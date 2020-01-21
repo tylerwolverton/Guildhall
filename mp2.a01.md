@@ -18,5 +18,5 @@ Use the branch name `mp2/turnin/a01` for grading, and you have the checklist cop
     - [x] This should contain a copy of this checklist with tasks you've attempted marked
     - [x] Make sure this is pushed
 - [x] [30pts] Create your `mp2/turnin/a01` branch and make sure it is pushed to remote.
-- [ ] Do a buddy build to make sure you can pull and build it yourself
-- [ ] Once assignment is done and everything compiles (and there were changes), merge `mp2/turnin/a01` back in to `master`
+- [x] Do a buddy build to make sure you can pull and build it yourself
+- [x] Once assignment is done and everything compiles (and there were changes), merge `mp2/turnin/a01` back in to `master`
