@@ -1,0 +1,63 @@
+<MapDefinitions>
+
+  <MapDefinition name="VolcanoIslands" width="50" height="80" fillTile="Grass" edgeTile="Water">
+    <MapGenSteps>
+      <!--Rivers-->
+      <Worm chanceToRun="1" iterations="3" setTile="Water" numWorms="5~12" wormLength="30~50" chancePerTile="1" />
+      <CellularAutomata chanceToRun="1" iterations="1" setTile="Water" neighborTile="Water" numNeighbors="1~9999" neighborRadius="1" chancePerTile="1"/>
+      <!--Place sand between grass and water-->
+      <CellularAutomata chanceToRun="1" iterations="1" setTile="Sand" ifTile="Grass" neighborTile="Water" numNeighbors="1~9999" neighborRadius="1" chancePerTile="1"/>
+      
+      <!--Lava Streams-->
+      <Worm chanceToRun="1" iterations="3~5" setTile="Lava" numWorms="5~9" wormLength="7~30" ifTile="Grass" chancePerTile="1" />
+      
+      <!--Turn single tiles in the middle of the ocean into water-->
+      <CellularAutomata chanceToRun="1" iterations="5" setTile="Water" neighborTile="Water" numNeighbors="5~9999" neighborRadius="1" chancePerTile="1"/>
+      
+      <!--Volcano Lair-->
+      <FromImage chanceToRun="1" iterations="1" imageFilePath="Data/Images/Maps/VolcanoLair.png" numRotations="0" alignmentX=".5" alignmentY=".8" chanceToMirror="0" chancePerTile="1" />
+
+      <!--Burn grass around lava-->
+      <CellularAutomata chanceToRun="1" iterations="1" setTile="BurnedEarth" ifTile="Grass" neighborTile="Lava" numNeighbors="1~9999" neighborRadius="1" chancePerTile="1"/>
+      <!--Place sand between lava and water-->
+      <CellularAutomata chanceToRun="1" iterations="1" setTile="Sand" ifTile="Water" neighborTile="Lava" numNeighbors="1~9999" neighborRadius="1" chancePerTile="1"/>
+    </MapGenSteps>
+  </MapDefinition>
+
+  <MapDefinition name="MutateDemo" width="40" height="50" fillTile="Grass" edgeTile="Water">
+    <MapGenSteps>
+      <Mutate chanceToRun="1" iterations="1~3" setTile="Stone" ifTile="Grass" chancePerTile="0.05" />
+    </MapGenSteps>
+  </MapDefinition>
+
+  <MapDefinition name="WormDemo" width="40" height="50" fillTile="Grass" edgeTile="Water">
+    <MapGenSteps>
+      <Worm chanceToRun="1" iterations="3" setTile="Lava" numWorms="5~12" wormLength="13~22" chancePerTile="1" />
+    </MapGenSteps>
+  </MapDefinition>
+
+  <MapDefinition name="FromImageDemo" width="40" height="50" fillTile="Grass" edgeTile="Water">
+    <MapGenSteps>
+      <FromImage chanceToRun="1" iterations="1~5" imageFilePath="Data/Images/Maps/LittleSmileyMapSolid.png" numRotations="0~3" alignmentX="0~1" alignmentY="0~1" chanceToMirror=".5" ifTile="Grass" chancePerTile="1" />
+    </MapGenSteps>
+  </MapDefinition>
+
+  <MapDefinition name="CellularAutomataDemo" width="40" height="50" fillTile="Grass" edgeTile="Water">
+    <MapGenSteps>
+      <Mutate chanceToRun="1" iterations="1" setTile="Stone" ifTile="Grass" chancePerTile="0.05" />
+      <CellularAutomata chanceToRun="1" iterations="1" setTile="Lava" ifTile="Grass" neighborTile="Stone" numNeighbors="1~9999" neighborRadius="1" chancePerTile="1"/>
+    </MapGenSteps>
+  </MapDefinition>
+
+  <MapDefinition name="RoomsAndPathsDemo" width="40" height="50" fillTile="Grass" edgeTile="Water">
+    <MapGenSteps>
+      <RoomsAndPaths chanceToRun="1" iterations="1" chancePerTile="1">
+        <Rooms count="2" width="10" height="15" numOverlaps="1" floorTile="Wood" wallTile="Stone" />
+        <Paths pathTile="Wood" chanceToLoop="0" straightness=".25" numExtraPaths="0" />
+      </RoomsAndPaths>
+    </MapGenSteps>
+  </MapDefinition>
+  
+</MapDefinitions>
+
+
