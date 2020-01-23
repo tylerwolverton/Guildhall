@@ -8,6 +8,7 @@
 struct AABB2;
 struct OBB2;
 struct Capsule2;
+class Polygon2;
 struct Rgba8;
 struct Vertex_PCU;
 class Camera;
@@ -43,15 +44,20 @@ public:
 	void DrawDisc2D( const Vec2& center, float radius, const Rgba8& color );
 	void DrawCapsule2D( const Capsule2& capsule, const Rgba8& color );
 	void DrawAABB2( const AABB2& box, const Rgba8& tint );
-	void DrawOBB2( const OBB2& box, const Rgba8& tint );
 	void DrawAABB2Outline( const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness );
+	void DrawOBB2( const OBB2& box, const Rgba8& tint );
 	void DrawOBB2Outline( const Vec2& center, const OBB2& box, const Rgba8& tint, float thickness );
+	void DrawPolygon2( const Polygon2& polygon2, const Rgba8& tint );
+	void DrawPolygon2( const std::vector<Vec2>& vertexPositions, const Rgba8& tint );
+	void DrawPolygon2Outline( const Polygon2& polygon2, const Rgba8& tint, float thickness );
+	void DrawPolygon2Outline( const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness );
 
 	static void AppendVertsForArc		( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint );
 	static void AppendVertsForAABB2D	( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	static void AppendVertsForOBB2D		( std::vector<Vertex_PCU>& vertexArray, const OBB2& spriteBounds,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	static void AppendVertsForOBB2D		( std::vector<Vertex_PCU>& vertexArray, const Vec2& bottomLeft, const Vec2& bottomRight, const Vec2& topLeft, const Vec2& topRight, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	static void AppendVertsForCapsule2D	( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+	static void AppendVertsForPolygon2	( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	void BindTexture( const Texture* texture );

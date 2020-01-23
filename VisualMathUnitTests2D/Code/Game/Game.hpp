@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Capsule2.hpp"
+#include "Engine/Math/Polygon2.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 
@@ -49,6 +50,7 @@ private:
 	void RandomizeAABB2();
 	void RandomizeOBB2();
 	void RandomizeCapsule2();
+	void RandomizePolygon2();
 
 	void RenderMouseShape() const;
 	void RenderShapes() const;
@@ -57,6 +59,7 @@ private:
 	void RenderAABB2() const;
 	void RenderOBB2() const;
 	void RenderCapsule2() const;
+	void RenderPolygon2() const;
 
 	void RenderNearestPoints() const;
 
@@ -85,6 +88,7 @@ private:
 	AABB2		m_aabb2 = AABB2::ONE_BY_ONE;
 	OBB2		m_obb2;
 	Capsule2	m_capsule2;
+	Polygon2	m_polygon2;
 
 	Vec2		m_nearestPointOnLine = Vec2::ZERO;
 	Vec2		m_nearestPointOnDisc = Vec2::ZERO;
@@ -97,4 +101,5 @@ private:
 	Rgba8		m_AABB2Color = Rgba8::MAGENTA;
 	Rgba8		m_OBB2Color = Rgba8::ORANGE;
 	Rgba8		m_capsule2Color = Rgba8::RED;
+	Rgba8		m_polygon2Color = Rgba8::PURPLE;
 };

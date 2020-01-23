@@ -9,6 +9,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Capsule2.hpp"
+#include "Engine/Math/Polygon2.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -271,6 +272,54 @@ void RenderContext::DrawOBB2Outline( const Vec2& center, const OBB2& box, const 
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::DrawPolygon2( const std::vector<Vec2>& vertexPositions, const Rgba8& tint )
+{
+	std::vector<Vertex_PCU> vertexes;
+
+	AppendVertsForPolygon2( vertexes, vertexPositions, tint );
+
+	DrawVertexArray( vertexes );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawPolygon2( const Polygon2& polygon2, const Rgba8& tint )
+{
+	DrawPolygon2( polygon2.GetPoints(), tint );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawPolygon2Outline( const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness )
+{
+	int numVertexes = (int)vertexPositions.size();
+
+	if ( numVertexes < 3 )
+	{
+		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to draw a Polygon2Outline with %d vertexes. At least 3 vertexes are required.", numVertexes ));
+		return;
+	}
+
+	for ( int vertexPosIdx = 0; vertexPosIdx < numVertexes - 1; ++vertexPosIdx )
+	{
+		int nextVertexIdx = vertexPosIdx + 1;
+		DrawLine2D( vertexPositions[ vertexPosIdx ], vertexPositions[ nextVertexIdx ], tint, thickness );
+	}
+
+	// Connect last vertex to first
+	int lastVertexIdx = numVertexes - 1;
+	DrawLine2D( vertexPositions[ lastVertexIdx ], vertexPositions[0], tint, thickness );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawPolygon2Outline( const Polygon2& polygon2, const Rgba8& tint, float thickness )
+{
+	DrawPolygon2Outline( polygon2.GetPoints(), tint, thickness );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint )
 {
 	constexpr float NUM_SIDES = 64.f;
@@ -349,6 +398,27 @@ void RenderContext::AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArra
 	// Add end caps
 	AppendVertsForArc( vertexArray, capsule.m_middleStart, capsule.m_radius, 180.f, iBasis.GetOrientationDegrees(), tint );
 	AppendVertsForArc( vertexArray, capsule.m_middleEnd,   capsule.m_radius, 180.f, iBasis.GetRotatedDegrees(- 180.f ).GetOrientationDegrees(), tint );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	int numVertexes = (int)vertexPositions.size();
+
+	if ( numVertexes < 3 )
+	{
+		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to append verts for a Polygon2 with %d vertexes. At least 3 vertexes are required.", numVertexes ) );
+		return;
+	}
+
+	for ( int vertexPosIdx = 1; vertexPosIdx < numVertexes - 1; ++vertexPosIdx )
+	{
+		int nextVertexIdx = vertexPosIdx + 1;
+		vertexArray.push_back( Vertex_PCU( vertexPositions[0],			   tint, uvAtMins ) );
+		vertexArray.push_back( Vertex_PCU( vertexPositions[vertexPosIdx], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+		vertexArray.push_back( Vertex_PCU( vertexPositions[nextVertexIdx], tint, uvAtMaxs ) );
+	}
 }
 
 

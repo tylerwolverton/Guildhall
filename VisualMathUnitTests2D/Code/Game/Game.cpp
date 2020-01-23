@@ -112,6 +112,7 @@ void Game::RandomizeShapes()
 	RandomizeAABB2();
 	RandomizeOBB2();
 	RandomizeCapsule2();
+	RandomizePolygon2();
 }
 
 
@@ -178,6 +179,25 @@ void Game::RandomizeCapsule2()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::RandomizePolygon2()
+{
+	Vec2 polygonStart( m_rng->RollRandomFloatInRange( 0, WINDOW_WIDTH ),
+					   m_rng->RollRandomFloatInRange( 0, WINDOW_HEIGHT ) );
+
+	// Since there is no CCW verification, just hard code points and randomize starting pos
+	std::vector<Vec2> points{
+		polygonStart + Vec2( 0.f, 0.f ),
+		polygonStart + Vec2( 2.f, 1.f ),
+		polygonStart + Vec2( 4.f, 3.f ),
+		polygonStart + Vec2( 2.5f, 4.5f ),
+		polygonStart + Vec2( 1.5f, 1.f )
+	};
+
+	m_polygon2.SetPoints( points );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::RenderMouseShape() const
 {
 	switch ( m_mouseState )
@@ -209,6 +229,7 @@ void Game::RenderShapes() const
 	RenderAABB2();
 	RenderOBB2();
 	RenderCapsule2();
+	RenderPolygon2();
 }
 
 
@@ -244,6 +265,13 @@ void Game::RenderOBB2() const
 void Game::RenderCapsule2() const
 {
 	g_renderer->DrawCapsule2D( m_capsule2, m_capsule2Color );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderPolygon2() const
+{
+	g_renderer->DrawPolygon2( m_polygon2, m_polygon2Color );
 }
 
 
