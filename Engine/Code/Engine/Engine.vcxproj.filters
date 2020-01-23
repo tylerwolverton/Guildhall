@@ -29,6 +29,9 @@
     <Filter Include="ThirdParty\TinyXML2">
       <UniqueIdentifier>{a2ae7cbb-c41c-418f-a372-e3042100ded7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OS">
+      <UniqueIdentifier>{629a22df-2026-4ee0-b0b5-1d1e03ad3f41}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -159,6 +162,9 @@
     </ClCompile>
     <ClCompile Include="Math\Polygon2.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Window.cpp">
+      <Filter>OS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -317,6 +323,9 @@
     </ClInclude>
     <ClInclude Include="Math\Polygon2.hpp">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Window.hpp">
+      <Filter>OS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

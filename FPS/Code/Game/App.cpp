@@ -17,6 +17,7 @@
 
 //-----------------------------------------------------------------------------------------------
 App* g_app = nullptr;				    // Created and owned by Main_Windows.cpp
+Window* g_window = nullptr;				// Created and owned by Main_Windows.cpp
 DevConsole* g_devConsole = nullptr;		// Created and owned by the App
 RenderContext* g_renderer = nullptr;	// Created and owned by the App
 InputSystem* g_inputSystem = nullptr;	// Created and owned by the App
