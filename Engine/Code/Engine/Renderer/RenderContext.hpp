@@ -5,6 +5,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Window;
+struct ID3D11Device;
+struct ID3D11DeviceContext;
+struct IDXGISwapChain;
 struct AABB2;
 struct OBB2;
 struct Capsule2;
@@ -28,7 +32,7 @@ enum class BlendMode
 class RenderContext
 {
 public:
-	void Startup();
+	void Startup( Window* window );
 	void BeginFrame();
 	void EndFrame();
 	void Shutdown();
@@ -73,4 +77,10 @@ private:
 private:
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
+
+public:
+	// SD2 TODO: Move to D3DCommon.hpp
+	ID3D11Device* m_device;
+	ID3D11DeviceContext* m_context;		// immediate context
+	IDXGISwapChain* m_swapchain;		// gives us textures that we can draw that the user can see
 };

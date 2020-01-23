@@ -1,5 +1,6 @@
 #include "App.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Rgba8.hpp"
@@ -42,6 +43,9 @@ App::~App()
 //-----------------------------------------------------------------------------------------------
 void App::Startup()
 {
+	g_window = new Window();
+	g_window->Open( "FPS", CLIENT_ASPECT, 0.9f ); // feed these from game blackboard
+
 	g_eventSystem = new EventSystem();
 	g_devConsole = new DevConsole();
 	g_inputSystem = new InputSystem();
@@ -53,7 +57,7 @@ void App::Startup()
 	g_devConsole->Startup();
 	g_inputSystem->Startup();
 	g_audioSystem->Startup();
-	g_renderer->Startup();
+	g_renderer->Startup( g_window );
 	g_game->Startup();
 }
 
@@ -67,6 +71,7 @@ void App::Shutdown()
 	g_inputSystem->Shutdown();
 	g_devConsole->Shutdown();
 	g_eventSystem->Shutdown();
+	g_window->Close();
 
 	delete g_game;
 	g_game = nullptr;
@@ -85,6 +90,9 @@ void App::Shutdown()
 
 	delete g_eventSystem;
 	g_eventSystem = nullptr;
+
+	delete g_window;
+	g_window = nullptr;
 }
 
 
@@ -126,6 +134,7 @@ void App::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void App::BeginFrame()
 {
+	g_window->BeginFrame();
 	g_eventSystem->BeginFrame();
 	g_devConsole->BeginFrame();
 	g_inputSystem->BeginFrame();
@@ -175,4 +184,5 @@ void App::EndFrame()
 	g_inputSystem->EndFrame();
 	g_devConsole->EndFrame();
 	g_eventSystem->EndFrame();
+	//g_window->EndFrame();
 }

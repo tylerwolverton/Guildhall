@@ -8,7 +8,6 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
-#include "Engine/OS/Window.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/App.hpp"
 #include "Game/Game.hpp"
@@ -17,7 +16,7 @@
 //-----------------------------------------------------------------------------------------------
 const char* APP_NAME = "FPS";						// ...becomes ??? (Change this per project!)
 
-Window* g_window = nullptr;
+//Window* g_window = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 void PopulateGameConfig()
@@ -43,8 +42,8 @@ int WINAPI WinMain( _In_ HINSTANCE applicationInstanceHandle, _In_opt_ HINSTANCE
 	PopulateGameConfig();							
 
 	g_app = new App();
-	g_window = new Window();
-	g_window->Open( APP_NAME, CLIENT_ASPECT, 0.9f ); // feed these from game blackboard
+	//g_window = new Window();
+	//g_window->Open( APP_NAME, CLIENT_ASPECT, 0.9f ); // feed these from game blackboard
 	
 	g_app->Startup();
 	
@@ -52,17 +51,12 @@ int WINAPI WinMain( _In_ HINSTANCE applicationInstanceHandle, _In_opt_ HINSTANCE
 	while( !g_app->IsQuitting() )			
 	{
 		//Sleep( 16 );							// Do nothing for 16 ms
-		g_window->BeginFrame();
 		g_app->RunFrame();					
 	}
 
 	g_app->Shutdown();
 	delete g_app;
 	g_app = nullptr;
-
-	g_window->Close();
-	delete g_window;
-	g_window = nullptr;
-
+	
 	return 0;
 }

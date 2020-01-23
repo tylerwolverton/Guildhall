@@ -18,7 +18,7 @@ public:
 	void Shutdown();
 	void RunFrame();
 
-	bool IsQuitting()										{ return m_isQuitting; }
+	bool IsQuitting()										{ return true; /*return m_isQuitting;*/ }
 	
 	bool HandleQuitRequested();
 	void RestartGame();

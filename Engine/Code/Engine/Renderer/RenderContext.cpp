@@ -13,16 +13,90 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/OS/Window.hpp"
 
 #include "ThirdParty/stb/stb_image.h"
 
+#define RENDER_DEBUG
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::Startup()
+// DX3D11 Includes
+#if !defined(WIN32_LEAN_AND_MEAN) 
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#define INITGUID
+#include <d3d11.h>  // d3d11 specific objects
+#include <dxgi.h>   // shared library used across multiple dx graphical interfaces
+#include <dxgidebug.h>  // debug utility (mostly used for reporting and analytics)
+
+#pragma comment( lib, "d3d11.lib" )         // needed a01
+#pragma comment( lib, "dxgi.lib" )          // needed a01
+#pragma comment( lib, "d3dcompiler.lib" )   // needed when we get to shaders
+
+#define DX_SAFE_RELEASE(obj)  if (nullptr != (obj)) { (obj)->Release(); (obj) = nullptr; }
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::Startup( Window* window )
 {
-	UNIMPLEMENTED();
 	/*glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );*/
+
+	// Instance - singleton
+	// Device - create resources 
+	// Context - issue commands
+
+	// ~SwapChain
+
+	//ID3D11Device
+	//ID3D11DeviceContext
+	IDXGISwapChain* swapchain = nullptr;
+	
+	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+	#if defined(RENDER_DEBUG)
+		flags |= D3D11_CREATE_DEVICE_DEBUG;
+	#endif
+
+	DXGI_SWAP_CHAIN_DESC swapchainDesc;
+	memset( &swapchainDesc, 0, sizeof( swapchainDesc ) );
+
+	// how many back buffers in our chain - we'll double buffer (one we show, one we draw to)
+	swapchainDesc.BufferCount = 2;
+	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // on swap, the old buffer is discarded
+	swapchainDesc.Flags = 0; // additional flags - see docs.  Used in special cases like for video buffers
+
+	// how swap chain is to be used
+	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_BACK_BUFFER;
+	HWND hwnd = (HWND)window->m_hwnd;
+	swapchainDesc.OutputWindow = hwnd; // HWND for the window to be used
+	swapchainDesc.SampleDesc.Count = 1; // how many samples per pixel (1 so no MSAA)
+										 // note, if we're doing MSAA, we'll do it on a secondary target
+
+	// describe the buffer
+	swapchainDesc.Windowed = TRUE;                                    // windowed/full-screen mode
+	swapchainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color RGBA8 color
+	swapchainDesc.BufferDesc.Width = window->GetClientWidth();
+	swapchainDesc.BufferDesc.Height = window->GetClientHeight();
+
+	HRESULT result = D3D11CreateDeviceAndSwapChain( nullptr,
+								   D3D_DRIVER_TYPE_HARDWARE,
+								   nullptr,
+								   flags, // controls the type of device we make
+								   nullptr,
+								   0,
+								   D3D11_SDK_VERSION,
+								   &swapchainDesc,
+								   &swapchain,
+								   &m_device,
+								   nullptr,
+								   &m_context );
+
+	GUARANTEE_OR_DIE( SUCCEEDED( result ), "Failed to create rendering device." );
+
+	if ( swapchain != nullptr ) {
+		//m_swapchain = new IDXGISwapChain( this, swapchain );
+		m_swapchain = swapchain;
+	}
 }
 
 
@@ -56,6 +130,16 @@ void RenderContext::Shutdown()
 		m_loadedTextures[textureIndex] = nullptr;
 	}
 	m_loadedTextures.clear();
+
+	// swapchain is one of our engine objects
+	// SD2 TODO: Create SwapChain class to manage this
+	/*delete m_swapchain;
+	m_swapchain = nullptr;*/
+	DX_SAFE_RELEASE( m_swapchain );
+
+	// release
+	DX_SAFE_RELEASE( m_context );
+	DX_SAFE_RELEASE( m_device );
 }
 
 

@@ -6,7 +6,7 @@
 #include <WinUser.h>
 
 
-extern HWND g_hWnd;
+//extern HWND g_hWnd;
 
 //-----------------------------------------------------------------------------------------------
 const unsigned char KEY_ESC = VK_ESCAPE;
@@ -116,7 +116,7 @@ void InputSystem::SetXboxControllerVibrationLevels( int controllerID, float left
 //-----------------------------------------------------------------------------------------------
 void InputSystem::UpdateMouse()
 {
-	POINT mousePos;
+	/*POINT mousePos;
 	GetCursorPos( &mousePos );
 	ScreenToClient( g_hWnd, &mousePos );
 	Vec2 mouseClientPos( (float)mousePos.x, (float)mousePos.y );
@@ -127,7 +127,7 @@ void InputSystem::UpdateMouse()
 	AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
 	
 	m_normalizedMouseClientPos = clientBounds.GetUVForPoint( mouseClientPos );
-	m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;
+	m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;*/
 }
 
 

@@ -53,13 +53,13 @@ void Game::Startup()
 
 	m_rng = new RandomNumberGenerator();
 
-	LoadAssets();
+	//LoadAssets();
 
 	m_world = new World();
 
 	m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
 	g_devConsole->PrintString( Rgba8::WHITE, Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
-	m_world->BuildNewMap( m_curMap );
+	//m_world->BuildNewMap( m_curMap );
 
 	LogMapDebugCommands();
 }
@@ -134,23 +134,23 @@ void Game::Update( float deltaSeconds )
 {
 	UpdateFromKeyboard( deltaSeconds );
 
-	// Modify deltaSeconds based on game state
-	if ( m_isPaused )
-	{
-		deltaSeconds = 0.f;
-	}
-	if ( m_isSlowMo )
-	{
-		deltaSeconds *= .1f;
-	}
-	if ( m_isFastMo )
-	{
-		deltaSeconds *= 4.f;
-	}
-	
-	m_world->Update( deltaSeconds );
-	UpdateCameras( deltaSeconds );
-	UpdateMousePositions( deltaSeconds );
+	//// Modify deltaSeconds based on game state
+	//if ( m_isPaused )
+	//{
+	//	deltaSeconds = 0.f;
+	//}
+	//if ( m_isSlowMo )
+	//{
+	//	deltaSeconds *= .1f;
+	//}
+	//if ( m_isFastMo )
+	//{
+	//	deltaSeconds *= 4.f;
+	//}
+	//
+	//m_world->Update( deltaSeconds );
+	//UpdateCameras( deltaSeconds );
+	//UpdateMousePositions( deltaSeconds );
 }
 
 
@@ -159,29 +159,29 @@ void Game::Render() const
 {
 	// Clear all screen (backbuffer) pixels to black
 	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen(Rgba8(0, 0, 0));
+	//g_renderer->ClearScreen(Rgba8(0, 0, 0));
 
-	g_renderer->BeginCamera(*m_worldCamera );
+	//g_renderer->BeginCamera(*m_worldCamera );
 
-	m_world->Render();
-	if ( m_isDebugRendering )
-	{
-		m_world->DebugRender();
-	}
-	
-	g_renderer->EndCamera( *m_worldCamera );
+	//m_world->Render();
+	//if ( m_isDebugRendering )
+	//{
+	//	m_world->DebugRender();
+	//}
+	//
+	//g_renderer->EndCamera( *m_worldCamera );
 
-	// Render UI with a new camera
-	g_renderer->BeginCamera( *m_uiCamera );
+	//// Render UI with a new camera
+	//g_renderer->BeginCamera( *m_uiCamera );
 
-	g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
+	//g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
 
-	if ( m_isDebugRendering )
-	{
-		m_debugInfoTextBox->Render( m_mouseUIPosition );
-	}
-	
-	g_renderer->EndCamera( *m_uiCamera );
+	//if ( m_isDebugRendering )
+	//{
+	//	m_debugInfoTextBox->Render( m_mouseUIPosition );
+	//}
+	//
+	//g_renderer->EndCamera( *m_uiCamera );
 }
 
 

@@ -115,27 +115,27 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 	float desktopAspect = desktopWidth / desktopHeight;
 
 	// Calculate maximum client size (as some % of desktop size)
-	float clientWidth = desktopWidth * maxClientFractionOfDesktop;
-	float clientHeight = desktopHeight * maxClientFractionOfDesktop;
+	m_clientWidth = desktopWidth * maxClientFractionOfDesktop;
+	m_clientHeight = desktopHeight * maxClientFractionOfDesktop;
 	if ( clientAspect > desktopAspect )
 	{
 		// Client window has a wider aspect than desktop; shrink client height to match its width
-		clientHeight = clientWidth / clientAspect;
+		m_clientHeight = m_clientWidth / clientAspect;
 	}
 	else
 	{
 		// Client window has a taller aspect than desktop; shrink client width to match its height
-		clientWidth = clientHeight * clientAspect;
+		m_clientWidth = m_clientHeight * clientAspect;
 	}
 
 	// Calculate client rect bounds by centering the client area
-	float clientMarginX = 0.5f * ( desktopWidth - clientWidth );
-	float clientMarginY = 0.5f * ( desktopHeight - clientHeight );
+	float clientMarginX = 0.5f * ( desktopWidth - m_clientWidth );
+	float clientMarginY = 0.5f * ( desktopHeight - m_clientHeight );
 	RECT clientRect;
 	clientRect.left = (int)clientMarginX;
-	clientRect.right = clientRect.left + (int)clientWidth;
+	clientRect.right = clientRect.left + (int)m_clientWidth;
 	clientRect.top = (int)clientMarginY;
-	clientRect.bottom = clientRect.top + (int)clientHeight;
+	clientRect.bottom = clientRect.top + (int)m_clientHeight;
 
 	// Calculate the outer dimensions of the physical window, including frame et. al.
 	RECT windowRect = clientRect;
