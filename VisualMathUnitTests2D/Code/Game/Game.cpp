@@ -112,6 +112,7 @@ void Game::RandomizeShapes()
 	RandomizeAABB2();
 	RandomizeOBB2();
 	RandomizeCapsule2();
+	RandomizePolygon2();
 }
 
 
@@ -174,6 +175,25 @@ void Game::RandomizeCapsule2()
 	float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
 
 	m_capsule2 = Capsule2( capsuleMiddleStart, capsuleMiddleEnd, radius );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RandomizePolygon2()
+{
+	Vec2 polygonStart( m_rng->RollRandomFloatInRange( 0, WINDOW_WIDTH ),
+					   m_rng->RollRandomFloatInRange( 0, WINDOW_HEIGHT ) );
+
+	// Since there is no CCW verification, just hard code points and randomize starting pos
+	std::vector<Vec2> points{
+		polygonStart + Vec2( 0.f, 0.f ),
+		polygonStart + Vec2( 2.f, 1.f ),
+		polygonStart + Vec2( 4.f, 3.f ),
+		polygonStart + Vec2( 2.5f, 4.5f ),
+		polygonStart + Vec2( 1.5f, 1.f )
+	};
+
+	m_polygon2.SetPoints( points );
 }
 
 
@@ -251,16 +271,7 @@ void Game::RenderCapsule2() const
 //-----------------------------------------------------------------------------------------------
 void Game::RenderPolygon2() const
 {
-	std::vector<Vec2> points{
-		Vec2( 2.f, 2.f ),
-		Vec2( 10.f, 3.f ),
-		Vec2( 8.f, 7.f ),
-		Vec2( 5.f, 5.f ),
-		Vec2( 3.f, 3.f )
-	};
-
-	g_renderer->DrawPolygon2( points, Rgba8::CYAN );
-	//g_renderer->DrawPolygon2Outline( points, Rgba8::CYAN, .02f );
+	g_renderer->DrawPolygon2( m_polygon2, m_polygon2Color );
 }
 
 

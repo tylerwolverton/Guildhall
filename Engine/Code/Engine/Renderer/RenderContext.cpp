@@ -9,6 +9,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Capsule2.hpp"
+#include "Engine/Math/Polygon2.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -271,7 +272,7 @@ void RenderContext::DrawOBB2Outline( const Vec2& center, const OBB2& box, const 
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::DrawPolygon2( std::vector<Vec2>& vertexPositions, const Rgba8& tint )
+void RenderContext::DrawPolygon2( const std::vector<Vec2>& vertexPositions, const Rgba8& tint )
 {
 	std::vector<Vertex_PCU> vertexes;
 
@@ -282,7 +283,14 @@ void RenderContext::DrawPolygon2( std::vector<Vec2>& vertexPositions, const Rgba
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::DrawPolygon2Outline( std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness )
+void RenderContext::DrawPolygon2( const Polygon2& polygon2, const Rgba8& tint )
+{
+	DrawPolygon2( polygon2.GetPoints(), tint );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawPolygon2Outline( const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness )
 {
 	int numVertexes = (int)vertexPositions.size();
 
@@ -301,6 +309,13 @@ void RenderContext::DrawPolygon2Outline( std::vector<Vec2>& vertexPositions, con
 	// Connect last vertex to first
 	int lastVertexIdx = numVertexes - 1;
 	DrawLine2D( vertexPositions[ lastVertexIdx ], vertexPositions[0], tint, thickness );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawPolygon2Outline( const Polygon2& polygon2, const Rgba8& tint, float thickness )
+{
+	DrawPolygon2Outline( polygon2.GetPoints(), tint, thickness );
 }
 
 
@@ -387,7 +402,7 @@ void RenderContext::AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArra
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	int numVertexes = (int)vertexPositions.size();
 
