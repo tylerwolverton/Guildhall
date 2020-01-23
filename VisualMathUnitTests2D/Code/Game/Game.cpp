@@ -209,6 +209,7 @@ void Game::RenderShapes() const
 	RenderAABB2();
 	RenderOBB2();
 	RenderCapsule2();
+	RenderPolygon2();
 }
 
 
@@ -244,6 +245,22 @@ void Game::RenderOBB2() const
 void Game::RenderCapsule2() const
 {
 	g_renderer->DrawCapsule2D( m_capsule2, m_capsule2Color );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderPolygon2() const
+{
+	std::vector<Vec2> points{
+		Vec2( 2.f, 2.f ),
+		Vec2( 10.f, 3.f ),
+		Vec2( 8.f, 7.f ),
+		Vec2( 5.f, 5.f ),
+		Vec2( 3.f, 3.f )
+	};
+
+	g_renderer->DrawPolygon2( points, Rgba8::CYAN );
+	//g_renderer->DrawPolygon2Outline( points, Rgba8::CYAN, .02f );
 }
 
 

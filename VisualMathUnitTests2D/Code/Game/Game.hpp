@@ -57,6 +57,7 @@ private:
 	void RenderAABB2() const;
 	void RenderOBB2() const;
 	void RenderCapsule2() const;
+	void RenderPolygon2() const;
 
 	void RenderNearestPoints() const;
 

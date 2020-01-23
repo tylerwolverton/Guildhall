@@ -114,3 +114,4 @@ $RECYCLE.BIN/
 !**/Run/*.exe
 !**/Run/*.dll
 !**/ThirdParty/**/*.lib
+*.user
