@@ -114,10 +114,24 @@ void Window::SetInputSystem( InputSystem* inputSystem )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, bool isBorderless )
+bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, WindowMode windowMode )
 {
-	const DWORD windowStyleFlags = isBorderless ? WS_POPUP : WS_CAPTION | WS_BORDER | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED;
-	const DWORD windowStyleExFlags = isBorderless ? WS_EX_APPWINDOW | WS_EX_CLIENTEDGE : WS_EX_APPWINDOW;
+	DWORD windowStyleFlags = 0;
+	DWORD windowStyleExFlags = 0;
+
+	switch ( windowMode )
+	{
+		case WindowMode::WINDOWED:
+			windowStyleFlags = WS_CAPTION | WS_BORDER | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED;
+			windowStyleExFlags = WS_EX_APPWINDOW;
+			break;
+
+		case WindowMode::BORDERLESS:
+			windowStyleFlags = WS_POPUP;
+			windowStyleExFlags = WS_EX_CLIENTEDGE | WS_EX_APPWINDOW;
+			maxClientFractionOfDesktop = 1.f;
+			break;
+	}
 	
 	// Get desktop rect, dimensions, aspect
 	RECT desktopRect;
@@ -126,17 +140,11 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 	float desktopWidth = (float)( desktopRect.right - desktopRect.left );
 	float desktopHeight = (float)( desktopRect.bottom - desktopRect.top );
 	float desktopAspect = desktopWidth / desktopHeight;
-
-	// Calculate maximum client size (as some % of desktop size)
-	if ( isBorderless )
-	{
-		maxClientFractionOfDesktop = 1.f;
-	}
-
+	
 	float clientWidth = desktopWidth * maxClientFractionOfDesktop;
 	float clientHeight = desktopHeight * maxClientFractionOfDesktop;
 
-	if ( !isBorderless )
+	if ( windowMode == WindowMode::WINDOWED )
 	{
 		if ( clientAspect > desktopAspect )
 		{

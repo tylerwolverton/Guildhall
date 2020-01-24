@@ -4,6 +4,7 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
@@ -50,10 +51,10 @@ void App::Startup()
 	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "SD2.A01" );
 	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
 	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
-	bool windowIsBorderless = g_gameConfigBlackboard.GetValue( "isBorderless", false );
+	WindowMode windowMode = GetWindowModeFromGameConfig();
 
 	g_window = new Window();
-	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowIsBorderless ); // feed these from game blackboard
+	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowMode );
 
 	g_eventSystem = new EventSystem();
 	g_devConsole = new DevConsole();
@@ -159,6 +160,27 @@ void App::PopulateGameConfig()
 
 
 //-----------------------------------------------------------------------------------------------
+WindowMode App::GetWindowModeFromGameConfig()
+{
+	std::string windowModeStr = g_gameConfigBlackboard.GetValue( "windowMode", "windowed" );
+
+	if ( !_strcmpi( windowModeStr.c_str(), "windowed" ) )
+	{
+		return WindowMode::WINDOWED;
+	}
+	else if ( !_strcmpi( windowModeStr.c_str(), "borderless" ) )
+	{
+		return WindowMode::BORDERLESS;
+	}
+	else
+	{
+		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Unrecognized window mode '%s' found in game config; using windowed mode.", windowModeStr.c_str() ) );
+		return WindowMode::WINDOWED;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void App::BeginFrame()
 {
 	g_window->BeginFrame();
@@ -193,12 +215,6 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 	{
 		g_app->RestartGame();
 	}
-
-	/*if ( g_inputSystem->WasKeyJustPressed( KEY_F11 ) )
-	{
-
-		g_app->RestartGame();
-	}*/
 }
 
 
