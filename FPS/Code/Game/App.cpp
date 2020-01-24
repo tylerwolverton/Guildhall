@@ -64,7 +64,10 @@ void App::Startup()
 
 	g_eventSystem->Startup();
 	g_devConsole->Startup();
+	
 	g_inputSystem->Startup();
+	g_window->SetInputSystem( g_inputSystem );
+
 	g_audioSystem->Startup();
 	g_renderer->Startup( g_window );
 	g_game->Startup();
@@ -190,6 +193,12 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 	{
 		g_app->RestartGame();
 	}
+
+	/*if ( g_inputSystem->WasKeyJustPressed( KEY_F11 ) )
+	{
+
+		g_app->RestartGame();
+	}*/
 }
 
 

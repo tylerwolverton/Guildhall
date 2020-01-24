@@ -1,4 +1,5 @@
 #include "Engine/OS/Window.hpp"
+#include "Engine/Input/InputSystem.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -7,51 +8,57 @@
 //-----------------------------------------------------------------------------------------------
 static TCHAR const* WND_CLASS_NAME = TEXT( "Simple Window Class" );
 
+static InputSystem* g_windowInputSystem = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 // Handles Windows (Win32) messages/events; i.e. the OS is trying to tell us something happened.
 // This function is called by Windows whenever we ask it for notifications
 //
-// #SD1ToDo: We will move this function to a more appropriate place later on...
-//
 // AKA WinProc
 static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam )
 {
-	//switch ( wmMessageCode )
-	//{
-	//	// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
-	//	case WM_CLOSE:
-	//	{
-	//		g_app->HandleQuitRequested();
-	//		return 0; // "Consumes" this message (tells Windows "okay, we handled it")
-	//	}
+	switch ( wmMessageCode )
+	{
+		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
+		case WM_CLOSE:
+		{
+			//g_app->HandleQuitRequested();
+			// HACK: Change to close game via app somehow
+			if ( g_windowInputSystem != nullptr )
+			{
+				g_windowInputSystem->HandleKeyPressed( KEY_ESC );
+			}
+			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
+		}
 
-	//	// Raw physical keyboard "key-was-just-depressed" event (case-insensitive, not translated)
-	//	case WM_KEYDOWN:
-	//	{
-	//		unsigned char asKey = (unsigned char)wParam;
+		// Raw physical keyboard "key-was-just-depressed" event (case-insensitive, not translated)
+		case WM_KEYDOWN:
+		{
+			unsigned char asKey = (unsigned char)wParam;
 
-	//		if ( g_inputSystem->HandleKeyPressed( asKey ) )
-	//		{
-	//			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
-	//		}
+			if( g_windowInputSystem != nullptr
+				&& g_windowInputSystem->HandleKeyPressed( asKey ) )
+			{
+				return 0; // "Consumes" this message (tells Windows "okay, we handled it")
+			}
 
-	//		break;
-	//	}
+			break;
+		}
 
-	//	// Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
-	//	case WM_KEYUP:
-	//	{
-	//		unsigned char asKey = (unsigned char)wParam;
+		// Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
+		case WM_KEYUP:
+		{
+			unsigned char asKey = (unsigned char)wParam;
 
-	//		if ( g_inputSystem->HandleKeyReleased( asKey ) )
-	//		{
-	//			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
-	//		}
+			if ( g_windowInputSystem != nullptr
+				 && g_windowInputSystem->HandleKeyReleased( asKey ) )
+			{
+				return 0; // "Consumes" this message (tells Windows "okay, we handled it")
+			}
 
-	//		break;
-	//	}
-	//}
+			break;
+		}
+	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)
 	return DefWindowProc( windowHandle, wmMessageCode, wParam, lParam );
@@ -95,6 +102,14 @@ Window::~Window()
 {
 	Close();
 	UnregisterWindowClass();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Window::SetInputSystem( InputSystem* inputSystem )
+{
+	m_inputSystem = inputSystem;
+	g_windowInputSystem = inputSystem;
 }
 
 
