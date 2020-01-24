@@ -101,15 +101,8 @@ Window::~Window()
 //-----------------------------------------------------------------------------------------------
 bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, bool isBorderless )
 {
-	// #SD1ToDo: Add support for fullscreen mode (requires different window style flags than windowed mode)
-	// SD2 BONUS: Fullscreen mode will be here as a new style
 	const DWORD windowStyleFlags = isBorderless ? WS_POPUP : WS_CAPTION | WS_BORDER | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED;
 	const DWORD windowStyleExFlags = isBorderless ? WS_EX_APPWINDOW | WS_EX_CLIENTEDGE : WS_EX_APPWINDOW;
-
-	if ( isBorderless )
-	{
-		maxClientFractionOfDesktop = 1.f;
-	}
 	
 	// Get desktop rect, dimensions, aspect
 	RECT desktopRect;
@@ -120,30 +113,39 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 	float desktopAspect = desktopWidth / desktopHeight;
 
 	// Calculate maximum client size (as some % of desktop size)
-	m_clientWidth = desktopWidth * maxClientFractionOfDesktop;
-	m_clientHeight = desktopHeight * maxClientFractionOfDesktop;
+	if ( isBorderless )
+	{
+		maxClientFractionOfDesktop = 1.f;
+	}
+
+	float clientWidth = desktopWidth * maxClientFractionOfDesktop;
+	float clientHeight = desktopHeight * maxClientFractionOfDesktop;
+
 	if ( !isBorderless )
 	{
 		if ( clientAspect > desktopAspect )
 		{
 			// Client window has a wider aspect than desktop; shrink client height to match its width
-			m_clientHeight = m_clientWidth / clientAspect;
+			clientHeight = clientWidth / clientAspect;
 		}
 		else
 		{
 			// Client window has a taller aspect than desktop; shrink client width to match its height
-			m_clientWidth = m_clientHeight * clientAspect;
+			clientWidth = clientHeight * clientAspect;
 		}
 	}
 
 	// Calculate client rect bounds by centering the client area
-	float clientMarginX = 0.5f * ( desktopWidth - m_clientWidth );
-	float clientMarginY = 0.5f * ( desktopHeight - m_clientHeight );
+	float clientMarginX = 0.5f * ( desktopWidth - clientWidth );
+	float clientMarginY = 0.5f * ( desktopHeight - clientHeight );
 	RECT clientRect;
 	clientRect.left = (int)clientMarginX;
-	clientRect.right = clientRect.left + (int)m_clientWidth;
+	clientRect.right = clientRect.left + (int)clientWidth;
 	clientRect.top = (int)clientMarginY;
-	clientRect.bottom = clientRect.top + (int)m_clientHeight;
+	clientRect.bottom = clientRect.top + (int)clientHeight;
+
+	m_clientWidth = (unsigned int)clientWidth;
+	m_clientHeight = (unsigned int)clientHeight;
 
 	// Calculate the outer dimensions of the physical window, including frame et. al.
 	RECT windowRect = clientRect;

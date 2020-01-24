@@ -80,7 +80,7 @@ private:
 
 public:
 	// SD2 TODO: Move to D3DCommon.hpp
-	ID3D11Device* m_device;
-	ID3D11DeviceContext* m_context;		// immediate context
-	IDXGISwapChain* m_swapchain;		// gives us textures that we can draw that the user can see
+	ID3D11Device* m_device = nullptr;
+	ID3D11DeviceContext* m_context = nullptr;		// immediate context
+	IDXGISwapChain* m_swapchain = nullptr;			// gives us textures that we can draw that the user can see
 };

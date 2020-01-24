@@ -14,11 +14,11 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	unsigned int GetClientWidth() { return (unsigned int)m_clientWidth; }
-	unsigned int GetClientHeight() { return (unsigned int)m_clientHeight; }
+	unsigned int GetClientWidth() { return m_clientWidth; }
+	unsigned int GetClientHeight() { return m_clientHeight; }
 
 public:
-	void* m_hwnd;
-	float m_clientWidth;
-	float m_clientHeight;
+	void* m_hwnd = nullptr;
+	unsigned int m_clientWidth = 0;
+	unsigned int m_clientHeight = 0;
 };
