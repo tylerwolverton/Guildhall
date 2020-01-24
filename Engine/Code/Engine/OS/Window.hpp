@@ -9,9 +9,10 @@ public:
 	Window();
 	~Window();
 
-	bool Open( const std::string& title, float clientAspect = 16.f / 9.f, float maxClientFractionOfDesktop = .9f );
+	bool Open( const std::string& title, float clientAspect = 16.f / 9.f, float maxClientFractionOfDesktop = .9f, bool isBorderless = false );
 	void Close();
 	void BeginFrame();
+	void EndFrame();
 
 	unsigned int GetClientWidth() { return (unsigned int)m_clientWidth; }
 	unsigned int GetClientHeight() { return (unsigned int)m_clientHeight; }

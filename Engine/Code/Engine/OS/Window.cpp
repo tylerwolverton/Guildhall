@@ -99,13 +99,18 @@ Window::~Window()
 
 
 //-----------------------------------------------------------------------------------------------
-bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop )
+bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, bool isBorderless )
 {
 	// #SD1ToDo: Add support for fullscreen mode (requires different window style flags than windowed mode)
 	// SD2 BONUS: Fullscreen mode will be here as a new style
-	const DWORD windowStyleFlags = WS_CAPTION | WS_BORDER | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED;
-	const DWORD windowStyleExFlags = WS_EX_APPWINDOW;
+	const DWORD windowStyleFlags = isBorderless ? WS_POPUP : WS_CAPTION | WS_BORDER | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED;
+	const DWORD windowStyleExFlags = isBorderless ? WS_EX_APPWINDOW | WS_EX_CLIENTEDGE : WS_EX_APPWINDOW;
 
+	if ( isBorderless )
+	{
+		maxClientFractionOfDesktop = 1.f;
+	}
+	
 	// Get desktop rect, dimensions, aspect
 	RECT desktopRect;
 	HWND desktopWindowHandle = GetDesktopWindow();
@@ -117,15 +122,18 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 	// Calculate maximum client size (as some % of desktop size)
 	m_clientWidth = desktopWidth * maxClientFractionOfDesktop;
 	m_clientHeight = desktopHeight * maxClientFractionOfDesktop;
-	if ( clientAspect > desktopAspect )
+	if ( !isBorderless )
 	{
-		// Client window has a wider aspect than desktop; shrink client height to match its width
-		m_clientHeight = m_clientWidth / clientAspect;
-	}
-	else
-	{
-		// Client window has a taller aspect than desktop; shrink client width to match its height
-		m_clientWidth = m_clientHeight * clientAspect;
+		if ( clientAspect > desktopAspect )
+		{
+			// Client window has a wider aspect than desktop; shrink client height to match its width
+			m_clientHeight = m_clientWidth / clientAspect;
+		}
+		else
+		{
+			// Client window has a taller aspect than desktop; shrink client width to match its height
+			m_clientWidth = m_clientHeight * clientAspect;
+		}
 	}
 
 	// Calculate client rect bounds by centering the client area
@@ -203,4 +211,11 @@ void Window::BeginFrame()
 		TranslateMessage( &queuedMessage );
 		DispatchMessage( &queuedMessage ); // This tells Windows to call our "WindowsMessageHandlingProcedure" (a.k.a. "WinProc") function
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Window::EndFrame()
+{
+
 }

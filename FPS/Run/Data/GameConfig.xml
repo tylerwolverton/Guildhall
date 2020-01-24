@@ -1,5 +1,7 @@
 <GameConfig
 	startMap="MutateDemo"
+  windowHeightRatio=".9f"
 	windowAspect="1.777"
-	isFullscreen="false"
+  windowTitle="FPS"
+	isBorderless="false"
 />

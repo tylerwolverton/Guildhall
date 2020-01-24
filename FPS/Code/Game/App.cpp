@@ -1,17 +1,19 @@
 #include "App.hpp"
 #include "Engine/Core/EngineCommon.hpp"
-#include "Engine/OS/Window.hpp"
-#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Rgba8.hpp"
-#include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Core/XmlUtils.hpp"
+#include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
-#include "Engine/Input/InputSystem.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 
@@ -43,8 +45,15 @@ App::~App()
 //-----------------------------------------------------------------------------------------------
 void App::Startup()
 {
+	PopulateGameConfig();
+
+	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "SD2.A01" );
+	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
+	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
+	bool windowIsBorderless = g_gameConfigBlackboard.GetValue( "isBorderless", false );
+
 	g_window = new Window();
-	g_window->Open( "FPS", CLIENT_ASPECT, 0.9f ); // feed these from game blackboard
+	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowIsBorderless ); // feed these from game blackboard
 
 	g_eventSystem = new EventSystem();
 	g_devConsole = new DevConsole();
@@ -132,6 +141,21 @@ void App::RestartGame()
 
 
 //-----------------------------------------------------------------------------------------------
+void App::PopulateGameConfig()
+{
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( "Data/GameConfig.xml" );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		return;
+	}
+
+	XmlElement* root = doc.RootElement();
+	g_gameConfigBlackboard.PopulateFromXmlElementAttributes( *root );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void App::BeginFrame()
 {
 	g_window->BeginFrame();
@@ -184,5 +208,5 @@ void App::EndFrame()
 	g_inputSystem->EndFrame();
 	g_devConsole->EndFrame();
 	g_eventSystem->EndFrame();
-	//g_window->EndFrame();
+	g_window->EndFrame();
 }
