@@ -20,22 +20,13 @@
 
 #include "ThirdParty/stb/stb_image.h"
 
-#define RENDER_DEBUG
 
-////-----------------------------------------------------------------------------------------------
-//// DX3D11 Includes
-//#if !defined(WIN32_LEAN_AND_MEAN) 
-//#define WIN32_LEAN_AND_MEAN
-//#endif
-//
-//#define INITGUID
-//#include <d3d11.h>  // d3d11 specific objects
-//#include <dxgi.h>   // shared library used across multiple dx graphical interfaces
-//#include <dxgidebug.h>  // debug utility (mostly used for reporting and analytics)
-//
-//#pragma comment( lib, "d3d11.lib" )         // needed a01
-//#pragma comment( lib, "dxgi.lib" )          // needed a01
-//#pragma comment( lib, "d3dcompiler.lib" )   // needed when we get to shaders
+//-----------------------------------------------------------------------------------------------
+// DX3D11 Includes
+
+#pragma comment( lib, "d3d11.lib" )         // needed a01
+#pragma comment( lib, "dxgi.lib" )          // needed a01
+#pragma comment( lib, "d3dcompiler.lib" )   // needed when we get to shaders
 
 
 //-----------------------------------------------------------------------------------------------
@@ -64,7 +55,7 @@ void RenderContext::Startup( Window* window )
 
 	// how many back buffers in our chain - we'll double buffer (one we show, one we draw to)
 	swapchainDesc.BufferCount = 2;
-	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // on swap, the old buffer is discarded
+	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // on swap, the old buffer is discarded
 	swapchainDesc.Flags = 0; // additional flags - see docs.  Used in special cases like for video buffers
 
 	// how swap chain is to be used
@@ -98,7 +89,6 @@ void RenderContext::Startup( Window* window )
 	if ( swapchain != nullptr ) 
 	{
 		m_swapchain = new SwapChain( this, swapchain );
-		//m_swapchain = swapchain;
 	}
 }
 
@@ -112,6 +102,7 @@ void RenderContext::BeginFrame()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::EndFrame()
 {
+	m_swapchain->Present();
 }
 
 

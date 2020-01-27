@@ -1,4 +1,5 @@
 #pragma once
+
 //-----------------------------------------------------------------------------------------------
 class Texture;
 class RenderContext;
@@ -9,16 +10,15 @@ struct IDXGISwapChain;
 class SwapChain
 {
 public:
-	SwapChain( RenderContext* renderContext, IDXGISwapChain* swapchain );
+	SwapChain( RenderContext* owner, IDXGISwapChain* handle );
 	~SwapChain();
 
 	Texture* GetBackBuffer();	// what do we want to render to?
-	void Present();				// does the job of `SwapBuffers`
-
+	void Present( int vsync = 0 );				// does the job of `SwapBuffers`
 
 public:
-	RenderContext* m_renderContext = nullptr; // owning context
-	IDXGISwapChain* m_swapchain = nullptr;
+	RenderContext* m_owner = nullptr; // owning context
+	IDXGISwapChain* m_handle = nullptr;
 
 	Texture* m_backbuffer = nullptr;
 };

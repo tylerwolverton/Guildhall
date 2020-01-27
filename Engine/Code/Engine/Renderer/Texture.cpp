@@ -6,7 +6,7 @@
 
 //-----------------------------------------------------------------------------------------------
 Texture::Texture( RenderContext* owner, ID3D11Texture2D* handle )
-	: m_renderContext( owner )
+	: m_owner( owner )
 	, m_handle( handle )
 {
 }
@@ -15,6 +15,7 @@ Texture::Texture( RenderContext* owner, ID3D11Texture2D* handle )
 //-----------------------------------------------------------------------------------------------
 Texture::~Texture()
 {
+	m_owner = nullptr;
 	DX_SAFE_RELEASE( m_handle );
 
 	delete m_renderTargetView;
@@ -41,7 +42,7 @@ TextureView* Texture::GetRenderTargetView()
 
 	ID3D11RenderTargetView* renderTargetView = nullptr;
 	// get the device, since we're creating something
-	m_renderContext->m_device->CreateRenderTargetView( m_handle, nullptr, &renderTargetView );
+	m_owner->m_device->CreateRenderTargetView( m_handle, nullptr, &renderTargetView );
 
 	if ( renderTargetView != nullptr )
 	{

@@ -19,7 +19,7 @@ public:
 	TextureView* GetRenderTargetView();
 
 public:
-	RenderContext* m_renderContext = nullptr; // owning context
+	RenderContext* m_owner = nullptr; // owning context
 
 	// TODO - temp - for now we only have one view type, so we'll hard code to that
 	// case, but in A03 we'll have multiple view types so we'll need to revisit this
