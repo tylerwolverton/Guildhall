@@ -13,8 +13,8 @@ public:
 	SwapChain( RenderContext* owner, IDXGISwapChain* handle );
 	~SwapChain();
 
-	Texture* GetBackBuffer();	// what do we want to render to?
-	void Present( int vsync = 0 );				// does the job of `SwapBuffers`
+	Texture* GetBackBuffer();				// what do we want to render to?
+	void Present( int vsync = 0 );			// does the job of `SwapBuffers`
 
 public:
 	RenderContext* m_owner = nullptr; // owning context

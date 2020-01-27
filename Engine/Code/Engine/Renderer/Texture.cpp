@@ -42,15 +42,14 @@ TextureView* Texture::GetRenderTargetView()
 
 	ID3D11RenderTargetView* renderTargetView = nullptr;
 	// get the device, since we're creating something
-	m_owner->m_device->CreateRenderTargetView( m_handle, nullptr, &renderTargetView );
+	ID3D11Device* device = m_owner->m_device;
+	device->CreateRenderTargetView( m_handle, nullptr, &renderTargetView );
 
 	if ( renderTargetView != nullptr )
 	{
 		// great, we made it, so make OUR object for it
-		m_renderTargetView = new TextureView();
-		m_renderTargetView->m_renderTargetView = renderTargetView; // setup the member
-
-		DX_SAFE_RELEASE( renderTargetView );
+		m_renderTargetView = new TextureView(); // could pass in constructor, but would require a lot of constructors
+		m_renderTargetView->m_handle = renderTargetView; // setup the member
 	}
 
 	return m_renderTargetView;

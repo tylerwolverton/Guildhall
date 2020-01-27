@@ -13,6 +13,7 @@ struct ID3D11Resource;
 class Texture
 {
 public:
+	//Texture( const char* imageFilePath, unsigned int textureId, IntVec2 dimensions );
 	Texture( RenderContext* owner, ID3D11Texture2D* handle ); // constructor we need for swapchain
 	~Texture();
 	

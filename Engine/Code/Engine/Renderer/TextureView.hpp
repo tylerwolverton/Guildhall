@@ -17,9 +17,5 @@ public:
 	// add some identifying information about this type of view
 	//Texture* m_owner = nullptr;
 
-	union
-	{
-		ID3D11Resource* m_handle = nullptr;				// A01
-		ID3D11RenderTargetView* m_renderTargetView;		// A01 - alias as an rtv
-	};
+	ID3D11RenderTargetView* m_handle = nullptr;				// A01
 };

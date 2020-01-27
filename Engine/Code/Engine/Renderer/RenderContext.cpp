@@ -159,32 +159,27 @@ void RenderContext::SetBlendMode( BlendMode blendMode )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::ClearScreen( const Rgba8& clearColor )
 {
-	UNUSED( clearColor );
-	UNIMPLEMENTED();
-	//glClearColor( clearColor.r, clearColor.g, clearColor.b, clearColor.a ); // Note; glClearColor takes colors as floats in [0,1], not bytes in [0,255]
-	//glClear( GL_COLOR_BUFFER_BIT );											// ALWAYS clear the screen at the top of each frame's Render()!
+	float clearFloats[4];
+	clearFloats[0] = (float)clearColor.r / 255.f;
+	clearFloats[1] = (float)clearColor.g / 255.f;
+	clearFloats[2] = (float)clearColor.b / 255.f;
+	clearFloats[3] = (float)clearColor.a / 255.f;
+
+	Texture* backbuffer = m_swapchain->GetBackBuffer();
+	TextureView* backbuffer_rtv = backbuffer->GetRenderTargetView();
+	ID3D11RenderTargetView* rtv = backbuffer_rtv->m_handle;
+	m_context->ClearRenderTargetView( rtv, clearFloats );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
-	//if ( cam should clear color ) {
-		Texture* target = m_swapchain->GetBackBuffer();
-		TextureView* renderTargetView = target->GetRenderTargetView();
-
-		float color[4]; // R, G, B, A
-		color[0] = 255.f;
-		color[1] = 0.f;
-		color[2] = 0.f;
-		color[3] = 255.f;
-	//	//fill color from camera clear color
+	UNUSED( camera );
 
 
-		//m_context->ClearRenderTargetView( renderTargetView->m_renderTargetView, color );
-	//}
-
-
+	ClearScreen( Rgba8::RED );
+	//ClearScreen( camera.GetClearColor() );
 	/*glLoadIdentity();
 	glOrtho( camera.GetOrthoBottomLeft().x, camera.GetOrthoTopRight().x,
 			 camera.GetOrthoBottomLeft().y, camera.GetOrthoTopRight().y,
