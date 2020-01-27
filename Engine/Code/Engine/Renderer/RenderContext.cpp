@@ -183,10 +183,10 @@ void RenderContext::BeginCamera( const Camera& camera )
 		TextureView* renderTargetView = target->GetRenderTargetView();
 
 		float color[4]; // R, G, B, A
-		color[0] = 255;
-		color[1] = 0;
-		color[2] = 0;
-		color[3] = 255;
+		color[0] = 255.f;
+		color[1] = 0.f;
+		color[2] = 0.f;
+		color[3] = 255.f;
 	//	//fill color from camera clear color
 
 

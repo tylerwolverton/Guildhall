@@ -49,19 +49,7 @@ void Game::Startup()
 	m_worldCamera = new Camera();
 	m_uiCamera = new Camera();
 
-	m_debugInfoTextBox = new TextBox( *g_renderer, AABB2( Vec2::ZERO, Vec2( 200.f, 80.f ) ) );
-
 	m_rng = new RandomNumberGenerator();
-
-	//LoadAssets();
-
-	m_world = new World();
-
-	m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
-	g_devConsole->PrintString( Rgba8::WHITE, Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
-	//m_world->BuildNewMap( m_curMap );
-
-	LogMapDebugCommands();
 }
 
 
@@ -132,56 +120,17 @@ void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& t
 //-----------------------------------------------------------------------------------------------
 void Game::Update( float deltaSeconds )
 {
-	UpdateFromKeyboard( deltaSeconds );
-
-	//// Modify deltaSeconds based on game state
-	//if ( m_isPaused )
-	//{
-	//	deltaSeconds = 0.f;
-	//}
-	//if ( m_isSlowMo )
-	//{
-	//	deltaSeconds *= .1f;
-	//}
-	//if ( m_isFastMo )
-	//{
-	//	deltaSeconds *= 4.f;
-	//}
-	//
-	//m_world->Update( deltaSeconds );
-	//UpdateCameras( deltaSeconds );
-	//UpdateMousePositions( deltaSeconds );
+	//UpdateFromKeyboard( deltaSeconds );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::RED );
+	
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	//g_renderer->ClearScreen(Rgba8(0, 0, 0));
-
 	g_renderer->BeginCamera(*m_worldCamera );
-
-	//m_world->Render();
-	//if ( m_isDebugRendering )
-	//{
-	//	m_world->DebugRender();
-	//}
-	//
 	g_renderer->EndCamera( *m_worldCamera );
-
-	//// Render UI with a new camera
-	//g_renderer->BeginCamera( *m_uiCamera );
-
-	//g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
-
-	//if ( m_isDebugRendering )
-	//{
-	//	m_debugInfoTextBox->Render( m_mouseUIPosition );
-	//}
-	//
-	//g_renderer->EndCamera( *m_uiCamera );
 }
 
 
@@ -189,103 +138,10 @@ void Game::Render() const
 void Game::LoadAssets()
 {
 	g_devConsole->PrintString( Rgba8::WHITE, "Loading Assets..." );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
-
-	// TODO: Check for nullptrs when loading textures
-	g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
-	g_characterSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" )), IntVec2( 12, 53 ) );
-	g_portraitSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaPortraits_8x8.png" )), IntVec2( 8, 8 ) );
-
-	LoadTilesFromXml();
-	LoadMapsFromXml();
-	LoadActorsFromXml();
 
 	g_devConsole->PrintString( Rgba8::GREEN, "Assets Loaded" );
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadTilesFromXml()
-{
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Tiles..." );
-
-	const char* filePath = "Data/Gameplay/TileDefs.xml";
-
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The tiles xml file '%s' could not be opened.", filePath ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		TileDefinition* tileDef = new TileDefinition( *element );
-		TileDefinition::s_definitions[ tileDef->GetName() ] = tileDef;
-
-		element = element->NextSiblingElement();
-	}
-
-	g_devConsole->PrintString( Rgba8::GREEN, "Tiles Loaded" );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadMapsFromXml()
-{
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Maps..." );
-
-	const char* filePath = "Data/Gameplay/MapDefs.xml";
-
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The maps xml file '%s' could not be opened.", filePath ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		MapDefinition* mapDef = new MapDefinition( *element );
-		MapDefinition::s_definitions[ mapDef->GetName() ] = mapDef;
-
-		element = element->NextSiblingElement();
-	}
-
-	g_devConsole->PrintString( Rgba8::GREEN, "Maps Loaded" );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadActorsFromXml()
-{
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Actors..." );
-
-	const char* filePath = "Data/Gameplay/ActorDefs.xml";
-
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The actors xml file '%s' could not be opened.", filePath ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		ActorDefinition* actorDef = new ActorDefinition( *element );
-		ActorDefinition::s_definitions[actorDef->GetName()] = actorDef;
-
-		element = element->NextSiblingElement();
-	}
-
-	g_devConsole->PrintString( Rgba8::GREEN, "Actors Loaded" );
-}
 
 
 //-----------------------------------------------------------------------------------------------

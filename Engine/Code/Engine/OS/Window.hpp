@@ -27,8 +27,10 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	unsigned int GetClientWidth() { return m_clientWidth; }
-	unsigned int GetClientHeight() { return m_clientHeight; }
+	unsigned int GetClientWidth()				{ return m_clientWidth; }
+	unsigned int GetClientHeight()				{ return m_clientHeight; }
+
+	InputSystem* GetInputSystem() const			{ return m_inputSystem; }
 
 public:
 	void* m_hwnd = nullptr;

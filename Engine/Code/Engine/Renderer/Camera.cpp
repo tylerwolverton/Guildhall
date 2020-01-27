@@ -1,4 +1,5 @@
 #include "Camera.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 
 
@@ -22,4 +23,15 @@ void Camera::Translate2D(const Vec2& translation)
 {
 	m_bottomLeft += translation;
 	m_topRight += translation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetClearMode( unsigned int clearFlags, Rgba8 color, float depth, unsigned int stencil )
+{
+	UNUSED( depth );
+	UNUSED( stencil );
+
+	m_clearMode = clearFlags;
+	m_clearColor = color;
 }

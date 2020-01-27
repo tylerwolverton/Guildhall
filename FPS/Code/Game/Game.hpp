@@ -48,9 +48,6 @@ public:
 
 private:
 	void LoadAssets();
-	void LoadTilesFromXml();
-	void LoadMapsFromXml();
-	void LoadActorsFromXml();
 
 	void UpdateFromKeyboard( float deltaSeconds );
 	void LoadNewMap( const std::string& mapName );

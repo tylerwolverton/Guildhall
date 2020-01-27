@@ -1,6 +1,16 @@
 #pragma once
+#include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+enum eCameraClearBitFlag : unsigned int
+{
+	CLEAR_COLOR_BIT = ( 1 << 0 ),
+	CLEAR_DEPTH_BIT = ( 1 << 1 ),
+	CLEAR_STENCIL_BIT = ( 1 << 2 ),
+};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -15,10 +25,13 @@ public:
 	Vec2 GetOrthoTopRight()				const	{ return m_topRight; }
 	//const AABB2 GetOrthoBounds()		const	{ return AABB2( m_bottomLeft, m_topRight ); }
 
-	void SetClearMode();
+	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 0.f, unsigned int stencil = 0 );
 
 private:
 	Vec2 m_bottomLeft;
 	Vec2 m_topRight;
+
+	unsigned int m_clearMode = 0;
+	Rgba8 m_clearColor = Rgba8::BLACK;
 };
 

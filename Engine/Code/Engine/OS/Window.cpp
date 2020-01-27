@@ -8,7 +8,6 @@
 //-----------------------------------------------------------------------------------------------
 static TCHAR const* WND_CLASS_NAME = TEXT( "Simple Window Class" );
 
-static InputSystem* g_windowInputSystem = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 // Handles Windows (Win32) messages/events; i.e. the OS is trying to tell us something happened.
@@ -17,17 +16,23 @@ static InputSystem* g_windowInputSystem = nullptr;
 // AKA WinProc
 static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam )
 {
+	Window* window = (Window*) ::GetWindowLongPtr( windowHandle, GWLP_USERDATA );
+	
+	InputSystem* inputSystem = nullptr;
+	if ( window != nullptr )
+	{
+		inputSystem = window->GetInputSystem();
+	}
+
 	switch ( wmMessageCode )
 	{
 		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
 		case WM_CLOSE:
 		{
-			//g_app->HandleQuitRequested();
-			// HACK: Change to close game via app somehow
-			if ( g_windowInputSystem != nullptr )
-			{
-				g_windowInputSystem->HandleKeyPressed( KEY_ESC );
-			}
+			// HACK: Change to close game 
+			inputSystem->HandleKeyPressed( KEY_ESC );
+			//Window->SetQuitRequested
+			//EventSystem for quit <- probably worth plumbing through
 			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 		}
 
@@ -36,8 +41,7 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 		{
 			unsigned char asKey = (unsigned char)wParam;
 
-			if( g_windowInputSystem != nullptr
-				&& g_windowInputSystem->HandleKeyPressed( asKey ) )
+			if( inputSystem->HandleKeyPressed( asKey ) )
 			{
 				return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 			}
@@ -50,8 +54,7 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 		{
 			unsigned char asKey = (unsigned char)wParam;
 
-			if ( g_windowInputSystem != nullptr
-				 && g_windowInputSystem->HandleKeyReleased( asKey ) )
+			if ( inputSystem->HandleKeyReleased( asKey ) )
 			{
 				return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 			}
@@ -116,7 +119,6 @@ Window::~Window()
 void Window::SetInputSystem( InputSystem* inputSystem )
 {
 	m_inputSystem = inputSystem;
-	g_windowInputSystem = inputSystem;
 }
 
 
@@ -197,10 +199,13 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 		(HINSTANCE) ::GetModuleHandle(NULL),
 		NULL );
 
+
 	if ( hwnd == nullptr )
 	{
 		return false;
 	}
+
+	::SetWindowLongPtr( hwnd, GWLP_USERDATA, (LONG_PTR)this );
 
 	ShowWindow( hwnd, SW_SHOW );
 	SetForegroundWindow( hwnd );
