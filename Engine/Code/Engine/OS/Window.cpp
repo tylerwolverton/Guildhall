@@ -58,6 +58,13 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 
 			break;
 		}
+
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			BeginPaint( windowHandle, &ps );
+			EndPaint( windowHandle, &ps );
+		} return 1;  // handled it
 	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)
@@ -227,14 +234,14 @@ void Window::BeginFrame()
 	MSG queuedMessage;
 	for ( ;; )
 	{
-		const BOOL wasMessagePresent = PeekMessage( &queuedMessage, NULL, 0, 0, PM_REMOVE );
+		const BOOL wasMessagePresent = ::PeekMessage( &queuedMessage, (HWND)m_hwnd, 0, 0, PM_REMOVE );
 		if ( !wasMessagePresent )
 		{
 			break;
 		}
 
-		TranslateMessage( &queuedMessage );
-		DispatchMessage( &queuedMessage ); // This tells Windows to call our "WindowsMessageHandlingProcedure" (a.k.a. "WinProc") function
+		::TranslateMessage( &queuedMessage );
+		::DispatchMessage( &queuedMessage ); // This tells Windows to call our "WindowsMessageHandlingProcedure" (a.k.a. "WinProc") function
 	}
 }
 

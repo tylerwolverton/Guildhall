@@ -10,31 +10,32 @@
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/Polygon2.hpp"
-#include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/D3DCommon.hpp"
+#include "Engine/Renderer/SwapChain.hpp"
+#include "Engine/Renderer/Texture.hpp"
 #include "Engine/OS/Window.hpp"
 
 #include "ThirdParty/stb/stb_image.h"
 
 #define RENDER_DEBUG
 
-//-----------------------------------------------------------------------------------------------
-// DX3D11 Includes
-#if !defined(WIN32_LEAN_AND_MEAN) 
-#define WIN32_LEAN_AND_MEAN
-#endif
+////-----------------------------------------------------------------------------------------------
+//// DX3D11 Includes
+//#if !defined(WIN32_LEAN_AND_MEAN) 
+//#define WIN32_LEAN_AND_MEAN
+//#endif
+//
+//#define INITGUID
+//#include <d3d11.h>  // d3d11 specific objects
+//#include <dxgi.h>   // shared library used across multiple dx graphical interfaces
+//#include <dxgidebug.h>  // debug utility (mostly used for reporting and analytics)
+//
+//#pragma comment( lib, "d3d11.lib" )         // needed a01
+//#pragma comment( lib, "dxgi.lib" )          // needed a01
+//#pragma comment( lib, "d3dcompiler.lib" )   // needed when we get to shaders
 
-#define INITGUID
-#include <d3d11.h>  // d3d11 specific objects
-#include <dxgi.h>   // shared library used across multiple dx graphical interfaces
-#include <dxgidebug.h>  // debug utility (mostly used for reporting and analytics)
-
-#pragma comment( lib, "d3d11.lib" )         // needed a01
-#pragma comment( lib, "dxgi.lib" )          // needed a01
-#pragma comment( lib, "d3dcompiler.lib" )   // needed when we get to shaders
-
-#define DX_SAFE_RELEASE(obj)  if (nullptr != (obj)) { (obj)->Release(); (obj) = nullptr; }
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Startup( Window* window )
@@ -68,9 +69,9 @@ void RenderContext::Startup( Window* window )
 	// how swap chain is to be used
 	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_BACK_BUFFER;
 	HWND hwnd = (HWND)window->m_hwnd;
-	swapchainDesc.OutputWindow = hwnd; // HWND for the window to be used
-	swapchainDesc.SampleDesc.Count = 1; // how many samples per pixel (1 so no MSAA)
-										 // note, if we're doing MSAA, we'll do it on a secondary target
+	swapchainDesc.OutputWindow = hwnd;		// HWND for the window to be used
+	swapchainDesc.SampleDesc.Count = 1;		// how many samples per pixel (1 so no MSAA)
+											// note, if we're doing MSAA, we'll do it on a secondary target
 
 	// describe the buffer
 	swapchainDesc.Windowed = TRUE;                                    // windowed/full-screen mode
@@ -93,9 +94,10 @@ void RenderContext::Startup( Window* window )
 
 	GUARANTEE_OR_DIE( SUCCEEDED( result ), "Failed to create rendering device." );
 
-	if ( swapchain != nullptr ) {
-		//m_swapchain = new IDXGISwapChain( this, swapchain );
-		m_swapchain = swapchain;
+	if ( swapchain != nullptr ) 
+	{
+		m_swapchain = new SwapChain( this, swapchain );
+		//m_swapchain = swapchain;
 	}
 }
 
@@ -133,9 +135,8 @@ void RenderContext::Shutdown()
 
 	// swapchain is one of our engine objects
 	// SD2 TODO: Create SwapChain class to manage this
-	/*delete m_swapchain;
-	m_swapchain = nullptr;*/
-	DX_SAFE_RELEASE( m_swapchain );
+	delete m_swapchain;
+	m_swapchain = nullptr;
 
 	// release
 	DX_SAFE_RELEASE( m_context );

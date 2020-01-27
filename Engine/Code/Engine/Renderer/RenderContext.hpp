@@ -9,6 +9,7 @@ class Window;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
+class SwapChain;
 struct AABB2;
 struct OBB2;
 struct Capsule2;
@@ -82,5 +83,5 @@ public:
 	// SD2 TODO: Move to D3DCommon.hpp
 	ID3D11Device* m_device = nullptr;
 	ID3D11DeviceContext* m_context = nullptr;		// immediate context
-	IDXGISwapChain* m_swapchain = nullptr;			// gives us textures that we can draw that the user can see
+	SwapChain* m_swapchain = nullptr;				// gives us textures that we can draw that the user can see
 };
