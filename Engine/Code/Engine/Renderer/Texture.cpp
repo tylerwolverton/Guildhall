@@ -15,6 +15,10 @@ Texture::Texture( RenderContext* owner, ID3D11Texture2D* handle )
 //-----------------------------------------------------------------------------------------------
 Texture::~Texture()
 {
+	DX_SAFE_RELEASE( m_handle );
+
+	delete m_renderTargetView;
+	m_renderTargetView = nullptr;
 }
 
 
@@ -44,6 +48,8 @@ TextureView* Texture::GetRenderTargetView()
 		// great, we made it, so make OUR object for it
 		m_renderTargetView = new TextureView();
 		m_renderTargetView->m_renderTargetView = renderTargetView; // setup the member
+
+		DX_SAFE_RELEASE( renderTargetView );
 	}
 
 	return m_renderTargetView;

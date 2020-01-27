@@ -161,7 +161,7 @@ void Game::Render() const
 	// ALWAYS clear the screen at the top of each frame's Render()!
 	//g_renderer->ClearScreen(Rgba8(0, 0, 0));
 
-	//g_renderer->BeginCamera(*m_worldCamera );
+	g_renderer->BeginCamera(*m_worldCamera );
 
 	//m_world->Render();
 	//if ( m_isDebugRendering )
@@ -169,7 +169,7 @@ void Game::Render() const
 	//	m_world->DebugRender();
 	//}
 	//
-	//g_renderer->EndCamera( *m_worldCamera );
+	g_renderer->EndCamera( *m_worldCamera );
 
 	//// Render UI with a new camera
 	//g_renderer->BeginCamera( *m_uiCamera );

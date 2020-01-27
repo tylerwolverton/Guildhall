@@ -15,6 +15,8 @@ public:
 	Vec2 GetOrthoTopRight()				const	{ return m_topRight; }
 	//const AABB2 GetOrthoBounds()		const	{ return AABB2( m_bottomLeft, m_topRight ); }
 
+	void SetClearMode();
+
 private:
 	Vec2 m_bottomLeft;
 	Vec2 m_topRight;

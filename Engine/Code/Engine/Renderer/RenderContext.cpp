@@ -15,6 +15,7 @@
 #include "Engine/Renderer/D3DCommon.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/TextureView.hpp"
 #include "Engine/OS/Window.hpp"
 
 #include "ThirdParty/stb/stb_image.h"
@@ -177,8 +178,22 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
-	UNUSED( camera );
-	UNIMPLEMENTED();
+	//if ( cam should clear color ) {
+		Texture* target = m_swapchain->GetBackBuffer();
+		TextureView* renderTargetView = target->GetRenderTargetView();
+
+		float color[4]; // R, G, B, A
+		color[0] = 255;
+		color[1] = 0;
+		color[2] = 0;
+		color[3] = 255;
+	//	//fill color from camera clear color
+
+
+		//m_context->ClearRenderTargetView( renderTargetView->m_renderTargetView, color );
+	//}
+
+
 	/*glLoadIdentity();
 	glOrtho( camera.GetOrthoBottomLeft().x, camera.GetOrthoTopRight().x,
 			 camera.GetOrthoBottomLeft().y, camera.GetOrthoTopRight().y,

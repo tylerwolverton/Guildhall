@@ -17,6 +17,9 @@ SwapChain::SwapChain( RenderContext* renderContext, IDXGISwapChain* swapchain )
 SwapChain::~SwapChain()
 {
 	DX_SAFE_RELEASE( m_swapchain );
+
+	delete m_backbuffer;
+	m_backbuffer = nullptr;
 }
 
 
@@ -38,7 +41,7 @@ Texture* SwapChain::GetBackBuffer()
 	// once we have the handle, we'll wrap it in our class to make the interface easy to use
 	// we are giving our reference we got from `GetBuffer` to this texture, who will handle
 	// it from here on; 
-	//m_backbuffer = new Texture( m_renderContext, texHandle );
+	m_backbuffer = new Texture( m_renderContext, texHandle );
 
 	return m_backbuffer;
 }
