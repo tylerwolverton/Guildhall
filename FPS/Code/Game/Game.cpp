@@ -15,6 +15,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 

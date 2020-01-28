@@ -32,14 +32,12 @@ Game* g_game = nullptr;					// Created and owned by the App
 //-----------------------------------------------------------------------------------------------
 App::App()
 {
-	
 }
 
 
 //-----------------------------------------------------------------------------------------------
 App::~App()
-{
-	
+{	
 }
 
 
@@ -64,6 +62,8 @@ void App::Startup()
 	g_game = new Game();
 
 	g_eventSystem->Startup();
+	g_window->SetEventSystem( g_eventSystem );
+
 	g_devConsole->Startup();
 	
 	g_inputSystem->Startup();
@@ -72,6 +72,8 @@ void App::Startup()
 	g_audioSystem->Startup();
 	g_renderer->Startup( g_window );
 	g_game->Startup();
+
+	g_eventSystem->RegisterEvent( "QuitGame", QuitGame );
 }
 
 
@@ -234,4 +236,13 @@ void App::EndFrame()
 	g_devConsole->EndFrame();
 	g_eventSystem->EndFrame();
 	g_window->EndFrame();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool App::QuitGame( EventArgs args )
+{
+	g_app->HandleQuitRequested();
+
+	return 0;
 }

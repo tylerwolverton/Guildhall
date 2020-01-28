@@ -294,6 +294,7 @@ void Game::RenderMousePointer() const
 }
 
 
+//-----------------------------------------------------------------------------------------------
 void Game::RenderSpriteAnimation( const SpriteDefinition& spriteDef, const Vec2& position ) const
 {
 	Vec2 uvAtMins, uvAtMaxs;

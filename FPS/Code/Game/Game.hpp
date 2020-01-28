@@ -41,7 +41,7 @@ public:
 	void		AddScreenShakeIntensity( float additionalIntensityFraction );
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
-
+	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 

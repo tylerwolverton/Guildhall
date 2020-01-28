@@ -1,5 +1,8 @@
 #include "Engine/OS/Window.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Input/InputSystem.hpp"
+
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -19,9 +22,11 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 	Window* window = (Window*) ::GetWindowLongPtr( windowHandle, GWLP_USERDATA );
 	
 	InputSystem* inputSystem = nullptr;
+	EventSystem* eventSystem = nullptr;
 	if ( window != nullptr )
 	{
 		inputSystem = window->GetInputSystem();
+		eventSystem = window->GetEventSystem();
 	}
 
 	switch ( wmMessageCode )
@@ -29,10 +34,8 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
 		case WM_CLOSE:
 		{
-			// HACK: Change to close game 
-			inputSystem->HandleKeyPressed( KEY_ESC );
-			//Window->SetQuitRequested
-			//EventSystem for quit <- probably worth plumbing through
+			EventArgs args;
+			eventSystem->FireEvent( "QuitGame", &args );
 			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 		}
 
@@ -112,6 +115,13 @@ Window::~Window()
 {
 	Close();
 	UnregisterWindowClass();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Window::SetEventSystem( EventSystem* eventSystem )
+{
+	m_eventSystem = eventSystem;
 }
 
 

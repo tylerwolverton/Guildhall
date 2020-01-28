@@ -3,6 +3,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class EventSystem;
 class InputSystem;
 
 
@@ -21,6 +22,7 @@ public:
 	Window();
 	~Window();
 
+	void SetEventSystem( EventSystem* eventSystem );
 	void SetInputSystem( InputSystem* inputSystem );
 
 	bool Open( const std::string& title, float clientAspect = 16.f / 9.f, float maxClientFractionOfDesktop = .9f, WindowMode windowMode = WindowMode::WINDOWED );
@@ -31,6 +33,7 @@ public:
 	unsigned int GetClientWidth()				{ return m_clientWidth; }
 	unsigned int GetClientHeight()				{ return m_clientHeight; }
 
+	EventSystem* GetEventSystem() const			{ return m_eventSystem; }
 	InputSystem* GetInputSystem() const			{ return m_inputSystem; }
 
 public:
@@ -39,5 +42,6 @@ public:
 	unsigned int m_clientHeight = 0;
 
 private:
+	EventSystem* m_eventSystem = nullptr;
 	InputSystem* m_inputSystem = nullptr;
 };

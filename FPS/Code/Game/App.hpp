@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 
 
@@ -32,7 +33,9 @@ private:
 	void UpdateFromKeyboard( float deltaSeconds );
 	void Render() const;
 	void EndFrame();
-	
+
+	static bool QuitGame( EventArgs args );
+
 private:
 	bool m_isQuitting = false;
 };
