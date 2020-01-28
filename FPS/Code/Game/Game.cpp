@@ -116,9 +116,9 @@ void Game::Update( float deltaSeconds )
 	//UpdateFromKeyboard( deltaSeconds );
 
 	float seconds = (float)GetCurrentTimeSeconds();
-	float red = RangeMapFloat( -1.f, 1.f, 0.f, 255.f, SinDegrees( seconds * 40.f ) );
+	float green = RangeMapFloat( -1.f, 1.f, 0.f, 255.f, SinDegrees( seconds * 40.f ) );
 	float blue = RangeMapFloat( -1.0f, 1.0f, 0.0f, 255.0f, CosDegrees( seconds * 30.f ) );
-	Rgba8 clearColor = Rgba8( (unsigned int)red, 0, (unsigned int)blue, 255);
+	Rgba8 clearColor = Rgba8( 0, (unsigned char)green, (unsigned char)blue, 255);
 
 	// make it so I'm clearing to a different frame each time; 
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, clearColor );

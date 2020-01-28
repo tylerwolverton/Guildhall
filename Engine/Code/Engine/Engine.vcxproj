@@ -249,7 +249,7 @@
     <ClInclude Include="OS\Window.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\Camera.hpp" />
-    <ClInclude Include="Renderer\D3DCommon.hpp" />
+    <ClInclude Include="Renderer\D3D11Common.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />
     <ClInclude Include="Renderer\SimpleTriangleFont.hpp" />
     <ClInclude Include="Renderer\SpriteAnimDefinition.hpp" />

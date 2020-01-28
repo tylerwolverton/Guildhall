@@ -336,10 +336,10 @@
     <ClInclude Include="Renderer\SwapChain.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\D3DCommon.hpp">
+    <ClInclude Include="Renderer\TextureView.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\TextureView.hpp">
+    <ClInclude Include="Renderer\D3D11Common.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>

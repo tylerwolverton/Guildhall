@@ -1,7 +1,7 @@
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Renderer/D3DCommon.hpp"
+#include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Texture.hpp"
 

@@ -8,6 +8,7 @@ class RenderContext;
 class Game;
 enum class WindowMode;
 
+
 //-----------------------------------------------------------------------------------------------
 class App 
 {

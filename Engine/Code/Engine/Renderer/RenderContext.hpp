@@ -9,6 +9,7 @@ class Window;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
+struct IDXGIDebug;
 class SwapChain;
 struct AABB2;
 struct OBB2;
@@ -75,13 +76,20 @@ private:
 
 	BitmapFont* RetrieveBitmapFontFromCache( const char* filePath );
 
+	void CreateDebugModule();
+	void DestroyDebugModule();
+	void ReportLiveObjects();
+
+public:
+	// SD2 TODO: Move to D3D11Common.hpp
+	ID3D11Device* m_device			= nullptr;
+	ID3D11DeviceContext* m_context	= nullptr;		// immediate context
+	SwapChain* m_swapchain			= nullptr;		// gives us textures that we can draw that the user can see
+
+	//HMODULE m_debugModule;
+	IDXGIDebug* m_debug				= nullptr;
+
 private:
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
-
-public:
-	// SD2 TODO: Move to D3DCommon.hpp
-	ID3D11Device* m_device = nullptr;
-	ID3D11DeviceContext* m_context = nullptr;		// immediate context
-	SwapChain* m_swapchain = nullptr;				// gives us textures that we can draw that the user can see
 };

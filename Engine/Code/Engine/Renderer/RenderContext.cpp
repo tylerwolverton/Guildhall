@@ -12,7 +12,7 @@
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/D3DCommon.hpp"
+#include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
@@ -32,22 +32,12 @@
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Startup( Window* window )
 {
-	/*glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );*/
-
-	// Instance - singleton
-	// Device - create resources 
-	// Context - issue commands
-
-	// ~SwapChain
-
-	//ID3D11Device
-	//ID3D11DeviceContext
 	IDXGISwapChain* swapchain = nullptr;
 	
 	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
 	#if defined(RENDER_DEBUG)
 		flags |= D3D11_CREATE_DEVICE_DEBUG;
+		CreateDebugModule();
 	#endif
 
 	DXGI_SWAP_CHAIN_DESC swapchainDesc;
@@ -133,6 +123,10 @@ void RenderContext::Shutdown()
 	// release
 	DX_SAFE_RELEASE( m_context );
 	DX_SAFE_RELEASE( m_device );
+
+	// do our leak reporting just before shutdown to give us a better detailed list
+	ReportLiveObjects();    
+	DestroyDebugModule();
 }
 
 
@@ -660,4 +654,50 @@ BitmapFont* RenderContext::RetrieveBitmapFontFromCache( const char* filePath )
 	}
 
 	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CreateDebugModule()
+{
+	// load the dll
+	//m_debugModule = ::LoadLibraryA( "Dxgidebug.dll" );
+	//if ( m_debugModule == nullptr ) 
+	//{
+	//	g_devConsole->PrintString( Rgba8::YELLOW, "Failed to find dxgidebug.dll.  No debug features enabled." );
+	//}
+	//else 
+	//{
+	//	// find a function in the loaded dll
+	//	typedef HRESULT( WINAPI* GetDebugModuleCB )( REFIID, void** );
+	//	GetDebugModuleCB cb = (GetDebugModuleCB) ::GetProcAddress( m_debugModule, "DXGIGetDebugInterface" );
+
+	//	// create our debug object
+	//	HRESULT hr = cb( __uuidof( IDXGIDebug ), (void**)& m_debug );
+	//	GUARANTEE_OR_DIE( SUCCEEDED( hr ), "Failed to create D3D debug object" );
+	//}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DestroyDebugModule()
+{
+	if ( m_debug != nullptr ) 
+	{
+		DX_SAFE_RELEASE( m_debug );   // release our debug object
+		//FreeLibrary( m_debugModule ); // unload the dll
+
+		m_debug = nullptr;
+		//m_debugModule = nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ReportLiveObjects()
+{
+	if ( m_debug != nullptr ) 
+	{
+		m_debug->ReportLiveObjects( DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL );
+	}
 }
