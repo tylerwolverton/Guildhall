@@ -36,7 +36,6 @@ Texture* SwapChain::GetBackBuffer()
 	// first, we request the D3D11 handle of the textures owned by the swapbuffer
 	ID3D11Texture2D* texHandle = nullptr;
 	m_handle->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (void**)& texHandle );
-	// recommend an ASSERT_OR_DIE that this worked.
 
 	GUARANTEE_OR_DIE( texHandle != nullptr, "Failed to get textures from swapchain buffer." );
 
@@ -53,5 +52,5 @@ Texture* SwapChain::GetBackBuffer()
 void SwapChain::Present( int vsync )
 {
 	m_handle->Present( vsync,	// vsync - 0 if you don't want to wait
-					   0 );	// DXGI_PRESENT option, see docs
+					   0 );		// DXGI_PRESENT option, see docs
 }

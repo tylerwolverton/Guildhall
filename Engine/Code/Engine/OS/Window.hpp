@@ -1,4 +1,4 @@
-//#pragma once
+#pragma once
 #include <string>
 
 
@@ -12,6 +12,7 @@ enum class WindowMode
 	WINDOWED,
 	BORDERLESS,
 };
+
 
 //-----------------------------------------------------------------------------------------------
 class Window

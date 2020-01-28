@@ -5,6 +5,15 @@
 
 
 //-----------------------------------------------------------------------------------------------
+Texture::Texture( int id, const char* filePath, const IntVec2& texelSize )
+	: m_id( id )
+	, m_filePath( filePath )
+	, m_texelSize( texelSize )
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Texture::Texture( RenderContext* owner, ID3D11Texture2D* handle )
 	: m_owner( owner )
 	, m_handle( handle )
@@ -49,7 +58,7 @@ TextureView* Texture::GetRenderTargetView()
 	{
 		// great, we made it, so make OUR object for it
 		m_renderTargetView = new TextureView(); // could pass in constructor, but would require a lot of constructors
-		m_renderTargetView->m_handle = renderTargetView; // setup the member
+		m_renderTargetView->m_renderTargetView = renderTargetView; // setup the member
 	}
 
 	return m_renderTargetView;

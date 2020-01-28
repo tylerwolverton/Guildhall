@@ -10,12 +10,12 @@ class TextureView
 {
 public:
 	TextureView();
-	~TextureView(); // just be sure to release the handle
+	~TextureView();
 
 public:
-	// TODO in later assignment
-	// add some identifying information about this type of view
-	//Texture* m_owner = nullptr;
-
-	ID3D11RenderTargetView* m_handle = nullptr;				// A01
+	union
+	{
+		ID3D11Resource* m_handle = nullptr;
+		ID3D11RenderTargetView* m_renderTargetView;
+	};
 };

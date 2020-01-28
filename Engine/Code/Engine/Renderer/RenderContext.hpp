@@ -86,7 +86,7 @@ public:
 	ID3D11DeviceContext* m_context	= nullptr;		// immediate context
 	SwapChain* m_swapchain			= nullptr;		// gives us textures that we can draw that the user can see
 
-	//HMODULE m_debugModule;
+	void* m_debugModule				= nullptr;
 	IDXGIDebug* m_debug				= nullptr;
 
 private:

@@ -115,8 +115,6 @@ void RenderContext::Shutdown()
 	}
 	m_loadedTextures.clear();
 
-	// swapchain is one of our engine objects
-	// SD2 TODO: Create SwapChain class to manage this
 	delete m_swapchain;
 	m_swapchain = nullptr;
 
@@ -161,7 +159,7 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 
 	Texture* backbuffer = m_swapchain->GetBackBuffer();
 	TextureView* backbuffer_rtv = backbuffer->GetRenderTargetView();
-	ID3D11RenderTargetView* rtv = backbuffer_rtv->m_handle;
+	ID3D11RenderTargetView* rtv = backbuffer_rtv->m_renderTargetView;
 	m_context->ClearRenderTargetView( rtv, clearFloats );
 }
 
@@ -661,21 +659,21 @@ BitmapFont* RenderContext::RetrieveBitmapFontFromCache( const char* filePath )
 void RenderContext::CreateDebugModule()
 {
 	// load the dll
-	//m_debugModule = ::LoadLibraryA( "Dxgidebug.dll" );
-	//if ( m_debugModule == nullptr ) 
-	//{
-	//	g_devConsole->PrintString( Rgba8::YELLOW, "Failed to find dxgidebug.dll.  No debug features enabled." );
-	//}
-	//else 
-	//{
-	//	// find a function in the loaded dll
-	//	typedef HRESULT( WINAPI* GetDebugModuleCB )( REFIID, void** );
-	//	GetDebugModuleCB cb = (GetDebugModuleCB) ::GetProcAddress( m_debugModule, "DXGIGetDebugInterface" );
+	m_debugModule = ::LoadLibraryA( "Dxgidebug.dll" );
+	if ( m_debugModule == nullptr ) 
+	{
+		g_devConsole->PrintString( Rgba8::YELLOW, "Failed to find dxgidebug.dll.  No debug features enabled." );
+	}
+	else 
+	{
+		// find a function in the loaded dll
+		typedef HRESULT( WINAPI* GetDebugModuleCB )( REFIID, void** );
+		GetDebugModuleCB cb = (GetDebugModuleCB) ::GetProcAddress( (HMODULE)m_debugModule, "DXGIGetDebugInterface" );
 
-	//	// create our debug object
-	//	HRESULT hr = cb( __uuidof( IDXGIDebug ), (void**)& m_debug );
-	//	GUARANTEE_OR_DIE( SUCCEEDED( hr ), "Failed to create D3D debug object" );
-	//}
+		// create our debug object
+		HRESULT hr = cb( __uuidof( IDXGIDebug ), (void**)& m_debug );
+		GUARANTEE_OR_DIE( SUCCEEDED( hr ), "Failed to create D3D debug object" );
+	}
 }
 
 
@@ -685,10 +683,10 @@ void RenderContext::DestroyDebugModule()
 	if ( m_debug != nullptr ) 
 	{
 		DX_SAFE_RELEASE( m_debug );   // release our debug object
-		//FreeLibrary( m_debugModule ); // unload the dll
+		FreeLibrary( (HMODULE)m_debugModule ); // unload the dll
 
 		m_debug = nullptr;
-		//m_debugModule = nullptr;
+		m_debugModule = nullptr;
 	}
 }
 
@@ -698,6 +696,8 @@ void RenderContext::ReportLiveObjects()
 {
 	if ( m_debug != nullptr ) 
 	{
-		m_debug->ReportLiveObjects( DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL );
+		HRESULT result = m_debug->ReportLiveObjects( DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL );
+
+		GUARANTEE_OR_DIE( SUCCEEDED( result ), "ReportLiveObjects failed" )
 	}
 }
