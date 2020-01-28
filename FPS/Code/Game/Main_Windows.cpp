@@ -14,6 +14,7 @@
 int WINAPI WinMain( _In_ HINSTANCE applicationInstanceHandle, _In_opt_ HINSTANCE, _In_ LPSTR commandLineString, _In_ int )
 {
 	UNUSED( commandLineString );
+	UNUSED( applicationInstanceHandle );
 							
 	g_app = new App();	
 	g_app->Startup();

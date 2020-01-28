@@ -30,12 +30,6 @@ enum class CardinalDirections
 //-----------------------------------------------------------------------------------------------
 class Map
 {
-	friend class MapGenStep_Mutate;
-	friend class MapGenStep_Worm;
-	friend class MapGenStep_FromImage;
-	friend class MapGenStep_CellularAutomata;
-	friend class MapGenStep_RoomsAndPaths;
-
 public:
 	Map( std::string name, MapDefinition* mapDef );
 	~Map();

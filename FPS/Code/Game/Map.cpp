@@ -293,7 +293,6 @@ void Map::PopulateTiles()
 {
 	CreateInitialTiles();
 	SetEdgeTiles();
-	m_mapDef->RunMapGenerationSteps( *this );
 }
 
 

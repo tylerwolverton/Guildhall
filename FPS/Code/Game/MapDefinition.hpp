@@ -8,7 +8,6 @@
 //-----------------------------------------------------------------------------------------------
 class TileDefinition;
 class Map;
-class MapGenStep;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -21,7 +20,6 @@ public:
 	~MapDefinition();
 
 	std::string GetName()													{ return m_name; }
-	void RunMapGenerationSteps( Map& map );
 
 	static MapDefinition* GetMapDefinition( std::string mapName );
 
@@ -34,5 +32,4 @@ private:
 	int m_height = 0;
 	TileDefinition* m_fillTile = nullptr;
 	TileDefinition* m_edgeTile = nullptr;
-	std::vector< MapGenStep* > m_mapGenerationSteps;
 };

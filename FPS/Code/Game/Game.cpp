@@ -95,15 +95,6 @@ void Game::RestartGame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::LogMapDebugCommands()
-{
-	g_devConsole->PrintString(Rgba8::WHITE, "Map Generation Debug Commands" );
-	g_devConsole->PrintString(Rgba8::WHITE, "F4 - View entire map" );
-	g_devConsole->PrintString(Rgba8::WHITE, "F5 - Reload current map" );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
 {
 	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
@@ -120,6 +111,7 @@ void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& t
 //-----------------------------------------------------------------------------------------------
 void Game::Update( float deltaSeconds )
 {
+	UNUSED( deltaSeconds );
 	//UpdateFromKeyboard( deltaSeconds );
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::RED );
 	
@@ -160,21 +152,6 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{
 		m_isDebugRendering = !m_isDebugRendering;
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
-	{
-		m_isNoClipEnabled = !m_isNoClipEnabled;
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
-	{
-		m_isDebugCameraEnabled = !m_isDebugCameraEnabled;
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
-	{
-		LoadNewMap( m_curMap );
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )

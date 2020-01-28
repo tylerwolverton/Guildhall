@@ -30,7 +30,6 @@ public:
 
 	void		RestartGame();
 	
-	void		LogMapDebugCommands();
 	void		SetWorldCameraOrthographicView( const AABB2& cameraBounds );
 	void		SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight );
 

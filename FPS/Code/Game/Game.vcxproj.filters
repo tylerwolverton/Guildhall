@@ -49,25 +49,7 @@
     <ClCompile Include="ActorDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapGenStep.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_Mutate.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="EntityDefinition.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_Worm.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_CellularAutomata.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_FromImage.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
@@ -108,25 +90,7 @@
     <ClInclude Include="ActorDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_Mutate.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_Worm.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_CellularAutomata.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_FromImage.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

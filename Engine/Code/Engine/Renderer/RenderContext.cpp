@@ -605,6 +605,7 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 //-----------------------------------------------------------------------------------------------
 Texture* RenderContext::RetrieveTextureFromCache( const char* filePath )
 {
+	UNUSED( filePath );
 	/*for ( int textureIndex = 0; textureIndex < (int)m_loadedTextures.size(); ++textureIndex )
 	{
 		if ( !strcmp( filePath, m_loadedTextures[textureIndex]->GetFilePath() ) )
