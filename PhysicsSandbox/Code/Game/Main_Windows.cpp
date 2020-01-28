@@ -84,7 +84,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 		case WM_MOUSEWHEEL:
 		{
 			short scrollFixedPoint = GET_WHEEL_DELTA_WPARAM( wParam ); // shift away low word part, leaving only the highword
-			float scrollAmount = (float)scrollFixedPoint / 120.0f; // convert to a numeric value
+			float scrollAmount = (float)scrollFixedPoint / WHEEL_DELTA; // convert to a numeric value
 			g_inputSystem->AddMouseWheelScrollAmount( scrollAmount ); // let the input system know that the mouse wheel has moved
 
 			break;
