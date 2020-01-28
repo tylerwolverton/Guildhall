@@ -76,6 +76,8 @@ void InputSystem::EndFrame()
 		KeyButtonState& keyState = m_keyStates[keyCode];
 		keyState.UpdateStatus( keyState.IsPressed() );
 	}
+
+	m_mouseWheelScrollAmountDelta = 0.f;
 }
 
 
@@ -141,6 +143,13 @@ void InputSystem::UpdateMouseButtonState( bool leftButtonDown, bool rightButtonD
 	m_keyStates[MOUSE_LBUTTON].UpdateStatus( leftButtonDown );
 	m_keyStates[MOUSE_RBUTTON].UpdateStatus( rightButtonDown );
 	m_keyStates[MOUSE_MBUTTON].UpdateStatus( middleButtonDown );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::AddMouseWheelScrollAmount( float scrollAmount )
+{
+	m_mouseWheelScrollAmountDelta += scrollAmount;
 }
 
 

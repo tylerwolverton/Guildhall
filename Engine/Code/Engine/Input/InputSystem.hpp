@@ -63,7 +63,9 @@ public:
 	void					SetXboxControllerVibrationLevels( int controllerID, float leftFraction, float rightFraction );
 
 	void UpdateMouse();
-	void UpdateMouseButtonState( bool leftButtonDown, bool rightButtonDown, bool middleButtonDown);
+	void UpdateMouseButtonState( bool leftButtonDown, bool rightButtonDown, bool middleButtonDown );
+	void AddMouseWheelScrollAmount( float scrollAmount );
+	float GetMouseWheelScrollAmountDelta() const									{ return m_mouseWheelScrollAmountDelta; }
 	const Vec2 GetNormalizedMouseClientPos()																					{ return m_normalizedMouseClientPos; }
 
 private:
@@ -77,4 +79,5 @@ private:
 	};
 
 	Vec2 m_normalizedMouseClientPos = Vec2::ZERO;
+	float m_mouseWheelScrollAmountDelta = 0.f;
 };
