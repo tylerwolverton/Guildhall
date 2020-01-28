@@ -35,6 +35,10 @@ extern const unsigned char KEY_F11;
 extern const unsigned char KEY_F12;
 extern const unsigned char KEY_TILDE;
 
+extern const unsigned char MOUSE_LBUTTON;
+extern const unsigned char MOUSE_RBUTTON;
+extern const unsigned char MOUSE_MBUTTON;
+
 
 //-----------------------------------------------------------------------------------------------
 class InputSystem
@@ -59,6 +63,7 @@ public:
 	void					SetXboxControllerVibrationLevels( int controllerID, float leftFraction, float rightFraction );
 
 	void UpdateMouse();
+	void UpdateMouseButtonState( bool leftButtonDown, bool rightButtonDown, bool middleButtonDown);
 	const Vec2 GetNormalizedMouseClientPos()																					{ return m_normalizedMouseClientPos; }
 
 private:

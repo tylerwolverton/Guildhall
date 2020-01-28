@@ -32,6 +32,10 @@ const unsigned char KEY_F11 = VK_F11;
 const unsigned char KEY_F12 = VK_F12;
 const unsigned char KEY_TILDE = VK_OEM_3;
 
+const unsigned char MOUSE_LBUTTON = VK_LBUTTON;
+const unsigned char MOUSE_RBUTTON = VK_RBUTTON;
+const unsigned char MOUSE_MBUTTON = VK_MBUTTON;
+
 
 //-----------------------------------------------------------------------------------------------
 InputSystem::InputSystem()
@@ -128,6 +132,15 @@ void InputSystem::UpdateMouse()
 	
 	m_normalizedMouseClientPos = clientBounds.GetUVForPoint( mouseClientPos );
 	m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::UpdateMouseButtonState( bool leftButtonDown, bool rightButtonDown, bool middleButtonDown )
+{
+	m_keyStates[MOUSE_LBUTTON].UpdateStatus( leftButtonDown );
+	m_keyStates[MOUSE_RBUTTON].UpdateStatus( rightButtonDown );
+	m_keyStates[MOUSE_MBUTTON].UpdateStatus( middleButtonDown );
 }
 
 

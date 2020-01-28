@@ -313,7 +313,8 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		m_isDebugRendering = !m_isDebugRendering;
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) 
+		 || g_inputSystem->WasKeyJustPressed( MOUSE_MBUTTON ) )
 	{
 		switch ( m_mouseState )
 		{
@@ -332,14 +333,16 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		RandomizeShapes();
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
+	if ( g_inputSystem->IsKeyPressed( 'Q' ) 
+		 || g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
 	{
-		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() + ( 30.f * deltaSeconds ) );
+		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() + ( 50.f * deltaSeconds ) );
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'E' ) )
+	if ( g_inputSystem->IsKeyPressed( 'E' ) 
+		 || g_inputSystem->IsKeyPressed( MOUSE_RBUTTON ) )
 	{
-		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() - ( 30.f * deltaSeconds ) );
+		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() - ( 50.f * deltaSeconds ) );
 	}
 }
 

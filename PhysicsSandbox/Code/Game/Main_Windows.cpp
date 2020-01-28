@@ -63,6 +63,23 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 
 			break;
 		}
+
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		{
+			// wParam tells us which buttons are down
+			bool leftButtonDown = wParam & MK_LBUTTON;
+			bool rightButtonDown = wParam & MK_RBUTTON;
+			bool middleButtonDown = wParam & MK_MBUTTON;
+
+			g_inputSystem->UpdateMouseButtonState( leftButtonDown, rightButtonDown , middleButtonDown );
+
+			break;
+		}
 	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)
