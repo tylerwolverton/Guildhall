@@ -9,6 +9,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/Time.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -113,8 +114,14 @@ void Game::Update( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 	//UpdateFromKeyboard( deltaSeconds );
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::RED );
-	
+
+	float seconds = (float)GetCurrentTimeSeconds();
+	float red = RangeMapFloat( -1.f, 1.f, 0.f, 255.f, SinDegrees( seconds * 40.f ) );
+	float blue = RangeMapFloat( -1.0f, 1.0f, 0.0f, 255.0f, CosDegrees( seconds * 30.f ) );
+	Rgba8 clearColor = Rgba8( (unsigned int)red, 0, (unsigned int)blue, 255);
+
+	// make it so I'm clearing to a different frame each time; 
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, clearColor );
 }
 
 

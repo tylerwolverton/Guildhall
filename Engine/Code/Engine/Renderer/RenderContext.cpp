@@ -175,15 +175,7 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
-	UNUSED( camera );
-
-
-	ClearScreen( Rgba8::RED );
-	//ClearScreen( camera.GetClearColor() );
-	/*glLoadIdentity();
-	glOrtho( camera.GetOrthoBottomLeft().x, camera.GetOrthoTopRight().x,
-			 camera.GetOrthoBottomLeft().y, camera.GetOrthoTopRight().y,
-			 0.0f, 1.0f );*/
+	ClearScreen( camera.GetClearColor() );
 }
 
 
