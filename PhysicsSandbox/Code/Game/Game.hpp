@@ -55,7 +55,7 @@ private:
 	
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
-	void UpdateMousePosition();
+	void UpdateMouse();
 
 	void SpawnDisc( const Vec2& center, float radius );
 

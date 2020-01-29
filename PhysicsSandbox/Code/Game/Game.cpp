@@ -82,7 +82,7 @@ void Game::Update( float deltaSeconds )
 	UpdateFromKeyboard( deltaSeconds );
 	UpdateCameras( deltaSeconds );
 
-	UpdateMousePosition();
+	UpdateMouse();
 
 	m_physics2D->Update();
 }
@@ -127,7 +127,7 @@ void Game::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void Game::RenderMouseShape() const
 {
-	switch ( m_mouseState )
+	/*switch ( m_mouseState )
 	{
 		case MOUSE_STATE_POINT:
 			{
@@ -142,14 +142,20 @@ void Game::RenderMouseShape() const
 				g_renderer->DrawOBB2( m_mouseOBB2, Rgba8::WHITE );
 			}
 			break;
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::RenderShapes() const
 {
+	for ( int shapeIdx = 0; shapeIdx < (int)m_gameObjects.size(); ++shapeIdx )
+	{
+		GameObject* gameObject = m_gameObjects[shapeIdx];
+		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
 
+		g_renderer->DrawDisc2D( collider->m_worldPosition, collider->m_radius, Rgba8::WHITE );
+	}
 }
 
 
@@ -178,14 +184,12 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		}
 	}
 	
-	if ( g_inputSystem->IsKeyPressed( 'Q' )
-		 || g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
+	if ( g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
 	{
 		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() + ( 50.f * deltaSeconds ) );
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'E' )
-		 || g_inputSystem->IsKeyPressed( MOUSE_RBUTTON ) )
+	if (  g_inputSystem->IsKeyPressed( MOUSE_RBUTTON ) )
 	{
 		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() - ( 50.f * deltaSeconds ) );
 	}
@@ -209,13 +213,31 @@ void Game::UpdateCameras( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMousePosition()
+void Game::UpdateMouse()
 {
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
 	m_mouseWorldPosition.x *= WINDOW_WIDTH;
 	m_mouseWorldPosition.y *= WINDOW_HEIGHT;
 
-	m_mouseOBB2.SetCenter( m_mouseWorldPosition );
+	/*m_mouseOBB2.SetCenter( m_mouseWorldPosition );*/
+
+	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+	{
+		float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
+		SpawnDisc( m_mouseWorldPosition, radius );
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
+	{
+		
+	}
+
+	float mouseWheelScrollAmount = g_inputSystem->GetMouseWheelScrollAmountDelta();
+	if ( mouseWheelScrollAmount > .001f
+		 || mouseWheelScrollAmount < -.001f )
+	{
+		
+	}
 }
 
 
