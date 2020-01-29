@@ -158,7 +158,7 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 	clearFloats[3] = (float)clearColor.a / 255.f;
 
 	Texture* backbuffer = m_swapchain->GetBackBuffer();
-	TextureView* backbuffer_rtv = backbuffer->GetRenderTargetView();
+	TextureView* backbuffer_rtv = backbuffer->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* rtv = backbuffer_rtv->m_renderTargetView;
 	m_context->ClearRenderTargetView( rtv, clearFloats );
 }

@@ -17,7 +17,7 @@ public:
 	Texture( RenderContext* owner, ID3D11Texture2D* handle ); // constructor we need for swapchain
 	~Texture();
 	
-	TextureView* GetRenderTargetView();
+	TextureView* GetOrCreateRenderTargetView();
 
 public:
 	RenderContext* m_owner = nullptr; // owning context

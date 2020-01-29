@@ -33,7 +33,7 @@ Texture::~Texture()
 
 
 //-----------------------------------------------------------------------------------------------
-TextureView* Texture::GetRenderTargetView()
+TextureView* Texture::GetOrCreateRenderTargetView()
 { 
 	// this uses lazy instantiation, meaning we'll only
 	// make a view the first time it is requested.  As there
