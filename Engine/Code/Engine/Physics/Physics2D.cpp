@@ -51,9 +51,9 @@ void Physics2D::DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy )
 
 
 //-----------------------------------------------------------------------------------------------
-DiscCollider2D* Physics2D::CreateDiscCollider( const Vec2& localPosition, float center )
+DiscCollider2D* Physics2D::CreateDiscCollider( const Vec2& localPosition, float radius )
 {
-	DiscCollider2D* newCollider2D = new DiscCollider2D();
+	DiscCollider2D* newCollider2D = new DiscCollider2D( localPosition, radius );
 	m_colliders.push_back( newCollider2D );
 
 	return newCollider2D;

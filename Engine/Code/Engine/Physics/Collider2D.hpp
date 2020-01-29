@@ -10,6 +10,7 @@ class Collider2D;
 //-----------------------------------------------------------------------------------------------
 enum eCollider2DType
 {
+	COLLIDER2D_NONE,
 	COLLIDER2D_DISC,
 };
 
@@ -23,7 +24,7 @@ class Collider2D
 public: // Interface 
 	// cache off the world shape representation of this object
 	// taking into account the owning rigidbody (if no owner, local is world)
-	virtual void UpdateWorldShape() const = 0;
+	virtual void UpdateWorldShape() = 0;
 
 	// queries 
 	virtual const Vec2 GetClosestPoint( const Vec2& pos ) const = 0;
@@ -36,13 +37,13 @@ public: // Interface
 
 protected:
 	// 
-	virtual ~Collider2D() = 0; // private - make sure this is virtual so correct deconstructor gets called
+	virtual ~Collider2D() {}; // private - make sure this is virtual so correct deconstructor gets called
 
 public: // any helpers you want to add
    // ...
 
 public:
-	eCollider2DType m_type;                 // keep track of the type - will help with collision later
-	Physics2D* m_system;                   // system who created our d
-	Rigidbody2D* m_rigidbody = nullptr;    // owning rigidbody, used for calculating world shape
+	eCollider2DType m_type		= COLLIDER2D_NONE;   // keep track of the type - will help with collision later
+	Physics2D* m_system			= nullptr;				// system who created our d
+	Rigidbody2D* m_rigidbody	= nullptr;			// owning rigidbody, used for calculating world shape
 };

@@ -7,12 +7,15 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 
+#include <vector>
 
 //-----------------------------------------------------------------------------------------------
 class Entity;
 struct Rgba8;
 class RandomNumberGenerator;
 class Camera;
+class Physics2D;
+class GameObject;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -33,9 +36,11 @@ public:
 	~Game();
 
 	void Startup();
+	void BeginFrame();
 	void Update( float deltaSeconds );
 	void Render() const;
 	void DebugRender() const;
+	void EndFrame();
 	void Shutdown();
 
 	void RestartGame();
@@ -44,30 +49,15 @@ public:
 	RandomNumberGenerator* m_rng = nullptr;
 
 private:
-	void RandomizeShapes();
-	void RandomizeLine();
-	void RandomizeDisc();
-	void RandomizeAABB2();
-	void RandomizeOBB2();
-	void RandomizeCapsule2();
-	void RandomizePolygon2();
 
 	void RenderMouseShape() const;
 	void RenderShapes() const;
-	void RenderLine() const;
-	void RenderDisc() const;
-	void RenderAABB2() const;
-	void RenderOBB2() const;
-	void RenderCapsule2() const;
-	void RenderPolygon2() const;
-
-	void RenderNearestPoints() const;
-
+	
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
 	void UpdateMousePosition();
-	void UpdateNearestPoints();
-	void UpdateShapeColors();
+
+	void SpawnDisc( const Vec2& center, float radius );
 
 private:
 	bool		m_isDebugRendering = false;
@@ -75,31 +65,11 @@ private:
 	Camera*		m_worldCamera = nullptr;
 	Camera*		m_uiCamera = nullptr;
 
+	Physics2D*  m_physics2D = nullptr;
+
 	MouseState  m_mouseState = MOUSE_STATE_POINT;
 	Vec2		m_mouseWorldPosition = Vec2::ZERO;
 	OBB2		m_mouseOBB2;
-
-	Vec2		m_lineSegmentStart = Vec2::ZERO;
-	Vec2		m_lineSegmentVector = Vec2::ZERO;
-
-	Vec2		m_discCenter = Vec2::ZERO;
-	float		m_discRadius = 0.f;
-
-	AABB2		m_aabb2 = AABB2::ONE_BY_ONE;
-	OBB2		m_obb2;
-	Capsule2	m_capsule2;
-	Polygon2	m_polygon2;
-
-	Vec2		m_nearestPointOnLine = Vec2::ZERO;
-	Vec2		m_nearestPointOnDisc = Vec2::ZERO;
-	Vec2		m_nearestPointOnAABB2 = Vec2::ZERO;
-	Vec2		m_nearestPointOnOBB2 = Vec2::ZERO;
-	Vec2		m_nearestPointOnCapsule2 = Vec2::ZERO;
-
-	Rgba8		m_lineColor = Rgba8::CYAN;
-	Rgba8		m_discColor = Rgba8::GREEN;
-	Rgba8		m_AABB2Color = Rgba8::MAGENTA;
-	Rgba8		m_OBB2Color = Rgba8::ORANGE;
-	Rgba8		m_capsule2Color = Rgba8::RED;
-	Rgba8		m_polygon2Color = Rgba8::PURPLE;
+	   
+	std::vector<GameObject*> m_gameObjects;
 };

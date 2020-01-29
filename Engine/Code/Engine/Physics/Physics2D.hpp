@@ -20,7 +20,7 @@ public:
 	Rigidbody2D* CreateRigidbody();
 	void DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy );
 
-	DiscCollider2D* CreateDiscCollider( const Vec2& localPosition, float center );
+	DiscCollider2D* CreateDiscCollider( const Vec2& localPosition, float radius );
 	void DestroyCollider( Collider2D* colliderToDestroy );
 
 private:

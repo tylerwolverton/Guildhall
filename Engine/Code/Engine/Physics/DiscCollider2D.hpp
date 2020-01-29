@@ -7,9 +7,9 @@
 class DiscCollider2D : public Collider2D
 {
 public:
-	DiscCollider2D();
+	DiscCollider2D( const Vec2& localPosition, float radius );
 
-	virtual void UpdateWorldShape() const override;
+	virtual void UpdateWorldShape() override;
 
 	// queries 
 	virtual const Vec2 GetClosestPoint( const Vec2& pos ) const override;
@@ -19,7 +19,7 @@ public:
 	// debug helpers
 	virtual void DebugRender( const Rgba8& borderColor, const Rgba8& fillColor ) override;
 
-private:
+protected:
 	virtual ~DiscCollider2D();
 
 public:
