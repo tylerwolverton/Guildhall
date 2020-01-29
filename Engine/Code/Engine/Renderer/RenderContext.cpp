@@ -14,6 +14,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
 #include "Engine/OS/Window.hpp"
@@ -80,6 +81,10 @@ void RenderContext::Startup( Window* window )
 	{
 		m_swapchain = new SwapChain( this, swapchain );
 	}
+
+	m_currentShader = new Shader();
+	m_currentShader->CreateFromFile( "Data/Shaders/Triangle.hlsl" );
+
 }
 
 
@@ -175,6 +180,13 @@ void RenderContext::BeginCamera( const Camera& camera )
 void RenderContext::EndCamera( const Camera& camera )
 {
 	UNUSED( camera );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::Draw( int numVertexes, int vertexOffset )
+{
+	m_context->Draw( numVertexes, vertexOffset );
 }
 
 

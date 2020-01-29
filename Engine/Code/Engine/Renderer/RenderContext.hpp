@@ -20,6 +20,7 @@ struct Vertex_PCU;
 class Camera;
 class Texture;
 class BitmapFont;
+class Shader;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -43,8 +44,11 @@ public:
 	void ClearScreen( const Rgba8& clearColor );
 	void BeginCamera( const Camera& camera );
 	void EndCamera	( const Camera& camera );
+
+	void Draw( int numVertexes, int vertexOffset = 0 );
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
+	
 	void DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8& color, float thickness );
 	void DrawRing2D( const Vec2& center, float radius, const Rgba8& color, float thickness );
 	void DrawDisc2D( const Vec2& center, float radius, const Rgba8& color );
@@ -92,4 +96,5 @@ public:
 private:
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
+	Shader* m_currentShader = nullptr;
 };
