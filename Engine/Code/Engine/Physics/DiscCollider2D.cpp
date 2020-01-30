@@ -19,7 +19,7 @@ void DiscCollider2D::UpdateWorldShape()
 
 	if ( m_rigidbody != nullptr )
 	{
-		m_worldPosition += m_rigidbody->m_worldPosition;
+		m_worldPosition += m_rigidbody->GetPosition();
 	}
 }
 

@@ -176,7 +176,7 @@ void Game::RenderShapes() const
 
 		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
 		Rgba8 fillColor = gameObject->m_fillColor;
-		fillColor.a *= .5f;
+		fillColor.a = (unsigned char)( (float)fillColor.a * .5f );
 		collider->DebugRender( g_renderer, gameObject->m_borderColor, fillColor );
 	}
 }
@@ -249,7 +249,7 @@ void Game::UpdateMouse()
 	{
 		m_isMouseDragging = true;
 		m_dragTarget = GetTopGameObjectAtMousePosition();
-		m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->m_worldPosition;
+		m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->GetPosition();
 	}
 	else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
 	{
@@ -322,8 +322,7 @@ void Game::UpdateDraggedObject()
 {
 	if ( m_dragTarget != nullptr )
 	{
-		m_dragTarget->m_rigidbody->m_worldPosition = m_mouseWorldPosition - m_dragOffset;
-		m_dragTarget->m_rigidbody->m_collider->UpdateWorldShape();
+		m_dragTarget->m_rigidbody->SetPosition( m_mouseWorldPosition - m_dragOffset );
 
 		m_dragTarget->m_borderColor = Rgba8::GREEN;
 	}
@@ -335,7 +334,7 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 {
 	GameObject* gameObject = new GameObject();
 	gameObject->m_rigidbody = m_physics2D->CreateRigidbody();
-	gameObject->m_rigidbody->m_worldPosition = center;
+	gameObject->m_rigidbody->SetPosition( center );
 
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, radius );
 	gameObject->m_rigidbody->TakeCollider( discCollider );

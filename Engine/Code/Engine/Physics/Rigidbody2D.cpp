@@ -33,6 +33,18 @@ void Rigidbody2D::TakeCollider( Collider2D* collider )
 
 
 //-----------------------------------------------------------------------------------------------
+void Rigidbody2D::SetPosition( const Vec2& position )
+{
+	m_worldPosition = position;
+
+	if ( m_collider != nullptr )
+	{
+		m_collider->UpdateWorldShape();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Rigidbody2D::~Rigidbody2D()
 {
 	Destroy();
