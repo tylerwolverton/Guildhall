@@ -79,7 +79,7 @@ private:
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<int> m_garbageGameObjectIndexes;
 
-
 	bool m_isMouseDragging = false;
+	Vec2 m_dragOffset = Vec2::ZERO;
 	GameObject* m_dragTarget = nullptr;
 };

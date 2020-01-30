@@ -249,6 +249,7 @@ void Game::UpdateMouse()
 	{
 		m_isMouseDragging = true;
 		m_dragTarget = GetTopGameObjectAtMousePosition();
+		m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->m_worldPosition;
 	}
 	else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
 	{
@@ -321,7 +322,7 @@ void Game::UpdateDraggedObject()
 {
 	if ( m_dragTarget != nullptr )
 	{
-		m_dragTarget->m_rigidbody->m_worldPosition = m_mouseWorldPosition;
+		m_dragTarget->m_rigidbody->m_worldPosition = m_mouseWorldPosition - m_dragOffset;
 		m_dragTarget->m_rigidbody->m_collider->UpdateWorldShape();
 
 		m_dragTarget->m_borderColor = Rgba8::GREEN;
