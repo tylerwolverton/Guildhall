@@ -56,8 +56,11 @@ private:
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
 	void UpdateMouse();
+	void UpdateDraggedObject();
 
 	void SpawnDisc( const Vec2& center, float radius );
+
+	GameObject* GetTopGameObjectAtMousePosition();
 
 private:
 	bool		m_isDebugRendering = false;
@@ -72,4 +75,7 @@ private:
 	OBB2		m_mouseOBB2;
 	   
 	std::vector<GameObject*> m_gameObjects;
+
+	bool m_isMouseDragging = false;
+	GameObject* dragTarget = nullptr;
 };

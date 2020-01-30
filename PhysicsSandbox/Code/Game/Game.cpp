@@ -83,6 +83,7 @@ void Game::Update( float deltaSeconds )
 	UpdateCameras( deltaSeconds );
 
 	UpdateMouse();
+	UpdateDraggedObject();
 
 	m_physics2D->Update();
 }
@@ -183,22 +184,11 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 				break;
 		}
 	}
-	
-	if ( g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
-	{
-		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() + ( 50.f * deltaSeconds ) );
-	}
 
-	if (  g_inputSystem->IsKeyPressed( MOUSE_RBUTTON ) )
+	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
-		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() - ( 50.f * deltaSeconds ) );
-	}
-
-	float mouseWheelScrollAmount = g_inputSystem->GetMouseWheelScrollAmountDelta();
-	if ( mouseWheelScrollAmount > .001f
-		 || mouseWheelScrollAmount < -.001f )
-	{
-		m_mouseOBB2.RotateByDegrees( g_inputSystem->GetMouseWheelScrollAmountDelta() * 10.f );
+		float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
+		SpawnDisc( m_mouseWorldPosition, radius );
 	}
 }
 
@@ -223,8 +213,17 @@ void Game::UpdateMouse()
 
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 	{
-		float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
-		SpawnDisc( m_mouseWorldPosition, radius );
+		m_isMouseDragging = true;
+		dragTarget = GetTopGameObjectAtMousePosition();
+	}
+	else if ( g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
+	{
+
+	}
+	else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
+	{
+		m_isMouseDragging = false;
+		dragTarget = nullptr;
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
@@ -242,6 +241,17 @@ void Game::UpdateMouse()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateDraggedObject()
+{
+	if ( dragTarget != nullptr )
+	{
+		dragTarget->m_rigidbody->m_worldPosition = m_mouseWorldPosition;
+		dragTarget->m_rigidbody->m_collider->UpdateWorldShape();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::SpawnDisc( const Vec2& center, float radius )
 {
 	GameObject* gameObject = new GameObject();
@@ -252,4 +262,22 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 	gameObject->m_rigidbody->TakeCollider( discCollider );
 
 	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+GameObject* Game::GetTopGameObjectAtMousePosition()
+{
+	for ( int shapeIdx = (int)m_gameObjects.size() - 1; shapeIdx >= 0; --shapeIdx )
+	{
+		GameObject* gameObject = m_gameObjects[shapeIdx];
+		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
+
+		if ( collider->Contains( m_mouseWorldPosition ) )
+		{
+			return gameObject;
+		}
+	}
+
+	return nullptr;
 }
