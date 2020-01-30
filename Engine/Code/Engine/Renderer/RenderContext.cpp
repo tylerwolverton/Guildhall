@@ -196,11 +196,13 @@ void RenderContext::Draw( int numVertexes, int vertexOffset )
 	TextureView* view = texture->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
 
+	IntVec2 outputSize = texture->GetTexelSize();
+
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = 400;
-	viewport.Height = 400;
+	viewport.Width = outputSize.x;
+	viewport.Height = outputSize.y;
 	viewport.MinDepth = 0.f;
 	viewport.MaxDepth = 1.f;
 

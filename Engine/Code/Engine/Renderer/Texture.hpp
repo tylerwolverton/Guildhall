@@ -18,6 +18,7 @@ public:
 	~Texture();
 	
 	TextureView* GetOrCreateRenderTargetView();
+	IntVec2 GetTexelSize()											{ return m_texelSize; }
 
 public:
 	RenderContext* m_owner = nullptr; // owning context
