@@ -16,6 +16,7 @@ extern const unsigned char KEY_ESC;
 extern const unsigned char KEY_ENTER;
 extern const unsigned char KEY_SPACEBAR;
 extern const unsigned char KEY_BACKSPACE;
+extern const unsigned char KEY_DELETE;
 extern const unsigned char KEY_SHIFT;
 extern const unsigned char KEY_UPARROW;
 extern const unsigned char KEY_LEFTARROW;

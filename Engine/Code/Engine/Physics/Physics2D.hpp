@@ -25,5 +25,7 @@ public:
 
 private:
 	std::vector<Rigidbody2D*> m_rigidbodies;
+	std::vector<int> m_garbageRigidbodyIndexes;
 	std::vector<Collider2D*> m_colliders;
+	std::vector<int> m_garbageColliderIndexes;
 };

@@ -21,7 +21,23 @@ void Physics2D::Update()
 //-----------------------------------------------------------------------------------------------
 void Physics2D::EndFrame()
 {
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_garbageRigidbodyIndexes.size(); ++rigidbodyIdx )
+	{
+		Rigidbody2D*& garbageRigidbody = m_rigidbodies[m_garbageRigidbodyIndexes[rigidbodyIdx]];
+		delete garbageRigidbody;
+		garbageRigidbody = nullptr;
+	}
 
+	m_garbageRigidbodyIndexes.clear();
+
+	for ( int colliderIdx = 0; colliderIdx < (int)m_garbageColliderIndexes.size(); ++colliderIdx )
+	{
+		Collider2D*& garbageCollider = m_colliders[m_garbageColliderIndexes[colliderIdx]];
+		delete garbageCollider;
+		garbageCollider = nullptr;
+	}
+
+	m_garbageColliderIndexes.clear();
 }
 
 
@@ -29,6 +45,7 @@ void Physics2D::EndFrame()
 Rigidbody2D* Physics2D::CreateRigidbody()
 {
 	Rigidbody2D* newRigidbody2D = new Rigidbody2D();
+	newRigidbody2D->m_system = this;
 	m_rigidbodies.push_back( newRigidbody2D );
 	
 	return newRigidbody2D;
@@ -42,8 +59,9 @@ void Physics2D::DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy )
 	{
 		if ( m_rigidbodies[ rigidbodyIdx ] == rigidbodyToDestroy )
 		{
-			delete m_rigidbodies[ rigidbodyIdx ];
-			m_rigidbodies[ rigidbodyIdx ] = nullptr;
+			m_garbageRigidbodyIndexes.push_back( rigidbodyIdx );
+			/*delete m_rigidbodies[ rigidbodyIdx ];
+			m_rigidbodies[ rigidbodyIdx ] = nullptr;*/
 			break;
 		}
 	}
@@ -67,8 +85,9 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 	{
 		if ( m_colliders[ colliderIdx ] == colliderToDestroy )
 		{
-			delete m_colliders[ colliderIdx ];
-			m_colliders[ colliderIdx ] = nullptr;
+			m_garbageColliderIndexes.push_back( colliderIdx );
+			/*delete m_colliders[ colliderIdx ];
+			m_colliders[ colliderIdx ] = nullptr;*/
 			break;
 		}
 	}

@@ -61,6 +61,7 @@ private:
 	void SpawnDisc( const Vec2& center, float radius );
 
 	GameObject* GetTopGameObjectAtMousePosition();
+	int GetIndexOfTopGameObjectAtMousePosition();
 
 private:
 	bool		m_isDebugRendering = false;
@@ -75,7 +76,9 @@ private:
 	OBB2		m_mouseOBB2;
 	   
 	std::vector<GameObject*> m_gameObjects;
+	std::vector<int> m_garbageGameObjectIndexes;
+
 
 	bool m_isMouseDragging = false;
-	GameObject* dragTarget = nullptr;
+	GameObject* m_dragTarget = nullptr;
 };

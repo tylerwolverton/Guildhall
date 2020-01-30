@@ -123,6 +123,7 @@ void App::BeginFrame()
 	g_devConsole->BeginFrame();
 	g_inputSystem->BeginFrame();
 	g_renderer->BeginFrame();
+	g_game->BeginFrame();
 }
 
 
@@ -162,6 +163,7 @@ void App::Render() const
 //-----------------------------------------------------------------------------------------------
 void App::EndFrame()
 {
+	g_game->EndFrame();
 	g_renderer->EndFrame();
 	g_inputSystem->EndFrame();
 	g_devConsole->EndFrame();

@@ -121,6 +121,21 @@ void Game::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Game::EndFrame()
 {
+	for ( int garbageIdx = 0; garbageIdx < (int)m_garbageGameObjectIndexes.size(); ++garbageIdx )
+	{
+		GameObject*& garbageGameObject = m_gameObjects[m_garbageGameObjectIndexes[garbageIdx]];
+
+		if ( garbageGameObject == m_dragTarget )
+		{
+			m_dragTarget = nullptr;
+		}
+
+		delete garbageGameObject;
+		garbageGameObject = nullptr;
+	}
+
+	m_garbageGameObjectIndexes.clear();
+
 	m_physics2D->EndFrame();
 }
 
@@ -153,6 +168,11 @@ void Game::RenderShapes() const
 	for ( int shapeIdx = 0; shapeIdx < (int)m_gameObjects.size(); ++shapeIdx )
 	{
 		GameObject* gameObject = m_gameObjects[shapeIdx];
+		if ( gameObject == nullptr )
+		{
+			continue;
+		}
+
 		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
 
 		g_renderer->DrawDisc2D( collider->m_worldPosition, collider->m_radius, Rgba8::WHITE );
@@ -190,6 +210,18 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
 		SpawnDisc( m_mouseWorldPosition, radius );
 	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_BACKSPACE )
+		 || g_inputSystem->WasKeyJustPressed( KEY_DELETE ))
+	{
+		// TODO: Only delete if dragging?
+		int objectToDeleteIndex = GetIndexOfTopGameObjectAtMousePosition();
+
+		if ( objectToDeleteIndex != -1 )
+		{
+			m_garbageGameObjectIndexes.push_back( objectToDeleteIndex );
+		}
+	}
 }
 
 
@@ -214,16 +246,12 @@ void Game::UpdateMouse()
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 	{
 		m_isMouseDragging = true;
-		dragTarget = GetTopGameObjectAtMousePosition();
-	}
-	else if ( g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
-	{
-
+		m_dragTarget = GetTopGameObjectAtMousePosition();
 	}
 	else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
 	{
 		m_isMouseDragging = false;
-		dragTarget = nullptr;
+		m_dragTarget = nullptr;
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
@@ -243,10 +271,10 @@ void Game::UpdateMouse()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateDraggedObject()
 {
-	if ( dragTarget != nullptr )
+	if ( m_dragTarget != nullptr )
 	{
-		dragTarget->m_rigidbody->m_worldPosition = m_mouseWorldPosition;
-		dragTarget->m_rigidbody->m_collider->UpdateWorldShape();
+		m_dragTarget->m_rigidbody->m_worldPosition = m_mouseWorldPosition;
+		m_dragTarget->m_rigidbody->m_collider->UpdateWorldShape();
 	}
 }
 
@@ -268,16 +296,37 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 //-----------------------------------------------------------------------------------------------
 GameObject* Game::GetTopGameObjectAtMousePosition()
 {
+	int gameObjectIdx = GetIndexOfTopGameObjectAtMousePosition();
+
+	if ( gameObjectIdx == -1 )
+	{
+		return nullptr;
+	}
+	else
+	{
+		return m_gameObjects[ gameObjectIdx ];
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int Game::GetIndexOfTopGameObjectAtMousePosition()
+{
 	for ( int shapeIdx = (int)m_gameObjects.size() - 1; shapeIdx >= 0; --shapeIdx )
 	{
 		GameObject* gameObject = m_gameObjects[shapeIdx];
+		if ( gameObject == nullptr )
+		{
+			continue;
+		}
+
 		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
 
 		if ( collider->Contains( m_mouseWorldPosition ) )
 		{
-			return gameObject;
+			return shapeIdx;
 		}
 	}
 
-	return nullptr;
+	return -1;
 }
