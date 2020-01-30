@@ -5,6 +5,7 @@ struct Rgba8;
 class Physics2D;
 class Rigidbody2D;
 class Collider2D;
+class RenderContext;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -33,7 +34,7 @@ public: // Interface
 
 
 	// debug helpers
-	virtual void DebugRender( const Rgba8& borderColor, const Rgba8& fillColor ) = 0;
+	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const = 0;
 
 protected:
 	// 

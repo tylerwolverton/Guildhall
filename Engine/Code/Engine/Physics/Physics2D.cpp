@@ -21,6 +21,7 @@ void Physics2D::Update()
 //-----------------------------------------------------------------------------------------------
 void Physics2D::EndFrame()
 {
+	// Cleanup rigidbodies
 	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_garbageRigidbodyIndexes.size(); ++rigidbodyIdx )
 	{
 		Rigidbody2D*& garbageRigidbody = m_rigidbodies[m_garbageRigidbodyIndexes[rigidbodyIdx]];
@@ -30,6 +31,7 @@ void Physics2D::EndFrame()
 
 	m_garbageRigidbodyIndexes.clear();
 
+	// Cleanup colliders
 	for ( int colliderIdx = 0; colliderIdx < (int)m_garbageColliderIndexes.size(); ++colliderIdx )
 	{
 		Collider2D*& garbageCollider = m_colliders[m_garbageColliderIndexes[colliderIdx]];

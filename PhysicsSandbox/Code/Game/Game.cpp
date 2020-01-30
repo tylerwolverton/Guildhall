@@ -83,6 +83,7 @@ void Game::Update( float deltaSeconds )
 	UpdateCameras( deltaSeconds );
 
 	UpdateMouse();
+	UpdateGameObjects();
 	UpdateDraggedObject();
 
 	m_physics2D->Update();
@@ -174,8 +175,9 @@ void Game::RenderShapes() const
 		}
 
 		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
-
-		g_renderer->DrawDisc2D( collider->m_worldPosition, collider->m_radius, Rgba8::WHITE );
+		Rgba8 fillColor = gameObject->m_fillColor;
+		fillColor.a *= .5f;
+		collider->DebugRender( g_renderer, gameObject->m_borderColor, fillColor );
 	}
 }
 
@@ -269,12 +271,60 @@ void Game::UpdateMouse()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateGameObjects()
+{
+	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
+	{
+		GameObject* gameObject = m_gameObjects[ objectIdx ];
+		if ( gameObject == nullptr )
+		{
+			continue;
+		}
+
+		// Default fill color to white
+		gameObject->m_fillColor = Rgba8::WHITE;
+
+		// Change border color based on mouse position
+		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
+		if ( collider->Contains( m_mouseWorldPosition ) )
+		{
+			gameObject->m_borderColor = Rgba8::YELLOW;
+		}
+		else
+		{
+			gameObject->m_borderColor = Rgba8::BLUE;
+		}
+
+		// Check intersection with other game objects
+		for ( int otherObjIdx = (int)m_gameObjects.size() - 1; otherObjIdx >= 0; --otherObjIdx )
+		{
+			GameObject* otherGameObject = m_gameObjects[ otherObjIdx ];
+			if ( otherGameObject == nullptr
+				 || gameObject == otherGameObject )
+			{
+				continue;
+			}
+
+			// Highlight red if intersecting another object
+			if ( collider->Intersects( (DiscCollider2D*)otherGameObject->m_rigidbody->m_collider ) )
+			{
+				gameObject->m_fillColor = Rgba8::RED;
+				otherGameObject->m_fillColor = Rgba8::RED;
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateDraggedObject()
 {
 	if ( m_dragTarget != nullptr )
 	{
 		m_dragTarget->m_rigidbody->m_worldPosition = m_mouseWorldPosition;
 		m_dragTarget->m_rigidbody->m_collider->UpdateWorldShape();
+
+		m_dragTarget->m_borderColor = Rgba8::GREEN;
 	}
 }
 
@@ -288,6 +338,9 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, radius );
 	gameObject->m_rigidbody->TakeCollider( discCollider );
+
+	gameObject->m_borderColor = Rgba8::BLUE;
+	gameObject->m_fillColor = Rgba8::WHITE;
 
 	m_gameObjects.push_back( gameObject );
 }

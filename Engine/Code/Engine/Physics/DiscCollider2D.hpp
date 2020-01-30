@@ -17,7 +17,7 @@ public:
 	virtual bool Intersects( const Collider2D* other ) const override;
 
 	// debug helpers
-	virtual void DebugRender( const Rgba8& borderColor, const Rgba8& fillColor ) override;
+	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const override;
 
 protected:
 	virtual ~DiscCollider2D();

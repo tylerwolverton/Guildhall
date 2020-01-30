@@ -1,6 +1,7 @@
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -40,14 +41,22 @@ bool DiscCollider2D::Contains( const Vec2& pos ) const
 //-----------------------------------------------------------------------------------------------
 bool DiscCollider2D::Intersects( const Collider2D* other ) const
 {
-	return false;
+	// TODO: Once we have more than one collider type we need to detect which type we have
+	DiscCollider2D* otherDisc = (DiscCollider2D*)other;
+	return DoDiscsOverlap( m_worldPosition, m_radius, otherDisc->m_worldPosition, otherDisc->m_radius );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DiscCollider2D::DebugRender( const Rgba8& borderColor, const Rgba8& fillColor )
+void DiscCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const
 {
+	if( renderer == nullptr )
+	{
+		return;
+	}
 
+	renderer->DrawDisc2D( m_worldPosition, m_radius, fillColor );
+	renderer->DrawRing2D( m_worldPosition, m_radius, borderColor, .04f );
 }
 
 
