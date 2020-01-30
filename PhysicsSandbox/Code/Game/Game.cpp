@@ -216,12 +216,13 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->WasKeyJustPressed( KEY_BACKSPACE )
 		 || g_inputSystem->WasKeyJustPressed( KEY_DELETE ))
 	{
-		// TODO: Only delete if dragging?
-		int objectToDeleteIndex = GetIndexOfTopGameObjectAtMousePosition();
-
-		if ( objectToDeleteIndex != -1 )
+		if ( m_dragTarget != nullptr )
 		{
-			m_garbageGameObjectIndexes.push_back( objectToDeleteIndex );
+			int index = GetIndexOfGameObject( m_dragTarget );
+
+			GUARANTEE_OR_DIE( index != -1, "Dragged object isn't in game object list" );
+
+			m_garbageGameObjectIndexes.push_back( index );
 		}
 	}
 }
@@ -249,7 +250,10 @@ void Game::UpdateMouse()
 	{
 		m_isMouseDragging = true;
 		m_dragTarget = GetTopGameObjectAtMousePosition();
-		m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->GetPosition();
+		if ( m_dragTarget != nullptr )
+		{
+			m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->GetPosition();
+		}
 	}
 	else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
 	{
@@ -378,6 +382,32 @@ int Game::GetIndexOfTopGameObjectAtMousePosition()
 		if ( collider->Contains( m_mouseWorldPosition ) )
 		{
 			return shapeIdx;
+		}
+	}
+
+	return -1;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int Game::GetIndexOfGameObject( GameObject* gameObjectToFind )
+{
+	if ( gameObjectToFind == nullptr )
+	{
+		return -1;
+	}
+
+	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
+	{
+		GameObject* gameObject = m_gameObjects[objectIdx];
+		if ( gameObject == nullptr )
+		{
+			continue;
+		}
+
+		if ( gameObject == gameObjectToFind )
+		{
+			return objectIdx;
 		}
 	}
 

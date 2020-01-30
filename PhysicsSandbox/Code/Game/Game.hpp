@@ -63,6 +63,7 @@ private:
 
 	GameObject* GetTopGameObjectAtMousePosition();
 	int GetIndexOfTopGameObjectAtMousePosition();
+	int GetIndexOfGameObject( GameObject* gameObjectToFind );
 
 private:
 	bool		m_isDebugRendering = false;
