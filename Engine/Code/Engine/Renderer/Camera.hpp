@@ -26,6 +26,7 @@ public:
 	//const AABB2 GetOrthoBounds()		const	{ return AABB2( m_bottomLeft, m_topRight ); }
 	Rgba8 GetClearColor()				const	{ return m_clearColor; }
 
+	unsigned int GetClearMode() const																				{ return m_clearMode; }
 	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 0.f, unsigned int stencil = 0 );
 
 private:

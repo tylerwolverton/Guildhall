@@ -130,6 +130,9 @@ void Game::Update( float deltaSeconds )
 void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
+
+	g_renderer->Draw( 3 );
+
 	g_renderer->EndCamera( *m_worldCamera );
 }
 

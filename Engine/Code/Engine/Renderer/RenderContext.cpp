@@ -82,7 +82,8 @@ void RenderContext::Startup( Window* window )
 		m_swapchain = new SwapChain( this, swapchain );
 	}
 
-	m_currentShader = new Shader();
+	// Create default shader
+	m_currentShader = new Shader( this );
 	m_currentShader->CreateFromFile( "Data/Shaders/Triangle.hlsl" );
 
 }
@@ -104,6 +105,8 @@ void RenderContext::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Shutdown()
 {
+	delete m_currentShader;
+
 	// Cleanup bitmap font cache
 	for ( int fontIndex = 0; fontIndex < (int)m_loadedBitmapFonts.size(); ++fontIndex )
 	{
@@ -172,7 +175,10 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
-	ClearScreen( camera.GetClearColor() );
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
+	{
+		ClearScreen( camera.GetClearColor() );
+	}
 }
 
 
@@ -186,6 +192,27 @@ void RenderContext::EndCamera( const Camera& camera )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Draw( int numVertexes, int vertexOffset )
 {
+	Texture* texture = m_swapchain->GetBackBuffer();
+	TextureView* view = texture->GetOrCreateRenderTargetView();
+	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
+
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = 400;
+	viewport.Height = 400;
+	viewport.MinDepth = 0.f;
+	viewport.MaxDepth = 1.f;
+
+	// TEMPORARY - move this later
+	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+
+	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
+	m_context->RSSetState( m_currentShader->m_rasterState );
+	m_context->RSSetViewports( 1, &viewport );
+	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
+	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
+
 	m_context->Draw( numVertexes, vertexOffset );
 }
 
