@@ -167,7 +167,10 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
-	ClearScreen( camera.GetClearColor() );
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
+	{
+		ClearScreen( camera.GetClearColor() );
+	}
 }
 
 
