@@ -1,4 +1,5 @@
-#include "Camera.hpp"
+#include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 
@@ -19,6 +20,9 @@ void Camera::SetPosition( const Vec3& position )
 //-----------------------------------------------------------------------------------------------
 void Camera::SetProjectionOrthographic( float height, float nearZ, float farZ )
 {
+	UNUSED( nearZ );
+	UNUSED( farZ );
+
 	float aspectRatio = GetAspectRatio();
 
 	m_outputSize.x = aspectRatio * height;
@@ -38,10 +42,7 @@ Vec2 Camera::ClientToWorldPosition( const Vec2& clientPos )
 	//    by range mapping them from your client size to (0,1) in both dimensions.
 	// 2. Convert to your ortho position by rangemapping the normalized coordinate 
 	//    from (0,1) to (min, max).
-
-	//Vec2 bottomLeft( m_position.x - ( m_outputSize.x * .5f ), m_position.y - ( m_outputSize.y * .5f ) );
-
-
+	   
 	float worldX = RangeMapFloat( 0.f, 1.f, GetOrthoMin().x, GetOrthoMax().x, clientPos.x );
 	float worldY = RangeMapFloat( 0.f, 1.f, GetOrthoMin().y, GetOrthoMax().y, clientPos.y );
 

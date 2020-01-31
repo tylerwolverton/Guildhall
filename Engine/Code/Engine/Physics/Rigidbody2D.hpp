@@ -3,8 +3,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
+struct Rgba8;
 class Physics2D;
 class Collider2D;
+class RenderContext;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -22,12 +24,14 @@ public:
 	Vec2 GetPosition()																{ return m_worldPosition; }
 	void SetPosition( const Vec2& position);
 
+	void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const;
+
 public:
-	Physics2D* m_system = nullptr;     // which scene created/owns this object
 	Collider2D* m_collider = nullptr;
 
 private:
-	Vec2 m_worldPosition = Vec2::ZERO;   // where in the world is this rigidbody
+	Physics2D* m_system = nullptr;			// which scene created/owns this object
+	Vec2 m_worldPosition = Vec2::ZERO;		// where in the world is this rigidbody
 
 private:
 	~Rigidbody2D(); // destroys the collider

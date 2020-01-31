@@ -34,19 +34,12 @@ void Game::Startup()
 	m_worldCamera = new Camera();
 	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
 	m_worldCamera->SetPosition( m_focalPoint );
-	//m_worldCamera->SetProjectionOrthographic( 800.f );
-
-	m_uiCamera = new Camera();
-
+	
 	m_rng = new RandomNumberGenerator();
 
 	m_physics2D = new Physics2D();
 
 	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
-	
-	m_mouseOBB2.SetDimensions( Vec2( .5f, 1.f ) );
-
-	SpawnDisc( Vec2::ZERO, .5f );
 }
 
 
@@ -65,9 +58,6 @@ void Game::Shutdown()
 
 	delete m_rng;
 	m_rng = nullptr;
-	
-	delete m_uiCamera;
-	m_uiCamera = nullptr;
 
 	delete m_worldCamera;
 	m_worldCamera = nullptr;
@@ -106,17 +96,9 @@ void Game::Render() const
 
 	g_renderer->BeginCamera( *m_worldCamera );
 		
-	RenderMouseShape();
 	RenderShapes();
 
 	g_renderer->EndCamera( *m_worldCamera );
-
-	// Render UI with a new camera
-	g_renderer->BeginCamera( *m_uiCamera );
-
-	g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
-	
-	g_renderer->EndCamera( *m_uiCamera );
 }
 
 
@@ -129,64 +111,24 @@ void Game::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Game::EndFrame()
 {
-	for ( int garbageIdx = 0; garbageIdx < (int)m_garbageGameObjectIndexes.size(); ++garbageIdx )
-	{
-		GameObject*& garbageGameObject = m_gameObjects[m_garbageGameObjectIndexes[garbageIdx]];
-
-		if ( garbageGameObject == m_dragTarget )
-		{
-			m_dragTarget = nullptr;
-		}
-
-		delete garbageGameObject;
-		garbageGameObject = nullptr;
-	}
-
-	m_garbageGameObjectIndexes.clear();
+	PerformGarbageCollection();
 
 	m_physics2D->EndFrame();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderMouseShape() const
-{
-	/*switch ( m_mouseState )
-	{
-		case MOUSE_STATE_POINT:
-			{
-				g_renderer->BindTexture( nullptr );
-				g_renderer->DrawRing2D( m_mouseWorldPosition, .02f, Rgba8::WHITE, .04f );
-			}
-			break;
-
-		case MOUSE_STATE_OBB2:
-			{
-				g_renderer->BindTexture( nullptr );
-				g_renderer->DrawOBB2( m_mouseOBB2, Rgba8::WHITE );
-			}
-			break;
-	}*/
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Game::RenderShapes() const
 {
-	// TODO Change to GameObject->DebugRender
-	// which calls Rigidbody->DebugRender
-	for ( int shapeIdx = 0; shapeIdx < (int)m_gameObjects.size(); ++shapeIdx )
+	for ( int objectIdx = 0; objectIdx < (int)m_gameObjects.size(); ++objectIdx )
 	{
-		GameObject* gameObject = m_gameObjects[shapeIdx];
+		GameObject* gameObject = m_gameObjects[ objectIdx ];
 		if ( gameObject == nullptr )
 		{
 			continue;
 		}
 
-		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
-		Rgba8 fillColor = gameObject->m_fillColor;
-		fillColor.a = (unsigned char)( (float)fillColor.a * .5f );
-		collider->DebugRender( g_renderer, gameObject->m_borderColor, fillColor );
+		gameObject->DebugRender();
 	}
 }
 
@@ -200,43 +142,34 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	{
 		m_isDebugRendering = !m_isDebugRendering;
 	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 )
-		 || g_inputSystem->WasKeyJustPressed( MOUSE_MBUTTON ) )
-	{
-		switch ( m_mouseState )
-		{
-			case MOUSE_STATE_POINT:
-				m_mouseState = MOUSE_STATE_OBB2;
-				break;
-
-			case MOUSE_STATE_OBB2:
-				m_mouseState = MOUSE_STATE_POINT;
-				break;
-		}
-	}
-
+	
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		m_focalPoint.y += 2.f * deltaSeconds;
+		m_focalPoint.y += 5.f * deltaSeconds;
 	}
 	if ( g_inputSystem->IsKeyPressed( 'A' ) )
 	{
-		m_focalPoint.x -= 2.f * deltaSeconds;
+		m_focalPoint.x -= 5.f * deltaSeconds;
 	}
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		m_focalPoint.y -= 2.f * deltaSeconds;
+		m_focalPoint.y -= 5.f * deltaSeconds;
 	}
 	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
-		m_focalPoint.x += 2.f * deltaSeconds;
+		m_focalPoint.x += 5.f * deltaSeconds;
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
 		float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
 		SpawnDisc( m_mouseWorldPosition, radius );
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
+	{
+		m_focalPoint = Vec3::ZERO;
+		m_zoomFactor = 1.f;
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_BACKSPACE )
@@ -259,9 +192,7 @@ void Game::UpdateCameras( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 	m_worldCamera->SetPosition( m_focalPoint );
-	//m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );
-	//m_worldCamera->SetOrthoView( Vec2::ZERO, Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
-	//m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );
 }
 
 
@@ -270,10 +201,6 @@ void Game::UpdateMouse()
 {
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
 	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition );
-	/*m_mouseWorldPosition.x *= WINDOW_WIDTH;
-	m_mouseWorldPosition.y *= WINDOW_HEIGHT;*/
-
-	/*m_mouseOBB2.SetCenter( m_mouseWorldPosition );*/
 
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 	{
@@ -290,17 +217,12 @@ void Game::UpdateMouse()
 		m_dragTarget = nullptr;
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
-	{
-		
-	}
-
 	float mouseWheelScrollAmount = g_inputSystem->GetMouseWheelScrollAmountDelta();
 	if ( mouseWheelScrollAmount > .001f
 		 || mouseWheelScrollAmount < -.001f )
 	{
-		m_zoomFactor += mouseWheelScrollAmount;
-
+		m_zoomFactor -= mouseWheelScrollAmount * .25f;
+		m_zoomFactor = ClampMinMax( m_zoomFactor, .1f, 20.f );
 	}
 }
 
@@ -399,9 +321,9 @@ GameObject* Game::GetTopGameObjectAtMousePosition()
 //-----------------------------------------------------------------------------------------------
 int Game::GetIndexOfTopGameObjectAtMousePosition()
 {
-	for ( int shapeIdx = (int)m_gameObjects.size() - 1; shapeIdx >= 0; --shapeIdx )
+	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
 	{
-		GameObject* gameObject = m_gameObjects[shapeIdx];
+		GameObject* gameObject = m_gameObjects[ objectIdx ];
 		if ( gameObject == nullptr )
 		{
 			continue;
@@ -411,7 +333,7 @@ int Game::GetIndexOfTopGameObjectAtMousePosition()
 
 		if ( collider->Contains( m_mouseWorldPosition ) )
 		{
-			return shapeIdx;
+			return objectIdx;
 		}
 	}
 
@@ -429,7 +351,7 @@ int Game::GetIndexOfGameObject( GameObject* gameObjectToFind )
 
 	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
 	{
-		GameObject* gameObject = m_gameObjects[objectIdx];
+		GameObject* gameObject = m_gameObjects[ objectIdx ];
 		if ( gameObject == nullptr )
 		{
 			continue;
@@ -442,4 +364,24 @@ int Game::GetIndexOfGameObject( GameObject* gameObjectToFind )
 	}
 
 	return -1;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::PerformGarbageCollection()
+{
+	for ( int garbageIdx = 0; garbageIdx < (int)m_garbageGameObjectIndexes.size(); ++garbageIdx )
+	{
+		GameObject*& garbageGameObject = m_gameObjects[m_garbageGameObjectIndexes[garbageIdx]];
+
+		if ( garbageGameObject == m_dragTarget )
+		{
+			m_dragTarget = nullptr;
+		}
+
+		delete garbageGameObject;
+		garbageGameObject = nullptr;
+	}
+
+	m_garbageGameObjectIndexes.clear();
 }

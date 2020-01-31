@@ -44,7 +44,9 @@ public: // any helpers you want to add
    // ...
 
 public:
-	eCollider2DType m_type		= COLLIDER2D_NONE;   // keep track of the type - will help with collision later
-	Physics2D* m_system			= nullptr;				// system who created our d
+	eCollider2DType m_type		= COLLIDER2D_NONE;  // keep track of the type - will help with collision later
 	Rigidbody2D* m_rigidbody	= nullptr;			// owning rigidbody, used for calculating world shape
+
+protected:
+	Physics2D* m_system			= nullptr;			// system who created our d
 };

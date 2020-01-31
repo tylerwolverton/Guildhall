@@ -45,6 +45,16 @@ void Rigidbody2D::SetPosition( const Vec2& position )
 
 
 //-----------------------------------------------------------------------------------------------
+void Rigidbody2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const
+{
+	if ( m_collider != nullptr )
+	{
+		m_collider->DebugRender( renderer, borderColor, fillColor );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Rigidbody2D::~Rigidbody2D()
 {
 	Destroy();

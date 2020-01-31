@@ -10,8 +10,9 @@ class Rigidbody2D;
 class GameObject
 {
 public:
-	/*GameObject();*/
-	~GameObject();
+	~GameObject(); 
+	
+	void DebugRender();
 
 public:
 	Rigidbody2D* m_rigidbody = nullptr;

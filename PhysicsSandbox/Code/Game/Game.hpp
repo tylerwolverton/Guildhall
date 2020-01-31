@@ -10,6 +10,7 @@
 
 #include <vector>
 
+
 //-----------------------------------------------------------------------------------------------
 class Entity;
 struct Rgba8;
@@ -17,16 +18,6 @@ class RandomNumberGenerator;
 class Camera;
 class Physics2D;
 class GameObject;
-
-
-//-----------------------------------------------------------------------------------------------
-enum MouseState
-{
-	MOUSE_STATE_POINT,
-	MOUSE_STATE_OBB2,
-
-	MOUSE_STATE_NUM_STATES
-};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -50,8 +41,6 @@ public:
 	RandomNumberGenerator* m_rng = nullptr;
 
 private:
-
-	void RenderMouseShape() const;
 	void RenderShapes() const;
 	
 	void UpdateFromKeyboard( float deltaSeconds );
@@ -66,24 +55,23 @@ private:
 	int GetIndexOfTopGameObjectAtMousePosition();
 	int GetIndexOfGameObject( GameObject* gameObjectToFind );
 
+	void PerformGarbageCollection();
+
 private:
-	bool		m_isDebugRendering = false;
+	bool		m_isDebugRendering		= false;
 
-	Camera*		m_worldCamera		= nullptr;
-	Camera*		m_uiCamera			= nullptr;
-	Vec3		m_focalPoint		= Vec3(0.f, 0.f, 0.f);
-	float		m_zoomFactor		= 1.f;
+	Camera*		m_worldCamera			= nullptr;
+	Vec3		m_focalPoint			= Vec3::ZERO;
+	float		m_zoomFactor			= 1.f;
 
-	Physics2D*  m_physics2D			= nullptr;
+	Physics2D*  m_physics2D				= nullptr;
 
-	MouseState  m_mouseState		= MOUSE_STATE_POINT;
-	Vec2		m_mouseWorldPosition = Vec2::ZERO;
-	OBB2		m_mouseOBB2;
+	Vec2		m_mouseWorldPosition	= Vec2::ZERO;
 	   
+	bool		m_isMouseDragging		= false;
+	Vec2		m_dragOffset			= Vec2::ZERO;
+	GameObject* m_dragTarget			= nullptr;
+
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<int> m_garbageGameObjectIndexes;
-
-	bool m_isMouseDragging = false;
-	Vec2 m_dragOffset = Vec2::ZERO;
-	GameObject* m_dragTarget = nullptr;
 };

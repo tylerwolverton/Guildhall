@@ -62,8 +62,6 @@ void Physics2D::DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy )
 		if ( m_rigidbodies[ rigidbodyIdx ] == rigidbodyToDestroy )
 		{
 			m_garbageRigidbodyIndexes.push_back( rigidbodyIdx );
-			/*delete m_rigidbodies[ rigidbodyIdx ];
-			m_rigidbodies[ rigidbodyIdx ] = nullptr;*/
 			break;
 		}
 	}
@@ -88,8 +86,6 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 		if ( m_colliders[ colliderIdx ] == colliderToDestroy )
 		{
 			m_garbageColliderIndexes.push_back( colliderIdx );
-			/*delete m_colliders[ colliderIdx ];
-			m_colliders[ colliderIdx ] = nullptr;*/
 			break;
 		}
 	}
