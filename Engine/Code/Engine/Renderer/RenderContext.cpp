@@ -96,8 +96,8 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 void RenderContext::BeginCamera( const Camera& camera )
 {
 	glLoadIdentity();
-	glOrtho( camera.GetOrthoBottomLeft().x, camera.GetOrthoTopRight().x,
-			 camera.GetOrthoBottomLeft().y, camera.GetOrthoTopRight().y,
+	glOrtho( camera.GetOrthoMin().x, camera.GetOrthoMax().x,
+			 camera.GetOrthoMin().y, camera.GetOrthoMax().y,
 			 0.0f, 1.0f );
 }
 

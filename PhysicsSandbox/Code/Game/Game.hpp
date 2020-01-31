@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Capsule2.hpp"
@@ -68,12 +69,14 @@ private:
 private:
 	bool		m_isDebugRendering = false;
 
-	Camera*		m_worldCamera = nullptr;
-	Camera*		m_uiCamera = nullptr;
+	Camera*		m_worldCamera		= nullptr;
+	Camera*		m_uiCamera			= nullptr;
+	Vec3		m_focalPoint		= Vec3(0.f, 0.f, 0.f);
+	float		m_zoomFactor		= 1.f;
 
-	Physics2D*  m_physics2D = nullptr;
+	Physics2D*  m_physics2D			= nullptr;
 
-	MouseState  m_mouseState = MOUSE_STATE_POINT;
+	MouseState  m_mouseState		= MOUSE_STATE_POINT;
 	Vec2		m_mouseWorldPosition = Vec2::ZERO;
 	OBB2		m_mouseOBB2;
 	   

@@ -32,6 +32,10 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetPosition( m_focalPoint );
+	//m_worldCamera->SetProjectionOrthographic( 800.f );
+
 	m_uiCamera = new Camera();
 
 	m_rng = new RandomNumberGenerator();
@@ -41,6 +45,8 @@ void Game::Startup()
 	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
 	
 	m_mouseOBB2.SetDimensions( Vec2( .5f, 1.f ) );
+
+	SpawnDisc( Vec2::ZERO, .5f );
 }
 
 
@@ -80,9 +86,10 @@ void Game::RestartGame()
 void Game::Update( float deltaSeconds )
 {
 	UpdateFromKeyboard( deltaSeconds );
+	UpdateMouse();
+
 	UpdateCameras( deltaSeconds );
 
-	UpdateMouse();
 	UpdateGameObjects();
 	UpdateDraggedObject();
 
@@ -97,7 +104,7 @@ void Game::Render() const
 	// ALWAYS clear the screen at the top of each frame's Render()!
 	g_renderer->ClearScreen( Rgba8::BLACK );
 
-	g_renderer->BeginCamera(*m_worldCamera );
+	g_renderer->BeginCamera( *m_worldCamera );
 		
 	RenderMouseShape();
 	RenderShapes();
@@ -166,6 +173,8 @@ void Game::RenderMouseShape() const
 //-----------------------------------------------------------------------------------------------
 void Game::RenderShapes() const
 {
+	// TODO Change to GameObject->DebugRender
+	// which calls Rigidbody->DebugRender
 	for ( int shapeIdx = 0; shapeIdx < (int)m_gameObjects.size(); ++shapeIdx )
 	{
 		GameObject* gameObject = m_gameObjects[shapeIdx];
@@ -207,6 +216,23 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		}
 	}
 
+	if ( g_inputSystem->IsKeyPressed( 'W' ) )
+	{
+		m_focalPoint.y += 2.f * deltaSeconds;
+	}
+	if ( g_inputSystem->IsKeyPressed( 'A' ) )
+	{
+		m_focalPoint.x -= 2.f * deltaSeconds;
+	}
+	if ( g_inputSystem->IsKeyPressed( 'S' ) )
+	{
+		m_focalPoint.y -= 2.f * deltaSeconds;
+	}
+	if ( g_inputSystem->IsKeyPressed( 'D' ) )
+	{
+		m_focalPoint.x += 2.f * deltaSeconds;
+	}
+
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
 		float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
@@ -232,8 +258,10 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 void Game::UpdateCameras( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
-	m_worldCamera->SetOrthoView( Vec2::ZERO, Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_worldCamera->SetPosition( m_focalPoint );
+	//m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );
+	//m_worldCamera->SetOrthoView( Vec2::ZERO, Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	//m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 }
 
 
@@ -241,8 +269,9 @@ void Game::UpdateCameras( float deltaSeconds )
 void Game::UpdateMouse()
 {
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
-	m_mouseWorldPosition.x *= WINDOW_WIDTH;
-	m_mouseWorldPosition.y *= WINDOW_HEIGHT;
+	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition );
+	/*m_mouseWorldPosition.x *= WINDOW_WIDTH;
+	m_mouseWorldPosition.y *= WINDOW_HEIGHT;*/
 
 	/*m_mouseOBB2.SetCenter( m_mouseWorldPosition );*/
 
@@ -270,7 +299,8 @@ void Game::UpdateMouse()
 	if ( mouseWheelScrollAmount > .001f
 		 || mouseWheelScrollAmount < -.001f )
 	{
-		
+		m_zoomFactor += mouseWheelScrollAmount;
+
 	}
 }
 
