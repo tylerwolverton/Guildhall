@@ -157,8 +157,8 @@ void Map::BuildCardinalDirectionsArray()
 //-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
-	RenderTiles();
-	RenderEntities();
+	//RenderTiles();
+	//RenderEntities();
 }
 
 
@@ -181,8 +181,8 @@ void Map::RenderTiles() const
 		g_renderer->AppendVertsForAABB2D( vertexes, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
 	}
 
-	g_renderer->BindTexture( &(g_tileSpriteSheet->GetTexture()) );
-	g_renderer->DrawVertexArray( vertexes );
+	//g_renderer->BindTexture( &(g_tileSpriteSheet->GetTexture()) );
+	//g_renderer->DrawVertexArray( vertexes );
 }
 
 

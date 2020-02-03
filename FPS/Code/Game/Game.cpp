@@ -28,12 +28,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteSheet* g_tileSpriteSheet = nullptr;
-SpriteSheet* g_characterSpriteSheet = nullptr;
-SpriteSheet* g_portraitSpriteSheet = nullptr;
-
-
-//-----------------------------------------------------------------------------------------------
 Game::Game()
 {
 } 
@@ -49,7 +43,7 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
-	m_uiCamera = new Camera();
+	//m_worldCamera->SetColorTarget( nullptr );
 
 	m_rng = new RandomNumberGenerator();
 }
@@ -59,17 +53,7 @@ void Game::Startup()
 void Game::Shutdown()
 {
 	TileDefinition::s_definitions.clear();
-
-	// Clean up global sprite sheets
-	delete g_tileSpriteSheet;
-	g_tileSpriteSheet = nullptr;
-
-	delete g_characterSpriteSheet;
-	g_characterSpriteSheet = nullptr;
-
-	delete g_portraitSpriteSheet;
-	g_portraitSpriteSheet = nullptr;
-
+	
 	// Clean up member variables
 	delete m_world;
 	m_world = nullptr;
@@ -80,9 +64,6 @@ void Game::Shutdown()
 	delete m_debugInfoTextBox;
 	m_debugInfoTextBox = nullptr;
 	
-	delete m_uiCamera;
-	m_uiCamera = nullptr;
-
 	delete m_worldCamera;
 	m_worldCamera = nullptr;
 }
@@ -113,8 +94,7 @@ void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& t
 //-----------------------------------------------------------------------------------------------
 void Game::Update( float deltaSeconds )
 {
-	UNUSED( deltaSeconds );
-	//UpdateFromKeyboard( deltaSeconds );
+	UpdateFromKeyboard( deltaSeconds );
 
 	float seconds = (float)GetCurrentTimeSeconds();
 	float green = RangeMapFloat( -1.f, 1.f, 0.f, 255.f, SinDegrees( seconds * 40.f ) );
@@ -132,6 +112,8 @@ void Game::Render() const
 	g_renderer->BeginCamera(*m_worldCamera );
 
 	g_renderer->Draw( 3 );
+
+	//g_devConsole->Render( *g_renderer, AABB2( 0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT ), 1.f );
 
 	g_renderer->EndCamera( *m_worldCamera );
 }
@@ -151,19 +133,6 @@ void Game::LoadAssets()
 void Game::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
-
-	m_isSlowMo = g_inputSystem->IsKeyPressed('T');
-	m_isFastMo = g_inputSystem->IsKeyPressed('Y');
-
-	if ( g_inputSystem->WasKeyJustPressed('P') )
-	{
-		m_isPaused = !m_isPaused;
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
-	{
-		m_isDebugRendering = !m_isDebugRendering;
-	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
 	{
@@ -186,7 +155,6 @@ void Game::LoadNewMap( const std::string& mapName )
 void Game::UpdateMousePositions( float deltaSeconds )
 {
 	UpdateMouseWorldPosition( deltaSeconds );
-	UpdateMouseUIPosition( deltaSeconds );
 }
 
 
@@ -198,16 +166,6 @@ void Game::UpdateMouseWorldPosition( float deltaSeconds )
 	Vec2 worldWindowDimensions = m_worldCamera->GetOrthoTopRight() - m_worldCamera->GetOrthoBottomLeft();
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos() * worldWindowDimensions;
 	m_mouseWorldPosition += m_worldCamera->GetOrthoBottomLeft();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateMouseUIPosition( float deltaSeconds )
-{
-	UNUSED( deltaSeconds );
-
-	Vec2 uiWindowDimensions = m_uiCamera->GetOrthoTopRight() - m_uiCamera->GetOrthoBottomLeft();
-	m_mouseUIPosition = g_inputSystem->GetNormalizedMouseClientPos() * uiWindowDimensions;
 }
 
 
@@ -224,9 +182,6 @@ void Game::UpdateCameras( float deltaSeconds )
 	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
 
 	m_worldCamera->Translate2D(cameraShakeOffset);
-
-	// UI Camera
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 }
 
 

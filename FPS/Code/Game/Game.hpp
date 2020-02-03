@@ -52,7 +52,6 @@ private:
 	void LoadNewMap( const std::string& mapName );
 	void UpdateMousePositions( float deltaSeconds );
 	void UpdateMouseWorldPosition( float deltaSeconds );
-	void UpdateMouseUIPosition( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
 
 private:
@@ -71,7 +70,6 @@ private:
 	float m_screenShakeIntensity = 0.f;
 
 	Camera* m_worldCamera = nullptr;
-	Camera* m_uiCamera = nullptr;
 
 	World* m_world = nullptr;
 	std::string m_curMap;

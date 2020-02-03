@@ -34,9 +34,9 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		std::string spriteCoordsStr = ParseXmlAttribute( *spriteAnimSetElement, "spriteCoords", "0,0" );
 		spriteCoords.SetFromText( spriteCoordsStr.c_str() );
 
-		Vec2 mins, maxs;
+		/*Vec2 mins, maxs;
 		g_characterSpriteSheet->GetSpriteUVs( mins, maxs, spriteCoords );
 		m_uvCoords.mins = mins;
-		m_uvCoords.maxs = maxs;
+		m_uvCoords.maxs = maxs;*/
 	}
 }

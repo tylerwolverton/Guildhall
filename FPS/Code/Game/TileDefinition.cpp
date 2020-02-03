@@ -50,10 +50,10 @@ TileDefinition::TileDefinition( const XmlElement& tileDefElem )
 	std::string spriteCoordsStr = ParseXmlAttribute( tileDefElem, "spriteCoords", "0,0" );
 	spriteCoords.SetFromText( spriteCoordsStr.c_str() );
 
-	Vec2 mins, maxs;
+	/*Vec2 mins, maxs;
 	g_tileSpriteSheet->GetSpriteUVs( mins, maxs, spriteCoords );
 	m_uvCoords.mins = mins;
-	m_uvCoords.maxs = maxs;
+	m_uvCoords.maxs = maxs;*/
 
 	std::string spriteTintStr = ParseXmlAttribute( tileDefElem, "spriteTint", "255,255,255,255" );
 	m_spriteTint.SetFromText( spriteTintStr.c_str() );
