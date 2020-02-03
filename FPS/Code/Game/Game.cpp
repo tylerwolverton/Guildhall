@@ -111,7 +111,8 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
 
-	g_renderer->Draw( 3 );
+	//g_renderer->Draw( 3 );
+	g_renderer->DrawAABB2( AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::RED );
 
 	//g_devConsole->Render( *g_renderer, AABB2( 0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT ), 1.f );
 

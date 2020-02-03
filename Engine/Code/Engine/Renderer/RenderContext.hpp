@@ -21,6 +21,7 @@ class Camera;
 class Texture;
 class BitmapFont;
 class Shader;
+class VertexBuffer;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -69,6 +70,9 @@ public:
 	static void AppendVertsForCapsule2D	( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	static void AppendVertsForPolygon2	( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
+	void BindShader( Shader* shader );
+	void BindVertexInput( VertexBuffer* vbo );
+
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	void BindTexture( const Texture* texture );
 
@@ -93,8 +97,12 @@ public:
 	void* m_debugModule				= nullptr;
 	IDXGIDebug* m_debug				= nullptr;
 
+	VertexBuffer* m_immediateVBO	= nullptr;
+
 private:
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
+
+	Shader* m_defaultShader = nullptr;
 	Shader* m_currentShader = nullptr;
 };

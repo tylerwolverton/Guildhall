@@ -17,6 +17,7 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/OS/Window.hpp"
 
 #include "ThirdParty/stb/stb_image.h"
@@ -83,9 +84,10 @@ void RenderContext::Startup( Window* window )
 	}
 
 	// Create default shader
-	m_currentShader = new Shader( this );
-	m_currentShader->CreateFromFile( "Data/Shaders/Triangle.hlsl" );
+	m_defaultShader = new Shader( this );
+	m_defaultShader->CreateFromFile( "Data/Shaders/Triangle.hlsl" );
 
+	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 }
 
 
@@ -105,7 +107,8 @@ void RenderContext::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Shutdown()
 {
-	delete m_currentShader;
+	delete m_immediateVBO;
+	delete m_defaultShader;
 
 	// Cleanup bitmap font cache
 	for ( int fontIndex = 0; fontIndex < (int)m_loadedBitmapFonts.size(); ++fontIndex )
@@ -179,6 +182,8 @@ void RenderContext::BeginCamera( const Camera& camera )
 	{
 		ClearScreen( camera.GetClearColor() );
 	}
+
+	BindShader( nullptr );
 }
 
 
@@ -222,18 +227,18 @@ void RenderContext::Draw( int numVertexes, int vertexOffset )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices )
 {
-	UNUSED( numVertices );
-	UNUSED( vertices );
-	UNIMPLEMENTED();
-	/*glBegin( GL_TRIANGLES );
-		for( int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++ )
-		{
-			const Vertex_PCU& vert = vertices[vertexIndex];
-			glTexCoord2f( vert.m_uvTexCoords.x, vert.m_uvTexCoords.y );
-			glColor4ub( vert.m_color.r, vert.m_color.g, vert.m_color.b, vert.m_color.a );
-			glVertex3f( vert.m_position.x, vert.m_position.y, vert.m_position.z );
-		}
-	glEnd();*/
+	// RenderBuffer* m_immediateVBO;  // VBO - vertex buffer object
+
+	// Update a vertex buffer
+	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
+	size_t elementSize = sizeof( Vertex_PCU );
+	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
+
+	// Bind
+	BindVertexInput( m_immediateVBO );
+
+	// Draw
+	Draw( numVertices, 0 );
 }
 
 
@@ -532,6 +537,28 @@ void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray
 		vertexArray.push_back( Vertex_PCU( vertexPositions[vertexPosIdx], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
 		vertexArray.push_back( Vertex_PCU( vertexPositions[nextVertexIdx], tint, uvAtMaxs ) );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShader( Shader* shader )
+{
+	m_currentShader = shader;
+	if ( m_currentShader == nullptr )
+	{
+		m_currentShader = m_defaultShader;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindVertexInput( VertexBuffer* vbo )
+{
+	ID3D11Buffer* vboHandle = vbo->m_handle;
+	uint stride = sizeof( Vertex_PCU );
+	uint offset = 0;
+
+	m_context->IASetVertexBuffers( 0, 1, &vboHandle, &stride, &offset );
 }
 
 

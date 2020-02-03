@@ -18,3 +18,8 @@
 //-----------------------------------------------------------------------------------------------
 #define RENDER_DEBUG
 #define DX_SAFE_RELEASE(obj)  if (nullptr != (obj)) { (obj)->Release(); (obj) = nullptr; }
+
+
+//-----------------------------------------------------------------------------------------------
+//D3D11_USAGE ToDxMemoryUsage( eRenderMemoryHint hint );
+//UINT ToDXUsage( eRenderBufferUsage usage );

@@ -25,9 +25,12 @@ typedef std::vector<int> Ints;
 typedef std::vector<float> Floats;
 typedef NamedStrings EventArgs;
 
+typedef unsigned int uint;
+typedef unsigned char byte;
 
 //-----------------------------------------------------------------------------------------------
 #define UNUSED(x) (void)(x);
+#define BIT_FLAG(b) (1<<(b))
 
 
 //-----------------------------------------------------------------------------------------------
