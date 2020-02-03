@@ -7,6 +7,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+DevConsole*  g_devConsole = nullptr;
 EventSystem* g_eventSystem = nullptr;
 NamedStrings g_gameConfigBlackboard;
 

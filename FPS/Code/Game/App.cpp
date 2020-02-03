@@ -20,16 +20,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-App* g_app = nullptr;				    // Created and owned by Main_Windows.cpp
-Window* g_window = nullptr;				// Created and owned by Main_Windows.cpp
-DevConsole* g_devConsole = nullptr;		// Created and owned by the App
-RenderContext* g_renderer = nullptr;	// Created and owned by the App
-InputSystem* g_inputSystem = nullptr;	// Created and owned by the App
-AudioSystem* g_audioSystem = nullptr;	// Created and owned by the App
-Game* g_game = nullptr;					// Created and owned by the App
-
-
-//-----------------------------------------------------------------------------------------------
 App::App()
 {
 }
