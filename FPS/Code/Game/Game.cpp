@@ -43,7 +43,7 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
-	//m_worldCamera->SetColorTarget( nullptr );
+	m_worldCamera->SetColorTarget( nullptr );
 
 	m_rng = new RandomNumberGenerator();
 }

@@ -42,6 +42,28 @@ bool Shader::CreateFromFile( const std::string& filename )
 
 
 //-----------------------------------------------------------------------------------------------
+ID3D11InputLayout* Shader::GetOrCreateInputLayout( VertexBuffer* vbo )
+{
+	if ( m_inputLayout != nullptr )
+	{
+		return m_inputLayout;
+	}
+
+	D3D11_INPUT_ELEMENT_DESC* inputElementDesc;
+
+	/*HRESULT hr = ::CreateInputLayout(
+		const D3D11_INPUT_ELEMENT_DESC * pInputElementDescs,
+		UINT                           NumElements,
+		vbo->m_attributes,
+		vbo->m_stride,??
+		&m_inputLayout
+	);
+*/
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Shader::CreateRasterState()
 {
 	D3D11_RASTERIZER_DESC desc;
@@ -124,17 +146,17 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 	ID3DBlob* bytecode = nullptr;
 	ID3DBlob* errors = nullptr;
 
-	HRESULT hr = ::D3DCompile( source,
-							   sourceByteLength,
-							   filename.c_str(),
-							   nullptr,
-							   D3D_COMPILE_STANDARD_FILE_INCLUDE, // include rules - 
-							   entryPoint,
-							   shaderModel,
-							   compileFlags,
-							   0,
-							   &bytecode, // can be cached to improve load times on subsequent loads
-							   &errors );
+	HRESULT hr = ::D3DCompile( source,								// plain text source code
+							   sourceByteLength,					
+							   filename.c_str(),					// optional, used for error messages (If you HLSL has includes - it will not use the includes names, it will use this name)
+							   nullptr,								// pre-compiler defines - used more for compiling multiple versions of a single shader (different quality specs, or shaders that are mostly the same outside some constants)
+							   D3D_COMPILE_STANDARD_FILE_INCLUDE,   // include rules - this allows #includes in the shader to work relative to the src_file path or my current working directly
+							   entryPoint,							// Entry Point for this shader
+							   shaderModel,							// Compile Target (MSDN - "Specifying Compiler Targets")
+							   compileFlags,						// Flags that control compilation
+							   0,									// Effect Flags (we will not be doing Effect Files)
+							   &bytecode,							// [OUT] ID3DBlob (buffer) that will store the byte code. ( can be cached to improve load times on subsequent loads )
+							   &errors );							// [OUT] ID3DBlob (buffer) that will store error information
 
 
 	if ( FAILED( hr ) || ( errors != nullptr ) ) 

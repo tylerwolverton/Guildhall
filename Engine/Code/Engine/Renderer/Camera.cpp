@@ -35,3 +35,10 @@ void Camera::SetClearMode( unsigned int clearFlags, Rgba8 color, float depth, un
 	m_clearMode = clearFlags;
 	m_clearColor = color;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetColorTarget( Texture* texture )
+{
+	m_colorTarget = texture;
+}
