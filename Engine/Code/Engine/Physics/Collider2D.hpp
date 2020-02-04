@@ -13,6 +13,7 @@ enum eCollider2DType
 {
 	COLLIDER2D_NONE,
 	COLLIDER2D_DISC,
+	COLLIDER2D_POLYGON,
 };
 
 
