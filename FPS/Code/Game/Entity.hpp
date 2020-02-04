@@ -43,7 +43,7 @@ public:
 	bool		 CanSwim() const								{ return m_entityDef->CanSwim(); }
 
 protected:
-	void PopulateVertexes();
+	void PopulateVertices();
 
 protected:
 	// Game state
@@ -64,7 +64,7 @@ protected:
 	bool					m_canSwim = false;*/
 
 	// Visual
-	std::vector<Vertex_PCU> m_vertexes;
+	std::vector<Vertex_PCU> m_vertices;
 	Texture*				m_texture = nullptr;
 };
 

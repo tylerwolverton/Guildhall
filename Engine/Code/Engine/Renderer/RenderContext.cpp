@@ -195,7 +195,7 @@ void RenderContext::EndCamera( const Camera& camera )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::Draw( int numVertexes, int vertexOffset )
+void RenderContext::Draw( int numVertices, int vertexOffset )
 {
 	Texture* texture = m_swapchain->GetBackBuffer();
 	TextureView* view = texture->GetOrCreateRenderTargetView();
@@ -220,7 +220,7 @@ void RenderContext::Draw( int numVertexes, int vertexOffset )
 	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
 
-	m_context->Draw( numVertexes, vertexOffset );
+	m_context->Draw( numVertices, vertexOffset );
 }
 
 
@@ -268,7 +268,7 @@ void RenderContext::DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8&
 	Vec2 endLeft = end + forward + left;
 	Vec2 endRight = end + forward - left;
 
-	Vertex_PCU lineVertexes[] =
+	Vertex_PCU lineVertices[] =
 	{
 		Vertex_PCU( startRight, color ),
 		Vertex_PCU( endRight, color ),
@@ -279,8 +279,8 @@ void RenderContext::DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8&
 		Vertex_PCU( startLeft, color )
 	};
 
-	constexpr int NUM_VERTEXES = sizeof( lineVertexes ) / sizeof( lineVertexes[0] );
-	DrawVertexArray( NUM_VERTEXES, lineVertexes );
+	constexpr int NUM_VERTICES = sizeof( lineVertices ) / sizeof( lineVertices[0] );
+	DrawVertexArray( NUM_VERTICES, lineVertices );
 }
 
 
@@ -315,44 +315,44 @@ void RenderContext::DrawRing2D( const Vec2& center, float radius, const Rgba8& c
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawDisc2D( const Vec2& center, float radius, const Rgba8& color )
 {
-	std::vector<Vertex_PCU> vertexes;
+	std::vector<Vertex_PCU> vertices;
 
-	AppendVertsForArc( vertexes, center, radius, 360.f, 0.f, color );
+	AppendVertsForArc( vertices, center, radius, 360.f, 0.f, color );
 
-	DrawVertexArray( vertexes );
+	DrawVertexArray( vertices );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawCapsule2D( const Capsule2& capsule, const Rgba8& color )
 {
-	std::vector<Vertex_PCU> vertexes;
+	std::vector<Vertex_PCU> vertices;
 
-	AppendVertsForCapsule2D( vertexes, capsule, color );
+	AppendVertsForCapsule2D( vertices, capsule, color );
 
-	DrawVertexArray( vertexes );
+	DrawVertexArray( vertices );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawAABB2( const AABB2& box, const Rgba8& tint )
 {
-	std::vector<Vertex_PCU> vertexes;
+	std::vector<Vertex_PCU> vertices;
 
-	AppendVertsForAABB2D( vertexes, box, tint );
+	AppendVertsForAABB2D( vertices, box, tint );
 
-	DrawVertexArray( vertexes );
+	DrawVertexArray( vertices );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawOBB2( const OBB2& box, const Rgba8& tint )
 {
-	std::vector<Vertex_PCU> vertexes;
+	std::vector<Vertex_PCU> vertices;
 
-	AppendVertsForOBB2D( vertexes, box, tint );
+	AppendVertsForOBB2D( vertices, box, tint );
 
-	DrawVertexArray( vertexes );
+	DrawVertexArray( vertices );
 }
 
 
@@ -392,11 +392,11 @@ void RenderContext::DrawOBB2Outline( const Vec2& center, const OBB2& box, const 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawPolygon2( const std::vector<Vec2>& vertexPositions, const Rgba8& tint )
 {
-	std::vector<Vertex_PCU> vertexes;
+	std::vector<Vertex_PCU> vertices;
 
-	AppendVertsForPolygon2( vertexes, vertexPositions, tint );
+	AppendVertsForPolygon2( vertices, vertexPositions, tint );
 
-	DrawVertexArray( vertexes );
+	DrawVertexArray( vertices );
 }
 
 
@@ -410,22 +410,22 @@ void RenderContext::DrawPolygon2( const Polygon2& polygon2, const Rgba8& tint )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawPolygon2Outline( const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness )
 {
-	int numVertexes = (int)vertexPositions.size();
+	int numVertices = (int)vertexPositions.size();
 
-	if ( numVertexes < 3 )
+	if ( numVertices < 3 )
 	{
-		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to draw a Polygon2Outline with %d vertexes. At least 3 vertexes are required.", numVertexes ));
+		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to draw a Polygon2Outline with %d vertices. At least 3 vertices are required.", numVertices ));
 		return;
 	}
 
-	for ( int vertexPosIdx = 0; vertexPosIdx < numVertexes - 1; ++vertexPosIdx )
+	for ( int vertexPosIdx = 0; vertexPosIdx < numVertices - 1; ++vertexPosIdx )
 	{
 		int nextVertexIdx = vertexPosIdx + 1;
 		DrawLine2D( vertexPositions[ vertexPosIdx ], vertexPositions[ nextVertexIdx ], tint, thickness );
 	}
 
 	// Connect last vertex to first
-	int lastVertexIdx = numVertexes - 1;
+	int lastVertexIdx = numVertices - 1;
 	DrawLine2D( vertexPositions[ lastVertexIdx ], vertexPositions[0], tint, thickness );
 }
 
@@ -522,15 +522,15 @@ void RenderContext::AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArra
 //-----------------------------------------------------------------------------------------------
 void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	int numVertexes = (int)vertexPositions.size();
+	int numVertices = (int)vertexPositions.size();
 
-	if ( numVertexes < 3 )
+	if ( numVertices < 3 )
 	{
-		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to append verts for a Polygon2 with %d vertexes. At least 3 vertexes are required.", numVertexes ) );
+		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to append verts for a Polygon2 with %d vertices. At least 3 vertices are required.", numVertices ) );
 		return;
 	}
 
-	for ( int vertexPosIdx = 1; vertexPosIdx < numVertexes - 1; ++vertexPosIdx )
+	for ( int vertexPosIdx = 1; vertexPosIdx < numVertices - 1; ++vertexPosIdx )
 	{
 		int nextVertexIdx = vertexPosIdx + 1;
 		vertexArray.push_back( Vertex_PCU( vertexPositions[0],			   tint, uvAtMins ) );

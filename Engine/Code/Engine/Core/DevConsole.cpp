@@ -81,11 +81,11 @@ void DevConsole::RenderBackground( RenderContext& renderer, const AABB2& bounds 
 	Rgba8 backgroundColor = Rgba8::BLACK;
 	backgroundColor.a = 150;
 
-	std::vector<Vertex_PCU> backgroundVertexes;
-	renderer.AppendVertsForAABB2D( backgroundVertexes, bounds, backgroundColor );
+	std::vector<Vertex_PCU> backgroundVertices;
+	renderer.AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
 
 	renderer.BindTexture( nullptr );
-	renderer.DrawVertexArray( backgroundVertexes );
+	renderer.DrawVertexArray( backgroundVertices );
 }
 
 
@@ -112,7 +112,7 @@ void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& 
 
 	BitmapFont* font = renderer.CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 
-	std::vector<Vertex_PCU> vertexes;
+	std::vector<Vertex_PCU> vertices;
 	float curLineY = 0;
 	int latestMessageIndex = (int)m_logMessages.size() - 1;
 
@@ -123,12 +123,12 @@ void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& 
 
 		if ( font->GetTexture() != nullptr )
 		{
-			font->AppendVertsForText2D( vertexes, Vec2( bounds.mins.x, bounds.mins.y + curLineY ), lineHeight, logMessage.m_message, logMessage.m_color, .75f );
+			font->AppendVertsForText2D( vertices, Vec2( bounds.mins.x, bounds.mins.y + curLineY ), lineHeight, logMessage.m_message, logMessage.m_color, .75f );
 		}
 		// Use triangle font if no font can be loaded
 		else
 		{
-			AppendTextTriangles2D( vertexes, logMessage.m_message, Vec2( bounds.mins.x, bounds.mins.y + curLineY ), lineHeight, logMessage.m_color );
+			AppendTextTriangles2D( vertices, logMessage.m_message, Vec2( bounds.mins.x, bounds.mins.y + curLineY ), lineHeight, logMessage.m_color );
 		}
 		curLineY += lineHeight;
 	}
@@ -141,7 +141,7 @@ void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& 
 	{
 		renderer.BindTexture( nullptr );
 	}
-	renderer.DrawVertexArray( vertexes );
+	renderer.DrawVertexArray( vertices );
 }
 
 

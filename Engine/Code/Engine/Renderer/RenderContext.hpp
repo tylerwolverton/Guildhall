@@ -46,7 +46,7 @@ public:
 	void BeginCamera( const Camera& camera );
 	void EndCamera	( const Camera& camera );
 
-	void Draw( int numVertexes, int vertexOffset = 0 );
+	void Draw( int numVertices, int vertexOffset = 0 );
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
 	

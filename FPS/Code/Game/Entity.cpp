@@ -14,7 +14,7 @@ Entity::Entity( const Vec2& position, EntityDefinition* entityDef )
 	: m_position( position )
 	, m_entityDef( entityDef )
 {
-	PopulateVertexes();
+	PopulateVertices();
 }
 
 
@@ -37,11 +37,11 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
-	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, 0.f, m_position );
+	std::vector<Vertex_PCU> verticesCopy( m_vertices );
+	Vertex_PCU::TransformVertexArray( verticesCopy, 1.f, 0.f, m_position );
 
 	g_renderer->BindTexture( m_texture );
-	g_renderer->DrawVertexArray( vertexesCopy );
+	g_renderer->DrawVertexArray( verticesCopy );
 }
 
 
@@ -96,11 +96,11 @@ void Entity::ApplyFriction()
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::PopulateVertexes()
+void Entity::PopulateVertices()
 {
 	m_texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" );
 	
-	g_renderer->AppendVertsForAABB2D( m_vertexes, m_entityDef->m_localDrawBounds, Rgba8::WHITE,
+	g_renderer->AppendVertsForAABB2D( m_vertices, m_entityDef->m_localDrawBounds, Rgba8::WHITE,
 									  m_entityDef->m_uvCoords.mins,
 									  m_entityDef->m_uvCoords.maxs );
 }

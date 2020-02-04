@@ -24,7 +24,7 @@ enum eRenderMemoryHint : uint
 {
 	MEMORY_HINT_GPU,		// GPU can read/write, CPU can't touch it. If we change it, it changes rarely from CPU
 	MEMORY_HINT_DYNAMIC, 	// GPU memory (read/write), that changes OFTEN from CPU - it allows "Mapping" of memory 
-	MEMORY_HINT_STAGING,  // CPU memory (read/write), can copy to a GPU buffer
+	MEMORY_HINT_STAGING,	// CPU memory (read/write), can copy to a GPU buffer
 };
 
 

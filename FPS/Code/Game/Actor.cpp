@@ -58,15 +58,15 @@ void Actor::Render() const
 	Vec2 mins, maxs;
 	spriteDef.GetUVs( mins, maxs );
 
-	std::vector<Vertex_PCU> vertexes;
-	g_renderer->AppendVertsForAABB2D( vertexes, m_actorDef->m_localDrawBounds, Rgba8::WHITE,
+	std::vector<Vertex_PCU> vertices;
+	g_renderer->AppendVertsForAABB2D( vertices, m_actorDef->m_localDrawBounds, Rgba8::WHITE,
 									  mins,
 									  maxs );
 
-	Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
+	Vertex_PCU::TransformVertexArray( vertices, 1.f, 0.f, m_position );
 
 	g_renderer->BindTexture( &( spriteDef.GetTexture() ) );
-	g_renderer->DrawVertexArray( vertexes );
+	g_renderer->DrawVertexArray( vertices );
 }
 
 
