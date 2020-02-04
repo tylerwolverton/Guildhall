@@ -1,6 +1,6 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 
-//TODO Rename to D3D11Common
 
 #if !defined(WIN32_LEAN_AND_MEAN) 
 #define WIN32_LEAN_AND_MEAN
@@ -21,5 +21,24 @@
 
 
 //-----------------------------------------------------------------------------------------------
-//D3D11_USAGE ToDxMemoryUsage( eRenderMemoryHint hint );
-//UINT ToDXUsage( eRenderBufferUsage usage );
+// The "WHAT" are we using it for
+enum eRenderBufferUsageBit : uint
+{
+	VERTEX_BUFFER_BIT = BIT_FLAG( 0 ),	// A02: can be used to store vertices
+	INDEX_BUFFER_BIT = BIT_FLAG( 1 ),  	// we will discuss this later
+	UNIFORM_BUFFER_BIT = BIT_FLAG( 2 ),	// A03: used to store constants
+};
+typedef uint eRenderBufferUsage;			// typedef helps to describe to reader when an entire bit field can be sent as opposed to a single bit
+
+
+//-----------------------------------------------------------------------------------------------
+// The "HOW" are we going to access it
+enum eRenderMemoryHint : uint
+{
+	MEMORY_HINT_GPU,		// GPU can read/write, CPU can't touch it. If we change it, it changes rarely from CPU
+	MEMORY_HINT_DYNAMIC, 	// GPU memory (read/write), that changes OFTEN from CPU - it allows "Mapping" of memory 
+	MEMORY_HINT_STAGING,	// CPU memory (read/write), can copy to a GPU buffer
+};
+
+D3D11_USAGE ToDxMemoryUsage( eRenderMemoryHint hint );
+UINT ToDXUsage( eRenderBufferUsage usage );

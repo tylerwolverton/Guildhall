@@ -85,6 +85,7 @@ void RenderContext::Startup( Window* window )
 
 	// Create default shader
 	m_defaultShader = new Shader( this );
+	//m_defaultShader->CreateFromFile( "Data/Shaders/Default.hlsl" );
 	m_defaultShader->CreateFromFile( "Data/Shaders/Triangle.hlsl" );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
