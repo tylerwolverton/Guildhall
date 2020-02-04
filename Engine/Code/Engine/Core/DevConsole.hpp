@@ -51,5 +51,6 @@ private:
 
 private:
 	bool m_isOpen = false;
+	Camera* m_devConsoleCamera = nullptr;
 	std::vector<DevConsoleLogMessage> m_logMessages;
 };

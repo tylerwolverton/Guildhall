@@ -23,6 +23,7 @@ DevConsole::~DevConsole()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Startup()
 {
+	m_devConsoleCamera = new Camera();
 }
 
 
@@ -43,7 +44,8 @@ void DevConsole::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Shutdown()
 {
-
+	delete m_devConsoleCamera;
+	m_devConsoleCamera = nullptr;
 }
 
 
@@ -70,8 +72,12 @@ void DevConsole::Render( RenderContext& renderer, const AABB2& bounds, float lin
 		return;
 	}
 
+	renderer.BeginCamera( *m_devConsoleCamera );
+
 	RenderBackground( renderer, bounds );
 	RenderLatestLogMessages( renderer, bounds, lineHeight );
+
+	renderer.EndCamera( *m_devConsoleCamera );
 }
 
 
@@ -84,7 +90,7 @@ void DevConsole::RenderBackground( RenderContext& renderer, const AABB2& bounds 
 	std::vector<Vertex_PCU> backgroundVertices;
 	renderer.AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
 
-	renderer.BindTexture( nullptr );
+	//renderer.BindTexture( nullptr );
 	renderer.DrawVertexArray( backgroundVertices );
 }
 
@@ -135,11 +141,11 @@ void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& 
 	
 	if ( font->GetTexture() != nullptr )
 	{
-		renderer.BindTexture( font->GetTexture() );
+		//renderer.BindTexture( font->GetTexture() );
 	}
 	else
 	{
-		renderer.BindTexture( nullptr );
+		//renderer.BindTexture( nullptr );
 	}
 	renderer.DrawVertexArray( vertices );
 }

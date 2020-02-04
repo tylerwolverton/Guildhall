@@ -214,6 +214,7 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 void App::Render() const
 {
 	g_game->Render();
+	g_devConsole->Render( *g_renderer, AABB2( 0.f, 0.f, 400.f, 400.f ), 10.f );
 }
 
 
