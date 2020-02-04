@@ -15,11 +15,17 @@ public:
 	static const Rgba8 WHITE;
 	static const Rgba8 BLACK;
 	static const Rgba8 RED;
+	static const Rgba8 DARK_RED;
 	static const Rgba8 GREEN;
+	static const Rgba8 DARK_GREEN;
 	static const Rgba8 BLUE;
+	static const Rgba8 DARK_BLUE;
 	static const Rgba8 MAGENTA;
+	static const Rgba8 DARK_MAGENTA;
 	static const Rgba8 CYAN;
+	static const Rgba8 DARK_CYAN;
 	static const Rgba8 YELLOW;
+	static const Rgba8 DARK_YELLOW;
 	static const Rgba8 ORANGE;
 	static const Rgba8 PURPLE;
 	static const Rgba8 GREY;

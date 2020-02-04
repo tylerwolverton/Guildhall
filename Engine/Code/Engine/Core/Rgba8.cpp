@@ -9,17 +9,23 @@
 
 //-----------------------------------------------------------------------------------------------
 // Static member definitions
-const Rgba8 Rgba8::WHITE	( 255, 255, 255 );
-const Rgba8 Rgba8::BLACK	( 0, 0, 0 );
-const Rgba8 Rgba8::RED		( 255, 0, 0 );
-const Rgba8 Rgba8::GREEN	( 0, 255, 0 );
-const Rgba8 Rgba8::BLUE		( 0, 0, 255 );
-const Rgba8 Rgba8::MAGENTA	( 255, 0, 255 );
-const Rgba8 Rgba8::CYAN		( 0, 255, 255 );
-const Rgba8 Rgba8::YELLOW	( 255, 255, 0 );
-const Rgba8 Rgba8::ORANGE	( 255, 127, 0 );
-const Rgba8 Rgba8::PURPLE	( 127, 0, 255 );
-const Rgba8 Rgba8::GREY		( 127, 127, 127 );
+const Rgba8 Rgba8::WHITE		( 255, 255, 255 );
+const Rgba8 Rgba8::BLACK		( 0, 0, 0 );
+const Rgba8 Rgba8::RED			( 255, 0, 0 );
+const Rgba8 Rgba8::DARK_RED		( 127, 0, 0 );
+const Rgba8 Rgba8::GREEN		( 0, 255, 0 );
+const Rgba8 Rgba8::DARK_GREEN	( 0, 127, 0 );
+const Rgba8 Rgba8::BLUE			( 0, 0, 255 );
+const Rgba8 Rgba8::DARK_BLUE	( 0, 0, 127 );
+const Rgba8 Rgba8::MAGENTA		( 255, 0, 255 );
+const Rgba8 Rgba8::DARK_MAGENTA	( 127, 0, 127 );
+const Rgba8 Rgba8::CYAN			( 0, 255, 255 );
+const Rgba8 Rgba8::DARK_CYAN	( 0, 127, 127 );
+const Rgba8 Rgba8::YELLOW		( 255, 255, 0 );
+const Rgba8 Rgba8::DARK_YELLOW	( 127, 127, 0 );
+const Rgba8 Rgba8::ORANGE		( 255, 127, 0 );
+const Rgba8 Rgba8::PURPLE		( 127, 0, 255 );
+const Rgba8 Rgba8::GREY			( 127, 127, 127 );
 
 
 //-----------------------------------------------------------------------------------------------

@@ -280,7 +280,7 @@ void Game::UpdateDraggedObject()
 	{
 		m_dragTarget->m_rigidbody->SetPosition( m_mouseWorldPosition - m_dragOffset );
 
-		m_dragTarget->m_borderColor = Rgba8::GREEN;
+		m_dragTarget->m_borderColor = Rgba8::DARK_GREEN;
 	}
 }
 
