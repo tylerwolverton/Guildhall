@@ -33,20 +33,25 @@ bool Polygon2::IsValid() const
 		return false;
 	}
 
-	return IsConvex();
+	return true;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 bool Polygon2::IsConvex() const
 {
+	if ( !IsValid() )
+	{
+		return false;
+	}
+
 	int totalNumPoints = (int)m_points.size();
 
 	for ( int pointNumIdx = 0; pointNumIdx < totalNumPoints; ++pointNumIdx )
 	{
 		Vec2 pointA = m_points[pointNumIdx];
 		Vec2 pointB;
-		if ( pointNumIdx == totalNumPoints )
+		if ( pointNumIdx == totalNumPoints - 1 )
 		{
 			pointB = m_points[0];
 		}

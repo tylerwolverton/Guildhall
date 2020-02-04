@@ -3,9 +3,11 @@
 
 //-----------------------------------------------------------------------------------------------
 struct Vec2;
+class Polygon2;
 class Rigidbody2D;
 class Collider2D;
 class DiscCollider2D;
+class PolygonCollider2D;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -21,6 +23,7 @@ public:
 	void DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy );
 
 	DiscCollider2D* CreateDiscCollider( const Vec2& localPosition, float radius );
+	PolygonCollider2D* CreatePolygon2Collider( const Polygon2& polygon );
 	void DestroyCollider( Collider2D* colliderToDestroy );
 
 private:

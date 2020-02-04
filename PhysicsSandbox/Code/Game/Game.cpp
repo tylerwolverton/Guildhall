@@ -11,6 +11,7 @@
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
+#include "Engine/Physics/PolygonCollider2D.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/GameObject.hpp"
@@ -138,51 +139,71 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+	switch ( m_gameState )
 	{
-		m_isDebugRendering = !m_isDebugRendering;
-	}
-	
-	if ( g_inputSystem->IsKeyPressed( 'W' ) )
-	{
-		m_focalPoint.y += 5.f * deltaSeconds;
-	}
-	if ( g_inputSystem->IsKeyPressed( 'A' ) )
-	{
-		m_focalPoint.x -= 5.f * deltaSeconds;
-	}
-	if ( g_inputSystem->IsKeyPressed( 'S' ) )
-	{
-		m_focalPoint.y -= 5.f * deltaSeconds;
-	}
-	if ( g_inputSystem->IsKeyPressed( 'D' ) )
-	{
-		m_focalPoint.x += 5.f * deltaSeconds;
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
-	{
-		float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
-		SpawnDisc( m_mouseWorldPosition, radius );
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
-	{
-		m_focalPoint = Vec3::ZERO;
-		m_zoomFactor = 1.f;
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_BACKSPACE )
-		 || g_inputSystem->WasKeyJustPressed( KEY_DELETE ))
-	{
-		if ( m_dragTarget != nullptr )
+		case eGameState::SANDBOX:
 		{
-			int index = GetIndexOfGameObject( m_dragTarget );
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+			{
+				m_isDebugRendering = !m_isDebugRendering;
+			}
 
-			GUARANTEE_OR_DIE( index != -1, "Dragged object isn't in game object list" );
+			if ( g_inputSystem->IsKeyPressed( 'W' ) )
+			{
+				m_focalPoint.y += 5.f * deltaSeconds;
+			}
+			if ( g_inputSystem->IsKeyPressed( 'A' ) )
+			{
+				m_focalPoint.x -= 5.f * deltaSeconds;
+			}
+			if ( g_inputSystem->IsKeyPressed( 'S' ) )
+			{
+				m_focalPoint.y -= 5.f * deltaSeconds;
+			}
+			if ( g_inputSystem->IsKeyPressed( 'D' ) )
+			{
+				m_focalPoint.x += 5.f * deltaSeconds;
+			}
 
-			m_garbageGameObjectIndexes.push_back( index );
-		}
+			if ( g_inputSystem->WasKeyJustPressed( '1' ) )
+			{
+				float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
+				SpawnDisc( m_mouseWorldPosition, radius );
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( '2' ) )
+			{
+				m_gameState = eGameState::CREATE_POLYGON;
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
+			{
+				m_focalPoint = Vec3::ZERO;
+				m_zoomFactor = 1.f;
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_BACKSPACE )
+				 || g_inputSystem->WasKeyJustPressed( KEY_DELETE ) )
+			{
+				if ( m_dragTarget != nullptr )
+				{
+					int index = GetIndexOfGameObject( m_dragTarget );
+
+					GUARANTEE_OR_DIE( index != -1, "Dragged object isn't in game object list" );
+
+					m_garbageGameObjectIndexes.push_back( index );
+				}
+			}
+		} break;
+
+		case eGameState::CREATE_POLYGON:
+		{
+			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			{
+				m_potentialPolygonPoints.clear();
+				m_gameState = eGameState::SANDBOX;
+			}
+		} break;
 	}
 }
 
@@ -202,19 +223,43 @@ void Game::UpdateMouse()
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
 	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition );
 
-	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+	switch ( m_gameState )
 	{
-		m_isMouseDragging = true;
-		m_dragTarget = GetTopGameObjectAtMousePosition();
-		if ( m_dragTarget != nullptr )
+		case eGameState::SANDBOX:
 		{
-			m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->GetPosition();
-		}
-	}
-	else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
-	{
-		m_isMouseDragging = false;
-		m_dragTarget = nullptr;
+			if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+			{
+				m_isMouseDragging = true;
+				m_dragTarget = GetTopGameObjectAtMousePosition();
+				if ( m_dragTarget != nullptr )
+				{
+					m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->GetPosition();
+				}
+			}
+			else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
+			{
+				m_isMouseDragging = false;
+				m_dragTarget = nullptr;
+			}
+		} break;
+
+		case eGameState::CREATE_POLYGON:
+		{
+			if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+			{
+				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
+			{
+				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+
+				SpawnPolygon( m_potentialPolygonPoints );
+
+				m_potentialPolygonPoints.clear();
+				m_gameState = eGameState::SANDBOX;
+			}
+		} break;
 	}
 
 	float mouseWheelScrollAmount = g_inputSystem->GetMouseWheelScrollAmountDelta();
@@ -299,6 +344,39 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 	gameObject->m_fillColor = Rgba8::WHITE;
 
 	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SpawnPolygon( const Polygon2& polygon )
+{
+	GameObject* gameObject = new GameObject();
+	gameObject->m_rigidbody = m_physics2D->CreateRigidbody();
+	// TODO: Make the center of mass the rigidbody location
+	gameObject->m_rigidbody->SetPosition( polygon.GetPoints()[0] );
+
+	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
+	gameObject->m_rigidbody->TakeCollider( polygonCollider );
+
+	gameObject->m_borderColor = Rgba8::BLUE;
+	gameObject->m_fillColor = Rgba8::WHITE;
+
+	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SpawnPolygon( const std::vector<Vec2>& points )
+{
+	Polygon2 newPolygon2 = Polygon2( points );
+
+	if ( !newPolygon2.IsValid() )
+	{
+		g_devConsole->PrintString( Rgba8::YELLOW, "Invalid polygon cannot be spawned" );
+		return;
+	}
+
+	SpawnPolygon( newPolygon2 );
 }
 
 

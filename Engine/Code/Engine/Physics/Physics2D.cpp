@@ -2,6 +2,7 @@
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
+#include "Engine/Physics/PolygonCollider2D.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -72,6 +73,16 @@ void Physics2D::DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy )
 DiscCollider2D* Physics2D::CreateDiscCollider( const Vec2& localPosition, float radius )
 {
 	DiscCollider2D* newCollider2D = new DiscCollider2D( localPosition, radius );
+	m_colliders.push_back( newCollider2D );
+
+	return newCollider2D;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+PolygonCollider2D* Physics2D::CreatePolygon2Collider( const Polygon2& polygon )
+{
+	PolygonCollider2D* newCollider2D = new PolygonCollider2D( polygon );
 	m_colliders.push_back( newCollider2D );
 
 	return newCollider2D;

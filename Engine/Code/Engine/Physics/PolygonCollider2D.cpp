@@ -11,6 +11,14 @@ PolygonCollider2D::PolygonCollider2D( const std::vector<Vec2>& points )
 
 
 //-----------------------------------------------------------------------------------------------
+PolygonCollider2D::PolygonCollider2D( const Polygon2& polygon )
+	: m_polygon( polygon )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void PolygonCollider2D::UpdateWorldShape()
 {
 	m_worldPosition = m_localPosition;
