@@ -51,21 +51,34 @@ bool Polygon2::IsConvex() const
 	{
 		Vec2 pointA = m_points[pointNumIdx];
 		Vec2 pointB;
+		Vec2 pointC;
 		if ( pointNumIdx == totalNumPoints - 1 )
 		{
 			pointB = m_points[0];
+			pointC = m_points[1];
+		}
+		else if( pointNumIdx == totalNumPoints - 2 )
+		{
+			int lastPointIdx = totalNumPoints - 1;
+			pointB = m_points[lastPointIdx];
+			pointC = m_points[0];
 		}
 		else
 		{
 			int nextPointIdx = pointNumIdx + 1;
 			pointB = m_points[nextPointIdx];
+			
+			++nextPointIdx;
+			pointC = m_points[nextPointIdx];
 		}
 
-		Vec2 edge = pointB - pointA;
-		Vec2 normal = edge.GetRotated90Degrees();
+		Vec2 normal = pointB - pointA;
+		normal.Rotate90Degrees();
+
+		Vec2 nextEdge = pointC - pointB;
 
 		// TODO: Handle edge cases discussed in class
-		if ( DotProduct2D( edge, normal ) < 0 )
+		if ( DotProduct2D( nextEdge, normal ) < 0 )
 		{
 			return false;
 		}

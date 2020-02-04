@@ -370,7 +370,7 @@ void Game::SpawnPolygon( const std::vector<Vec2>& points )
 {
 	Polygon2 newPolygon2 = Polygon2( points );
 
-	if ( !newPolygon2.IsValid() )
+	if ( !newPolygon2.IsConvex() )
 	{
 		g_devConsole->PrintString( Rgba8::YELLOW, "Invalid polygon cannot be spawned" );
 		return;
