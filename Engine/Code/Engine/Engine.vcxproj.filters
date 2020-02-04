@@ -184,6 +184,9 @@
     <ClCompile Include="Renderer\D3D11Common.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\VertexBuffer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">

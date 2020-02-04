@@ -205,6 +205,7 @@
     <ClCompile Include="Renderer\SwapChain.cpp" />
     <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Renderer\TextureView.cpp" />
+    <ClCompile Include="Renderer\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
