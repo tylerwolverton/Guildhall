@@ -133,19 +133,19 @@ void Window::SetInputSystem( InputSystem* inputSystem )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, WindowMode windowMode )
+bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode )
 {
 	DWORD windowStyleFlags = 0;
 	DWORD windowStyleExFlags = 0;
 
 	switch ( windowMode )
 	{
-		case WindowMode::WINDOWED:
+		case eWindowMode::WINDOWED:
 			windowStyleFlags = WS_CAPTION | WS_BORDER | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED;
 			windowStyleExFlags = WS_EX_APPWINDOW;
 			break;
 
-		case WindowMode::BORDERLESS:
+		case eWindowMode::BORDERLESS:
 			windowStyleFlags = WS_POPUP;
 			windowStyleExFlags = WS_EX_CLIENTEDGE | WS_EX_APPWINDOW;
 			maxClientFractionOfDesktop = 1.f;
@@ -163,7 +163,7 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 	float clientWidth = desktopWidth * maxClientFractionOfDesktop;
 	float clientHeight = desktopHeight * maxClientFractionOfDesktop;
 
-	if ( windowMode == WindowMode::WINDOWED )
+	if ( windowMode == eWindowMode::WINDOWED )
 	{
 		if ( clientAspect > desktopAspect )
 		{

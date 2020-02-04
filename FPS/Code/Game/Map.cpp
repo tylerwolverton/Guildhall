@@ -142,15 +142,15 @@ void Map::BuildCardinalDirectionsArray()
 	// 5 1 6
 	// 4 * 2
 	// 8 3 7
-	m_cardinalDirectionOffsets[(int)CardinalDirections::CENTER] = Vec2::ZERO;
-	m_cardinalDirectionOffsets[(int)CardinalDirections::NORTH] = Vec2( 0.f, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::EAST] = Vec2( TILE_SIZE, 0.f );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::SOUTH] = Vec2( 0.f, -TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::WEST] = Vec2( -TILE_SIZE, 0.f );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::NORTHWEST] = Vec2( -TILE_SIZE, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::NORTHEAST] = Vec2( TILE_SIZE, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::SOUTHEAST] = Vec2( TILE_SIZE, -TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::SOUTHWEST] = Vec2( -TILE_SIZE, -TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::CENTER] = Vec2::ZERO;
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::NORTH] = Vec2( 0.f, TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::EAST] = Vec2( TILE_SIZE, 0.f );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::SOUTH] = Vec2( 0.f, -TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::WEST] = Vec2( -TILE_SIZE, 0.f );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::NORTHWEST] = Vec2( -TILE_SIZE, TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::NORTHEAST] = Vec2( TILE_SIZE, TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::SOUTHEAST] = Vec2( TILE_SIZE, -TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirections::SOUTHWEST] = Vec2( -TILE_SIZE, -TILE_SIZE );
 }
 
 

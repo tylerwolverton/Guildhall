@@ -7,7 +7,7 @@
 class Camera;
 class RenderContext;
 class Game;
-enum class WindowMode;
+enum class eWindowMode;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ public:
 	
 private:
 	void PopulateGameConfig();
-	WindowMode GetWindowModeFromGameConfig();
+	eWindowMode GetWindowModeFromGameConfig();
 	void BeginFrame();
 	void Update( float deltaSeconds );
 	void UpdateFromKeyboard( float deltaSeconds );

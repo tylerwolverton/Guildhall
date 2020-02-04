@@ -13,7 +13,7 @@ class MapDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class CardinalDirections
+enum class eCardinalDirections
 {
 	CENTER,
 	NORTH,

@@ -25,7 +25,7 @@ class VertexBuffer;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class BlendMode
+enum class eBlendMode
 {
 	ALPHA,
 	ADDITIVE,
@@ -41,7 +41,7 @@ public:
 	void EndFrame();
 	void Shutdown();
 
-	void SetBlendMode( BlendMode blendMode );
+	void SetBlendMode( eBlendMode blendMode );
 	void ClearScreen( const Rgba8& clearColor );
 	void BeginCamera( const Camera& camera );
 	void EndCamera	( const Camera& camera );

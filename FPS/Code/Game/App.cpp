@@ -39,7 +39,7 @@ void App::Startup()
 	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "SD2.A01" );
 	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
 	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
-	WindowMode windowMode = GetWindowModeFromGameConfig();
+	eWindowMode windowMode = GetWindowModeFromGameConfig();
 
 	g_window = new Window();
 	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowMode );
@@ -152,22 +152,22 @@ void App::PopulateGameConfig()
 
 
 //-----------------------------------------------------------------------------------------------
-WindowMode App::GetWindowModeFromGameConfig()
+eWindowMode App::GetWindowModeFromGameConfig()
 {
 	std::string windowModeStr = g_gameConfigBlackboard.GetValue( "windowMode", "windowed" );
 
 	if ( !_strcmpi( windowModeStr.c_str(), "windowed" ) )
 	{
-		return WindowMode::WINDOWED;
+		return eWindowMode::WINDOWED;
 	}
 	else if ( !_strcmpi( windowModeStr.c_str(), "borderless" ) )
 	{
-		return WindowMode::BORDERLESS;
+		return eWindowMode::BORDERLESS;
 	}
 	else
 	{
 		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Unrecognized window mode '%s' found in game config; using windowed mode.", windowModeStr.c_str() ) );
-		return WindowMode::WINDOWED;
+		return eWindowMode::WINDOWED;
 	}
 }
 

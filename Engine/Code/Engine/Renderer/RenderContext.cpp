@@ -140,7 +140,7 @@ void RenderContext::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetBlendMode( BlendMode blendMode )
+void RenderContext::SetBlendMode( eBlendMode blendMode )
 {
 	UNUSED( blendMode );
 	UNIMPLEMENTED();

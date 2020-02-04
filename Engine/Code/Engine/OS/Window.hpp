@@ -8,7 +8,7 @@ class InputSystem;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class WindowMode
+enum class eWindowMode
 {
 	WINDOWED,
 	BORDERLESS,
@@ -25,7 +25,7 @@ public:
 	void SetEventSystem( EventSystem* eventSystem );
 	void SetInputSystem( InputSystem* inputSystem );
 
-	bool Open( const std::string& title, float clientAspect = 16.f / 9.f, float maxClientFractionOfDesktop = .9f, WindowMode windowMode = WindowMode::WINDOWED );
+	bool Open( const std::string& title, float clientAspect = 16.f / 9.f, float maxClientFractionOfDesktop = .9f, eWindowMode windowMode = eWindowMode::WINDOWED );
 	void Close();
 	void BeginFrame();
 	void EndFrame();
