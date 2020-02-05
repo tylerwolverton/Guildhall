@@ -27,7 +27,7 @@ public:
 	int GetEdgeCount() const;
 	void GetEdge( Vec2* outStart, Vec2* outEnd );
 
-private:
+public:
 	// Stored in counter clockwise order
 	std::vector<Vec2> m_points;
 };

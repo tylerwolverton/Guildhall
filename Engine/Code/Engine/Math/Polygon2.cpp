@@ -75,10 +75,10 @@ bool Polygon2::IsConvex() const
 		Vec2 normal = pointB - pointA;
 		normal.Rotate90Degrees();
 
-		Vec2 nextEdge = pointC - pointB;
+		Vec2 nextEdge = pointC - pointA;
 
 		// TODO: Handle edge cases discussed in class
-		if ( DotProduct2D( nextEdge, normal ) < 0 )
+		if ( DotProduct2D( nextEdge, normal ) > 0 )
 		{
 			return false;
 		}
@@ -91,7 +91,40 @@ bool Polygon2::IsConvex() const
 //-----------------------------------------------------------------------------------------------
 bool Polygon2::Contains( Vec2 point ) const
 {
-	return false;
+	if ( !IsValid() )
+	{
+		return false;
+	}
+
+	int totalNumPoints = (int)m_points.size();
+
+	for ( int pointNumIdx = 0; pointNumIdx < totalNumPoints; ++pointNumIdx )
+	{
+		Vec2 pointA = m_points[pointNumIdx];
+		Vec2 pointB;
+		if ( pointNumIdx == totalNumPoints - 1 )
+		{
+			pointB = m_points[0];
+		}
+		else
+		{
+			int nextPointIdx = pointNumIdx + 1;
+			pointB = m_points[nextPointIdx];
+		}
+
+		Vec2 normal = pointB - pointA;
+		normal.Rotate90Degrees();
+
+		Vec2 nextEdge = point - pointB;
+
+		// TODO: Handle edge cases discussed in class
+		if ( DotProduct2D( nextEdge, normal ) > 0 )
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
@@ -119,7 +152,7 @@ int Polygon2::GetVertexCount() const
 //-----------------------------------------------------------------------------------------------
 int Polygon2::GetEdgeCount() const
 {
-	return (int)m_points.size() - 1;
+	return (int)m_points.size();
 }
 
 
