@@ -1,6 +1,7 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
@@ -19,6 +20,7 @@ Shader::Shader( RenderContext* owner )
 Shader::~Shader()
 {
 	DX_SAFE_RELEASE( m_rasterState );
+	DX_SAFE_RELEASE( m_inputLayout );
 }
 
 
@@ -42,24 +44,50 @@ bool Shader::CreateFromFile( const std::string& filename )
 
 
 //-----------------------------------------------------------------------------------------------
-ID3D11InputLayout* Shader::GetOrCreateInputLayout( VertexBuffer* vbo )
+ID3D11InputLayout* Shader::GetOrCreateInputLayout( )
 {
 	if ( m_inputLayout != nullptr )
 	{
 		return m_inputLayout;
 	}
 
-	D3D11_INPUT_ELEMENT_DESC* inputElementDesc;
+	ID3D11Device* device = m_owner->m_device;
 
-	/*HRESULT hr = ::CreateInputLayout(
-		const D3D11_INPUT_ELEMENT_DESC * pInputElementDescs,
-		UINT                           NumElements,
-		vbo->m_attributes,
-		vbo->m_stride,??
-		&m_inputLayout
-	);
-*/
-	return nullptr;
+
+	D3D11_INPUT_ELEMENT_DESC vertexDesc[3];
+
+	// position
+	vertexDesc[0].SemanticName				= "POSITION";							// semantic name in shader of the data we're bindnig to; 
+	vertexDesc[0].SemanticIndex				= 0;									// If you have an array, which index of the area are we binding to
+	vertexDesc[0].Format					= DXGI_FORMAT_R32G32B32_FLOAT;			// What data is here - 3 32-bit floats
+	vertexDesc[0].InputSlot					= 0;									// Which input slot is the data coming from (where you bind your stream)
+	vertexDesc[0].AlignedByteOffset			= offsetof( Vertex_PCU, m_position );	// where the data appears from start of a vertex
+	vertexDesc[0].InputSlotClass			= D3D11_INPUT_PER_VERTEX_DATA;			// type of data (vertex or instance)
+	vertexDesc[0].InstanceDataStepRate		= 0;									// used in instance rendering to describe when we move this data forward
+
+	// color
+	vertexDesc[1].SemanticName				= "COLOR";								// semantic name in shader of the data we're bindnig to; 
+	vertexDesc[1].SemanticIndex				= 0;									
+	vertexDesc[1].Format					= DXGI_FORMAT_R8G8B8A8_UNORM;			// 4 1-byte channel, unsigned normal value ( converts between 0-1 )
+	vertexDesc[1].InputSlot					= 0;									
+	vertexDesc[1].AlignedByteOffset			= offsetof( Vertex_PCU, m_color );		
+	vertexDesc[1].InputSlotClass			= D3D11_INPUT_PER_VERTEX_DATA;			
+	vertexDesc[1].InstanceDataStepRate		= 0;									
+
+	// uv
+	vertexDesc[2].SemanticName				= "TEXCOORD";							// semantic name in shader of the data we're bindnig to; 
+	vertexDesc[2].SemanticIndex				= 0;									
+	vertexDesc[2].Format					= DXGI_FORMAT_R32G32_FLOAT;				// 2 32-bit floats
+	vertexDesc[2].InputSlot					= 0;									
+	vertexDesc[2].AlignedByteOffset			= offsetof( Vertex_PCU, m_uvTexCoords );		
+	vertexDesc[2].InputSlotClass			= D3D11_INPUT_PER_VERTEX_DATA;			
+	vertexDesc[2].InstanceDataStepRate		= 0;									
+
+	device->CreateInputLayout( vertexDesc, 3,													// describe vertex
+							   m_vertexStage.GetBytecode(), m_vertexStage.GetBytecodeLength(),	// describe shader
+							   &m_inputLayout );
+
+	return m_inputLayout;
 }
 
 
@@ -208,4 +236,17 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 	m_type = stage;
 
 	return IsValid();
+}
+
+//-----------------------------------------------------------------------------------------------
+const void* ShaderStage::GetBytecode() const
+{
+	return m_bytecode->GetBufferPointer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+size_t ShaderStage::GetBytecodeLength() const
+{
+	return m_bytecode->GetBufferSize();
 }

@@ -85,8 +85,7 @@ void RenderContext::Startup( Window* window )
 
 	// Create default shader
 	m_defaultShader = new Shader( this );
-	//m_defaultShader->CreateFromFile( "Data/Shaders/Default.hlsl" );
-	m_defaultShader->CreateFromFile( "Data/Shaders/Triangle.hlsl" );
+	m_defaultShader->CreateFromFile( "Data/Shaders/Default.hlsl" );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 }
@@ -95,6 +94,7 @@ void RenderContext::Startup( Window* window )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginFrame()
 {
+
 }
 
 
@@ -213,6 +213,7 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 	viewport.MaxDepth = 1.f;
 
 	// TEMPORARY - move this later
+	// To BeginCamera?
 	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
@@ -220,6 +221,10 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 	m_context->RSSetViewports( 1, &viewport );
 	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
+
+	// Describe Vertex Format to Shader
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout(/* VertexPCU::LAYOUT*/);
+	m_context->IASetInputLayout( inputLayout );
 
 	m_context->Draw( numVertices, vertexOffset );
 }

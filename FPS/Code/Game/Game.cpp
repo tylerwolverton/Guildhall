@@ -102,7 +102,8 @@ void Game::Update( float deltaSeconds )
 	Rgba8 clearColor = Rgba8( 0, (unsigned char)green, (unsigned char)blue, 255);
 
 	// clear to a different frame each time
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, clearColor );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+	//m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, clearColor );
 }
 
 
@@ -111,8 +112,8 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
 
-	g_renderer->Draw( 3 );
-	//g_renderer->DrawAABB2( AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
+	//g_renderer->Draw( 3 );
+	g_renderer->DrawAABB2( AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::BLUE );
 
 	//g_devConsole->Render( *g_renderer, AABB2( 0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT ), 1.f );
 

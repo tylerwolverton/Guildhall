@@ -37,10 +37,11 @@ public:
 
 	inline bool IsValid() const { return m_handle != nullptr; }
 
+	const void* GetBytecode() const;
+	size_t GetBytecodeLength() const;
 
 public:
 	eShaderType m_type = eShaderType::SHADER_TYPE_VERTEX;
-	ID3D10Blob* m_bytecode = nullptr;
 
 	union
 	{
@@ -48,6 +49,9 @@ public:
 		ID3D11VertexShader* m_vertexShader;
 		ID3D11PixelShader* m_fragmentShader;
 	};
+
+private:
+	ID3D10Blob* m_bytecode = nullptr;
 };
 
 
@@ -61,8 +65,8 @@ public:
 	bool CreateFromFile( const std::string& filename );
 
 	// for hooking IA (input assembler) to the VS (vertex shader), 
-	// needs to vertex shader and vertex format to make the binding
-	ID3D11InputLayout* GetOrCreateInputLayout( VertexBuffer* vbo );            // A02
+	// needs the vertex shader and vertex format to make the binding
+	ID3D11InputLayout* GetOrCreateInputLayout( /* cosnt buffer_attribute_t* attribs*/ );            // A02
 
 	void CreateRasterState();
 
