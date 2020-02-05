@@ -83,6 +83,7 @@ void Game::Update( float deltaSeconds )
 
 	UpdateGameObjects();
 	UpdateDraggedObject();
+	UpdatePotentialPolygon();
 
 	m_physics2D->Update();
 }
@@ -97,7 +98,12 @@ void Game::Render() const
 
 	g_renderer->BeginCamera( *m_worldCamera );
 		
-	RenderShapes();
+	RenderGameObjects();
+
+	if ( m_gameState == eGameState::CREATE_POLYGON )
+	{
+		RenderPolygonPoints();
+	}
 
 	g_renderer->EndCamera( *m_worldCamera );
 }
@@ -119,7 +125,7 @@ void Game::EndFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderShapes() const
+void Game::RenderGameObjects() const
 {
 	for ( int objectIdx = 0; objectIdx < (int)m_gameObjects.size(); ++objectIdx )
 	{
@@ -131,6 +137,27 @@ void Game::RenderShapes() const
 
 		gameObject->DebugRender();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderPolygonPoints() const
+{
+	int numPotentialPoints = (int)m_potentialPolygonPoints.size();
+	if ( numPotentialPoints < 1 )
+	{
+		return;
+	}
+
+	for ( int pointIdx = 0; pointIdx < numPotentialPoints; ++pointIdx )
+	{
+		g_renderer->DrawDisc2D( m_potentialPolygonPoints[pointIdx], .05f, Rgba8::WHITE );
+	}
+
+	Rgba8 lineColor = ( m_isPotentialPolygonConvex || numPotentialPoints < 3 ) ? Rgba8::BLUE : Rgba8::RED;
+
+	int lastPointIdx = numPotentialPoints - 2;
+	g_renderer->DrawLine2D( m_potentialPolygonPoints[lastPointIdx], m_mouseWorldPosition, lineColor, .05f );
 }
 
 
@@ -174,6 +201,8 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 			if ( g_inputSystem->WasKeyJustPressed( '2' ) )
 			{
 				m_gameState = eGameState::CREATE_POLYGON;
+				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
 			}
 
 			if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
@@ -247,17 +276,24 @@ void Game::UpdateMouse()
 		{
 			if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 			{
-				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+				if ( (int)m_potentialPolygonPoints.size() < 3
+					 || m_isPotentialPolygonConvex )
+				{
+					m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+				}
 			}
 
 			if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
 			{
-				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+				if ( m_isPotentialPolygonConvex )
+				{
+					m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
 
-				SpawnPolygon( m_potentialPolygonPoints );
+					SpawnPolygon( m_potentialPolygonPoints );
 
-				m_potentialPolygonPoints.clear();
-				m_gameState = eGameState::SANDBOX;
+					m_potentialPolygonPoints.clear();
+					m_gameState = eGameState::SANDBOX;
+				}
 			}
 		} break;
 	}
@@ -326,6 +362,23 @@ void Game::UpdateDraggedObject()
 		m_dragTarget->m_rigidbody->SetPosition( m_mouseWorldPosition - m_dragOffset );
 
 		m_dragTarget->m_borderColor = Rgba8::DARK_GREEN;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdatePotentialPolygon()
+{
+	if ( m_gameState == eGameState::CREATE_POLYGON
+		 && m_potentialPolygonPoints.size() > 0 )
+	{
+		//std::vector<Vec2> potentialPotentialPoints( m_potentialPolygonPoints );
+
+		Polygon2 potentialPolygon( m_potentialPolygonPoints );
+		m_isPotentialPolygonConvex = potentialPolygon.IsConvex();
+
+		int lastPointIdx = m_potentialPolygonPoints.size() - 1;
+		m_potentialPolygonPoints[lastPointIdx] = m_mouseWorldPosition;
 	}
 }
 

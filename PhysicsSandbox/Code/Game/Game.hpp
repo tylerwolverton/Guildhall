@@ -49,13 +49,15 @@ public:
 	RandomNumberGenerator* m_rng = nullptr;
 
 private:
-	void RenderShapes() const;
+	void RenderGameObjects() const;
+	void RenderPolygonPoints() const;
 	
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
 	void UpdateMouse();
 	void UpdateGameObjects();
 	void UpdateDraggedObject();
+	void UpdatePotentialPolygon();
 
 	void SpawnDisc( const Vec2& center, float radius );
 	void SpawnPolygon( const std::vector<Vec2>& points );
@@ -85,6 +87,7 @@ private:
 	eGameState			m_gameState				= eGameState::SANDBOX;
 
 	std::vector<Vec2>	m_potentialPolygonPoints;
+	bool				m_isPotentialPolygonConvex = false;
 
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<int> m_garbageGameObjectIndexes;
