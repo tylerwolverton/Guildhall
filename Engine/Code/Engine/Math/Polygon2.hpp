@@ -25,7 +25,12 @@ public:
 	// accessors
 	int GetVertexCount() const;
 	int GetEdgeCount() const;
-	void GetEdge( Vec2* outStart, Vec2* outEnd );
+	void GetEdge( int edgeIndex, Vec2* outStart, Vec2* outEnd );
+
+	void Translate2D( const Vec2& translation );
+
+	Vec2 GetCenterOfMass() const;
+	void SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass );
 
 public:
 	// Stored in counter clockwise order

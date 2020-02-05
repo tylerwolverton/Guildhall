@@ -27,6 +27,8 @@ void PolygonCollider2D::UpdateWorldShape()
 	{
 		m_worldPosition += m_rigidbody->GetPosition();
 	}
+
+	m_polygon.SetCenterOfMassAndUpdatePoints( m_worldPosition );
 }
 
 

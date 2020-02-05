@@ -157,7 +157,41 @@ int Polygon2::GetEdgeCount() const
 
 
 //-----------------------------------------------------------------------------------------------
-void Polygon2::GetEdge( Vec2* outStart, Vec2* outEnd )
+void Polygon2::GetEdge( int edgeIndex, Vec2* outStart, Vec2* outEnd )
 {
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::Translate2D( const Vec2& translation )
+{
+	for ( int pointNumIdx = 0; pointNumIdx < GetVertexCount(); ++pointNumIdx )
+	{
+		m_points[pointNumIdx] += translation;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Polygon2::GetCenterOfMass() const
+{
+	Vec2 sumOfPoints( Vec2::ZERO );
+	for ( int pointNumIdx = 0; pointNumIdx < GetVertexCount(); ++pointNumIdx )
+	{
+		sumOfPoints += m_points[pointNumIdx];
+	}
+
+	return sumOfPoints / GetVertexCount();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass )
+{
+	Vec2 oldCenterOfMass = GetCenterOfMass();
+
+	Vec2 translation = newCenterOfMass - oldCenterOfMass;
+
+	Translate2D( translation );
 }

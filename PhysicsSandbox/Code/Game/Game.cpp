@@ -353,7 +353,7 @@ void Game::SpawnPolygon( const Polygon2& polygon )
 	GameObject* gameObject = new GameObject();
 	gameObject->m_rigidbody = m_physics2D->CreateRigidbody();
 	// TODO: Make the center of mass the rigidbody location
-	gameObject->m_rigidbody->SetPosition( polygon.GetPoints()[0] );
+	gameObject->m_rigidbody->SetPosition( polygon.GetCenterOfMass() );
 
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
 	gameObject->m_rigidbody->TakeCollider( polygonCollider );
