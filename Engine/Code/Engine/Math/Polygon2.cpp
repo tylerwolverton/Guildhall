@@ -78,7 +78,7 @@ bool Polygon2::IsConvex() const
 		Vec2 nextEdge = pointC - pointA;
 
 		// TODO: Handle edge cases discussed in class
-		if ( DotProduct2D( nextEdge, normal ) > 0 )
+		if ( DotProduct2D( nextEdge, normal ) < 0 )
 		{
 			return false;
 		}
@@ -118,7 +118,7 @@ bool Polygon2::Contains( Vec2 point ) const
 		Vec2 nextEdge = point - pointB;
 
 		// TODO: Handle edge cases discussed in class
-		if ( DotProduct2D( nextEdge, normal ) > 0 )
+		if ( DotProduct2D( nextEdge, normal ) < 0 )
 		{
 			return false;
 		}
