@@ -192,7 +192,6 @@ void RenderContext::BeginCamera( const Camera& camera )
 	if ( colorTarget == nullptr )
 	{
 		colorTarget = m_swapchain->GetBackBuffer();
-		//colorTarget = GetFrameColorTarget();
 	}
 
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();

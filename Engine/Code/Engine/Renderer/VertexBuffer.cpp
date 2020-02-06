@@ -10,4 +10,3 @@ VertexBuffer::VertexBuffer( RenderContext* owner, eRenderMemoryHint memHint )
 {
 
 }
-

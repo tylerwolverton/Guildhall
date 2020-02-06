@@ -102,7 +102,6 @@ void Game::Update( float deltaSeconds )
 	Rgba8 clearColor = Rgba8( 0, (unsigned char)green, (unsigned char)blue, 255);
 
 	// clear to a different frame each time
-	//m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, clearColor );
 }
 
