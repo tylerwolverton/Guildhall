@@ -223,7 +223,7 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
 
 	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout(/* VertexPCU::LAYOUT*/);
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( Vertex_PCU::LAYOUT );
 	m_context->IASetInputLayout( inputLayout );
 
 	m_context->Draw( numVertices, vertexOffset );

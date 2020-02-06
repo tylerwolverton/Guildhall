@@ -3,6 +3,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
+#include "Engine/Renderer/BufferAttribute.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include <d3dcompiler.h>
@@ -43,47 +44,22 @@ bool Shader::CreateFromFile( const std::string& filename )
 }
 
 
+
+
 //-----------------------------------------------------------------------------------------------
-ID3D11InputLayout* Shader::GetOrCreateInputLayout( )
+ID3D11InputLayout* Shader::GetOrCreateInputLayout( const BufferAttribute* attributes )
 {
-	if ( m_inputLayout != nullptr )
+	if ( m_inputLayout != nullptr 
+		 || attributes == m_lastLayout )
 	{
 		return m_inputLayout;
 	}
 
+	m_vertexDesc.clear();
+	PopulateVertexDescription( attributes );
+
 	ID3D11Device* device = m_owner->m_device;
-
-
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[3];
-
-	// position
-	vertexDesc[0].SemanticName				= "POSITION";							// semantic name in shader of the data we're bindnig to; 
-	vertexDesc[0].SemanticIndex				= 0;									// If you have an array, which index of the area are we binding to
-	vertexDesc[0].Format					= DXGI_FORMAT_R32G32B32_FLOAT;			// What data is here - 3 32-bit floats
-	vertexDesc[0].InputSlot					= 0;									// Which input slot is the data coming from (where you bind your stream)
-	vertexDesc[0].AlignedByteOffset			= offsetof( Vertex_PCU, m_position );	// where the data appears from start of a vertex
-	vertexDesc[0].InputSlotClass			= D3D11_INPUT_PER_VERTEX_DATA;			// type of data (vertex or instance)
-	vertexDesc[0].InstanceDataStepRate		= 0;									// used in instance rendering to describe when we move this data forward
-
-	// color
-	vertexDesc[1].SemanticName				= "COLOR";								// semantic name in shader of the data we're bindnig to; 
-	vertexDesc[1].SemanticIndex				= 0;									
-	vertexDesc[1].Format					= DXGI_FORMAT_R8G8B8A8_UNORM;			// 4 1-byte channel, unsigned normal value ( converts between 0-1 )
-	vertexDesc[1].InputSlot					= 0;									
-	vertexDesc[1].AlignedByteOffset			= offsetof( Vertex_PCU, m_color );		
-	vertexDesc[1].InputSlotClass			= D3D11_INPUT_PER_VERTEX_DATA;			
-	vertexDesc[1].InstanceDataStepRate		= 0;									
-
-	// uv
-	vertexDesc[2].SemanticName				= "TEXCOORD";							// semantic name in shader of the data we're bindnig to; 
-	vertexDesc[2].SemanticIndex				= 0;									
-	vertexDesc[2].Format					= DXGI_FORMAT_R32G32_FLOAT;				// 2 32-bit floats
-	vertexDesc[2].InputSlot					= 0;									
-	vertexDesc[2].AlignedByteOffset			= offsetof( Vertex_PCU, m_uvTexCoords );		
-	vertexDesc[2].InputSlotClass			= D3D11_INPUT_PER_VERTEX_DATA;			
-	vertexDesc[2].InstanceDataStepRate		= 0;									
-
-	device->CreateInputLayout( vertexDesc, 3,													// describe vertex
+	device->CreateInputLayout( m_vertexDesc.data(), (uint)m_vertexDesc.size(),					// describe vertex
 							   m_vertexStage.GetBytecode(), m_vertexStage.GetBytecodeLength(),	// describe shader
 							   &m_inputLayout );
 
@@ -109,6 +85,30 @@ void Shader::CreateRasterState()
 
 	ID3D11Device* device = m_owner->m_device;
 	device->CreateRasterizerState( &desc, &m_rasterState );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Shader::PopulateVertexDescription( const BufferAttribute* attributes )
+{
+	int vertexDescIdx = 0;
+	while ( attributes[vertexDescIdx].m_bufferFormatType != BUFFER_FORMAT_UNKNOWN )
+	{
+		D3D11_INPUT_ELEMENT_DESC desc;
+		desc.SemanticName = attributes[vertexDescIdx].m_name.c_str();					// semantic name in shader of the data we're binding to; 
+		desc.SemanticIndex = 0;															// If you have an array, which index of the area are we binding to
+		desc.Format = ToDXGIFormat( attributes[vertexDescIdx].m_bufferFormatType );		// What data is here
+		desc.InputSlot = 0;																// Which input slot is the data coming from (where you bind your stream)
+		desc.AlignedByteOffset = attributes[vertexDescIdx].m_offset;					// where the data appears from start of a vertex
+		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;								// type of data (vertex or instance)
+		desc.InstanceDataStepRate = 0;													// used in instance rendering to describe when we move this data forward
+
+		m_vertexDesc.push_back( desc );
+
+		++vertexDescIdx;
+	}
+
+	m_lastLayout = attributes;
 }
 
 

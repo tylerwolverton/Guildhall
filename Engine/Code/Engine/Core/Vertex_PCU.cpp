@@ -3,6 +3,17 @@
 
 
 //-----------------------------------------------------------------------------------------------
+// Static variables
+const BufferAttribute Vertex_PCU::LAYOUT[] =
+{
+   BufferAttribute( "POSITION",  BUFFER_FORMAT_VEC3,      		offsetof( Vertex_PCU, m_position ) ),
+   BufferAttribute( "COLOR",     BUFFER_FORMAT_R8G8B8A8_UNORM, 	offsetof( Vertex_PCU, m_color ) ),
+   BufferAttribute( "TEXCOORD",  BUFFER_FORMAT_VEC2,			offsetof( Vertex_PCU, m_uvTexCoords ) ),
+   BufferAttribute() // end - terminator element; 
+};
+
+
+//-----------------------------------------------------------------------------------------------
 Vertex_PCU::Vertex_PCU( const Vec3& position, const Rgba8& tint, const Vec2& uvTexCoords )
 	: m_position(position)
 	, m_color(tint)

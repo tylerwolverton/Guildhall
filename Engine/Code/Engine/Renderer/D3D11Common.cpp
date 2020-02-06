@@ -1,4 +1,5 @@
 #include "Engine/Renderer/D3D11Common.hpp"
+#include "Engine/Renderer/BufferAttribute.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -35,4 +36,19 @@ UINT ToDXUsage( eRenderBufferUsage usage )
 	}
 
 	return ret;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+DXGI_FORMAT ToDXGIFormat( eBufferFormatType formatType )
+{
+	switch ( formatType )
+	{
+		case BUFFER_FORMAT_VEC2: return DXGI_FORMAT_R32G32_FLOAT;
+		case BUFFER_FORMAT_VEC3: return DXGI_FORMAT_R32G32B32_FLOAT;
+		case BUFFER_FORMAT_R8G8B8A8_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case BUFFER_FORMAT_UNKNOWN: 
+		default:
+			ERROR_AND_DIE( "Unknown DXGI format type" );
+	}
 }

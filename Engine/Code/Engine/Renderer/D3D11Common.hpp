@@ -2,6 +2,11 @@
 #include "Engine/Core/EngineCommon.hpp"
 
 
+//-----------------------------------------------------------------------------------------------
+// Forward declarations
+enum eBufferFormatType : uint;
+
+//-----------------------------------------------------------------------------------------------
 #if !defined(WIN32_LEAN_AND_MEAN) 
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -42,3 +47,4 @@ enum eRenderMemoryHint : uint
 
 D3D11_USAGE ToDxMemoryUsage( eRenderMemoryHint hint );
 UINT ToDXUsage( eRenderBufferUsage usage );
+DXGI_FORMAT ToDXGIFormat( eBufferFormatType formatType );
