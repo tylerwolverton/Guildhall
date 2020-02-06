@@ -60,6 +60,10 @@ public:
 	bool WasKeyJustPressed( unsigned char keyCode ) const;
 	bool WasKeyJustReleased( unsigned char keyCode ) const;
 	
+	bool ConsumeIsKeyPressed( unsigned char keyCode );
+	bool ConsumeWasKeyJustPressed( unsigned char keyCode );
+	bool ConsumeWasKeyJustReleased( unsigned char keyCode );
+
 	const XboxController&	GetXboxController( int controllerID );
 	void					SetXboxControllerVibrationLevels( int controllerID, float leftFraction, float rightFraction );
 

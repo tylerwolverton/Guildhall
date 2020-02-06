@@ -172,3 +172,39 @@ bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
 {
 	return m_keyStates[keyCode].WasJustReleased();
 }
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeIsKeyPressed( unsigned char keyCode )
+{
+	bool isKeyPressed = m_keyStates[keyCode].IsPressed();
+	if ( isKeyPressed )
+	{
+		HandleKeyReleased( keyCode );
+	}
+	return isKeyPressed;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeWasKeyJustPressed( unsigned char keyCode )
+{
+	bool wasJustPressed = m_keyStates[keyCode].WasJustPressed();
+	if ( wasJustPressed )
+	{
+		HandleKeyReleased( keyCode );
+	}
+	return wasJustPressed;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeWasKeyJustReleased( unsigned char keyCode )
+{
+	bool wasJustReleased = m_keyStates[keyCode].WasJustReleased();
+	if ( wasJustReleased )
+	{
+		HandleKeyPressed( keyCode );
+	}
+	return wasJustReleased;
+}

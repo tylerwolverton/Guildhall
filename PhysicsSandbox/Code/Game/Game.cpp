@@ -152,6 +152,12 @@ void Game::RenderPolygonPoints() const
 	for ( int pointIdx = 0; pointIdx < numPotentialPoints; ++pointIdx )
 	{
 		g_renderer->DrawDisc2D( m_potentialPolygonPoints[pointIdx], .05f, Rgba8::WHITE );
+		
+		if ( pointIdx > 0 )
+		{
+			int lastIdx = pointIdx - 1;
+			g_renderer->DrawLine2D( m_potentialPolygonPoints[lastIdx], m_potentialPolygonPoints[pointIdx], Rgba8::BLUE, .05f );
+		}
 	}
 
 	Rgba8 lineColor = ( m_isPotentialPolygonConvex || numPotentialPoints < 3 ) ? Rgba8::BLUE : Rgba8::RED;
@@ -227,7 +233,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 		case eGameState::CREATE_POLYGON:
 		{
-			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			if ( g_inputSystem->ConsumeWasKeyJustPressed( KEY_ESC ) )
 			{
 				m_potentialPolygonPoints.clear();
 				m_gameState = eGameState::SANDBOX;

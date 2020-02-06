@@ -130,9 +130,10 @@ void App::BeginFrame()
 //-----------------------------------------------------------------------------------------------
 void App::Update( float deltaSeconds )
 {
-	UpdateFromKeyboard( deltaSeconds );
-
 	g_game->Update( deltaSeconds );
+
+	// Let game handle input before app
+	UpdateFromKeyboard( deltaSeconds );
 }
 
 
