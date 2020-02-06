@@ -34,6 +34,7 @@ public:
 	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 0.f, unsigned int stencil = 0 );
 
 	void SetColorTarget( Texture* texture );
+	Texture* GetColorTarget() const;
 
 private:
 	Vec2 m_bottomLeft;

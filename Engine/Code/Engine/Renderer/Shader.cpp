@@ -26,20 +26,22 @@ Shader::~Shader()
 
 
 //-----------------------------------------------------------------------------------------------
-bool Shader::CreateFromFile( const std::string& filename )
+bool Shader::CreateFromFile( const std::string& fileName )
 {
 	size_t fileSize = 0;
-	void* source = FileReadToNewBuffer( filename, &fileSize );
+	void* source = FileReadToNewBuffer( fileName, &fileSize );
 	if ( source == nullptr )
 	{
 		return false;
 	}
 
-	m_vertexStage.Compile( m_owner, filename, source, fileSize, SHADER_TYPE_VERTEX );
-	m_fragmentStage.Compile( m_owner, filename, source, fileSize, SHADER_TYPE_FRAGMENT );
+	m_vertexStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_VERTEX );
+	m_fragmentStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_FRAGMENT );
 
 	delete[] source;
 
+	m_fileName = fileName;
+	
 	return true;
 }
 

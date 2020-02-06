@@ -84,8 +84,7 @@ void RenderContext::Startup( Window* window )
 	}
 
 	// Create default shader
-	m_defaultShader = new Shader( this );
-	m_defaultShader->CreateFromFile( "Data/Shaders/Default.hlsl" );
+	BindShader( "Data/Shaders/Default.hlsl" );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 }
@@ -109,7 +108,14 @@ void RenderContext::EndFrame()
 void RenderContext::Shutdown()
 {
 	delete m_immediateVBO;
-	delete m_defaultShader;
+
+	// Cleanup shader cache
+	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
+	{
+		delete m_loadedShaders[shaderIdx];
+		m_loadedShaders[shaderIdx] = nullptr;
+	}
+	m_loadedShaders.clear();
 
 	// Cleanup bitmap font cache
 	for ( int fontIndex = 0; fontIndex < (int)m_loadedBitmapFonts.size(); ++fontIndex )
@@ -161,7 +167,7 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::ClearScreen( const Rgba8& clearColor )
+void RenderContext::ClearScreen( Texture* colorTarget, const Rgba8& clearColor )
 {
 	float clearFloats[4];
 	clearFloats[0] = (float)clearColor.r / 255.f;
@@ -169,9 +175,8 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 	clearFloats[2] = (float)clearColor.b / 255.f;
 	clearFloats[3] = (float)clearColor.a / 255.f;
 
-	Texture* backbuffer = m_swapchain->GetBackBuffer();
-	TextureView* backbuffer_rtv = backbuffer->GetOrCreateRenderTargetView();
-	ID3D11RenderTargetView* rtv = backbuffer_rtv->m_renderTargetView;
+	TextureView* colorTarget_rtv = colorTarget->GetOrCreateRenderTargetView();
+	ID3D11RenderTargetView* rtv = colorTarget_rtv->m_renderTargetView;
 	m_context->ClearRenderTargetView( rtv, clearFloats );
 }
 
@@ -179,12 +184,19 @@ void RenderContext::ClearScreen( const Rgba8& clearColor )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
-	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
+	Texture* colorTarget = camera.GetColorTarget();
+
+	if ( colorTarget == nullptr )
 	{
-		ClearScreen( camera.GetClearColor() );
+		colorTarget = m_swapchain->GetBackBuffer();
 	}
 
-	BindShader( nullptr );
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
+	{
+		ClearScreen( colorTarget, camera.GetClearColor() );
+	}
+
+	//BindShader( m_defaultShader );
 }
 
 
@@ -212,6 +224,7 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 	viewport.MinDepth = 0.f;
 	viewport.MaxDepth = 1.f;
 
+
 	// TEMPORARY - move this later
 	// To BeginCamera?
 	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
@@ -223,7 +236,7 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
 
 	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( Vertex_PCU::LAYOUT );
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_immediateVBO->m_attributes );
 	m_context->IASetInputLayout( inputLayout );
 
 	m_context->Draw( numVertices, vertexOffset );
@@ -233,15 +246,13 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices )
 {
-	// RenderBuffer* m_immediateVBO;  // VBO - vertex buffer object
-
 	// Update a vertex buffer
 	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
 	size_t elementSize = sizeof( Vertex_PCU );
 	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
 
 	// Bind
-	BindVertexInput( m_immediateVBO );
+	BindVertexBuffer( m_immediateVBO );
 
 	// Draw
 	Draw( numVertices, 0 );
@@ -558,10 +569,40 @@ void RenderContext::BindShader( Shader* shader )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindVertexInput( VertexBuffer* vbo )
+void RenderContext::BindShader( const char* fileName )
 {
+	Shader* newShader = GetOrCreateShader( fileName );
+	BindShader( newShader );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Shader* RenderContext::GetOrCreateShader( char const* filename )
+{
+	// Check cache for shader
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), filename ) )
+		{
+			return m_loadedShaders[loadedShaderIdx];
+		}
+	}
+
+	Shader* newShader = new Shader( this );
+	newShader->CreateFromFile( filename );
+	m_loadedShaders.push_back( newShader );
+
+	return newShader;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
+{
+	
+
 	ID3D11Buffer* vboHandle = vbo->m_handle;
-	uint stride = sizeof( Vertex_PCU );
+	uint stride = (uint)vbo->m_stride;
 	uint offset = 0;
 
 	m_context->IASetVertexBuffers( 0, 1, &vboHandle, &stride, &offset );

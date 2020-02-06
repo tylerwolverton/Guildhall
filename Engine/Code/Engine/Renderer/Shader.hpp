@@ -65,15 +65,17 @@ public:
 	Shader( RenderContext* owner );
 	~Shader();
 
-	bool CreateFromFile( const std::string& filename );
+	bool CreateFromFile( const std::string& fileName );
 
 	// for hooking IA (input assembler) to the VS (vertex shader), 
 	// needs the vertex shader and vertex format to make the binding
 	ID3D11InputLayout* GetOrCreateInputLayout( const BufferAttribute* attributes );            // A02
 
-	void CreateRasterState();
+
+	std::string GetFileName()															{ return m_fileName; }
 
 private:
+	void CreateRasterState();
 	void PopulateVertexDescription( const BufferAttribute* attributes );            // A02
 
 public:
@@ -87,4 +89,6 @@ public:
 private:
 	const BufferAttribute*					m_lastLayout = nullptr;
 	std::vector<D3D11_INPUT_ELEMENT_DESC>	m_vertexDesc;
+
+	std::string m_fileName;
 };

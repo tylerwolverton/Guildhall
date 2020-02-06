@@ -1,18 +1,27 @@
 Project: FPS
 
-[x] *10pts*: `Window` class created in Engine to spec, with Protogame being updated; 
-[x] *20pts*: `RenderContext` changes
-    [x] All broken `RenderContext` methods a stripped with an assert or `todo` added to the body.
-    [x] `RenderContext` can be setup by giving it a window
-[x] *05pts* `Camera::SetClearMode` added
-[x] *05pts* `RenderContext::BeginCamera` should now clears depending on clear mode 
-    [x] For  now, clear the default swapchain on `RenderContext`
-[x] *10pts* `SwapChain` implemented
-    [x] Default `SwapChain` is added to your `RenderContext`, created during setup
-    [x] Ability to get the backbuffer texture.
-[x] *10pts*: `Texture` class added/modified
-[x] *10pts*: `Texture::GetOrCreateView` will return a texture view;    
-[x] *10pts*: Game code should cycle clear color each frame to show everything working. 
-[x] *20pts* Ability to create a debug context by pre defining `RENDER_DEBUG`
-    [x] All builds should define `RENDER_DEBUG` for now
-    [x] Be sure there are no leaked resources on shutdown (check `Output`)
+[x] *05pts*: When creating a texture from a handle (`ID3D11Texture2D*`), use `ID3D11Texture2D::GetDesc` to cache off the texure dimensions.
+[x] *05pts*: `Camera::SetColorTarget( Texture* tex )` implemented. 
+    [x] If color target is `nullptr` when `BeginCamera` is called, default to the swapchain's backbuffer.
+[x] *20pts*: Be able to create a `Shader` by compiling *Vertex* and *Pixel* shader stages.
+    [x] Can compile a shader stage
+    [x] Properly print out compilation errors.
+    [x] Create a raster state
+[ ] *10pts*: Implement `RenderContext::BindShader( Shader* shader )` to set the active shader.  
+    [ ] Assert that you are currently drawing (between a `BeginCamera` and `EndCamera` call)
+    [ ] Binds the vertex and pixel shader stages to the correct place in the pipeline.
+    [ ] Bind the raster state
+[x] *10pts*: Implement `RenderContext::GetOrCreateShader( char const* filename )`
+[x] *05pts*: Implement `RenderContext::BindShader( char const* filename )` helper method so we can set by string.
+[x] *05pts*: Implement `RenderContext::Draw( int vertexCount, int startIndex = 0 )` to RenderContext
+[x] *10pts*: Implement `RenderBuffer` class for allocating GPU memory
+[x] *10pts*: Implement `VertexBuffer` specialization of `RenderBuffer` for handling vertex data
+    [x] Add `buffer_attribute_t` description of your `VertexPCT` 
+[ ] *05pts*: Implement `RenderContext::BindVertexBuffer( VertexBuffer* vbo )`
+    [ ] Keep track of currently bound vertex buffer and don't rebind if no change is made. 
+[x] *15pts*: Implement `RenderContext::DrawVertexArray`
+    [x] `RenderContext` should own a vertex buffer (`RenderBuffer* m_immediateVBO`) to use for `DrawVertexArray`
+    [x] Copy vertices to immediate vbo.
+    [x] Bind the vertex buffer to input slot 0 (i)
+    [x] `GetOrCreate` an input layout from current shader/vertex buffer.  Bind if different.
+    [x] Call `Draw`
