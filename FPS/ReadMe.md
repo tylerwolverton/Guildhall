@@ -7,18 +7,18 @@ Project: FPS
     [x] Can compile a shader stage
     [x] Properly print out compilation errors.
     [x] Create a raster state
-[ ] *10pts*: Implement `RenderContext::BindShader( Shader* shader )` to set the active shader.  
-    [ ] Assert that you are currently drawing (between a `BeginCamera` and `EndCamera` call)
-    [ ] Binds the vertex and pixel shader stages to the correct place in the pipeline.
-    [ ] Bind the raster state
+[x] *10pts*: Implement `RenderContext::BindShader( Shader* shader )` to set the active shader.  
+    [x] Assert that you are currently drawing (between a `BeginCamera` and `EndCamera` call)
+    [x] Binds the vertex and pixel shader stages to the correct place in the pipeline.
+    [x] Bind the raster state
 [x] *10pts*: Implement `RenderContext::GetOrCreateShader( char const* filename )`
 [x] *05pts*: Implement `RenderContext::BindShader( char const* filename )` helper method so we can set by string.
 [x] *05pts*: Implement `RenderContext::Draw( int vertexCount, int startIndex = 0 )` to RenderContext
 [x] *10pts*: Implement `RenderBuffer` class for allocating GPU memory
 [x] *10pts*: Implement `VertexBuffer` specialization of `RenderBuffer` for handling vertex data
     [x] Add `buffer_attribute_t` description of your `VertexPCT` 
-[ ] *05pts*: Implement `RenderContext::BindVertexBuffer( VertexBuffer* vbo )`
-    [ ] Keep track of currently bound vertex buffer and don't rebind if no change is made. 
+[x] *05pts*: Implement `RenderContext::BindVertexBuffer( VertexBuffer* vbo )`
+    [x] Keep track of currently bound vertex buffer and don't rebind if no change is made. 
 [x] *15pts*: Implement `RenderContext::DrawVertexArray`
     [x] `RenderContext` should own a vertex buffer (`RenderBuffer* m_immediateVBO`) to use for `DrawVertexArray`
     [x] Copy vertices to immediate vbo.

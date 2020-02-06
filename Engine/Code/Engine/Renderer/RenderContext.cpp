@@ -84,7 +84,7 @@ void RenderContext::Startup( Window* window )
 	}
 
 	// Create default shader
-	BindShader( "Data/Shaders/Default.hlsl" );
+	m_defaultShader = GetOrCreateShader( "Data/Shaders/Default.hlsl" );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 }
@@ -167,7 +167,7 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::ClearScreen( Texture* colorTarget, const Rgba8& clearColor )
+void RenderContext::ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor )
 {
 	float clearFloats[4];
 	clearFloats[0] = (float)clearColor.r / 255.f;
@@ -175,15 +175,15 @@ void RenderContext::ClearScreen( Texture* colorTarget, const Rgba8& clearColor )
 	clearFloats[2] = (float)clearColor.b / 255.f;
 	clearFloats[3] = (float)clearColor.a / 255.f;
 
-	TextureView* colorTarget_rtv = colorTarget->GetOrCreateRenderTargetView();
-	ID3D11RenderTargetView* rtv = colorTarget_rtv->m_renderTargetView;
-	m_context->ClearRenderTargetView( rtv, clearFloats );
+	m_context->ClearRenderTargetView( renderTargetView, clearFloats );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
+	m_isDrawing = true;
+
 	Texture* colorTarget = camera.GetColorTarget();
 
 	if ( colorTarget == nullptr )
@@ -191,30 +191,10 @@ void RenderContext::BeginCamera( const Camera& camera )
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
 
-	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
-	{
-		ClearScreen( colorTarget, camera.GetClearColor() );
-	}
-
-	//BindShader( m_defaultShader );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::EndCamera( const Camera& camera )
-{
-	UNUSED( camera );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::Draw( int numVertices, int vertexOffset )
-{
-	Texture* texture = m_swapchain->GetBackBuffer();
-	TextureView* view = texture->GetOrCreateRenderTargetView();
+	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
 
-	IntVec2 outputSize = texture->GetTexelSize();
+	IntVec2 outputSize = colorTarget->GetTexelSize();
 
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
@@ -224,17 +204,31 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 	viewport.MinDepth = 0.f;
 	viewport.MaxDepth = 1.f;
 
-
-	// TEMPORARY - move this later
-	// To BeginCamera?
 	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
-	m_context->RSSetState( m_currentShader->m_rasterState );
 	m_context->RSSetViewports( 1, &viewport );
-	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
 
+	BindShader( m_defaultShader );
+	
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
+	{
+		ClearScreen( renderTargetView, camera.GetClearColor() );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::EndCamera( const Camera& camera )
+{
+	UNUSED( camera );
+	m_isDrawing = false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::Draw( int numVertices, int vertexOffset )
+{
 	// Describe Vertex Format to Shader
 	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_immediateVBO->m_attributes );
 	m_context->IASetInputLayout( inputLayout );
@@ -560,11 +554,17 @@ void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BindShader( Shader* shader )
 {
+	GUARANTEE_OR_DIE( m_isDrawing, "Tried to call BindShader while not drawing" );
+
 	m_currentShader = shader;
 	if ( m_currentShader == nullptr )
 	{
 		m_currentShader = m_defaultShader;
 	}
+
+	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
+	m_context->RSSetState( m_currentShader->m_rasterState );
+	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 }
 
 
@@ -599,9 +599,13 @@ Shader* RenderContext::GetOrCreateShader( char const* filename )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 {
-	
-
 	ID3D11Buffer* vboHandle = vbo->m_handle;
+	if ( vboHandle == m_lastVBOHandle )
+	{
+		return;
+	}
+	m_lastVBOHandle = vboHandle;
+
 	uint stride = (uint)vbo->m_stride;
 	uint offset = 0;
 

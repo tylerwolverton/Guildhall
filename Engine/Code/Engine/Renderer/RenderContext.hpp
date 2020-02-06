@@ -10,6 +10,8 @@ struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
 struct IDXGIDebug;
+struct ID3D11RenderTargetView;
+struct ID3D11Buffer;
 class SwapChain;
 struct AABB2;
 struct OBB2;
@@ -42,7 +44,7 @@ public:
 	void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
-	void ClearScreen( Texture* colorTarget, const Rgba8& clearColor );
+	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
 	void BeginCamera( const Camera& camera );
 	void EndCamera	( const Camera& camera );
 
@@ -110,7 +112,11 @@ private:
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
 
+	ID3D11Buffer* m_lastVBOHandle = nullptr;
+
 	Shader* m_defaultShader = nullptr;
 	Shader* m_currentShader = nullptr;
 	std::vector<Shader*> m_loadedShaders;
+
+	bool m_isDrawing = false;
 };

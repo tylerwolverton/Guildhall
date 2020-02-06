@@ -35,7 +35,15 @@ bool RenderBuffer::Update( const void* data, size_t dataByteSize, size_t element
 	}
 
 	// 2. if no buffer, create one that is compatible
-	Create( dataByteSize, elementByteSize );
+	if ( m_handle == nullptr )
+	{
+		if ( !Create( dataByteSize, elementByteSize ) )
+		{
+			return false;
+		}
+	}
+
+	GUARANTEE_OR_DIE( m_handle != nullptr, "Invalid handle for render buffer" );
 
 	// 3. updating the buffer
 	ID3D11DeviceContext* context = m_owner->m_context;
@@ -95,7 +103,15 @@ bool RenderBuffer::Create( size_t dataByteSize, size_t elementByteSize )
 
 	device->CreateBuffer( &desc, nullptr, &m_handle );
 
-	return ( m_handle != nullptr );
+	if ( m_handle == nullptr )
+	{
+		return false;
+	}
+
+	m_bufferByteSize = dataByteSize;
+	m_elementByteSize = elementByteSize;
+	
+	return true;
 }
 
 
