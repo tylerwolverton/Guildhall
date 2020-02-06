@@ -72,6 +72,8 @@ public:
 	static void AppendVertsForCapsule2D	( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	static void AppendVertsForPolygon2	( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
+	Texture* GetFrameColorTarget();
+
 	// Binding Inputs
 	void BindVertexBuffer( VertexBuffer* vbo );
 

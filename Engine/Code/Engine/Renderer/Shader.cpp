@@ -46,8 +46,6 @@ bool Shader::CreateFromFile( const std::string& fileName )
 }
 
 
-
-
 //-----------------------------------------------------------------------------------------------
 ID3D11InputLayout* Shader::GetOrCreateInputLayout( const BufferAttribute* attributes )
 {

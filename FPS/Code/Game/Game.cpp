@@ -111,9 +111,10 @@ void Game::Update( float deltaSeconds )
 void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
-
-	//g_renderer->Draw( 3 );
-	g_renderer->DrawAABB2( AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::BLUE );
+	
+	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
+	
+	g_renderer->DrawAABB2( AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::RED );
 	
 	g_renderer->EndCamera( *m_worldCamera );
 }

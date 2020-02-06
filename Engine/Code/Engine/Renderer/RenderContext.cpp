@@ -182,17 +182,22 @@ void RenderContext::ClearScreen( ID3D11RenderTargetView* renderTargetView, const
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( const Camera& camera )
 {
+	#if defined(RENDER_DEBUG)
+		m_context->ClearState();
+	#endif
+
 	m_isDrawing = true;
 
 	Texture* colorTarget = camera.GetColorTarget();
-
 	if ( colorTarget == nullptr )
 	{
 		colorTarget = m_swapchain->GetBackBuffer();
+		//colorTarget = GetFrameColorTarget();
 	}
 
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
+	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
 
 	IntVec2 outputSize = colorTarget->GetTexelSize();
 
@@ -207,14 +212,14 @@ void RenderContext::BeginCamera( const Camera& camera )
 	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	m_context->RSSetViewports( 1, &viewport );
-	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
-
-	BindShader( m_defaultShader );
-	
+		
 	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
 	{
 		ClearScreen( renderTargetView, camera.GetClearColor() );
 	}
+
+	BindShader( (Shader*)nullptr );
+	m_lastVBOHandle = nullptr;
 }
 
 
@@ -548,6 +553,13 @@ void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray
 		vertexArray.push_back( Vertex_PCU( vertexPositions[vertexPosIdx], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
 		vertexArray.push_back( Vertex_PCU( vertexPositions[nextVertexIdx], tint, uvAtMaxs ) );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::GetFrameColorTarget()
+{
+	return m_swapchain->GetBackBuffer();
 }
 
 

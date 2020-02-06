@@ -3,7 +3,7 @@
 
 #include <string>
 
-
+// TODO: Move to D3D11Common
 //-----------------------------------------------------------------------------------------------
 enum eBufferFormatType : uint
 {
