@@ -15,7 +15,7 @@ class Physics2D
 {
 public:
 	void BeginFrame();
-	void Update();
+	void Update( float deltaSeconds );
 	void EndFrame();
 
 	// factory style create/destroy
@@ -25,6 +25,13 @@ public:
 	DiscCollider2D* CreateDiscCollider( const Vec2& localPosition, float radius );
 	PolygonCollider2D* CreatePolygon2Collider( const Polygon2& polygon );
 	void DestroyCollider( Collider2D* colliderToDestroy );
+
+private:
+	void AdvanceSimulation( float deltaSeconds );
+	void ApplyEffectors( float deltaSeconds ); 	
+	void MoveRigidbodies( float deltaSeconds ); 	
+	void CleanupDestroyedObjects();  	
+
 
 private:
 	std::vector<Rigidbody2D*> m_rigidbodies;

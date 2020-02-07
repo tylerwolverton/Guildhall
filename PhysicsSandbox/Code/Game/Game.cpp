@@ -85,7 +85,9 @@ void Game::Update( float deltaSeconds )
 	UpdateDraggedObject();
 	UpdatePotentialPolygon();
 
-	m_physics2D->Update();
+	m_physics2D->Update( deltaSeconds );
+
+	UpdateBouncingGameObjects();
 }
 
 
@@ -227,6 +229,9 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 					GUARANTEE_OR_DIE( index != -1, "Dragged object isn't in game object list" );
 
 					m_garbageGameObjectIndexes.push_back( index );
+
+					m_isMouseDragging = false;
+					m_dragTarget = nullptr;
 				}
 			}
 		} break;
@@ -255,6 +260,7 @@ void Game::UpdateCameras( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateMouse()
 {
+	m_lastMouseWorldPosition = m_mouseWorldPosition;
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
 	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition );
 
@@ -273,8 +279,16 @@ void Game::UpdateMouse()
 			}
 			else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
 			{
-				m_isMouseDragging = false;
-				m_dragTarget = nullptr;
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						m_dragTarget->m_rigidbody->SetVelocity( ( m_mouseWorldPosition - m_lastMouseWorldPosition ) * 5.f);
+					}
+
+					m_isMouseDragging = false;
+					m_dragTarget = nullptr;
+				}
 			}
 		} break;
 
@@ -385,6 +399,27 @@ void Game::UpdatePotentialPolygon()
 
 		int lastPointIdx = m_potentialPolygonPoints.size() - 1;
 		m_potentialPolygonPoints[lastPointIdx] = m_mouseWorldPosition;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateBouncingGameObjects()
+{
+	for ( int objectIdx = 0; objectIdx < (int)m_gameObjects.size(); ++objectIdx )
+	{
+		if ( m_gameObjects[objectIdx] == nullptr )
+		{
+			continue;
+		}
+
+		if ( m_gameObjects[objectIdx]->m_rigidbody->GetPosition().y < m_worldCamera->GetOrthoMin().y )
+		{
+			Vec2 newVelocity( m_gameObjects[objectIdx]->m_rigidbody->GetVelocity() );
+			newVelocity.y *= -1.f;
+
+			m_gameObjects[objectIdx]->m_rigidbody->SetVelocity( newVelocity );
+		}
 	}
 }
 

@@ -58,6 +58,7 @@ private:
 	void UpdateGameObjects();
 	void UpdateDraggedObject();
 	void UpdatePotentialPolygon();
+	void UpdateBouncingGameObjects();
 
 	void SpawnDisc( const Vec2& center, float radius );
 	void SpawnPolygon( const std::vector<Vec2>& points );
@@ -70,21 +71,22 @@ private:
 	void PerformGarbageCollection();
 
 private:
-	bool				m_isDebugRendering		= false;
-
-	Camera*				m_worldCamera			= nullptr;
-	Vec3				m_focalPoint			= Vec3::ZERO;
-	float				m_zoomFactor			= 1.f;
-
-	Physics2D*			m_physics2D				= nullptr;
-
-	Vec2				m_mouseWorldPosition	= Vec2::ZERO;
-	   
-	bool				m_isMouseDragging		= false;
-	Vec2				m_dragOffset			= Vec2::ZERO;
-	GameObject*			m_dragTarget			= nullptr;
-
-	eGameState			m_gameState				= eGameState::SANDBOX;
+	bool				m_isDebugRendering		 = false;
+												 
+	Camera*				m_worldCamera			 = nullptr;
+	Vec3				m_focalPoint			 = Vec3::ZERO;
+	float				m_zoomFactor			 = 1.f;
+												 
+	Physics2D*			m_physics2D				 = nullptr;
+												 
+	Vec2				m_mouseWorldPosition	 = Vec2::ZERO;
+	Vec2				m_lastMouseWorldPosition = Vec2::ZERO;
+	   											 
+	bool				m_isMouseDragging		 = false;
+	Vec2				m_dragOffset			 = Vec2::ZERO;
+	GameObject*			m_dragTarget			 = nullptr;
+												 
+	eGameState			m_gameState				 = eGameState::SANDBOX;
 
 	std::vector<Vec2>	m_potentialPolygonPoints;
 	bool				m_isPotentialPolygonConvex = false;

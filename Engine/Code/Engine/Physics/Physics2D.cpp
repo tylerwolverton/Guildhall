@@ -13,14 +13,51 @@ void Physics2D::BeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::Update()
+void Physics2D::Update( float deltaSeconds )
 {
-
+	AdvanceSimulation( deltaSeconds );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::EndFrame()
+void Physics2D::AdvanceSimulation( float deltaSeconds )
+{
+	ApplyEffectors( deltaSeconds ); 	// apply gravity to all dynamic objects
+	MoveRigidbodies( deltaSeconds ); 	// apply an euler step to all rigidbodies, and reset per-frame data
+	// DetectCollisions(); - A04		// determine all pairs of intersecting colliders
+	// CollisionResponse(); - A04		// resolve all collisions, firing appropraite events
+	CleanupDestroyedObjects();  		// destroy objects 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::ApplyEffectors( float deltaSeconds )
+{
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
+	{
+		if ( m_rigidbodies[rigidbodyIdx] != nullptr )
+		{
+			m_rigidbodies[rigidbodyIdx]->AddForce( Vec2( 0.f, -9.8f ) );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::MoveRigidbodies( float deltaSeconds )
+{
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
+	{
+		if ( m_rigidbodies[rigidbodyIdx] != nullptr )
+		{
+			m_rigidbodies[rigidbodyIdx]->Update( deltaSeconds );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CleanupDestroyedObjects()
 {
 	// Cleanup rigidbodies
 	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_garbageRigidbodyIndexes.size(); ++rigidbodyIdx )
@@ -45,9 +82,16 @@ void Physics2D::EndFrame()
 
 
 //-----------------------------------------------------------------------------------------------
+void Physics2D::EndFrame()
+{
+	
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Rigidbody2D* Physics2D::CreateRigidbody()
 {
-	Rigidbody2D* newRigidbody2D = new Rigidbody2D();
+	Rigidbody2D* newRigidbody2D = new Rigidbody2D( 10.f );
 	newRigidbody2D->m_system = this;
 	m_rigidbodies.push_back( newRigidbody2D );
 	

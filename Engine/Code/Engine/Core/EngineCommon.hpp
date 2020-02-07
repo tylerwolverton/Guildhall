@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Math/Vec2.hpp"
 
 #include <string>
