@@ -84,10 +84,10 @@ void Game::Update( float deltaSeconds )
 	UpdateGameObjects();
 	UpdateDraggedObject();
 	UpdatePotentialPolygon();
+	UpdateBouncingGameObjects();
 
 	m_physics2D->Update( deltaSeconds );
 
-	UpdateBouncingGameObjects();
 }
 
 
@@ -283,7 +283,7 @@ void Game::UpdateMouse()
 				{
 					if ( m_dragTarget != nullptr )
 					{
-						m_dragTarget->m_rigidbody->SetVelocity( ( m_mouseWorldPosition - m_lastMouseWorldPosition ) * 5.f);
+						m_dragTarget->m_rigidbody->SetVelocity( ( m_mouseWorldPosition - m_lastMouseWorldPosition ) * 5.f );
 					}
 
 					m_isMouseDragging = false;
@@ -406,6 +406,8 @@ void Game::UpdatePotentialPolygon()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateBouncingGameObjects()
 {
+	AABB2 screenBounds( m_worldCamera->GetOrthoMin(), m_worldCamera->GetOrthoMax() );
+
 	for ( int objectIdx = 0; objectIdx < (int)m_gameObjects.size(); ++objectIdx )
 	{
 		if ( m_gameObjects[objectIdx] == nullptr )
@@ -413,12 +415,25 @@ void Game::UpdateBouncingGameObjects()
 			continue;
 		}
 
-		if ( m_gameObjects[objectIdx]->m_rigidbody->GetPosition().y < m_worldCamera->GetOrthoMin().y )
+		unsigned int edges = m_gameObjects[objectIdx]->m_rigidbody->m_collider->CheckIfOutsideScreen( screenBounds, false );
+		if ( edges & SCREEN_EDGE_BOTTOM )
 		{
 			Vec2 newVelocity( m_gameObjects[objectIdx]->m_rigidbody->GetVelocity() );
-			newVelocity.y *= -1.f;
+			newVelocity.y = abs( newVelocity.y );
 
 			m_gameObjects[objectIdx]->m_rigidbody->SetVelocity( newVelocity );
+		}
+		
+		edges = m_gameObjects[objectIdx]->m_rigidbody->m_collider->CheckIfOutsideScreen( screenBounds, true );
+		float yPos = m_gameObjects[objectIdx]->m_rigidbody->GetPosition().y;
+		if ( edges & SCREEN_EDGE_LEFT )
+		{
+			m_gameObjects[objectIdx]->m_rigidbody->SetPosition( Vec2( screenBounds.maxs.x, yPos ) );
+
+		}
+		if( edges & SCREEN_EDGE_RIGHT )
+		{
+			m_gameObjects[objectIdx]->m_rigidbody->SetPosition( Vec2( screenBounds.mins.x, yPos ) );
 		}
 	}
 }

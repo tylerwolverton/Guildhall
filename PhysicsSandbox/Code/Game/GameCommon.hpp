@@ -48,3 +48,14 @@ constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
 
 constexpr float HIT_FLASH_SECONDS = .3f;
+
+
+//-----------------------------------------------------------------------------------------------
+enum eScreenEdgesBitField : unsigned int
+{
+	SCREEN_EDGE_NONE	= 0,
+	SCREEN_EDGE_RIGHT	= ( 1 << 0 ),
+	SCREEN_EDGE_LEFT	= ( 1 << 1 ),
+	SCREEN_EDGE_TOP		= ( 1 << 2 ),
+	SCREEN_EDGE_BOTTOM	= ( 1 << 3 )
+};

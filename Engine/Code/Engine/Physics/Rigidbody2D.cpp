@@ -16,6 +16,7 @@ Rigidbody2D::Rigidbody2D( float mass )
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::Update( float deltaSeconds )
 {
+	// TODO: Make gravity work like real gravity
 	Vec2 acceleration = m_forces * m_inverseMass;
 	m_velocity += acceleration * deltaSeconds;
 	m_worldPosition += m_velocity * deltaSeconds;

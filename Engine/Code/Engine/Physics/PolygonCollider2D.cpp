@@ -1,4 +1,5 @@
 #include "Engine/Physics/PolygonCollider2D.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
@@ -50,6 +51,16 @@ bool PolygonCollider2D::Contains( const Vec2& pos ) const
 bool PolygonCollider2D::Intersects( const Collider2D* other ) const
 {
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+unsigned int PolygonCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const
+{
+	eScreenEdgesBitField edges = SCREEN_EDGE_NONE;
+
+
+	return edges;
 }
 
 

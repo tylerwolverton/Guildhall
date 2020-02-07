@@ -1,6 +1,7 @@
 #include "Engine/Physics/DiscCollider2D.hpp"
-#include "Engine/Physics/Rigidbody2D.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 
@@ -44,6 +45,59 @@ bool DiscCollider2D::Intersects( const Collider2D* other ) const
 	// TODO: Once we have more than one collider type we need to detect which type we have
 	DiscCollider2D* otherDisc = (DiscCollider2D*)other;
 	return DoDiscsOverlap( m_worldPosition, m_radius, otherDisc->m_worldPosition, otherDisc->m_radius );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+unsigned int DiscCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const
+{
+	unsigned int edges = SCREEN_EDGE_NONE;
+	
+	Vec2 discMins( m_worldPosition.x - m_radius, m_worldPosition.y - m_radius );
+	Vec2 discMaxs( m_worldPosition.x + m_radius, m_worldPosition.y + m_radius );
+
+	if ( checkForCompletelyOffScreen )
+	{
+		if ( screenBounds.mins.x > discMaxs.x )
+		{
+			edges |= SCREEN_EDGE_LEFT;
+		}
+		else if ( screenBounds.maxs.x < discMins.x )
+		{
+			edges |= SCREEN_EDGE_RIGHT;
+		}
+
+		if ( screenBounds.mins.y > discMaxs.y )
+		{
+			edges |= SCREEN_EDGE_BOTTOM;
+		}
+		else if ( screenBounds.maxs.y < discMins.y )
+		{
+			edges |= SCREEN_EDGE_TOP;
+		}
+	}
+	else
+	{
+		if ( screenBounds.mins.x > discMins.x )
+		{
+			edges |= SCREEN_EDGE_LEFT;
+		}
+		else if ( screenBounds.maxs.x < discMaxs.x )
+		{
+			edges |= SCREEN_EDGE_RIGHT;
+		}
+
+		if ( screenBounds.mins.y > discMins.y )
+		{
+			edges |= SCREEN_EDGE_BOTTOM;
+		}
+		else if ( screenBounds.maxs.y < discMaxs.y )
+		{
+			edges |= SCREEN_EDGE_TOP;
+		}
+	}
+
+	return edges;
 }
 
 
