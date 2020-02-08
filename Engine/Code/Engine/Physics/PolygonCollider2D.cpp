@@ -8,6 +8,7 @@
 PolygonCollider2D::PolygonCollider2D( const std::vector<Vec2>& points )
 {
 	m_polygon = Polygon2( points );
+	m_type = COLLIDER2D_POLYGON;
 }
 
 
@@ -57,8 +58,50 @@ bool PolygonCollider2D::Intersects( const Collider2D* other ) const
 //-----------------------------------------------------------------------------------------------
 unsigned int PolygonCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const
 {
-	eScreenEdgesBitField edges = SCREEN_EDGE_NONE;
+	unsigned int edges = SCREEN_EDGE_NONE;
 
+	const AABB2 polygonBoundingBox = GetBoundingBox();
+
+	if ( checkForCompletelyOffScreen )
+	{
+		if ( screenBounds.mins.x > polygonBoundingBox.maxs.x )
+		{
+			edges |= SCREEN_EDGE_LEFT;
+		}
+		else if ( screenBounds.maxs.x < polygonBoundingBox.mins.x )
+		{
+			edges |= SCREEN_EDGE_RIGHT;
+		}
+
+		if ( screenBounds.mins.y > polygonBoundingBox.maxs.y )
+		{
+			edges |= SCREEN_EDGE_BOTTOM;
+		}
+		else if ( screenBounds.maxs.y < polygonBoundingBox.mins.y )
+		{
+			edges |= SCREEN_EDGE_TOP;
+		}
+	}
+	else
+	{
+		if ( screenBounds.mins.x > polygonBoundingBox.mins.x )
+		{
+			edges |= SCREEN_EDGE_LEFT;
+		}
+		else if ( screenBounds.maxs.x < polygonBoundingBox.maxs.x )
+		{
+			edges |= SCREEN_EDGE_RIGHT;
+		}
+
+		if ( screenBounds.mins.y > polygonBoundingBox.mins.y )
+		{
+			edges |= SCREEN_EDGE_BOTTOM;
+		}
+		else if ( screenBounds.maxs.y < polygonBoundingBox.maxs.y )
+		{
+			edges |= SCREEN_EDGE_TOP;
+		}
+	}
 
 	return edges;
 }
@@ -81,4 +124,20 @@ void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borde
 PolygonCollider2D::~PolygonCollider2D()
 {
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const AABB2 PolygonCollider2D::GetBoundingBox() const
+{
+	// Initialize with first 2 points in polygon
+	std::vector<Vec2> polygonPoints = m_polygon.GetPoints();
+	AABB2 boundingBox( polygonPoints[0], polygonPoints[1] );
+
+	for ( int pointIdx = 2; pointIdx < (int)polygonPoints.size(); ++pointIdx )
+	{
+		boundingBox.StretchToIncludePoint( polygonPoints[pointIdx] );
+	}
+
+	return boundingBox;
 }

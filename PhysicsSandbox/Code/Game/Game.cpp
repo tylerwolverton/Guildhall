@@ -84,7 +84,7 @@ void Game::Update( float deltaSeconds )
 	UpdateGameObjects();
 	UpdateDraggedObject();
 	UpdatePotentialPolygon();
-	UpdateBouncingGameObjects();
+	UpdateOffScreenGameObjects();
 
 	m_physics2D->Update( deltaSeconds );
 
@@ -364,7 +364,7 @@ void Game::UpdateGameObjects()
 			}
 
 			// Highlight red if intersecting another object
-			if ( collider->Intersects( (DiscCollider2D*)otherGameObject->m_rigidbody->m_collider ) )
+			if ( collider->Intersects( otherGameObject->m_rigidbody->m_collider ) )
 			{
 				gameObject->m_fillColor = Rgba8::RED;
 				otherGameObject->m_fillColor = Rgba8::RED;
@@ -404,7 +404,7 @@ void Game::UpdatePotentialPolygon()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateBouncingGameObjects()
+void Game::UpdateOffScreenGameObjects()
 {
 	AABB2 screenBounds( m_worldCamera->GetOrthoMin(), m_worldCamera->GetOrthoMax() );
 
@@ -415,25 +415,41 @@ void Game::UpdateBouncingGameObjects()
 			continue;
 		}
 
-		unsigned int edges = m_gameObjects[objectIdx]->m_rigidbody->m_collider->CheckIfOutsideScreen( screenBounds, false );
-		if ( edges & SCREEN_EDGE_BOTTOM )
+		Rigidbody2D*& rigidbody = m_gameObjects[objectIdx]->m_rigidbody;
+
+		if ( rigidbody->m_collider == nullptr )
 		{
-			Vec2 newVelocity( m_gameObjects[objectIdx]->m_rigidbody->GetVelocity() );
+			continue;
+		}
+
+		Collider2D*& collider = rigidbody->m_collider;;
+
+		// Check bouncing off bottom
+		unsigned int edgesOfScreenColliderIsOff = collider->CheckIfOutsideScreen( screenBounds, false );
+		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_BOTTOM )
+		{
+			Vec2 newVelocity( rigidbody->GetVelocity() );
 			newVelocity.y = abs( newVelocity.y );
 
-			m_gameObjects[objectIdx]->m_rigidbody->SetVelocity( newVelocity );
+			rigidbody->SetVelocity( newVelocity );
 		}
 		
-		edges = m_gameObjects[objectIdx]->m_rigidbody->m_collider->CheckIfOutsideScreen( screenBounds, true );
-		float yPos = m_gameObjects[objectIdx]->m_rigidbody->GetPosition().y;
-		if ( edges & SCREEN_EDGE_LEFT )
+		// Check side wraparound
+		edgesOfScreenColliderIsOff = collider->CheckIfOutsideScreen( screenBounds, true );
+		float yPos = rigidbody->GetPosition().y;
+		const AABB2 objectBoundingBox = collider->GetBoundingBox();
+
+		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_LEFT )
 		{
-			m_gameObjects[objectIdx]->m_rigidbody->SetPosition( Vec2( screenBounds.maxs.x, yPos ) );
+			float xDistanceToOtherSideOfScreen = objectBoundingBox.mins.x - screenBounds.maxs.x;
+			rigidbody->SetPosition( Vec2( rigidbody->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
+
 
 		}
-		if( edges & SCREEN_EDGE_RIGHT )
+		if( edgesOfScreenColliderIsOff & SCREEN_EDGE_RIGHT )
 		{
-			m_gameObjects[objectIdx]->m_rigidbody->SetPosition( Vec2( screenBounds.mins.x, yPos ) );
+			float xDistanceToOtherSideOfScreen = objectBoundingBox.maxs.x - screenBounds.mins.x;
+			rigidbody->SetPosition( Vec2( rigidbody->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
 		}
 	}
 }

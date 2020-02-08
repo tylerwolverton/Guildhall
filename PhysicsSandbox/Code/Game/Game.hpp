@@ -58,7 +58,7 @@ private:
 	void UpdateGameObjects();
 	void UpdateDraggedObject();
 	void UpdatePotentialPolygon();
-	void UpdateBouncingGameObjects();
+	void UpdateOffScreenGameObjects();
 
 	void SpawnDisc( const Vec2& center, float radius );
 	void SpawnPolygon( const std::vector<Vec2>& points );
