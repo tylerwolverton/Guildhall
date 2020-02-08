@@ -1,25 +1,49 @@
 Project - PhysicsSandbox
 
-## Checklist
-- [x] *05pts*: Insantiate a physic system into the game.
-- [x] *10pts*: Be able to create game objects with a collider based on button press,
-    - [x] `1` should create random radius disc centered at cursor
-- [x] *10pts*: Camera changes implemented
-- [x] *05pts*: Can move around using `WASD` or equivalent (if different, make note in readme)
-- [x] *10pts*: Can zoom in and out using mouse-wheel.
-    - [x] Make sure this is clamped at a max and min "zoom" so zoom can't go negative.
-- [x] *05pts*: Pressing 'O' (capitol letter 'Oh') should reset camera position and zoom to default (ie, move to origin)
-- [x] *05pts*: Be sure to render the objects in your scene, by default...
-    - [x] Render with a blue border
-    - [x] Render with 50% alpha white interior
-- [x] *10pts* If mouse is inside the object, render the border yellow.
-- [x] *15pts* Be able to drag them around
-    - [x] If the mouse is dragging the object, render the border dark green.
-- [x] *10pts* If the object is touching another object, render the entire interior at 50% alpha red instead of white. 
-    - [x] Disc-vs-Disc collision should be same as MP1
-- [x] *10pts* If dragging, and `delete` or `backspace` is pressed, destroy object.
-- [x] *05pts* Press `Escape` to quit.
-- [x] Add `mp2.a02.md` readme to root folder
-
+- [ ] *25pts*: Add a `PolygonCollider2D`
+    - [x] *05pts*: Can construct from counter-clockwise list of points
+        - [ ] `GUARANTEE_OR_DIE` points represent a convex polygon
+    - [ ] **CHALLENGE** - Can construct from a point cloud (gift wrapping algorithm)
+    - [x] *05pts*: Implmeent `Contains`
+    - [ ] *05pts*: Implement `GetClosestPoint`
+    - [ ] *05pts*: Implement `Intersects`, but only vs disc, return `false` if intersecting with another polygon for now.
+        - [x] Be sure disc now checks against both discs and polygons useing `GetType`
+    - [x] *05pts*: Can render it - should work as before.
+- [x] *25pts*: Can construct `GameObject` with a `PolygonCollider`
+    - [x] Press `2` to enter a polygon draw mode, place first point where cursor is when `2` was pressed
+    - [x] Draw a line from last point added to cursor
+        - [x] Line drawn `RED` if not a valid point to add (ie, would maintain convexity)
+        - [x] Line drawn `BLUE` if it is a valid point.
+    - [x] When pressing `Left Mouse Button`, add a point if it is a legal (will maintain convex polygon)
+    - [x] When pressing `Right Mouse Button`, end, closing off the loop.
+    - [x] Pressing `Escape` while in this mode should cancel the creation.
+    - [x] Construct object with polygon as its collider, exiting creation mode
+        - [x] Pick 'center', or position of rigidbody by either
+            - Average of all points
+            - Center of box that encapsulates all points
+            - **CHALLENGE**: Center of mass, assuming uniform density
+    - [ ] *If you did the giftwrapping algorithm, you can just add points and construct a polygon that would work for them*
+- [ ] *05pts*: `Rigidbody2D` can `Enable` or `Disable` itself, taking it out of the simulation, but still rendering
+    - [ ] Objects being dragged should set themselves to disabled, and re-enable when unselected.
+- [ ] *05pts*: When drawing, draw the location of the `Rigidbody` as an `X`, red if disabled, blue if enabled. 
+- [x] *10pts*: `Physics2D::Update` loop implemented
+    - [x] Apply all global forces
+    - [x] Simulate all rigidbodies
+    - [x] Cleanup destroyed objects (should be happening from A01)
+- [x] *10pts*: Add `Rigidbody2D::SetVelocity` to change the velocity of the object
+    - [ ] When releasing an object, set its velocity based on mouse movement (ie, be able to throw an object)
+- [ ] *05pts*: `Rigidbody2D` can `SetSimulationMode` to either `STATIC`, `KINEMATIC`, or `DYNAMIC`
+    - [ ] `STATIC` objects do not apply forces or simulate.
+    - [ ] `KINEMATIC` objects do not apply forces, but will simulate.  
+    - [ ] `DYNAMIC` objects apply forces and simulate
+    - [ ] While selected, `1`, `2`, and `3` should switch the object to `STATIC`, `KINEMATIC`, or `DYNAMIC` respectively
+- [ ] *05pts*: `Physics2D::SetSceneGravity` implemented
+    - [x] Applies a flat acceleration force to every dynamic rigidbody in the scene beginning of frame. 
+    - [ ] Use `+` and `-` keys to adjust gravity amount
+    - [ ] Current gravity should be visible on the screen (hotkey hint here is nice)
+- [x] *05pts*: Objects that fully fall off the sides of the screen should appear on the opposite side, maintaining velocity
+- [x] *05pts*: Implement `Rigidbody2D::GetVelocity`
+    - [x] Objects that falling off the bottom of the screen, reverse its velocity along Y (bounce it)
+    - [ ] Only bounce if it is falling down (-y)
 ------------
 Used WASD for camera movement, left click for dragging

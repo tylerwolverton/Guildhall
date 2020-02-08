@@ -25,7 +25,7 @@ public:
 	// accessors
 	int GetVertexCount() const;
 	int GetEdgeCount() const;
-	void GetEdge( int edgeIndex, Vec2* outStart, Vec2* outEnd );
+	void GetEdge( int edgeIndex, Vec2* out_start, Vec2* out_end ) const;
 
 	void Translate2D( const Vec2& translation );
 

@@ -44,7 +44,6 @@ bool DiscCollider2D::Contains( const Vec2& pos ) const
 //-----------------------------------------------------------------------------------------------
 bool DiscCollider2D::Intersects( const Collider2D* other ) const
 {
-	// TODO: Once we have more than one collider type we need to detect which type we have
 	switch ( other->m_type )
 	{
 		case COLLIDER2D_DISC:
@@ -56,7 +55,8 @@ bool DiscCollider2D::Intersects( const Collider2D* other ) const
 		case COLLIDER2D_POLYGON:
 		{
 			PolygonCollider2D* polygon = (PolygonCollider2D*)other;
-			return false;
+			Vec2 nearestPoint = polygon->GetClosestPoint( m_worldPosition );
+			return IsPointInsideDisc( nearestPoint, m_worldPosition, m_radius );
 		}
 
 		default:

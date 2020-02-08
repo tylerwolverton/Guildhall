@@ -138,7 +138,30 @@ float Polygon2::GetDistance( Vec2 point ) const
 //-----------------------------------------------------------------------------------------------
 Vec2 Polygon2::GetClosestPoint( Vec2 point ) const
 {
-	return point;
+	if ( Contains( point ) )
+	{
+		return point;
+	}
+
+	Vec2 nearestPoint = Vec2::ZERO;
+	float minDistToPoint = 99999999.f;
+	for ( int edgeIdx = 0; edgeIdx < GetEdgeCount(); ++edgeIdx )
+	{
+		Vec2 startVert;
+		Vec2 endVert;
+		GetEdge( edgeIdx, &startVert, &endVert );
+
+		Vec2 nearestLocalPoint = GetNearestPointOnLineSegment2D( point, startVert, endVert );
+		float distToPoint = GetDistance2D( nearestLocalPoint, point );
+
+		if ( distToPoint < minDistToPoint )
+		{
+			minDistToPoint = distToPoint;
+			nearestPoint = nearestLocalPoint;
+		}
+	}
+
+	return nearestPoint;
 }
 
 
@@ -157,9 +180,31 @@ int Polygon2::GetEdgeCount() const
 
 
 //-----------------------------------------------------------------------------------------------
-void Polygon2::GetEdge( int edgeIndex, Vec2* outStart, Vec2* outEnd )
+void Polygon2::GetEdge( int edgeIndex, Vec2* out_start, Vec2* out_end ) const
 {
+	if ( edgeIndex >= GetEdgeCount() 
+		 || edgeIndex < 0 )
+	{
+		out_start = nullptr;
+		out_end = nullptr;
+		return;
+	}
 
+	int firstVertIdx = edgeIndex - 1;
+	int secondVertIdx = edgeIndex;
+
+	if ( firstVertIdx == -1 )
+	{
+		firstVertIdx = GetVertexCount() - 1;
+	}
+
+	if ( secondVertIdx == GetVertexCount() )
+	{
+		secondVertIdx = 0;
+	}
+
+	*out_start = m_points[firstVertIdx];
+	*out_end = m_points[secondVertIdx];
 }
 
 

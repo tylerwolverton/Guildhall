@@ -331,9 +331,10 @@ void Game::UpdateMouse()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateGameObjects()
 {
+	// Reset fill color for all game objects
 	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
 	{
-		GameObject* gameObject = m_gameObjects[ objectIdx ];
+		GameObject* gameObject = m_gameObjects[objectIdx];
 		if ( gameObject == nullptr )
 		{
 			continue;
@@ -341,9 +342,19 @@ void Game::UpdateGameObjects()
 
 		// Default fill color to white
 		gameObject->m_fillColor = Rgba8::WHITE;
+	}
 
+	// Check for collisions
+	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
+	{
+		GameObject* gameObject = m_gameObjects[ objectIdx ];
+		if ( gameObject == nullptr )
+		{
+			continue;
+		}
+		
 		// Change border color based on mouse position
-		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
+		Collider2D* collider = gameObject->m_rigidbody->m_collider;
 		if ( collider->Contains( m_mouseWorldPosition ) )
 		{
 			gameObject->m_borderColor = Rgba8::YELLOW;
@@ -392,8 +403,6 @@ void Game::UpdatePotentialPolygon()
 	if ( m_gameState == eGameState::CREATE_POLYGON
 		 && m_potentialPolygonPoints.size() > 0 )
 	{
-		//std::vector<Vec2> potentialPotentialPoints( m_potentialPolygonPoints );
-
 		Polygon2 potentialPolygon( m_potentialPolygonPoints );
 		m_isPotentialPolygonConvex = potentialPolygon.IsConvex();
 
@@ -477,7 +486,6 @@ void Game::SpawnPolygon( const Polygon2& polygon )
 {
 	GameObject* gameObject = new GameObject();
 	gameObject->m_rigidbody = m_physics2D->CreateRigidbody();
-	// TODO: Make the center of mass the rigidbody location
 	gameObject->m_rigidbody->SetPosition( polygon.GetCenterOfMass() );
 
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );

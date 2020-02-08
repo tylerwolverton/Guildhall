@@ -1,6 +1,8 @@
 #include "Engine/Physics/PolygonCollider2D.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
+#include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 
@@ -15,6 +17,13 @@ PolygonCollider2D::PolygonCollider2D( const std::vector<Vec2>& points )
 //-----------------------------------------------------------------------------------------------
 PolygonCollider2D::PolygonCollider2D( const Polygon2& polygon )
 	: m_polygon( polygon )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+PolygonCollider2D::~PolygonCollider2D()
 {
 
 }
@@ -37,7 +46,7 @@ void PolygonCollider2D::UpdateWorldShape()
 //-----------------------------------------------------------------------------------------------
 const Vec2 PolygonCollider2D::GetClosestPoint( const Vec2& pos ) const
 {
-	return Vec2::ZERO;
+	return m_polygon.GetClosestPoint( pos );
 }
 
 
@@ -51,7 +60,23 @@ bool PolygonCollider2D::Contains( const Vec2& pos ) const
 //-----------------------------------------------------------------------------------------------
 bool PolygonCollider2D::Intersects( const Collider2D* other ) const
 {
-	return false;
+	switch ( other->m_type )
+	{
+		case COLLIDER2D_DISC:
+		{
+			DiscCollider2D* disc = (DiscCollider2D*)other;
+			Vec2 nearestPoint = GetClosestPoint( disc->m_worldPosition );
+			return IsPointInsideDisc( nearestPoint, disc->m_worldPosition, disc->m_radius );
+		}
+
+		case COLLIDER2D_POLYGON:
+		{
+			return false;
+		}
+
+		default:
+			return false;
+	}
 }
 
 
@@ -117,13 +142,6 @@ void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borde
 
 	renderer->DrawPolygon2( m_polygon.GetPoints(), fillColor );
 	renderer->DrawPolygon2Outline( m_polygon.GetPoints(), borderColor, .04f );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-PolygonCollider2D::~PolygonCollider2D()
-{
-
 }
 
 
