@@ -10,6 +10,8 @@ struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
 struct IDXGIDebug;
+struct ID3D11RenderTargetView;
+struct ID3D11Buffer;
 class SwapChain;
 struct AABB2;
 struct OBB2;
@@ -42,7 +44,7 @@ public:
 	void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
-	void ClearScreen( const Rgba8& clearColor );
+	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
 	void BeginCamera( const Camera& camera );
 	void EndCamera	( const Camera& camera );
 
@@ -70,8 +72,17 @@ public:
 	static void AppendVertsForCapsule2D	( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	static void AppendVertsForPolygon2	( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
+	Texture* GetFrameColorTarget();
+
+	// Binding Inputs
+	void BindVertexBuffer( VertexBuffer* vbo );
+
+	// Binding State
 	void BindShader( Shader* shader );
-	void BindVertexInput( VertexBuffer* vbo );
+	void BindShader( const char* fileName );
+
+	// Resource Creation
+	Shader* GetOrCreateShader( char const* filename );
 
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	void BindTexture( const Texture* texture );
@@ -103,6 +114,11 @@ private:
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
 
+	ID3D11Buffer* m_lastVBOHandle = nullptr;
+
 	Shader* m_defaultShader = nullptr;
 	Shader* m_currentShader = nullptr;
+	std::vector<Shader*> m_loadedShaders;
+
+	bool m_isDrawing = false;
 };

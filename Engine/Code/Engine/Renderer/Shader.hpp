@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -9,6 +10,8 @@ struct ID3D11PixelShader;
 struct ID3D11InputLayout;
 struct ID3D10Blob;
 struct ID3D11RasterizerState;
+struct D3D11_INPUT_ELEMENT_DESC;
+struct BufferAttribute;
 class RenderContext;
 class VertexBuffer;
 
@@ -37,10 +40,11 @@ public:
 
 	inline bool IsValid() const { return m_handle != nullptr; }
 
+	const void* GetBytecode() const;
+	size_t GetBytecodeLength() const;
 
 public:
 	eShaderType m_type = eShaderType::SHADER_TYPE_VERTEX;
-	ID3D10Blob* m_bytecode = nullptr;
 
 	union
 	{
@@ -48,6 +52,9 @@ public:
 		ID3D11VertexShader* m_vertexShader;
 		ID3D11PixelShader* m_fragmentShader;
 	};
+
+private:
+	ID3D10Blob* m_bytecode = nullptr;
 };
 
 
@@ -58,19 +65,29 @@ public:
 	Shader( RenderContext* owner );
 	~Shader();
 
-	bool CreateFromFile( const std::string& filename );
+	bool CreateFromFile( const std::string& fileName );
 
 	// for hooking IA (input assembler) to the VS (vertex shader), 
-	// needs to vertex shader and vertex format to make the binding
-	ID3D11InputLayout* GetOrCreateInputLayout( VertexBuffer* vbo );            // A02
+	// needs the vertex shader and vertex format to make the binding
+	ID3D11InputLayout* GetOrCreateInputLayout( const BufferAttribute* attributes );           
 
+	std::string GetFileName()															{ return m_fileName; }
+
+private:
 	void CreateRasterState();
+	void PopulateVertexDescription( const BufferAttribute* attributes );            
 
 public:
-	RenderContext* m_owner;
-	ShaderStage m_vertexStage;
-	ShaderStage m_fragmentStage;
+	RenderContext*			m_owner = nullptr;
+	ShaderStage				m_vertexStage;
+	ShaderStage				m_fragmentStage;
 
-	ID3D11InputLayout* m_inputLayout = nullptr; // for now, we'll have 1, but in the future you could have one for each different vertex type you use with this
-	ID3D11RasterizerState* m_rasterState = nullptr;
+	ID3D11InputLayout*		m_inputLayout = nullptr; // for now, we'll have 1, but in the future you could have one for each different vertex type you use with this
+	ID3D11RasterizerState*	m_rasterState = nullptr;
+
+private:
+	const BufferAttribute*					m_lastLayout = nullptr;
+	std::vector<D3D11_INPUT_ELEMENT_DESC>	m_vertexDesc;
+
+	std::string								m_fileName;
 };

@@ -3,6 +3,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
+struct BufferAttribute;
+
+
+//-----------------------------------------------------------------------------------------------
 class VertexBuffer : public RenderBuffer
 {
 public:
@@ -11,5 +15,5 @@ public:
 public:
 	// information about our vertex
 	size_t m_stride = 0; // how far from one vertex to the next
-	//const buffer_attribute_t* m_attributes; // array describing the vertex
+	const BufferAttribute* m_attributes = nullptr; // array describing the vertex
 };

@@ -42,3 +42,10 @@ void Camera::SetColorTarget( Texture* texture )
 {
 	m_colorTarget = texture;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* Camera::GetColorTarget() const
+{
+	return m_colorTarget;
+}

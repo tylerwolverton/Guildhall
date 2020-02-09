@@ -1,7 +1,9 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
+#include "Engine/Renderer/BufferAttribute.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include <d3dcompiler.h>
@@ -19,47 +21,49 @@ Shader::Shader( RenderContext* owner )
 Shader::~Shader()
 {
 	DX_SAFE_RELEASE( m_rasterState );
+	DX_SAFE_RELEASE( m_inputLayout );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool Shader::CreateFromFile( const std::string& filename )
+bool Shader::CreateFromFile( const std::string& fileName )
 {
 	size_t fileSize = 0;
-	void* source = FileReadToNewBuffer( filename, &fileSize );
+	void* source = FileReadToNewBuffer( fileName, &fileSize );
 	if ( source == nullptr )
 	{
 		return false;
 	}
 
-	m_vertexStage.Compile( m_owner, filename, source, fileSize, SHADER_TYPE_VERTEX );
-	m_fragmentStage.Compile( m_owner, filename, source, fileSize, SHADER_TYPE_FRAGMENT );
+	m_vertexStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_VERTEX );
+	m_fragmentStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_FRAGMENT );
 
 	delete[] source;
 
+	m_fileName = fileName;
+	
 	return true;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-ID3D11InputLayout* Shader::GetOrCreateInputLayout( VertexBuffer* vbo )
+ID3D11InputLayout* Shader::GetOrCreateInputLayout( const BufferAttribute* attributes )
 {
-	if ( m_inputLayout != nullptr )
+	if ( m_inputLayout != nullptr 
+		 || attributes == m_lastLayout )
 	{
 		return m_inputLayout;
 	}
 
-	D3D11_INPUT_ELEMENT_DESC* inputElementDesc;
+	m_vertexDesc.clear();
+	PopulateVertexDescription( attributes );
 
-	/*HRESULT hr = ::CreateInputLayout(
-		const D3D11_INPUT_ELEMENT_DESC * pInputElementDescs,
-		UINT                           NumElements,
-		vbo->m_attributes,
-		vbo->m_stride,??
-		&m_inputLayout
-	);
-*/
-	return nullptr;
+	ID3D11Device* device = m_owner->m_device;
+	device->CreateInputLayout( m_vertexDesc.data(), (uint)m_vertexDesc.size(),					// describe vertex
+							   m_vertexStage.GetBytecode(), m_vertexStage.GetBytecodeLength(),	// describe shader
+							   &m_inputLayout );
+
+	return m_inputLayout;
 }
 
 
@@ -81,6 +85,30 @@ void Shader::CreateRasterState()
 
 	ID3D11Device* device = m_owner->m_device;
 	device->CreateRasterizerState( &desc, &m_rasterState );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Shader::PopulateVertexDescription( const BufferAttribute* attributes )
+{
+	int vertexDescIdx = 0;
+	while ( attributes[vertexDescIdx].m_bufferFormatType != BUFFER_FORMAT_UNKNOWN )
+	{
+		D3D11_INPUT_ELEMENT_DESC desc;
+		desc.SemanticName = attributes[vertexDescIdx].m_name.c_str();					// semantic name in shader of the data we're binding to; 
+		desc.SemanticIndex = 0;															// If you have an array, which index of the area are we binding to
+		desc.Format = ToDXGIFormat( attributes[vertexDescIdx].m_bufferFormatType );		// What data is here
+		desc.InputSlot = 0;																// Which input slot is the data coming from (where you bind your stream)
+		desc.AlignedByteOffset = attributes[vertexDescIdx].m_offset;					// where the data appears from start of a vertex
+		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;								// type of data (vertex or instance)
+		desc.InstanceDataStepRate = 0;													// used in instance rendering to describe when we move this data forward
+
+		m_vertexDesc.push_back( desc );
+
+		++vertexDescIdx;
+	}
+
+	m_lastLayout = attributes;
 }
 
 
@@ -208,4 +236,17 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 	m_type = stage;
 
 	return IsValid();
+}
+
+//-----------------------------------------------------------------------------------------------
+const void* ShaderStage::GetBytecode() const
+{
+	return m_bytecode->GetBufferPointer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+size_t ShaderStage::GetBytecodeLength() const
+{
+	return m_bytecode->GetBufferSize();
 }
