@@ -46,6 +46,8 @@ void Game::Startup()
 	m_worldCamera->SetColorTarget( nullptr );
 
 	m_rng = new RandomNumberGenerator();
+
+	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
 }
 
 
@@ -94,7 +96,10 @@ void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& t
 //-----------------------------------------------------------------------------------------------
 void Game::Update( float deltaSeconds )
 {
-	UpdateFromKeyboard( deltaSeconds );
+	if ( !g_devConsole->IsOpen() ) 
+	{
+		UpdateFromKeyboard( deltaSeconds );
+	}
 
 	float seconds = (float)GetCurrentTimeSeconds();
 	float green = RangeMapFloat( -1.f, 1.f, 0.f, 255.f, SinDegrees( seconds * 40.f ) );
@@ -102,7 +107,7 @@ void Game::Update( float deltaSeconds )
 	Rgba8 clearColor = Rgba8( 0, (unsigned char)green, (unsigned char)blue, 255);
 
 	// clear to a different frame each time
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, clearColor );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 }
 
 
@@ -134,10 +139,6 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
-	{
-		g_devConsole->ToggleOpenFull();
-	}
 }
 
 

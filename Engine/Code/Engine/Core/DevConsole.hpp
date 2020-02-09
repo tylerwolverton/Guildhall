@@ -45,12 +45,21 @@ public:
 	void Close();
 	bool IsOpen() const												{ return m_isOpen; }
 
+	void MoveCursorPosition( int deltaCursorPosition );
+	void InsertCharacterIntoCommand( std::string character );
+
 private:
 	void RenderBackground( RenderContext& renderer, const AABB2& bounds ) const;
 	void RenderLatestLogMessages( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
+	void RenderInputString( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
 
 private:
 	bool m_isOpen = false;
 	Camera* m_devConsoleCamera = nullptr;
 	std::vector<DevConsoleLogMessage> m_logMessages;
+
+	std::string m_currentCommandStr;
+	int m_currentCursorPosition = 0;
+	std::vector<std::string> m_commandHistory;
+
 };

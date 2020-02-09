@@ -260,6 +260,7 @@ void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
 {
+	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
 	DrawVertexArray( (int)vertices.size(), &vertices[0] );
 }
 

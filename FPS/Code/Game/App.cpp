@@ -207,6 +207,25 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 	{
 		g_app->RestartGame();
 	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
+	{
+		g_devConsole->ToggleOpenFull();
+	}
+
+	if ( g_devConsole->IsOpen() )
+	{
+		if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
+		{
+			g_devConsole->InsertCharacterIntoCommand( "a" );
+			//g_devConsole->MoveCursorPosition( 1 );
+		}
+		if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
+		{
+			g_devConsole->MoveCursorPosition( -1 );
+		}
+	
+	}
 }
 
 
@@ -214,7 +233,7 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 void App::Render() const
 {
 	g_game->Render();
-	g_devConsole->Render( *g_renderer, AABB2( 0.f, 0.f, 400.f, 400.f ), 10.f );
+	g_devConsole->Render( *g_renderer, AABB2( -1.f, -1.f, 1.f, 1.f ), .05f );
 }
 
 

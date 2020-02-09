@@ -24,6 +24,7 @@ DevConsole::~DevConsole()
 void DevConsole::Startup()
 {
 	m_devConsoleCamera = new Camera();
+	m_devConsoleCamera->SetColorTarget( nullptr );
 }
 
 
@@ -74,8 +75,9 @@ void DevConsole::Render( RenderContext& renderer, const AABB2& bounds, float lin
 
 	renderer.BeginCamera( *m_devConsoleCamera );
 
-	RenderBackground( renderer, bounds );
+	//RenderBackground( renderer, bounds );
 	RenderLatestLogMessages( renderer, bounds, lineHeight );
+	RenderInputString( renderer, bounds, lineHeight );
 
 	renderer.EndCamera( *m_devConsoleCamera );
 }
@@ -116,37 +118,34 @@ void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& 
 		numLinesToRender = (int)m_logMessages.size();
 	}
 
-	BitmapFont* font = renderer.CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	//BitmapFont* font = renderer.CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 
 	std::vector<Vertex_PCU> vertices;
-	float curLineY = 0;
+	float curLineY = 1;
 	int latestMessageIndex = (int)m_logMessages.size() - 1;
 
 	for ( int logMessageIndexFromEnd = 0; logMessageIndexFromEnd < numLinesToRender; ++logMessageIndexFromEnd )
 	{
 		int logMessageIndex = latestMessageIndex - logMessageIndexFromEnd;
 		const DevConsoleLogMessage& logMessage = m_logMessages[logMessageIndex];
-
-		if ( font->GetTexture() != nullptr )
-		{
-			font->AppendVertsForText2D( vertices, Vec2( bounds.mins.x, bounds.mins.y + curLineY ), lineHeight, logMessage.m_message, logMessage.m_color, .75f );
-		}
-		// Use triangle font if no font can be loaded
-		else
-		{
-			AppendTextTriangles2D( vertices, logMessage.m_message, Vec2( bounds.mins.x, bounds.mins.y + curLineY ), lineHeight, logMessage.m_color );
-		}
+		
+		AppendTextTriangles2D( vertices, logMessage.m_message, Vec2( bounds.mins.x, bounds.mins.y + ( curLineY * lineHeight ) ), lineHeight, logMessage.m_color );
+		
 		curLineY += lineHeight;
 	}
 	
-	if ( font->GetTexture() != nullptr )
-	{
-		//renderer.BindTexture( font->GetTexture() );
-	}
-	else
-	{
-		//renderer.BindTexture( nullptr );
-	}
+	renderer.DrawVertexArray( vertices );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::RenderInputString( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const
+{
+	std::vector<Vertex_PCU> vertices;
+
+	AppendTextTriangles2D( vertices, ">", Vec2( bounds.mins.x, bounds.mins.y ), lineHeight, Rgba8::WHITE );
+	AppendTextTriangles2D( vertices, m_currentCommandStr, Vec2( bounds.mins.x + .02f, bounds.mins.y ), lineHeight, Rgba8::WHITE );
+
 	renderer.DrawVertexArray( vertices );
 }
 
@@ -162,4 +161,29 @@ void DevConsole::ToggleOpenFull()
 void DevConsole::Close()
 {
 	m_isOpen = false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::MoveCursorPosition( int deltaCursorPosition )
+{
+	m_currentCursorPosition += deltaCursorPosition;
+
+	if ( m_currentCursorPosition < 0 )
+	{
+		m_currentCursorPosition = 0;
+	}
+
+	if ( m_currentCursorPosition >= (int)m_currentCommandStr.size() )
+	{
+		m_currentCursorPosition = (int)m_currentCommandStr.size() - 1;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::InsertCharacterIntoCommand( std::string character )
+{
+	std::string newChar( "" + character );
+	m_currentCommandStr.insert( (size_t)m_currentCursorPosition, newChar );
 }
