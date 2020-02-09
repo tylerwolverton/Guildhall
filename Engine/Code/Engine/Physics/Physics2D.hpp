@@ -27,6 +27,7 @@ public:
 	PolygonCollider2D* CreatePolygon2Collider( const Polygon2& polygon );
 	void DestroyCollider( Collider2D* colliderToDestroy );
 
+	const Vec2 GetSceneGravity()															{ return m_forceOfGravity; }
 	void SetSceneGravity( const Vec2& forceOfGravity );
 	void SetSceneGravity( float forceOfGravityY );
 

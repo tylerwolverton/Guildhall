@@ -133,7 +133,28 @@ bool Polygon2::Contains( Vec2 point ) const
 //-----------------------------------------------------------------------------------------------
 float Polygon2::GetDistance( Vec2 point ) const
 {
-	return 0.f;
+	if ( Contains( point ) )
+	{
+		return 0.f;
+	}
+
+	float minDistToPoint = 99999999.f;
+	for ( int edgeIdx = 0; edgeIdx < GetEdgeCount(); ++edgeIdx )
+	{
+		Vec2 startVert;
+		Vec2 endVert;
+		GetEdge( edgeIdx, &startVert, &endVert );
+
+		Vec2 nearestLocalPoint = GetNearestPointOnLineSegment2D( point, startVert, endVert );
+		float distToPoint = GetDistance2D( nearestLocalPoint, point );
+
+		if ( distToPoint < minDistToPoint )
+		{
+			minDistToPoint = distToPoint;
+		}
+	}
+
+	return minDistToPoint;
 }
 
 
@@ -229,7 +250,7 @@ Vec2 Polygon2::GetCenterOfMass() const
 		sumOfPoints += m_points[pointNumIdx];
 	}
 
-	return sumOfPoints / GetVertexCount();
+	return sumOfPoints / (float)GetVertexCount();
 }
 
 

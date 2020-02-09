@@ -32,6 +32,8 @@ const unsigned char KEY_F10 = VK_F10;
 const unsigned char KEY_F11 = VK_F11;
 const unsigned char KEY_F12 = VK_F12;
 const unsigned char KEY_TILDE = VK_OEM_3;
+const unsigned char KEY_PLUS = VK_OEM_PLUS;
+const unsigned char KEY_MINUS = VK_OEM_MINUS;
 
 const unsigned char MOUSE_LBUTTON = VK_LBUTTON;
 const unsigned char MOUSE_RBUTTON = VK_RBUTTON;

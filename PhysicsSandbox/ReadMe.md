@@ -2,7 +2,7 @@ Project - PhysicsSandbox
 
 - [x] *25pts*: Add a `PolygonCollider2D`
     - [x] *05pts*: Can construct from counter-clockwise list of points
-        - [x] `GUARANTEE_OR_DIE` points represent a convex polygon
+        - [] `GUARANTEE_OR_DIE` points represent a convex polygon
     - [ ] **CHALLENGE** - Can construct from a point cloud (gift wrapping algorithm)
     - [x] *05pts*: Implmeent `Contains`
     - [x] *05pts*: Implement `GetClosestPoint`
@@ -31,19 +31,19 @@ Project - PhysicsSandbox
     - [x] Simulate all rigidbodies
     - [x] Cleanup destroyed objects (should be happening from A01)
 - [x] *10pts*: Add `Rigidbody2D::SetVelocity` to change the velocity of the object
-    - [ ] When releasing an object, set its velocity based on mouse movement (ie, be able to throw an object)
-- [ ] *05pts*: `Rigidbody2D` can `SetSimulationMode` to either `STATIC`, `KINEMATIC`, or `DYNAMIC`
+    - [x] When releasing an object, set its velocity based on mouse movement (ie, be able to throw an object)
+- [x] *05pts*: `Rigidbody2D` can `SetSimulationMode` to either `STATIC`, `KINEMATIC`, or `DYNAMIC`
     - [x] `STATIC` objects do not apply forces or simulate.
     - [x] `KINEMATIC` objects do not apply forces, but will simulate.  
     - [x] `DYNAMIC` objects apply forces and simulate
-    - [ ] While selected, `1`, `2`, and `3` should switch the object to `STATIC`, `KINEMATIC`, or `DYNAMIC` respectively
-- [ ] *05pts*: `Physics2D::SetSceneGravity` implemented
+    - [x] While selected, `1`, `2`, and `3` should switch the object to `STATIC`, `KINEMATIC`, or `DYNAMIC` respectively
+- [x] *05pts*: `Physics2D::SetSceneGravity` implemented
     - [x] Applies a flat acceleration force to every dynamic rigidbody in the scene beginning of frame. 
-    - [ ] Use `+` and `-` keys to adjust gravity amount
-    - [ ] Current gravity should be visible on the screen (hotkey hint here is nice)
+    - [x] Use `+` and `-` keys to adjust gravity amount
+    - [x] Current gravity should be visible on the screen (hotkey hint here is nice)
 - [x] *05pts*: Objects that fully fall off the sides of the screen should appear on the opposite side, maintaining velocity
 - [x] *05pts*: Implement `Rigidbody2D::GetVelocity`
     - [x] Objects that falling off the bottom of the screen, reverse its velocity along Y (bounce it)
-    - [ ] Only bounce if it is falling down (-y)
+    - [x] Only bounce if it is falling down (-y)
 
 ------------

@@ -5,8 +5,9 @@
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
@@ -36,6 +37,10 @@ void Game::Startup()
 	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
 	m_worldCamera->SetPosition( m_focalPoint );
 	
+	m_uiCamera = new Camera();
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+
 	m_rng = new RandomNumberGenerator();
 
 	m_physics2D = new Physics2D();
@@ -60,6 +65,9 @@ void Game::Shutdown()
 	delete m_rng;
 	m_rng = nullptr;
 
+	delete m_uiCamera;
+	m_uiCamera = nullptr;
+
 	delete m_worldCamera;
 	m_worldCamera = nullptr;
 }
@@ -77,7 +85,7 @@ void Game::RestartGame()
 void Game::Update( float deltaSeconds )
 {
 	UpdateFromKeyboard( deltaSeconds );
-	UpdateMouse();
+	UpdateMouse( deltaSeconds );
 
 	UpdateCameras( deltaSeconds );
 
@@ -87,7 +95,6 @@ void Game::Update( float deltaSeconds )
 	UpdateOffScreenGameObjects();
 
 	m_physics2D->Update( deltaSeconds );
-
 }
 
 
@@ -108,6 +115,12 @@ void Game::Render() const
 	}
 
 	g_renderer->EndCamera( *m_worldCamera );
+
+	g_renderer->BeginCamera( *m_uiCamera );
+	
+	RenderUI();
+	
+	g_renderer->EndCamera( *m_uiCamera );
 }
 
 
@@ -170,6 +183,15 @@ void Game::RenderPolygonPoints() const
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::RenderUI() const
+{
+	std::string gravityStr = Stringf( "Gravity: %.1f", m_physics2D->GetSceneGravity().y );
+	DrawTextTriangles2D( *g_renderer, gravityStr, Vec2( 1600.f, 1000.f ), 30.f, Rgba8::WHITE );
+	DrawTextTriangles2D( *g_renderer, "- or + keys to change ", Vec2( 1600.f, 970.f ), 20.f, Rgba8::WHITE );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
@@ -202,15 +224,58 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 			if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 			{
-				float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
-				SpawnDisc( m_mouseWorldPosition, radius );
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						m_dragTarget->m_rigidbody->SetSimulationMode( SIMULATION_MODE_STATIC );
+					}
+				}
+				else
+				{
+					float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
+					SpawnDisc( m_mouseWorldPosition, radius );
+				}
 			}
 
 			if ( g_inputSystem->WasKeyJustPressed( '2' ) )
 			{
-				m_gameState = eGameState::CREATE_POLYGON;
-				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
-				m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						m_dragTarget->m_rigidbody->SetSimulationMode( SIMULATION_MODE_KINEMATIC );
+					}
+				}
+				else
+				{
+					m_gameState = eGameState::CREATE_POLYGON;
+					m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+					m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( '3' ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						m_dragTarget->m_rigidbody->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+					}
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_PLUS ) )
+			{
+				Vec2 currentGravity = m_physics2D->GetSceneGravity();
+				m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, -1.f ) );
+			}
+			
+			if ( g_inputSystem->WasKeyJustPressed( KEY_MINUS ) )
+			{
+				Vec2 currentGravity = m_physics2D->GetSceneGravity();
+				m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, 1.f ) );
 			}
 
 			if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
@@ -254,11 +319,14 @@ void Game::UpdateCameras( float deltaSeconds )
 	UNUSED( deltaSeconds );
 	m_worldCamera->SetPosition( m_focalPoint );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );
+
+	/*m_uiCamera->SetPosition( m_focalPoint );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMouse()
+void Game::UpdateMouse( float deltaSeconds )
 {
 	m_lastMouseWorldPosition = m_mouseWorldPosition;
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
@@ -284,7 +352,9 @@ void Game::UpdateMouse()
 				{
 					if ( m_dragTarget != nullptr )
 					{
-						m_dragTarget->m_rigidbody->SetVelocity( ( m_mouseWorldPosition - m_lastMouseWorldPosition ) * 5.f );
+						Vec2 deltaPosition = m_mouseWorldPosition - m_lastMouseWorldPosition;
+
+						m_dragTarget->m_rigidbody->SetVelocity( deltaPosition / deltaSeconds * .4f );
 						m_dragTarget->m_rigidbody->Enable();
 					}
 
@@ -309,8 +379,6 @@ void Game::UpdateMouse()
 			{
 				if ( m_isPotentialPolygonConvex )
 				{
-					m_potentialPolygonPoints.push_back( m_mouseWorldPosition );
-
 					SpawnPolygon( m_potentialPolygonPoints );
 
 					m_potentialPolygonPoints.clear();
@@ -433,11 +501,13 @@ void Game::UpdateOffScreenGameObjects()
 			continue;
 		}
 
-		Collider2D*& collider = rigidbody->m_collider;;
+		Collider2D*& collider = rigidbody->m_collider;
+		const AABB2 objectBoundingBox = collider->GetBoundingBox();
 
 		// Check bouncing off bottom
 		unsigned int edgesOfScreenColliderIsOff = collider->CheckIfOutsideScreen( screenBounds, false );
-		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_BOTTOM )
+		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_BOTTOM
+			 && rigidbody->GetVelocity().y < 0.01f)
 		{
 			Vec2 newVelocity( rigidbody->GetVelocity() );
 			newVelocity.y = abs( newVelocity.y );
@@ -448,14 +518,11 @@ void Game::UpdateOffScreenGameObjects()
 		// Check side wraparound
 		edgesOfScreenColliderIsOff = collider->CheckIfOutsideScreen( screenBounds, true );
 		float yPos = rigidbody->GetPosition().y;
-		const AABB2 objectBoundingBox = collider->GetBoundingBox();
 
 		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_LEFT )
 		{
 			float xDistanceToOtherSideOfScreen = objectBoundingBox.mins.x - screenBounds.maxs.x;
 			rigidbody->SetPosition( Vec2( rigidbody->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
-
-
 		}
 		if( edgesOfScreenColliderIsOff & SCREEN_EDGE_RIGHT )
 		{

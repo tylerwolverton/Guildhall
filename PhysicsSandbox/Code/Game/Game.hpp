@@ -51,10 +51,11 @@ public:
 private:
 	void RenderGameObjects() const;
 	void RenderPolygonPoints() const;
+	void RenderUI() const;
 	
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
-	void UpdateMouse();
+	void UpdateMouse( float deltaSeconds );
 	void UpdateGameObjects();
 	void UpdateDraggedObject();
 	void UpdatePotentialPolygon();
@@ -74,6 +75,7 @@ private:
 	bool				m_isDebugRendering		 = false;
 												 
 	Camera*				m_worldCamera			 = nullptr;
+	Camera*				m_uiCamera				 = nullptr;
 	Vec3				m_focalPoint			 = Vec3::ZERO;
 	float				m_zoomFactor			 = 1.f;
 												 

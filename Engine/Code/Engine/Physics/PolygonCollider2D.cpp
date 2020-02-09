@@ -148,11 +148,11 @@ void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borde
 //-----------------------------------------------------------------------------------------------
 const AABB2 PolygonCollider2D::GetBoundingBox() const
 {
-	// Initialize with first 2 points in polygon
+	// Initialize with first point in polygon
 	std::vector<Vec2> polygonPoints = m_polygon.GetPoints();
-	AABB2 boundingBox( polygonPoints[0], polygonPoints[1] );
+	AABB2 boundingBox( polygonPoints[0], polygonPoints[0] );
 
-	for ( int pointIdx = 2; pointIdx < (int)polygonPoints.size(); ++pointIdx )
+	for ( int pointIdx = 1; pointIdx < (int)polygonPoints.size(); ++pointIdx )
 	{
 		boundingBox.StretchToIncludePoint( polygonPoints[pointIdx] );
 	}

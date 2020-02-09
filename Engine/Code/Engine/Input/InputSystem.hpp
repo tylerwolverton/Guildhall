@@ -35,6 +35,8 @@ extern const unsigned char KEY_F10;
 extern const unsigned char KEY_F11;
 extern const unsigned char KEY_F12;
 extern const unsigned char KEY_TILDE;
+extern const unsigned char KEY_PLUS;
+extern const unsigned char KEY_MINUS;
 
 extern const unsigned char MOUSE_LBUTTON;
 extern const unsigned char MOUSE_RBUTTON;
