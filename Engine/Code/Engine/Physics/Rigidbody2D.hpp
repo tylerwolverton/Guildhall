@@ -10,6 +10,15 @@ class RenderContext;
 
 
 //-----------------------------------------------------------------------------------------------
+enum eSimulationMode
+{
+	SIMULATION_MODE_STATIC,
+	SIMULATION_MODE_KINEMATIC,
+	SIMULATION_MODE_DYNAMIC
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Rigidbody2D
 {
 	friend class Physics2D;
@@ -33,6 +42,13 @@ public:
 
 	void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const;
 
+	bool IsEnabled() const															{ return m_isEnabled; }
+	void Enable()																	{ m_isEnabled = true; }
+	void Disable()																	{ m_isEnabled = false; }
+
+	eSimulationMode GetSimulationMode()												{ return m_simulationMode; }
+	void SetSimulationMode( eSimulationMode mode )									{ m_simulationMode = mode; }
+
 public:
 	Collider2D* m_collider = nullptr;
 
@@ -44,6 +60,9 @@ private:
 	Vec2 m_velocity = Vec2::ZERO;
 	float m_mass = 1.f;
 	float m_inverseMass = 1.f;
+
+	bool m_isEnabled = true;
+	eSimulationMode m_simulationMode = SIMULATION_MODE_DYNAMIC;
 
 private:
 	~Rigidbody2D(); // destroys the collider

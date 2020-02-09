@@ -1,4 +1,5 @@
 #include "Engine/Math/Polygon2.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 
@@ -6,6 +7,7 @@
 Polygon2::Polygon2( const std::vector<Vec2>& points )
 	: m_points( points )
 {
+	//GUARANTEE_OR_DIE( IsConvex(), "Invalid points for polygon" );
 }
 
 

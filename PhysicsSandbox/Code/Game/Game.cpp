@@ -275,6 +275,7 @@ void Game::UpdateMouse()
 				if ( m_dragTarget != nullptr )
 				{
 					m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->GetPosition();
+					m_dragTarget->m_rigidbody->Disable();
 				}
 			}
 			else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
@@ -284,6 +285,7 @@ void Game::UpdateMouse()
 					if ( m_dragTarget != nullptr )
 					{
 						m_dragTarget->m_rigidbody->SetVelocity( ( m_mouseWorldPosition - m_lastMouseWorldPosition ) * 5.f );
+						m_dragTarget->m_rigidbody->Enable();
 					}
 
 					m_isMouseDragging = false;
@@ -406,7 +408,7 @@ void Game::UpdatePotentialPolygon()
 		Polygon2 potentialPolygon( m_potentialPolygonPoints );
 		m_isPotentialPolygonConvex = potentialPolygon.IsConvex();
 
-		int lastPointIdx = m_potentialPolygonPoints.size() - 1;
+		int lastPointIdx = (int)m_potentialPolygonPoints.size() - 1;
 		m_potentialPolygonPoints[lastPointIdx] = m_mouseWorldPosition;
 	}
 }

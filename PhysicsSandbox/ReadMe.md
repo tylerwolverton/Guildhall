@@ -1,12 +1,12 @@
 Project - PhysicsSandbox
 
-- [ ] *25pts*: Add a `PolygonCollider2D`
+- [x] *25pts*: Add a `PolygonCollider2D`
     - [x] *05pts*: Can construct from counter-clockwise list of points
-        - [ ] `GUARANTEE_OR_DIE` points represent a convex polygon
+        - [x] `GUARANTEE_OR_DIE` points represent a convex polygon
     - [ ] **CHALLENGE** - Can construct from a point cloud (gift wrapping algorithm)
     - [x] *05pts*: Implmeent `Contains`
-    - [ ] *05pts*: Implement `GetClosestPoint`
-    - [ ] *05pts*: Implement `Intersects`, but only vs disc, return `false` if intersecting with another polygon for now.
+    - [x] *05pts*: Implement `GetClosestPoint`
+    - [x] *05pts*: Implement `Intersects`, but only vs disc, return `false` if intersecting with another polygon for now.
         - [x] Be sure disc now checks against both discs and polygons useing `GetType`
     - [x] *05pts*: Can render it - should work as before.
 - [x] *25pts*: Can construct `GameObject` with a `PolygonCollider`
@@ -23,9 +23,9 @@ Project - PhysicsSandbox
             - Center of box that encapsulates all points
             - **CHALLENGE**: Center of mass, assuming uniform density
     - [ ] *If you did the giftwrapping algorithm, you can just add points and construct a polygon that would work for them*
-- [ ] *05pts*: `Rigidbody2D` can `Enable` or `Disable` itself, taking it out of the simulation, but still rendering
-    - [ ] Objects being dragged should set themselves to disabled, and re-enable when unselected.
-- [ ] *05pts*: When drawing, draw the location of the `Rigidbody` as an `X`, red if disabled, blue if enabled. 
+- [x] *05pts*: `Rigidbody2D` can `Enable` or `Disable` itself, taking it out of the simulation, but still rendering
+    - [x] Objects being dragged should set themselves to disabled, and re-enable when unselected.
+- [x] *05pts*: When drawing, draw the location of the `Rigidbody` as an `X`, red if disabled, blue if enabled. 
 - [x] *10pts*: `Physics2D::Update` loop implemented
     - [x] Apply all global forces
     - [x] Simulate all rigidbodies
@@ -33,9 +33,9 @@ Project - PhysicsSandbox
 - [x] *10pts*: Add `Rigidbody2D::SetVelocity` to change the velocity of the object
     - [ ] When releasing an object, set its velocity based on mouse movement (ie, be able to throw an object)
 - [ ] *05pts*: `Rigidbody2D` can `SetSimulationMode` to either `STATIC`, `KINEMATIC`, or `DYNAMIC`
-    - [ ] `STATIC` objects do not apply forces or simulate.
-    - [ ] `KINEMATIC` objects do not apply forces, but will simulate.  
-    - [ ] `DYNAMIC` objects apply forces and simulate
+    - [x] `STATIC` objects do not apply forces or simulate.
+    - [x] `KINEMATIC` objects do not apply forces, but will simulate.  
+    - [x] `DYNAMIC` objects apply forces and simulate
     - [ ] While selected, `1`, `2`, and `3` should switch the object to `STATIC`, `KINEMATIC`, or `DYNAMIC` respectively
 - [ ] *05pts*: `Physics2D::SetSceneGravity` implemented
     - [x] Applies a flat acceleration force to every dynamic rigidbody in the scene beginning of frame. 
@@ -45,5 +45,5 @@ Project - PhysicsSandbox
 - [x] *05pts*: Implement `Rigidbody2D::GetVelocity`
     - [x] Objects that falling off the bottom of the screen, reverse its velocity along Y (bounce it)
     - [ ] Only bounce if it is falling down (-y)
+
 ------------
-Used WASD for camera movement, left click for dragging

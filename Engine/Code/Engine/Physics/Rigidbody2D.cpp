@@ -1,7 +1,9 @@
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Rgba8.hpp"
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -16,7 +18,11 @@ Rigidbody2D::Rigidbody2D( float mass )
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::Update( float deltaSeconds )
 {
-	// TODO: Make gravity work like real gravity
+	if ( !m_isEnabled )
+	{
+		return;
+	}
+
 	Vec2 acceleration = m_forces * m_inverseMass;
 	m_velocity += acceleration * deltaSeconds;
 	m_worldPosition += m_velocity * deltaSeconds;
@@ -70,12 +76,23 @@ void Rigidbody2D::SetPosition( const Vec2& position )
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::AddForce( const Vec2& force )
 {
+	if ( !m_isEnabled )
+	{
+		return;
+	}
+
 	m_forces += force;
 }
 
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const
 {
+	Rgba8 rigidbodyColor = m_isEnabled ? Rgba8::BLUE : Rgba8::RED;
+	Vec2 crossOffset( .1f, .1f );
+	g_renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
+	crossOffset.x *= -1.f;
+	g_renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
+
 	if ( m_collider != nullptr )
 	{
 		m_collider->DebugRender( renderer, borderColor, fillColor );

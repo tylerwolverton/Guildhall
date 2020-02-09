@@ -1,4 +1,5 @@
 #include "Engine/Physics/Physics2D.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
@@ -33,11 +34,21 @@ void Physics2D::AdvanceSimulation( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Physics2D::ApplyEffectors( float deltaSeconds )
 {
+	UNUSED( deltaSeconds );
+
 	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
 	{
-		if ( m_rigidbodies[rigidbodyIdx] != nullptr )
+		Rigidbody2D*& rigidbody = m_rigidbodies[rigidbodyIdx];
+		if ( rigidbody != nullptr )
 		{
-			m_rigidbodies[rigidbodyIdx]->AddForce( Vec2( 0.f, -9.8f ) );
+			switch ( rigidbody->GetSimulationMode() )
+			{
+				case SIMULATION_MODE_DYNAMIC:
+				{
+					rigidbody->AddForce( m_forceOfGravity );
+				}
+				break;
+			}
 		}
 	}
 }
@@ -48,9 +59,17 @@ void Physics2D::MoveRigidbodies( float deltaSeconds )
 {
 	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
 	{
-		if ( m_rigidbodies[rigidbodyIdx] != nullptr )
+		Rigidbody2D*& rigidbody = m_rigidbodies[rigidbodyIdx];
+		if ( rigidbody != nullptr )
 		{
-			m_rigidbodies[rigidbodyIdx]->Update( deltaSeconds );
+			switch ( rigidbody->GetSimulationMode() )
+			{
+				case SIMULATION_MODE_DYNAMIC:
+				case SIMULATION_MODE_KINEMATIC:
+				{
+					rigidbody->Update( deltaSeconds );
+				}
+			}
 		}
 	}
 }
@@ -144,4 +163,18 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 			break;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::SetSceneGravity( const Vec2& forceOfGravity )
+{
+	m_forceOfGravity = forceOfGravity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::SetSceneGravity( float forceOfGravityY )
+{
+	m_forceOfGravity = Vec2( 0.f, forceOfGravityY );
 }

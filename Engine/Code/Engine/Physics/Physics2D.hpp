@@ -1,8 +1,9 @@
 #pragma once
+#include "Engine/Math/Vec2.hpp"
+
 #include <vector>
 
 //-----------------------------------------------------------------------------------------------
-struct Vec2;
 class Polygon2;
 class Rigidbody2D;
 class Collider2D;
@@ -26,6 +27,9 @@ public:
 	PolygonCollider2D* CreatePolygon2Collider( const Polygon2& polygon );
 	void DestroyCollider( Collider2D* colliderToDestroy );
 
+	void SetSceneGravity( const Vec2& forceOfGravity );
+	void SetSceneGravity( float forceOfGravityY );
+
 private:
 	void AdvanceSimulation( float deltaSeconds );
 	void ApplyEffectors( float deltaSeconds ); 	
@@ -38,4 +42,6 @@ private:
 	std::vector<int> m_garbageRigidbodyIndexes;
 	std::vector<Collider2D*> m_colliders;
 	std::vector<int> m_garbageColliderIndexes;
+
+	Vec2 m_forceOfGravity = Vec2( 0.f, -9.8f );
 };
