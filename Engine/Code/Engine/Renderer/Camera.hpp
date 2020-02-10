@@ -6,6 +6,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class Texture;
+class RenderBuffer;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -18,9 +19,20 @@ enum eCameraClearBitFlag : unsigned int
 
 
 //-----------------------------------------------------------------------------------------------
+struct CameraData
+{
+	Vec2 orthoMin;
+	Vec2 orthoMax;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Camera
 {
 public:
+	Camera();
+	~Camera();
+
 	void SetOrthoView( const Vec2& bottomLeft, const Vec2& topRight );
 	void SetOrthoView( const AABB2& cameraBounds );
 	void Translate2D( const Vec2& translation);
@@ -36,6 +48,11 @@ public:
 	void SetColorTarget( Texture* texture );
 	Texture* GetColorTarget() const;
 
+	void UpdateCameraUBO();
+
+public:
+	RenderBuffer* m_cameraUBO = nullptr;
+
 private:
 	Vec2 m_bottomLeft;
 	Vec2 m_topRight;
@@ -44,5 +61,6 @@ private:
 	Rgba8 m_clearColor = Rgba8::BLACK;
 
 	Texture* m_colorTarget = nullptr;
+
 };
 

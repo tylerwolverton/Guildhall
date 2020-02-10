@@ -5,6 +5,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/Time.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
@@ -87,13 +88,13 @@ void RenderContext::Startup( Window* window )
 	m_defaultShader = GetOrCreateShader( "Data/Shaders/Default.hlsl" );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
+	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginFrame()
 {
-
 }
 
 
@@ -108,6 +109,7 @@ void RenderContext::EndFrame()
 void RenderContext::Shutdown()
 {
 	delete m_immediateVBO;
+	delete m_frameUBO;
 
 	// Cleanup shader cache
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
@@ -180,7 +182,7 @@ void RenderContext::ClearScreen( ID3D11RenderTargetView* renderTargetView, const
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BeginCamera( const Camera& camera )
+void RenderContext::BeginCamera( Camera& camera )
 {
 	#if defined(RENDER_DEBUG)
 		m_context->ClearState();
@@ -193,6 +195,13 @@ void RenderContext::BeginCamera( const Camera& camera )
 	{
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
+
+	if ( camera.m_cameraUBO == nullptr )
+	{
+		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	}
+
+	camera.UpdateCameraUBO();
 
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
@@ -219,6 +228,9 @@ void RenderContext::BeginCamera( const Camera& camera )
 
 	BindShader( (Shader*)nullptr );
 	m_lastVBOHandle = nullptr;
+
+	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
+	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
 }
 
 
@@ -227,6 +239,17 @@ void RenderContext::EndCamera( const Camera& camera )
 {
 	UNUSED( camera );
 	m_isDrawing = false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::UpdateFrameTime( float deltaSeconds )
+{
+	FrameData frameData;
+	frameData.SystemTimeSeconds = (float)GetCurrentTimeSeconds();
+	frameData.SystemDeltaTimeSeconds = deltaSeconds;
+
+	m_frameUBO->Update( &frameData, sizeof( frameData ), sizeof( frameData ) );
 }
 
 
@@ -622,6 +645,17 @@ void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 	uint offset = 0;
 
 	m_context->IASetVertexBuffers( 0, 1, &vboHandle, &stride, &offset );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindUniformBuffer( uint slot, RenderBuffer* ubo )
+{
+	// TODO: GetHandle
+	ID3D11Buffer* uboHandle =  ubo->m_handle;
+
+	m_context->VSSetConstantBuffers( slot, 1, &uboHandle );
+	m_context->PSSetConstantBuffers( slot, 1, &uboHandle );
 }
 
 

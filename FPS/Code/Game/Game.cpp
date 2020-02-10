@@ -101,6 +101,8 @@ void Game::Update( float deltaSeconds )
 		UpdateFromKeyboard( deltaSeconds );
 	}
 
+	UpdateCameras( deltaSeconds );
+
 	float seconds = (float)GetCurrentTimeSeconds();
 	float green = RangeMapFloat( -1.f, 1.f, 0.f, 255.f, SinDegrees( seconds * 40.f ) );
 	float blue = RangeMapFloat( -1.0f, 1.0f, 0.0f, 255.0f, CosDegrees( seconds * 30.f ) );
@@ -183,6 +185,8 @@ void Game::UpdateCameras( float deltaSeconds )
 	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
 
 	m_worldCamera->Translate2D(cameraShakeOffset);
+
+	m_worldCamera->SetOrthoView( Vec2( -10.f, -10.f ), Vec2( 10.f, 10.f ) );
 }
 
 

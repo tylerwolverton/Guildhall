@@ -22,6 +22,20 @@ struct vs_input_t
 };
 
 
+cbuffer time_constants : register( b0 )
+{
+	float SYSTEM_TIME_SECONDS;
+	float SYSTEM_TIME_DELTA_SECONDS;
+};
+
+
+cbuffer camera_constants : register( b1 )
+{
+	float2 orthoMin;
+	float2 orthoMax;
+};
+
+
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------
@@ -35,6 +49,14 @@ struct v2f_t
 	float2 uv : UV;
 };
 
+// TODO: Move to MathUtils.hlsl
+float RangeMap( float val, float inMin, float inMax, float outMin, float outMax )
+{
+	float inputRange = inMax - inMin;
+	float outputRange = outMax - outMin;
+	return ( ( val - inMin ) / inputRange ) * outputRange + outMin;
+}
+
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 v2f_t VertexFunction( vs_input_t input )
@@ -46,8 +68,26 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f.color = input.color;
 	v2f.uv = input.uv;
 
+	float4 worldPos = float4( input.position, 1 );
+	worldPos.x += cos( SYSTEM_TIME_SECONDS );
+	worldPos.y += sin( SYSTEM_TIME_SECONDS );
+
+	float4 clipPos = worldPos;
+	clipPos.x = RangeMap( worldPos.x, orthoMin.x, orthoMax.x, -1.f, 1.f );
+	clipPos.y = RangeMap( worldPos.y, orthoMin.y, orthoMax.y, -1.f, 1.f );
+	clipPos.z = 0.f;
+	clipPos.w = .75f + sin( sin( SYSTEM_TIME_SECONDS * 2.f) * cos( SYSTEM_TIME_SECONDS * 5.f ) );
+	//clipPos.w = 1.f;
+
+	clipPos.xyz /= clipPos.w;
+
+	v2f.position = clipPos;
+
 	return v2f;
 }
+
+// raster step
+// float3 ndcPos = clipPos.xyz / clipPos.w;
 
 //--------------------------------------------------------------------------------------
 // Fragment Shader
@@ -61,7 +101,11 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	// Very common rendering debugging method is to 
 	// use color to portray information; 
 	float4 uvAsColor = float4( input.uv, 0.0f, 1.0f );
-	float4 finalColor = input.color;
+	float4 finalColor = input.color;;
+
+	finalColor.r = 1.f + input.uv.x + sin( SYSTEM_TIME_SECONDS );
+	finalColor.g = 1.f + input.uv.x + cos( SYSTEM_TIME_SECONDS );
+	finalColor.b = finalColor.r - finalColor.g;
 
 	return finalColor;
 }

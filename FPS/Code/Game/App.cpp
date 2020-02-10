@@ -189,6 +189,7 @@ void App::Update( float deltaSeconds )
 {
 	UpdateFromKeyboard( deltaSeconds );
 
+	g_renderer->UpdateFrameTime( deltaSeconds );
 	g_game->Update( deltaSeconds );
 }
 

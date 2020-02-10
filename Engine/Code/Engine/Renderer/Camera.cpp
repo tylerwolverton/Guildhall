@@ -1,6 +1,21 @@
 #include "Camera.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Renderer/RenderBuffer.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+Camera::Camera()
+{
+	
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Camera::~Camera()
+{
+	delete m_cameraUBO;
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -48,4 +63,15 @@ void Camera::SetColorTarget( Texture* texture )
 Texture* Camera::GetColorTarget() const
 {
 	return m_colorTarget;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::UpdateCameraUBO()
+{
+	CameraData cameraData;
+	cameraData.orthoMin = m_bottomLeft; 
+	cameraData.orthoMax = m_topRight;
+
+	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
 }

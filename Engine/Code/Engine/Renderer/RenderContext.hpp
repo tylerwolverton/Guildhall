@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include <vector>
 #include <map>
 
@@ -23,6 +24,7 @@ class Camera;
 class Texture;
 class BitmapFont;
 class Shader;
+class RenderBuffer;
 class VertexBuffer;
 
 
@@ -31,6 +33,22 @@ enum class eBlendMode
 {
 	ALPHA,
 	ADDITIVE,
+};
+
+
+enum eBufferSlot
+{
+	UBO_FRAME_SLOT = 0,
+	UBO_CAMERA_SLOT = 1,
+};
+
+
+struct FrameData
+{
+	float SystemTimeSeconds;
+	float SystemDeltaTimeSeconds;
+	
+	float padding[2];
 };
 
 
@@ -45,8 +63,10 @@ public:
 
 	void SetBlendMode( eBlendMode blendMode );
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
-	void BeginCamera( const Camera& camera );
+	void BeginCamera( Camera& camera );
 	void EndCamera	( const Camera& camera );
+
+	void UpdateFrameTime( float deltaSeconds );
 
 	void Draw( int numVertices, int vertexOffset = 0 );
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
@@ -76,6 +96,8 @@ public:
 
 	// Binding Inputs
 	void BindVertexBuffer( VertexBuffer* vbo );
+	
+	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
 
 	// Binding State
 	void BindShader( Shader* shader );
@@ -109,6 +131,8 @@ public:
 	IDXGIDebug* m_debug				= nullptr;
 
 	VertexBuffer* m_immediateVBO	= nullptr;
+
+	RenderBuffer* m_frameUBO		= nullptr;
 
 private:
 	std::vector<Texture*> m_loadedTextures;
