@@ -224,8 +224,7 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 	{
 		if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
 		{
-			g_devConsole->InsertCharacterIntoCommand( "a" );
-			//g_devConsole->MoveCursorPosition( 1 );
+			g_devConsole->MoveCursorPosition( 1 );
 		}
 		if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
 		{

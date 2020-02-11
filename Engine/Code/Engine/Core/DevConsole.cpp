@@ -99,6 +99,7 @@ void DevConsole::Render( RenderContext& renderer, const AABB2& bounds, float lin
 	//RenderBackground( renderer, bounds );
 	RenderLatestLogMessages( renderer, bounds, lineHeight );
 	RenderInputString( renderer, bounds, lineHeight );
+	RenderCursor( renderer, bounds, lineHeight );
 
 	renderer.EndCamera( *m_devConsoleCamera );
 }
@@ -172,6 +173,20 @@ void DevConsole::RenderInputString( RenderContext& renderer, const AABB2& bounds
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::RenderCursor( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const
+{
+	std::vector<Vertex_PCU> vertices;
+
+	float cursorNormalizedPos = .05f + (float)m_currentCursorPosition * ( 0.56f * lineHeight ) + .02f;
+	Rgba8 color = Rgba8::WHITE;
+
+	AppendTextTriangles2D( vertices, "|", Vec2( bounds.mins.x + cursorNormalizedPos, bounds.mins.y ), lineHeight, color );
+
+	renderer.DrawVertexArray( vertices );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::ToggleOpenFull()
 {
 	m_isOpen = !m_isOpen;
@@ -233,6 +248,17 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 
 		m_currentCommandStr.clear();
 		m_currentCursorPosition = 0;
+
+		return true;
+	}
+
+	if ( character == '\b' )
+	{
+		if ( m_currentCursorPosition > 0 )
+		{
+			m_currentCommandStr.pop_back();
+			--m_currentCursorPosition;
+		}
 
 		return true;
 	}

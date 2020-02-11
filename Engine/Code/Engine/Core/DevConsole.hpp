@@ -59,6 +59,7 @@ private:
 	void RenderBackground( RenderContext& renderer, const AABB2& bounds ) const;
 	void RenderLatestLogMessages( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
 	void RenderInputString( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
+	void RenderCursor( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
 
 	void ExecuteCommand();
 
