@@ -1,4 +1,6 @@
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
@@ -59,6 +61,13 @@ void DevConsole::Shutdown()
 {
 	delete m_devConsoleCamera;
 	m_devConsoleCamera = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::SetEventSystem( EventSystem* eventSystem )
+{
+	m_eventSystem = eventSystem;
 }
 
 
@@ -156,7 +165,7 @@ void DevConsole::RenderInputString( RenderContext& renderer, const AABB2& bounds
 	std::vector<Vertex_PCU> vertices;
 
 	AppendTextTriangles2D( vertices, ">", Vec2( bounds.mins.x, bounds.mins.y ), lineHeight, Rgba8::WHITE );
-	AppendTextTriangles2D( vertices, m_currentCommandStr, Vec2( bounds.mins.x + .02f, bounds.mins.y ), lineHeight, Rgba8::WHITE );
+	AppendTextTriangles2D( vertices, m_currentCommandStr, Vec2( bounds.mins.x + .04f, bounds.mins.y ), lineHeight, Rgba8::WHITE );
 
 	renderer.DrawVertexArray( vertices );
 }
@@ -198,4 +207,51 @@ void DevConsole::InsertCharacterIntoCommand( std::string character )
 {
 	std::string newChar( "" + character );
 	m_currentCommandStr.insert( (size_t)m_currentCursorPosition, newChar );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DevConsole::ProcessCharTyped( unsigned char character )
+{
+	if ( !m_isOpen )
+	{
+		return false;
+	}
+
+	if ( character == '~'
+		 || character == '`' )
+	{
+		m_currentCommandStr.clear();
+		m_currentCursorPosition = 0;
+		
+		return true;
+	}
+
+	if ( character == '\r' )
+	{
+		ExecuteCommand();
+
+		m_currentCommandStr.clear();
+		m_currentCursorPosition = 0;
+
+		return true;
+	}
+
+	m_currentCommandStr += character;
+	++m_currentCursorPosition;
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::ExecuteCommand()
+{
+	if ( m_eventSystem == nullptr )
+	{
+		return;
+	}
+
+	EventArgs args;
+	m_eventSystem->FireEvent( m_currentCommandStr, &args );
 }

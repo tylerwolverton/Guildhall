@@ -46,6 +46,8 @@ void App::Startup()
 
 	g_eventSystem = new EventSystem();
 	g_devConsole = new DevConsole();
+	g_devConsole->SetEventSystem( g_eventSystem );
+
 	g_inputSystem = new InputSystem();
 	g_audioSystem = new AudioSystem();
 	g_renderer = new RenderContext();
@@ -55,6 +57,7 @@ void App::Startup()
 	g_window->SetEventSystem( g_eventSystem );
 
 	g_devConsole->Startup();
+	g_window->SetDevCosole( g_devConsole );
 	
 	g_inputSystem->Startup();
 	g_window->SetInputSystem( g_inputSystem );
@@ -64,6 +67,8 @@ void App::Startup()
 	g_game->Startup();
 
 	g_eventSystem->RegisterEvent( "QuitGame", QuitGame );
+	g_eventSystem->RegisterEvent( "Quit", QuitGame );
+	g_eventSystem->RegisterEvent( "Exit", QuitGame );
 }
 
 
