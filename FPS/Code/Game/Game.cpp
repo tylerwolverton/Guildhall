@@ -186,7 +186,7 @@ void Game::UpdateCameras( float deltaSeconds )
 
 	m_worldCamera->Translate2D(cameraShakeOffset);
 
-	m_worldCamera->SetOrthoView( Vec2( -10.f, -10.f ), Vec2( 10.f, 10.f ) );
+	m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 }
 
 

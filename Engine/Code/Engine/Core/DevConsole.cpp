@@ -36,6 +36,18 @@ void DevConsole::BeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::Update( float deltaSeconds )
+{
+	if ( !m_isOpen )
+	{
+		return;
+	}
+
+	m_devConsoleCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::EndFrame()
 {
 

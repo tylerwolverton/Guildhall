@@ -46,7 +46,7 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 
 			if( inputSystem->HandleKeyPressed( asKey ) )
 			{
-				return 0; // "Consumes" this message (tells Windows "okay, we handled it")
+				return 0; 
 			}
 
 			break;
@@ -59,7 +59,19 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 
 			if ( inputSystem->HandleKeyReleased( asKey ) )
 			{
-				return 0; // "Consumes" this message (tells Windows "okay, we handled it")
+				return 0;
+			}
+
+			break;
+		}
+
+		case WM_CHAR:
+		{
+			unsigned char asKey = (unsigned char)wParam;
+
+			if ( true )
+			{
+				return 0; 
 			}
 
 			break;

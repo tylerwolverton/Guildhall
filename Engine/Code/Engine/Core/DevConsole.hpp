@@ -34,6 +34,7 @@ public:
 	~DevConsole();
 	void Startup();
 	void BeginFrame();
+	void Update( float deltaSeconds );
 	void EndFrame();
 	void Shutdown();
 

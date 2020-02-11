@@ -191,6 +191,7 @@ void App::Update( float deltaSeconds )
 
 	g_renderer->UpdateFrameTime( deltaSeconds );
 	g_game->Update( deltaSeconds );
+	g_devConsole->Update( deltaSeconds );
 }
 
 

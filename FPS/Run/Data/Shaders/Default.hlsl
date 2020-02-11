@@ -69,17 +69,17 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f.uv = input.uv;
 
 	float4 worldPos = float4( input.position, 1 );
-	worldPos.x += cos( SYSTEM_TIME_SECONDS );
-	worldPos.y += sin( SYSTEM_TIME_SECONDS );
+	//worldPos.x += cos( SYSTEM_TIME_SECONDS );
+	//worldPos.y += sin( SYSTEM_TIME_SECONDS );
 
 	float4 clipPos = worldPos;
 	clipPos.x = RangeMap( worldPos.x, orthoMin.x, orthoMax.x, -1.f, 1.f );
 	clipPos.y = RangeMap( worldPos.y, orthoMin.y, orthoMax.y, -1.f, 1.f );
 	clipPos.z = 0.f;
-	clipPos.w = .75f + sin( sin( SYSTEM_TIME_SECONDS * 2.f) * cos( SYSTEM_TIME_SECONDS * 5.f ) );
-	//clipPos.w = 1.f;
+	clipPos.w = 1.f;
 
-	clipPos.xyz /= clipPos.w;
+	//clipPos.w = .75f + sin( sin( SYSTEM_TIME_SECONDS * 2.f) * cos( SYSTEM_TIME_SECONDS * 5.f ) );
+	//clipPos.xyz /= clipPos.w;
 
 	v2f.position = clipPos;
 
@@ -103,9 +103,9 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float4 uvAsColor = float4( input.uv, 0.0f, 1.0f );
 	float4 finalColor = input.color;;
 
-	finalColor.r = 1.f + input.uv.x + sin( SYSTEM_TIME_SECONDS );
+	/*finalColor.r = 1.f + input.uv.x + sin( SYSTEM_TIME_SECONDS );
 	finalColor.g = 1.f + input.uv.x + cos( SYSTEM_TIME_SECONDS );
-	finalColor.b = finalColor.r - finalColor.g;
+	finalColor.b = finalColor.r - finalColor.g;*/
 
 	return finalColor;
 }
