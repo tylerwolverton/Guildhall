@@ -45,6 +45,17 @@ void Game::Startup()
 
 	m_physics2D = new Physics2D();
 
+	m_mouseHistoryPoints[0].position = Vec2::ZERO;
+	m_mouseHistoryPoints[0].deltaSeconds = 0.f;
+	m_mouseHistoryPoints[1].position = Vec2::ZERO;
+	m_mouseHistoryPoints[1].deltaSeconds = 0.f;
+	m_mouseHistoryPoints[2].position = Vec2::ZERO;
+	m_mouseHistoryPoints[2].deltaSeconds = 0.f;
+	m_mouseHistoryPoints[3].position = Vec2::ZERO;
+	m_mouseHistoryPoints[3].deltaSeconds = 0.f;
+	m_mouseHistoryPoints[4].position = Vec2::ZERO;
+	m_mouseHistoryPoints[4].deltaSeconds = 0.f;
+
 	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
 }
 
@@ -228,7 +239,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 				{
 					if ( m_dragTarget != nullptr )
 					{
-						m_dragTarget->m_rigidbody->SetSimulationMode( SIMULATION_MODE_STATIC );
+						m_dragTarget->SetSimulationMode( SIMULATION_MODE_STATIC );
 					}
 				}
 				else
@@ -244,7 +255,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 				{
 					if ( m_dragTarget != nullptr )
 					{
-						m_dragTarget->m_rigidbody->SetSimulationMode( SIMULATION_MODE_KINEMATIC );
+						m_dragTarget->SetSimulationMode( SIMULATION_MODE_KINEMATIC );
 					}
 				}
 				else
@@ -261,7 +272,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 				{
 					if ( m_dragTarget != nullptr )
 					{
-						m_dragTarget->m_rigidbody->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+						m_dragTarget->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 					}
 				}
 			}
@@ -319,16 +330,14 @@ void Game::UpdateCameras( float deltaSeconds )
 	UNUSED( deltaSeconds );
 	m_worldCamera->SetPosition( m_focalPoint );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );
-
-	/*m_uiCamera->SetPosition( m_focalPoint );
-	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateMouse( float deltaSeconds )
 {
-	m_lastMouseWorldPosition = m_mouseWorldPosition;
+	UpdateMouseHistory( m_mouseWorldPosition, deltaSeconds );
+	
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
 	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition );
 
@@ -342,8 +351,8 @@ void Game::UpdateMouse( float deltaSeconds )
 				m_dragTarget = GetTopGameObjectAtMousePosition();
 				if ( m_dragTarget != nullptr )
 				{
-					m_dragOffset = m_mouseWorldPosition - m_dragTarget->m_rigidbody->GetPosition();
-					m_dragTarget->m_rigidbody->Disable();
+					m_dragOffset = m_mouseWorldPosition - m_dragTarget->GetPosition();
+					m_dragTarget->DisablePhysics();
 				}
 			}
 			else if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
@@ -352,10 +361,10 @@ void Game::UpdateMouse( float deltaSeconds )
 				{
 					if ( m_dragTarget != nullptr )
 					{
-						Vec2 deltaPosition = m_mouseWorldPosition - m_lastMouseWorldPosition;
+						MouseMovementHistoryPoint historyPt = GetCummulativeMouseHistory();
 
-						m_dragTarget->m_rigidbody->SetVelocity( deltaPosition / deltaSeconds * .4f );
-						m_dragTarget->m_rigidbody->Enable();
+						m_dragTarget->SetVelocity( historyPt.position / historyPt.deltaSeconds );
+						m_dragTarget->EnablePhysics();
 					}
 
 					m_isMouseDragging = false;
@@ -399,59 +408,24 @@ void Game::UpdateMouse( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateMouseHistory( const Vec2& position, float deltaSeconds )
+{
+	for ( int historyIdx = 0; historyIdx < 4; ++historyIdx )
+	{
+		int nextHistoryPoint = historyIdx + 1;
+		m_mouseHistoryPoints[historyIdx] = m_mouseHistoryPoints[nextHistoryPoint];
+	}
+
+	m_mouseHistoryPoints[4].position = position;
+	m_mouseHistoryPoints[4].deltaSeconds = deltaSeconds;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateGameObjects()
 {
-	// Reset fill color for all game objects
-	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
-	{
-		GameObject* gameObject = m_gameObjects[objectIdx];
-		if ( gameObject == nullptr )
-		{
-			continue;
-		}
-
-		// Default fill color to white
-		gameObject->m_fillColor = Rgba8::WHITE;
-	}
-
-	// Check for collisions
-	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
-	{
-		GameObject* gameObject = m_gameObjects[ objectIdx ];
-		if ( gameObject == nullptr )
-		{
-			continue;
-		}
-		
-		// Change border color based on mouse position
-		Collider2D* collider = gameObject->m_rigidbody->m_collider;
-		if ( collider->Contains( m_mouseWorldPosition ) )
-		{
-			gameObject->m_borderColor = Rgba8::YELLOW;
-		}
-		else
-		{
-			gameObject->m_borderColor = Rgba8::BLUE;
-		}
-
-		// Check intersection with other game objects
-		for ( int otherObjIdx = (int)m_gameObjects.size() - 1; otherObjIdx >= 0; --otherObjIdx )
-		{
-			GameObject* otherGameObject = m_gameObjects[ otherObjIdx ];
-			if ( otherGameObject == nullptr
-				 || gameObject == otherGameObject )
-			{
-				continue;
-			}
-
-			// Highlight red if intersecting another object
-			if ( collider->Intersects( otherGameObject->m_rigidbody->m_collider ) )
-			{
-				gameObject->m_fillColor = Rgba8::RED;
-				otherGameObject->m_fillColor = Rgba8::RED;
-			}
-		}
-	}
+	ResetGameObjectColors();
+	CheckCollisions();	
 }
 
 
@@ -460,9 +434,9 @@ void Game::UpdateDraggedObject()
 {
 	if ( m_dragTarget != nullptr )
 	{
-		m_dragTarget->m_rigidbody->SetPosition( m_mouseWorldPosition - m_dragOffset );
+		m_dragTarget->SetPosition( m_mouseWorldPosition - m_dragOffset );
 
-		m_dragTarget->m_borderColor = Rgba8::DARK_GREEN;
+		m_dragTarget->SetBorderColor( Rgba8::DARK_GREEN );
 	}
 }
 
@@ -494,41 +468,113 @@ void Game::UpdateOffScreenGameObjects()
 			continue;
 		}
 
-		Rigidbody2D*& rigidbody = m_gameObjects[objectIdx]->m_rigidbody;
+		GameObject*& gameObject = m_gameObjects[objectIdx];
 
-		if ( rigidbody->m_collider == nullptr )
-		{
-			continue;
-		}
-
-		Collider2D*& collider = rigidbody->m_collider;
-		const AABB2 objectBoundingBox = collider->GetBoundingBox();
+		const AABB2 objectBoundingBox = gameObject->GetBoundingBox();
 
 		// Check bouncing off bottom
-		unsigned int edgesOfScreenColliderIsOff = collider->CheckIfOutsideScreen( screenBounds, false );
+		unsigned int edgesOfScreenColliderIsOff = gameObject->CheckIfOutsideScreen( screenBounds, false );
 		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_BOTTOM
-			 && rigidbody->GetVelocity().y < 0.01f)
+			 && gameObject->GetVelocity().y < 0.01f)
 		{
-			Vec2 newVelocity( rigidbody->GetVelocity() );
+			Vec2 newVelocity( gameObject->GetVelocity() );
 			newVelocity.y = abs( newVelocity.y );
 
-			rigidbody->SetVelocity( newVelocity );
+			gameObject->SetVelocity( newVelocity );
 		}
 		
 		// Check side wraparound
-		edgesOfScreenColliderIsOff = collider->CheckIfOutsideScreen( screenBounds, true );
-		float yPos = rigidbody->GetPosition().y;
+		edgesOfScreenColliderIsOff = gameObject->CheckIfOutsideScreen( screenBounds, true );
+		float yPos = gameObject->GetPosition().y;
 
 		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_LEFT )
 		{
 			float xDistanceToOtherSideOfScreen = objectBoundingBox.mins.x - screenBounds.maxs.x;
-			rigidbody->SetPosition( Vec2( rigidbody->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
+			gameObject->SetPosition( Vec2( gameObject->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
 		}
 		if( edgesOfScreenColliderIsOff & SCREEN_EDGE_RIGHT )
 		{
 			float xDistanceToOtherSideOfScreen = objectBoundingBox.maxs.x - screenBounds.mins.x;
-			rigidbody->SetPosition( Vec2( rigidbody->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
+			gameObject->SetPosition( Vec2( gameObject->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ResetGameObjectColors()
+{
+	// Reset fill color for all game objects
+	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
+	{
+		GameObject* gameObject = m_gameObjects[objectIdx];
+		if ( gameObject == nullptr )
+		{
+			continue;
+		}
+
+		// Default fill color to white
+		gameObject->SetFillColor( Rgba8::WHITE );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::CheckCollisions()
+{
+	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
+	{
+		GameObject* gameObject = m_gameObjects[objectIdx];
+		if ( gameObject == nullptr )
+		{
+			continue;
+		}
+
+		UpdateBorderColor( gameObject );
+
+		// Check intersection with other game objects
+		for ( int otherObjIdx = (int)m_gameObjects.size() - 1; otherObjIdx >= 0; --otherObjIdx )
+		{
+			GameObject* otherGameObject = m_gameObjects[otherObjIdx];
+			HandleIntersection( gameObject, otherGameObject );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateBorderColor( GameObject* gameObject )
+{
+	if ( gameObject == nullptr )
+	{
+		return;
+	}
+	
+	if ( gameObject->Contains( m_mouseWorldPosition ) )
+	{
+		gameObject->SetBorderColor( Rgba8::YELLOW );
+	}
+	else
+	{
+		gameObject->SetBorderColor( Rgba8::BLUE );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::HandleIntersection( GameObject* gameObject, GameObject* otherGameObject )
+{
+	if ( otherGameObject == nullptr
+		 || gameObject == otherGameObject )
+	{
+		return;
+	}
+
+	// Highlight red if intersecting another object
+	if ( gameObject->Intersects( otherGameObject ) )
+	{
+		gameObject->SetFillColor( Rgba8::RED );
+		otherGameObject->SetFillColor( Rgba8::RED );
 	}
 }
 
@@ -537,14 +583,14 @@ void Game::UpdateOffScreenGameObjects()
 void Game::SpawnDisc( const Vec2& center, float radius )
 {
 	GameObject* gameObject = new GameObject();
-	gameObject->m_rigidbody = m_physics2D->CreateRigidbody();
-	gameObject->m_rigidbody->SetPosition( center );
+	gameObject->SetRigidbody( m_physics2D->CreateRigidbody() );
+	gameObject->SetPosition( center );
 
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, radius );
-	gameObject->m_rigidbody->TakeCollider( discCollider );
+	gameObject->SetCollider( discCollider );
 
-	gameObject->m_borderColor = Rgba8::BLUE;
-	gameObject->m_fillColor = Rgba8::WHITE;
+	gameObject->SetBorderColor( Rgba8::BLUE );
+	gameObject->SetFillColor( Rgba8::WHITE );
 
 	m_gameObjects.push_back( gameObject );
 }
@@ -554,14 +600,14 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 void Game::SpawnPolygon( const Polygon2& polygon )
 {
 	GameObject* gameObject = new GameObject();
-	gameObject->m_rigidbody = m_physics2D->CreateRigidbody();
-	gameObject->m_rigidbody->SetPosition( polygon.GetCenterOfMass() );
+	gameObject->SetRigidbody( m_physics2D->CreateRigidbody() );
+	gameObject->SetPosition( polygon.GetCenterOfMass() );
 
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
-	gameObject->m_rigidbody->TakeCollider( polygonCollider );
+	gameObject->SetCollider( polygonCollider );
 
-	gameObject->m_borderColor = Rgba8::BLUE;
-	gameObject->m_fillColor = Rgba8::WHITE;
+	gameObject->SetBorderColor( Rgba8::BLUE );
+	gameObject->SetFillColor( Rgba8::WHITE );
 
 	m_gameObjects.push_back( gameObject );
 }
@@ -609,9 +655,7 @@ int Game::GetIndexOfTopGameObjectAtMousePosition()
 			continue;
 		}
 
-		DiscCollider2D* collider = (DiscCollider2D*)gameObject->m_rigidbody->m_collider;
-
-		if ( collider->Contains( m_mouseWorldPosition ) )
+		if ( gameObject->Contains( m_mouseWorldPosition ) )
 		{
 			return objectIdx;
 		}
@@ -664,4 +708,20 @@ void Game::PerformGarbageCollection()
 	}
 
 	m_garbageGameObjectIndexes.clear();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+MouseMovementHistoryPoint Game::GetCummulativeMouseHistory()
+{
+	MouseMovementHistoryPoint history;
+	history.position = m_mouseHistoryPoints[4].position - m_mouseHistoryPoints[0].position;
+	history.deltaSeconds = 0.f;
+
+	for ( int historyIdx = 0; historyIdx < 5; ++historyIdx )
+	{
+		history.deltaSeconds += m_mouseHistoryPoints[historyIdx].deltaSeconds;
+	}
+
+	return history;
 }
