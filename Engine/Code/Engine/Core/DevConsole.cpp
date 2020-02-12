@@ -72,6 +72,17 @@ void DevConsole::SetEventSystem( EventSystem* eventSystem )
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::ProcessInput()
+{
+	/*char c;
+	while ( InputSystem->PopCharacter( &c ) )
+	{
+		AddCharacterToInput( c );
+	}*/
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::PrintString( const Rgba8& textColor, const std::string& devConsolePrintString )
 {
 	m_logMessages.push_back( DevConsoleLogMessage( textColor, devConsolePrintString ) );
@@ -99,7 +110,7 @@ void DevConsole::Render( RenderContext& renderer, const AABB2& bounds, float lin
 	//RenderBackground( renderer, bounds );
 	RenderLatestLogMessages( renderer, bounds, lineHeight );
 	RenderInputString( renderer, bounds, lineHeight );
-	RenderCursor( renderer, bounds, lineHeight );
+	//RenderCursor( renderer, bounds, lineHeight );
 
 	renderer.EndCamera( *m_devConsoleCamera );
 }

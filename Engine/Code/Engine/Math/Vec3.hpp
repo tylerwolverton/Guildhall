@@ -1,4 +1,7 @@
 #pragma once
+//-----------------------------------------------------------------------------------------------
+struct Vec2;
+
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3
@@ -13,6 +16,7 @@ public:
 	~Vec3() {}															// destructor (do nothing)
 	Vec3() {}															// default constructor (do nothing)
 	Vec3( const Vec3& copyFrom );										// copy constructor (from another Vec3)
+	Vec3( const Vec2& copyFrom , float initialZ );						// copy constructor (from a Vec2)
 	explicit Vec3( float initialX, float initialY, float initialZ );	// explicit constructor (from x, y, z)
 	void SetFromText( const char* asText );
 

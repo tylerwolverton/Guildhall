@@ -1,6 +1,6 @@
 #include "Camera.hpp"
 #include "Engine/Core/EngineCommon.hpp"
-#include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Renderer/RenderBuffer.hpp"
 
 
@@ -23,6 +23,8 @@ void Camera::SetOrthoView( const Vec2& bottomLeft, const Vec2& topRight )
 {
 	m_bottomLeft = bottomLeft;
 	m_topRight = topRight;
+
+	m_projectionMatrix = Mat44::CreateOrthographicProjection( Vec3( bottomLeft, 0.f ), Vec3( topRight, 1.f ) );
 }
 
 
@@ -32,6 +34,21 @@ void Camera::SetOrthoView( const AABB2& cameraBounds )
 	m_bottomLeft = cameraBounds.mins;
 	m_topRight = cameraBounds.maxs;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetPosition( const Vec3& position )
+{
+	m_position = position;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::Translate( const Vec3& translation )
+{
+	m_position += translation;
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void Camera::Translate2D(const Vec2& translation)
@@ -69,9 +86,13 @@ Texture* Camera::GetColorTarget() const
 //-----------------------------------------------------------------------------------------------
 void Camera::UpdateCameraUBO()
 {
+	// if buffer is nulllptr
+	// cameraUBO = new RenderBuffer()
+
 	CameraData cameraData;
-	cameraData.orthoMin = m_bottomLeft; 
-	cameraData.orthoMax = m_topRight;
+	cameraData.projection = m_projectionMatrix;
+	cameraData.view = Mat44::CreateTranslation3D( -m_position );
 
 	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
+	// return m_cameraUBO;
 }

@@ -72,6 +72,7 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 		{
 			unsigned char asKey = (unsigned char)wParam;
 
+			// inputSystem->PushChracter()
 			if ( devConsole->ProcessCharTyped( asKey ) )
 			{
 				return 0; 

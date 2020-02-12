@@ -29,10 +29,11 @@ cbuffer time_constants : register( b0 )
 };
 
 
+// MVP - Model - View - Projection
 cbuffer camera_constants : register( b1 )
 {
-	float2 orthoMin;
-	float2 orthoMax;
+	float4x4 VIEW;		 // WORLD_TO_CAMERA_TRANSFORM;
+	float4x4 PROJECTION; // CAMERA_TO_CLIP_TRANSFORM;  
 };
 
 
@@ -69,14 +70,11 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f.uv = input.uv;
 
 	float4 worldPos = float4( input.position, 1 );
-	//worldPos.x += cos( SYSTEM_TIME_SECONDS );
-	//worldPos.y += sin( SYSTEM_TIME_SECONDS );
+	/*worldPos.x += cos( SYSTEM_TIME_SECONDS );
+	worldPos.y += sin( SYSTEM_TIME_SECONDS );*/
 
-	float4 clipPos = worldPos;
-	clipPos.x = RangeMap( worldPos.x, orthoMin.x, orthoMax.x, -1.f, 1.f );
-	clipPos.y = RangeMap( worldPos.y, orthoMin.y, orthoMax.y, -1.f, 1.f );
-	clipPos.z = 0.f;
-	clipPos.w = 1.f;
+	float4 cameraPos = mul( VIEW, worldPos );
+	float4 clipPos = mul( PROJECTION, cameraPos );
 
 	//clipPos.w = .75f + sin( sin( SYSTEM_TIME_SECONDS * 2.f) * cos( SYSTEM_TIME_SECONDS * 5.f ) );
 	//clipPos.xyz /= clipPos.w;

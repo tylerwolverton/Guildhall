@@ -558,3 +558,36 @@ const Mat44 Mat44::CreateNonUniformScale3D( const Vec3& scaleFactorsXYZ )
 
 	return newMatrix;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreateOrthographicProjection( const Vec3& min, const Vec3& max )
+{
+	// think of x
+	// min.x, max.x -> (-1,1)
+	// ndc.x = ((x -  min.x) / (max.x - min.x)) * (( 1.f - (-1.f)) + -1.f )
+	// ndc.x = x / (max.x - min.x) - (min.x / (max.x - min.x)) * 2.f + -1.f )
+	// a = (max.x - min.x)
+	// b = (-2.f * min.x - max.x + min.x) / (max.x - min.x)
+	//   = -(max.x - min.x) / (max.x - min.x)
+
+	// min.z, max.z -> (0,1) (In DirectX only, map to -1, 1 in other APIs)
+	// ndc.z = ((z -  min.z) / (max.z - min.z)) * (( 1.f - (0.f)) + 0.f )
+	// ndc.z = z / (max.z - min.z) - (min.z / (max.z - min.z)) * 1.f )
+	// a = 1.f / (max.z - min.z)
+	// b = -min.z / (max.z - min.z)
+
+
+	Vec3 diff = max - min;
+	Vec3 sum = max + min;
+
+	float projMatrix[] =
+	{
+		2.f / diff.x,		0.f,				0.f,				0.f,
+		0.f,				2.f / diff.y,		0.f,				0.f,
+		0.f,				0.f,				1.f / diff.z,		0.f,
+		-sum.x / diff.x,	-sum.y / diff.y,	-min.z / diff.z,	1.f
+	};
+
+	return Mat44( projMatrix );
+}

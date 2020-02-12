@@ -42,6 +42,8 @@ public:
 
 	void SetEventSystem( EventSystem* eventSystem );
 
+	void ProcessInput();
+
 	void PrintString( const Rgba8& textColor, const std::string& devConsolePrintString );
 	void Render( RenderContext& renderer, const Camera& camera, float lineHeight ) const;
 	void Render( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;

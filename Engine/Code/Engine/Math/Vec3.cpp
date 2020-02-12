@@ -1,4 +1,5 @@
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
@@ -26,6 +27,15 @@ Vec3::Vec3( float initialX, float initialY, float initialZ )
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+Vec3::Vec3( const Vec2& copyFrom, float initialZ )
+	: x( copyFrom.x )
+	, y( copyFrom.y )
+	, z( initialZ )
+{
+
+}
 
 //-----------------------------------------------------------------------------------------------
 void Vec3::SetFromText( const char* asText )

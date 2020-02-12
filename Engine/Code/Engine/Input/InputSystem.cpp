@@ -72,6 +72,8 @@ void InputSystem::EndFrame()
 		KeyButtonState& keyState = m_keyStates[keyCode];
 		keyState.UpdateStatus( keyState.IsPressed() );
 	}
+
+	//m_m_characters.clear();
 }
 
 
@@ -96,6 +98,30 @@ bool InputSystem::HandleKeyReleased( unsigned char keyCode )
 	m_keyStates[keyCode].UpdateStatus( false );
 
 	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::PushCharacter( char c )
+{
+	//m_characters.enqueue( c );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::PopCharacter( char* out )
+{
+	/*if ( have chars )
+	{
+		*out = m_characters.front();
+		m_characters.pop();
+		return true;
+	}
+	else
+	{
+		return false;
+	}*/
+	return false;
 }
 
 

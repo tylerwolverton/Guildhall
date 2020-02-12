@@ -141,6 +141,28 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 
+	Vec3 cameraTranslation;
+	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
+	{
+		cameraTranslation.x += 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
+	{
+		cameraTranslation.x -= 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
+	{
+		cameraTranslation.y += 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
+	{
+		cameraTranslation.y -= 1.f;
+	}
+
+	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
 }
 
 
@@ -186,7 +208,7 @@ void Game::UpdateCameras( float deltaSeconds )
 
 	m_worldCamera->Translate2D(cameraShakeOffset);
 
-	m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
+	m_worldCamera->SetOrthoView( Vec2( -10.f, -10.f ), Vec2( 10.f, 10.f ) );
 }
 
 

@@ -92,6 +92,9 @@ public:
 	static const Mat44	CreateUniformScale3D( float scaleFactorsXYZ );
 	static const Mat44	CreateNonUniformScale3D( const Vec3& scaleFactorsXYZ );
 
+	// Projection
+	static const Mat44	CreateOrthographicProjection( const Vec3& min, const Vec3& max );
+
 private:
 	const Mat44 operator*( const Mat44& rhs ) const = delete; // Do not implement, forbidden!
 };

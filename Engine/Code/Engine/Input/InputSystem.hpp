@@ -51,6 +51,9 @@ public:
 	bool HandleKeyPressed( unsigned char keyCode );
 	bool HandleKeyReleased( unsigned char keyCode );
 
+	void PushCharacter( char c );
+	bool PopCharacter( char* out );
+
 	bool IsKeyPressed( unsigned char keyCode ) const;
 	bool WasKeyJustPressed( unsigned char keyCode ) const;
 	bool WasKeyJustReleased( unsigned char keyCode ) const;
@@ -72,4 +75,6 @@ private:
 	};
 
 	Vec2 m_normalizedMouseClientPos = Vec2::ZERO;
+
+	//std::queue<char> m_characters;
 };
