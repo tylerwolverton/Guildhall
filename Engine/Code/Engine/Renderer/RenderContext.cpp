@@ -93,6 +93,8 @@ void RenderContext::Startup( Window* window )
 
 	m_defaultSampler = new Sampler( this, SAMPLER_POINT );
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
+
+	CreateBlendStates();
 }
 
 
@@ -120,6 +122,9 @@ void RenderContext::Shutdown()
 
 	delete m_defaultWhiteTexture;
 	m_defaultWhiteTexture = nullptr;
+
+	DX_SAFE_RELEASE( m_alphaBlendState );
+	DX_SAFE_RELEASE( m_additiveBlendState );
 
 	// Cleanup shader cache
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
@@ -161,20 +166,13 @@ void RenderContext::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::SetBlendMode( eBlendMode blendMode )
 {
-	UNUSED( blendMode );
-	UNIMPLEMENTED();
-	/*if ( blendMode == BlendMode::ALPHA )
+	float const zeroes[] = { 0,0,0,0 };
+
+	switch ( blendMode )
 	{
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0 ); return;
+		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0 ); return;
 	}
-	else if ( blendMode == BlendMode::ADDITIVE )
-	{
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-	}
-	else
-	{
-		ERROR_AND_DIE( Stringf( "Unknown / unsupported blend mode #%i", blendMode ) );
-	}*/
 }
 
 
@@ -240,6 +238,8 @@ void RenderContext::BeginCamera( Camera& camera )
 	BindTexture( nullptr );
 	BindSampler( nullptr );
 	m_lastVBOHandle = nullptr;
+
+	SetBlendMode( eBlendMode::ALPHA );
 
 	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
 	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
@@ -755,6 +755,43 @@ Texture* RenderContext::RetrieveTextureFromCache( const char* filePath )
 	}
 
 	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CreateBlendStates()
+{
+	// Alpha
+	D3D11_BLEND_DESC alphaDesc;
+	alphaDesc.AlphaToCoverageEnable = FALSE;
+	alphaDesc.IndependentBlendEnable = FALSE;
+	alphaDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	alphaDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	alphaDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
+	alphaDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	alphaDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	alphaDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	alphaDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	m_device->CreateBlendState( &alphaDesc, &m_alphaBlendState );
+
+	// Additive
+	D3D11_BLEND_DESC additiveDesc;
+	additiveDesc.AlphaToCoverageEnable = FALSE;
+	additiveDesc.IndependentBlendEnable = FALSE;
+	additiveDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	additiveDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	additiveDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+
+	additiveDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	additiveDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	additiveDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	additiveDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	m_device->CreateBlendState( &additiveDesc, &m_additiveBlendState );
 }
 
 

@@ -120,8 +120,13 @@ void Game::Render() const
 	
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/mgs.png" );
 	g_renderer->BindTexture( texture );
-	
+	//g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
+
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
+	g_renderer->BindTexture( nullptr );
+	g_renderer->DrawAABB2( AABB2( -.75f, -.25f, -.25f, .25f ), Rgba8::GREEN );
+
+	g_renderer->BindTexture( texture );
 	g_renderer->DrawAABB2( AABB2( -.75f, -.25f, -.25f, .25f ), Rgba8::WHITE );
 	
 	g_renderer->BindShader( "Data/Shaders/InvertColors.hlsl" );

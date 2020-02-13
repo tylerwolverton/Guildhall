@@ -13,6 +13,7 @@ struct IDXGISwapChain;
 struct IDXGIDebug;
 struct ID3D11RenderTargetView;
 struct ID3D11Buffer;
+struct ID3D11BlendState;
 class SwapChain;
 struct AABB2;
 struct OBB2;
@@ -120,6 +121,8 @@ private:
 	Texture* CreateTextureFromFile( const char* filePath );
 	Texture* RetrieveTextureFromCache( const char* filePath );
 
+	void CreateBlendStates();
+
 	BitmapFont* RetrieveBitmapFontFromCache( const char* filePath );
 
 	void CreateDebugModule();
@@ -151,6 +154,9 @@ private:
 
 	Sampler* m_defaultSampler = nullptr;
 	Texture* m_defaultWhiteTexture = nullptr;
+
+	ID3D11BlendState* m_alphaBlendState;
+	ID3D11BlendState* m_additiveBlendState;
 
 	bool m_isDrawing = false;
 };
