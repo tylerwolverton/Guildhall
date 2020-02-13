@@ -73,7 +73,10 @@ void InputSystem::EndFrame()
 		keyState.UpdateStatus( keyState.IsPressed() );
 	}
 
-	//m_m_characters.clear();
+	for ( int charNum = 0; charNum < (int)m_characters.size(); ++charNum )
+	{
+		m_characters.pop();
+	}
 }
 
 
@@ -104,14 +107,14 @@ bool InputSystem::HandleKeyReleased( unsigned char keyCode )
 //-----------------------------------------------------------------------------------------------
 void InputSystem::PushCharacter( char c )
 {
-	//m_characters.enqueue( c );
+	m_characters.push( c );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 bool InputSystem::PopCharacter( char* out )
 {
-	/*if ( have chars )
+	if ( m_characters.size() > 0 )
 	{
 		*out = m_characters.front();
 		m_characters.pop();
@@ -120,8 +123,7 @@ bool InputSystem::PopCharacter( char* out )
 	else
 	{
 		return false;
-	}*/
-	return false;
+	}
 }
 
 

@@ -1,7 +1,6 @@
 #include "Engine/OS/Window.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
-#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
 
@@ -24,12 +23,10 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 	
 	InputSystem* inputSystem = nullptr;
 	EventSystem* eventSystem = nullptr;
-	DevConsole* devConsole = nullptr;
 	if ( window != nullptr )
 	{
 		inputSystem = window->GetInputSystem();
 		eventSystem = window->GetEventSystem();
-		devConsole = window->GetDevConsole();
 	}
 
 	switch ( wmMessageCode )
@@ -72,11 +69,8 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 		{
 			unsigned char asKey = (unsigned char)wParam;
 
-			// inputSystem->PushChracter()
-			if ( devConsole->ProcessCharTyped( asKey ) )
-			{
-				return 0; 
-			}
+			inputSystem->PushCharacter( asKey );
+			return 0; 
 
 			break;
 		}
@@ -145,13 +139,6 @@ void Window::SetEventSystem( EventSystem* eventSystem )
 void Window::SetInputSystem( InputSystem* inputSystem )
 {
 	m_inputSystem = inputSystem;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Window::SetDevCosole( DevConsole* devConsole )
-{
-	m_devConsole = devConsole;
 }
 
 

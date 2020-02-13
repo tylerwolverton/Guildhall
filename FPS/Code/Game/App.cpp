@@ -57,10 +57,10 @@ void App::Startup()
 	g_window->SetEventSystem( g_eventSystem );
 
 	g_devConsole->Startup();
-	g_window->SetDevCosole( g_devConsole );
 	
 	g_inputSystem->Startup();
 	g_window->SetInputSystem( g_inputSystem );
+	g_devConsole->SetInputSystem( g_inputSystem );
 
 	g_audioSystem->Startup();
 	g_renderer->Startup( g_window );

@@ -3,6 +3,8 @@
 #include "Engine/Input/KeyButtonState.hpp"
 #include "Engine/Math/Vec2.hpp"
 
+#include <queue>
+
 
 //-----------------------------------------------------------------------------------------------
 constexpr int MAX_XBOX_CONTROLLERS = 4;
@@ -76,5 +78,5 @@ private:
 
 	Vec2 m_normalizedMouseClientPos = Vec2::ZERO;
 
-	//std::queue<char> m_characters;
+	std::queue<char> m_characters;
 };

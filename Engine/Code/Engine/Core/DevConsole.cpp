@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -45,6 +46,8 @@ void DevConsole::Update( float deltaSeconds )
 		return;
 	}
 
+	ProcessInput();
+	
 	m_devConsoleCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 }
 
@@ -65,6 +68,13 @@ void DevConsole::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::SetInputSystem( InputSystem* inputSystem )
+{
+	m_inputSystem = inputSystem;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::SetEventSystem( EventSystem* eventSystem )
 {
 	m_eventSystem = eventSystem;
@@ -74,11 +84,17 @@ void DevConsole::SetEventSystem( EventSystem* eventSystem )
 //-----------------------------------------------------------------------------------------------
 void DevConsole::ProcessInput()
 {
-	/*char c;
-	while ( InputSystem->PopCharacter( &c ) )
+	if ( m_inputSystem == nullptr )
 	{
-		AddCharacterToInput( c );
-	}*/
+		PrintString( Rgba8::RED, "No input system bound to dev console" );
+		return;
+	}
+
+	char c;
+	while ( m_inputSystem->PopCharacter( &c ) )
+	{
+		ProcessCharTyped( c );
+	}
 }
 
 

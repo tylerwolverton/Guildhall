@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------------------------------
 class EventSystem;
 class InputSystem;
-class DevConsole;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -25,7 +24,6 @@ public:
 
 	void SetEventSystem( EventSystem* eventSystem );
 	void SetInputSystem( InputSystem* inputSystem );
-	void SetDevCosole( DevConsole* devConsole );
 
 	bool Open( const std::string& title, float clientAspect = 16.f / 9.f, float maxClientFractionOfDesktop = .9f, eWindowMode windowMode = eWindowMode::WINDOWED );
 	void Close();
@@ -37,7 +35,6 @@ public:
 
 	EventSystem*	GetEventSystem() const			{ return m_eventSystem; }
 	InputSystem*	GetInputSystem() const			{ return m_inputSystem; }
-	DevConsole*		GetDevConsole() const			{ return m_devConsole; }
 
 public:
 	void* m_hwnd = nullptr;
@@ -47,5 +44,4 @@ public:
 private:
 	EventSystem* m_eventSystem = nullptr;
 	InputSystem* m_inputSystem = nullptr;
-	DevConsole* m_devConsole = nullptr;
 };

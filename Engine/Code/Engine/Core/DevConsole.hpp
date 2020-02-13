@@ -8,6 +8,7 @@
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
 class EventSystem;
+class InputSystem;
 class RenderContext;
 class Camera;
 
@@ -40,6 +41,7 @@ public:
 	void EndFrame();
 	void Shutdown();
 
+	void SetInputSystem( InputSystem* inputSystem );
 	void SetEventSystem( EventSystem* eventSystem );
 
 	void ProcessInput();
@@ -66,6 +68,8 @@ private:
 	void ExecuteCommand();
 
 private:
+	InputSystem* m_inputSystem = nullptr;
+
 	bool m_isOpen = false;
 	Camera* m_devConsoleCamera = nullptr;
 	std::vector<DevConsoleLogMessage> m_logMessages;
