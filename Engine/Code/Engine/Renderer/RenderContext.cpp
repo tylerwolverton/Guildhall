@@ -1,4 +1,4 @@
-#include "RenderContext.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
@@ -15,6 +15,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
+#include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
@@ -89,6 +90,9 @@ void RenderContext::Startup( Window* window )
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+
+	m_defaultSampler = new Sampler( this, SAMPLER_POINT );
+	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
 }
 
 
@@ -110,6 +114,12 @@ void RenderContext::Shutdown()
 {
 	delete m_immediateVBO;
 	delete m_frameUBO;
+
+	delete m_defaultSampler;
+	m_defaultSampler = nullptr;
+
+	delete m_defaultWhiteTexture;
+	m_defaultWhiteTexture = nullptr;
 
 	// Cleanup shader cache
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
@@ -227,6 +237,8 @@ void RenderContext::BeginCamera( Camera& camera )
 	}
 
 	BindShader( (Shader*)nullptr );
+	BindTexture( nullptr );
+	BindSampler( nullptr );
 	m_lastVBOHandle = nullptr;
 
 	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
@@ -675,79 +687,58 @@ Texture* RenderContext::CreateOrGetTextureFromFile( const char* filePath )
 //-----------------------------------------------------------------------------------------------
 Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 {
-	UNUSED( imageFilePath );
-	UNIMPLEMENTED();
-	return nullptr;
-	//unsigned int textureID = 0;
-	//int imageTexelSizeX = 0; // This will be filled in for us to indicate image width
-	//int imageTexelSizeY = 0; // This will be filled in for us to indicate image height
-	//int numComponents = 0; // This will be filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
-	//int numComponentsRequested = 0; // don't care; we support 3 (24-bit RGB) or 4 (32-bit RGBA)
+	int imageTexelSizeX = 0; // This will be filled in for us to indicate image width
+	int imageTexelSizeY = 0; // This will be filled in for us to indicate image height
+	int numComponents = 0; // This will be filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
+	int numComponentsRequested = 4; // we support 4 (32-bit RGBA)
 
-	//// Load (and decompress) the image RGB(A) bytes from a file on disk into a memory buffer (array of bytes)
-	//stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
-	//unsigned char* imageData = stbi_load( imageFilePath, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
+	// Load (and decompress) the image RGB(A) bytes from a file on disk into a memory buffer (array of bytes)
+	stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
+	unsigned char* imageData = stbi_load( imageFilePath, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
 
-	//// Check if the load was successful
-	//if ( imageData == nullptr )
-	//{
-	//	g_devConsole->PrintString( Rgba8::RED, Stringf( "Failed to load image \"%s\"", imageFilePath ) );
-	//	return nullptr;
-	//}
+	// Check if the load was successful
+	if ( imageData == nullptr )
+	{
+		g_devConsole->PrintString( Rgba8::RED, Stringf( "Failed to load image \"%s\"", imageFilePath ) );
+		return nullptr;
+	}
 
-	//if ( !( numComponents >= 3 && numComponents <= 4 && imageTexelSizeX > 0 && imageTexelSizeY > 0 ) )
-	//{
-	//	g_devConsole->PrintString( Rgba8::RED, Stringf( "ERROR loading image \"%s\" (Bpp=%i, size=%i,%i)", imageFilePath, numComponents, imageTexelSizeX, imageTexelSizeY ) );
-	//	return nullptr;
-	//}
+	if ( !( numComponents == 4 && imageTexelSizeX > 0 && imageTexelSizeY > 0 ) )
+	{
+		g_devConsole->PrintString( Rgba8::RED, Stringf( "ERROR loading image \"%s\" (Bpp=%i, size=%i,%i)", imageFilePath, numComponents, imageTexelSizeX, imageTexelSizeY ) );
+		return nullptr;
+	}
 
-	//// Enable OpenGL texturing
-	//glEnable( GL_TEXTURE_2D );
+	// Describe the texture
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = imageTexelSizeX;
+	desc.Height = imageTexelSizeY;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;						// MSAA
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_IMMUTABLE;				// if we do mip chains this needs to be GPU/DEFAULT; as of now the texture will never change
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;	// | RENDER_TAGET later
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
 
-	//// Tell OpenGL that our pixel data is single-byte aligned
-	//glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+	D3D11_SUBRESOURCE_DATA initialData;
+	initialData.pSysMem = imageData;
+	initialData.SysMemPitch = imageTexelSizeX * 4;
+	initialData.SysMemSlicePitch = 0;
 
-	//// Ask OpenGL for an unused texName (ID number) to use for this texture
-	//glGenTextures( 1, (GLuint*)& textureID );
+	// DirectX creation
+	ID3D11Texture2D* texHandle = nullptr;
+	m_device->CreateTexture2D( &desc, &initialData, &texHandle );
 
-	//// Tell OpenGL to bind (set) this as the currently active texture
-	//glBindTexture( GL_TEXTURE_2D, textureID );
+	// Free the raw image texel data now that we've sent a copy of it down to the GPU to be stored in video memory
+	stbi_image_free( imageData );
 
-	//// Set texture clamp vs. wrap (repeat) default settings
-	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT ); // GL_CLAMP or GL_REPEAT
-	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT ); // GL_CLAMP or GL_REPEAT
+	Texture* newTexture = new Texture( imageFilePath, this, texHandle );
+	m_loadedTextures.push_back( newTexture );
 
-	//// Set magnification (texel > pixel) and minification (texel < pixel) filters
-	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST ); // one of: GL_NEAREST, GL_LINEAR
-	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ); // one of: GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_LINEAR
-
-	//// Pick the appropriate OpenGL format (RGB or RGBA) for this texel data
-	//GLenum bufferFormat = GL_RGBA; // the format our source pixel data is in; any of: GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, ...
-	//if ( numComponents == 3 )
-	//{
-	//	bufferFormat = GL_RGB;
-	//}
-	//GLenum internalFormat = bufferFormat; // the format we want the texture to be on the card; technically allows us to translate into a different texture format as we upload to OpenGL
-
-	//// Upload the image texel data (raw pixels bytes) to OpenGL under this textureID
-	//glTexImage2D(			// Upload this pixel data to our new OpenGL texture
-	//			  GL_TEXTURE_2D,		// Creating this as a 2d texture
-	//			  0,					// Which mipmap level to use as the "root" (0 = the highest-quality, full-res image), if mipmaps are enabled
-	//			  internalFormat,		// Type of texel format we want OpenGL to use for this texture internally on the video card
-	//			  imageTexelSizeX,	// Texel-width of image; for maximum compatibility, use 2^N + 2^B, where N is some integer in the range [3,11], and B is the border thickness [0,1]
-	//			  imageTexelSizeY,	// Texel-height of image; for maximum compatibility, use 2^M + 2^B, where M is some integer in the range [3,11], and B is the border thickness [0,1]
-	//			  0,					// Border size, in texels (must be 0 or 1, recommend 0)
-	//			  bufferFormat,		// Pixel format describing the composition of the pixel data in buffer
-	//			  GL_UNSIGNED_BYTE,	// Pixel color components are unsigned bytes (one byte per color channel/component)
-	//			  imageData );		// Address of the actual pixel data bytes/buffer in system memory
-
-	//		  // Free the raw image texel data now that we've sent a copy of it down to the GPU to be stored in video memory
-	//stbi_image_free( imageData );
-
-	//Texture* newTexture = new Texture( textureID, imageFilePath, IntVec2( imageTexelSizeX, imageTexelSizeY ) );
-	//m_loadedTextures.push_back( newTexture );
-
-	//return newTexture ;
+	return newTexture;
 }
 
 
@@ -755,32 +746,43 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 Texture* RenderContext::RetrieveTextureFromCache( const char* filePath )
 {
 	UNUSED( filePath );
-	/*for ( int textureIndex = 0; textureIndex < (int)m_loadedTextures.size(); ++textureIndex )
+	for ( int textureIndex = 0; textureIndex < (int)m_loadedTextures.size(); ++textureIndex )
 	{
-		if ( !strcmp( filePath, m_loadedTextures[textureIndex]->GetFilePath() ) )
+		if ( m_loadedTextures[textureIndex]->GetFilePath() == filePath )
 		{
 			return m_loadedTextures[textureIndex];
 		}
-	}*/
+	}
 
 	return nullptr;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindTexture( const Texture* texture )
+void RenderContext::BindTexture( const Texture* constTexture )
 {
-	UNUSED( texture );
-	UNIMPLEMENTED();
-	/*if ( texture )
+	Texture* texture = const_cast<Texture*>( constTexture );
+	if ( texture == nullptr )
 	{
-		glEnable( GL_TEXTURE_2D );
-		glBindTexture( GL_TEXTURE_2D, texture->GetTextureID() );
+		texture = m_defaultWhiteTexture;
 	}
-	else
+
+	TextureView* shaderResourceView = texture->GetOrCreateShaderResourceView();
+	ID3D11ShaderResourceView* srvHandle = shaderResourceView->m_shaderResourceView;
+	m_context->PSSetShaderResources( 0, 1, &srvHandle ); //srv
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindSampler( Sampler* sampler )
+{
+	if ( sampler == nullptr )
 	{
-		glDisable( GL_TEXTURE_2D );
-	}*/
+		sampler = m_defaultSampler;
+	} 
+
+	ID3D11SamplerState* samplerHandle = sampler->m_handle;
+	m_context->PSSetSamplers( 0, 1, &samplerHandle );
 }
 
 
@@ -802,6 +804,51 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
 	}
 
 	return font;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
+{
+	int imageTexelSizeX = 1; // This will be filled in for us to indicate image width
+	int imageTexelSizeY = 1; // This will be filled in for us to indicate image height
+	//int numComponents = 0; // This will be filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
+	//int numComponentsRequested = 4; // we support 4 (32-bit RGBA)
+
+	//// Load (and decompress) the image RGB(A) bytes from a file on disk into a memory buffer (array of bytes)
+	//stbi_set_flip_vertically_on_load( 0 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
+	//unsigned char* initialData = stbi_load_from_memory( &color, 4, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
+	
+	// Describe the texture
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = imageTexelSizeX;
+	desc.Height = imageTexelSizeY;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;						// MSAA
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_IMMUTABLE;				// if we do mip chains this needs to be GPU/DEFAULT; as of now the texture will never change
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;	// | RENDER_TAGET later
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA initialData;
+	initialData.pSysMem = &color;
+	initialData.SysMemPitch = sizeof( Rgba8 );
+	initialData.SysMemSlicePitch = 0;
+
+	// DirectX creation
+	ID3D11Texture2D* texHandle = nullptr;
+	m_device->CreateTexture2D( &desc, &initialData, &texHandle );
+
+	// Free the raw image texel data now that we've sent a copy of it down to the GPU to be stored in video memory
+	//stbi_image_free( imageData );
+
+	Texture* newTexture = new Texture( this, texHandle );
+	//m_loadedTextures.push_back( newTexture );
+
+	return newTexture;
 }
 
 

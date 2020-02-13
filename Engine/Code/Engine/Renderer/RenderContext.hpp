@@ -22,6 +22,7 @@ struct Rgba8;
 struct Vertex_PCU;
 class Camera;
 class Texture;
+class Sampler;
 class BitmapFont;
 class Shader;
 class RenderBuffer;
@@ -107,9 +108,13 @@ public:
 	Shader* GetOrCreateShader( char const* filename );
 
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
-	void BindTexture( const Texture* texture );
+	void BindTexture( const Texture* constTexture );
+	void BindSampler( Sampler* sampler );
 
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
+
+	Texture* CreateTextureFromColor( const Rgba8& color );
+	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
 private:
 	Texture* CreateTextureFromFile( const char* filePath );
@@ -143,6 +148,9 @@ private:
 	Shader* m_defaultShader = nullptr;
 	Shader* m_currentShader = nullptr;
 	std::vector<Shader*> m_loadedShaders;
+
+	Sampler* m_defaultSampler = nullptr;
+	Texture* m_defaultWhiteTexture = nullptr;
 
 	bool m_isDrawing = false;
 };

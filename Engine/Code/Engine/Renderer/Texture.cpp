@@ -5,15 +5,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Texture::Texture( int id, const char* filePath, const IntVec2& texelSize )
-	: m_id( id )
-	, m_filePath( filePath )
-	, m_texelSize( texelSize )
-{
-}
-
-
-//-----------------------------------------------------------------------------------------------
 Texture::Texture( RenderContext* owner, ID3D11Texture2D* handle )
 	: m_owner( owner )
 	, m_handle( handle )
@@ -26,6 +17,14 @@ Texture::Texture( RenderContext* owner, ID3D11Texture2D* handle )
 
 
 //-----------------------------------------------------------------------------------------------
+Texture::Texture( const char* filePath, RenderContext* owner, ID3D11Texture2D* handle )
+	: Texture( owner, handle )
+{
+	m_filePath = filePath;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Texture::~Texture()
 {
 	m_owner = nullptr;
@@ -33,6 +32,9 @@ Texture::~Texture()
 
 	delete m_renderTargetView;
 	m_renderTargetView = nullptr;
+
+	delete m_shaderResourceView;
+	m_shaderResourceView = nullptr;
 }
 
 
@@ -66,4 +68,32 @@ TextureView* Texture::GetOrCreateRenderTargetView()
 	}
 
 	return m_renderTargetView;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+TextureView* Texture::GetOrCreateShaderResourceView()
+{
+	// only need to create it once
+	if ( m_shaderResourceView != nullptr )
+	{
+		return m_shaderResourceView;
+	}
+
+	// now we create it.  If we need a special type of view
+	// we would have to fill out a `D3D11_RENDER_TARGET_VIEW_DESC`, but 
+	// in this case, the default will be fine; 
+
+	ID3D11Device* device = m_owner->m_device;
+	ID3D11ShaderResourceView* shaderResourceView = nullptr;
+	device->CreateShaderResourceView( m_handle, nullptr, &shaderResourceView );
+
+	if ( shaderResourceView != nullptr )
+	{
+		// great, we made it, so make OUR object for it
+		m_shaderResourceView = new TextureView(); // could pass in constructor, but would require a lot of constructors
+		m_shaderResourceView->m_shaderResourceView = shaderResourceView; // setup the member
+	}
+
+	return m_shaderResourceView;
 }

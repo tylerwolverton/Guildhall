@@ -198,6 +198,7 @@
     <ClCompile Include="Renderer\D3D11Common.cpp" />
     <ClCompile Include="Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />
+    <ClCompile Include="Renderer\Sampler.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
     <ClCompile Include="Renderer\SimpleTriangleFont.cpp" />
     <ClCompile Include="Renderer\SpriteAnimDefinition.cpp" />
@@ -262,6 +263,7 @@
     <ClInclude Include="Renderer\D3D11Common.hpp" />
     <ClInclude Include="Renderer\RenderBuffer.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />
+    <ClInclude Include="Renderer\Sampler.hpp" />
     <ClInclude Include="Renderer\Shader.hpp" />
     <ClInclude Include="Renderer\SimpleTriangleFont.hpp" />
     <ClInclude Include="Renderer\SpriteAnimDefinition.hpp" />

@@ -119,8 +119,10 @@ void Game::Render() const
 	g_renderer->BeginCamera(*m_worldCamera );
 	
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
+	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/mgs.png" );
 	
-	g_renderer->DrawAABB2( AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::RED );
+	g_renderer->BindTexture( texture );
+	g_renderer->DrawAABB2( AABB2( -.75f, -.25f, -.25f, .25f ), Rgba8::WHITE );
 	
 	g_renderer->EndCamera( *m_worldCamera );
 }
@@ -208,7 +210,7 @@ void Game::UpdateCameras( float deltaSeconds )
 
 	m_worldCamera->Translate2D(cameraShakeOffset);
 
-	m_worldCamera->SetOrthoView( Vec2( -10.f, -10.f ), Vec2( 10.f, 10.f ) );
+	m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 }
 
 

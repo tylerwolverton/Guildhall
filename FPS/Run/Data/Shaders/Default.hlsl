@@ -37,6 +37,11 @@ cbuffer camera_constants : register( b1 )
 };
 
 
+// data - uniform/constant across entire draw call
+Texture2D<float4> tDiffuse : register( t0 );	// color of surface
+SamplerState sSampler : register( s0 );			// rules for how to sample texture
+
+
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------
@@ -94,16 +99,6 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	// we'll outoupt our UV coordinates as color here
-	// to make sure they're being passed correctly.
-	// Very common rendering debugging method is to 
-	// use color to portray information; 
-	float4 uvAsColor = float4( input.uv, 0.0f, 1.0f );
-	float4 finalColor = input.color;;
-
-	/*finalColor.r = 1.f + input.uv.x + sin( SYSTEM_TIME_SECONDS );
-	finalColor.g = 1.f + input.uv.x + cos( SYSTEM_TIME_SECONDS );
-	finalColor.b = finalColor.r - finalColor.g;*/
-
-	return finalColor;
+	float4 color = tDiffuse.Sample( sSampler, input.uv );
+	return color * input.color;
 }
