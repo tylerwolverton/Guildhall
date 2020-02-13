@@ -60,6 +60,8 @@ public:
 	bool ProcessCharTyped( unsigned char character );
 
 private:
+	void BlinkCursor( float deltaSeconds );
+
 	void RenderBackground( RenderContext& renderer, const AABB2& bounds ) const;
 	void RenderLatestLogMessages( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
 	void RenderInputString( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
@@ -79,4 +81,7 @@ private:
 	int m_currentCursorPosition = 0;
 	std::vector<std::string> m_commandHistory;
 
+	Rgba8 m_cursorColor = Rgba8::WHITE;
+	float m_curCursorSeconds = 0.f;
+	float m_maxCursorBlinkStateSeconds = .5f;
 };

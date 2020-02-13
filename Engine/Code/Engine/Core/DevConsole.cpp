@@ -46,6 +46,8 @@ void DevConsole::Update( float deltaSeconds )
 		return;
 	}
 
+	BlinkCursor( deltaSeconds );
+
 	ProcessInput();
 	
 	m_devConsoleCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
@@ -123,12 +125,37 @@ void DevConsole::Render( RenderContext& renderer, const AABB2& bounds, float lin
 
 	renderer.BeginCamera( *m_devConsoleCamera );
 
+	AABB2 logMessageBounds = bounds.GetBoxAtTop( .95f );
+	AABB2 inputStringBounds = bounds.GetBoxAtBottom( .04f );
+	AABB2 inputCarotBounds = bounds.GetBoxAtBottom( .01f );
+
 	//RenderBackground( renderer, bounds );
-	RenderLatestLogMessages( renderer, bounds, lineHeight );
-	RenderInputString( renderer, bounds, lineHeight );
-	//RenderCursor( renderer, bounds, lineHeight );
+	RenderLatestLogMessages( renderer, logMessageBounds, lineHeight );
+	RenderInputString( renderer, inputStringBounds, lineHeight );
+	RenderCursor( renderer, inputCarotBounds, lineHeight );
 
 	renderer.EndCamera( *m_devConsoleCamera );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::BlinkCursor( float deltaSeconds )
+{
+	m_curCursorSeconds += deltaSeconds;
+
+	if ( m_curCursorSeconds > m_maxCursorBlinkStateSeconds )
+	{
+		if ( m_cursorColor == Rgba8::WHITE )
+		{
+			m_cursorColor = Rgba8::BLACK;
+		}
+		else
+		{
+			m_cursorColor = Rgba8::WHITE;
+		}
+
+		m_curCursorSeconds = 0.f;
+	}
 }
 
 
@@ -192,8 +219,15 @@ void DevConsole::RenderInputString( RenderContext& renderer, const AABB2& bounds
 {
 	std::vector<Vertex_PCU> vertices;
 
-	AppendTextTriangles2D( vertices, ">", Vec2( bounds.mins.x, bounds.mins.y ), lineHeight, Rgba8::WHITE );
-	AppendTextTriangles2D( vertices, m_currentCommandStr, Vec2( bounds.mins.x + .04f, bounds.mins.y ), lineHeight, Rgba8::WHITE );
+	float cellAspect = .56f;
+	float cellWidth = cellAspect * lineHeight;
+	float spacingFraction = .2f;
+	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
+
+	AppendTextTriangles2D( vertices, ">", startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
+
+	startMins.x += cellWidth + ( cellWidth * spacingFraction );
+	AppendTextTriangles2D( vertices, m_currentCommandStr, startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
 
 	renderer.DrawVertexArray( vertices );
 }
@@ -204,10 +238,16 @@ void DevConsole::RenderCursor( RenderContext& renderer, const AABB2& bounds, flo
 {
 	std::vector<Vertex_PCU> vertices;
 
-	float cursorNormalizedPos = .05f + (float)m_currentCursorPosition * ( 0.56f * lineHeight ) + .02f;
-	Rgba8 color = Rgba8::WHITE;
+	float cellAspect = .56f;
+	float cellWidth = cellAspect * lineHeight;
+	float spacingFraction = .2f;
+	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
 
-	AppendTextTriangles2D( vertices, "|", Vec2( bounds.mins.x + cursorNormalizedPos, bounds.mins.y ), lineHeight, color );
+	float startCursorPosition = (float)m_currentCursorPosition + 1.f;
+	startMins.x += (( startCursorPosition * cellWidth ) + ( startCursorPosition * cellWidth * spacingFraction ) );
+
+
+	AppendTextTriangles2D( vertices, "_", startMins, lineHeight, m_cursorColor, cellAspect, spacingFraction );
 
 	renderer.DrawVertexArray( vertices );
 }
@@ -237,9 +277,9 @@ void DevConsole::MoveCursorPosition( int deltaCursorPosition )
 		m_currentCursorPosition = 0;
 	}
 
-	if ( m_currentCursorPosition >= (int)m_currentCommandStr.size() )
+	if ( m_currentCursorPosition > (int)m_currentCommandStr.size() )
 	{
-		m_currentCursorPosition = (int)m_currentCommandStr.size() - 1;
+		m_currentCursorPosition = (int)m_currentCommandStr.size();
 	}
 }
 
@@ -283,7 +323,8 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 	{
 		if ( m_currentCursorPosition > 0 )
 		{
-			m_currentCommandStr.pop_back();
+			int deletePos = m_currentCursorPosition - 1;
+			m_currentCommandStr.erase( deletePos, 1 );
 			--m_currentCursorPosition;
 		}
 
