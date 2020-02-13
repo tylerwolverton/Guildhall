@@ -2,7 +2,7 @@ Project - PhysicsSandbox
 
 - [x] *25pts*: Add a `PolygonCollider2D`
     - [x] *05pts*: Can construct from counter-clockwise list of points
-        - [] `GUARANTEE_OR_DIE` points represent a convex polygon
+        - [x] `GUARANTEE_OR_DIE` points represent a convex polygon
     - [ ] **CHALLENGE** - Can construct from a point cloud (gift wrapping algorithm)
     - [x] *05pts*: Implmeent `Contains`
     - [x] *05pts*: Implement `GetClosestPoint`

@@ -175,7 +175,7 @@ void Game::RenderPolygonPoints() const
 		return;
 	}
 
-	for ( int pointIdx = 0; pointIdx < numPotentialPoints; ++pointIdx )
+	for ( int pointIdx = 0; pointIdx < numPotentialPoints - 1; ++pointIdx )
 	{
 		g_renderer->DrawDisc2D( m_potentialPolygonPoints[pointIdx], .05f, Rgba8::WHITE );
 		
@@ -386,13 +386,12 @@ void Game::UpdateMouse( float deltaSeconds )
 
 			if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
 			{
-				if ( m_isPotentialPolygonConvex )
-				{
-					SpawnPolygon( m_potentialPolygonPoints );
+				m_potentialPolygonPoints.pop_back();
 
-					m_potentialPolygonPoints.clear();
-					m_gameState = eGameState::SANDBOX;
-				}
+				SpawnPolygon( m_potentialPolygonPoints );
+
+				m_potentialPolygonPoints.clear();
+				m_gameState = eGameState::SANDBOX;
 			}
 		} break;
 	}
@@ -444,11 +443,18 @@ void Game::UpdateDraggedObject()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdatePotentialPolygon()
 {
-	if ( m_gameState == eGameState::CREATE_POLYGON
-		 && m_potentialPolygonPoints.size() > 0 )
+	if ( m_gameState == eGameState::CREATE_POLYGON )
 	{
-		Polygon2 potentialPolygon( m_potentialPolygonPoints );
-		m_isPotentialPolygonConvex = potentialPolygon.IsConvex();
+		if ( m_potentialPolygonPoints.size() > 0
+			 && m_potentialPolygonPoints.size() < 3 )
+		{
+			m_isPotentialPolygonConvex = true;
+		}
+		else
+		{
+			Polygon2 potentialPolygon( m_potentialPolygonPoints );
+			m_isPotentialPolygonConvex = potentialPolygon.IsConvex();
+		}
 
 		int lastPointIdx = (int)m_potentialPolygonPoints.size() - 1;
 		m_potentialPolygonPoints[lastPointIdx] = m_mouseWorldPosition;

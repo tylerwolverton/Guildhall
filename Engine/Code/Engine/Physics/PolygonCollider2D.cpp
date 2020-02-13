@@ -1,4 +1,5 @@
 #include "Engine/Physics/PolygonCollider2D.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
@@ -11,6 +12,8 @@ PolygonCollider2D::PolygonCollider2D( const std::vector<Vec2>& points )
 {
 	m_polygon = Polygon2( points );
 	m_type = COLLIDER2D_POLYGON;
+
+	GUARANTEE_OR_DIE( m_polygon.IsConvex(), "Polygon collider is not convex");
 }
 
 
@@ -18,7 +21,7 @@ PolygonCollider2D::PolygonCollider2D( const std::vector<Vec2>& points )
 PolygonCollider2D::PolygonCollider2D( const Polygon2& polygon )
 	: m_polygon( polygon )
 {
-
+	GUARANTEE_OR_DIE( m_polygon.IsConvex(), "Polygon collider is not convex" );
 }
 
 

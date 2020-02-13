@@ -7,7 +7,7 @@
 Polygon2::Polygon2( const std::vector<Vec2>& points )
 	: m_points( points )
 {
-	//GUARANTEE_OR_DIE( IsConvex(), "Invalid points for polygon" );
+	
 }
 
 
@@ -242,6 +242,7 @@ void Polygon2::Translate2D( const Vec2& translation )
 
 
 //-----------------------------------------------------------------------------------------------
+// TODO: Calculate more accurately
 Vec2 Polygon2::GetCenterOfMass() const
 {
 	Vec2 sumOfPoints( Vec2::ZERO );
