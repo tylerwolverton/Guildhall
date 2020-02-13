@@ -256,7 +256,14 @@ void DevConsole::RenderCursor( RenderContext& renderer, const AABB2& bounds, flo
 //-----------------------------------------------------------------------------------------------
 void DevConsole::ToggleOpenFull()
 {
-	m_isOpen = !m_isOpen;
+	if ( m_isOpen )
+	{
+		Close();
+	}
+	else
+	{
+		m_isOpen = true;
+	}
 }
 
 
@@ -264,6 +271,7 @@ void DevConsole::ToggleOpenFull()
 void DevConsole::Close()
 {
 	m_isOpen = false;
+	m_currentCommandHistoryPos = (int)m_commandHistory.size();
 }
 
 
@@ -276,8 +284,7 @@ void DevConsole::MoveCursorPosition( int deltaCursorPosition )
 	{
 		m_currentCursorPosition = 0;
 	}
-
-	if ( m_currentCursorPosition > (int)m_currentCommandStr.size() )
+	else if ( m_currentCursorPosition > (int)m_currentCommandStr.size() )
 	{
 		m_currentCursorPosition = (int)m_currentCommandStr.size();
 	}
@@ -289,6 +296,27 @@ void DevConsole::InsertCharacterIntoCommand( std::string character )
 {
 	std::string newChar( "" + character );
 	m_currentCommandStr.insert( (size_t)m_currentCursorPosition, newChar );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
+{
+	m_currentCommandHistoryPos += deltaCommandHistoryPosition;
+
+	if ( m_currentCommandHistoryPos < 0 )
+	{
+		m_currentCommandHistoryPos = 0;
+	}
+	else if ( m_currentCommandHistoryPos >= (int)m_commandHistory.size() )
+	{
+		m_currentCommandHistoryPos = (int)m_commandHistory.size() - 1;
+		return;
+	}
+
+	m_currentCommandStr.clear();
+
+	m_currentCommandStr = m_commandHistory[m_currentCommandHistoryPos];
 }
 
 
@@ -345,6 +373,9 @@ void DevConsole::ExecuteCommand()
 	{
 		return;
 	}
+
+	m_commandHistory.push_back( m_currentCommandStr );
+	m_currentCommandHistoryPos = (int)m_commandHistory.size();
 
 	EventArgs args;
 	m_eventSystem->FireEvent( m_currentCommandStr, &args );

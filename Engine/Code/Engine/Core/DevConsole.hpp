@@ -57,6 +57,8 @@ public:
 	void MoveCursorPosition( int deltaCursorPosition );
 	void InsertCharacterIntoCommand( std::string character );
 
+	void MoveThroughCommandHistory( int deltaCommandHistoryPosition );
+
 	bool ProcessCharTyped( unsigned char character );
 
 private:
@@ -79,6 +81,7 @@ private:
 	EventSystem* m_eventSystem = nullptr;
 	std::string m_currentCommandStr;
 	int m_currentCursorPosition = 0;
+	int m_currentCommandHistoryPos = 0;
 	std::vector<std::string> m_commandHistory;
 
 	Rgba8 m_cursorColor = Rgba8::WHITE;

@@ -230,7 +230,14 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 		{
 			g_devConsole->MoveCursorPosition( -1 );
 		}
-	
+		if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+		{
+			g_devConsole->MoveThroughCommandHistory( -1 );
+		}
+		if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+		{
+			g_devConsole->MoveThroughCommandHistory( 1 );
+		}
 	}
 }
 
