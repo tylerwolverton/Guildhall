@@ -13,6 +13,7 @@ const unsigned char KEY_ESC = VK_ESCAPE;
 const unsigned char KEY_ENTER = VK_RETURN;
 const unsigned char KEY_SPACEBAR = VK_SPACE;
 const unsigned char KEY_BACKSPACE = VK_BACK;
+const unsigned char KEY_DELETE = VK_DELETE;
 const unsigned char KEY_SHIFT = VK_SHIFT;
 const unsigned char KEY_UPARROW = VK_UP;
 const unsigned char KEY_LEFTARROW = VK_LEFT;
@@ -77,6 +78,11 @@ void InputSystem::EndFrame()
 	{
 		m_characters.pop();
 	}
+
+	for ( int keyCodeNum = 0; keyCodeNum < (int)m_rawKeyCodes.size(); ++keyCodeNum )
+	{
+		m_rawKeyCodes.pop();
+	}
 }
 
 
@@ -89,6 +95,8 @@ void InputSystem::Shutdown()
 //-----------------------------------------------------------------------------------------------
 bool InputSystem::HandleKeyPressed( unsigned char keyCode )
 {
+	PushKeyCode( keyCode );
+
 	m_keyStates[keyCode].UpdateStatus( true );
 	
 	return true;
@@ -118,6 +126,29 @@ bool InputSystem::PopCharacter( char* out )
 	{
 		*out = m_characters.front();
 		m_characters.pop();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::PushKeyCode( char keyCode )
+{
+	m_rawKeyCodes.push( keyCode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::PopKeyCode( char* out )
+{
+	if ( m_rawKeyCodes.size() > 0 )
+	{
+		*out = m_rawKeyCodes.front();
+		m_rawKeyCodes.pop();
 		return true;
 	}
 	else

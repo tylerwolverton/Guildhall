@@ -7,6 +7,7 @@
 
 //-----------------------------------------------------------------------------------------------
 struct Vertex_PCU;
+struct Vec2;
 struct AABB2;
 class EventSystem;
 class InputSystem;
@@ -51,6 +52,7 @@ public:
 	void ProcessInput();
 
 	void PrintString( const std::string& message, const Rgba8& textColor = Rgba8::WHITE );
+
 	void Render( const Camera& camera, float lineHeight = .03f ) const;
 	void Render( const AABB2& bounds, float lineHeight = .03f ) const;
 
@@ -63,16 +65,16 @@ public:
 
 	void MoveThroughCommandHistory( int deltaCommandHistoryPosition );
 
-	bool ProcessCharTyped( unsigned char character );
-
 private:
+	bool ProcessCharTyped( unsigned char character );
+	bool ProcessKeyCode( unsigned char keyCode );
 	void UpdateCursorBlink( float deltaSeconds );
 
 	void RenderBackground( const AABB2& bounds ) const;
 	void AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
 	void AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
 	void AppendVertsForCursor( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
-
+	void AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::string message, const Rgba8& textColor, const Vec2& startMins, float lineHeight, float cellAspect = .56f, float spacingFraction = .2f ) const;
 	void ExecuteCommand();
 
 private:

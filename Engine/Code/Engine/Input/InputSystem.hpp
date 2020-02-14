@@ -18,6 +18,7 @@ extern const unsigned char KEY_ESC;
 extern const unsigned char KEY_ENTER;
 extern const unsigned char KEY_SPACEBAR;
 extern const unsigned char KEY_BACKSPACE;
+extern const unsigned char KEY_DELETE;
 extern const unsigned char KEY_SHIFT;
 extern const unsigned char KEY_UPARROW;
 extern const unsigned char KEY_LEFTARROW;
@@ -54,7 +55,9 @@ public:
 	bool HandleKeyReleased( unsigned char keyCode );
 
 	void PushCharacter( char c );
-	bool PopCharacter( char* out );
+	bool PopCharacter( char* out ); 
+	void PushKeyCode( char keyCode );
+	bool PopKeyCode( char* out );
 
 	bool IsKeyPressed( unsigned char keyCode ) const;
 	bool WasKeyJustPressed( unsigned char keyCode ) const;
@@ -79,4 +82,5 @@ private:
 	Vec2 m_normalizedMouseClientPos = Vec2::ZERO;
 
 	std::queue<char> m_characters;
+	std::queue<char> m_rawKeyCodes;
 };

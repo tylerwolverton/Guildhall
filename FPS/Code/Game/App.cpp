@@ -210,7 +210,14 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
 	{
-		HandleQuitRequested();
+		if ( g_devConsole->IsOpen() )
+		{
+			g_devConsole->Close();
+		}
+		else
+		{
+			HandleQuitRequested();
+		}
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F8 ) )
@@ -221,26 +228,6 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
 	{
 		g_devConsole->ToggleOpenFull();
-	}
-
-	if ( g_devConsole->IsOpen() )
-	{
-		if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
-		{
-			g_devConsole->MoveCursorPosition( 1 );
-		}
-		if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
-		{
-			g_devConsole->MoveCursorPosition( -1 );
-		}
-		if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
-		{
-			g_devConsole->MoveThroughCommandHistory( -1 );
-		}
-		if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
-		{
-			g_devConsole->MoveThroughCommandHistory( 1 );
-		}
 	}
 }
 

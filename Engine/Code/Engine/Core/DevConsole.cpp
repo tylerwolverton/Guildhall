@@ -113,6 +113,11 @@ void DevConsole::ProcessInput()
 	{
 		ProcessCharTyped( c );
 	}
+
+	while ( m_inputSystem->PopKeyCode( &c ) )
+	{
+		ProcessKeyCode( c );
+	}
 }
 
 
@@ -143,8 +148,9 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	m_renderer->BeginCamera( *m_devConsoleCamera );
 	
 	AABB2 logMessageBounds = bounds.GetBoxAtTop( .95f );
-	AABB2 inputStringBounds = bounds.GetBoxAtBottom( .04f );
-	AABB2 inputCarotBounds = bounds.GetBoxAtBottom( .01f );
+	AABB2 inputStringBounds = bounds.GetBoxAtBottom( .045f );
+	AABB2 inputCarotBounds = bounds.GetBoxAtBottom( .005f );
+	inputStringBounds.mins.y = inputCarotBounds.maxs.y;
 
 	std::vector<Vertex_PCU> vertices;
 	
@@ -231,16 +237,8 @@ void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& verti
 		int logMessageIndex = latestMessageIndex - logMessageIndexFromEnd;
 		const DevConsoleLogMessage& logMessage = m_logMessages[logMessageIndex];
 		Vec2 textMins( bounds.mins.x, bounds.mins.y + ( curLineY * lineHeight ) );
-
-		if ( m_bitmapFont == nullptr 
-			|| m_bitmapFont->GetTexture() == nullptr )
-		{
-			AppendTextTriangles2D( vertices, logMessage.m_message, textMins, lineHeight, logMessage.m_color );
-		}
-		else
-		{
-			m_bitmapFont->AppendVertsForText2D( vertices, textMins, lineHeight, logMessage.m_message, logMessage.m_color );
-		}
+		
+		AppendVertsForString( vertices, logMessage.m_message, logMessage.m_color, textMins, lineHeight );
 		
 		++curLineY;
 	}
@@ -251,31 +249,15 @@ void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& verti
 void DevConsole::AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
 	float cellAspect = .56f;
-	float cellWidth = cellAspect * lineHeight;
+	//float cellWidth = cellAspect * lineHeight;
 	float spacingFraction = .2f;
 	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
 	
-	if ( m_bitmapFont == nullptr
-		 || m_bitmapFont->GetTexture() == nullptr )
-	{
-		AppendTextTriangles2D( vertices, ">", startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
-	}
-	else
-	{
-		m_bitmapFont->AppendVertsForText2D( vertices, startMins, lineHeight, ">", Rgba8::WHITE, cellAspect );
-	}
+	AppendVertsForString( vertices, "> " + m_currentCommandStr, Rgba8::WHITE, startMins, lineHeight, cellAspect, spacingFraction );
 
-	startMins.x += cellWidth + ( cellWidth * spacingFraction );
-
-	if ( m_bitmapFont == nullptr
-		 || m_bitmapFont->GetTexture() == nullptr )
-	{
-		AppendTextTriangles2D( vertices, m_currentCommandStr, startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
-	}
-	else
-	{
-		m_bitmapFont->AppendVertsForText2D( vertices, startMins, lineHeight, m_currentCommandStr, Rgba8::WHITE, cellAspect );
-	}
+	/*startMins.x += cellWidth + ( cellWidth * spacingFraction );
+	
+	AppendVertsForString( vertices, m_currentCommandStr, Rgba8::WHITE, startMins, lineHeight, cellAspect, spacingFraction );*/
 }
 
 
@@ -283,21 +265,32 @@ void DevConsole::AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, c
 void DevConsole::AppendVertsForCursor( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
 	float cellAspect = .56f;
-	float cellWidth = cellAspect * lineHeight;
-	float spacingFraction = .2f;
-	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
+	if ( m_bitmapFont != nullptr
+		 && m_bitmapFont->GetTexture() != nullptr )
+	{
+		cellAspect = .5f;
+	}
 
-	float startCursorPosition = (float)m_currentCursorPosition + 1.f;
-	startMins.x += ( startCursorPosition * cellWidth ) + .01f; //+ ( startCursorPosition * cellWidth * spacingFraction ) );
+	float cellWidth = cellAspect * lineHeight;
+	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
+	float startCursorPosition = (float)m_currentCursorPosition + 2.f;
+	startMins.x += ( startCursorPosition * cellWidth );
 	
+	AppendVertsForString( vertices, "_", m_cursorColor, startMins, lineHeight, cellAspect );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::string message, const Rgba8& textColor, const Vec2& startMins, float lineHeight, float cellAspect, float spacingFraction ) const
+{
 	if ( m_bitmapFont == nullptr
 		 || m_bitmapFont->GetTexture() == nullptr )
 	{
-		AppendTextTriangles2D( vertices, "_", startMins, lineHeight, m_cursorColor, cellAspect, spacingFraction );
+		AppendTextTriangles2D( vertices, message, startMins, lineHeight, textColor, cellAspect, spacingFraction );
 	}
 	else
 	{
-		m_bitmapFont->AppendVertsForText2D( vertices, startMins, lineHeight, "_", m_cursorColor, cellAspect );
+		m_bitmapFont->AppendVertsForText2D( vertices, startMins, lineHeight, message, textColor, .5f );
 	}
 }
 
@@ -320,6 +313,8 @@ void DevConsole::ToggleOpenFull()
 void DevConsole::Close()
 {
 	m_isOpen = false;
+	m_currentCommandStr.clear();
+	m_currentCursorPosition = 0;
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
 }
 
@@ -365,7 +360,10 @@ void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
 
 	m_currentCommandStr.clear();
 
-	m_currentCommandStr = m_commandHistory[m_currentCommandHistoryPos];
+	if ( m_commandHistory.size() > 0 )
+	{
+		m_currentCommandStr = m_commandHistory[m_currentCommandHistoryPos];
+	}
 }
 
 
@@ -382,7 +380,7 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 	{
 		m_currentCommandStr.clear();
 		m_currentCursorPosition = 0;
-		
+
 		return true;
 	}
 
@@ -410,6 +408,57 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 
 	m_currentCommandStr += character;
 	++m_currentCursorPosition;
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DevConsole::ProcessKeyCode( unsigned char keyCode )
+{
+	if ( !m_isOpen )
+	{
+		return false;
+	}
+
+	if ( keyCode == KEY_RIGHTARROW )
+	{
+		MoveCursorPosition( 1 );
+
+		return true;
+	}
+
+	if ( keyCode == KEY_LEFTARROW )
+	{
+		MoveCursorPosition( -1 );
+
+		return true;
+	}
+
+	if ( keyCode == KEY_UPARROW )
+	{
+		MoveThroughCommandHistory( -1 );
+
+		return true;
+	}
+
+	if ( keyCode == KEY_DOWNARROW )
+	{
+		MoveThroughCommandHistory( 1 );
+
+		return true;
+	}
+
+	if ( keyCode == KEY_DELETE )
+	{
+		if ( m_currentCursorPosition < (int)m_currentCommandStr.size() )
+		{
+			int deletePos = m_currentCursorPosition;
+			m_currentCommandStr.erase( deletePos, 1 );
+			m_currentCursorPosition;
+		}
+		return true;
+	}
 
 	return true;
 }
