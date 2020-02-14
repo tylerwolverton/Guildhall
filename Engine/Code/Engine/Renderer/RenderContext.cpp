@@ -170,8 +170,8 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 
 	switch ( blendMode )
 	{
-		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0 ); return;
-		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0 ); return;
+		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); return;
+		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); return;
 	}
 }
 
@@ -465,7 +465,7 @@ void RenderContext::DrawPolygon2Outline( const std::vector<Vec2>& vertexPosition
 
 	if ( numVertices < 3 )
 	{
-		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to draw a Polygon2Outline with %d vertices. At least 3 vertices are required.", numVertices ));
+		g_devConsole->PrintString( Stringf( "Tried to draw a Polygon2Outline with %d vertices. At least 3 vertices are required.", numVertices ), Rgba8::YELLOW );
 		return;
 	}
 
@@ -577,7 +577,7 @@ void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray
 
 	if ( numVertices < 3 )
 	{
-		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Tried to append verts for a Polygon2 with %d vertices. At least 3 vertices are required.", numVertices ) );
+		g_devConsole->PrintString( Stringf( "Tried to append verts for a Polygon2 with %d vertices. At least 3 vertices are required.", numVertices ), Rgba8::YELLOW );
 		return;
 	}
 
@@ -699,13 +699,13 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 	// Check if the load was successful
 	if ( imageData == nullptr )
 	{
-		g_devConsole->PrintString( Rgba8::RED, Stringf( "Failed to load image \"%s\"", imageFilePath ) );
+		g_devConsole->PrintString( Stringf( "Failed to load image \"%s\"", imageFilePath ), Rgba8::RED );
 		return nullptr;
 	}
 
 	if ( !( numComponents == 4 && imageTexelSizeX > 0 && imageTexelSizeY > 0 ) )
 	{
-		g_devConsole->PrintString( Rgba8::RED, Stringf( "ERROR loading image \"%s\" (Bpp=%i, size=%i,%i)", imageFilePath, numComponents, imageTexelSizeX, imageTexelSizeY ) );
+		g_devConsole->PrintString( Stringf( "ERROR loading image \"%s\" (Bpp=%i, size=%i,%i)", imageFilePath, numComponents, imageTexelSizeX, imageTexelSizeY ) ,Rgba8::RED );
 		return nullptr;
 	}
 
@@ -911,7 +911,7 @@ void RenderContext::CreateDebugModule()
 	m_debugModule = ::LoadLibraryA( "Dxgidebug.dll" );
 	if ( m_debugModule == nullptr ) 
 	{
-		g_devConsole->PrintString( Rgba8::YELLOW, "Failed to find dxgidebug.dll.  No debug features enabled." );
+		g_devConsole->PrintString( "Failed to find dxgidebug.dll.  No debug features enabled.", Rgba8::YELLOW );
 	}
 	else 
 	{

@@ -46,7 +46,7 @@ void DevConsole::Update( float deltaSeconds )
 		return;
 	}
 
-	BlinkCursor( deltaSeconds );
+	UpdateCursorBlink( deltaSeconds );
 
 	ProcessInput();
 	
@@ -66,6 +66,15 @@ void DevConsole::Shutdown()
 {
 	delete m_devConsoleCamera;
 	m_devConsoleCamera = nullptr;
+
+	m_renderer = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::SetRenderer( RenderContext* renderer )
+{
+	m_renderer = renderer;
 }
 
 
@@ -84,11 +93,18 @@ void DevConsole::SetEventSystem( EventSystem* eventSystem )
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::SetBitmapFont( BitmapFont* font )
+{
+	m_bitmapFont = font;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::ProcessInput()
 {
 	if ( m_inputSystem == nullptr )
 	{
-		PrintString( Rgba8::RED, "No input system bound to dev console" );
+		PrintString( "No input system bound to dev console", Rgba8::RED );
 		return;
 	}
 
@@ -101,45 +117,58 @@ void DevConsole::ProcessInput()
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::PrintString( const Rgba8& textColor, const std::string& devConsolePrintString )
+void DevConsole::PrintString( const std::string& message, const Rgba8& textColor )
 {
-	m_logMessages.push_back( DevConsoleLogMessage( textColor, devConsolePrintString ) );
+	m_logMessages.push_back( DevConsoleLogMessage( message, textColor ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::Render( RenderContext& renderer, const Camera& camera, float lineHeight ) const
+void DevConsole::Render( const Camera& camera, float lineHeight ) const
 {
 	AABB2 bounds( camera.GetOrthoBottomLeft(), camera.GetOrthoTopRight() );
-	Render( renderer, bounds, lineHeight );
+	Render( bounds, lineHeight );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::Render( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const
+void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 {
-	if ( !m_isOpen )
+	if ( !m_isOpen 
+		 || m_renderer == nullptr )
 	{
 		return;
 	}
 
-	renderer.BeginCamera( *m_devConsoleCamera );
-
+	m_renderer->BeginCamera( *m_devConsoleCamera );
+	
 	AABB2 logMessageBounds = bounds.GetBoxAtTop( .95f );
 	AABB2 inputStringBounds = bounds.GetBoxAtBottom( .04f );
 	AABB2 inputCarotBounds = bounds.GetBoxAtBottom( .01f );
 
-	//RenderBackground( renderer, bounds );
-	RenderLatestLogMessages( renderer, logMessageBounds, lineHeight );
-	RenderInputString( renderer, inputStringBounds, lineHeight );
-	RenderCursor( renderer, inputCarotBounds, lineHeight );
-
-	renderer.EndCamera( *m_devConsoleCamera );
+	std::vector<Vertex_PCU> vertices;
+	
+	RenderBackground( bounds );
+	AppendVertsForLatestLogMessages( vertices, logMessageBounds, lineHeight );
+	AppendVertsForInputString( vertices, inputStringBounds, lineHeight );
+	AppendVertsForCursor( vertices, inputCarotBounds, lineHeight );
+	
+	if ( m_bitmapFont != nullptr )
+	{
+		m_renderer->BindTexture( m_bitmapFont->GetTexture() );
+	}
+	else
+	{
+		m_renderer->BindTexture( nullptr );
+	}
+	m_renderer->DrawVertexArray( vertices );
+	
+	m_renderer->EndCamera( *m_devConsoleCamera );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::BlinkCursor( float deltaSeconds )
+void DevConsole::UpdateCursorBlink( float deltaSeconds )
 {
 	m_curCursorSeconds += deltaSeconds;
 
@@ -160,21 +189,21 @@ void DevConsole::BlinkCursor( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::RenderBackground( RenderContext& renderer, const AABB2& bounds ) const
+void DevConsole::RenderBackground( const AABB2& bounds ) const
 {
 	Rgba8 backgroundColor = Rgba8::BLACK;
 	backgroundColor.a = 150;
 
 	std::vector<Vertex_PCU> backgroundVertices;
-	renderer.AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
+	m_renderer->AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
 
-	//renderer.BindTexture( nullptr );
-	renderer.DrawVertexArray( backgroundVertices );
+	m_renderer->BindTexture( nullptr );
+	m_renderer->DrawVertexArray( backgroundVertices );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const
+void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
 	// Show one more line than can technically fit in order to show a partial line if possible
 	float boundsHeightInPixels = bounds.maxs.y - bounds.mins.y;
@@ -193,10 +222,7 @@ void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& 
 	{
 		numLinesToRender = (int)m_logMessages.size();
 	}
-
-	//BitmapFont* font = renderer.CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
-
-	std::vector<Vertex_PCU> vertices;
+	
 	float curLineY = 1;
 	int latestMessageIndex = (int)m_logMessages.size() - 1;
 
@@ -204,52 +230,75 @@ void DevConsole::RenderLatestLogMessages( RenderContext& renderer, const AABB2& 
 	{
 		int logMessageIndex = latestMessageIndex - logMessageIndexFromEnd;
 		const DevConsoleLogMessage& logMessage = m_logMessages[logMessageIndex];
+		Vec2 textMins( bounds.mins.x, bounds.mins.y + ( curLineY * lineHeight ) );
+
+		if ( m_bitmapFont == nullptr 
+			|| m_bitmapFont->GetTexture() == nullptr )
+		{
+			AppendTextTriangles2D( vertices, logMessage.m_message, textMins, lineHeight, logMessage.m_color );
+		}
+		else
+		{
+			m_bitmapFont->AppendVertsForText2D( vertices, textMins, lineHeight, logMessage.m_message, logMessage.m_color );
+		}
 		
-		AppendTextTriangles2D( vertices, logMessage.m_message, Vec2( bounds.mins.x, bounds.mins.y + ( curLineY * lineHeight ) ), lineHeight, logMessage.m_color );
-		
-		curLineY += lineHeight;
+		++curLineY;
 	}
-	
-	renderer.DrawVertexArray( vertices );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::RenderInputString( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const
+void DevConsole::AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
-	std::vector<Vertex_PCU> vertices;
-
 	float cellAspect = .56f;
 	float cellWidth = cellAspect * lineHeight;
 	float spacingFraction = .2f;
 	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
-
-	AppendTextTriangles2D( vertices, ">", startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
+	
+	if ( m_bitmapFont == nullptr
+		 || m_bitmapFont->GetTexture() == nullptr )
+	{
+		AppendTextTriangles2D( vertices, ">", startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
+	}
+	else
+	{
+		m_bitmapFont->AppendVertsForText2D( vertices, startMins, lineHeight, ">", Rgba8::WHITE, cellAspect );
+	}
 
 	startMins.x += cellWidth + ( cellWidth * spacingFraction );
-	AppendTextTriangles2D( vertices, m_currentCommandStr, startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
 
-	renderer.DrawVertexArray( vertices );
+	if ( m_bitmapFont == nullptr
+		 || m_bitmapFont->GetTexture() == nullptr )
+	{
+		AppendTextTriangles2D( vertices, m_currentCommandStr, startMins, lineHeight, Rgba8::WHITE, cellAspect, spacingFraction );
+	}
+	else
+	{
+		m_bitmapFont->AppendVertsForText2D( vertices, startMins, lineHeight, m_currentCommandStr, Rgba8::WHITE, cellAspect );
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::RenderCursor( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const
+void DevConsole::AppendVertsForCursor( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
-	std::vector<Vertex_PCU> vertices;
-
 	float cellAspect = .56f;
 	float cellWidth = cellAspect * lineHeight;
 	float spacingFraction = .2f;
 	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
 
 	float startCursorPosition = (float)m_currentCursorPosition + 1.f;
-	startMins.x += (( startCursorPosition * cellWidth ) + ( startCursorPosition * cellWidth * spacingFraction ) );
-
-
-	AppendTextTriangles2D( vertices, "_", startMins, lineHeight, m_cursorColor, cellAspect, spacingFraction );
-
-	renderer.DrawVertexArray( vertices );
+	startMins.x += ( startCursorPosition * cellWidth ) + .01f; //+ ( startCursorPosition * cellWidth * spacingFraction ) );
+	
+	if ( m_bitmapFont == nullptr
+		 || m_bitmapFont->GetTexture() == nullptr )
+	{
+		AppendTextTriangles2D( vertices, "_", startMins, lineHeight, m_cursorColor, cellAspect, spacingFraction );
+	}
+	else
+	{
+		m_bitmapFont->AppendVertsForText2D( vertices, startMins, lineHeight, "_", m_cursorColor, cellAspect );
+	}
 }
 
 
@@ -376,6 +425,8 @@ void DevConsole::ExecuteCommand()
 
 	m_commandHistory.push_back( m_currentCommandStr );
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
+
+	PrintString( "> " + m_currentCommandStr, Rgba8::WHITE );
 
 	EventArgs args;
 	m_eventSystem->FireEvent( m_currentCommandStr, &args );

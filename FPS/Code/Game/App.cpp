@@ -45,25 +45,27 @@ void App::Startup()
 	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowMode );
 
 	g_eventSystem = new EventSystem();
-	g_devConsole = new DevConsole();
-	g_devConsole->SetEventSystem( g_eventSystem );
-
 	g_inputSystem = new InputSystem();
 	g_audioSystem = new AudioSystem();
 	g_renderer = new RenderContext();
+	g_devConsole = new DevConsole();
 	g_game = new Game();
 
 	g_eventSystem->Startup();
 	g_window->SetEventSystem( g_eventSystem );
 
-	g_devConsole->Startup();
-	
 	g_inputSystem->Startup();
 	g_window->SetInputSystem( g_inputSystem );
-	g_devConsole->SetInputSystem( g_inputSystem );
 
 	g_audioSystem->Startup();
 	g_renderer->Startup( g_window );
+
+	g_devConsole->Startup();
+	g_devConsole->SetEventSystem( g_eventSystem );
+	g_devConsole->SetInputSystem( g_inputSystem );
+	g_devConsole->SetRenderer( g_renderer );
+	g_devConsole->SetBitmapFont( g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" ) );
+
 	g_game->Startup();
 
 	g_eventSystem->RegisterEvent( "QuitGame", QuitGame );
@@ -76,15 +78,19 @@ void App::Startup()
 void App::Shutdown()
 {
 	g_game->Shutdown();
+	g_devConsole->Shutdown();
 	g_renderer->Shutdown();
 	g_audioSystem->Shutdown();
 	g_inputSystem->Shutdown();
-	g_devConsole->Shutdown();
+	//g_devConsole->Shutdown();
 	g_eventSystem->Shutdown();
 	g_window->Close();
 
 	delete g_game;
 	g_game = nullptr;
+
+	delete g_devConsole;
+	g_devConsole = nullptr;
 
 	delete g_renderer;
 	g_renderer = nullptr;
@@ -94,9 +100,6 @@ void App::Shutdown()
 
 	delete g_inputSystem;
 	g_inputSystem = nullptr;
-
-	delete g_devConsole;
-	g_devConsole = nullptr;
 
 	delete g_eventSystem;
 	g_eventSystem = nullptr;
@@ -171,7 +174,7 @@ eWindowMode App::GetWindowModeFromGameConfig()
 	}
 	else
 	{
-		g_devConsole->PrintString( Rgba8::YELLOW, Stringf( "Unrecognized window mode '%s' found in game config; using windowed mode.", windowModeStr.c_str() ) );
+		g_devConsole->PrintString( Stringf( "Unrecognized window mode '%s' found in game config; using windowed mode.", windowModeStr.c_str() ), Rgba8::YELLOW );
 		return eWindowMode::WINDOWED;
 	}
 }
@@ -195,8 +198,8 @@ void App::Update( float deltaSeconds )
 	UpdateFromKeyboard( deltaSeconds );
 
 	g_renderer->UpdateFrameTime( deltaSeconds );
-	g_game->Update( deltaSeconds );
 	g_devConsole->Update( deltaSeconds );
+	g_game->Update( deltaSeconds );
 }
 
 
@@ -246,7 +249,7 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 void App::Render() const
 {
 	g_game->Render();
-	g_devConsole->Render( *g_renderer, AABB2( -1.f, -1.f, 1.f, 1.f ), .05f );
+	g_devConsole->Render( AABB2( -1.f, -1.f, 1.f, 1.f ) );
 }
 
 

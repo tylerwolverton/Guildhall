@@ -47,7 +47,7 @@ void Game::Startup()
 
 	m_rng = new RandomNumberGenerator();
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
 
@@ -139,9 +139,9 @@ void Game::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game::LoadAssets()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Assets..." );
+	g_devConsole->PrintString( "Loading Assets...", Rgba8::WHITE );
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Assets Loaded" );
+	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
 
 

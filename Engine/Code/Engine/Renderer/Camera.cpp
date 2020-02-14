@@ -15,6 +15,7 @@ Camera::Camera()
 Camera::~Camera()
 {
 	delete m_cameraUBO;
+	m_cameraUBO = nullptr;
 }
 
 

@@ -6,10 +6,12 @@
 
 
 //-----------------------------------------------------------------------------------------------
+struct Vertex_PCU;
 struct AABB2;
 class EventSystem;
 class InputSystem;
 class RenderContext;
+class BitmapFont;
 class Camera;
 
 
@@ -17,13 +19,13 @@ class Camera;
 struct DevConsoleLogMessage
 {
 public:
-	Rgba8 m_color = Rgba8::WHITE;
 	std::string m_message;
+	Rgba8 m_color = Rgba8::WHITE;
 
 public:
-	explicit DevConsoleLogMessage( const Rgba8& color, std::string message )
-		: m_color( color )
-		, m_message( message )
+	explicit DevConsoleLogMessage( std::string message, const Rgba8& color )
+		: m_message( message )
+		, m_color( color )
 	{}
 };
 
@@ -41,14 +43,16 @@ public:
 	void EndFrame();
 	void Shutdown();
 
+	void SetRenderer( RenderContext* renderer );
 	void SetInputSystem( InputSystem* inputSystem );
 	void SetEventSystem( EventSystem* eventSystem );
+	void SetBitmapFont( BitmapFont* font );
 
 	void ProcessInput();
 
-	void PrintString( const Rgba8& textColor, const std::string& devConsolePrintString );
-	void Render( RenderContext& renderer, const Camera& camera, float lineHeight ) const;
-	void Render( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
+	void PrintString( const std::string& message, const Rgba8& textColor = Rgba8::WHITE );
+	void Render( const Camera& camera, float lineHeight = .03f ) const;
+	void Render( const AABB2& bounds, float lineHeight = .03f ) const;
 
 	void ToggleOpenFull();
 	void Close();
@@ -62,23 +66,26 @@ public:
 	bool ProcessCharTyped( unsigned char character );
 
 private:
-	void BlinkCursor( float deltaSeconds );
+	void UpdateCursorBlink( float deltaSeconds );
 
-	void RenderBackground( RenderContext& renderer, const AABB2& bounds ) const;
-	void RenderLatestLogMessages( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
-	void RenderInputString( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
-	void RenderCursor( RenderContext& renderer, const AABB2& bounds, float lineHeight ) const;
+	void RenderBackground( const AABB2& bounds ) const;
+	void AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
+	void AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
+	void AppendVertsForCursor( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
 
 	void ExecuteCommand();
 
 private:
+	RenderContext* m_renderer = nullptr;
 	InputSystem* m_inputSystem = nullptr;
+	EventSystem* m_eventSystem = nullptr;
+
+	BitmapFont* m_bitmapFont = nullptr;
 
 	bool m_isOpen = false;
 	Camera* m_devConsoleCamera = nullptr;
 	std::vector<DevConsoleLogMessage> m_logMessages;
 
-	EventSystem* m_eventSystem = nullptr;
 	std::string m_currentCommandStr;
 	int m_currentCursorPosition = 0;
 	int m_currentCommandHistoryPos = 0;

@@ -4,10 +4,8 @@
 #include <cassert>
 #include <crtdbg.h>
 
-#include "Engine/Core/EngineCommon.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/App.hpp"
-#include "Game/Game.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -22,7 +20,6 @@ int WINAPI WinMain( _In_ HINSTANCE applicationInstanceHandle, _In_opt_ HINSTANCE
 	// Program main loop; keep running frames until it's time to quit
 	while( !g_app->IsQuitting() )			
 	{
-		//Sleep( 16 );							// Do nothing for 16 ms
 		g_app->RunFrame();					
 	}
 
