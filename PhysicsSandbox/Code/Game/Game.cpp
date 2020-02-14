@@ -556,14 +556,30 @@ void Game::UpdateBorderColor( GameObject* gameObject )
 		return;
 	}
 	
+	Rgba8 borderColor = gameObject->GetBorderColor();
 	if ( gameObject->Contains( m_mouseWorldPosition ) )
 	{
-		gameObject->SetBorderColor( Rgba8::YELLOW );
+		borderColor = Rgba8::YELLOW;
 	}
 	else
 	{
-		gameObject->SetBorderColor( Rgba8::BLUE );
+		switch ( gameObject->GetSimulationMode() )
+		{
+			case SIMULATION_MODE_DYNAMIC:
+				borderColor = Rgba8::BLUE;
+				break;
+			case SIMULATION_MODE_KINEMATIC:
+				borderColor = Rgba8::MAGENTA;
+				break;
+			case SIMULATION_MODE_STATIC:
+				borderColor = Rgba8::DARK_GREY;
+				break;
+			default:
+				borderColor = Rgba8::BLUE;
+		}
 	}
+
+	gameObject->SetBorderColor( borderColor );
 }
 
 
