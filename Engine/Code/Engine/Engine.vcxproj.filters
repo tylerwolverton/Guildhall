@@ -172,6 +172,9 @@
     <ClCompile Include="Physics\Rigidbody2D.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\PolygonCollider2D.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -340,6 +343,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\Rigidbody2D.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\PolygonCollider2D.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>

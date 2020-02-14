@@ -35,6 +35,8 @@ extern const unsigned char KEY_F10;
 extern const unsigned char KEY_F11;
 extern const unsigned char KEY_F12;
 extern const unsigned char KEY_TILDE;
+extern const unsigned char KEY_PLUS;
+extern const unsigned char KEY_MINUS;
 
 extern const unsigned char MOUSE_LBUTTON;
 extern const unsigned char MOUSE_RBUTTON;
@@ -60,6 +62,10 @@ public:
 	bool WasKeyJustPressed( unsigned char keyCode ) const;
 	bool WasKeyJustReleased( unsigned char keyCode ) const;
 	
+	bool ConsumeIsKeyPressed( unsigned char keyCode );
+	bool ConsumeWasKeyJustPressed( unsigned char keyCode );
+	bool ConsumeWasKeyJustReleased( unsigned char keyCode );
+
 	const XboxController&	GetXboxController( int controllerID );
 	void					SetXboxControllerVibrationLevels( int controllerID, float leftFraction, float rightFraction );
 

@@ -1,6 +1,10 @@
 #pragma once
+#include "Game/GameCommon.hpp"
+
+
 //-----------------------------------------------------------------------------------------------
 struct Vec2;
+struct AABB2;
 struct Rgba8;
 class Physics2D;
 class Rigidbody2D;
@@ -13,6 +17,7 @@ enum eCollider2DType
 {
 	COLLIDER2D_NONE,
 	COLLIDER2D_DISC,
+	COLLIDER2D_POLYGON,
 };
 
 
@@ -32,9 +37,13 @@ public: // Interface
 	virtual bool Contains( const Vec2& pos ) const = 0;
 	virtual bool Intersects( const Collider2D* other ) const = 0;
 
+	// TODO: Move this to a generic AABB2 method
+	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
+	virtual const AABB2 GetBoundingBox() const = 0;
 
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const = 0;
+
 
 protected:
 	// 

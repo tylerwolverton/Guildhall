@@ -1,7 +1,9 @@
 #include "Engine/Physics/Physics2D.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
+#include "Engine/Physics/PolygonCollider2D.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -12,14 +14,69 @@ void Physics2D::BeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::Update()
+void Physics2D::Update( float deltaSeconds )
 {
-
+	AdvanceSimulation( deltaSeconds );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::EndFrame()
+void Physics2D::AdvanceSimulation( float deltaSeconds )
+{
+	ApplyEffectors( deltaSeconds ); 	// apply gravity to all dynamic objects
+	MoveRigidbodies( deltaSeconds ); 	// apply an euler step to all rigidbodies, and reset per-frame data
+	// DetectCollisions(); - A04		// determine all pairs of intersecting colliders
+	// CollisionResponse(); - A04		// resolve all collisions, firing appropraite events
+	CleanupDestroyedObjects();  		// destroy objects 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::ApplyEffectors( float deltaSeconds )
+{
+	UNUSED( deltaSeconds );
+
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
+	{
+		Rigidbody2D*& rigidbody = m_rigidbodies[rigidbodyIdx];
+		if ( rigidbody != nullptr )
+		{
+			switch ( rigidbody->GetSimulationMode() )
+			{
+				case SIMULATION_MODE_DYNAMIC:
+				{
+					rigidbody->AddForce( m_forceOfGravity );
+				}
+				break;
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::MoveRigidbodies( float deltaSeconds )
+{
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
+	{
+		Rigidbody2D*& rigidbody = m_rigidbodies[rigidbodyIdx];
+		if ( rigidbody != nullptr )
+		{
+			switch ( rigidbody->GetSimulationMode() )
+			{
+				case SIMULATION_MODE_DYNAMIC:
+				case SIMULATION_MODE_KINEMATIC:
+				{
+					rigidbody->Update( deltaSeconds );
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CleanupDestroyedObjects()
 {
 	// Cleanup rigidbodies
 	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_garbageRigidbodyIndexes.size(); ++rigidbodyIdx )
@@ -44,9 +101,16 @@ void Physics2D::EndFrame()
 
 
 //-----------------------------------------------------------------------------------------------
+void Physics2D::EndFrame()
+{
+	
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Rigidbody2D* Physics2D::CreateRigidbody()
 {
-	Rigidbody2D* newRigidbody2D = new Rigidbody2D();
+	Rigidbody2D* newRigidbody2D = new Rigidbody2D( 10.f );
 	newRigidbody2D->m_system = this;
 	m_rigidbodies.push_back( newRigidbody2D );
 	
@@ -79,6 +143,16 @@ DiscCollider2D* Physics2D::CreateDiscCollider( const Vec2& localPosition, float 
 
 
 //-----------------------------------------------------------------------------------------------
+PolygonCollider2D* Physics2D::CreatePolygon2Collider( const Polygon2& polygon )
+{
+	PolygonCollider2D* newCollider2D = new PolygonCollider2D( polygon );
+	m_colliders.push_back( newCollider2D );
+
+	return newCollider2D;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 {
 	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
@@ -89,4 +163,18 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 			break;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::SetSceneGravity( const Vec2& forceOfGravity )
+{
+	m_forceOfGravity = forceOfGravity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::SetSceneGravity( float forceOfGravityY )
+{
+	m_forceOfGravity = Vec2( 0.f, forceOfGravityY );
 }

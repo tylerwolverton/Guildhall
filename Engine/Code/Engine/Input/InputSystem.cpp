@@ -32,6 +32,8 @@ const unsigned char KEY_F10 = VK_F10;
 const unsigned char KEY_F11 = VK_F11;
 const unsigned char KEY_F12 = VK_F12;
 const unsigned char KEY_TILDE = VK_OEM_3;
+const unsigned char KEY_PLUS = VK_OEM_PLUS;
+const unsigned char KEY_MINUS = VK_OEM_MINUS;
 
 const unsigned char MOUSE_LBUTTON = VK_LBUTTON;
 const unsigned char MOUSE_RBUTTON = VK_RBUTTON;
@@ -171,4 +173,40 @@ bool InputSystem::WasKeyJustPressed( unsigned char keyCode ) const
 bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
 {
 	return m_keyStates[keyCode].WasJustReleased();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeIsKeyPressed( unsigned char keyCode )
+{
+	bool isKeyPressed = m_keyStates[keyCode].IsPressed();
+	if ( isKeyPressed )
+	{
+		HandleKeyReleased( keyCode );
+	}
+	return isKeyPressed;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeWasKeyJustPressed( unsigned char keyCode )
+{
+	bool wasJustPressed = m_keyStates[keyCode].WasJustPressed();
+	if ( wasJustPressed )
+	{
+		HandleKeyReleased( keyCode );
+	}
+	return wasJustPressed;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeWasKeyJustReleased( unsigned char keyCode )
+{
+	bool wasJustReleased = m_keyStates[keyCode].WasJustReleased();
+	if ( wasJustReleased )
+	{
+		HandleKeyPressed( keyCode );
+	}
+	return wasJustReleased;
 }

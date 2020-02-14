@@ -21,6 +21,22 @@ class GameObject;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eGameState
+{
+	SANDBOX,
+	CREATE_POLYGON,
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct MouseMovementHistoryPoint
+{
+	Vec2 position;
+	float deltaSeconds;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -41,36 +57,57 @@ public:
 	RandomNumberGenerator* m_rng = nullptr;
 
 private:
-	void RenderShapes() const;
+	void RenderGameObjects() const;
+	void RenderPolygonPoints() const;
+	void RenderUI() const;
 	
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
-	void UpdateMouse();
+	void UpdateMouse( float deltaSeconds );
+	void UpdateMouseHistory( const Vec2& position, float deltaSeconds );
 	void UpdateGameObjects();
 	void UpdateDraggedObject();
+	void UpdatePotentialPolygon();
+	void UpdateOffScreenGameObjects();
+
+	void ResetGameObjectColors();
+	void CheckCollisions();
+	void UpdateBorderColor( GameObject* gameObject );
+	void HandleIntersection( GameObject* gameObject, GameObject* otherGameObject );
 
 	void SpawnDisc( const Vec2& center, float radius );
+	void SpawnPolygon( const std::vector<Vec2>& points );
+	void SpawnPolygon( const Polygon2& polygon );
 
 	GameObject* GetTopGameObjectAtMousePosition();
 	int GetIndexOfTopGameObjectAtMousePosition();
 	int GetIndexOfGameObject( GameObject* gameObjectToFind );
 
 	void PerformGarbageCollection();
+	MouseMovementHistoryPoint GetCummulativeMouseHistory();
 
 private:
-	bool		m_isDebugRendering		= false;
+	bool				m_isDebugRendering				= false;
+														
+	Camera*				m_worldCamera					= nullptr;
+	Camera*				m_uiCamera						= nullptr;
+	Vec3				m_focalPoint					= Vec3::ZERO;
+	float				m_zoomFactor					= 1.f;
+														
+	Physics2D*			m_physics2D						= nullptr;
+														
+	Vec2				m_mouseWorldPosition			= Vec2::ZERO;
+	Vec2				m_lastMouseWorldPosition		= Vec2::ZERO;
+	MouseMovementHistoryPoint m_mouseHistoryPoints[5];
+	   											 
+	bool				m_isMouseDragging				= false;
+	Vec2				m_dragOffset					= Vec2::ZERO;
+	GameObject*			m_dragTarget					= nullptr;
+														
+	eGameState			m_gameState						= eGameState::SANDBOX;
 
-	Camera*		m_worldCamera			= nullptr;
-	Vec3		m_focalPoint			= Vec3::ZERO;
-	float		m_zoomFactor			= 1.f;
-
-	Physics2D*  m_physics2D				= nullptr;
-
-	Vec2		m_mouseWorldPosition	= Vec2::ZERO;
-	   
-	bool		m_isMouseDragging		= false;
-	Vec2		m_dragOffset			= Vec2::ZERO;
-	GameObject* m_dragTarget			= nullptr;
+	std::vector<Vec2>	m_potentialPolygonPoints;
+	bool				m_isPotentialPolygonConvex		= false;
 
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<int> m_garbageGameObjectIndexes;

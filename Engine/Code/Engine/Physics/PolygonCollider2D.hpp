@@ -1,13 +1,21 @@
 #pragma once
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Polygon2.hpp"
+
+#include <vector>
 
 
 //-----------------------------------------------------------------------------------------------
-class DiscCollider2D : public Collider2D
+struct AABB2;
+
+
+//-----------------------------------------------------------------------------------------------
+class PolygonCollider2D : public Collider2D
 {
 public:
-	DiscCollider2D( const Vec2& localPosition, float radius );
+	PolygonCollider2D( const std::vector<Vec2>& points );
+	PolygonCollider2D( const Polygon2& polygon );
 
 	virtual void UpdateWorldShape() override;
 
@@ -23,10 +31,10 @@ public:
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const override;
 
 protected:
-	virtual ~DiscCollider2D();
+	virtual ~PolygonCollider2D();
 
 public:
-	Vec2	m_localPosition; // my local offset from my parent
-	Vec2	m_worldPosition; // calculated from local position and owning rigidbody if present
-	float	m_radius = 0.f;
+	Vec2	 m_localPosition;	// my local offset from my parent
+	Vec2	 m_worldPosition;	// calculated from local position and owning rigidbody if present
+	Polygon2 m_polygon;			// polygon that makes up body of collider
 };
