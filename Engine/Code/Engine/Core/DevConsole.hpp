@@ -32,6 +32,21 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
+struct DevConsoleCommand
+{
+public:
+	std::string m_name;
+	std::string m_helpText;
+
+public:
+	explicit DevConsoleCommand( std::string name, std::string helpText )
+		: m_name( name )
+		, m_helpText( helpText )
+	{}
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class DevConsole
 {
 public:
@@ -66,6 +81,8 @@ public:
 	void MoveThroughCommandHistory( int deltaCommandHistoryPosition );
 
 private:
+	void InitializeSupportedCommands();
+
 	bool ProcessCharTyped( unsigned char character );
 	bool ProcessKeyCode( unsigned char keyCode );
 	void UpdateCursorBlink( float deltaSeconds );
@@ -75,7 +92,10 @@ private:
 	void AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
 	void AppendVertsForCursor( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
 	void AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::string message, const Rgba8& textColor, const Vec2& startMins, float lineHeight, float cellAspect = .56f, float spacingFraction = .2f ) const;
+	
 	void ExecuteCommand();
+	void ExecuteQuitCommand();
+	void ExecuteHelpCommand();
 
 private:
 	RenderContext* m_renderer = nullptr;
@@ -92,6 +112,8 @@ private:
 	int m_currentCursorPosition = 0;
 	int m_currentCommandHistoryPos = 0;
 	std::vector<std::string> m_commandHistory;
+
+	std::vector<DevConsoleCommand> m_supportedCommands;
 
 	Rgba8 m_cursorColor = Rgba8::WHITE;
 	float m_curCursorSeconds = 0.f;

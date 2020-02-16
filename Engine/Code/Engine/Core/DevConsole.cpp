@@ -28,6 +28,8 @@ void DevConsole::Startup()
 {
 	m_devConsoleCamera = new Camera();
 	m_devConsoleCamera->SetColorTarget( nullptr );
+
+	InitializeSupportedCommands();
 }
 
 
@@ -368,6 +370,14 @@ void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::InitializeSupportedCommands()
+{
+	m_supportedCommands.push_back( DevConsoleCommand( "quit", "Quit the game." ) );
+	m_supportedCommands.push_back( DevConsoleCommand( "help", "Display help text for each supported command." ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool DevConsole::ProcessCharTyped( unsigned char character )
 {
 	if ( !m_isOpen )
@@ -406,7 +416,7 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 		return true;
 	}
 
-	m_currentCommandStr += character;
+	m_currentCommandStr.insert( m_currentCursorPosition, 1, character );
 	++m_currentCursorPosition;
 
 	return true;
@@ -467,7 +477,8 @@ bool DevConsole::ProcessKeyCode( unsigned char keyCode )
 //-----------------------------------------------------------------------------------------------
 void DevConsole::ExecuteCommand()
 {
-	if ( m_eventSystem == nullptr )
+	PrintString( "> " + m_currentCommandStr, Rgba8::WHITE );
+	if ( m_currentCommandStr.size() == 0 )
 	{
 		return;
 	}
@@ -475,8 +486,42 @@ void DevConsole::ExecuteCommand()
 	m_commandHistory.push_back( m_currentCommandStr );
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
 
-	PrintString( "> " + m_currentCommandStr, Rgba8::WHITE );
+	// Check for a match in supported commands with case insensitivity
+	if ( !_stricmp( m_currentCommandStr.c_str(), "quit" ) )
+	{
+		ExecuteQuitCommand();
+	}
+	else if ( !_stricmp( m_currentCommandStr.c_str(), "help" ) )
+	{
+		ExecuteHelpCommand();
+	}
+	else
+	{
+		PrintString( "Invalid command: '" + m_currentCommandStr + "'", Rgba8::RED );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::ExecuteQuitCommand()
+{
+	if ( m_eventSystem == nullptr )
+	{
+		return;
+	}
 
 	EventArgs args;
 	m_eventSystem->FireEvent( m_currentCommandStr, &args );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::ExecuteHelpCommand()
+{
+	PrintString( "List of supported commands:", Rgba8::WHITE );
+	for ( int commandIdx = 0; commandIdx < (int)m_supportedCommands.size(); ++commandIdx )
+	{
+		DevConsoleCommand& cmd = m_supportedCommands[commandIdx];
+		PrintString( cmd.m_name + " - " + cmd.m_helpText, Rgba8::WHITE );
+	}
 }

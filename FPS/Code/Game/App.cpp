@@ -82,7 +82,6 @@ void App::Shutdown()
 	g_renderer->Shutdown();
 	g_audioSystem->Shutdown();
 	g_inputSystem->Shutdown();
-	//g_devConsole->Shutdown();
 	g_eventSystem->Shutdown();
 	g_window->Close();
 
