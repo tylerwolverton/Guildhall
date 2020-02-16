@@ -118,19 +118,19 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
 	
-	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/mgs.png" );
+	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
 	//g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
 
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
-	g_renderer->BindTexture( nullptr );
-	g_renderer->DrawAABB2( AABB2( -.75f, -.25f, -.25f, .25f ), Rgba8::GREEN );
+	//g_renderer->BindTexture( nullptr );
+	//g_renderer->DrawAABB2( AABB2( -.75f, -.25f, -.25f, .25f ), Rgba8::GREEN );
 
 	g_renderer->BindTexture( texture );
-	g_renderer->DrawAABB2( AABB2( -.75f, -.25f, -.25f, .25f ), Rgba8::WHITE );
+	g_renderer->DrawAABB2( AABB2( -.9f, -.5f, -.15f, .5f ), Rgba8::WHITE );
 	
 	g_renderer->BindShader( "Data/Shaders/InvertColors.hlsl" );
-	g_renderer->DrawAABB2( AABB2( .25f, -.25f, .75f, .25f ), Rgba8::WHITE );
+	g_renderer->DrawAABB2( AABB2( .15f, -.5f, .9f, .5f ), Rgba8::WHITE );
 
 	g_renderer->EndCamera( *m_worldCamera );
 }

@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/MatrixUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Renderer/RenderBuffer.hpp"
 
@@ -25,7 +26,9 @@ void Camera::SetOrthoView( const Vec2& bottomLeft, const Vec2& topRight )
 	m_bottomLeft = bottomLeft;
 	m_topRight = topRight;
 
-	m_projectionMatrix = Mat44::CreateOrthographicProjection( Vec3( bottomLeft, 0.f ), Vec3( topRight, 1.f ) );
+	m_projectionMatrix = MakeOrthographicProjectionMatrixD3D( bottomLeft.x, topRight.x, 
+															  bottomLeft.y, topRight.y, 
+															  0.f, 1.f );
 }
 
 
