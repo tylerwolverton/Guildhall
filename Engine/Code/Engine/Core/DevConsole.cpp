@@ -116,10 +116,7 @@ void DevConsole::ProcessInput()
 		ProcessCharTyped( c );
 	}
 
-	while ( m_inputSystem->PopKeyCode( &c ) )
-	{
-		ProcessKeyCode( c );
-	}
+	UpdateFromKeyboard();
 }
 
 
@@ -348,6 +345,11 @@ void DevConsole::InsertCharacterIntoCommand( std::string character )
 //-----------------------------------------------------------------------------------------------
 void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
 {
+	if ( deltaCommandHistoryPosition == 0 )
+	{
+		return;
+	}
+
 	m_currentCommandHistoryPos += deltaCommandHistoryPosition;
 
 	if ( m_currentCommandHistoryPos < 0 )
@@ -424,53 +426,28 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DevConsole::ProcessKeyCode( unsigned char keyCode )
+void DevConsole::UpdateFromKeyboard()
 {
 	if ( !m_isOpen )
 	{
-		return false;
+		return;
 	}
 
-	if ( keyCode == KEY_RIGHTARROW )
+	MoveCursorPosition( m_inputSystem->ConsumeAllKeyPresses( KEY_RIGHTARROW ) );
+	MoveCursorPosition( -m_inputSystem->ConsumeAllKeyPresses( KEY_LEFTARROW ) );
+
+	MoveThroughCommandHistory( -m_inputSystem->ConsumeAllKeyPresses( KEY_UPARROW ) );
+	MoveThroughCommandHistory( m_inputSystem->ConsumeAllKeyPresses( KEY_DOWNARROW ) );
+
+	int numTimesDeletePressed = m_inputSystem->ConsumeAllKeyPresses( KEY_DELETE );
+	int maxNumCharactersAvailableToDelete = (int)m_currentCommandStr.size() - m_currentCursorPosition;
+	if ( numTimesDeletePressed > 0 
+		 && maxNumCharactersAvailableToDelete > 0 )
 	{
-		MoveCursorPosition( 1 );
+		int numCharactersToDelete = numTimesDeletePressed < maxNumCharactersAvailableToDelete ? numTimesDeletePressed : maxNumCharactersAvailableToDelete;
 
-		return true;
+		m_currentCommandStr.erase( m_currentCursorPosition, numCharactersToDelete );
 	}
-
-	if ( keyCode == KEY_LEFTARROW )
-	{
-		MoveCursorPosition( -1 );
-
-		return true;
-	}
-
-	if ( keyCode == KEY_UPARROW )
-	{
-		MoveThroughCommandHistory( -1 );
-
-		return true;
-	}
-
-	if ( keyCode == KEY_DOWNARROW )
-	{
-		MoveThroughCommandHistory( 1 );
-
-		return true;
-	}
-
-	if ( keyCode == KEY_DELETE )
-	{
-		if ( m_currentCursorPosition < (int)m_currentCommandStr.size() )
-		{
-			int deletePos = m_currentCursorPosition;
-			m_currentCommandStr.erase( deletePos, 1 );
-			m_currentCursorPosition;
-		}
-		return true;
-	}
-
-	return true;
 }
 
 

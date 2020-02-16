@@ -56,13 +56,19 @@ public:
 
 	void PushCharacter( char c );
 	bool PopCharacter( char* out ); 
-	void PushKeyCode( char keyCode );
-	bool PopKeyCode( char* out );
 
 	bool IsKeyPressed( unsigned char keyCode ) const;
 	bool WasKeyJustPressed( unsigned char keyCode ) const;
 	bool WasKeyJustReleased( unsigned char keyCode ) const;
 	
+	bool ConsumeIsKeyPressed( unsigned char keyCode );
+	bool ConsumeWasKeyJustPressed( unsigned char keyCode );
+	bool ConsumeWasKeyJustReleased( unsigned char keyCode );
+
+	int ConsumeAllKeyPresses( unsigned char keyCode );
+	int ConsumeAllKeyReleases( unsigned char keyCode );
+
+
 	const XboxController&	GetXboxController( int controllerID );
 	void					SetXboxControllerVibrationLevels( int controllerID, float leftFraction, float rightFraction );
 
@@ -82,5 +88,4 @@ private:
 	Vec2 m_normalizedMouseClientPos = Vec2::ZERO;
 
 	std::queue<char> m_characters;
-	std::queue<char> m_rawKeyCodes;
 };

@@ -84,7 +84,7 @@ private:
 	void InitializeSupportedCommands();
 
 	bool ProcessCharTyped( unsigned char character );
-	bool ProcessKeyCode( unsigned char keyCode );
+	void UpdateFromKeyboard();
 	void UpdateCursorBlink( float deltaSeconds );
 
 	void RenderBackground( const AABB2& bounds ) const;

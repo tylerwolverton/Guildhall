@@ -6,8 +6,6 @@
 #include <WinUser.h>
 
 
-//extern HWND g_hWnd;
-
 //-----------------------------------------------------------------------------------------------
 const unsigned char KEY_ESC = VK_ESCAPE;
 const unsigned char KEY_ENTER = VK_RETURN;
@@ -78,11 +76,6 @@ void InputSystem::EndFrame()
 	{
 		m_characters.pop();
 	}
-
-	for ( int keyCodeNum = 0; keyCodeNum < (int)m_rawKeyCodes.size(); ++keyCodeNum )
-	{
-		m_rawKeyCodes.pop();
-	}
 }
 
 
@@ -95,8 +88,6 @@ void InputSystem::Shutdown()
 //-----------------------------------------------------------------------------------------------
 bool InputSystem::HandleKeyPressed( unsigned char keyCode )
 {
-	PushKeyCode( keyCode );
-
 	m_keyStates[keyCode].UpdateStatus( true );
 	
 	return true;
@@ -126,29 +117,6 @@ bool InputSystem::PopCharacter( char* out )
 	{
 		*out = m_characters.front();
 		m_characters.pop();
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void InputSystem::PushKeyCode( char keyCode )
-{
-	m_rawKeyCodes.push( keyCode );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool InputSystem::PopKeyCode( char* out )
-{
-	if ( m_rawKeyCodes.size() > 0 )
-	{
-		*out = m_rawKeyCodes.front();
-		m_rawKeyCodes.pop();
 		return true;
 	}
 	else
@@ -207,4 +175,66 @@ bool InputSystem::WasKeyJustPressed( unsigned char keyCode ) const
 bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
 {
 	return m_keyStates[keyCode].WasJustReleased();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeIsKeyPressed( unsigned char keyCode )
+{
+	bool isKeyPressed = m_keyStates[keyCode].IsPressed();
+	if ( isKeyPressed )
+	{
+		HandleKeyReleased( keyCode );
+	}
+	return isKeyPressed;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeWasKeyJustPressed( unsigned char keyCode )
+{
+	bool wasJustPressed = m_keyStates[keyCode].WasJustPressed();
+	if ( wasJustPressed )
+	{
+		HandleKeyReleased( keyCode );
+	}
+	return wasJustPressed;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeWasKeyJustReleased( unsigned char keyCode )
+{
+	bool wasJustReleased = m_keyStates[keyCode].WasJustReleased();
+	if ( wasJustReleased )
+	{
+		HandleKeyPressed( keyCode );
+	}
+	return wasJustReleased;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int InputSystem::ConsumeAllKeyPresses( unsigned char keyCode )
+{
+	int keyPresses = m_keyStates[keyCode].ConsumeAllKeyPresses();
+	if(keyPresses > 0 )
+	{
+		HandleKeyReleased( keyCode );
+	}
+
+	return keyPresses;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int InputSystem::ConsumeAllKeyReleases( unsigned char keyCode )
+{
+	int keyReleases = m_keyStates[keyCode].ConsumeAllKeyReleases();
+	if ( keyReleases > 0 )
+	{
+		HandleKeyPressed( keyCode );
+	}
+
+	return keyReleases;
 }
