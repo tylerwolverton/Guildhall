@@ -83,6 +83,9 @@ public:
 private:
 	void InitializeSupportedCommands();
 
+	void LoadPersistentHistory();
+	void SavePersistentHistory();
+
 	bool ProcessCharTyped( unsigned char character );
 	void UpdateFromKeyboard();
 	void UpdateCursorBlink( float deltaSeconds );

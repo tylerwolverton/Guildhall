@@ -10,6 +10,9 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 
+#include <iostream>
+#include <fstream>
+
 
 //-----------------------------------------------------------------------------------------------
 DevConsole::DevConsole()
@@ -30,6 +33,8 @@ void DevConsole::Startup()
 	m_devConsoleCamera->SetColorTarget( nullptr );
 
 	InitializeSupportedCommands();
+
+	LoadPersistentHistory();
 }
 
 
@@ -70,6 +75,8 @@ void DevConsole::Shutdown()
 	m_devConsoleCamera = nullptr;
 
 	m_renderer = nullptr;
+
+	SavePersistentHistory();
 }
 
 
@@ -248,15 +255,10 @@ void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& verti
 void DevConsole::AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
 	float cellAspect = .56f;
-	//float cellWidth = cellAspect * lineHeight;
 	float spacingFraction = .2f;
 	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
 	
 	AppendVertsForString( vertices, "> " + m_currentCommandStr, Rgba8::WHITE, startMins, lineHeight, cellAspect, spacingFraction );
-
-	/*startMins.x += cellWidth + ( cellWidth * spacingFraction );
-	
-	AppendVertsForString( vertices, m_currentCommandStr, Rgba8::WHITE, startMins, lineHeight, cellAspect, spacingFraction );*/
 }
 
 
@@ -367,6 +369,7 @@ void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
 	if ( m_commandHistory.size() > 0 )
 	{
 		m_currentCommandStr = m_commandHistory[m_currentCommandHistoryPos];
+		m_currentCursorPosition = (int)m_currentCommandStr.size();
 	}
 }
 
@@ -376,6 +379,48 @@ void DevConsole::InitializeSupportedCommands()
 {
 	m_supportedCommands.push_back( DevConsoleCommand( "quit", "Quit the game." ) );
 	m_supportedCommands.push_back( DevConsoleCommand( "help", "Display help text for each supported command." ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::LoadPersistentHistory()
+{
+	std::string command;
+	std::ifstream persistentHistory;
+	persistentHistory.open( "Data/DevConsole/History.txt", std::ios::in );
+
+	if ( !persistentHistory.is_open() )
+	{
+		return;
+	}
+
+	while ( std::getline( persistentHistory, command ) )
+	{
+		m_commandHistory.push_back( command );
+	}
+
+	persistentHistory.close();
+
+	m_currentCommandHistoryPos = (int)m_commandHistory.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::SavePersistentHistory()
+{
+	std::ofstream persistentHistory;
+	persistentHistory.open( "Data/DevConsole/History.txt", std::ios::out );
+	if ( !persistentHistory.is_open() )
+	{
+		return;
+	}
+
+	for ( int commandHistoryIdx = 0; commandHistoryIdx < (int)m_commandHistory.size(); ++commandHistoryIdx )
+	{
+		persistentHistory << m_commandHistory[commandHistoryIdx] << "\n";
+	}
+
+	persistentHistory.close();
 }
 
 
@@ -460,8 +505,12 @@ void DevConsole::ExecuteCommand()
 		return;
 	}
 
-	m_commandHistory.push_back( m_currentCommandStr );
-	m_currentCommandHistoryPos = (int)m_commandHistory.size();
+	if ( m_commandHistory.empty()
+		|| m_commandHistory.back() != m_currentCommandStr )
+	{
+		m_commandHistory.push_back( m_currentCommandStr );
+		m_currentCommandHistoryPos = (int)m_commandHistory.size();
+	}
 
 	// Check for a match in supported commands with case insensitivity
 	if ( !_stricmp( m_currentCommandStr.c_str(), "quit" ) )
