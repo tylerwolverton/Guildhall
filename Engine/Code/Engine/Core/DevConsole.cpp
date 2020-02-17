@@ -297,6 +297,21 @@ void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::s
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::AutoCompleteCommand()
+{
+
+	for ( int commandIdx = 0; commandIdx < (int)m_supportedCommands.size(); ++commandIdx )
+	{
+		if ( !_strnicmp( m_currentCommandStr.c_str(), m_supportedCommands[commandIdx].m_name.c_str(), m_currentCommandStr.size() ) )
+		{
+			m_currentCommandStr = m_supportedCommands[commandIdx].m_name;
+			m_currentCursorPosition = (int)m_currentCommandStr.size();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::ToggleOpenFull()
 {
 	if ( m_isOpen )
@@ -447,6 +462,13 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 
 		m_currentCommandStr.clear();
 		m_currentCursorPosition = 0;
+
+		return true;
+	}
+
+	if ( character == '\t' )
+	{
+		AutoCompleteCommand();
 
 		return true;
 	}

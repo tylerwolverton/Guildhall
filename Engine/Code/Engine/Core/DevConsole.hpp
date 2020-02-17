@@ -96,6 +96,7 @@ private:
 	void AppendVertsForCursor( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
 	void AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::string message, const Rgba8& textColor, const Vec2& startMins, float lineHeight, float cellAspect = .56f, float spacingFraction = .2f ) const;
 	
+	void AutoCompleteCommand();
 	void ExecuteCommand();
 	void ExecuteQuitCommand();
 	void ExecuteHelpCommand();
