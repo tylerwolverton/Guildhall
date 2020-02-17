@@ -35,14 +35,28 @@ bool Shader::CreateFromFile( const std::string& fileName )
 		return false;
 	}
 
-	m_vertexStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_VERTEX );
-	m_fragmentStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_FRAGMENT );
+	bool isVertexShaderValid = m_vertexStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_VERTEX );
+	bool isFragmentShaderValid = m_fragmentStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_FRAGMENT );
 
 	delete[] source;
 
 	m_fileName = fileName;
 	
-	return true;
+	// Set error shader if compilation failed
+	if ( !isVertexShaderValid || !isFragmentShaderValid )
+	{
+		fileSize = 0;
+		source = FileReadToNewBuffer( ERROR_SHADER_FILENAME, &fileSize );
+		if ( source == nullptr )
+		{
+			return false;
+		}
+
+		m_vertexStage.Compile( m_owner, ERROR_SHADER_FILENAME, source, fileSize, SHADER_TYPE_VERTEX );
+		m_fragmentStage.Compile( m_owner, ERROR_SHADER_FILENAME, source, fileSize, SHADER_TYPE_FRAGMENT );
+	}
+
+	return isVertexShaderValid && isFragmentShaderValid;
 }
 
 
@@ -195,8 +209,6 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 			DebuggerPrintf( "Failed to compile [%s].  Compiler gave the following output;\n%s",
 							 filename.c_str(),
 							 error_string );
-
-			DEBUGBREAK();
 		}	
 	}
 	else

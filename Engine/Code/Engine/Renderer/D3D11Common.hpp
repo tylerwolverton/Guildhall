@@ -48,3 +48,8 @@ enum eRenderMemoryHint : uint
 D3D11_USAGE ToDxMemoryUsage( eRenderMemoryHint hint );
 UINT ToDXUsage( eRenderBufferUsage usage );
 DXGI_FORMAT ToDXGIFormat( eBufferFormatType formatType );
+
+
+//-----------------------------------------------------------------------------------------------
+static const char* DEFAULT_SHADER_FILENAME = "Data/Shaders/Default.hlsl";
+static const char* ERROR_SHADER_FILENAME = "Data/Shaders/Error.hlsl";

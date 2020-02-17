@@ -31,7 +31,6 @@ public:
 	ShaderStage();
 	~ShaderStage();
 
-	// A02
 	bool Compile( RenderContext* renderContext,
 							   const std::string& filename,
 							   const void* source,

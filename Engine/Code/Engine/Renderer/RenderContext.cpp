@@ -86,7 +86,7 @@ void RenderContext::Startup( Window* window )
 	}
 
 	// Create default shader
-	m_defaultShader = GetOrCreateShader( "Data/Shaders/Default.hlsl" );
+	m_defaultShader = GetOrCreateShader( DEFAULT_SHADER_FILENAME );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
