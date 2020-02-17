@@ -24,6 +24,8 @@ extern const unsigned char KEY_UPARROW;
 extern const unsigned char KEY_LEFTARROW;
 extern const unsigned char KEY_DOWNARROW;
 extern const unsigned char KEY_RIGHTARROW;
+extern const unsigned char KEY_HOME;
+extern const unsigned char KEY_END;
 extern const unsigned char KEY_F1;
 extern const unsigned char KEY_F2;
 extern const unsigned char KEY_F3;

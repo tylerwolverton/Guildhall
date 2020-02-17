@@ -297,6 +297,7 @@ void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::s
 
 
 //-----------------------------------------------------------------------------------------------
+// Explain how this works via tab
 void DevConsole::AutoCompleteCommand()
 {
 
@@ -487,6 +488,8 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 
 	m_currentCommandStr.insert( m_currentCursorPosition, 1, character );
 	++m_currentCursorPosition;
+	m_cursorColor = Rgba8::WHITE;
+	m_curCursorSeconds = 0.f;
 
 	return true;
 }
@@ -514,6 +517,16 @@ void DevConsole::UpdateFromKeyboard()
 		int numCharactersToDelete = numTimesDeletePressed < maxNumCharactersAvailableToDelete ? numTimesDeletePressed : maxNumCharactersAvailableToDelete;
 
 		m_currentCommandStr.erase( m_currentCursorPosition, numCharactersToDelete );
+	}
+
+	if ( m_inputSystem->WasKeyJustPressed( KEY_HOME ) )
+	{
+		m_currentCursorPosition = 0;
+	}
+
+	if ( m_inputSystem->WasKeyJustPressed( KEY_END ) )
+	{
+		m_currentCursorPosition = (int)m_currentCommandStr.size();
 	}
 }
 
