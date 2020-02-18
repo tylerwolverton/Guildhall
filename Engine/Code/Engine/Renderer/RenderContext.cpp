@@ -91,7 +91,10 @@ void RenderContext::Startup( Window* window )
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
-	m_defaultSampler = new Sampler( this, SAMPLER_POINT );
+	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
+	m_defaultLinearSampler = new Sampler( this, SAMPLER_BILINEAR );
+	m_currentSampler = m_defaultPointSampler;
+
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
 
 	CreateBlendStates();
@@ -117,14 +120,18 @@ void RenderContext::Shutdown()
 	delete m_immediateVBO;
 	delete m_frameUBO;
 
-	delete m_defaultSampler;
-	m_defaultSampler = nullptr;
+	delete m_defaultPointSampler;
+	m_defaultPointSampler = nullptr;
+
+	delete m_defaultLinearSampler;
+	m_defaultLinearSampler = nullptr;
 
 	delete m_defaultWhiteTexture;
 	m_defaultWhiteTexture = nullptr;
 
 	DX_SAFE_RELEASE( m_alphaBlendState );
 	DX_SAFE_RELEASE( m_additiveBlendState );
+	DX_SAFE_RELEASE( m_disabledBlendState );
 
 	// Cleanup shader cache
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
@@ -172,6 +179,7 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 	{
 		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); return;
 		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); return;
+		case eBlendMode::DISABLED: m_context->OMSetBlendState( m_disabledBlendState, zeroes, ~0U ); return;
 	}
 }
 
@@ -210,7 +218,10 @@ void RenderContext::BeginCamera( Camera& camera )
 	}
 
 	camera.UpdateCameraUBO();
+	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
+	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
 
+	// Viewport creation
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
 	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
@@ -226,7 +237,6 @@ void RenderContext::BeginCamera( Camera& camera )
 	viewport.MaxDepth = 1.f;
 
 	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
 	m_context->RSSetViewports( 1, &viewport );
 		
 	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
@@ -234,15 +244,13 @@ void RenderContext::BeginCamera( Camera& camera )
 		ClearScreen( renderTargetView, camera.GetClearColor() );
 	}
 
+	// Reset
 	BindShader( (Shader*)nullptr );
 	BindTexture( nullptr );
 	BindSampler( nullptr );
 	m_lastVBOHandle = nullptr;
 
-	SetBlendMode( eBlendMode::ALPHA );
-
-	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
-	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
+	SetBlendMode( m_currentBlendMode );
 }
 
 
@@ -792,6 +800,22 @@ void RenderContext::CreateBlendStates()
 	additiveDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	m_device->CreateBlendState( &additiveDesc, &m_additiveBlendState );
+
+	// Opaque
+	D3D11_BLEND_DESC opaqueDesc;
+	opaqueDesc.AlphaToCoverageEnable = FALSE;
+	opaqueDesc.IndependentBlendEnable = FALSE;
+	opaqueDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	opaqueDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	opaqueDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+
+	opaqueDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	opaqueDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	opaqueDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	opaqueDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	m_device->CreateBlendState( &opaqueDesc, &m_disabledBlendState );
 }
 
 
@@ -815,7 +839,7 @@ void RenderContext::BindSampler( Sampler* sampler )
 {
 	if ( sampler == nullptr )
 	{
-		sampler = m_defaultSampler;
+		sampler = m_currentSampler;
 	} 
 
 	ID3D11SamplerState* samplerHandle = sampler->m_handle;
@@ -886,6 +910,32 @@ Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 	//m_loadedTextures.push_back( newTexture );
 
 	return newTexture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CycleSampler()
+{
+	if ( m_currentSampler == m_defaultPointSampler )
+	{
+		m_currentSampler = m_defaultLinearSampler;
+	}
+	else if ( m_currentSampler == m_defaultLinearSampler )
+	{
+		m_currentSampler = m_defaultPointSampler;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CycleBlendMode()
+{
+	switch ( m_currentBlendMode )
+	{
+		case eBlendMode::ALPHA: m_currentBlendMode = eBlendMode::ADDITIVE; return;
+		case eBlendMode::ADDITIVE: m_currentBlendMode = eBlendMode::DISABLED; return;
+		case eBlendMode::DISABLED: m_currentBlendMode = eBlendMode::ALPHA; return;
+	}
 }
 
 

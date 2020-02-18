@@ -33,6 +33,7 @@ class VertexBuffer;
 //-----------------------------------------------------------------------------------------------
 enum class eBlendMode
 {
+	DISABLED,
 	ALPHA,
 	ADDITIVE,
 };
@@ -117,6 +118,10 @@ public:
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
+	// Debug methods
+	void CycleSampler();
+	void CycleBlendMode();
+
 private:
 	Texture* CreateTextureFromFile( const char* filePath );
 	Texture* RetrieveTextureFromCache( const char* filePath );
@@ -152,11 +157,16 @@ private:
 	Shader* m_currentShader = nullptr;
 	std::vector<Shader*> m_loadedShaders;
 
-	Sampler* m_defaultSampler = nullptr;
+	Sampler* m_defaultPointSampler = nullptr;
+	Sampler* m_defaultLinearSampler = nullptr;
+	Sampler* m_currentSampler = nullptr;
+	
 	Texture* m_defaultWhiteTexture = nullptr;
 
-	ID3D11BlendState* m_alphaBlendState;
-	ID3D11BlendState* m_additiveBlendState;
+	ID3D11BlendState* m_alphaBlendState = nullptr;
+	ID3D11BlendState* m_additiveBlendState = nullptr;
+	ID3D11BlendState* m_disabledBlendState = nullptr;
+	eBlendMode m_currentBlendMode = eBlendMode::DISABLED;
 
 	bool m_isDrawing = false;
 };
