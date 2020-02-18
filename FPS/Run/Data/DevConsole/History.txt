@@ -6,3 +6,8 @@ tyler
 quit
 help
 quit
+HEllo I hve a better font
+help
+quit
+help
+quit

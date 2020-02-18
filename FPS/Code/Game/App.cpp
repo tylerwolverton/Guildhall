@@ -61,16 +61,13 @@ void App::Startup()
 	g_renderer->Startup( g_window );
 
 	g_devConsole->Startup();
-	g_devConsole->SetEventSystem( g_eventSystem );
 	g_devConsole->SetInputSystem( g_inputSystem );
 	g_devConsole->SetRenderer( g_renderer );
 	g_devConsole->SetBitmapFont( g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" ) );
 
 	g_game->Startup();
 
-	g_eventSystem->RegisterEvent( "QuitGame", QuitGame );
-	g_eventSystem->RegisterEvent( "Quit", QuitGame );
-	g_eventSystem->RegisterEvent( "Exit", QuitGame );
+	g_eventSystem->RegisterEvent( "Quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
 }
 
 
@@ -252,8 +249,9 @@ void App::EndFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-bool App::QuitGame( EventArgs args )
+bool App::QuitGame( EventArgs* args )
 {
+	UNUSED( args );
 	g_app->HandleQuitRequested();
 
 	return 0;

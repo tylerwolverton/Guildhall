@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 #include <string>
 #include <vector>
@@ -32,21 +33,6 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
-struct DevConsoleCommand
-{
-public:
-	std::string m_name;
-	std::string m_helpText;
-
-public:
-	explicit DevConsoleCommand( std::string name, std::string helpText )
-		: m_name( name )
-		, m_helpText( helpText )
-	{}
-};
-
-
-//-----------------------------------------------------------------------------------------------
 class DevConsole
 {
 public:
@@ -61,7 +47,7 @@ public:
 
 	void SetRenderer( RenderContext* renderer );
 	void SetInputSystem( InputSystem* inputSystem );
-	void SetEventSystem( EventSystem* eventSystem );
+	//void SetEventSystem( EventSystem* eventSystem );
 	void SetBitmapFont( BitmapFont* font );
 
 	void ProcessInput();
@@ -80,9 +66,9 @@ public:
 
 	void MoveThroughCommandHistory( int deltaCommandHistoryPosition );
 
-private:
-	void InitializeSupportedCommands();
+	static bool ShowHelp( EventArgs* args );
 
+private:
 	void LoadPersistentHistory();
 	void SavePersistentHistory();
 
@@ -98,13 +84,11 @@ private:
 	
 	void AutoCompleteCommand();
 	void ExecuteCommand();
-	void ExecuteQuitCommand();
-	void ExecuteHelpCommand();
 
 private:
 	RenderContext* m_renderer = nullptr;
 	InputSystem* m_inputSystem = nullptr;
-	EventSystem* m_eventSystem = nullptr;
+	//EventSystem* m_eventSystem = nullptr;
 
 	BitmapFont* m_bitmapFont = nullptr;
 
@@ -116,8 +100,6 @@ private:
 	int m_currentCursorPosition = 0;
 	int m_currentCommandHistoryPos = 0;
 	std::vector<std::string> m_commandHistory;
-
-	std::vector<DevConsoleCommand> m_supportedCommands;
 
 	Rgba8 m_cursorColor = Rgba8::WHITE;
 	float m_curCursorSeconds = 0.f;

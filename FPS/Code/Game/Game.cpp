@@ -147,7 +147,6 @@ void Game::LoadAssets()
 }
 
 
-
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard( float deltaSeconds )
 {

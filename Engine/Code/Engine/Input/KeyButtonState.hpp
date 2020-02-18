@@ -12,9 +12,7 @@ public:
 	void	Reset();
 
 	bool	ConsumeKeyPress();
-	bool	ConsumeKeyRelease();
 	int		ConsumeAllKeyPresses();
-	int		ConsumeAllKeyReleases();
 
 private:
 	bool m_isPressed = false;

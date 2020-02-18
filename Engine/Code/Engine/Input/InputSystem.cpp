@@ -181,62 +181,14 @@ bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
 
 
 //-----------------------------------------------------------------------------------------------
-bool InputSystem::ConsumeIsKeyPressed( unsigned char keyCode )
+bool InputSystem::ConsumeKeyPress( unsigned char keyCode )
 {
-	bool isKeyPressed = m_keyStates[keyCode].IsPressed();
-	if ( isKeyPressed )
-	{
-		HandleKeyReleased( keyCode );
-	}
-	return isKeyPressed;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool InputSystem::ConsumeWasKeyJustPressed( unsigned char keyCode )
-{
-	bool wasJustPressed = m_keyStates[keyCode].WasJustPressed();
-	if ( wasJustPressed )
-	{
-		HandleKeyReleased( keyCode );
-	}
-	return wasJustPressed;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool InputSystem::ConsumeWasKeyJustReleased( unsigned char keyCode )
-{
-	bool wasJustReleased = m_keyStates[keyCode].WasJustReleased();
-	if ( wasJustReleased )
-	{
-		HandleKeyPressed( keyCode );
-	}
-	return wasJustReleased;
+	return m_keyStates[keyCode].ConsumeKeyPress();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 int InputSystem::ConsumeAllKeyPresses( unsigned char keyCode )
 {
-	int keyPresses = m_keyStates[keyCode].ConsumeAllKeyPresses();
-	if(keyPresses > 0 )
-	{
-		HandleKeyReleased( keyCode );
-	}
-
-	return keyPresses;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-int InputSystem::ConsumeAllKeyReleases( unsigned char keyCode )
-{
-	int keyReleases = m_keyStates[keyCode].ConsumeAllKeyReleases();
-	if ( keyReleases > 0 )
-	{
-		HandleKeyPressed( keyCode );
-	}
-
-	return keyReleases;
+	return m_keyStates[keyCode].ConsumeAllKeyPresses();
 }

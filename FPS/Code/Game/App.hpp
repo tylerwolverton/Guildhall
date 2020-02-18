@@ -34,7 +34,7 @@ private:
 	void Render() const;
 	void EndFrame();
 
-	static bool QuitGame( EventArgs args );
+	static bool QuitGame( EventArgs* args );
 
 private:
 	bool m_isQuitting = false;

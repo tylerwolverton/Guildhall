@@ -57,20 +57,12 @@ bool KeyButtonState::ConsumeKeyPress()
 		 && m_numTimesPressed > 0 )
 	{
 		--m_numTimesPressed;
-		return true;
-	}
 
-	return false;
-}
+		if ( m_numTimesPressed == 0 )
+		{
+			m_isPressed = false;
+		}
 
-
-//-----------------------------------------------------------------------------------------------
-bool KeyButtonState::ConsumeKeyRelease()
-{
-	if ( m_isPressed
-		 && m_numTimesReleased > 0 )
-	{
-		--m_numTimesReleased;
 		return true;
 	}
 
@@ -83,14 +75,6 @@ int KeyButtonState::ConsumeAllKeyPresses()
 {
 	int numPresses = m_numTimesPressed;
 	m_numTimesPressed = 0;
+	m_isPressed = false;
 	return numPresses;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-int KeyButtonState::ConsumeAllKeyReleases()
-{
-	int numReleases = m_numTimesReleased;
-	m_numTimesReleased = 0;
-	return numReleases;
 }

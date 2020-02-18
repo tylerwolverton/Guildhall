@@ -1,11 +1,13 @@
 #include "ShaderUtils.hlsl"
 
+
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 v2f_t VertexFunction( vs_input_t input )
 {
 	return DefaultVertexFunction( input );
 }
+
 
 //--------------------------------------------------------------------------------------
 // Fragment Shader

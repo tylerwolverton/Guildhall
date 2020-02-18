@@ -32,7 +32,7 @@ void DevConsole::Startup()
 	m_devConsoleCamera = new Camera();
 	m_devConsoleCamera->SetColorTarget( nullptr );
 
-	InitializeSupportedCommands();
+	g_eventSystem->RegisterEvent( "Help", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
 
 	LoadPersistentHistory();
 }
@@ -95,13 +95,6 @@ void DevConsole::SetInputSystem( InputSystem* inputSystem )
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::SetEventSystem( EventSystem* eventSystem )
-{
-	m_eventSystem = eventSystem;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void DevConsole::SetBitmapFont( BitmapFont* font )
 {
 	m_bitmapFont = font;
@@ -156,15 +149,15 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	
 	AABB2 logMessageBounds = bounds.GetBoxAtTop( .95f );
 	AABB2 inputStringBounds = bounds.GetBoxAtBottom( .045f );
-	AABB2 inputCarotBounds = bounds.GetBoxAtBottom( .005f );
-	inputStringBounds.mins.y = inputCarotBounds.maxs.y;
+	AABB2 inputCursorBounds = bounds.GetBoxAtBottom( .005f );
+	inputStringBounds.mins.y = inputCursorBounds.maxs.y;
 
 	std::vector<Vertex_PCU> vertices;
 	
 	RenderBackground( bounds );
 	AppendVertsForLatestLogMessages( vertices, logMessageBounds, lineHeight );
 	AppendVertsForInputString( vertices, inputStringBounds, lineHeight );
-	AppendVertsForCursor( vertices, inputCarotBounds, lineHeight );
+	AppendVertsForCursor( vertices, inputCursorBounds, lineHeight );
 	
 	if ( m_bitmapFont != nullptr )
 	{
@@ -256,10 +249,15 @@ void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& verti
 void DevConsole::AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
 	float cellAspect = .56f;
-	float spacingFraction = .2f;
+	if ( m_bitmapFont != nullptr
+		 && m_bitmapFont->GetTexture() != nullptr )
+	{
+		cellAspect = .5f;
+	}
+
 	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
 	
-	AppendVertsForString( vertices, "> " + m_currentCommandStr, Rgba8::WHITE, startMins, lineHeight, cellAspect, spacingFraction );
+	AppendVertsForString( vertices, "> " + m_currentCommandStr, Rgba8::WHITE, startMins, lineHeight, cellAspect );
 }
 
 
@@ -301,12 +299,13 @@ void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::s
 // Explain how this works via tab
 void DevConsole::AutoCompleteCommand()
 {
+	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
 
-	for ( int commandIdx = 0; commandIdx < (int)m_supportedCommands.size(); ++commandIdx )
+	for ( int commandIdx = 0; commandIdx < (int)supportedCommands.size(); ++commandIdx )
 	{
-		if ( !_strnicmp( m_currentCommandStr.c_str(), m_supportedCommands[commandIdx].m_name.c_str(), m_currentCommandStr.size() ) )
+		if ( !_strnicmp( m_currentCommandStr.c_str(), supportedCommands[commandIdx]->m_eventName.c_str(), m_currentCommandStr.size() ) )
 		{
-			m_currentCommandStr = m_supportedCommands[commandIdx].m_name;
+			m_currentCommandStr = supportedCommands[commandIdx]->m_eventName;
 			m_currentCursorPosition = (int)m_currentCommandStr.size();
 		}
 	}
@@ -340,6 +339,11 @@ void DevConsole::Close()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::MoveCursorPosition( int deltaCursorPosition )
 {
+	if ( deltaCursorPosition == 0 )
+	{
+		return;
+	}
+
 	m_currentCursorPosition += deltaCursorPosition;
 
 	if ( m_currentCursorPosition < 0 )
@@ -350,6 +354,9 @@ void DevConsole::MoveCursorPosition( int deltaCursorPosition )
 	{
 		m_currentCursorPosition = (int)m_currentCommandStr.size();
 	}
+
+	m_cursorColor = Rgba8::WHITE;
+	m_curCursorSeconds = 0.f;
 }
 
 
@@ -388,14 +395,6 @@ void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
 		m_currentCommandStr = m_commandHistory[m_currentCommandHistoryPos];
 		m_currentCursorPosition = (int)m_currentCommandStr.size();
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void DevConsole::InitializeSupportedCommands()
-{
-	m_supportedCommands.push_back( DevConsoleCommand( "quit", "Quit the game." ) );
-	m_supportedCommands.push_back( DevConsoleCommand( "help", "Display help text for each supported command." ) );
 }
 
 
@@ -481,16 +480,14 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 		{
 			int deletePos = m_currentCursorPosition - 1;
 			m_currentCommandStr.erase( deletePos, 1 );
-			--m_currentCursorPosition;
+			MoveCursorPosition( -1 );
 		}
 
 		return true;
 	}
 
 	m_currentCommandStr.insert( m_currentCursorPosition, 1, character );
-	++m_currentCursorPosition;
-	m_cursorColor = Rgba8::WHITE;
-	m_curCursorSeconds = 0.f;
+	MoveCursorPosition( 1 );
 
 	return true;
 }
@@ -549,41 +546,39 @@ void DevConsole::ExecuteCommand()
 	}
 
 	// Check for a match in supported commands with case insensitivity
-	if ( !_stricmp( m_currentCommandStr.c_str(), "quit" ) )
+	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
+
+	for ( int cmdIdx = 0; cmdIdx < (int)supportedCommands.size(); ++cmdIdx )
 	{
-		ExecuteQuitCommand();
+		EventSubscription*& cmd = supportedCommands[cmdIdx];
+		if ( cmd != nullptr 
+			 && !_strcmpi( m_currentCommandStr.c_str(), cmd->m_eventName.c_str() ) )
+		{
+			g_eventSystem->FireEvent( m_currentCommandStr, nullptr, eUsageLocation::DEV_CONSOLE );
+			return;
+		}
 	}
-	else if ( !_stricmp( m_currentCommandStr.c_str(), "help" ) )
-	{
-		ExecuteHelpCommand();
-	}
-	else
-	{
-		PrintString( "Invalid command: '" + m_currentCommandStr + "'", Rgba8::RED );
-	}
+	
+	PrintString( "Invalid command: '" + m_currentCommandStr + "'", Rgba8::RED );
+	
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::ExecuteQuitCommand()
+bool DevConsole::ShowHelp( EventArgs* args )
 {
-	if ( m_eventSystem == nullptr )
+	UNUSED( args );
+
+	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
+
+	for ( int cmdIdx = 0; cmdIdx < (int)supportedCommands.size(); ++cmdIdx )
 	{
-		return;
+		EventSubscription*& cmd = supportedCommands[cmdIdx];
+		if ( cmd != nullptr )
+		{
+			g_devConsole->PrintString( cmd->m_eventName + " - " + cmd->m_eventHelpText, Rgba8::WHITE );
+		}
 	}
 
-	EventArgs args;
-	m_eventSystem->FireEvent( m_currentCommandStr, &args );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void DevConsole::ExecuteHelpCommand()
-{
-	PrintString( "List of supported commands:", Rgba8::WHITE );
-	for ( int commandIdx = 0; commandIdx < (int)m_supportedCommands.size(); ++commandIdx )
-	{
-		DevConsoleCommand& cmd = m_supportedCommands[commandIdx];
-		PrintString( cmd.m_name + " - " + cmd.m_helpText, Rgba8::WHITE );
-	}
+	return 0;
 }
