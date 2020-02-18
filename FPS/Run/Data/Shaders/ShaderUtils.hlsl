@@ -57,7 +57,7 @@ struct v2f_t
 
 
 //--------------------------------------------------------------------------------------
-// Vertex Shader
+// Default Vertex Shader
 v2f_t DefaultVertexFunction( vs_input_t input )
 {
 	v2f_t v2f = (v2f_t)0;

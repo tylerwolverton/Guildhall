@@ -1,10 +1,13 @@
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/BufferAttribute.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/BuiltInShaders.hpp"
 
 #include <d3dcompiler.h>
 
@@ -45,15 +48,26 @@ bool Shader::CreateFromFile( const std::string& fileName )
 	// Set error shader if compilation failed
 	if ( !isVertexShaderValid || !isFragmentShaderValid )
 	{
-		fileSize = 0;
-		source = FileReadToNewBuffer( ERROR_SHADER_FILENAME, &fileSize );
-		if ( source == nullptr )
-		{
-			return false;
-		}
+		m_vertexStage.Compile( m_owner, "ErrorBuiltInShader", g_errorShaderCode, strlen( g_errorShaderCode ), SHADER_TYPE_VERTEX );
+		m_fragmentStage.Compile( m_owner, "ErrorBuiltInShader", g_errorShaderCode, strlen( g_errorShaderCode ), SHADER_TYPE_FRAGMENT );
+	}
 
-		m_vertexStage.Compile( m_owner, ERROR_SHADER_FILENAME, source, fileSize, SHADER_TYPE_VERTEX );
-		m_fragmentStage.Compile( m_owner, ERROR_SHADER_FILENAME, source, fileSize, SHADER_TYPE_FRAGMENT );
+	return isVertexShaderValid && isFragmentShaderValid;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Shader::CreateFromSourceString( const std::string& shaderName, const char* source )
+{
+	bool isVertexShaderValid = m_vertexStage.Compile( m_owner, shaderName, source, strlen( source ), SHADER_TYPE_VERTEX );
+	bool isFragmentShaderValid = m_fragmentStage.Compile( m_owner, shaderName, source, strlen( source ), SHADER_TYPE_FRAGMENT );
+	m_fileName = shaderName;
+
+	// Set error shader if compilation failed
+	if ( !isVertexShaderValid || !isFragmentShaderValid )
+	{
+		m_vertexStage.Compile( m_owner, "ErrorBuiltInShader", g_errorShaderCode, strlen( g_errorShaderCode ), SHADER_TYPE_VERTEX );
+		m_fragmentStage.Compile( m_owner, "ErrorBuiltInShader", g_errorShaderCode, strlen( g_errorShaderCode ), SHADER_TYPE_FRAGMENT );
 	}
 
 	return isVertexShaderValid && isFragmentShaderValid;
@@ -209,6 +223,9 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 			DebuggerPrintf( "Failed to compile [%s].  Compiler gave the following output;\n%s",
 							 filename.c_str(),
 							 error_string );
+
+			g_devConsole->PrintString( Stringf( "Failed to compile [%s].  Compiler gave the following output;\n%s",	filename.c_str(), error_string ), 
+									   Rgba8::RED );
 		}	
 	}
 	else

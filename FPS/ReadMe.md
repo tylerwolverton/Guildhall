@@ -12,11 +12,11 @@ Project: FPS
     - [x] *04pts*: Make a `Sampler` class
     - [x] *03pts*: Default Samplers (Linear+Wrap, Point+Wrap)
     - [x] *03pts*: `RenderContext::GetOrCreateTexture` works again.
-- [ ] *08pts*: Blend States supported by shader.
+- [x] *08pts*: Blend States supported by shader.
     - [x] *04pts*: Blend states creating when renderer starts up.
     - [x] *04pts*: ADDITIVE, OPAQUE, and ALPHA blend modes supported
-- [ ] *05pts*: Default Built-In Shader to use when `BindShader(nullptr)` is used
-    - [ ] `Renderer::SetBlendState` should affect this shader; 
+- [x] *05pts*: Default Built-In Shader to use when `BindShader(nullptr)` is used
+    - [x] `Renderer::SetBlendState` should affect this shader; 
 - [x] *05pts*: Render two textured quads on screen
     - [x] *04pts*: One using an invert color shader
     - [x] *01pts*: One default
@@ -45,7 +45,7 @@ Project: FPS
 
 ## Extras
 
-- [-] *X03.01 : 03pts*: Built-in error shader to use when a shader fails to compile.   
+- [x] *X03.01 : 03pts*: Built-in error shader to use when a shader fails to compile.   
 - [-] *X03.02 : 04pts*: AutoComplete
 - [ ] *X03.03 : 04pts*: Context Sensitive Auto Complete
 - [x] *X03.04 : 04pts*: Command History

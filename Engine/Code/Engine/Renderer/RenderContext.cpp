@@ -12,6 +12,7 @@
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/BuiltInShaders.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
@@ -86,7 +87,7 @@ void RenderContext::Startup( Window* window )
 	}
 
 	// Create default shader
-	m_defaultShader = GetOrCreateShader( DEFAULT_SHADER_FILENAME );
+	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
@@ -177,9 +178,9 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 
 	switch ( blendMode )
 	{
-		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); return;
-		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); return;
-		case eBlendMode::DISABLED: m_context->OMSetBlendState( m_disabledBlendState, zeroes, ~0U ); return;
+		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ALPHA; return;
+		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ADDITIVE; return;
+		case eBlendMode::DISABLED: m_context->OMSetBlendState( m_disabledBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::DISABLED; return;
 	}
 }
 
@@ -632,7 +633,7 @@ void RenderContext::BindShader( const char* fileName )
 
 
 //-----------------------------------------------------------------------------------------------
-Shader* RenderContext::GetOrCreateShader( char const* filename )
+Shader* RenderContext::GetOrCreateShader( const char* filename )
 {
 	// Check cache for shader
 	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
@@ -645,6 +646,26 @@ Shader* RenderContext::GetOrCreateShader( char const* filename )
 
 	Shader* newShader = new Shader( this );
 	newShader->CreateFromFile( filename );
+	m_loadedShaders.push_back( newShader );
+
+	return newShader;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Shader* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName, const char* source )
+{
+	// Check cache for shader
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), shaderName ) )
+		{
+			return m_loadedShaders[loadedShaderIdx];
+		}
+	}
+
+	Shader* newShader = new Shader( this );
+	newShader->CreateFromSourceString( shaderName, source );
 	m_loadedShaders.push_back( newShader );
 
 	return newShader;

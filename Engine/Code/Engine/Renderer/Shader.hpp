@@ -65,6 +65,7 @@ public:
 	~Shader();
 
 	bool CreateFromFile( const std::string& fileName );
+	bool CreateFromSourceString( const std::string& shaderName, const char* source );
 
 	// for hooking IA (input assembler) to the VS (vertex shader), 
 	// needs the vertex shader and vertex format to make the binding

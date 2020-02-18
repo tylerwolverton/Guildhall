@@ -150,6 +150,7 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	{
 		return;
 	}
+	m_renderer->SetBlendMode( eBlendMode::ALPHA );
 
 	m_renderer->BeginCamera( *m_devConsoleCamera );
 	

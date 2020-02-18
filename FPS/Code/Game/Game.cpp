@@ -120,7 +120,6 @@ void Game::Render() const
 	
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
-	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
 	g_renderer->DrawAABB2( AABB2( -.9f, -.5f, -.15f, .5f ), Rgba8::WHITE );
 	
 	g_renderer->BindShader( "Data/Shaders/InvertColors.hlsl" );
@@ -128,7 +127,7 @@ void Game::Render() const
 
 	// Test for blend modes
 	g_renderer->BindTexture( nullptr );
-	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
+	g_renderer->BindShader( (Shader*)nullptr );
 	g_renderer->DrawAABB2( AABB2( -.125f, .75f, .125f, 1.f ), Rgba8::RED );
 
 	texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/mgs.png"  );

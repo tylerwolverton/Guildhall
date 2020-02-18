@@ -53,6 +53,3 @@ DXGI_FORMAT ToDXGIFormat( eBufferFormatType formatType );
 //-----------------------------------------------------------------------------------------------
 static const char* DEFAULT_SHADER_FILENAME = "Data/Shaders/Default.hlsl";
 static const char* ERROR_SHADER_FILENAME = "Data/Shaders/Error.hlsl";
-
-//char const* g_defaultShaderCode = R"()";
-//char const* g_errorShaderCode = R"()";

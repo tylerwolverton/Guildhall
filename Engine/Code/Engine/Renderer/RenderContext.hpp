@@ -107,7 +107,8 @@ public:
 	void BindShader( const char* fileName );
 
 	// Resource Creation
-	Shader* GetOrCreateShader( char const* filename );
+	Shader* GetOrCreateShader( const char* filename );
+	Shader* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
 
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	void BindTexture( const Texture* constTexture );
