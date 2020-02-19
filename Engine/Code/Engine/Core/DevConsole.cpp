@@ -33,6 +33,7 @@ void DevConsole::Startup()
 	m_devConsoleCamera->SetColorTarget( nullptr );
 
 	g_eventSystem->RegisterEvent( "Help", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
+	g_eventSystem->RegisterEvent( "HelpTester", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
 
 	LoadPersistentHistory();
 }
@@ -296,19 +297,57 @@ void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::s
 
 
 //-----------------------------------------------------------------------------------------------
-// Explain how this works via tab
 void DevConsole::AutoCompleteCommand()
 {
 	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
 
+	if ( m_currentCommandStr.empty() 
+		 && supportedCommands.size() > 0 
+		 && supportedCommands[0] != nullptr )
+	{
+		m_currentCommandStr = supportedCommands[0]->m_eventName;
+		m_currentCursorPosition = (int)m_currentCommandStr.size();
+		return;
+	}
+
+	std::vector<std::string> potentialMatches;
 	for ( int commandIdx = 0; commandIdx < (int)supportedCommands.size(); ++commandIdx )
 	{
-		if ( !_strnicmp( m_currentCommandStr.c_str(), supportedCommands[commandIdx]->m_eventName.c_str(), m_currentCommandStr.size() ) )
+		EventSubscription*& sub = supportedCommands[commandIdx];
+		if ( !_strcmpi( m_currentCommandStr.c_str(), sub->m_eventName.c_str() ) )
 		{
-			m_currentCommandStr = supportedCommands[commandIdx]->m_eventName;
+			int newIndex = ( commandIdx + 1 ) % (int)supportedCommands.size();
+			m_currentCommandStr = supportedCommands[newIndex]->m_eventName;
 			m_currentCursorPosition = (int)m_currentCommandStr.size();
+			return;
+
+		}
+
+		if ( !_strnicmp( m_currentCommandStr.c_str(), sub->m_eventName.c_str(), m_currentCommandStr.size() ) )
+		{
+			potentialMatches.push_back( sub->m_eventName );
 		}
 	}
+
+	int numMatches = (int)potentialMatches.size();
+	if ( numMatches <= 0 )
+	{
+		return;
+	}
+
+	int minLength = 99999999;
+	int minIdx = 0;
+	for ( int matchIdx = 0; matchIdx < numMatches; ++matchIdx )
+	{
+		if ( (int)potentialMatches[matchIdx].size() < minLength )
+		{
+			minLength = (int)potentialMatches[matchIdx].size();
+			minIdx = matchIdx;
+		}
+	}
+
+	m_currentCommandStr = potentialMatches[minIdx];
+	m_currentCursorPosition = (int)m_currentCommandStr.size();
 }
 
 
@@ -486,6 +525,13 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 		return true;
 	}
 
+	if ( character == CMD_PASTE )
+	{
+		PasteFromClipboard();
+
+		return true;
+	}
+
 	m_currentCommandStr.insert( m_currentCursorPosition, 1, character );
 	MoveCursorPosition( 1 );
 
@@ -561,6 +607,20 @@ void DevConsole::ExecuteCommand()
 	
 	PrintString( "Invalid command: '" + m_currentCommandStr + "'", Rgba8::RED );
 	
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::PasteFromClipboard()
+{
+	const char* clipboardText = m_inputSystem->GetTextFromClipboard();
+	if ( clipboardText == nullptr )
+	{
+		return;
+	}
+
+	m_currentCommandStr.insert( m_currentCursorPosition, clipboardText );
+	m_currentCursorPosition = (int)m_currentCommandStr.size();
 }
 
 

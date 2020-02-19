@@ -16,6 +16,12 @@ constexpr int MAX_KEY_CODES = 256;
 //
 extern const unsigned char KEY_ESC;
 extern const unsigned char KEY_ENTER;
+extern const unsigned char KEY_LEFT_SHIFT;
+extern const unsigned char KEY_RIGHT_SHIFT;
+extern const unsigned char KEY_LEFT_CTRL;
+extern const unsigned char KEY_RIGHT_CTRL;
+extern const unsigned char KEY_LEFT_ALT;
+extern const unsigned char KEY_RIGHT_ALT;
 extern const unsigned char KEY_SPACEBAR;
 extern const unsigned char KEY_BACKSPACE;
 extern const unsigned char KEY_DELETE;
@@ -39,6 +45,8 @@ extern const unsigned char KEY_F10;
 extern const unsigned char KEY_F11;
 extern const unsigned char KEY_F12;
 extern const unsigned char KEY_TILDE;
+
+extern const unsigned char CMD_PASTE;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -71,6 +79,8 @@ public:
 
 	void UpdateMouse();
 	const Vec2 GetNormalizedMouseClientPos()																					{ return m_normalizedMouseClientPos; }
+
+	const char* GetTextFromClipboard() const;
 
 private:
 	KeyButtonState m_keyStates[MAX_KEY_CODES];

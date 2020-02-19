@@ -826,6 +826,7 @@ void RenderContext::CreateBlendStates()
 	D3D11_BLEND_DESC opaqueDesc;
 	opaqueDesc.AlphaToCoverageEnable = FALSE;
 	opaqueDesc.IndependentBlendEnable = FALSE;
+	opaqueDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	opaqueDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 	opaqueDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
 

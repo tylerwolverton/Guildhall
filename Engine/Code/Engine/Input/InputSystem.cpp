@@ -1,4 +1,5 @@
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/AABB2.hpp"
 
 #define WIN32_LEAN_AND_MEAN
@@ -9,6 +10,12 @@
 //-----------------------------------------------------------------------------------------------
 const unsigned char KEY_ESC = VK_ESCAPE;
 const unsigned char KEY_ENTER = VK_RETURN;
+const unsigned char KEY_LEFT_SHIFT = VK_LSHIFT;
+const unsigned char KEY_RIGHT_SHIFT = VK_RSHIFT;
+const unsigned char KEY_LEFT_CTRL = VK_LCONTROL;
+const unsigned char KEY_RIGHT_CTRL = VK_RCONTROL;
+const unsigned char KEY_LEFT_ALT = VK_LMENU;
+const unsigned char KEY_RIGHT_ALT = VK_RMENU;
 const unsigned char KEY_SPACEBAR = VK_SPACE;
 const unsigned char KEY_BACKSPACE = VK_BACK;
 const unsigned char KEY_DELETE = VK_DELETE;
@@ -32,6 +39,8 @@ const unsigned char KEY_F10 = VK_F10;
 const unsigned char KEY_F11 = VK_F11;
 const unsigned char KEY_F12 = VK_F12;
 const unsigned char KEY_TILDE = VK_OEM_3;
+
+const unsigned char CMD_PASTE = '\x16';
 
 
 //-----------------------------------------------------------------------------------------------
@@ -157,6 +166,27 @@ void InputSystem::UpdateMouse()
 	
 	m_normalizedMouseClientPos = clientBounds.GetUVForPoint( mouseClientPos );
 	m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;*/
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const char* InputSystem::GetTextFromClipboard() const
+{
+	HANDLE h;
+
+	if ( !OpenClipboard( NULL ) )
+	{
+		g_devConsole->PrintString( "Can't open clipboard", Rgba8::RED );
+		return nullptr;
+	}
+
+	h = GetClipboardData( CF_TEXT );
+
+	const char* data = (const char*)h;
+
+	CloseClipboard();
+
+	return data;
 }
 
 

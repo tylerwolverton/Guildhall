@@ -10,7 +10,6 @@
 struct Vertex_PCU;
 struct Vec2;
 struct AABB2;
-class EventSystem;
 class InputSystem;
 class RenderContext;
 class BitmapFont;
@@ -47,7 +46,6 @@ public:
 
 	void SetRenderer( RenderContext* renderer );
 	void SetInputSystem( InputSystem* inputSystem );
-	//void SetEventSystem( EventSystem* eventSystem );
 	void SetBitmapFont( BitmapFont* font );
 
 	void ProcessInput();
@@ -85,10 +83,11 @@ private:
 	void AutoCompleteCommand();
 	void ExecuteCommand();
 
+	void PasteFromClipboard();
+
 private:
 	RenderContext* m_renderer = nullptr;
 	InputSystem* m_inputSystem = nullptr;
-	//EventSystem* m_eventSystem = nullptr;
 
 	BitmapFont* m_bitmapFont = nullptr;
 
