@@ -34,8 +34,7 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
 		case WM_CLOSE:
 		{
-			EventArgs args;
-			eventSystem->FireEvent( "QuitGame", &args );
+			eventSystem->FireEvent( "Quit" );
 			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 		}
 
