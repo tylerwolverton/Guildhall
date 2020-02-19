@@ -305,8 +305,7 @@ void DevConsole::AutoCompleteCommand()
 		 && supportedCommands.size() > 0 
 		 && supportedCommands[0] != nullptr )
 	{
-		m_currentCommandStr = supportedCommands[0]->m_eventName;
-		m_currentCursorPosition = (int)m_currentCommandStr.size();
+		SetCommandString( supportedCommands[0]->m_eventName );
 		return;
 	}
 
@@ -317,8 +316,7 @@ void DevConsole::AutoCompleteCommand()
 		if ( !_strcmpi( m_currentCommandStr.c_str(), sub->m_eventName.c_str() ) )
 		{
 			int newIndex = ( commandIdx + 1 ) % (int)supportedCommands.size();
-			m_currentCommandStr = supportedCommands[newIndex]->m_eventName;
-			m_currentCursorPosition = (int)m_currentCommandStr.size();
+			SetCommandString( supportedCommands[newIndex]->m_eventName );
 			return;
 
 		}
@@ -346,8 +344,7 @@ void DevConsole::AutoCompleteCommand()
 		}
 	}
 
-	m_currentCommandStr = potentialMatches[minIdx];
-	m_currentCursorPosition = (int)m_currentCommandStr.size();
+	SetCommandString( potentialMatches[minIdx] );
 }
 
 
@@ -431,8 +428,7 @@ void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
 
 	if ( m_commandHistory.size() > 0 )
 	{
-		m_currentCommandStr = m_commandHistory[m_currentCommandHistoryPos];
-		m_currentCursorPosition = (int)m_currentCommandStr.size();
+		SetCommandString( m_commandHistory[m_currentCommandHistoryPos] );
 	}
 }
 
@@ -606,7 +602,14 @@ void DevConsole::ExecuteCommand()
 	}
 	
 	PrintString( "Invalid command: '" + m_currentCommandStr + "'", Rgba8::RED );
-	
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::SetCommandString( std::string newString )
+{
+	m_currentCommandStr = newString;
+	m_currentCursorPosition = (int)m_currentCommandStr.size();
 }
 
 

@@ -46,12 +46,12 @@ Project: FPS
 ## Extras
 
 - [x] *X03.01 : 03pts*: Built-in error shader to use when a shader fails to compile.   
-- [-] *X03.02 : 04pts*: AutoComplete
+- [x] *X03.02 : 04pts*: AutoComplete
 - [ ] *X03.03 : 04pts*: Context Sensitive Auto Complete
 - [x] *X03.04 : 04pts*: Command History
 - [x] *X03.05 : 03pts*: Persistant Command History (requires X03.02)
 - [ ] *X03.06 : 05pts*: Text Selection 
-- [ ] *X03.10 : 04pts*: Cut, Copy & Paste from Window's Clipboard (Requires X03.04)
+- [-] *X03.10 : 04pts*: Cut, Copy & Paste from Window's Clipboard (Requires X03.04)
 - [ ] *X03.11 : 02pts*: Text Scrolling
 - [ ] *X03.12 : 02pts*: Vertical Scroll Bar (Requires X03.11)
 - [ ] *X03.13 : 06pts*: Contextual Auto Complete (Requies X03.01)
@@ -66,5 +66,6 @@ Project: FPS
 
 
 Controls
+Tab - Autocomplete ( finish command or scroll through available commands when line is blank or command is present )
 F2 - Cycle Sampler (between point and bilinear)
 F3 - Cycle Blend Mode (Affects the debug image in the top middle)

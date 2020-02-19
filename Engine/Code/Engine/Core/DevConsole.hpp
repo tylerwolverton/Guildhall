@@ -83,6 +83,7 @@ private:
 	void AutoCompleteCommand();
 	void ExecuteCommand();
 
+	void SetCommandString( std::string newString );
 	void PasteFromClipboard();
 
 private:
