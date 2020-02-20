@@ -59,7 +59,8 @@ public:
 	void Close();
 	bool IsOpen() const												{ return m_isOpen; }
 
-	void MoveCursorPosition( int deltaCursorPosition );
+	void MoveCursorPosition( int deltaCursorPosition, bool updateInputIndex = true );
+	void SetCursorPosition( int newCursorPosition, bool updateInputIndex = true );
 	void InsertCharacterIntoCommand( std::string character );
 
 	void MoveThroughCommandHistory( int deltaCommandHistoryPosition );
@@ -80,7 +81,7 @@ private:
 	void AppendVertsForCursor( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
 	void AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::string message, const Rgba8& textColor, const Vec2& startMins, float lineHeight, float cellAspect = .56f, float spacingFraction = .2f ) const;
 	
-	void AutoCompleteCommand();
+	void AutoCompleteCommand( bool isReversed );
 	void ExecuteCommand();
 
 	void SetCommandString( std::string newString );
@@ -100,6 +101,11 @@ private:
 	int m_currentCursorPosition = 0;
 	int m_currentCommandHistoryPos = 0;
 	std::vector<std::string> m_commandHistory;
+
+	bool m_isSelectingText = false;
+	int m_latestInputStringPosition = 0;
+	int m_currentAutoCompleteIdx = 0;
+	int m_currentSelectionEndPosition = -1;
 
 	Rgba8 m_cursorColor = Rgba8::WHITE;
 	float m_curCursorSeconds = 0.f;

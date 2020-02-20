@@ -10,16 +10,12 @@
 //-----------------------------------------------------------------------------------------------
 const unsigned char KEY_ESC = VK_ESCAPE;
 const unsigned char KEY_ENTER = VK_RETURN;
-const unsigned char KEY_LEFT_SHIFT = VK_LSHIFT;
-const unsigned char KEY_RIGHT_SHIFT = VK_RSHIFT;
-const unsigned char KEY_LEFT_CTRL = VK_LCONTROL;
-const unsigned char KEY_RIGHT_CTRL = VK_RCONTROL;
-const unsigned char KEY_LEFT_ALT = VK_LMENU;
-const unsigned char KEY_RIGHT_ALT = VK_RMENU;
+const unsigned char KEY_SHIFT = VK_SHIFT;
+const unsigned char KEY_CTRL = VK_CONTROL;
+const unsigned char KEY_ALT = VK_MENU;
 const unsigned char KEY_SPACEBAR = VK_SPACE;
 const unsigned char KEY_BACKSPACE = VK_BACK;
 const unsigned char KEY_DELETE = VK_DELETE;
-const unsigned char KEY_SHIFT = VK_SHIFT;
 const unsigned char KEY_UPARROW = VK_UP;
 const unsigned char KEY_LEFTARROW = VK_LEFT;
 const unsigned char KEY_DOWNARROW = VK_DOWN;

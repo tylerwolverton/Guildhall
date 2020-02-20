@@ -297,7 +297,7 @@ void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::s
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::AutoCompleteCommand()
+void DevConsole::AutoCompleteCommand( bool isReversed )
 {
 	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
 
@@ -306,22 +306,25 @@ void DevConsole::AutoCompleteCommand()
 		 && supportedCommands[0] != nullptr )
 	{
 		SetCommandString( supportedCommands[0]->m_eventName );
+		
+		if ( isReversed )
+		{
+			m_currentAutoCompleteIdx = (int)supportedCommands.size() - 1;
+		}
+		else
+		{
+			++m_currentAutoCompleteIdx;
+		}
+
 		return;
 	}
-
+	
 	std::vector<std::string> potentialMatches;
+	std::string subStrToMatch = m_currentCommandStr.substr( 0, m_latestInputStringPosition );
 	for ( int commandIdx = 0; commandIdx < (int)supportedCommands.size(); ++commandIdx )
 	{
 		EventSubscription*& sub = supportedCommands[commandIdx];
-		if ( !_strcmpi( m_currentCommandStr.c_str(), sub->m_eventName.c_str() ) )
-		{
-			int newIndex = ( commandIdx + 1 ) % (int)supportedCommands.size();
-			SetCommandString( supportedCommands[newIndex]->m_eventName );
-			return;
-
-		}
-
-		if ( !_strnicmp( m_currentCommandStr.c_str(), sub->m_eventName.c_str(), m_currentCommandStr.size() ) )
+		if ( !_strnicmp( m_currentCommandStr.c_str(), sub->m_eventName.c_str(), m_latestInputStringPosition ) )
 		{
 			potentialMatches.push_back( sub->m_eventName );
 		}
@@ -342,6 +345,21 @@ void DevConsole::AutoCompleteCommand()
 			minLength = (int)potentialMatches[matchIdx].size();
 			minIdx = matchIdx;
 		}
+	}
+
+	minIdx += m_currentAutoCompleteIdx;
+	minIdx %= numMatches;
+	if ( isReversed )
+	{
+		--m_currentAutoCompleteIdx;
+		if ( m_currentAutoCompleteIdx < 0 )
+		{
+			m_currentAutoCompleteIdx = numMatches - 1;
+		}
+	}
+	else
+	{
+		++m_currentAutoCompleteIdx;
 	}
 
 	SetCommandString( potentialMatches[minIdx] );
@@ -367,13 +385,13 @@ void DevConsole::Close()
 {
 	m_isOpen = false;
 	m_currentCommandStr.clear();
-	m_currentCursorPosition = 0;
+	SetCursorPosition( 0 );
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::MoveCursorPosition( int deltaCursorPosition )
+void DevConsole::MoveCursorPosition( int deltaCursorPosition, bool updateInputIndex )
 {
 	if ( deltaCursorPosition == 0 )
 	{
@@ -384,15 +402,32 @@ void DevConsole::MoveCursorPosition( int deltaCursorPosition )
 
 	if ( m_currentCursorPosition < 0 )
 	{
-		m_currentCursorPosition = 0;
+		SetCursorPosition( 0 );
 	}
 	else if ( m_currentCursorPosition > (int)m_currentCommandStr.size() )
 	{
-		m_currentCursorPosition = (int)m_currentCommandStr.size();
+		SetCursorPosition( (int)m_currentCommandStr.size() );
+	}
+
+	if ( updateInputIndex )
+	{
+		m_latestInputStringPosition = m_currentCursorPosition;
 	}
 
 	m_cursorColor = Rgba8::WHITE;
 	m_curCursorSeconds = 0.f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::SetCursorPosition( int newCursorPosition, bool updateInputIndex )
+{
+	m_currentCursorPosition = newCursorPosition;
+
+	if ( updateInputIndex )
+	{
+		m_latestInputStringPosition = newCursorPosition;
+	}
 }
 
 
@@ -487,7 +522,7 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 		 || character == '`' )
 	{
 		m_currentCommandStr.clear();
-		m_currentCursorPosition = 0;
+		SetCursorPosition( 0 );
 
 		return true;
 	}
@@ -497,14 +532,15 @@ bool DevConsole::ProcessCharTyped( unsigned char character )
 		ExecuteCommand();
 
 		m_currentCommandStr.clear();
-		m_currentCursorPosition = 0;
+		SetCursorPosition( 0);
 
 		return true;
 	}
 
 	if ( character == '\t' )
 	{
-		AutoCompleteCommand();
+		bool isReversed = m_inputSystem->IsKeyPressed( KEY_SHIFT );
+		AutoCompleteCommand( isReversed );
 
 		return true;
 	}
@@ -543,8 +579,30 @@ void DevConsole::UpdateFromKeyboard()
 		return;
 	}
 
-	MoveCursorPosition( m_inputSystem->ConsumeAllKeyPresses( KEY_RIGHTARROW ) );
-	MoveCursorPosition( -m_inputSystem->ConsumeAllKeyPresses( KEY_LEFTARROW ) );
+	MoveCursorPosition( m_inputSystem->ConsumeAllKeyPresses( KEY_RIGHTARROW ), false );
+	MoveCursorPosition( -m_inputSystem->ConsumeAllKeyPresses( KEY_LEFTARROW ), false );
+
+	if ( m_inputSystem->WasKeyJustPressed( KEY_HOME ) )
+	{
+		/*if ( m_inputSystem->IsKeyPressed( KEY_LEFT_SHIFT )
+			 || m_inputSystem->IsKeyPressed( KEY_RIGHT_SHIFT ) )
+		{
+			m_currentSelectionEndPosition = m_currentCursorPosition;
+		}*/
+
+		SetCursorPosition( 0 );
+	}
+
+	if ( m_inputSystem->WasKeyJustPressed( KEY_END ) )
+	{
+		/*if ( m_inputSystem->IsKeyPressed( KEY_LEFT_SHIFT )
+			 || m_inputSystem->IsKeyPressed( KEY_RIGHT_SHIFT ) )
+		{
+			m_currentSelectionEndPosition = m_currentCursorPosition;
+		}*/
+
+		SetCursorPosition( (int)m_currentCommandStr.size() );
+	}
 
 	MoveThroughCommandHistory( -m_inputSystem->ConsumeAllKeyPresses( KEY_UPARROW ) );
 	MoveThroughCommandHistory( m_inputSystem->ConsumeAllKeyPresses( KEY_DOWNARROW ) );
@@ -557,16 +615,6 @@ void DevConsole::UpdateFromKeyboard()
 		int numCharactersToDelete = numTimesDeletePressed < maxNumCharactersAvailableToDelete ? numTimesDeletePressed : maxNumCharactersAvailableToDelete;
 
 		m_currentCommandStr.erase( m_currentCursorPosition, numCharactersToDelete );
-	}
-
-	if ( m_inputSystem->WasKeyJustPressed( KEY_HOME ) )
-	{
-		m_currentCursorPosition = 0;
-	}
-
-	if ( m_inputSystem->WasKeyJustPressed( KEY_END ) )
-	{
-		m_currentCursorPosition = (int)m_currentCommandStr.size();
 	}
 }
 
@@ -623,7 +671,7 @@ void DevConsole::PasteFromClipboard()
 	}
 
 	m_currentCommandStr.insert( m_currentCursorPosition, clipboardText );
-	m_currentCursorPosition = (int)m_currentCommandStr.size();
+	SetCursorPosition( (int)m_currentCommandStr.size() );
 }
 
 

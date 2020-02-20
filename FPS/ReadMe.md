@@ -59,7 +59,7 @@ Project: FPS
 - [ ] *X03.21 : 02pts*: Command Scripts
 - [ ] *X03.22 : 02pts*: Mouse Input on Dev Console (scroll wheel to scroll, click to set carrot)
 - [ ] *X03.23 : 04pts*: Mouse Selection (Requires X03.05 and X03.22)
-- [x] *X03.24 : 02pts*: Navigation Hotkeys 
+- [-] *X03.24 : 02pts*: Navigation Hotkeys, Home, End, Ctrl + Arrows
 - [ ] *X03.25 : 02pts*: Audio Cues
 - [ ] *X03.26 : 02pts*: Open & Close Animations (Slides Open for Example)
 - [ ] *X03.27 : 04pts*: Undo/Redo History (Ctrl+Z, Ctrl+Y)

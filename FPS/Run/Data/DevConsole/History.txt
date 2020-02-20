@@ -16,3 +16,6 @@ help
 Help
 help
 Help
+buttz
+Help
+quit
