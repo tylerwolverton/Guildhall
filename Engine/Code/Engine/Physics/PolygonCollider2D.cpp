@@ -22,6 +22,7 @@ PolygonCollider2D::PolygonCollider2D( const Polygon2& polygon )
 	: m_polygon( polygon )
 {
 	GUARANTEE_OR_DIE( m_polygon.IsConvex(), "Polygon collider is not convex" );
+	m_type = COLLIDER2D_POLYGON;
 }
 
 

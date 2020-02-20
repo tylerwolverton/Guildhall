@@ -15,9 +15,11 @@ class RenderContext;
 //-----------------------------------------------------------------------------------------------
 enum eCollider2DType
 {
-	COLLIDER2D_NONE,
+	COLLIDER2D_NONE = -1,
 	COLLIDER2D_DISC,
 	COLLIDER2D_POLYGON,
+
+	NUM_COLLIDER_TYPES
 };
 
 
@@ -35,7 +37,7 @@ public: // Interface
 	// queries 
 	virtual const Vec2 GetClosestPoint( const Vec2& pos ) const = 0;
 	virtual bool Contains( const Vec2& pos ) const = 0;
-	virtual bool Intersects( const Collider2D* other ) const = 0;
+	virtual bool Intersects( const Collider2D* other ) const;
 
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
@@ -59,3 +61,7 @@ public:
 protected:
 	Physics2D* m_system			= nullptr;			// system who created our d
 };
+
+
+//-----------------------------------------------------------------------------------------------
+typedef bool ( *collision_check_cb )( Collider2D const*, Collider2D const* );

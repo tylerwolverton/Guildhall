@@ -607,6 +607,7 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 	GameObject* gameObject = new GameObject();
 	gameObject->SetRigidbody( m_physics2D->CreateRigidbody() );
 	gameObject->SetPosition( center );
+	gameObject->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, radius );
 	gameObject->SetCollider( discCollider );
@@ -624,6 +625,7 @@ void Game::SpawnPolygon( const Polygon2& polygon )
 	GameObject* gameObject = new GameObject();
 	gameObject->SetRigidbody( m_physics2D->CreateRigidbody() );
 	gameObject->SetPosition( polygon.GetCenterOfMass() );
+	gameObject->SetSimulationMode( SIMULATION_MODE_STATIC );
 
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
 	gameObject->SetCollider( polygonCollider );
