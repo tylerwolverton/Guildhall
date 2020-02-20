@@ -82,6 +82,7 @@ private:
 	void AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::string message, const Rgba8& textColor, const Vec2& startMins, float lineHeight, float cellAspect = .56f, float spacingFraction = .2f ) const;
 	
 	void AutoCompleteCommand( bool isReversed );
+	void UpdateAutoCompleteIdx( bool isReversed, int numCommands );
 	void ExecuteCommand();
 
 	void SetCommandString( std::string newString );
@@ -104,7 +105,7 @@ private:
 
 	bool m_isSelectingText = false;
 	int m_latestInputStringPosition = 0;
-	int m_currentAutoCompleteIdx = 0;
+	int m_currentAutoCompleteIdx = -1;
 	int m_currentSelectionEndPosition = -1;
 
 	Rgba8 m_cursorColor = Rgba8::WHITE;

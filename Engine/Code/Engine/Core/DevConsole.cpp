@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -33,7 +34,8 @@ void DevConsole::Startup()
 	m_devConsoleCamera->SetColorTarget( nullptr );
 
 	g_eventSystem->RegisterEvent( "Help", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
-	g_eventSystem->RegisterEvent( "HelpTester", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
+	g_eventSystem->RegisterEvent( "HelpTester", "Dummy command to test autocomplete.", eUsageLocation::DEV_CONSOLE, ShowHelp );
+	g_eventSystem->RegisterEvent( "HelpTester2", "Dummy command to test autocomplete.", eUsageLocation::DEV_CONSOLE, ShowHelp );
 
 	LoadPersistentHistory();
 }
@@ -144,6 +146,7 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	{
 		return;
 	}
+
 	m_renderer->SetBlendMode( eBlendMode::ALPHA );
 
 	m_renderer->BeginCamera( *m_devConsoleCamera );
@@ -299,28 +302,23 @@ void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::s
 //-----------------------------------------------------------------------------------------------
 void DevConsole::AutoCompleteCommand( bool isReversed )
 {
+	// Get all commands available to dev console
 	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
+	int numSupportedCommands = (int)supportedCommands.size();
 
-	if ( m_currentCommandStr.empty() 
-		 && supportedCommands.size() > 0 
-		 && supportedCommands[0] != nullptr )
+	if ( numSupportedCommands == 0 )
 	{
-		SetCommandString( supportedCommands[0]->m_eventName );
-		
-		if ( isReversed )
-		{
-			m_currentAutoCompleteIdx = (int)supportedCommands.size() - 1;
-		}
-		else
-		{
-			++m_currentAutoCompleteIdx;
-		}
-
 		return;
 	}
-	
+		
+	// Get all commands that start with current substr
 	std::vector<std::string> potentialMatches;
-	std::string subStrToMatch = m_currentCommandStr.substr( 0, m_latestInputStringPosition );
+	std::string subStrToMatch;
+	if ( m_latestInputStringPosition > 0 )
+	{
+		subStrToMatch = m_currentCommandStr.substr( 0, m_latestInputStringPosition );
+	}
+
 	for ( int commandIdx = 0; commandIdx < (int)supportedCommands.size(); ++commandIdx )
 	{
 		EventSubscription*& sub = supportedCommands[commandIdx];
@@ -331,38 +329,46 @@ void DevConsole::AutoCompleteCommand( bool isReversed )
 	}
 
 	int numMatches = (int)potentialMatches.size();
-	if ( numMatches <= 0 )
+	if ( numMatches == 0 )
 	{
 		return;
 	}
 
-	int minLength = 99999999;
-	int minIdx = 0;
-	for ( int matchIdx = 0; matchIdx < numMatches; ++matchIdx )
+	// Sort commands alphabetically and select the command to set based on position in auto complete sublist
+	std::sort( potentialMatches.begin(), potentialMatches.end() );
+
+	UpdateAutoCompleteIdx( isReversed, numMatches );
+
+	// Handle case where user typed in a substr char for char and then tabs to next command
+	if ( potentialMatches[m_currentAutoCompleteIdx] == m_currentCommandStr
+		 && numMatches > 1 )
 	{
-		if ( (int)potentialMatches[matchIdx].size() < minLength )
-		{
-			minLength = (int)potentialMatches[matchIdx].size();
-			minIdx = matchIdx;
-		}
+		UpdateAutoCompleteIdx( isReversed, numMatches );
 	}
 
-	minIdx += m_currentAutoCompleteIdx;
-	minIdx %= numMatches;
+	SetCommandString( potentialMatches[m_currentAutoCompleteIdx] );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::UpdateAutoCompleteIdx( bool isReversed, int numCommands )
+{
 	if ( isReversed )
 	{
 		--m_currentAutoCompleteIdx;
 		if ( m_currentAutoCompleteIdx < 0 )
 		{
-			m_currentAutoCompleteIdx = numMatches - 1;
+			m_currentAutoCompleteIdx = numCommands - 1;
 		}
 	}
 	else
 	{
 		++m_currentAutoCompleteIdx;
+		if ( m_currentAutoCompleteIdx >= numCommands )
+		{
+			m_currentAutoCompleteIdx = 0;
+		}
 	}
-
-	SetCommandString( potentialMatches[minIdx] );
 }
 
 
@@ -402,16 +408,17 @@ void DevConsole::MoveCursorPosition( int deltaCursorPosition, bool updateInputIn
 
 	if ( m_currentCursorPosition < 0 )
 	{
-		SetCursorPosition( 0 );
+		SetCursorPosition( 0, false );
 	}
 	else if ( m_currentCursorPosition > (int)m_currentCommandStr.size() )
 	{
-		SetCursorPosition( (int)m_currentCommandStr.size() );
+		SetCursorPosition( (int)m_currentCommandStr.size(), false );
 	}
 
 	if ( updateInputIndex )
 	{
 		m_latestInputStringPosition = m_currentCursorPosition;
+		m_currentAutoCompleteIdx = -1;
 	}
 
 	m_cursorColor = Rgba8::WHITE;
@@ -427,6 +434,7 @@ void DevConsole::SetCursorPosition( int newCursorPosition, bool updateInputIndex
 	if ( updateInputIndex )
 	{
 		m_latestInputStringPosition = newCursorPosition;
+		m_currentAutoCompleteIdx = -1;
 	}
 }
 
@@ -464,6 +472,8 @@ void DevConsole::MoveThroughCommandHistory( int deltaCommandHistoryPosition )
 	if ( m_commandHistory.size() > 0 )
 	{
 		SetCommandString( m_commandHistory[m_currentCommandHistoryPos] );
+		m_latestInputStringPosition = m_currentCursorPosition;
+		m_currentAutoCompleteIdx = -1;
 	}
 }
 
@@ -615,6 +625,8 @@ void DevConsole::UpdateFromKeyboard()
 		int numCharactersToDelete = numTimesDeletePressed < maxNumCharactersAvailableToDelete ? numTimesDeletePressed : maxNumCharactersAvailableToDelete;
 
 		m_currentCommandStr.erase( m_currentCursorPosition, numCharactersToDelete );
+		m_latestInputStringPosition = m_currentCursorPosition;
+		m_currentAutoCompleteIdx = -1;
 	}
 }
 

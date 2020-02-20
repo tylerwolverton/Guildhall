@@ -794,6 +794,7 @@ void RenderContext::CreateBlendStates()
 	D3D11_BLEND_DESC alphaDesc;
 	alphaDesc.AlphaToCoverageEnable = FALSE;
 	alphaDesc.IndependentBlendEnable = FALSE;
+	alphaDesc.RenderTarget[0].BlendEnable = TRUE;
 	alphaDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	alphaDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	alphaDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
@@ -810,6 +811,7 @@ void RenderContext::CreateBlendStates()
 	D3D11_BLEND_DESC additiveDesc;
 	additiveDesc.AlphaToCoverageEnable = FALSE;
 	additiveDesc.IndependentBlendEnable = FALSE;
+	alphaDesc.RenderTarget[0].BlendEnable = TRUE;
 	additiveDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	additiveDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 	additiveDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
@@ -826,6 +828,7 @@ void RenderContext::CreateBlendStates()
 	D3D11_BLEND_DESC opaqueDesc;
 	opaqueDesc.AlphaToCoverageEnable = FALSE;
 	opaqueDesc.IndependentBlendEnable = FALSE;
+	alphaDesc.RenderTarget[0].BlendEnable = FALSE;
 	opaqueDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	opaqueDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 	opaqueDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
