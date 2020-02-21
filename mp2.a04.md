@@ -16,21 +16,21 @@ Project - PhysicsSandbox
     - [ ] Implement a disc versus disc manifold
     - [ ] Implement a disc versus polygon manifold
     - **Note: We are not doing polygon -vs- polygon yet**
-- [ ] `Collider2D` gets gets a `PhysicsMaterial`
+- [ ] `Collider2D` gets a `PhysicsMaterial`
     - [ ] `PhysicsMaterial` has a property for `restitution` (or `bounciness` if you prefer)
     - [ ] `Collider2D::GetBounceWith(Collider2D const* other) const` implemented to compute restitution between two objects
         - There are multiple methods for computing the restitution.  Product, Min, Max, Spherical, Lookup, etc...   
     - [ ] Allow user to adjust bounciness using `+` and `-` while the object is selected.
     - [ ] Set the alpha for the fill color to the counciness of the object.
-- [ ] Add a `Collision2D` object that contains..
+- [x] Add a `Collision2D` object that contains..
     - Two pointers to the `Collider2D` objects involved in the collision (`me` and `them`)
     - A `manifold2` struct containing...
       - `normal` describing the normal at the impact point
       - `penetration` How deeply interpenetrated are the two objects.
-- [ ] `Physics2D` during a `SimulateStep` should now do the following
-    - [ ] `DetectCollisions` to compute all collisions between all colliders.
-    - [ ] `ResolveCollisions` to resolve all detected collisions
-    - [ ] `ResolveCollision` to resolve a single collision
+- [x] `Physics2D` during a `SimulateStep` should now do the following
+    - [x] `DetectCollisions` to compute all collisions between all colliders.
+    - [x] `ResolveCollisions` to resolve all detected collisions
+    - [x] `ResolveCollision` to resolve a single collision
 - [ ] `ResolveCollision` should...
     - [ ] `CorrectObjects`, pushing them out of their respective objects
         - [ ] Push should depend on the ratio of the masses

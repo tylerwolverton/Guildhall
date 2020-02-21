@@ -6,6 +6,7 @@
 struct Vec2;
 struct AABB2;
 struct Rgba8;
+struct Manifold2;
 class Physics2D;
 class Rigidbody2D;
 class Collider2D;
@@ -38,6 +39,7 @@ public: // Interface
 	virtual const Vec2 GetClosestPoint( const Vec2& pos ) const = 0;
 	virtual bool Contains( const Vec2& pos ) const = 0;
 	bool Intersects( const Collider2D* other ) const;
+	Manifold2 GetCollisionManifold( const Collider2D* other ) const;
 
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
@@ -65,3 +67,4 @@ protected:
 
 //-----------------------------------------------------------------------------------------------
 typedef bool ( *CollisionCheckCallback )( const Collider2D*, const Collider2D* );
+typedef Manifold2( *CollisionManifoldGenerationCallback )( const Collider2D*, const Collider2D* );

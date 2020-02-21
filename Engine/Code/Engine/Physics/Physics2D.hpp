@@ -9,6 +9,7 @@ class Rigidbody2D;
 class Collider2D;
 class DiscCollider2D;
 class PolygonCollider2D;
+class Collision2D;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -35,6 +36,9 @@ private:
 	void AdvanceSimulation( float deltaSeconds );
 	void ApplyEffectors( float deltaSeconds ); 	
 	void MoveRigidbodies( float deltaSeconds ); 	
+	void DetectCollisions( float deltaSeconds ); 	
+	void ResolveCollisions( float deltaSeconds ); 	
+	void ResolveCollision( const Collision2D& collision ); 	
 	void CleanupDestroyedObjects();  	
 
 
@@ -43,6 +47,8 @@ private:
 	std::vector<int> m_garbageRigidbodyIndexes;
 	std::vector<Collider2D*> m_colliders;
 	std::vector<int> m_garbageColliderIndexes;
+
+	std::vector<Collision2D> m_collisions;
 
 	Vec2 m_forceOfGravity = Vec2( 0.f, -9.8f );
 };

@@ -2,8 +2,10 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
+#include "Engine/Physics/Collision2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/PolygonCollider2D.hpp"
+#include "Engine/Physics/Manifold2.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -25,8 +27,8 @@ void Physics2D::AdvanceSimulation( float deltaSeconds )
 {
 	ApplyEffectors( deltaSeconds ); 	// apply gravity to all dynamic objects
 	MoveRigidbodies( deltaSeconds ); 	// apply an euler step to all rigidbodies, and reset per-frame data
-	// DetectCollisions(); - A04		// determine all pairs of intersecting colliders
-	// CollisionResponse(); - A04		// resolve all collisions, firing appropraite events
+	DetectCollisions( deltaSeconds );	// determine all pairs of intersecting colliders
+	ResolveCollisions( deltaSeconds ); 	// resolve all collisions, firing appropraite events
 	CleanupDestroyedObjects();  		// destroy objects 
 }
 
@@ -72,6 +74,94 @@ void Physics2D::MoveRigidbodies( float deltaSeconds )
 			}
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::DetectCollisions( float deltaSeconds )
+{
+	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
+	{
+		Collider2D* collider = m_colliders[colliderIdx];
+		if ( collider == nullptr )
+		{
+			continue;
+		}
+		
+		// Check intersection with other game objects
+		for ( int otherColliderIdx = colliderIdx; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
+		{
+			Collider2D* otherCollider = m_colliders[otherColliderIdx];
+			if ( collider->Intersects( otherCollider ) )
+			{
+				Collision2D collision;
+				collision.m_myCollider = collider;
+				collision.m_theirCollider = otherCollider;
+				collision.m_collisionManifold = collider->GetCollisionManifold( otherCollider );
+
+				m_collisions.push_back( collision );
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::ResolveCollisions( float deltaSeconds )
+{
+	for ( int collisionIdx = 0; collisionIdx < (int)m_collisions.size(); ++collisionIdx )
+	{
+		ResolveCollision( m_collisions[collisionIdx] );
+	}
+
+	m_collisions.clear();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::ResolveCollision( const Collision2D& collision )
+{
+	eSimulationMode mySimulationMode = collision.m_myCollider->m_rigidbody->GetSimulationMode();
+	eSimulationMode theirSimulationMode = collision.m_theirCollider->m_rigidbody->GetSimulationMode();
+
+	// Do nothing when both are static
+	if ( mySimulationMode == SIMULATION_MODE_STATIC
+		 && theirSimulationMode == SIMULATION_MODE_STATIC )
+	{
+		return;
+	}
+
+	// Set mass of static and kinematic to infinite and then add impulse
+
+	/*switch ( mySimulationMode )
+	{
+		case SIMULATION_MODE_STATIC:
+			switch ( theirSimulationMode )
+			{
+				case SIMULATION_MODE_STATIC: return;
+				case SIMULATION_MODE_KINEMATIC: 
+				case SIMULATION_MODE_DYNAMIC: ApplyAllForceToThem(); return;
+			}
+			break;
+
+		case SIMULATION_MODE_KINEMATIC:
+			switch ( theirSimulationMode )
+			{
+				case SIMULATION_MODE_STATIC: ApplyAllForceToMe(); return;
+				case SIMULATION_MODE_KINEMATIC: ApplyForceToBoth(); return;
+				case SIMULATION_MODE_DYNAMIC: ApplyAllForceToThem(); return;
+			}
+			break;
+
+		case SIMULATION_MODE_DYNAMIC:
+			switch ( theirSimulationMode )
+			{
+				case SIMULATION_MODE_STATIC: 
+				case SIMULATION_MODE_KINEMATIC: ApplyAllForceToMe(); return;
+				case SIMULATION_MODE_DYNAMIC: ApplyForceToBoth(); return;
+			}
+			break;
+	}*/
 }
 
 
