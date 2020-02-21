@@ -233,5 +233,5 @@ const AABB2 GameObject::GetBoundingBox() const
 		return AABB2( Vec2::ZERO, Vec2::ZERO );
 	}
 
-	return collider->GetBoundingBox();
+	return collider->GetWorldBounds();
 }

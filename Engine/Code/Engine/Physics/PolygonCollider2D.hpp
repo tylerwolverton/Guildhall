@@ -22,10 +22,9 @@ public:
 	// queries 
 	virtual const Vec2 GetClosestPoint( const Vec2& pos ) const override;
 	virtual bool Contains( const Vec2& pos ) const override;
-	virtual bool Intersects( const Collider2D* other ) const override;
 
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const override;
-	virtual const AABB2 GetBoundingBox() const override;
+	virtual const AABB2 GetWorldBounds() const override;
 
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const override;

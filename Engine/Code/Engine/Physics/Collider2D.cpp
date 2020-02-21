@@ -7,39 +7,39 @@
 
 
 //-----------------------------------------------------------------------------------------------
-static bool DiscVDiscCollisionCheck( const Collider2D* col0, const Collider2D* col1 )
+static bool DiscVDiscCollisionCheck( const Collider2D* collider1, const Collider2D* collider2 )
 {
 	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
-	const DiscCollider2D* disc0 = (const DiscCollider2D*)col0;
-	const DiscCollider2D* disc1 = (const DiscCollider2D*)col1;
+	const DiscCollider2D* discCollider1 = (const DiscCollider2D*)collider1;
+	const DiscCollider2D* discCollider2 = (const DiscCollider2D*)collider2;
 
-	return DoDiscsOverlap( disc0->m_worldPosition, 
-						   disc0->m_radius, 
-						   disc1->m_worldPosition,
-						   disc1->m_radius );
+	return DoDiscsOverlap( discCollider1->m_worldPosition, 
+						   discCollider1->m_radius, 
+						   discCollider2->m_worldPosition,
+						   discCollider2->m_radius );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-static bool DiscVPolygonCollisionCheck( const Collider2D* col0, const Collider2D* col1 )
+static bool DiscVPolygonCollisionCheck( const Collider2D* collider1, const Collider2D* collider2 )
 {
 	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
-	const DiscCollider2D* disc = (const DiscCollider2D*)col0;
-	const PolygonCollider2D* polygon = (const PolygonCollider2D*)col1;
+	const DiscCollider2D* discCollider = (const DiscCollider2D*)collider1;
+	const PolygonCollider2D* polygonCollider = (const PolygonCollider2D*)collider2;
 
-	Vec2 nearestPoint = polygon->GetClosestPoint( disc->m_worldPosition );
-	return IsPointInsideDisc( nearestPoint, disc->m_worldPosition, disc->m_radius );
+	Vec2 nearestPoint = polygonCollider->GetClosestPoint( discCollider->m_worldPosition );
+	return IsPointInsideDisc( nearestPoint, discCollider->m_worldPosition, discCollider->m_radius );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-static bool PolygonVPolygonCollisionCheck( const Collider2D* col0, const Collider2D* col1 )
+static bool PolygonVPolygonCollisionCheck( const Collider2D* collider1, const Collider2D* collider2 )
 {
-	UNUSED( col0 );
-	UNUSED( col1 );
+	UNUSED( collider1 );
+	UNUSED( collider2 );
 	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
-	/*const PolygonCollider2D* polygon0 = (const PolygonCollider2D*)col0;
-	const PolygonCollider2D* polygon1 = (const PolygonCollider2D*)col1;*/
+	/*const PolygonCollider2D* polygonCollider1 = (const PolygonCollider2D*)collider1;
+	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;*/
 
 	return false;
 }
@@ -47,7 +47,7 @@ static bool PolygonVPolygonCollisionCheck( const Collider2D* col0, const Collide
 
 //-----------------------------------------------------------------------------------------------
 // a "matrix" lookup is just a 2D array
-static collision_check_cb gCollisionChecks[NUM_COLLIDER_TYPES * NUM_COLLIDER_TYPES] = {
+static CollisionCheckCallback g_CollisionChecks[NUM_COLLIDER_TYPES * NUM_COLLIDER_TYPES] = {
 	/*             disc,                         polygon, */
 	/*    disc */  DiscVDiscCollisionCheck,      nullptr,
 	/* polygon */  DiscVPolygonCollisionCheck,   PolygonVPolygonCollisionCheck
@@ -57,7 +57,7 @@ static collision_check_cb gCollisionChecks[NUM_COLLIDER_TYPES * NUM_COLLIDER_TYP
 //-----------------------------------------------------------------------------------------------
 bool Collider2D::Intersects( const Collider2D* other ) const
 {
-	if ( !DoAABBsOverlap2D( GetBoundingBox(), other->GetBoundingBox() ) )
+	if ( !DoAABBsOverlap2D( GetWorldBounds(), other->GetWorldBounds() ) )
 	{
 		return false;
 	}
@@ -68,14 +68,14 @@ bool Collider2D::Intersects( const Collider2D* other ) const
 	if ( myType <= otherType ) 
 	{
 		int idx = otherType * NUM_COLLIDER_TYPES + myType;
-		collision_check_cb check = gCollisionChecks[idx];
-		return check( this, other );
+		CollisionCheckCallback callback = g_CollisionChecks[idx];
+		return callback( this, other );
 	}
 	else 
 	{
 		// flip the types when looking into the index.
 		int idx = myType * NUM_COLLIDER_TYPES + otherType;
-		collision_check_cb check = gCollisionChecks[idx];
-		return check( other, this );
+		CollisionCheckCallback callback = g_CollisionChecks[idx];
+		return callback( other, this );
 	}
 }

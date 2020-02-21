@@ -37,11 +37,11 @@ public: // Interface
 	// queries 
 	virtual const Vec2 GetClosestPoint( const Vec2& pos ) const = 0;
 	virtual bool Contains( const Vec2& pos ) const = 0;
-	virtual bool Intersects( const Collider2D* other ) const;
+	bool Intersects( const Collider2D* other ) const;
 
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
-	virtual const AABB2 GetBoundingBox() const = 0;
+	virtual const AABB2 GetWorldBounds() const = 0;
 
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const = 0;
@@ -64,4 +64,4 @@ protected:
 
 
 //-----------------------------------------------------------------------------------------------
-typedef bool ( *collision_check_cb )( Collider2D const*, Collider2D const* );
+typedef bool ( *CollisionCheckCallback )( const Collider2D*, const Collider2D* );

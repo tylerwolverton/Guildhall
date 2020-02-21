@@ -42,30 +42,6 @@ bool DiscCollider2D::Contains( const Vec2& pos ) const
 
 
 //-----------------------------------------------------------------------------------------------
-bool DiscCollider2D::Intersects( const Collider2D* other ) const
-{
-	switch ( other->m_type )
-	{
-		case COLLIDER2D_DISC:
-		{
-			DiscCollider2D* otherDisc = (DiscCollider2D*)other;
-			return DoDiscsOverlap( m_worldPosition, m_radius, otherDisc->m_worldPosition, otherDisc->m_radius );
-		}
-
-		case COLLIDER2D_POLYGON:
-		{
-			PolygonCollider2D* polygon = (PolygonCollider2D*)other;
-			Vec2 nearestPoint = polygon->GetClosestPoint( m_worldPosition );
-			return IsPointInsideDisc( nearestPoint, m_worldPosition, m_radius );
-		}
-
-		default:
-			return false;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 unsigned int DiscCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const
 {
 	unsigned int edges = SCREEN_EDGE_NONE;
@@ -119,7 +95,7 @@ unsigned int DiscCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds, bo
 
 
 //-----------------------------------------------------------------------------------------------
-const AABB2 DiscCollider2D::GetBoundingBox() const
+const AABB2 DiscCollider2D::GetWorldBounds() const
 {
 	Vec2 discMins( m_worldPosition.x - m_radius, m_worldPosition.y - m_radius );
 	Vec2 discMaxs( m_worldPosition.x + m_radius, m_worldPosition.y + m_radius );

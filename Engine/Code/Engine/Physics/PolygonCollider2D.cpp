@@ -62,34 +62,11 @@ bool PolygonCollider2D::Contains( const Vec2& pos ) const
 
 
 //-----------------------------------------------------------------------------------------------
-bool PolygonCollider2D::Intersects( const Collider2D* other ) const
-{
-	switch ( other->m_type )
-	{
-		case COLLIDER2D_DISC:
-		{
-			DiscCollider2D* disc = (DiscCollider2D*)other;
-			Vec2 nearestPoint = GetClosestPoint( disc->m_worldPosition );
-			return IsPointInsideDisc( nearestPoint, disc->m_worldPosition, disc->m_radius );
-		}
-
-		case COLLIDER2D_POLYGON:
-		{
-			return false;
-		}
-
-		default:
-			return false;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 unsigned int PolygonCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const
 {
 	unsigned int edges = SCREEN_EDGE_NONE;
 
-	const AABB2 polygonBoundingBox = GetBoundingBox();
+	const AABB2 polygonBoundingBox = GetWorldBounds();
 
 	if ( checkForCompletelyOffScreen )
 	{
@@ -150,7 +127,7 @@ void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borde
 
 
 //-----------------------------------------------------------------------------------------------
-const AABB2 PolygonCollider2D::GetBoundingBox() const
+const AABB2 PolygonCollider2D::GetWorldBounds() const
 {
 	// Initialize with first point in polygon
 	std::vector<Vec2> polygonPoints = m_polygon.GetPoints();
