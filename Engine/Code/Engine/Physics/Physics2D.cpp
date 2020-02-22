@@ -135,38 +135,6 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 	}
 
 	CorrectCollidingRigidbodies( rigidbody1, rigidbody2, collision.m_collisionManifold );
-
-	// Set mass of static and kinematic to infinite and then add impulse
-
-	/*switch ( mySimulationMode )
-	{
-		case SIMULATION_MODE_STATIC:
-			switch ( theirSimulationMode )
-			{
-				case SIMULATION_MODE_STATIC: return;
-				case SIMULATION_MODE_KINEMATIC: 
-				case SIMULATION_MODE_DYNAMIC: ApplyAllForceToThem(); return;
-			}
-			break;
-
-		case SIMULATION_MODE_KINEMATIC:
-			switch ( theirSimulationMode )
-			{
-				case SIMULATION_MODE_STATIC: ApplyAllForceToMe(); return;
-				case SIMULATION_MODE_KINEMATIC: ApplyForceToBoth(); return;
-				case SIMULATION_MODE_DYNAMIC: ApplyAllForceToThem(); return;
-			}
-			break;
-
-		case SIMULATION_MODE_DYNAMIC:
-			switch ( theirSimulationMode )
-			{
-				case SIMULATION_MODE_STATIC: 
-				case SIMULATION_MODE_KINEMATIC: ApplyAllForceToMe(); return;
-				case SIMULATION_MODE_DYNAMIC: ApplyForceToBoth(); return;
-			}
-			break;
-	}*/
 }
 
 
@@ -193,11 +161,13 @@ void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2
 	{
 		// If both are kinematic leave their masses alone
 	}
-	else if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC )
+	else if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC
+			  && rigidbody2->GetSimulationMode() != SIMULATION_MODE_STATIC )
 	{
 		rigidbody1Mass = 999999999.f;
 	}
-	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC )
+	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC 
+			  && rigidbody1->GetSimulationMode() != SIMULATION_MODE_STATIC )
 	{
 		rigidbody2Mass = 999999999.f;
 	}
@@ -212,8 +182,8 @@ void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2
 	float rigidbody1CorrectionDist = ( rigidbody2Mass / sumOfMasses ) * collisionManifold.penetrationDepth;
 	float rigidbody2CorrectionDist = ( rigidbody1Mass / sumOfMasses ) * collisionManifold.penetrationDepth;
 
-	rigidbody1->Translate2D( rigidbody1CorrectionDist * collisionManifold.normal );
-	rigidbody2->Translate2D( rigidbody2CorrectionDist * -collisionManifold.normal );
+	rigidbody1->Translate2D( rigidbody1CorrectionDist * -collisionManifold.normal );
+	rigidbody2->Translate2D( rigidbody2CorrectionDist * collisionManifold.normal );
 }
 
 

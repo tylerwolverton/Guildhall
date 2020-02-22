@@ -58,7 +58,8 @@ static CollisionCheckCallback g_CollisionChecks[NUM_COLLIDER_TYPES * NUM_COLLIDE
 //-----------------------------------------------------------------------------------------------
 bool Collider2D::Intersects( const Collider2D* other ) const
 {
-	if ( !DoAABBsOverlap2D( GetWorldBounds(), other->GetWorldBounds() ) )
+	if ( other == nullptr
+		 || !DoAABBsOverlap2D( GetWorldBounds(), other->GetWorldBounds() ) )
 	{
 		return false;
 	}
@@ -120,10 +121,10 @@ static Manifold2 DiscVPolygonCollisionManifoldGenerator( const Collider2D* colli
 	}*/
 
 	Manifold2 manifold;
-	manifold.normal = discCollider->m_worldPosition - closestPointOnPolygonToDisc;
+	manifold.normal = closestPointOnPolygonToDisc - discCollider->m_worldPosition;
 	manifold.normal.Normalize();
 
-	Vec2 closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( -manifold.normal * discCollider->m_radius );
+	Vec2 closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( manifold.normal * discCollider->m_radius );
 	manifold.penetrationDepth = GetDistance2D( closestPointOnDiscToPolygon, closestPointOnPolygonToDisc );
 
 	return manifold;
@@ -155,7 +156,8 @@ static CollisionManifoldGenerationCallback g_ManifoldGenerators[NUM_COLLIDER_TYP
 //-----------------------------------------------------------------------------------------------
 Manifold2 Collider2D::GetCollisionManifold( const Collider2D* other ) const
 {
-	if ( !DoAABBsOverlap2D( GetWorldBounds(), other->GetWorldBounds() ) )
+	if ( other == nullptr
+		 || !DoAABBsOverlap2D( GetWorldBounds(), other->GetWorldBounds() ) )
 	{
 		return Manifold2();
 	}
