@@ -89,7 +89,7 @@ void Physics2D::DetectCollisions( float deltaSeconds )
 		}
 		
 		// Check intersection with other game objects
-		for ( int otherColliderIdx = colliderIdx; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
+		for ( int otherColliderIdx = colliderIdx + 1; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
 		{
 			Collider2D* otherCollider = m_colliders[otherColliderIdx];
 			if ( collider->Intersects( otherCollider ) )
@@ -121,15 +121,20 @@ void Physics2D::ResolveCollisions( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Physics2D::ResolveCollision( const Collision2D& collision )
 {
-	eSimulationMode mySimulationMode = collision.m_myCollider->m_rigidbody->GetSimulationMode();
-	eSimulationMode theirSimulationMode = collision.m_theirCollider->m_rigidbody->GetSimulationMode();
+	Rigidbody2D* rigidbody1 = collision.m_myCollider->m_rigidbody;
+	Rigidbody2D* rigidbody2 = collision.m_theirCollider->m_rigidbody;
+
+	GUARANTEE_OR_DIE( rigidbody1 != nullptr, "My Collider doesn't have a rigidbody" );
+	GUARANTEE_OR_DIE( rigidbody2 != nullptr, "Their Collider doesn't have a rigidbody" );
 
 	// Do nothing when both are static
-	if ( mySimulationMode == SIMULATION_MODE_STATIC
-		 && theirSimulationMode == SIMULATION_MODE_STATIC )
+	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
+		 && rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC )
 	{
 		return;
 	}
+
+	CorrectCollidingRigidbodies( rigidbody1, rigidbody2, collision.m_collisionManifold );
 
 	// Set mass of static and kinematic to infinite and then add impulse
 
@@ -162,6 +167,53 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 			}
 			break;
 	}*/
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
+{
+	// Adjust masses based on simulation type
+	float rigidbody1Mass = rigidbody1->GetMass();
+	float rigidbody2Mass = rigidbody2->GetMass();
+
+	// Static objects are treated as having infinite mass
+	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC )
+	{
+		rigidbody1Mass = 999999999.f;
+	}
+	if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC )
+	{
+		rigidbody2Mass = 999999999.f;
+	}
+
+	// Kinematic objects are treated has having infinite mass, unless both are kinematic
+	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC
+		 && rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC )
+	{
+		// If both are kinematic leave their masses alone
+	}
+	else if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC )
+	{
+		rigidbody1Mass = 999999999.f;
+	}
+	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC )
+	{
+		rigidbody2Mass = 999999999.f;
+	}
+
+	// Dynamic objects will keep their original masses
+
+	// If a rigidbody has no mass, assume a very small mass instead
+	if ( rigidbody1Mass == 0.f ) rigidbody1Mass = .0001f;
+	if ( rigidbody2Mass == 0.f ) rigidbody2Mass = .0001f;
+
+	float sumOfMasses = rigidbody1Mass + rigidbody2Mass;
+	float rigidbody1CorrectionDist = ( rigidbody2Mass / sumOfMasses ) * collisionManifold.penetrationDepth;
+	float rigidbody2CorrectionDist = ( rigidbody1Mass / sumOfMasses ) * collisionManifold.penetrationDepth;
+
+	rigidbody1->Translate2D( rigidbody1CorrectionDist * collisionManifold.normal );
+	rigidbody2->Translate2D( rigidbody2CorrectionDist * -collisionManifold.normal );
 }
 
 

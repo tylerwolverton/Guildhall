@@ -1,15 +1,16 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Physics/Collision2D.hpp"
 
 #include <vector>
 
 //-----------------------------------------------------------------------------------------------
+struct Manifold2;
 class Polygon2;
 class Rigidbody2D;
 class Collider2D;
 class DiscCollider2D;
 class PolygonCollider2D;
-class Collision2D;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -39,6 +40,8 @@ private:
 	void DetectCollisions( float deltaSeconds ); 	
 	void ResolveCollisions( float deltaSeconds ); 	
 	void ResolveCollision( const Collision2D& collision ); 	
+	// TODO: Rename to my and theirs or something else that's clear
+	void CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
 	void CleanupDestroyedObjects();  	
 
 

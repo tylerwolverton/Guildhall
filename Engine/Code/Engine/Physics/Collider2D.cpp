@@ -95,9 +95,11 @@ static Manifold2 DiscVDiscCollisionManifoldGenerator( const Collider2D* collider
 						   discCollider2->m_radius );*/
 
 	Manifold2 manifold;
-	manifold.normal = discCollider1->m_worldPosition - discCollider2->m_worldPosition;
+	manifold.normal = discCollider2->m_worldPosition - discCollider1->m_worldPosition;
+	manifold.normal.Normalize();
+
 	Vec2 disc1Edge = discCollider1->m_worldPosition + ( manifold.normal * discCollider1->m_radius );
-	Vec2 disc2Edge = discCollider2->m_worldPosition - ( manifold.normal * discCollider2->m_radius );
+	Vec2 disc2Edge = discCollider2->m_worldPosition + ( -manifold.normal * discCollider2->m_radius );
 	manifold.penetrationDepth = GetDistance2D( disc1Edge, disc2Edge );
 
 	return manifold;
@@ -111,14 +113,18 @@ static Manifold2 DiscVPolygonCollisionManifoldGenerator( const Collider2D* colli
 	const DiscCollider2D* discCollider = (const DiscCollider2D*)collider1;
 	const PolygonCollider2D* polygonCollider = (const PolygonCollider2D*)collider2;
 
-	Vec2 nearestPoint = polygonCollider->GetClosestPoint( discCollider->m_worldPosition );
+	Vec2 closestPointOnPolygonToDisc = polygonCollider->GetClosestPoint( discCollider->m_worldPosition );
 	/*if ( IsPointInsideDisc( nearestPoint, discCollider->m_worldPosition, discCollider->m_radius ) )
 	{
 
 	}*/
+
 	Manifold2 manifold;
-	manifold.normal = discCollider->m_worldPosition - nearestPoint;
-	manifold.penetrationDepth = GetDistance2D( discCollider->m_worldPosition + ( manifold.normal * discCollider->m_radius ), nearestPoint );
+	manifold.normal = discCollider->m_worldPosition - closestPointOnPolygonToDisc;
+	manifold.normal.Normalize();
+
+	Vec2 closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( -manifold.normal * discCollider->m_radius );
+	manifold.penetrationDepth = GetDistance2D( closestPointOnDiscToPolygon, closestPointOnPolygonToDisc );
 
 	return manifold;
 }
@@ -168,6 +174,8 @@ Manifold2 Collider2D::GetCollisionManifold( const Collider2D* other ) const
 		// flip the types when looking into the index.
 		int idx = myType * NUM_COLLIDER_TYPES + otherType;
 		CollisionManifoldGenerationCallback manifoldGenerator = g_ManifoldGenerators[idx];
-		return manifoldGenerator( other, this );
+		Manifold2 manifold = manifoldGenerator( other, this );
+		manifold.normal *= -1.f;
+		return manifold;
 	}
 }

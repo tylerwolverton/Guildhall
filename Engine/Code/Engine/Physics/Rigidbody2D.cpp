@@ -74,6 +74,18 @@ void Rigidbody2D::SetPosition( const Vec2& position )
 
 
 //-----------------------------------------------------------------------------------------------
+void Rigidbody2D::Translate2D( const Vec2& translation )
+{
+	m_worldPosition += translation;
+
+	if ( m_collider != nullptr )
+	{
+		m_collider->UpdateWorldShape();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Rigidbody2D::AddForce( const Vec2& force )
 {
 	if ( !m_isEnabled )

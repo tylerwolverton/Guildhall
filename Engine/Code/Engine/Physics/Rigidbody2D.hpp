@@ -37,7 +37,11 @@ public:
 	void SetVelocity( const Vec2& velocity );
 
 	Vec2 GetPosition()																{ return m_worldPosition; }
-	void SetPosition( const Vec2& position);
+	void SetPosition( const Vec2& position );
+	void Translate2D( const Vec2& translation );
+
+	float GetMass() const															{ return m_mass; }
+	float GetInverseMass() const													{ return m_inverseMass; }
 
 	void AddForce( const Vec2& force );
 
@@ -47,7 +51,7 @@ public:
 	void Enable()																	{ m_isEnabled = true; }
 	void Disable()																	{ m_isEnabled = false; }
 
-	eSimulationMode GetSimulationMode()												{ return m_simulationMode; }
+	eSimulationMode GetSimulationMode()	const										{ return m_simulationMode; }
 	void SetSimulationMode( eSimulationMode mode )									{ m_simulationMode = mode; }
 
 private:
