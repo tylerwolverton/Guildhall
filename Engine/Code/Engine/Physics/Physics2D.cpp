@@ -135,6 +135,8 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 	}
 
 	CorrectCollidingRigidbodies( rigidbody1, rigidbody2, collision.m_collisionManifold );
+
+	
 }
 
 
@@ -184,6 +186,31 @@ void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2
 
 	rigidbody1->Translate2D( rigidbody1CorrectionDist * -collisionManifold.normal );
 	rigidbody2->Translate2D( rigidbody2CorrectionDist * collisionManifold.normal );
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	//float sumOfMasses = rigidbody1Mass + rigidbody2Mass;
+	Vec2 initialVelocity1 = rigidbody1->GetVelocity();
+	Vec2 initialVelocity2 = rigidbody2->GetVelocity();
+
+	/*Vec2 sumOfInitialMomenta = ( rigidbody1->GetMass() * initialVelocity1 )
+		+ ( rigidbody2->GetMass() * initialVelocity2 );
+
+	Vec2 momentaToMassesRatio = sumOfInitialMomenta / sumOfMasses;
+
+	Vec2 rigidbody1MassToVelocity = rigidbody2->GetMass() * ( initialVelocity2 - initialVelocity1 );
+	Vec2 rigidbody2MassToVelocity = rigidbody1->GetMass() * ( initialVelocity1 - initialVelocity2 );
+
+	Vec2 finalVelocity1 = ( rigidbody1MassToVelocity / sumOfMasses ) + momentaToMassesRatio;
+	Vec2 finalVelocity2 = ( rigidbody2MassToVelocity / sumOfMasses ) + momentaToMassesRatio;
+*/
+	float productOfMasses = rigidbody1Mass * rigidbody2Mass;
+	float massesRatio = productOfMasses / sumOfMasses;
+	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
+
+	Vec2 impulse = massesRatio * differenceOfInitialVelocities;
+
+	rigidbody1->ApplyImpulseAt( impulse * collisionManifold.normal);
+	rigidbody2->ApplyImpulseAt( -impulse * collisionManifold.normal );
 }
 
 

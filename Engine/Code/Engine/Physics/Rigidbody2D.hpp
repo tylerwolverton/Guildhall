@@ -44,6 +44,7 @@ public:
 	float GetInverseMass() const													{ return m_inverseMass; }
 
 	void AddForce( const Vec2& force );
+	void ApplyImpulseAt( const Vec2& impulse );
 
 	void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const;
 
@@ -61,6 +62,7 @@ private:
 
 	Vec2 m_forces = Vec2::ZERO;
 	Vec2 m_velocity = Vec2::ZERO;
+	Vec2 m_acceleration = Vec2::ZERO;
 	float m_mass = 1.f;
 	float m_inverseMass = 1.f;
 
