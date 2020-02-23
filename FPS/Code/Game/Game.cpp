@@ -114,11 +114,23 @@ void Game::Render() const
 	
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
-	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -.2f, Rgba8::WHITE );
-	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -1.f, Rgba8::WHITE );
-	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -50.f, Rgba8::WHITE );
-	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -.02f, Rgba8::WHITE );
-	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), .0f, Rgba8::WHITE );
+
+	std::vector<Vertex_PCU> vertices;
+	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
+
+	/*vertices.push_back( Vertex_PCU( Vec2::ZERO, Rgba8::WHITE ) );
+	vertices.push_back( Vertex_PCU( Vec2( .5f, .5f ), Rgba8::WHITE ) );
+	vertices.push_back( Vertex_PCU( Vec2( 0.f, .5f ), Rgba8::WHITE ) );*/
+
+	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };
+
+	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );
+	//g_renderer->DrawVertexArray( vertices.size(), &vertices[0] );
+	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), 0.f, Rgba8::WHITE );
+	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -1.f, Rgba8::WHITE );
+	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -50.f, Rgba8::WHITE );
+	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -.02f, Rgba8::WHITE );
+	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), .0f, Rgba8::WHITE );
 	
 	
 	g_renderer->EndCamera( *m_worldCamera );

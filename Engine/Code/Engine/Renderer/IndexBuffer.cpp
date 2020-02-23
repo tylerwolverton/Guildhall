@@ -11,7 +11,9 @@ IndexBuffer::IndexBuffer( RenderContext* owner, eRenderMemoryHint memHint )
 //-----------------------------------------------------------------------------------------------
 void IndexBuffer::Update( uint indexCount, const uint* indices )
 {
-
+	size_t dataByteSize = indexCount * sizeof( uint );
+	size_t elementSize = sizeof( uint );
+	RenderBuffer::Update( indices, dataByteSize, elementSize );
 }
 
 

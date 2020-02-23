@@ -4,8 +4,8 @@ Project: FPS
 
 **Reminder:  You can use previously uncompleted extras as well as extras in this assignment to fill out the points.**
 
-- [ ] `Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )` implemented
-    - [ ] Set projection to `60 degrees`, and `-0.1` to `-100.0` for the clip planes.
+- [-] `Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )` implemented
+    - [-] Set projection to `60 degrees`, and `-0.1` to `-100.0` for the clip planes.
 - [ ] Camera now has a `Transform`
     - [x] Create the `Transform` class
     - [x] `Transform::SetPosition` implemented
@@ -15,10 +15,10 @@ Project: FPS
             - [ ] Roll & Yaw is `-180` to `180` 
             - [ ] Pitch is `-90` to `90`
 - [ ] Camera now calculates `view` matrix from their transform.
-    - [ ] `Transform::GetAsMatrix` implemented to calculate the camera's model matrix
-    - [ ] `MatrixInvertOrthoNormal` implemented to invert the camera's model into a view matrix
-        - [ ] `MatrixIsOrthoNormal` check added
-        - [ ] `MatrixTranspose` added
+    - [x] `Transform::GetAsMatrix` implemented to calculate the camera's model matrix
+    - [-] `MatrixInvertOrthoNormal` implemented to invert the camera's model into a view matrix
+        - [] `MatrixIsOrthoNormal` check added
+        - [x] `MatrixTranspose` added
 - [ ] Draw a Quad at `(0, 0, -10)`, or 10 units in front of the origin (should be visible when you start)
 - [ ] Allow player to move the camera by change the camera transform position
    - [x] `W` & `S`: Forward & Back (movement is relative to where you're looking)
@@ -48,10 +48,10 @@ Project: FPS
     - [ ] `BeginCamera` should `SetModelMatrix` to the `IDENTITY`, and be sure to bind the buffer.
 - [ ] Be able to draw a cube mesh at `(1, 0.5, -12.0)`
     - [ ] Create a `GPUMesh` class
-        - [ ] Implement `IndexBuffer`
+        - [x] Implement `IndexBuffer`
         - [ ] Be able to construct a mesh from a vertex and index array
-        - [ ] Add `RenderContext::BindIndexBuffer`
-        - [ ] Add `RenderContext::DrawIndexed`
+        - [x] Add `RenderContext::BindIndexBuffer`
+        - [x] Add `RenderContext::DrawIndexed`
         - [ ] Add `RenderContext::DrawMesh`
             - This should bind the vertex buffer, index buffer, and then `DrawIndexed`
     - [ ] Game creates a `cube mesh` around the origin with 2 unit sides. 

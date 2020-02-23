@@ -15,7 +15,6 @@ public:
 	void UpdateVertices( uint vertexCount, const void* vertexData, uint vertexStride, const BufferAttribute* layout );
 	void UpdateIndices( uint indexCount, const uint* indices );
 
-
 	// helper template
 	template <typename VERTEX_TYPE>
 	void UpdateVertices( uint vertexCount, const VERTEX_TYPE* vertices )

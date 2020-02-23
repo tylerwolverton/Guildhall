@@ -21,6 +21,7 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/OS/Window.hpp"
 
 #include "ThirdParty/stb/stb_image.h"
@@ -90,6 +91,7 @@ void RenderContext::Startup( Window* window )
 	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
+	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
 	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
@@ -119,6 +121,7 @@ void RenderContext::EndFrame()
 void RenderContext::Shutdown()
 {
 	delete m_immediateVBO;
+	delete m_immediateIBO;
 	delete m_frameUBO;
 
 	delete m_defaultPointSampler;
@@ -306,6 +309,30 @@ void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
 {
 	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
 	DrawVertexArray( (int)vertices.size(), &vertices[0] );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawIndexed( int numVertices, const Vertex_PCU* vertices, const std::vector<uint>& indices )
+{
+	// Describe Vertex Format to Shader
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_immediateVBO->m_attributes );
+	m_context->IASetInputLayout( inputLayout );
+
+	// Update a vertex buffer
+	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
+	size_t elementSize = sizeof( Vertex_PCU );
+	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
+
+	// Update an index buffer
+	m_immediateIBO->Update( indices );
+
+	// Bind
+	BindVertexBuffer( m_immediateVBO );
+	BindIndexBuffer( m_immediateIBO );
+
+	// Draw
+	m_context->DrawIndexed( (uint)indices.size(), 0, 0 );
 }
 
 
@@ -713,6 +740,15 @@ void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 	uint offset = 0;
 
 	m_context->IASetVertexBuffers( 0, 1, &vboHandle, &stride, &offset );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindIndexBuffer( IndexBuffer* ibo )
+{
+	ID3D11Buffer* iboHandle = ibo->m_handle;
+
+	m_context->IASetIndexBuffer( iboHandle, DXGI_FORMAT_R32_UINT, 0 );
 }
 
 
