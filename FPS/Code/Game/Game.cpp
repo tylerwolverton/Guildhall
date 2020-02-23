@@ -114,7 +114,12 @@ void Game::Render() const
 	
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
-	g_renderer->DrawAABB2( AABB2(-.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
+	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -.2f, Rgba8::WHITE );
+	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -1.f, Rgba8::WHITE );
+	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -50.f, Rgba8::WHITE );
+	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -.02f, Rgba8::WHITE );
+	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), .0f, Rgba8::WHITE );
+	
 	
 	g_renderer->EndCamera( *m_worldCamera );
 }
@@ -150,13 +155,13 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW )
 		 || g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		cameraTranslation.z += 1.f;
+		cameraTranslation.z -= 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW )
 		 || g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		cameraTranslation.z -= 1.f;
+		cameraTranslation.z += 1.f;
 	}
 
 	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
@@ -217,7 +222,7 @@ void Game::UpdateCameras( float deltaSeconds )
 	//m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 	m_worldCamera->SetOutputSize( Vec2( 2.f, 2.f ) );
 	m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
-	//m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
+	//m_worldCamera->SetProjectionPerspective( 90.f, -.1f, -100.f );
 }
 
 
