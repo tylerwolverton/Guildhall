@@ -90,11 +90,11 @@ void Camera::SetProjectionOrthographic( const Vec2& size, float nearZ, float far
 
 
 //-----------------------------------------------------------------------------------------------
-void Camera::SetProjectionPerspective( float fovDegrees, float nearZ, float farZ )
+void Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )
 {
 	m_projectionMatrix = MakePerspectiveProjectionMatrixD3D( fovDegrees,
 															 GetAspectRatio(),
-															 nearZ, farZ );
+															 nearZClip, farZClip );
 }
 
 
@@ -157,7 +157,7 @@ void Camera::UpdateCameraUBO()
 
 	CameraData cameraData;
 	cameraData.projection = m_projectionMatrix;
-	cameraData.view = Mat44::CreateTranslation3D( -m_transform.m_position );
+	cameraData.view = m_transform.GetAsMatrix();
 
 	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
 	// return m_cameraUBO;

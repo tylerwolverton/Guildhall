@@ -51,7 +51,7 @@ public:
 
 	void SetProjectionOrthographic( const Vec2& size, float nearZ, float farZ );
 	//void SetProjectionOrthographic( float size, float nearZ, float farZ );
-	void SetProjectionPerspective( float fovDegrees, float nearZ, float farZ );
+	void SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip );
 
 	// Rendering
 	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 0.f, unsigned int stencil = 0 );

@@ -150,13 +150,13 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW )
 		 || g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		cameraTranslation.y += 1.f;
+		cameraTranslation.z += 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW )
 		 || g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		cameraTranslation.y -= 1.f;
+		cameraTranslation.z -= 1.f;
 	}
 
 	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
@@ -217,6 +217,7 @@ void Game::UpdateCameras( float deltaSeconds )
 	//m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 	m_worldCamera->SetOutputSize( Vec2( 2.f, 2.f ) );
 	m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
+	//m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 }
 
 
