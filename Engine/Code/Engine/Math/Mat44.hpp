@@ -80,11 +80,14 @@ public:
 	void				ScaleUniform3D( float uniformScaleXYZ );
 	void				ScaleNonUniform3D( const Vec3& scaleFactorsXYZ );
 	void				TransformBy( const Mat44& transformationToConcatenate );
+	void				Transpose();
 
 	// Static creation methods
 	static const Mat44	CreateXRotationDegrees( float degreesAboutX );
 	static const Mat44	CreateYRotationDegrees( float degreesAboutY );
 	static const Mat44	CreateZRotationDegrees( float degreesAboutZ );
+	static const Mat44	CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw );
+	static const Mat44	CreateXYZRotationDegrees( const Vec3& rotation );
 	static const Mat44	CreateTranslation2D( const Vec2& translationXY );
 	static const Mat44	CreateTranslation3D( const Vec3& translation3D );
 	static const Mat44	CreateUniformScale2D( float scaleFactorXY );
@@ -94,6 +97,9 @@ public:
 
 	// Projection
 	static const Mat44	CreateOrthographicProjection( const Vec3& min, const Vec3& max );
+	static const Mat44	CreatePerspectiveProjection( float fovDegrees,
+													 float aspectRatio,
+													 float nearZ, float farZ );
 
 private:
 	const Mat44 operator*( const Mat44& rhs ) const = delete; // Do not implement, forbidden!

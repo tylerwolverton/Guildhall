@@ -7,9 +7,9 @@ Project: FPS
 - [ ] `Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )` implemented
     - [ ] Set projection to `60 degrees`, and `-0.1` to `-100.0` for the clip planes.
 - [ ] Camera now has a `Transform`
-    - [ ] Create the `Transform` class
-    - [ ] `Transform::SetPosition` implemented
-    - [ ] `Transform::Translate` implemented
+    - [x] Create the `Transform` class
+    - [x] `Transform::SetPosition` implemented
+    - [x] `Transform::Translate` implemented
     - [ ] `Transform::SetRotationFromPitchRollYawDegrees`
         - [ ] When storing degrees, make sure they are stored in sane ranges...
             - [ ] Roll & Yaw is `-180` to `180` 
@@ -21,8 +21,8 @@ Project: FPS
         - [ ] `MatrixTranspose` added
 - [ ] Draw a Quad at `(0, 0, -10)`, or 10 units in front of the origin (should be visible when you start)
 - [ ] Allow player to move the camera by change the camera transform position
-   - [ ] `W` & `S`: Forward & Back (movement is relative to where you're looking)
-   - [ ] `A` & `D`: Left and Right (movement is relative to where you're looking)
+   - [x] `W` & `S`: Forward & Back (movement is relative to where you're looking)
+   - [x] `A` & `D`: Left and Right (movement is relative to where you're looking)
    - [ ] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
    - [ ] `Left-Shift`: Move faster while held.
    - *Note:  If you want different controls, just make a note in your readme*

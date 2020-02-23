@@ -435,6 +435,28 @@ void Mat44::TransformBy( const Mat44& transformationToConcatenate )
 
 
 //-----------------------------------------------------------------------------------------------
+void Mat44::Transpose()
+{
+	float* matrixData = GetAsFloatArray();
+
+	for ( int yIndex = 0; yIndex < 4; ++yIndex )
+	{
+		for ( int xIndex = 0; xIndex < 4; ++xIndex )
+		{
+			if ( yIndex == xIndex )
+			{
+				continue;
+			}
+
+			float temp = matrixData[yIndex * 4 + xIndex];
+			matrixData[yIndex * 4 + xIndex] = matrixData[xIndex * 4 + yIndex];
+			matrixData[xIndex * 4 + yIndex] = temp;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Mat44 Mat44::CreateXRotationDegrees( float degreesAboutX )
 {
 	Mat44 newMatrix;
@@ -482,6 +504,24 @@ const Mat44 Mat44::CreateZRotationDegrees( float degreesAboutZ )
 	newMatrix.Jy = cosine;
 
 	return newMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
+{
+	Mat44 rotationMatrix = CreateXRotationDegrees( pitch );
+	rotationMatrix.RotateYDegrees( roll );
+	rotationMatrix.RotateZDegrees( yaw );
+
+	return rotationMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreateXYZRotationDegrees( const Vec3& rotation )
+{
+	return CreateRotationFromPitchRollYawDegrees( rotation.x, rotation.y, rotation.z );
 }
 
 
@@ -587,6 +627,39 @@ const Mat44 Mat44::CreateOrthographicProjection( const Vec3& min, const Vec3& ma
 		0.f,				2.f / diff.y,		0.f,				0.f,
 		0.f,				0.f,				1.f / diff.z,		0.f,
 		-sum.x / diff.x,	-sum.y / diff.y,	-min.z / diff.z,	1.f
+	};
+
+	return Mat44( projMatrix );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreatePerspectiveProjection( float fovDegrees,
+												float aspectRatio,
+												float nearZ, float farZ )
+{
+	// float fovDegrees is the field of view you want
+	// float farZ and nearZ are the depth range you want to see
+	// -> do **not** span zero here.
+
+	// Goal is to...
+	// - setup a default "depth" where (1, 1) == (1, 1) after proejction (1 / tan(fov * .5f))
+	// - map z to w, so the z divide happens
+	// - map nearZ to 0, farZ to farZ, since a Z divide will happen
+	//   and this will result in mapping nearZ to 0, and farZ to 1. 
+	//   -> ((z - nz) / (fz - nz)) * fz + 0
+	//   -> fz / (fz - nz) * z      + (-fz * nz) / (fz - nz)
+
+	float height = 1.0f / TanDegrees( fovDegrees * .5f ); // how far away are we for the perspective point to be "one up" from our forward line. 
+	float zRange = farZ - nearZ;
+	float inverseZRange = 1.0f / zRange;
+
+	float projMatrix[] =
+	{
+		height / aspectRatio,	0.f,		0.f,					0.f,
+		0.f,					height,		0.f,					0.f,
+		0.f,					0.f,		farZ * inverseZRange,	-nearZ * farZ * inverseZRange,
+		0.f,					0.f,		1.f,					0.f
 	};
 
 	return Mat44( projMatrix );

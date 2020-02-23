@@ -49,6 +49,10 @@ public:
 	void Translate2D( const Vec2& translation );
 	void SetPitchRollYawRotation( float pitch, float roll, float yaw );
 
+	void SetProjectionOrthographic( const Vec2& size, float nearZ, float farZ );
+	//void SetProjectionOrthographic( float size, float nearZ, float farZ );
+	void SetProjectionPerspective( float fovDegrees, float nearZ, float farZ );
+
 	// Rendering
 	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 0.f, unsigned int stencil = 0 );
 	
@@ -71,12 +75,18 @@ public:
 	const Mat44 GetViewMatrix()			const	{ return m_viewMatrix; }
 	const Mat44 GetProjectionMatrix()	const	{ return m_projectionMatrix; }
 
+	// Helpers
+	// can use this to determine aspect ratio
+	void SetOutputSize( const Vec2& size );
+	float GetAspectRatio() const;
+
 public:
 	RenderBuffer* m_cameraUBO = nullptr;
 
 private:
 	Vec2			m_bottomLeft;
 	Vec2			m_topRight;
+	Vec2			m_outputSize;
 	
 	Transform		m_transform;
 

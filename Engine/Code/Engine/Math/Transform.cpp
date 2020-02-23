@@ -26,12 +26,12 @@ void Transform::SetRotationFromPitchRollYawDegrees( float pitch, float roll, flo
 //-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetAsMatrix() const
 {
-	Mat44 rotation = Mat44::CreateXRotationDegrees( m_rotation.x );
-					/** Mat44::CreateYRotationDegrees( m_rotation.y )
-					* Mat44::CreateZRotationDegrees( m_rotation.z );*/
-
 	Mat44 translation = Mat44::CreateTranslation3D( m_position );
+	Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_rotation );
 	Mat44 scale = Mat44::CreateNonUniformScale3D( m_scale );
 
-	return Mat44();
+	Mat44 model = translation;
+	model.TransformBy( rotation );
+	model.TransformBy( scale );
+	return model;
 }

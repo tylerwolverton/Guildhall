@@ -102,13 +102,7 @@ void Game::Update( float deltaSeconds )
 	}
 
 	UpdateCameras( deltaSeconds );
-
-	float seconds = (float)GetCurrentTimeSeconds();
-	float green = RangeMapFloat( -1.f, 1.f, 0.f, 255.f, SinDegrees( seconds * 40.f ) );
-	float blue = RangeMapFloat( -1.0f, 1.0f, 0.0f, 255.0f, CosDegrees( seconds * 30.f ) );
-	Rgba8 clearColor = Rgba8( 0, (unsigned char)green, (unsigned char)blue, 255);
-
-	// clear to a different frame each time
+	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 }
 
@@ -220,7 +214,9 @@ void Game::UpdateCameras( float deltaSeconds )
 
 	m_worldCamera->Translate2D(cameraShakeOffset);
 
-	m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
+	//m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
+	m_worldCamera->SetOutputSize( Vec2( 2.f, 2.f ) );
+	m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
 }
 
 

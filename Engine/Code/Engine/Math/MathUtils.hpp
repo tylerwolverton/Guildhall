@@ -20,6 +20,7 @@ float		ConvertRadiansToDegrees( float angleRad );
 // Trig Functions
 float		CosDegrees	( float angleDeg );
 float		SinDegrees	( float angleDeg );
+float		TanDegrees	( float angleDeg );
 float		Atan2Degrees( float y, float x );
 
 int			PositiveMod( int left, int right );
