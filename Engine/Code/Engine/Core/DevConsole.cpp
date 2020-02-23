@@ -34,8 +34,6 @@ void DevConsole::Startup()
 	m_devConsoleCamera->SetColorTarget( nullptr );
 
 	g_eventSystem->RegisterEvent( "Help", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
-	g_eventSystem->RegisterEvent( "HelpTester", "Dummy command to test autocomplete.", eUsageLocation::DEV_CONSOLE, ShowHelp );
-	g_eventSystem->RegisterEvent( "HelpTester2", "Dummy command to test autocomplete.", eUsageLocation::DEV_CONSOLE, ShowHelp );
 
 	LoadPersistentHistory();
 }
