@@ -11,6 +11,9 @@ public: // NOTE: this is one of the few cases where we break both the "m_" namin
 	float y = 0.f;
 	float z = 0.f;
 
+	static const Vec3 ZERO;
+	static const Vec3 ONE;
+
 public:
 	// Construction/Destruction
 	~Vec3() {}															// destructor (do nothing)

@@ -43,14 +43,14 @@ void Camera::SetOrthoView( const AABB2& cameraBounds )
 //-----------------------------------------------------------------------------------------------
 void Camera::SetPosition( const Vec3& position )
 {
-	m_position = position;
+	m_transform.SetPosition( position );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Camera::Translate( const Vec3& translation )
 {
-	m_position += translation;
+	m_transform.Translate( translation );
 }
 
 
@@ -59,6 +59,13 @@ void Camera::Translate2D(const Vec2& translation)
 {
 	m_bottomLeft += translation;
 	m_topRight += translation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetPitchRollYawRotation( float pitch, float roll, float yaw )
+{
+	m_transform.SetRotationFromPitchRollYawDegrees( pitch, roll, yaw );
 }
 
 
@@ -81,6 +88,13 @@ void Camera::SetColorTarget( Texture* texture )
 
 
 //-----------------------------------------------------------------------------------------------
+void Camera::SetDepthStencilTarget( Texture* texture )
+{
+	m_deptStencilTarget = texture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Texture* Camera::GetColorTarget() const
 {
 	return m_colorTarget;
@@ -95,7 +109,7 @@ void Camera::UpdateCameraUBO()
 
 	CameraData cameraData;
 	cameraData.projection = m_projectionMatrix;
-	cameraData.view = Mat44::CreateTranslation3D( -m_position );
+	cameraData.view = Mat44::CreateTranslation3D( -m_transform.m_position );
 
 	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
 	// return m_cameraUBO;

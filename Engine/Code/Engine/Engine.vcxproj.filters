@@ -199,6 +199,9 @@
     <ClCompile Include="Renderer\BuiltInShaders.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Transform.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -392,6 +395,9 @@
     </ClInclude>
     <ClInclude Include="Renderer\BuiltInShaders.hpp">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Transform.hpp">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

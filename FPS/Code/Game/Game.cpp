@@ -120,20 +120,8 @@ void Game::Render() const
 	
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
-	g_renderer->DrawAABB2( AABB2( -.9f, -.5f, -.15f, .5f ), Rgba8::WHITE );
+	g_renderer->DrawAABB2( AABB2(-.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
 	
-	g_renderer->BindShader( "Data/Shaders/InvertColors.hlsl" );
-	g_renderer->DrawAABB2( AABB2( .15f, -.5f, .9f, .5f ), Rgba8::WHITE );
-
-	// Test for blend modes
-	g_renderer->BindTexture( nullptr );
-	g_renderer->BindShader( (Shader*)nullptr );
-	g_renderer->DrawAABB2( AABB2( -.125f, .75f, .125f, 1.f ), Rgba8::RED );
-
-	texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/mgs.png"  );
-	g_renderer->BindTexture( texture );
-	g_renderer->DrawAABB2( AABB2( -.125f, .75f, .125f, 1.f ), Rgba8::WHITE );
-
 	g_renderer->EndCamera( *m_worldCamera );
 }
 
@@ -153,22 +141,26 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	UNUSED( deltaSeconds );
 
 	Vec3 cameraTranslation;
-	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW )
+		 || g_inputSystem->IsKeyPressed( 'D' ) )
 	{
 		cameraTranslation.x += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW )
+		 || g_inputSystem->IsKeyPressed( 'A' ) )
 	{
 		cameraTranslation.x -= 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW )
+		 || g_inputSystem->IsKeyPressed( 'W' ) )
 	{
 		cameraTranslation.y += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW )
+		 || g_inputSystem->IsKeyPressed( 'S' ) )
 	{
 		cameraTranslation.y -= 1.f;
 	}
