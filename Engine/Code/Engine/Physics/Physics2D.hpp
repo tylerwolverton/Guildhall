@@ -53,5 +53,5 @@ private:
 
 	std::vector<Collision2D> m_collisions;
 
-	Vec2 m_forceOfGravity = Vec2( 0.f, -9.8f );
+	Vec2 m_forceOfGravity = Vec2( 0.f, -1.f );
 };

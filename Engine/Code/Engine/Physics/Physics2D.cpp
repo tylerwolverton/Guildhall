@@ -1,5 +1,6 @@
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/Collision2D.hpp"
@@ -191,26 +192,15 @@ void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2
 	//float sumOfMasses = rigidbody1Mass + rigidbody2Mass;
 	Vec2 initialVelocity1 = rigidbody1->GetVelocity();
 	Vec2 initialVelocity2 = rigidbody2->GetVelocity();
-
-	/*Vec2 sumOfInitialMomenta = ( rigidbody1->GetMass() * initialVelocity1 )
-		+ ( rigidbody2->GetMass() * initialVelocity2 );
-
-	Vec2 momentaToMassesRatio = sumOfInitialMomenta / sumOfMasses;
-
-	Vec2 rigidbody1MassToVelocity = rigidbody2->GetMass() * ( initialVelocity2 - initialVelocity1 );
-	Vec2 rigidbody2MassToVelocity = rigidbody1->GetMass() * ( initialVelocity1 - initialVelocity2 );
-
-	Vec2 finalVelocity1 = ( rigidbody1MassToVelocity / sumOfMasses ) + momentaToMassesRatio;
-	Vec2 finalVelocity2 = ( rigidbody2MassToVelocity / sumOfMasses ) + momentaToMassesRatio;
-*/
+	
 	float productOfMasses = rigidbody1Mass * rigidbody2Mass;
 	float massesRatio = productOfMasses / sumOfMasses;
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
-	Vec2 impulse = massesRatio * differenceOfInitialVelocities;
+	float impulseMagnitude = massesRatio * ( 1.f ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
 
-	rigidbody1->ApplyImpulseAt( impulse * collisionManifold.normal);
-	rigidbody2->ApplyImpulseAt( -impulse * collisionManifold.normal );
+	rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
+	rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
 }
 
 

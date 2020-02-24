@@ -23,13 +23,12 @@ void Rigidbody2D::Update( float deltaSeconds )
 		return;
 	}
 
-	m_acceleration += m_forces;
-	m_velocity += m_acceleration * deltaSeconds;
+	Vec2 acceleration = m_forces;
+	m_velocity += acceleration * deltaSeconds;
 	m_worldPosition += m_velocity * deltaSeconds;
 	m_collider->UpdateWorldShape();
 
 	m_forces = Vec2::ZERO;
-	m_acceleration = Vec2::ZERO;
 }
 
 
@@ -99,9 +98,16 @@ void Rigidbody2D::AddForce( const Vec2& force )
 
 
 //-----------------------------------------------------------------------------------------------
-void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse )
+void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& worldPosition )
 {
-	m_acceleration += impulse * m_inverseMass;
+	UNUSED( worldPosition );
+
+	if ( !m_isEnabled )
+	{
+		return;
+	}
+
+	m_velocity += ( impulse * m_inverseMass );
 }
 
 
