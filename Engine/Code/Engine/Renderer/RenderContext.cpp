@@ -692,10 +692,13 @@ void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray
 //-----------------------------------------------------------------------------------------------
 void RenderContext::AppendIndicesForCubeMesh( std::vector<uint>& indices )
 {
-	indices.reserve( 24 );
+	indices.reserve( 36 );
 	// Front face
 	indices.push_back( 0 );
 	indices.push_back( 1 );
+	indices.push_back( 2 );
+
+	indices.push_back( 0 );
 	indices.push_back( 2 );
 	indices.push_back( 3 );
 
@@ -703,11 +706,17 @@ void RenderContext::AppendIndicesForCubeMesh( std::vector<uint>& indices )
 	indices.push_back( 1 );
 	indices.push_back( 5 );
 	indices.push_back( 6 );
+	
+	indices.push_back( 1 );
+	indices.push_back( 6 );
 	indices.push_back( 2 );
 
 	// Back face
 	indices.push_back( 4 );
 	indices.push_back( 5 );
+	indices.push_back( 6 );
+	
+	indices.push_back( 4 );
 	indices.push_back( 6 );
 	indices.push_back( 7 );
 
@@ -715,17 +724,26 @@ void RenderContext::AppendIndicesForCubeMesh( std::vector<uint>& indices )
 	indices.push_back( 4 );
 	indices.push_back( 0 );
 	indices.push_back( 3 );
+	
+	indices.push_back( 4 );
+	indices.push_back( 3 );
 	indices.push_back( 7 );
 
 	// Top face
 	indices.push_back( 3 );
 	indices.push_back( 2 );
 	indices.push_back( 6 );
+	
+	indices.push_back( 3 );
+	indices.push_back( 6 );
 	indices.push_back( 7 );
 
 	// Bottom face
 	indices.push_back( 0 );
 	indices.push_back( 1 );
+	indices.push_back( 5 );
+	
+	indices.push_back( 0 );
 	indices.push_back( 5 );
 	indices.push_back( 4 );
 }

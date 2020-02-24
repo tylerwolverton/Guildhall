@@ -152,13 +152,9 @@ float Camera::GetAspectRatio() const
 //-----------------------------------------------------------------------------------------------
 void Camera::UpdateCameraUBO()
 {
-	// if buffer is nulllptr
-	// cameraUBO = new RenderBuffer()
-
 	CameraData cameraData;
 	cameraData.projection = m_projectionMatrix;
 	cameraData.view = m_transform.GetAsMatrix();
 
 	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
-	// return m_cameraUBO;
 }

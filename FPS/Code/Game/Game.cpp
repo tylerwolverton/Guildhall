@@ -119,7 +119,10 @@ void Game::Update( float deltaSeconds )
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
-	g_renderer->AppendVertsForCubeMesh( vertices, Vec3( 0.f, 0.f, -1.f ), 2.f, Rgba8::WHITE );
+	Vec3 position = Vec3( 0.f, 1.f, -1.f );
+	position = position.GetRotatedAboutZDegrees( SinDegrees( GetCurrentTimeSeconds() ) );
+
+	g_renderer->AppendVertsForCubeMesh( vertices, position, 2.f, Rgba8::WHITE );
 	g_renderer->AppendIndicesForCubeMesh( indices );
 
 	// Update buffers
@@ -136,7 +139,7 @@ void Game::Render() const
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
 
-	g_renderer->DrawMesh( mesh, 6 );
+	g_renderer->DrawMesh( mesh, 36 );
 
 	/*std::vector<Vertex_PCU> vertices;
 	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
