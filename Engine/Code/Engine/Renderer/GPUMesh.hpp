@@ -26,6 +26,9 @@ public:
 		UpdateVertices( vertexCount, vertices, sizeof( VERTEX_TYPE ), VERTEX_TYPE::LAYOUT );
 	}
 
+	int GetIndexCount();
+	int GetVertexCount();
+
 public:
 	VertexBuffer* m_vertices = nullptr;
 	IndexBuffer* m_indices = nullptr;

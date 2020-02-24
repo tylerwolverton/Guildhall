@@ -338,18 +338,27 @@ void RenderContext::DrawIndexed( int numVertices, const Vertex_PCU* vertices, co
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::DrawMesh( GPUMesh* mesh, uint indexCount )
-{
-	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( mesh->m_vertices->m_attributes );
-	m_context->IASetInputLayout( inputLayout );
-	
+void RenderContext::DrawMesh( GPUMesh* mesh )
+{	
 	// Bind
 	BindVertexBuffer( mesh->m_vertices );
 	BindIndexBuffer( mesh->m_indices );
 
+	// Describe Vertex Format to Shader
+	// UpdateLayoutFunctionIfNeeded
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( mesh->m_vertices->m_attributes );
+	m_context->IASetInputLayout( inputLayout );
+
 	// Draw
-	m_context->DrawIndexed( indexCount, 0, 0 );
+	if ( true ) //hasIndeices )
+	{
+		BindIndexBuffer( mesh->m_indices );
+		m_context->DrawIndexed( mesh->GetIndexCount(), 0, 0 );
+	}
+	else
+	{
+		Draw( mesh->GetVertexCount(), 0 );
+	}
 }
 
 

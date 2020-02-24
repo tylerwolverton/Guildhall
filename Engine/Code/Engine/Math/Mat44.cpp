@@ -648,7 +648,7 @@ const Mat44 Mat44::CreatePerspectiveProjection( float fovDegrees,
 	// - map nearZ to 0, farZ to farZ, since a Z divide will happen
 	//   and this will result in mapping nearZ to 0, and farZ to 1. 
 	//   -> ((z - nz) / (fz - nz)) * fz + 0
-	//   -> fz / (fz - nz) * z      + (-fz * nz) / (fz - nz)
+	//   -> -fz / (fz - nz) * z      + (fz * nz) / (fz - nz)
 
 	float height = 1.0f / TanDegrees( fovDegrees * .5f ); // how far away are we for the perspective point to be "one up" from our forward line. 
 	float zRange = farZ - nearZ;
@@ -656,10 +656,10 @@ const Mat44 Mat44::CreatePerspectiveProjection( float fovDegrees,
 
 	float projMatrix[] =
 	{
-		height / aspectRatio,	0.f,		0.f,					0.f,
-		0.f,					height,		0.f,					0.f,
-		0.f,					0.f,		-farZ * inverseZRange,	nearZ * farZ * inverseZRange,
-		0.f,					0.f,		1.f,					0.f
+		height / aspectRatio,	0.f,		0.f,								0.f,
+		0.f,					height,		0.f,								0.f,
+		0.f,					0.f,		-farZ * inverseZRange,				-1.f,
+		0.f,					0.f,		nearZ * farZ * inverseZRange,		0.f
 	};
 
 	return Mat44( projMatrix );

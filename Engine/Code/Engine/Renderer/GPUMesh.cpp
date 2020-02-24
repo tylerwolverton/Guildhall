@@ -24,10 +24,23 @@ GPUMesh::~GPUMesh()
 //-----------------------------------------------------------------------------------------------
 void GPUMesh::UpdateVertices( uint vertexCount, const void* vertexData, uint vertexStride, const BufferAttribute* layout )
 {
-	size_t dataByteSize = vertexCount * sizeof( Vertex_PCU );
-	size_t elementSize = sizeof( Vertex_PCU );
+	size_t dataByteSize = (size_t)vertexCount * (size_t)vertexStride;
+	size_t elementSize = vertexStride;
 	m_vertices->Update( vertexData, dataByteSize, elementSize );
-	//m_vertices->Update(vertexData, )
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int GPUMesh::GetIndexCount()
+{
+	return (int)m_indices->m_bufferByteSize / (int)m_indices->m_elementByteSize;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int GPUMesh::GetVertexCount()
+{
+	return (int)m_vertices->m_bufferByteSize / (int)m_vertices->m_elementByteSize;
 }
 
 
