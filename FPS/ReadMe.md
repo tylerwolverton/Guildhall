@@ -52,7 +52,7 @@ Project: FPS
         - [ ] Be able to construct a mesh from a vertex and index array
         - [x] Add `RenderContext::BindIndexBuffer`
         - [x] Add `RenderContext::DrawIndexed`
-        - [ ] Add `RenderContext::DrawMesh`
+        - [-] Add `RenderContext::DrawMesh`
             - This should bind the vertex buffer, index buffer, and then `DrawIndexed`
     - [ ] Game creates a `cube mesh` around the origin with 2 unit sides. 
     - [ ] Game has a `Transform` for the cube set at `(1, 0.5, -12.0f)`, 

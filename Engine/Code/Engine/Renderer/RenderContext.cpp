@@ -656,7 +656,83 @@ void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs)
+{
+	Vec3 mins( center );
+	mins.x -= sideLength * .5f;
+	mins.y -= sideLength * .5f;
+	mins.z += sideLength * .5f;
+
+	Vec3 maxs( center );
+	maxs.x += sideLength * .5f;
+	maxs.y += sideLength * .5f;
+	maxs.z -= sideLength * .5f;
+
+	// Front 4
+	vertexArray.push_back( Vertex_PCU( mins, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( Vec3( maxs.x, mins.y, mins.z ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( maxs, tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( Vec3( mins.x, maxs.y, mins.z ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+
+	
+	Vec3 backMins( mins );
+	backMins.z = center.z - sideLength * .5f;
+
+	Vec3 backMaxs( maxs );
+	backMaxs.z = center.z + sideLength * .5f;
+
+	// Back 4
+	vertexArray.push_back( Vertex_PCU( backMins, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( Vec3( backMaxs.x, backMins.y, backMins.z ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( backMaxs, tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( Vec3( backMins.x, backMaxs.y, backMins.z ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::AppendIndicesForCubeMesh( std::vector<uint>& indices )
+{
+	indices.reserve( 24 );
+	// Front face
+	indices.push_back( 0 );
+	indices.push_back( 1 );
+	indices.push_back( 2 );
+	indices.push_back( 3 );
+
+	// Right face
+	indices.push_back( 1 );
+	indices.push_back( 5 );
+	indices.push_back( 6 );
+	indices.push_back( 2 );
+
+	// Back face
+	indices.push_back( 4 );
+	indices.push_back( 5 );
+	indices.push_back( 6 );
+	indices.push_back( 7 );
+
+	// Left face
+	indices.push_back( 4 );
+	indices.push_back( 0 );
+	indices.push_back( 3 );
+	indices.push_back( 7 );
+
+	// Top face
+	indices.push_back( 3 );
+	indices.push_back( 2 );
+	indices.push_back( 6 );
+	indices.push_back( 7 );
+
+	// Bottom face
+	indices.push_back( 0 );
+	indices.push_back( 1 );
+	indices.push_back( 5 );
+	indices.push_back( 4 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 mins( spriteBounds.mins, zDepth );
 	Vec3 maxs( spriteBounds.maxs, zDepth );

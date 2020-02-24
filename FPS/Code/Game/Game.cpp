@@ -111,10 +111,16 @@ void Game::Update( float deltaSeconds )
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 
-	std::vector<Vertex_PCU> vertices;
+	/*std::vector<Vertex_PCU> vertices;
 	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
 
-	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };
+	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };*/
+
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	g_renderer->AppendVertsForCubeMesh( vertices, Vec3( 0.f, 0.f, -1.f ), 2.f, Rgba8::WHITE );
+	g_renderer->AppendIndicesForCubeMesh( indices );
 
 	// Update buffers
 	mesh->UpdateVertices( vertices.size(), &vertices[0] );
