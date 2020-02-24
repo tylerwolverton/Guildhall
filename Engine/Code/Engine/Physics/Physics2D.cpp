@@ -93,6 +93,7 @@ void Physics2D::DetectCollisions( float deltaSeconds )
 		for ( int otherColliderIdx = colliderIdx + 1; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
 		{
 			Collider2D* otherCollider = m_colliders[otherColliderIdx];
+			// TODO: Remove Intersects check
 			if ( collider->Intersects( otherCollider ) )
 			{
 				Collision2D collision;
@@ -138,6 +139,22 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 	CorrectCollidingRigidbodies( rigidbody1, rigidbody2, collision.m_collisionManifold );
 
 	
+	///////////////////////////////////////////////////////////////////////////////////////
+	// Move to Calculate Impulse
+	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
+		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+	{
+		CalculateImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, collision.m_collisionManifold );
+	}
+	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
+			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+	{
+		CalculateImpulseAgainstImmoveableObject( rigidbody1, rigidbody2, collision.m_collisionManifold );
+	}
+	else
+	{
+		CalculateImpulseBetweenMoveableObjects( rigidbody1, rigidbody2, collision.m_collisionManifold );
+	}
 }
 
 
@@ -188,12 +205,48 @@ void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2
 	rigidbody1->Translate2D( rigidbody1CorrectionDist * -collisionManifold.normal );
 	rigidbody2->Translate2D( rigidbody2CorrectionDist * collisionManifold.normal );
 
-	///////////////////////////////////////////////////////////////////////////////////////
-	//float sumOfMasses = rigidbody1Mass + rigidbody2Mass;
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////float sumOfMasses = rigidbody1Mass + rigidbody2Mass;
+	//Vec2 initialVelocity1 = rigidbody1->GetVelocity();
+	//Vec2 initialVelocity2 = rigidbody2->GetVelocity();
+	//
+	//float productOfMasses = rigidbody1Mass * rigidbody2Mass;
+	//float massesRatio = productOfMasses / sumOfMasses;
+	//Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
+
+	//float impulseMagnitude = massesRatio * ( 1.f ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+	//
+	//rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
+	//rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Manifold2& collisionManifold )
+{
+	//float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
+	Vec2 initialVelocity1 = moveableRigidbody->GetVelocity();
+	Vec2 initialVelocity2 = immoveableRigidbody->GetVelocity();
+
+	//float productOfMasses = rigidbody1->GetMass() * rigidbody2->GetMass();
+	float massesRatio = 1.f;// productOfMasses / sumOfMasses;
+	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
+
+	float impulseMagnitude = massesRatio * ( 5.f ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+
+	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
+{
+	float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
 	Vec2 initialVelocity1 = rigidbody1->GetVelocity();
 	Vec2 initialVelocity2 = rigidbody2->GetVelocity();
-	
-	float productOfMasses = rigidbody1Mass * rigidbody2Mass;
+
+	float productOfMasses = rigidbody1->GetMass() * rigidbody2->GetMass();
 	float massesRatio = productOfMasses / sumOfMasses;
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 

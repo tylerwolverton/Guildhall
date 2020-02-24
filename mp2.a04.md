@@ -21,7 +21,7 @@ Project - PhysicsSandbox
     - [ ] `Collider2D::GetBounceWith(Collider2D const* other) const` implemented to compute restitution between two objects
         - There are multiple methods for computing the restitution.  Product, Min, Max, Spherical, Lookup, etc...   
     - [ ] Allow user to adjust bounciness using `+` and `-` while the object is selected.
-    - [ ] Set the alpha for the fill color to the counciness of the object.
+    - [ ] Set the alpha for the fill color to the bounciness of the object.
 - [x] Add a `Collision2D` object that contains..
     - Two pointers to the `Collider2D` objects involved in the collision (`me` and `them`)
     - A `manifold2` struct containing...

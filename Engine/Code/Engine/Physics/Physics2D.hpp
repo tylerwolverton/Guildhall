@@ -42,6 +42,9 @@ private:
 	void ResolveCollision( const Collision2D& collision ); 	
 	// TODO: Rename to my and theirs or something else that's clear
 	void CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
+	void CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Manifold2& collisionManifold );
+	void CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
+
 	void CleanupDestroyedObjects();  	
 
 
@@ -53,5 +56,5 @@ private:
 
 	std::vector<Collision2D> m_collisions;
 
-	Vec2 m_forceOfGravity = Vec2( 0.f, -1.f );
+	Vec2 m_forceOfGravity = Vec2( 0.f, -9.8f );
 };
