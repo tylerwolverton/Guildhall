@@ -139,14 +139,14 @@ void Game::Render() const
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
 
-	g_renderer->DrawMesh( mesh, 36 );
+	//g_renderer->DrawMesh( mesh, 36 );
 
-	/*std::vector<Vertex_PCU> vertices;
+	std::vector<Vertex_PCU> vertices;
 	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
 
 	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };
 
-	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );*/
+	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );
 
 	//g_renderer->DrawVertexArray( vertices.size(), &vertices[0] );
 	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), 0.f, Rgba8::WHITE );
@@ -256,8 +256,8 @@ void Game::UpdateCameras( float deltaSeconds )
 
 	//m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 	m_worldCamera->SetOutputSize( Vec2( 2.f, 2.f ) );
-	m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
-	//m_worldCamera->SetProjectionPerspective( 90.f, -.1f, -100.f );
+	//m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
+	m_worldCamera->SetProjectionPerspective( 90.f, -.1f, -100.f );
 }
 
 

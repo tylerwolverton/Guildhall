@@ -658,7 +658,7 @@ const Mat44 Mat44::CreatePerspectiveProjection( float fovDegrees,
 	{
 		height / aspectRatio,	0.f,		0.f,					0.f,
 		0.f,					height,		0.f,					0.f,
-		0.f,					0.f,		farZ * inverseZRange,	-nearZ * farZ * inverseZRange,
+		0.f,					0.f,		-farZ * inverseZRange,	nearZ * farZ * inverseZRange,
 		0.f,					0.f,		1.f,					0.f
 	};
 
