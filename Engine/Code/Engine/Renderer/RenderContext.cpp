@@ -15,6 +15,7 @@
 #include "Engine/Renderer/BuiltInShaders.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
@@ -333,6 +334,22 @@ void RenderContext::DrawIndexed( int numVertices, const Vertex_PCU* vertices, co
 
 	// Draw
 	m_context->DrawIndexed( (uint)indices.size(), 0, 0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawMesh( GPUMesh* mesh, uint indexCount )
+{
+	// Describe Vertex Format to Shader
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( mesh->m_vertices->m_attributes );
+	m_context->IASetInputLayout( inputLayout );
+	
+	// Bind
+	BindVertexBuffer( mesh->m_vertices );
+	BindIndexBuffer( mesh->m_indices );
+
+	// Draw
+	m_context->DrawIndexed( indexCount, 0, 0 );
 }
 
 

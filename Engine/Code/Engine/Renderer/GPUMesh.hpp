@@ -4,6 +4,7 @@
 
 //-----------------------------------------------------------------------------------------------
 struct BufferAttribute;
+class RenderContext;
 class VertexBuffer;
 class IndexBuffer;
 
@@ -12,6 +13,9 @@ class IndexBuffer;
 class GPUMesh
 {
 public:
+	GPUMesh( RenderContext* context );
+	~GPUMesh();
+
 	void UpdateVertices( uint vertexCount, const void* vertexData, uint vertexStride, const BufferAttribute* layout );
 	void UpdateIndices( uint indexCount, const uint* indices );
 
@@ -23,6 +27,6 @@ public:
 	}
 
 public:
-	VertexBuffer* m_vertices;
-	IndexBuffer* m_indices;
+	VertexBuffer* m_vertices = nullptr;
+	IndexBuffer* m_indices = nullptr;
 };

@@ -13,6 +13,7 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Core/EventSystem.hpp"
@@ -48,6 +49,8 @@ void Game::Startup()
 	m_rng = new RandomNumberGenerator();
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
+
+	mesh = new GPUMesh( g_renderer );
 }
 
 
@@ -57,6 +60,9 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	delete mesh;
+	mesh = nullptr;
+
 	delete m_world;
 	m_world = nullptr;
 
@@ -104,6 +110,15 @@ void Game::Update( float deltaSeconds )
 	UpdateCameras( deltaSeconds );
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+
+	std::vector<Vertex_PCU> vertices;
+	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
+
+	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };
+
+	// Update buffers
+	mesh->UpdateVertices( vertices.size(), &vertices[0] );
+	mesh->UpdateIndices( indices.size(), &indices[0] );
 }
 
 
@@ -115,23 +130,22 @@ void Game::Render() const
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
 
-	std::vector<Vertex_PCU> vertices;
-	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
+	g_renderer->DrawMesh( mesh, 6 );
 
-	/*vertices.push_back( Vertex_PCU( Vec2::ZERO, Rgba8::WHITE ) );
-	vertices.push_back( Vertex_PCU( Vec2( .5f, .5f ), Rgba8::WHITE ) );
-	vertices.push_back( Vertex_PCU( Vec2( 0.f, .5f ), Rgba8::WHITE ) );*/
+	/*std::vector<Vertex_PCU> vertices;
+	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
 
 	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };
 
-	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );
+	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );*/
+
 	//g_renderer->DrawVertexArray( vertices.size(), &vertices[0] );
 	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), 0.f, Rgba8::WHITE );
 	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -1.f, Rgba8::WHITE );
 	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -50.f, Rgba8::WHITE );
 	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -.02f, Rgba8::WHITE );
 	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), .0f, Rgba8::WHITE );
-	
+
 	
 	g_renderer->EndCamera( *m_worldCamera );
 }

@@ -29,6 +29,7 @@ class Shader;
 class RenderBuffer;
 class VertexBuffer;
 class IndexBuffer;
+class GPUMesh;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -76,6 +77,7 @@ public:
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
 	void DrawIndexed( int numVertices, const Vertex_PCU* vertices, const std::vector<uint>& indices );
+	void DrawMesh( GPUMesh* mesh, uint indexCount );
 	
 	void DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8& color, float thickness );
 	void DrawRing2D( const Vec2& center, float radius, const Rgba8& color, float thickness );

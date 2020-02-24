@@ -13,6 +13,7 @@ class RandomNumberGenerator;
 class Camera;
 class World;
 class TextBox;
+class GPUMesh;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -73,4 +74,6 @@ private:
 
 	World* m_world = nullptr;
 	std::string m_curMap;
+
+	GPUMesh* mesh = nullptr;
 };
