@@ -45,6 +45,9 @@ public:
 	unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const;
 	const AABB2 GetBoundingBox() const;
 
+	void ChangeBounciness( float deltaBounciness );
+	float GetBounciness();
+
 private:
 	Rigidbody2D* m_rigidbody = nullptr;
 	Rgba8 m_borderColor = Rgba8::MAGENTA;

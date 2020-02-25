@@ -1,6 +1,7 @@
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/PolygonCollider2D.hpp"
+#include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/Manifold2.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -59,6 +60,8 @@ static CollisionCheckCallback g_CollisionChecks[NUM_COLLIDER_TYPES * NUM_COLLIDE
 bool Collider2D::Intersects( const Collider2D* other ) const
 {
 	if ( other == nullptr
+		 || !m_rigidbody->IsEnabled()
+		 || !other->m_rigidbody->IsEnabled()
 		 || !DoAABBsOverlap2D( GetWorldBounds(), other->GetWorldBounds() ) )
 	{
 		return false;
@@ -157,6 +160,8 @@ static CollisionManifoldGenerationCallback g_ManifoldGenerators[NUM_COLLIDER_TYP
 Manifold2 Collider2D::GetCollisionManifold( const Collider2D* other ) const
 {
 	if ( other == nullptr
+		 || !m_rigidbody->IsEnabled()
+		 || !other->m_rigidbody->IsEnabled()
 		 || !DoAABBsOverlap2D( GetWorldBounds(), other->GetWorldBounds() ) )
 	{
 		return Manifold2();
@@ -180,4 +185,11 @@ Manifold2 Collider2D::GetCollisionManifold( const Collider2D* other ) const
 		manifold.normal *= -1.f;
 		return manifold;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float Collider2D::GetBounceWith( const Collider2D* otherCollider ) const
+{
+	return m_material.m_bounciness * otherCollider->m_material.m_bounciness;
 }

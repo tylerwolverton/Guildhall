@@ -6,7 +6,7 @@ Project - PhysicsSandbox
 - [x] Make sure your game creates polygons as `STATIC` by default, and discs create as `DYNAMIC` by default
 - [] Add support for `disc Collider2D::GetWorldBounds` for existing colliders
 	- [] **Easier Option**: Implement this using `AABB2` bounding boxes
-    - [ ] **Challenge Option**: Implement this using a bounding `Disc`
+    - [] **Challenge Option**: Implement this using a bounding `Disc`
     - [] Update this bounds whenever you update the world shape of the object.
 - [x] Switch `Collider2D::Intersects` to be non-virtual, and instead use a matrix lookup
     - [x] Use a *mid-phase* check to early out of a collision by comparing the bounds first.
@@ -16,12 +16,12 @@ Project - PhysicsSandbox
     - [x] Implement a disc versus disc manifold
     - [x] Implement a disc versus polygon manifold
     - **Note: We are not doing polygon -vs- polygon yet**
-- [ ] `Collider2D` gets a `PhysicsMaterial`
-    - [ ] `PhysicsMaterial` has a property for `restitution` (or `bounciness` if you prefer)
-    - [ ] `Collider2D::GetBounceWith(Collider2D const* other) const` implemented to compute restitution between two objects
+- [x] `Collider2D` gets a `PhysicsMaterial`
+    - [x] `PhysicsMaterial` has a property for `restitution` (or `bounciness` if you prefer)
+    - [x] `Collider2D::GetBounceWith(Collider2D const* other) const` implemented to compute restitution between two objects
         - There are multiple methods for computing the restitution.  Product, Min, Max, Spherical, Lookup, etc...   
-    - [ ] Allow user to adjust bounciness using `+` and `-` while the object is selected.
-    - [ ] Set the alpha for the fill color to the bounciness of the object.
+    - [x] Allow user to adjust bounciness using `+` and `-` while the object is selected.
+    - [x] Set the alpha for the fill color to the bounciness of the object.
 - [x] Add a `Collision2D` object that contains..
     - Two pointers to the `Collider2D` objects involved in the collision (`me` and `them`)
     - A `manifold2` struct containing...

@@ -279,14 +279,28 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 			if ( g_inputSystem->WasKeyJustPressed( KEY_PLUS ) )
 			{
-				Vec2 currentGravity = m_physics2D->GetSceneGravity();
-				m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, -1.f ) );
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeBounciness( .1f );
+				}
+				else
+				{
+					Vec2 currentGravity = m_physics2D->GetSceneGravity();
+					m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, -1.f ) );
+				}
 			}
 			
 			if ( g_inputSystem->WasKeyJustPressed( KEY_MINUS ) )
 			{
-				Vec2 currentGravity = m_physics2D->GetSceneGravity();
-				m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, 1.f ) );
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeBounciness( -.1f );
+				}
+				else
+				{
+					Vec2 currentGravity = m_physics2D->GetSceneGravity();
+					m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, 1.f ) );
+				}
 			}
 
 			if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
@@ -520,7 +534,10 @@ void Game::ResetGameObjectColors()
 		}
 
 		// Default fill color to white
-		gameObject->SetFillColor( Rgba8::WHITE );
+		Rgba8 fillColor = Rgba8::WHITE;
+		float mappedAlpha = RangeMapFloat( 0.f, 1.f, 100.f, 254.f, gameObject->GetBounciness() );
+		fillColor.a = (unsigned char)mappedAlpha;
+		gameObject->SetFillColor( fillColor );
 	}
 }
 
@@ -537,13 +554,6 @@ void Game::CheckCollisions()
 		}
 
 		UpdateBorderColor( gameObject );
-
-		//// Check intersection with other game objects
-		//for ( int otherObjIdx = (int)m_gameObjects.size() - 1; otherObjIdx >= 0; --otherObjIdx )
-		//{
-		//	GameObject* otherGameObject = m_gameObjects[otherObjIdx];
-		//	HandleIntersection( gameObject, otherGameObject );
-		//}
 	}
 }
 
@@ -611,6 +621,7 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, radius );
 	gameObject->SetCollider( discCollider );
+	gameObject->ChangeBounciness( .5f );
 
 	gameObject->SetBorderColor( Rgba8::BLUE );
 	gameObject->SetFillColor( Rgba8::WHITE );
@@ -629,6 +640,7 @@ void Game::SpawnPolygon( const Polygon2& polygon )
 
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
 	gameObject->SetCollider( polygonCollider );
+	gameObject->ChangeBounciness( .5f );
 
 	gameObject->SetBorderColor( Rgba8::BLUE );
 	gameObject->SetFillColor( Rgba8::WHITE );

@@ -233,7 +233,7 @@ void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRi
 	float massesRatio = 1.f;// productOfMasses / sumOfMasses;
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
-	float impulseMagnitude = massesRatio * ( 5.f ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+	float impulseMagnitude = massesRatio * ( 1.f + moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider ) ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
 
 	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
 }
@@ -250,7 +250,7 @@ void Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1,
 	float massesRatio = productOfMasses / sumOfMasses;
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
-	float impulseMagnitude = massesRatio * ( 1.f ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+	float impulseMagnitude = massesRatio * ( 1.f + rigidbody1->m_collider->GetBounceWith( rigidbody2->m_collider ) ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
 
 	rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
 	rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionManifold.normal, Vec2::ZERO );

@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/GameCommon.hpp"
+#include "Engine/Physics/PhysicsMaterial.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -40,6 +41,7 @@ public: // Interface
 	virtual bool Contains( const Vec2& pos ) const = 0;
 	bool Intersects( const Collider2D* other ) const;
 	Manifold2 GetCollisionManifold( const Collider2D* other ) const;
+	float GetBounceWith( const Collider2D* otherCollider ) const;
 
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
@@ -59,6 +61,7 @@ public: // any helpers you want to add
 public:
 	eCollider2DType m_type		= COLLIDER2D_NONE;  // keep track of the type - will help with collision later
 	Rigidbody2D* m_rigidbody	= nullptr;			// owning rigidbody, used for calculating world shape
+	PhysicsMaterial m_material;
 
 protected:
 	Physics2D* m_system			= nullptr;			// system who created our d

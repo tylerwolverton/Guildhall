@@ -4,6 +4,7 @@
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Game/GameCommon.hpp"
 
 
@@ -234,4 +235,41 @@ const AABB2 GameObject::GetBoundingBox() const
 	}
 
 	return collider->GetWorldBounds();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::ChangeBounciness( float deltaBounciness )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	Collider2D* collider = m_rigidbody->GetCollider();
+	if ( collider == nullptr )
+	{
+		return;
+	}
+
+	collider->m_material.m_bounciness += deltaBounciness;
+	collider->m_material.m_bounciness = ClampMinMax( collider->m_material.m_bounciness, 0.f, 1.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float GameObject::GetBounciness()
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0.f;
+	}
+
+	Collider2D* collider = m_rigidbody->GetCollider();
+	if ( collider == nullptr )
+	{
+		return 0.f;
+	}
+
+	return collider->m_material.m_bounciness;
 }

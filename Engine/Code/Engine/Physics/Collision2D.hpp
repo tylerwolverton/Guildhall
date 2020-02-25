@@ -8,5 +8,4 @@ public:
 	Collider2D* m_myCollider = nullptr;
 	Collider2D* m_theirCollider = nullptr;
 	Manifold2 m_collisionManifold;
-
 };

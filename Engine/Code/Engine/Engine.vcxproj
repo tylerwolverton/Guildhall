@@ -255,6 +255,7 @@
     <ClInclude Include="Physics\DiscCollider2D.hpp" />
     <ClInclude Include="Physics\Manifold2.hpp" />
     <ClInclude Include="Physics\Physics2D.hpp" />
+    <ClInclude Include="Physics\PhysicsMaterial.hpp" />
     <ClInclude Include="Physics\PolygonCollider2D.hpp" />
     <ClInclude Include="Physics\Rigidbody2D.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
