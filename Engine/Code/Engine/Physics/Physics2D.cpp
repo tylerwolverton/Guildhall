@@ -172,7 +172,7 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
 		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
 	{
-		CalculateImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, collisionManifold.normal );
+		CalculateImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, -collisionManifold.normal );
 	}
 	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
 			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
@@ -200,7 +200,7 @@ void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRi
 	float e = moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider );
 	float impulseMagnitude = massesRatio * ( 1.f + e ) * DotProduct2D( moveableRigidbody->GetVelocity(), collisionNormal );
 
-	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * collisionNormal, Vec2::ZERO );
+	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * -collisionNormal, Vec2::ZERO );
 }
 
 
