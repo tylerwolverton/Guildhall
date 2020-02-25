@@ -73,7 +73,6 @@ void Camera::SetPitchRollYawRotation( float pitch, float roll, float yaw )
 void Camera::SetProjectionOrthographic( const Vec2& size, float nearZ, float farZ )
 //void Camera::SetProjectionOrthographic( float size, float nearZ, float farZ )
 {
-
 	if ( size.y == 0.f )
 	{
 		return;

@@ -51,6 +51,19 @@ void Game::Startup()
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
 	mesh = new GPUMesh( g_renderer );
+
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	Vec3 position = Vec3( 0.f, 1.f, -1.f );
+	position = position.GetRotatedAboutZDegrees( SinDegrees( GetCurrentTimeSeconds() ) );
+
+	g_renderer->AppendVertsForCubeMesh( vertices, position, 2.f, Rgba8::WHITE );
+	g_renderer->AppendIndicesForCubeMesh( indices );
+
+	// Update buffers
+	mesh->UpdateVertices( vertices.size(), &vertices[0] );
+	mesh->UpdateIndices( indices.size(), &indices[0] );
 	/*mesh->AddVertices( 24, cubeVerts );
 	mesh->AddIndices( 36, indices );*/
 }
@@ -118,18 +131,18 @@ void Game::Update( float deltaSeconds )
 
 	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };*/
 
-	std::vector<Vertex_PCU> vertices;
-	std::vector<uint> indices;
+	//std::vector<Vertex_PCU> vertices;
+	//std::vector<uint> indices;
 
-	Vec3 position = Vec3( 0.f, 1.f, -1.f );
-	position = position.GetRotatedAboutZDegrees( SinDegrees( GetCurrentTimeSeconds() ) );
+	//Vec3 position = Vec3( 0.f, 1.f, -1.f );
+	//position = position.GetRotatedAboutZDegrees( SinDegrees( GetCurrentTimeSeconds() ) );
 
-	g_renderer->AppendVertsForCubeMesh( vertices, position, 2.f, Rgba8::WHITE );
-	g_renderer->AppendIndicesForCubeMesh( indices );
+	//g_renderer->AppendVertsForCubeMesh( vertices, position, 2.f, Rgba8::WHITE );
+	//g_renderer->AppendIndicesForCubeMesh( indices );
 
-	// Update buffers
-	mesh->UpdateVertices( vertices.size(), &vertices[0] );
-	mesh->UpdateIndices( indices.size(), &indices[0] );
+	//// Update buffers
+	//mesh->UpdateVertices( vertices.size(), &vertices[0] );
+	//mesh->UpdateIndices( indices.size(), &indices[0] );
 }
 
 
@@ -181,31 +194,51 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	UNUSED( deltaSeconds );
 
 	Vec3 cameraTranslation;
-	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW )
-		 || g_inputSystem->IsKeyPressed( 'D' ) )
+	Vec3 cameraRotation;
+
+	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
 		cameraTranslation.x += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW )
-		 || g_inputSystem->IsKeyPressed( 'A' ) )
+	if ( g_inputSystem->IsKeyPressed( 'A' ) )
 	{
 		cameraTranslation.x -= 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW )
-		 || g_inputSystem->IsKeyPressed( 'W' ) )
+	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
 		cameraTranslation.z -= 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW )
-		 || g_inputSystem->IsKeyPressed( 'S' ) )
+	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
 		cameraTranslation.z += 1.f;
 	}
+	
+	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
+	{
+		cameraTranslation.y += 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
+	{
+		cameraTranslation.y -= 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
+	{
+		cameraRotation.y += 10.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
+	{
+		cameraRotation.y -= 10.f;
+	}
 
 	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
+	Transform transform = m_worldCamera->GetTransform();
+	m_worldCamera->SetPitchRollYawRotation( 0.f, transform.m_rotation.y + ( cameraRotation.y * deltaSeconds ), 0.f );
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
 	{

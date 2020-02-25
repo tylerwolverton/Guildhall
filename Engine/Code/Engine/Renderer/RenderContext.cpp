@@ -680,7 +680,7 @@ void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray
 	// Front 4
 	vertexArray.push_back( Vertex_PCU( mins, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( Vec3( maxs.x, mins.y, mins.z ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( maxs, tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( Vec3( maxs.x, maxs.y, mins.z ), tint, uvAtMaxs ) );
 	vertexArray.push_back( Vertex_PCU( Vec3( mins.x, maxs.y, mins.z ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
 
 	
@@ -693,7 +693,7 @@ void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray
 	// Back 4
 	vertexArray.push_back( Vertex_PCU( backMins, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( Vec3( backMaxs.x, backMins.y, backMins.z ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( backMaxs, tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( Vec3( backMaxs.x, backMaxs.y, backMins.z ), tint, uvAtMaxs ) );
 	vertexArray.push_back( Vertex_PCU( Vec3( backMins.x, backMaxs.y, backMins.z ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
 }
 
