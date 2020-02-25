@@ -37,13 +37,15 @@ private:
 	void AdvanceSimulation( float deltaSeconds );
 	void ApplyEffectors( float deltaSeconds ); 	
 	void MoveRigidbodies( float deltaSeconds ); 	
-	void DetectCollisions( float deltaSeconds ); 	
-	void ResolveCollisions( float deltaSeconds ); 	
+	void DetectCollisions(); 	
+	void ResolveCollisions(); 	
 	void ResolveCollision( const Collision2D& collision ); 	
 	// TODO: Rename to my and theirs or something else that's clear
 	void CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
-	void CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Manifold2& collisionManifold );
-	void CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
+	void ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
+	void CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& collisionNormal );
+	void CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& collisionNormal );
+
 
 	void CleanupDestroyedObjects();  	
 

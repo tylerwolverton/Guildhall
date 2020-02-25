@@ -28,8 +28,8 @@ void Physics2D::AdvanceSimulation( float deltaSeconds )
 {
 	ApplyEffectors( deltaSeconds ); 	// apply gravity to all dynamic objects
 	MoveRigidbodies( deltaSeconds ); 	// apply an euler step to all rigidbodies, and reset per-frame data
-	DetectCollisions( deltaSeconds );	// determine all pairs of intersecting colliders
-	ResolveCollisions( deltaSeconds ); 	// resolve all collisions, firing appropraite events
+	DetectCollisions();	// determine all pairs of intersecting colliders
+	ResolveCollisions(); 	// resolve all collisions, firing appropraite events
 	CleanupDestroyedObjects();  		// destroy objects 
 }
 
@@ -79,7 +79,7 @@ void Physics2D::MoveRigidbodies( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::DetectCollisions( float deltaSeconds )
+void Physics2D::DetectCollisions()
 {
 	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
 	{
@@ -109,7 +109,7 @@ void Physics2D::DetectCollisions( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::ResolveCollisions( float deltaSeconds )
+void Physics2D::ResolveCollisions()
 {
 	for ( int collisionIdx = 0; collisionIdx < (int)m_collisions.size(); ++collisionIdx )
 	{
@@ -137,110 +137,75 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 	}
 
 	CorrectCollidingRigidbodies( rigidbody1, rigidbody2, collision.m_collisionManifold );
-
-	
-	///////////////////////////////////////////////////////////////////////////////////////
-	// Move to Calculate Impulse
-	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
-		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
-	{
-		CalculateImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, collision.m_collisionManifold );
-	}
-	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
-			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
-	{
-		CalculateImpulseAgainstImmoveableObject( rigidbody1, rigidbody2, collision.m_collisionManifold );
-	}
-	else
-	{
-		CalculateImpulseBetweenMoveableObjects( rigidbody1, rigidbody2, collision.m_collisionManifold );
-	}
+	ApplyCollisionImpulses( rigidbody1, rigidbody2, collision.m_collisionManifold );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
 {
-	// Adjust masses based on simulation type
-	float rigidbody1Mass = rigidbody1->GetMass();
-	float rigidbody2Mass = rigidbody2->GetMass();
-
-	// Static objects are treated as having infinite mass
-	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC )
+	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
+		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
 	{
-		rigidbody1Mass = 999999999.f;
+		rigidbody2->Translate2D( collisionManifold.penetrationDepth * collisionManifold.normal );
+		return;
 	}
-	if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC )
+	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
+			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
 	{
-		rigidbody2Mass = 999999999.f;
-	}
-
-	// Kinematic objects are treated has having infinite mass, unless both are kinematic
-	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC
-		 && rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC )
-	{
-		// If both are kinematic leave their masses alone
-	}
-	else if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC
-			  && rigidbody2->GetSimulationMode() != SIMULATION_MODE_STATIC )
-	{
-		rigidbody1Mass = 999999999.f;
-	}
-	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC 
-			  && rigidbody1->GetSimulationMode() != SIMULATION_MODE_STATIC )
-	{
-		rigidbody2Mass = 999999999.f;
+		rigidbody1->Translate2D( collisionManifold.penetrationDepth * collisionManifold.normal );
+		return;
 	}
 
-	// Dynamic objects will keep their original masses
-
-	// If a rigidbody has no mass, assume a very small mass instead
-	if ( rigidbody1Mass == 0.f ) rigidbody1Mass = .0001f;
-	if ( rigidbody2Mass == 0.f ) rigidbody2Mass = .0001f;
-
-	float sumOfMasses = rigidbody1Mass + rigidbody2Mass;
-	float rigidbody1CorrectionDist = ( rigidbody2Mass / sumOfMasses ) * collisionManifold.penetrationDepth;
-	float rigidbody2CorrectionDist = ( rigidbody1Mass / sumOfMasses ) * collisionManifold.penetrationDepth;
+	float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
+	float rigidbody1CorrectionDist = ( rigidbody2->GetMass() / sumOfMasses ) * collisionManifold.penetrationDepth;
+	float rigidbody2CorrectionDist = ( rigidbody1->GetMass() / sumOfMasses ) * collisionManifold.penetrationDepth;
 
 	rigidbody1->Translate2D( rigidbody1CorrectionDist * -collisionManifold.normal );
 	rigidbody2->Translate2D( rigidbody2CorrectionDist * collisionManifold.normal );
-
-
-	/////////////////////////////////////////////////////////////////////////////////////////
-	////float sumOfMasses = rigidbody1Mass + rigidbody2Mass;
-	//Vec2 initialVelocity1 = rigidbody1->GetVelocity();
-	//Vec2 initialVelocity2 = rigidbody2->GetVelocity();
-	//
-	//float productOfMasses = rigidbody1Mass * rigidbody2Mass;
-	//float massesRatio = productOfMasses / sumOfMasses;
-	//Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
-
-	//float impulseMagnitude = massesRatio * ( 1.f ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
-	//
-	//rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
-	//rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Manifold2& collisionManifold )
+void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
+{
+	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
+		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+	{
+		CalculateImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, collisionManifold.normal );
+	}
+	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
+			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+	{
+		CalculateImpulseAgainstImmoveableObject( rigidbody1, rigidbody2, collisionManifold.normal );
+	}
+	else
+	{
+		CalculateImpulseBetweenMoveableObjects( rigidbody1, rigidbody2, collisionManifold.normal );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& collisionNormal )
 {
 	//float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
-	Vec2 initialVelocity1 = moveableRigidbody->GetVelocity();
-	Vec2 initialVelocity2 = immoveableRigidbody->GetVelocity();
+	//Vec2 initialVelocity1 = moveableRigidbody->GetVelocity();
+	//Vec2 initialVelocity2 = immoveableRigidbody->GetVelocity();
 
 	//float productOfMasses = rigidbody1->GetMass() * rigidbody2->GetMass();
 	float massesRatio = 1.f;// productOfMasses / sumOfMasses;
-	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
+	//Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
-	float impulseMagnitude = massesRatio * ( 1.f + moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider ) ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+	float e = moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider );
+	float impulseMagnitude = massesRatio * ( 1.f + e ) * DotProduct2D( moveableRigidbody->GetVelocity(), collisionNormal );
 
-	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
+	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * collisionNormal, Vec2::ZERO );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
+void Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& collisionNormal )
 {
 	float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
 	Vec2 initialVelocity1 = rigidbody1->GetVelocity();
@@ -250,10 +215,10 @@ void Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1,
 	float massesRatio = productOfMasses / sumOfMasses;
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
-	float impulseMagnitude = massesRatio * ( 1.f + rigidbody1->m_collider->GetBounceWith( rigidbody2->m_collider ) ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+	float impulseMagnitude = massesRatio * ( 1.f + rigidbody1->m_collider->GetBounceWith( rigidbody2->m_collider ) ) * DotProduct2D( differenceOfInitialVelocities, collisionNormal );
 
-	rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
-	rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
+	rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionNormal, Vec2::ZERO );
+	rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionNormal, Vec2::ZERO );
 }
 
 
