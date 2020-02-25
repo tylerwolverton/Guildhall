@@ -314,26 +314,9 @@ void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::DrawIndexed( int numVertices, const Vertex_PCU* vertices, const std::vector<uint>& indices )
+void RenderContext::DrawIndexed( int indexCount, int indexOffset, int vertexOffset )
 {
-	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_immediateVBO->m_attributes );
-	m_context->IASetInputLayout( inputLayout );
-
-	// Update a vertex buffer
-	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
-	size_t elementSize = sizeof( Vertex_PCU );
-	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
-
-	// Update an index buffer
-	m_immediateIBO->Update( indices );
-
-	// Bind
-	BindVertexBuffer( m_immediateVBO );
-	BindIndexBuffer( m_immediateIBO );
-
-	// Draw
-	m_context->DrawIndexed( (uint)indices.size(), 0, 0 );
+	m_context->DrawIndexed( indexCount, indexOffset, vertexOffset );
 }
 
 
@@ -342,7 +325,6 @@ void RenderContext::DrawMesh( GPUMesh* mesh )
 {	
 	// Bind
 	BindVertexBuffer( mesh->m_vertices );
-	BindIndexBuffer( mesh->m_indices );
 
 	// Describe Vertex Format to Shader
 	// UpdateLayoutFunctionIfNeeded
@@ -350,14 +332,14 @@ void RenderContext::DrawMesh( GPUMesh* mesh )
 	m_context->IASetInputLayout( inputLayout );
 
 	// Draw
-	if ( true ) //hasIndeices )
+	if ( true ) //hasIndices )
 	{
 		BindIndexBuffer( mesh->m_indices );
-		m_context->DrawIndexed( mesh->GetIndexCount(), 0, 0 );
+		DrawIndexed( mesh->GetIndexCount() );
 	}
 	else
 	{
-		Draw( mesh->GetVertexCount(), 0 );
+		Draw( mesh->GetVertexCount() );
 	}
 }
 
@@ -867,6 +849,11 @@ void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 void RenderContext::BindIndexBuffer( IndexBuffer* ibo )
 {
 	ID3D11Buffer* iboHandle = ibo->m_handle;
+	/*if ( iboHandle == m_lastIBOHandle )
+	{
+		return;
+	}
+	m_lastIBOHandle = iboHandle;*/
 
 	m_context->IASetIndexBuffer( iboHandle, DXGI_FORMAT_R32_UINT, 0 );
 }

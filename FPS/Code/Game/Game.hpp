@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Transform.hpp"
 
 #include <string>
 #include <vector>
@@ -75,5 +76,6 @@ private:
 	World* m_world = nullptr;
 	std::string m_curMap;
 
-	GPUMesh* mesh = nullptr;
+	GPUMesh* m_mesh = nullptr;
+	Transform m_meshTransform;
 };

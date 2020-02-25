@@ -50,20 +50,18 @@ void Game::Startup()
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
-	mesh = new GPUMesh( g_renderer );
+	m_mesh = new GPUMesh( g_renderer );
+	m_meshTransform.SetPosition( Vec3( 1.f, .5f, -12.f ) );
 
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
-
-	Vec3 position = Vec3( 0.f, 1.f, -1.f );
-	position = position.GetRotatedAboutZDegrees( SinDegrees( GetCurrentTimeSeconds() ) );
-
-	g_renderer->AppendVertsForCubeMesh( vertices, position, 2.f, Rgba8::WHITE );
+	
+	g_renderer->AppendVertsForCubeMesh( vertices, m_meshTransform.m_position, 2.f, Rgba8::WHITE );
 	g_renderer->AppendIndicesForCubeMesh( indices );
 
 	// Update buffers
-	mesh->UpdateVertices( vertices.size(), &vertices[0] );
-	mesh->UpdateIndices( indices.size(), &indices[0] );
+	m_mesh->UpdateVertices( vertices.size(), &vertices[0] );
+	m_mesh->UpdateIndices( indices.size(), &indices[0] );
 	/*mesh->AddVertices( 24, cubeVerts );
 	mesh->AddIndices( 36, indices );*/
 }
@@ -75,8 +73,8 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
-	delete mesh;
-	mesh = nullptr;
+	delete m_mesh;
+	m_mesh = nullptr;
 
 	delete m_world;
 	m_world = nullptr;
@@ -126,6 +124,8 @@ void Game::Update( float deltaSeconds )
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 
+	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, SinDegrees( GetCurrentTimeSeconds() ), 0.f );
+
 	/*std::vector<Vertex_PCU> vertices;
 	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
 
@@ -157,7 +157,7 @@ void Game::Render() const
 	//g_renderer->DrawMesh( mesh );
 	// Mat44 model = m_cubeTransform->GetAsMatrix();
 	// g_renderer->SetModelMatrix( model );
-	 g_renderer->DrawMesh( mesh );
+	 g_renderer->DrawMesh( m_mesh );
 
 	/*std::vector<Vertex_PCU> vertices;
 	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
@@ -166,13 +166,7 @@ void Game::Render() const
 
 	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );*/
 
-	//g_renderer->DrawVertexArray( vertices.size(), &vertices[0] );
-	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), 0.f, Rgba8::WHITE );
-	//g_renderer->DrawAABB2WithDepth( AABB2( .5f, -.5f, 1.5f, .5f ), -15.f, Rgba8::WHITE );
-	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -30.f, Rgba8::WHITE );
-	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, .5f, .5f, 1.f ), -60.f, Rgba8::WHITE );
-	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -.02f, Rgba8::WHITE );
-	//g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), .0f, Rgba8::WHITE );
+	g_renderer->DrawAABB2WithDepth( AABB2( .5f, -.5f, 1.5f, .5f ), -10.f, Rgba8::WHITE );
 
 	
 	g_renderer->EndCamera( *m_worldCamera );

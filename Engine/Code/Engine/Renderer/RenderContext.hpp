@@ -75,9 +75,10 @@ public:
 	void UpdateFrameTime( float deltaSeconds );
 
 	void Draw( int numVertices, int vertexOffset = 0 );
+	void DrawIndexed( int indexCount, int indexOffset = 0, int vertexOffset = 0 );
+
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
-	void DrawIndexed( int numVertices, const Vertex_PCU* vertices, const std::vector<uint>& indices );
 	void DrawMesh( GPUMesh* mesh );
 	
 	void DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8& color, float thickness );
@@ -165,6 +166,7 @@ private:
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
 
 	ID3D11Buffer* m_lastVBOHandle = nullptr;
+	ID3D11Buffer* m_lastIBOHandle = nullptr;
 
 	Shader* m_defaultShader = nullptr;
 	Shader* m_currentShader = nullptr;
