@@ -153,7 +153,11 @@ void Camera::UpdateCameraUBO()
 {
 	CameraData cameraData;
 	cameraData.projection = m_projectionMatrix;
-	cameraData.view = m_transform.GetAsMatrix();
+
+	Mat44 model = m_transform.GetAsMatrix();
+	InvertOrthoNormalMatrix( model );
+
+	cameraData.view = model;
 
 	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
 }

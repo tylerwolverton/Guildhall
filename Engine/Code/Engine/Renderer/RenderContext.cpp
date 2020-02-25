@@ -94,6 +94,7 @@ void RenderContext::Startup( Window* window )
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
 	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
 	m_defaultLinearSampler = new Sampler( this, SAMPLER_BILINEAR );
@@ -124,6 +125,7 @@ void RenderContext::Shutdown()
 	delete m_immediateVBO;
 	delete m_immediateIBO;
 	delete m_frameUBO;
+	delete m_modelMatrixUBO;
 
 	delete m_defaultPointSampler;
 	m_defaultPointSampler = nullptr;
@@ -221,10 +223,13 @@ void RenderContext::BeginCamera( Camera& camera )
 	{
 		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	}
-
+	
 	camera.UpdateCameraUBO();
+	SetModelMatrix( Mat44() );
+
 	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
 	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
+	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
 
 	// Viewport creation
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
@@ -254,6 +259,7 @@ void RenderContext::BeginCamera( Camera& camera )
 	BindTexture( nullptr );
 	BindSampler( nullptr );
 	m_lastVBOHandle = nullptr;
+	m_lastIBOHandle = nullptr;
 
 	SetBlendMode( m_currentBlendMode );
 }
@@ -271,8 +277,8 @@ void RenderContext::EndCamera( const Camera& camera )
 void RenderContext::UpdateFrameTime( float deltaSeconds )
 {
 	FrameData frameData;
-	frameData.SystemTimeSeconds = (float)GetCurrentTimeSeconds();
-	frameData.SystemDeltaTimeSeconds = deltaSeconds;
+	frameData.systemTimeSeconds = (float)GetCurrentTimeSeconds();
+	frameData.systemDeltaTimeSeconds = deltaSeconds;
 
 	m_frameUBO->Update( &frameData, sizeof( frameData ), sizeof( frameData ) );
 }
@@ -849,11 +855,11 @@ void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 void RenderContext::BindIndexBuffer( IndexBuffer* ibo )
 {
 	ID3D11Buffer* iboHandle = ibo->m_handle;
-	/*if ( iboHandle == m_lastIBOHandle )
+	if ( iboHandle == m_lastIBOHandle )
 	{
 		return;
 	}
-	m_lastIBOHandle = iboHandle;*/
+	m_lastIBOHandle = iboHandle;
 
 	m_context->IASetIndexBuffer( iboHandle, DXGI_FORMAT_R32_UINT, 0 );
 }
@@ -1104,6 +1110,16 @@ Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 	//m_loadedTextures.push_back( newTexture );
 
 	return newTexture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetModelMatrix( const Mat44& modelMatrix )
+{
+	ModelMatrixData matrixData;
+	matrixData.modelMatrix = modelMatrix;
+
+	m_modelMatrixUBO->Update( &matrixData, sizeof( matrixData ), sizeof( matrixData ) );
 }
 
 

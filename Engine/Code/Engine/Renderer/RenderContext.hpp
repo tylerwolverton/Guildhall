@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include <vector>
 #include <map>
@@ -46,15 +47,22 @@ enum eBufferSlot
 {
 	UBO_FRAME_SLOT = 0,
 	UBO_CAMERA_SLOT = 1,
+	UBO_MODEL_MATRIX_SLOT = 2,
 };
 
 
 struct FrameData
 {
-	float SystemTimeSeconds;
-	float SystemDeltaTimeSeconds;
+	float systemTimeSeconds;
+	float systemDeltaTimeSeconds;
 	
 	float padding[2];
+};
+
+
+struct ModelMatrixData
+{
+	Mat44 modelMatrix;
 };
 
 
@@ -132,6 +140,8 @@ public:
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
+	void SetModelMatrix( const Mat44& modelMatrix );
+
 	// Debug methods
 	void CycleSampler();
 	void CycleBlendMode();
@@ -160,6 +170,7 @@ public:
 	VertexBuffer* m_immediateVBO	= nullptr;
 	IndexBuffer* m_immediateIBO		= nullptr;
 	RenderBuffer* m_frameUBO		= nullptr;
+	RenderBuffer* m_modelMatrixUBO	= nullptr;
 
 private:
 	std::vector<Texture*> m_loadedTextures;

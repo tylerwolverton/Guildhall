@@ -36,7 +36,5 @@ const Mat44 Transform::GetAsMatrix() const
 	model.TransformBy( rotation );
 	model.TransformBy( scale );
 
-	Mat44 view = model;
-	InvertOrthoNormalMatrix( view );
-	return view;
+	return model;
 }

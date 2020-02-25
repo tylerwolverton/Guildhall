@@ -124,25 +124,7 @@ void Game::Update( float deltaSeconds )
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 
-	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, SinDegrees( GetCurrentTimeSeconds() ), 0.f );
-
-	/*std::vector<Vertex_PCU> vertices;
-	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
-
-	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };*/
-
-	//std::vector<Vertex_PCU> vertices;
-	//std::vector<uint> indices;
-
-	//Vec3 position = Vec3( 0.f, 1.f, -1.f );
-	//position = position.GetRotatedAboutZDegrees( SinDegrees( GetCurrentTimeSeconds() ) );
-
-	//g_renderer->AppendVertsForCubeMesh( vertices, position, 2.f, Rgba8::WHITE );
-	//g_renderer->AppendIndicesForCubeMesh( indices );
-
-	//// Update buffers
-	//mesh->UpdateVertices( vertices.size(), &vertices[0] );
-	//mesh->UpdateIndices( indices.size(), &indices[0] );
+	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, GetCurrentTimeSeconds(), 0.f );
 }
 
 
@@ -153,11 +135,14 @@ void Game::Render() const
 	
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
-
+	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
+	
 	//g_renderer->DrawMesh( mesh );
-	// Mat44 model = m_cubeTransform->GetAsMatrix();
-	// g_renderer->SetModelMatrix( model );
-	 g_renderer->DrawMesh( m_mesh );
+	g_renderer->DrawAABB2WithDepth( AABB2( .5f, -.5f, 1.5f, .5f ), -10.f, Rgba8::WHITE );
+	
+	Mat44 model = m_meshTransform.GetAsMatrix();
+	g_renderer->SetModelMatrix( model );
+	g_renderer->DrawMesh( m_mesh );
 
 	/*std::vector<Vertex_PCU> vertices;
 	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
@@ -166,7 +151,6 @@ void Game::Render() const
 
 	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );*/
 
-	g_renderer->DrawAABB2WithDepth( AABB2( .5f, -.5f, 1.5f, .5f ), -10.f, Rgba8::WHITE );
 
 	
 	g_renderer->EndCamera( *m_worldCamera );
