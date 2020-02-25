@@ -32,9 +32,13 @@ const Mat44 Transform::GetAsMatrix() const
 	Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_rotation );
 	Mat44 scale = Mat44::CreateNonUniformScale3D( m_scale );
 
-	Mat44 model = translation;
+	/*Mat44 model = translation;
 	model.TransformBy( rotation );
-	model.TransformBy( scale );
+	model.TransformBy( scale );*/
+
+	Mat44 model = scale;
+	model.TransformBy( rotation );
+	model.TransformBy( translation );
 
 	return model;
 }
