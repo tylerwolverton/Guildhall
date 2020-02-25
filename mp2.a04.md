@@ -2,7 +2,7 @@ Project - PhysicsSandbox
 
 ## Checklist
 
-- [ ] Stop coloring objects red that are intersecting (it becomes a strobe light in this assignment otherwise)
+- [x] Stop coloring objects red that are intersecting (it becomes a strobe light in this assignment otherwise)
 - [x] Make sure your game creates polygons as `STATIC` by default, and discs create as `DYNAMIC` by default
 - [] Add support for `disc Collider2D::GetWorldBounds` for existing colliders
 	- [] **Easier Option**: Implement this using `AABB2` bounding boxes

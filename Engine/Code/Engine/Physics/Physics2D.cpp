@@ -145,15 +145,15 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
 {
 	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
-		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() == SIMULATION_MODE_DYNAMIC ) )
 	{
 		rigidbody2->Translate2D( collisionManifold.penetrationDepth * collisionManifold.normal );
 		return;
 	}
 	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
-			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() == SIMULATION_MODE_DYNAMIC ) )
 	{
-		rigidbody1->Translate2D( collisionManifold.penetrationDepth * collisionManifold.normal );
+		rigidbody1->Translate2D( collisionManifold.penetrationDepth * -collisionManifold.normal );
 		return;
 	}
 
@@ -170,12 +170,12 @@ void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2
 void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
 {
 	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
-		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() == SIMULATION_MODE_DYNAMIC ) )
 	{
-		CalculateImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, -collisionManifold.normal );
+		CalculateImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, collisionManifold.normal );
 	}
 	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
-			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() != SIMULATION_MODE_KINEMATIC ) )
+			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() == SIMULATION_MODE_DYNAMIC ) )
 	{
 		CalculateImpulseAgainstImmoveableObject( rigidbody1, rigidbody2, collisionManifold.normal );
 	}
@@ -194,7 +194,7 @@ void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRi
 	//Vec2 initialVelocity2 = immoveableRigidbody->GetVelocity();
 
 	//float productOfMasses = rigidbody1->GetMass() * rigidbody2->GetMass();
-	float massesRatio = 1.f;// productOfMasses / sumOfMasses;
+	float massesRatio = moveableRigidbody->GetMass();// productOfMasses / sumOfMasses;
 	//Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
 	float e = moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider );

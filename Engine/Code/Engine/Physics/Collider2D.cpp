@@ -92,12 +92,7 @@ static Manifold2 DiscVDiscCollisionManifoldGenerator( const Collider2D* collider
 	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
 	const DiscCollider2D* discCollider1 = (const DiscCollider2D*)collider1;
 	const DiscCollider2D* discCollider2 = (const DiscCollider2D*)collider2;
-
-	/*return DoDiscsOverlap( discCollider1->m_worldPosition,
-						   discCollider1->m_radius,
-						   discCollider2->m_worldPosition,
-						   discCollider2->m_radius );*/
-
+	
 	Manifold2 manifold;
 	manifold.normal = discCollider2->m_worldPosition - discCollider1->m_worldPosition;
 	manifold.normal.Normalize();
