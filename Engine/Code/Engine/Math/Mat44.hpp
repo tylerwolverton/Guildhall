@@ -86,7 +86,7 @@ public:
 	static const Mat44	CreateXRotationDegrees( float degreesAboutX );
 	static const Mat44	CreateYRotationDegrees( float degreesAboutY );
 	static const Mat44	CreateZRotationDegrees( float degreesAboutZ );
-	static const Mat44	CreateRotationFromPitchYawRollDegrees( float pitch, float yaw, float roll );
+	static const Mat44	CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw );
 	static const Mat44	CreateXYZRotationDegrees( const Vec3& rotation );
 	static const Mat44	CreateTranslation2D( const Vec2& translationXY );
 	static const Mat44	CreateTranslation3D( const Vec3& translation3D );

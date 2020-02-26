@@ -12,7 +12,7 @@ class Transform
 public:
 	void SetPosition( const Vec3& position );
 	void Translate( const Vec3& translation );
-	void SetRotationFromPitchYawRollDegrees( float pitch, float yaw, float roll );
+	void SetRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw );
 
 	const Mat44 GetAsMatrix() const;
 

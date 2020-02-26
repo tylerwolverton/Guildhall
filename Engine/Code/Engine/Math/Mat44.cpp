@@ -508,7 +508,7 @@ const Mat44 Mat44::CreateZRotationDegrees( float degreesAboutZ )
 
 
 //-----------------------------------------------------------------------------------------------
-const Mat44 Mat44::CreateRotationFromPitchYawRollDegrees( float pitch, float yaw, float roll )
+const Mat44 Mat44::CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
 {
 	/*Mat44 rotationMatrix = CreateXRotationDegrees( pitch );
 	rotationMatrix.RotateYDegrees( yaw );
@@ -525,7 +525,7 @@ const Mat44 Mat44::CreateRotationFromPitchYawRollDegrees( float pitch, float yaw
 //-----------------------------------------------------------------------------------------------
 const Mat44 Mat44::CreateXYZRotationDegrees( const Vec3& rotation )
 {
-	return CreateRotationFromPitchYawRollDegrees( rotation.x, rotation.y, rotation.z );
+	return CreateRotationFromPitchRollYawDegrees( rotation.x, rotation.y, rotation.z );
 }
 
 

@@ -18,9 +18,9 @@ void Transform::Translate( const Vec3& translation )
 
 
 //-----------------------------------------------------------------------------------------------
-void Transform::SetRotationFromPitchYawRollDegrees( float pitch, float yaw, float roll )
+void Transform::SetRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
 {
-	m_rotation = Vec3( pitch, yaw, roll );
+	m_rotation = Vec3( pitch, roll, yaw );
 }
 
 

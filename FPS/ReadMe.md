@@ -4,8 +4,8 @@ Project: FPS
 
 **Reminder:  You can use previously uncompleted extras as well as extras in this assignment to fill out the points.**
 
-- [-] `Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )` implemented
-    - [-] Set projection to `60 degrees`, and `-0.1` to `-100.0` for the clip planes.
+- [x] `Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )` implemented
+    - [x] Set projection to `60 degrees`, and `-0.1` to `-100.0` for the clip planes.
 - [ ] Camera now has a `Transform`
     - [x] Create the `Transform` class
     - [x] `Transform::SetPosition` implemented
@@ -16,15 +16,15 @@ Project: FPS
             - [ ] Pitch is `-90` to `90`
 - [ ] Camera now calculates `view` matrix from their transform.
     - [x] `Transform::GetAsMatrix` implemented to calculate the camera's model matrix
-    - [-] `MatrixInvertOrthoNormal` implemented to invert the camera's model into a view matrix
+    - [x] `MatrixInvertOrthoNormal` implemented to invert the camera's model into a view matrix
         - [] `MatrixIsOrthoNormal` check added
         - [x] `MatrixTranspose` added
-- [ ] Draw a Quad at `(0, 0, -10)`, or 10 units in front of the origin (should be visible when you start)
+- [x] Draw a Quad at `(0, 0, -10)`, or 10 units in front of the origin (should be visible when you start)
 - [ ] Allow player to move the camera by change the camera transform position
    - [x] `W` & `S`: Forward & Back (movement is relative to where you're looking)
    - [x] `A` & `D`: Left and Right (movement is relative to where you're looking)
-   - [ ] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
-   - [ ] `Left-Shift`: Move faster while held.
+   - [x] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
+   - [x] `Left-Shift`: Move faster while held.
    - *Note:  If you want different controls, just make a note in your readme*
 - [ ] Allow player to turn the camera using the mouse.
     - [ ] `InputSystem::HideSystemCursor` implemented
@@ -43,9 +43,9 @@ Project: FPS
         - [ ] Do not allow pitch above `85` degrees or below `95` degrees - no going upside down... yet...
         - *Note:  Up to you if you want inverted-y or not.*
 - [ ] Support `RenderContext::SetModelMatrix`
-    - [ ] Create a new uniform buffer for storing a model matrix (slot 2)
-    - [ ] `SetModelMatrix` should update this uniform buffer
-    - [ ] `BeginCamera` should `SetModelMatrix` to the `IDENTITY`, and be sure to bind the buffer.
+    - [x] Create a new uniform buffer for storing a model matrix (slot 2)
+    - [x] `SetModelMatrix` should update this uniform buffer
+    - [x] `BeginCamera` should `SetModelMatrix` to the `IDENTITY`, and be sure to bind the buffer.
 - [ ] Be able to draw a cube mesh at `(1, 0.5, -12.0)`
     - [ ] Create a `GPUMesh` class
         - [x] Implement `IndexBuffer`
@@ -54,9 +54,9 @@ Project: FPS
         - [x] Add `RenderContext::DrawIndexed`
         - [-] Add `RenderContext::DrawMesh`
             - This should bind the vertex buffer, index buffer, and then `DrawIndexed`
-    - [ ] Game creates a `cube mesh` around the origin with 2 unit sides. 
-    - [ ] Game has a `Transform` for the cube set at `(1, 0.5, -12.0f)`, 
-    - [ ] Cube transform sets `yaw` rotation to current time each frame
+    - [x] Game creates a `cube mesh` around the origin with 2 unit sides. 
+    - [x] Game has a `Transform` for the cube set at `(1, 0.5, -12.0f)`, 
+    - [x] Cube transform sets `yaw` rotation to current time each frame
     - [ ] Game should `SetModelMatrix` to the cube transform matrix
 - [ ] Support a depth buffer
     - [ ] `Texture::CreateDepthStencilBuffer` added

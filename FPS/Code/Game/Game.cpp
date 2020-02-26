@@ -124,7 +124,7 @@ void Game::Update( float deltaSeconds )
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 
-	m_meshTransform.SetRotationFromPitchYawRollDegrees( 0.f, GetCurrentTimeSeconds() * 20.f, 0.f );
+	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  GetCurrentTimeSeconds() * 20.f );
 }
 
 
@@ -186,12 +186,12 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		cameraTranslation.z -= 10.f;
+		cameraTranslation.z -= 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		cameraTranslation.z += 10.f;
+		cameraTranslation.z += 1.f;
 	}
 	
 	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
@@ -206,17 +206,22 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
 	{
-		cameraRotation.y += 30.f;
+		cameraRotation.z += 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
 	{
-		cameraRotation.y -= 30.f;
+		cameraRotation.z -= 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
+	{
+		cameraTranslation *= 10.f;
 	}
 
 	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( 0.f, transform.m_rotation.y + ( cameraRotation.y * deltaSeconds ), 0.f );
+	m_worldCamera->SetPitchRollYawRotation( 0.f, 0.f, transform.m_rotation.z + ( cameraRotation.z * deltaSeconds ) );
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
 	{
