@@ -27,19 +27,19 @@ Project: FPS
    - [x] `Left-Shift`: Move faster while held.
    - *Note:  If you want different controls, just make a note in your readme*
 - [ ] Allow player to turn the camera using the mouse.
-    - [ ] `InputSystem::HideSystemCursor` implemented
-    - [ ] `InputSystem::ClipSystemCursor` implemented
+    - [x] `InputSystem::HideSystemCursor` implemented
+    - [x] `InputSystem::ClipSystemCursor` implemented
     - [ ] `InputSystem::SetCursorMode` implemented
-        - [ ] `ABSOLUTE` mode is what you currently have
-        - [ ] `RELATIVE` move implemented
-            - [ ] Move mouse to the center of the screen, and store off the cursor position
+        - [x] `ABSOLUTE` mode is what you currently have
+        - [-] `RELATIVE` move implemented
+            - [x] Move mouse to the center of the screen, and store off the cursor position
                 - *Note:  Be sure to actually make the system call, not just assume where you moved it is where it went.  This can cause drifting.*
-            - [ ] Each frame, get the cursor position, and calculate frame delta.
-            - [ ] ...after which, reset to center of screen and reget the current position. 
-    - [ ] Game should be set to `RELATIVE` mode
-        - [ ] `DevConsole` should unlock the mouse and set to `ABSOLUTE` mode
-    - [ ] Associate `X` movement with `yaw`
-    - [ ] Associate `Y` movement with `pitch`
+            - [x] Each frame, get the cursor position, and calculate frame delta.
+            - [x] ...after which, reset to center of screen and reget the current position. 
+    - [x] Game should be set to `RELATIVE` mode
+        - [x] `DevConsole` should unlock the mouse and set to `ABSOLUTE` mode
+    - [x] Associate `X` movement with `yaw`
+    - [-] Associate `Y` movement with `pitch`
         - [ ] Do not allow pitch above `85` degrees or below `95` degrees - no going upside down... yet...
         - *Note:  Up to you if you want inverted-y or not.*
 - [ ] Support `RenderContext::SetModelMatrix`
