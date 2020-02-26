@@ -111,8 +111,7 @@ public:
 
 	static void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	static void AppendIndicesForCubeMesh( std::vector<uint>& indices );
-
-
+	
 	void DrawAABB2WithDepth( const AABB2& box, float zDepth, const Rgba8& tint );
 	static void AppendVertsForAABB2DWithDepth ( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	

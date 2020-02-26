@@ -338,7 +338,7 @@ void RenderContext::DrawMesh( GPUMesh* mesh )
 	m_context->IASetInputLayout( inputLayout );
 
 	// Draw
-	if ( true ) //hasIndices )
+	if ( mesh->GetIndexCount() > 0 )
 	{
 		BindIndexBuffer( mesh->m_indices );
 		DrawIndexed( mesh->GetIndexCount() );

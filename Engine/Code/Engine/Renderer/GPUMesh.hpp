@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 
+#include <vector>
+
 
 //-----------------------------------------------------------------------------------------------
 struct BufferAttribute;
@@ -18,6 +20,7 @@ public:
 
 	void UpdateVertices( uint vertexCount, const void* vertexData, uint vertexStride, const BufferAttribute* layout );
 	void UpdateIndices( uint indexCount, const uint* indices );
+	void UpdateIndices( const std::vector<uint>& indices );
 
 	// helper template
 	template <typename VERTEX_TYPE>

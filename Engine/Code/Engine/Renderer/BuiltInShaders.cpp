@@ -27,6 +27,12 @@ cbuffer camera_constants : register( b1 )
 };
 
 
+cbuffer model_matrix_constants : register( b2 )
+{
+	float4x4 MODEL;
+};
+
+
 // data - uniform/constant across entire draw call
 Texture2D<float4> tDiffuse : register( t0 );	// color of surface
 SamplerState sSampler : register( s0 );			// rules for how to sample texture
@@ -58,6 +64,7 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f.uv = input.uv;
 
 	float4 worldPos = float4( input.position, 1 );
+	float4 modelPos = mul( MODEL, worldPos );
 	float4 cameraPos = mul( VIEW, worldPos );
 	float4 clipPos = mul( PROJECTION, cameraPos );
 

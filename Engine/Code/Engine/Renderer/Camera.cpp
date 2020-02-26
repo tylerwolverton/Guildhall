@@ -50,16 +50,16 @@ void Camera::SetPosition( const Vec3& position )
 //-----------------------------------------------------------------------------------------------
 void Camera::Translate( const Vec3& translation )
 {
-	Vec3 direction( 1.f, 1.f, 1.f );
+	/*Vec3 direction( 1.f, 1.f, 1.f );
 	if ( m_transform.m_rotation.GetLength() > 0 )
 	{
 		direction = -m_transform.m_rotation / m_transform.m_rotation.GetLength();
-	}
-	//Mat44 rotationMatrix = Mat44::CreateRotationFromPitchRollYawDegrees( m_transform.m_rotation.x, m_transform.m_rotation.z, m_transform.m_rotation.y );
-	//forwardVector = rotationMatrix.TransformVector3D( forwardVector );
+	}*/
+	Mat44 rotationMatrix = Mat44::CreateRotationFromPitchRollYawDegrees( m_transform.m_rotation.x, m_transform.m_rotation.z, m_transform.m_rotation.y );
+	Vec3 forwardTranslation = rotationMatrix.TransformVector3D( translation );
 
 	//m_transform.Translate( direction * -translation );
-	m_transform.Translate( translation );
+	m_transform.Translate( forwardTranslation );
 }
 
 

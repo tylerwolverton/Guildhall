@@ -63,7 +63,7 @@ void Game::Startup()
 
 	// Update buffers
 	m_mesh->UpdateVertices( vertices.size(), &vertices[0] );
-	m_mesh->UpdateIndices( indices.size(), &indices[0] );
+	m_mesh->UpdateIndices( indices );
 	/*mesh->AddVertices( 24, cubeVerts );
 	mesh->AddIndices( 36, indices );*/
 }
@@ -213,28 +213,16 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		cameraTranslation *= 10.f;
 	}
 
-	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
-
-
 	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-	float yaw = mousePosition.x;
-	float pitch = mousePosition.y;
-
-	/*if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
-	{
-		cameraRotation.z += 1.f;
-	}
-
-	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
-	{
-		cameraRotation.z -= 1.f;
-	}*/
-
+	float yaw = mousePosition.x * 2.f;
+	float pitch = mousePosition.y * 2.f;
 
 	Transform transform = m_worldCamera->GetTransform();
 	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch * deltaSeconds,
 											0.f,
 											transform.m_rotation.z + yaw * deltaSeconds );
+
+	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
 	{
