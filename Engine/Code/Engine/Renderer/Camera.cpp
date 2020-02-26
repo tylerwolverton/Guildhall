@@ -55,11 +55,11 @@ void Camera::Translate( const Vec3& translation )
 	{
 		direction = -m_transform.m_rotation / m_transform.m_rotation.GetLength();
 	}*/
-	Mat44 rotationMatrix = Mat44::CreateRotationFromPitchRollYawDegrees( m_transform.m_rotation.x, m_transform.m_rotation.z, m_transform.m_rotation.y );
-	Vec3 forwardTranslation = rotationMatrix.TransformVector3D( translation );
+	//Mat44 rotationMatrix = Mat44::CreateRotationFromPitchRollYawDegrees( m_transform.m_rotation.x, m_transform.m_rotation.z, m_transform.m_rotation.y );
+	//Vec3 forwardTranslation = rotationMatrix.TransformVector3D( translation );
 
 	//m_transform.Translate( direction * -translation );
-	m_transform.Translate( forwardTranslation );
+	m_transform.Translate( translation );
 }
 
 

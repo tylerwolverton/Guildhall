@@ -23,7 +23,7 @@ Project: FPS
 - [ ] Allow player to move the camera by change the camera transform position
    - [x] `W` & `S`: Forward & Back (movement is relative to where you're looking)
    - [x] `A` & `D`: Left and Right (movement is relative to where you're looking)
-   - [x] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
+   - [] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
    - [x] `Left-Shift`: Move faster while held.
    - *Note:  If you want different controls, just make a note in your readme*
 - [ ] Allow player to turn the camera using the mouse.
@@ -57,7 +57,7 @@ Project: FPS
     - [x] Game creates a `cube mesh` around the origin with 2 unit sides. 
     - [x] Game has a `Transform` for the cube set at `(1, 0.5, -12.0f)`, 
     - [x] Cube transform sets `yaw` rotation to current time each frame
-    - [ ] Game should `SetModelMatrix` to the cube transform matrix
+    - [x] Game should `SetModelMatrix` to the cube transform matrix
 - [ ] Support a depth buffer
     - [ ] `Texture::CreateDepthStencilBuffer` added
     - [ ] `Camera::SetDepthStencilBuffer` added

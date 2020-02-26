@@ -55,6 +55,7 @@ private:
 	void UpdateMousePositions( float deltaSeconds );
 	void UpdateMouseWorldPosition( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
+	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
 private:
 	bool m_isPaused = false;

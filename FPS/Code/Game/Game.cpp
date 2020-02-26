@@ -1,6 +1,7 @@
 #include "Game.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/MatrixUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
@@ -137,8 +138,8 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
 	
-	/*Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
-	g_renderer->BindTexture( texture );*/
+	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
+	g_renderer->BindTexture( texture );
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
 	
 	//g_renderer->DrawMesh( mesh );
@@ -190,12 +191,14 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		cameraTranslation.z -= 1.f;
+		//cameraTranslation.z -= 1.f;
+		TranslateCameraFPS( Vec3( 0.f, 0.f, -1.f * deltaSeconds ));
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		cameraTranslation.z += 1.f;
+		TranslateCameraFPS( Vec3( 0.f, 0.f, 1.f * deltaSeconds ));
+		//cameraTranslation.z += 1.f;
 	}
 	
 	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
@@ -222,7 +225,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 											0.f,
 											transform.m_rotation.z + yaw * deltaSeconds );
 
-	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
+	//TranslateCameraFPS( cameraTranslation * deltaSeconds );
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
 	{
@@ -267,7 +270,7 @@ void Game::UpdateMouseWorldPosition( float deltaSeconds )
 void Game::UpdateCameras( float deltaSeconds )
 {
 	// World camera
-	m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
+	/*m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
 	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.0);
 
 	float maxScreenShake = m_screenShakeIntensity * MAX_CAMERA_SHAKE_DIST;
@@ -275,12 +278,22 @@ void Game::UpdateCameras( float deltaSeconds )
 	float cameraShakeY = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
 	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
 
-	m_worldCamera->Translate2D(cameraShakeOffset);
+	m_worldCamera->Translate2D(cameraShakeOffset);*/
 
 	//m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 	m_worldCamera->SetOutputSize( Vec2( 2.f, 2.f ) );
 	//m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
+{
+	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
+	Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
+
+	m_worldCamera->Translate( absoluteTranslation );
 }
 
 

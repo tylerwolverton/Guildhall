@@ -70,7 +70,7 @@ public:
 	void				SetBasisVectors4D( const Vec4& iBasis4D, const Vec4& jBasis4D, const Vec4& kBasis4D, const Vec4& translation4D );
 
 	// Transformation mutators; concatenate a new transform to this matrix
-	void				RotateXDegrees( float degreesAboutX );
+	void				RotateXDegrees( float degreesAboutX ); // PushRotationByX
 	void				RotateYDegrees( float degreesAboutY );
 	void				RotateZDegrees( float degreesAboutZ );
 	void				Translate2D( const Vec2& translationXY );
@@ -79,7 +79,7 @@ public:
 	void				ScaleNonUniform2D( const Vec2& scaleFactorsXY );
 	void				ScaleUniform3D( float uniformScaleXYZ );
 	void				ScaleNonUniform3D( const Vec3& scaleFactorsXYZ );
-	void				AppendTransform( const Mat44& transformationToConcatenate );
+	void				AppendTransform( const Mat44& transformationToConcatenate ); // PushMatrix
 	void				Transpose();
 
 	// Static creation methods

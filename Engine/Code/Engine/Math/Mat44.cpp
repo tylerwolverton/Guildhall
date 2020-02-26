@@ -114,8 +114,8 @@ const Vec3 Mat44::TransformVector3D( const Vec3& vector ) const
 //-----------------------------------------------------------------------------------------------
 const Vec2 Mat44::TransformPosition2D( const Vec2& position ) const
 {
-	float newX = ( Ix * position.x ) + ( Jx * position.y + Tx );
-	float newY = ( Iy * position.x ) + ( Jy * position.y + Ty );
+	float newX = ( Ix * position.x ) + ( Jx * position.y ) + Tx;
+	float newY = ( Iy * position.x ) + ( Jy * position.y ) + Ty;
 
 	return Vec2( newX, newY );
 }
@@ -514,9 +514,13 @@ const Mat44 Mat44::CreateRotationFromPitchRollYawDegrees( float pitch, float rol
 	rotationMatrix.RotateYDegrees( yaw );
 	rotationMatrix.RotateZDegrees( roll );*/
 
-	Mat44 rotationMatrix = CreateYRotationDegrees( yaw );
-	rotationMatrix.RotateXDegrees( pitch );
-	rotationMatrix.RotateZDegrees( roll );
+	//Mat44 rotationMatrix = CreateYRotationDegrees( yaw );
+	//rotationMatrix.RotateXDegrees( pitch );
+	//rotationMatrix.RotateZDegrees( roll );
+	Mat44 rotationMatrix;
+	rotationMatrix.AppendTransform( CreateXRotationDegrees( pitch ) );
+	rotationMatrix.AppendTransform( CreateZRotationDegrees( roll ) );
+	rotationMatrix.AppendTransform( CreateYRotationDegrees( yaw ) );
 
 	return rotationMatrix;
 }
