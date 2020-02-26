@@ -30,6 +30,11 @@ static bool DiscVPolygonCollisionCheck( const Collider2D* collider1, const Colli
 	const PolygonCollider2D* polygonCollider = (const PolygonCollider2D*)collider2;
 
 	Vec2 nearestPoint = polygonCollider->GetClosestPoint( discCollider->m_worldPosition );
+	//if ( polygonCollider->m_polygon.Contains( discCollider->m_worldPosition ) )
+	//{
+	//	return true;
+	//}
+
 	return IsPointInsideDisc( nearestPoint, discCollider->m_worldPosition, discCollider->m_radius );
 }
 
@@ -112,17 +117,23 @@ static Manifold2 DiscVPolygonCollisionManifoldGenerator( const Collider2D* colli
 	const DiscCollider2D* discCollider = (const DiscCollider2D*)collider1;
 	const PolygonCollider2D* polygonCollider = (const PolygonCollider2D*)collider2;
 
-	Vec2 closestPointOnPolygonToDisc = polygonCollider->GetClosestPoint( discCollider->m_worldPosition );
-	/*if ( IsPointInsideDisc( nearestPoint, discCollider->m_worldPosition, discCollider->m_radius ) )
-	{
-
-	}*/
-
+	Vec2 closestPointOnPolygonToDisc = polygonCollider->m_polygon.GetClosestPointOnEdge( discCollider->m_worldPosition );
+	
 	Manifold2 manifold;
 	manifold.normal = closestPointOnPolygonToDisc - discCollider->m_worldPosition;
 	manifold.normal.Normalize();
 
-	Vec2 closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( manifold.normal * discCollider->m_radius );
+
+	Vec2 closestPointOnDiscToPolygon;
+	if ( polygonCollider->m_polygon.Contains( discCollider->m_worldPosition ) )
+	{
+		closestPointOnDiscToPolygon = discCollider->m_worldPosition - ( manifold.normal * discCollider->m_radius );
+	}
+	else
+	{
+		closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( manifold.normal * discCollider->m_radius );
+	}
+
 	manifold.penetrationDepth = GetDistance2D( closestPointOnDiscToPolygon, closestPointOnPolygonToDisc );
 
 	return manifold;

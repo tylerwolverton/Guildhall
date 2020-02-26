@@ -166,6 +166,13 @@ Vec2 Polygon2::GetClosestPoint( Vec2 point ) const
 		return point;
 	}
 
+	return GetClosestPointOnEdge( point );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Polygon2::GetClosestPointOnEdge( Vec2 point ) const
+{
 	Vec2 nearestPoint = Vec2::ZERO;
 	float minDistToPoint = 99999999.f;
 	for ( int edgeIdx = 0; edgeIdx < GetEdgeCount(); ++edgeIdx )
