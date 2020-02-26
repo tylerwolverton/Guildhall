@@ -56,7 +56,7 @@ void Game::Startup()
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 	
-	g_renderer->AppendVertsForCubeMesh( vertices, m_meshTransform.m_position, 2.f, Rgba8::WHITE );
+	g_renderer->AppendVertsForCubeMesh( vertices, Vec3::ZERO, 2.f, Rgba8::WHITE );
 	g_renderer->AppendIndicesForCubeMesh( indices );
 
 	// Update buffers
@@ -124,7 +124,7 @@ void Game::Update( float deltaSeconds )
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 
-	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, GetCurrentTimeSeconds(), 0.f );
+	m_meshTransform.SetRotationFromPitchYawRollDegrees( 0.f, GetCurrentTimeSeconds() * 20.f, 0.f );
 }
 
 
@@ -133,12 +133,12 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
 	
-	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
-	g_renderer->BindTexture( texture );
+	/*Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
+	g_renderer->BindTexture( texture );*/
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
 	
 	//g_renderer->DrawMesh( mesh );
-	g_renderer->DrawAABB2WithDepth( AABB2( .5f, -.5f, 1.5f, .5f ), -10.f, Rgba8::WHITE );
+	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -10.f, Rgba8::WHITE );
 	
 	Mat44 model = m_meshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model );
@@ -186,12 +186,12 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		cameraTranslation.z -= 1.f;
+		cameraTranslation.z -= 10.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		cameraTranslation.z += 1.f;
+		cameraTranslation.z += 10.f;
 	}
 	
 	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
@@ -206,12 +206,12 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
 	{
-		cameraRotation.y += 10.f;
+		cameraRotation.y += 30.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
 	{
-		cameraRotation.y -= 10.f;
+		cameraRotation.y -= 30.f;
 	}
 
 	m_worldCamera->Translate( cameraTranslation * deltaSeconds );

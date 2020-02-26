@@ -18,9 +18,9 @@ void Transform::Translate( const Vec3& translation )
 
 
 //-----------------------------------------------------------------------------------------------
-void Transform::SetRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
+void Transform::SetRotationFromPitchYawRollDegrees( float pitch, float yaw, float roll )
 {
-	m_rotation = Vec3( pitch, roll, yaw );
+	m_rotation = Vec3( pitch, yaw, roll );
 }
 
 
@@ -32,13 +32,9 @@ const Mat44 Transform::GetAsMatrix() const
 	Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_rotation );
 	Mat44 scale = Mat44::CreateNonUniformScale3D( m_scale );
 
-	/*Mat44 model = translation;
-	model.TransformBy( rotation );
-	model.TransformBy( scale );*/
-
-	Mat44 model = scale;
-	model.TransformBy( rotation );
-	model.TransformBy( translation );
+	Mat44 model = translation;
+	model.AppendTransform( rotation );
+	model.AppendTransform( scale );
 
 	return model;
 }

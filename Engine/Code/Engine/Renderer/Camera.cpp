@@ -65,7 +65,7 @@ void Camera::Translate2D(const Vec2& translation)
 //-----------------------------------------------------------------------------------------------
 void Camera::SetPitchRollYawRotation( float pitch, float roll, float yaw )
 {
-	m_transform.SetRotationFromPitchRollYawDegrees( pitch, roll, yaw );
+	m_transform.SetRotationFromPitchYawRollDegrees( pitch, roll, yaw );
 }
 
 

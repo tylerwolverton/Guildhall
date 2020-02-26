@@ -345,68 +345,68 @@ void Mat44::SetBasisVectors4D( const Vec4& iBasis4D, const Vec4& jBasis4D, const
 //-----------------------------------------------------------------------------------------------
 void Mat44::RotateXDegrees( float degreesAboutX )
 {
-	TransformBy( CreateXRotationDegrees( degreesAboutX ) );
+	AppendTransform( CreateXRotationDegrees( degreesAboutX ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::RotateYDegrees( float degreesAboutY )
 {
-	TransformBy( CreateYRotationDegrees( degreesAboutY ) );
+	AppendTransform( CreateYRotationDegrees( degreesAboutY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::RotateZDegrees( float degreesAboutZ )
 {
-	TransformBy( CreateZRotationDegrees( degreesAboutZ ) );
+	AppendTransform( CreateZRotationDegrees( degreesAboutZ ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::Translate2D( const Vec2& translationXY )
 {
-	TransformBy( CreateTranslation2D( translationXY ) );
+	AppendTransform( CreateTranslation2D( translationXY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::Translate3D( const Vec3& translation3D )
 {
-	TransformBy( CreateTranslation3D( translation3D ) );
+	AppendTransform( CreateTranslation3D( translation3D ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleUniform2D( float scaleFactorXY )
 {
-	TransformBy( CreateUniformScale2D( scaleFactorXY ) );
+	AppendTransform( CreateUniformScale2D( scaleFactorXY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleNonUniform2D( const Vec2& scaleFactorsXY )
 {
-	TransformBy( CreateNonUniformScale2D( scaleFactorsXY ) );
+	AppendTransform( CreateNonUniformScale2D( scaleFactorsXY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleUniform3D( float uniformScaleXYZ )
 {
-	TransformBy( CreateUniformScale3D( uniformScaleXYZ ) );
+	AppendTransform( CreateUniformScale3D( uniformScaleXYZ ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleNonUniform3D( const Vec3& scaleFactorsXYZ )
 {
-	TransformBy( CreateNonUniformScale3D( scaleFactorsXYZ ) );
+	AppendTransform( CreateNonUniformScale3D( scaleFactorsXYZ ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Mat44::TransformBy( const Mat44& transformationToConcatenate )
+void Mat44::AppendTransform( const Mat44& transformationToConcatenate )
 {
 	// Nicknames for brevity
 	Mat44 old(*this);
@@ -508,11 +508,15 @@ const Mat44 Mat44::CreateZRotationDegrees( float degreesAboutZ )
 
 
 //-----------------------------------------------------------------------------------------------
-const Mat44 Mat44::CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
+const Mat44 Mat44::CreateRotationFromPitchYawRollDegrees( float pitch, float yaw, float roll )
 {
-	Mat44 rotationMatrix = CreateXRotationDegrees( pitch );
-	rotationMatrix.RotateYDegrees( roll );
-	rotationMatrix.RotateZDegrees( yaw );
+	/*Mat44 rotationMatrix = CreateXRotationDegrees( pitch );
+	rotationMatrix.RotateYDegrees( yaw );
+	rotationMatrix.RotateZDegrees( roll );*/
+
+	Mat44 rotationMatrix = CreateYRotationDegrees( yaw );
+	rotationMatrix.RotateXDegrees( pitch );
+	rotationMatrix.RotateZDegrees( roll );
 
 	return rotationMatrix;
 }
@@ -521,7 +525,7 @@ const Mat44 Mat44::CreateRotationFromPitchRollYawDegrees( float pitch, float rol
 //-----------------------------------------------------------------------------------------------
 const Mat44 Mat44::CreateXYZRotationDegrees( const Vec3& rotation )
 {
-	return CreateRotationFromPitchRollYawDegrees( rotation.x, rotation.y, rotation.z );
+	return CreateRotationFromPitchYawRollDegrees( rotation.x, rotation.y, rotation.z );
 }
 
 
