@@ -54,7 +54,7 @@ void App::Startup()
 	g_eventSystem->Startup();
 	g_window->SetEventSystem( g_eventSystem );
 
-	g_inputSystem->Startup();
+	g_inputSystem->Startup( g_window );
 	g_window->SetInputSystem( g_inputSystem );
 
 	g_audioSystem->Startup();

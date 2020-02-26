@@ -43,6 +43,8 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	g_inputSystem->SetCursorMode( CURSOR_RELATIVE );
+
 	m_worldCamera = new Camera();
 	m_worldCamera->SetColorTarget( nullptr );
 
@@ -70,6 +72,8 @@ void Game::Startup()
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
+	g_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
+
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
@@ -204,7 +208,19 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		cameraTranslation.y -= 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
+	{
+		cameraTranslation *= 10.f;
+	}
+
+	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
+
+
+	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
+	float yaw = mousePosition.x;
+	float pitch = mousePosition.y;
+
+	/*if ( g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
 	{
 		cameraRotation.z += 1.f;
 	}
@@ -212,16 +228,13 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
 	{
 		cameraRotation.z -= 1.f;
-	}
+	}*/
 
-	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
-	{
-		cameraTranslation *= 10.f;
-	}
 
-	m_worldCamera->Translate( cameraTranslation * deltaSeconds );
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( 0.f, 0.f, transform.m_rotation.z + ( cameraRotation.z * deltaSeconds ) );
+	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch * deltaSeconds,
+											0.f,
+											transform.m_rotation.z + yaw * deltaSeconds );
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
 	{

@@ -375,10 +375,12 @@ void DevConsole::ToggleOpenFull()
 {
 	if ( m_isOpen )
 	{
+		m_inputSystem->SetCursorMode( CURSOR_RELATIVE );
 		Close();
 	}
 	else
 	{
+		m_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
 		m_isOpen = true;
 	}
 }

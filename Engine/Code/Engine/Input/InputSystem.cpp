@@ -1,5 +1,6 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Math/AABB2.hpp"
 
 #define WIN32_LEAN_AND_MEAN
@@ -52,8 +53,9 @@ InputSystem::~InputSystem()
 
 
 //-----------------------------------------------------------------------------------------------
-void InputSystem::Startup()
+void InputSystem::Startup( Window* window )
 {
+	m_window = window;
 }
 
 
@@ -150,18 +152,100 @@ void InputSystem::SetXboxControllerVibrationLevels( int controllerID, float left
 //-----------------------------------------------------------------------------------------------
 void InputSystem::UpdateMouse()
 {
-	/*POINT mousePos;
-	GetCursorPos( &mousePos );
-	ScreenToClient( g_hWnd, &mousePos );
-	Vec2 mouseClientPos( (float)mousePos.x, (float)mousePos.y );
 
+	switch ( m_cursorMode )
+	{
+		case CURSOR_ABSOLUTE:
+		{
+			POINT mousePos;
+			GetCursorPos( &mousePos );
+			ScreenToClient( (HWND)m_window->m_hwnd, &mousePos );
+			Vec2 mouseClientPos( (float)mousePos.x, (float)mousePos.y );
+
+			RECT clientRect;
+			GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
+
+			AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+			m_normalizedMouseClientPos = clientBounds.GetUVForPoint( mouseClientPos );
+			m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;
+		} break;
+
+		case CURSOR_RELATIVE:
+		{
+			POINT mousePos;
+			GetCursorPos( &mousePos );
+			ScreenToClient( (HWND)m_window->m_hwnd, &mousePos );
+			Vec2 mouseClientPos( (float)mousePos.x, (float)mousePos.y );
+
+			m_mouseMovementDelta = mouseClientPos - m_mousePositionLastFrame;// move back to center
+
+			Vec2 windowCenter = GetCenterOfWindow();
+			SetCursorPos( windowCenter.x, windowCenter.y ); 
+			
+			// one trick to prevent drift
+			GetCursorPos( &mousePos );
+			ScreenToClient( (HWND)m_window->m_hwnd, &mousePos );
+			windowCenter = Vec2( mousePos.x, mousePos.y );
+
+			m_mousePositionLastFrame = windowCenter;
+		} break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::HideSystemCursor()
+{
+	ShowCursor( false );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::ShowSystemCursor()
+{
+	// Force the cursor to be shown
+	while ( ShowCursor( true ) < 0 ) {}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::LockSystemCursor()
+{
 	RECT clientRect;
-	GetClientRect( g_hWnd, &clientRect );
+	GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
+	ClipCursor( &clientRect );
+}
 
-	AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::UnlockSystemCursor()
+{
+	ClipCursor( nullptr );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::SetCursorMode( eCursorMode cursorMode )
+{
+	m_cursorMode = cursorMode;
 	
-	m_normalizedMouseClientPos = clientBounds.GetUVForPoint( mouseClientPos );
-	m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;*/
+	switch ( m_cursorMode )
+	{
+		case CURSOR_ABSOLUTE:
+		{
+			ShowSystemCursor();
+			UnlockSystemCursor();
+		} break;
+
+		case CURSOR_RELATIVE:
+		{
+			LockSystemCursor();
+			HideSystemCursor();
+			m_mousePositionLastFrame = GetCenterOfWindow();
+			SetCursorPos( m_mousePositionLastFrame.x, m_mousePositionLastFrame.y );
+		} break;
+	}
 }
 
 
@@ -187,10 +271,28 @@ const char* InputSystem::GetTextFromClipboard() const
 
 
 //-----------------------------------------------------------------------------------------------
+const Vec2 InputSystem::GetCenterOfWindow()
+{
+	RECT clientRect;
+	GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
+	AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+	Vec2 clientCenter = clientBounds.GetCenter();
+
+	POINT windowOffset = POINT();
+	ClientToScreen( (HWND)m_window->m_hwnd, &windowOffset );
+	clientCenter += Vec2( windowOffset.x, windowOffset.y );
+	
+	return clientCenter;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool InputSystem::IsKeyPressed( unsigned char keyCode ) const
 {
 	return m_keyStates[keyCode].IsPressed();
 }
+
 
 //-----------------------------------------------------------------------------------------------
 bool InputSystem::WasKeyJustPressed( unsigned char keyCode ) const
@@ -198,6 +300,7 @@ bool InputSystem::WasKeyJustPressed( unsigned char keyCode ) const
 	return m_keyStates[keyCode].WasJustPressed();
 
 }
+
 
 //-----------------------------------------------------------------------------------------------
 bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
