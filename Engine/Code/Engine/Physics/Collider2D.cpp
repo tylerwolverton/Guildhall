@@ -8,6 +8,10 @@
 #include "Engine/Core/EngineCommon.hpp"
 
 
+typedef bool ( *CollisionCheckCallback )( const Collider2D*, const Collider2D* );
+typedef Manifold2( *CollisionManifoldGenerationCallback )( const Collider2D*, const Collider2D* );
+
+
 //-----------------------------------------------------------------------------------------------
 static bool DiscVDiscCollisionCheck( const Collider2D* collider1, const Collider2D* collider2 )
 {

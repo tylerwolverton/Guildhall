@@ -239,6 +239,7 @@ void RenderContext::DrawOBB2( const OBB2& box, const Rgba8& tint )
 
 
 //-----------------------------------------------------------------------------------------------
+// TODO: This doesn't draw at correct position
 void RenderContext::DrawAABB2Outline( const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness )
 {
 	Vec2 bottomLeft( box.mins + center );

@@ -4,10 +4,10 @@ Project - PhysicsSandbox
 
 - [x] Stop coloring objects red that are intersecting (it becomes a strobe light in this assignment otherwise)
 - [x] Make sure your game creates polygons as `STATIC` by default, and discs create as `DYNAMIC` by default
-- [] Add support for `disc Collider2D::GetWorldBounds` for existing colliders
-	- [] **Easier Option**: Implement this using `AABB2` bounding boxes
+- [x] Add support for `disc Collider2D::GetWorldBounds` for existing colliders
+	- [x] **Easier Option**: Implement this using `AABB2` bounding boxes
     - [] **Challenge Option**: Implement this using a bounding `Disc`
-    - [] Update this bounds whenever you update the world shape of the object.
+    - [x] Update this bounds whenever you update the world shape of the object.
 - [x] Switch `Collider2D::Intersects` to be non-virtual, and instead use a matrix lookup
     - [x] Use a *mid-phase* check to early out of a collision by comparing the bounds first.
     - [x] If passes the bounds check, lookup and call the appropriate callback

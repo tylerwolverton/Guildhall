@@ -1,11 +1,11 @@
 #pragma once
 #include "Game/GameCommon.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Physics/PhysicsMaterial.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 struct Vec2;
-struct AABB2;
 struct Rgba8;
 struct Manifold2;
 class Physics2D;
@@ -45,7 +45,7 @@ public: // Interface
 
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
-	virtual const AABB2 GetWorldBounds() const = 0;
+	virtual const AABB2 GetWorldBounds() const																				{ return m_worldBounds; };
 
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const = 0;
@@ -64,10 +64,10 @@ public:
 	PhysicsMaterial m_material;
 
 protected:
-	Physics2D* m_system			= nullptr;			// system who created our d
+	Physics2D* m_system			= nullptr;			
+
+	AABB2 m_worldBounds;
 };
 
 
 //-----------------------------------------------------------------------------------------------
-typedef bool ( *CollisionCheckCallback )( const Collider2D*, const Collider2D* );
-typedef Manifold2( *CollisionManifoldGenerationCallback )( const Collider2D*, const Collider2D* );

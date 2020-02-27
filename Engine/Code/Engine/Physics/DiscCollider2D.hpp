@@ -16,7 +16,7 @@ public:
 	virtual bool Contains( const Vec2& pos ) const override;
 
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const override;
-	virtual const AABB2 GetWorldBounds() const override;
+	const AABB2 CalculateWorldBounds();
 
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const override;

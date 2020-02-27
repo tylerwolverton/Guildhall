@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/AABB2.hpp"
 
 #include <vector>
 
@@ -33,7 +34,11 @@ public:
 	Vec2 GetCenterOfMass() const;
 	void SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass );
 
+private:
+	void CalculateCenterOfMass();
+
 public:
 	// Stored in counter clockwise order
 	std::vector<Vec2> m_points;
+	AABB2 m_boundingBox;
 };

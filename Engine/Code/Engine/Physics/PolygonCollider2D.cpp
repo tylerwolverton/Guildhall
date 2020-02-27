@@ -1,5 +1,6 @@
 #include "Engine/Physics/PolygonCollider2D.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
@@ -123,20 +124,4 @@ void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borde
 
 	renderer->DrawPolygon2( m_polygon.GetPoints(), fillColor );
 	renderer->DrawPolygon2Outline( m_polygon.GetPoints(), borderColor, .04f );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-const AABB2 PolygonCollider2D::GetWorldBounds() const
-{
-	// Initialize with first point in polygon
-	std::vector<Vec2> polygonPoints = m_polygon.GetPoints();
-	AABB2 boundingBox( polygonPoints[0], polygonPoints[0] );
-
-	for ( int pointIdx = 1; pointIdx < (int)polygonPoints.size(); ++pointIdx )
-	{
-		boundingBox.StretchToIncludePoint( polygonPoints[pointIdx] );
-	}
-
-	return boundingBox;
 }

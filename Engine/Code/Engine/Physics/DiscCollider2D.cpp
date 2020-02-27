@@ -12,6 +12,7 @@ DiscCollider2D::DiscCollider2D( const Vec2& localPosition, float radius )
 	, m_radius( radius )
 {
 	m_type = COLLIDER2D_DISC;
+	m_worldBounds = CalculateWorldBounds();
 }
 
 
@@ -24,6 +25,8 @@ void DiscCollider2D::UpdateWorldShape()
 	{
 		m_worldPosition += m_rigidbody->GetPosition();
 	}
+
+	m_worldBounds.SetCenter( m_worldPosition );
 }
 
 
@@ -95,12 +98,14 @@ unsigned int DiscCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds, bo
 
 
 //-----------------------------------------------------------------------------------------------
-const AABB2 DiscCollider2D::GetWorldBounds() const
+const AABB2 DiscCollider2D::CalculateWorldBounds()
 {
 	Vec2 discMins( m_worldPosition.x - m_radius, m_worldPosition.y - m_radius );
 	Vec2 discMaxs( m_worldPosition.x + m_radius, m_worldPosition.y + m_radius );
 
-	return AABB2( discMins, discMaxs );
+	AABB2 boundingBox( discMins, discMaxs );
+
+	return boundingBox;
 }
 
 

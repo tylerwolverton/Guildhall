@@ -189,13 +189,7 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 //-----------------------------------------------------------------------------------------------
 void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& collisionNormal )
 {
-	//float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
-	//Vec2 initialVelocity1 = moveableRigidbody->GetVelocity();
-	//Vec2 initialVelocity2 = immoveableRigidbody->GetVelocity();
-
-	//float productOfMasses = rigidbody1->GetMass() * rigidbody2->GetMass();
-	float massesRatio = moveableRigidbody->GetMass();// productOfMasses / sumOfMasses;
-	//Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
+	float massesRatio = moveableRigidbody->GetMass();
 
 	float e = moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider );
 	float impulseMagnitude = massesRatio * ( 1.f + e ) * DotProduct2D( moveableRigidbody->GetVelocity(), collisionNormal );

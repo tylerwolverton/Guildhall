@@ -7,7 +7,7 @@
 Polygon2::Polygon2( const std::vector<Vec2>& points )
 	: m_points( points )
 {
-	
+	CalculateCenterOfMass();
 }
 
 
@@ -252,13 +252,7 @@ void Polygon2::Translate2D( const Vec2& translation )
 // TODO: Calculate more accurately
 Vec2 Polygon2::GetCenterOfMass() const
 {
-	Vec2 sumOfPoints( Vec2::ZERO );
-	for ( int pointNumIdx = 0; pointNumIdx < GetVertexCount(); ++pointNumIdx )
-	{
-		sumOfPoints += m_points[pointNumIdx];
-	}
-
-	return sumOfPoints / (float)GetVertexCount();
+	return m_boundingBox.GetCenter();
 }
 
 
@@ -270,4 +264,21 @@ void Polygon2::SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass )
 	Vec2 translation = newCenterOfMass - oldCenterOfMass;
 
 	Translate2D( translation );
+
+	m_boundingBox.SetCenter( newCenterOfMass );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::CalculateCenterOfMass()
+{
+	// Initialize with first point in polygon
+	AABB2 boundingBox( m_points[0], m_points[0] );
+
+	for ( int pointIdx = 1; pointIdx < (int)m_points.size(); ++pointIdx )
+	{
+		boundingBox.StretchToIncludePoint( m_points[pointIdx] );
+	}
+
+	m_boundingBox = boundingBox;
 }
