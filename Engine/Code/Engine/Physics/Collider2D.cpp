@@ -123,17 +123,13 @@ static Manifold2 DiscVPolygonCollisionManifoldGenerator( const Collider2D* colli
 	manifold.normal = closestPointOnPolygonToDisc - discCollider->m_worldPosition;
 	manifold.normal.Normalize();
 
-
-	Vec2 closestPointOnDiscToPolygon;
+	// If disc is inside polygon flip the normal to ensure it is pushed out
 	if ( polygonCollider->m_polygon.Contains( discCollider->m_worldPosition ) )
 	{
-		closestPointOnDiscToPolygon = discCollider->m_worldPosition - ( manifold.normal * discCollider->m_radius );
-	}
-	else
-	{
-		closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( manifold.normal * discCollider->m_radius );
+		manifold.normal *= -1.f;
 	}
 
+	Vec2 closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( manifold.normal * discCollider->m_radius );
 	manifold.penetrationDepth = GetDistance2D( closestPointOnDiscToPolygon, closestPointOnPolygonToDisc );
 
 	return manifold;
