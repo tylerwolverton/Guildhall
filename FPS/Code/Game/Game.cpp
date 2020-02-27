@@ -281,7 +281,7 @@ void Game::UpdateCameras( float deltaSeconds )
 	m_worldCamera->Translate2D(cameraShakeOffset);*/
 
 	//m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
-	m_worldCamera->SetOutputSize( Vec2( 2.f, 2.f ) );
+	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	//m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 }

@@ -708,17 +708,17 @@ void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray
 	vertexArray.push_back( vert6 );
 	vertexArray.push_back( vert2 );
 
-	//// Top
-	//vertexArray.push_back( frontTopLeft );
-	//vertexArray.push_back( frontTopRight );
-	//vertexArray.push_back( backTopRight );
-	//vertexArray.push_back( backTopLeft );
+	// Top
+	vertexArray.push_back( vert2 );
+	vertexArray.push_back( vert3 );
+	vertexArray.push_back( vert6 );
+	vertexArray.push_back( vert7 );
 
-	//// Bottom
-	//vertexArray.push_back( frontBottomLeft );
-	//vertexArray.push_back( frontBottomRight );
-	//vertexArray.push_back( backBottomRight );
-	//vertexArray.push_back( backBottomLeft );
+	// Bottom
+	vertexArray.push_back( vert0 );
+	vertexArray.push_back( vert1 );
+	vertexArray.push_back( vert4 );
+	vertexArray.push_back( vert5 );
 }
 
 
