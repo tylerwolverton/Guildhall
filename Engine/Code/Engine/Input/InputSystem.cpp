@@ -1,4 +1,6 @@
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Math/AABB2.hpp"
 
 #define WIN32_LEAN_AND_MEAN
@@ -6,19 +8,21 @@
 #include <WinUser.h>
 
 
-extern HWND g_hWnd;
-
 //-----------------------------------------------------------------------------------------------
 const unsigned char KEY_ESC = VK_ESCAPE;
 const unsigned char KEY_ENTER = VK_RETURN;
+const unsigned char KEY_SHIFT = VK_SHIFT;
+const unsigned char KEY_CTRL = VK_CONTROL;
+const unsigned char KEY_ALT = VK_MENU;
 const unsigned char KEY_SPACEBAR = VK_SPACE;
 const unsigned char KEY_BACKSPACE = VK_BACK;
 const unsigned char KEY_DELETE = VK_DELETE;
-const unsigned char KEY_SHIFT = VK_SHIFT;
 const unsigned char KEY_UPARROW = VK_UP;
 const unsigned char KEY_LEFTARROW = VK_LEFT;
 const unsigned char KEY_DOWNARROW = VK_DOWN;
 const unsigned char KEY_RIGHTARROW = VK_RIGHT;
+const unsigned char KEY_HOME = VK_HOME;
+const unsigned char KEY_END = VK_END;
 const unsigned char KEY_F1 = VK_F1;
 const unsigned char KEY_F2 = VK_F2;
 const unsigned char KEY_F3 = VK_F3;
@@ -38,6 +42,7 @@ const unsigned char KEY_MINUS = VK_OEM_MINUS;
 const unsigned char MOUSE_LBUTTON = VK_LBUTTON;
 const unsigned char MOUSE_RBUTTON = VK_RBUTTON;
 const unsigned char MOUSE_MBUTTON = VK_MBUTTON;
+const unsigned char CMD_PASTE = '\x16';
 
 
 //-----------------------------------------------------------------------------------------------
@@ -53,8 +58,9 @@ InputSystem::~InputSystem()
 
 
 //-----------------------------------------------------------------------------------------------
-void InputSystem::Startup()
+void InputSystem::Startup( Window* window )
 {
+	m_window = window;
 }
 
 
@@ -81,6 +87,11 @@ void InputSystem::EndFrame()
 	}
 
 	m_mouseWheelScrollAmountDelta = 0.f;
+
+	for ( int charNum = 0; charNum < (int)m_characters.size(); ++charNum )
+	{
+		m_characters.pop();
+	}
 }
 
 
@@ -109,6 +120,29 @@ bool InputSystem::HandleKeyReleased( unsigned char keyCode )
 
 
 //-----------------------------------------------------------------------------------------------
+void InputSystem::PushCharacter( char c )
+{
+	m_characters.push( c );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::PopCharacter( char* out )
+{
+	if ( m_characters.size() > 0 )
+	{
+		*out = m_characters.front();
+		m_characters.pop();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const XboxController& InputSystem::GetXboxController(int controllerID)
 {
 	return m_controllers[controllerID];
@@ -125,18 +159,138 @@ void InputSystem::SetXboxControllerVibrationLevels( int controllerID, float left
 //-----------------------------------------------------------------------------------------------
 void InputSystem::UpdateMouse()
 {
-	POINT mousePos;
-	GetCursorPos( &mousePos );
-	ScreenToClient( g_hWnd, &mousePos );
-	Vec2 mouseClientPos( (float)mousePos.x, (float)mousePos.y );
 
+	switch ( m_cursorMode )
+	{
+		case CURSOR_ABSOLUTE:
+		{
+			POINT mousePos;
+			GetCursorPos( &mousePos );
+			ScreenToClient( (HWND)m_window->m_hwnd, &mousePos );
+			Vec2 mouseClientPos( (float)mousePos.x, (float)mousePos.y );
+
+			RECT clientRect;
+			GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
+
+			AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+			m_normalizedMouseClientPos = clientBounds.GetUVForPoint( mouseClientPos );
+			m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;
+		} break;
+
+		case CURSOR_RELATIVE:
+		{
+			POINT mousePos;
+			GetCursorPos( &mousePos );
+			ScreenToClient( (HWND)m_window->m_hwnd, &mousePos );
+			Vec2 mouseClientPos( (float)mousePos.x, (float)mousePos.y );
+
+			m_mouseMovementDelta = mouseClientPos - m_mousePositionLastFrame;// move back to center
+
+			Vec2 windowCenter = GetCenterOfWindow();
+			SetCursorPos( windowCenter.x, windowCenter.y ); 
+			
+			// one trick to prevent drift
+			GetCursorPos( &mousePos );
+			ScreenToClient( (HWND)m_window->m_hwnd, &mousePos );
+			windowCenter = Vec2( mousePos.x, mousePos.y );
+
+			m_mousePositionLastFrame = windowCenter;
+		} break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::HideSystemCursor()
+{
+	ShowCursor( false );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::ShowSystemCursor()
+{
+	// Force the cursor to be shown
+	while ( ShowCursor( true ) < 0 ) {}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::LockSystemCursor()
+{
 	RECT clientRect;
-	GetClientRect( g_hWnd, &clientRect );
+	GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
+	ClipCursor( &clientRect );
+}
 
-	AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::UnlockSystemCursor()
+{
+	ClipCursor( nullptr );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::SetCursorMode( eCursorMode cursorMode )
+{
+	m_cursorMode = cursorMode;
 	
-	m_normalizedMouseClientPos = clientBounds.GetUVForPoint( mouseClientPos );
-	m_normalizedMouseClientPos.y = 1.f - m_normalizedMouseClientPos.y;
+	switch ( m_cursorMode )
+	{
+		case CURSOR_ABSOLUTE:
+		{
+			ShowSystemCursor();
+			UnlockSystemCursor();
+		} break;
+
+		case CURSOR_RELATIVE:
+		{
+			LockSystemCursor();
+			HideSystemCursor();
+			m_mousePositionLastFrame = GetCenterOfWindow();
+			SetCursorPos( m_mousePositionLastFrame.x, m_mousePositionLastFrame.y );
+		} break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const char* InputSystem::GetTextFromClipboard() const
+{
+	HANDLE h;
+
+	if ( !OpenClipboard( NULL ) )
+	{
+		g_devConsole->PrintString( "Can't open clipboard", Rgba8::RED );
+		return nullptr;
+	}
+
+	h = GetClipboardData( CF_TEXT );
+
+	const char* data = (const char*)h;
+
+	CloseClipboard();
+
+	return data;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Vec2 InputSystem::GetCenterOfWindow()
+{
+	RECT clientRect;
+	GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
+	AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+	Vec2 clientCenter = clientBounds.GetCenter();
+
+	POINT windowOffset = POINT();
+	ClientToScreen( (HWND)m_window->m_hwnd, &windowOffset );
+	clientCenter += Vec2( windowOffset.x, windowOffset.y );
+	
+	return clientCenter;
 }
 
 
@@ -162,12 +316,14 @@ bool InputSystem::IsKeyPressed( unsigned char keyCode ) const
 	return m_keyStates[keyCode].IsPressed();
 }
 
+
 //-----------------------------------------------------------------------------------------------
 bool InputSystem::WasKeyJustPressed( unsigned char keyCode ) const
 {
 	return m_keyStates[keyCode].WasJustPressed();
 
 }
+
 
 //-----------------------------------------------------------------------------------------------
 bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
@@ -177,36 +333,14 @@ bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
 
 
 //-----------------------------------------------------------------------------------------------
-bool InputSystem::ConsumeIsKeyPressed( unsigned char keyCode )
+bool InputSystem::ConsumeKeyPress( unsigned char keyCode )
 {
-	bool isKeyPressed = m_keyStates[keyCode].IsPressed();
-	if ( isKeyPressed )
-	{
-		HandleKeyReleased( keyCode );
-	}
-	return isKeyPressed;
+	return m_keyStates[keyCode].ConsumeKeyPress();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool InputSystem::ConsumeWasKeyJustPressed( unsigned char keyCode )
+int InputSystem::ConsumeAllKeyPresses( unsigned char keyCode )
 {
-	bool wasJustPressed = m_keyStates[keyCode].WasJustPressed();
-	if ( wasJustPressed )
-	{
-		HandleKeyReleased( keyCode );
-	}
-	return wasJustPressed;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool InputSystem::ConsumeWasKeyJustReleased( unsigned char keyCode )
-{
-	bool wasJustReleased = m_keyStates[keyCode].WasJustReleased();
-	if ( wasJustReleased )
-	{
-		HandleKeyPressed( keyCode );
-	}
-	return wasJustReleased;
+	return m_keyStates[keyCode].ConsumeAllKeyPresses();
 }

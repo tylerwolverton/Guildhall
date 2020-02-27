@@ -20,6 +20,7 @@ float		ConvertRadiansToDegrees( float angleRad );
 // Trig Functions
 float		CosDegrees	( float angleDeg );
 float		SinDegrees	( float angleDeg );
+float		TanDegrees	( float angleDeg );
 float		Atan2Degrees( float y, float x );
 
 int			PositiveMod( int left, int right );
@@ -53,6 +54,7 @@ float		ClampMinMax			( float value, float minimumValue, float maximumValue );
 float		ClampZeroToOne		( float value );
 int			ClampMinMaxInt		( int value, int minimumValue, int maximumValue );
 float		RangeMapFloat		( float orginalBegin, float originalEnd, float newBegin, float newEnd, float value );
+Vec3		RangeMapVec3		( const Vec3& orginalBegin, const Vec3& originalEnd, const Vec3& newBegin, const Vec3& newEnd, const Vec3& value );
 int			RoundDownToInt		( float value );
 
 // Geometric Queries 2D

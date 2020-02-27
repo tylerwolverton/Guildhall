@@ -114,8 +114,8 @@ const Vec3 Mat44::TransformVector3D( const Vec3& vector ) const
 //-----------------------------------------------------------------------------------------------
 const Vec2 Mat44::TransformPosition2D( const Vec2& position ) const
 {
-	float newX = ( Ix * position.x ) + ( Jx * position.y + Tx );
-	float newY = ( Iy * position.x ) + ( Jy * position.y + Ty );
+	float newX = ( Ix * position.x ) + ( Jx * position.y ) + Tx;
+	float newY = ( Iy * position.x ) + ( Jy * position.y ) + Ty;
 
 	return Vec2( newX, newY );
 }
@@ -345,68 +345,68 @@ void Mat44::SetBasisVectors4D( const Vec4& iBasis4D, const Vec4& jBasis4D, const
 //-----------------------------------------------------------------------------------------------
 void Mat44::RotateXDegrees( float degreesAboutX )
 {
-	TransformBy( CreateXRotationDegrees( degreesAboutX ) );
+	AppendTransform( CreateXRotationDegrees( degreesAboutX ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::RotateYDegrees( float degreesAboutY )
 {
-	TransformBy( CreateYRotationDegrees( degreesAboutY ) );
+	AppendTransform( CreateYRotationDegrees( degreesAboutY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::RotateZDegrees( float degreesAboutZ )
 {
-	TransformBy( CreateZRotationDegrees( degreesAboutZ ) );
+	AppendTransform( CreateZRotationDegrees( degreesAboutZ ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::Translate2D( const Vec2& translationXY )
 {
-	TransformBy( CreateTranslation2D( translationXY ) );
+	AppendTransform( CreateTranslation2D( translationXY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::Translate3D( const Vec3& translation3D )
 {
-	TransformBy( CreateTranslation3D( translation3D ) );
+	AppendTransform( CreateTranslation3D( translation3D ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleUniform2D( float scaleFactorXY )
 {
-	TransformBy( CreateUniformScale2D( scaleFactorXY ) );
+	AppendTransform( CreateUniformScale2D( scaleFactorXY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleNonUniform2D( const Vec2& scaleFactorsXY )
 {
-	TransformBy( CreateNonUniformScale2D( scaleFactorsXY ) );
+	AppendTransform( CreateNonUniformScale2D( scaleFactorsXY ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleUniform3D( float uniformScaleXYZ )
 {
-	TransformBy( CreateUniformScale3D( uniformScaleXYZ ) );
+	AppendTransform( CreateUniformScale3D( uniformScaleXYZ ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::ScaleNonUniform3D( const Vec3& scaleFactorsXYZ )
 {
-	TransformBy( CreateNonUniformScale3D( scaleFactorsXYZ ) );
+	AppendTransform( CreateNonUniformScale3D( scaleFactorsXYZ ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Mat44::TransformBy( const Mat44& transformationToConcatenate )
+void Mat44::AppendTransform( const Mat44& transformationToConcatenate )
 {
 	// Nicknames for brevity
 	Mat44 old(*this);
@@ -431,6 +431,28 @@ void Mat44::TransformBy( const Mat44& transformationToConcatenate )
 	Jw = ( old.Iw * in.Jx ) + ( old.Jw * in.Jy ) + ( old.Kw * in.Jz ) + ( old.Tw * in.Jw );
 	Kw = ( old.Iw * in.Kx ) + ( old.Jw * in.Ky ) + ( old.Kw * in.Kz ) + ( old.Tw * in.Kw );
 	Tw = ( old.Iw * in.Tx ) + ( old.Jw * in.Ty ) + ( old.Kw * in.Tz ) + ( old.Tw * in.Tw );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Mat44::Transpose()
+{
+	float* matrixData = GetAsFloatArray();
+
+	for ( int yIndex = 0; yIndex < 4; ++yIndex )
+	{
+		for ( int xIndex = 0; xIndex < 4; ++xIndex )
+		{
+			if ( yIndex == xIndex )
+			{
+				continue;
+			}
+
+			float temp = matrixData[yIndex * 4 + xIndex];
+			matrixData[yIndex * 4 + xIndex] = matrixData[xIndex * 4 + yIndex];
+			matrixData[xIndex * 4 + yIndex] = temp;
+		}
+	}
 }
 
 
@@ -482,6 +504,32 @@ const Mat44 Mat44::CreateZRotationDegrees( float degreesAboutZ )
 	newMatrix.Jy = cosine;
 
 	return newMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
+{
+	/*Mat44 rotationMatrix = CreateXRotationDegrees( pitch );
+	rotationMatrix.RotateYDegrees( yaw );
+	rotationMatrix.RotateZDegrees( roll );*/
+
+	//Mat44 rotationMatrix = CreateYRotationDegrees( yaw );
+	//rotationMatrix.RotateXDegrees( pitch );
+	//rotationMatrix.RotateZDegrees( roll );
+	Mat44 rotationMatrix;
+	rotationMatrix.AppendTransform( CreateXRotationDegrees( pitch ) );
+	rotationMatrix.AppendTransform( CreateZRotationDegrees( roll ) );
+	rotationMatrix.AppendTransform( CreateYRotationDegrees( yaw ) );
+
+	return rotationMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreateXYZRotationDegrees( const Vec3& rotation )
+{
+	return CreateRotationFromPitchRollYawDegrees( rotation.x, rotation.y, rotation.z );
 }
 
 
@@ -557,4 +605,70 @@ const Mat44 Mat44::CreateNonUniformScale3D( const Vec3& scaleFactorsXYZ )
 	newMatrix.Kz = scaleFactorsXYZ.z;
 
 	return newMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreateOrthographicProjection( const Vec3& min, const Vec3& max )
+{
+	// think of x
+	// min.x, max.x -> (-1,1)
+	// ndc.x = ((x -  min.x) / (max.x - min.x)) * (( 1.f - (-1.f)) + -1.f )
+	// ndc.x = x / (max.x - min.x) - (min.x / (max.x - min.x)) * 2.f + -1.f )
+	// a = (max.x - min.x)
+	// b = (-2.f * min.x - max.x + min.x) / (max.x - min.x)
+	//   = -(max.x - min.x) / (max.x - min.x)
+
+	// min.z, max.z -> (0,1) (In DirectX only, map to -1, 1 in other APIs)
+	// ndc.z = ((z -  min.z) / (max.z - min.z)) * (( 1.f - (0.f)) + 0.f )
+	// ndc.z = z / (max.z - min.z) - (min.z / (max.z - min.z)) * 1.f )
+	// a = 1.f / (max.z - min.z)
+	// b = -min.z / (max.z - min.z)
+
+
+	Vec3 diff = max - min;
+	Vec3 sum = max + min;
+
+	float projMatrix[] =
+	{
+		2.f / diff.x,		0.f,				0.f,				0.f,
+		0.f,				2.f / diff.y,		0.f,				0.f,
+		0.f,				0.f,				1.f / diff.z,		0.f,
+		-sum.x / diff.x,	-sum.y / diff.y,	-min.z / diff.z,	1.f
+	};
+
+	return Mat44( projMatrix );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::CreatePerspectiveProjection( float fovDegrees,
+												float aspectRatio,
+												float nearZ, float farZ )
+{
+	// float fovDegrees is the field of view you want
+	// float farZ and nearZ are the depth range you want to see
+	// -> do **not** span zero here.
+
+	// Goal is to...
+	// - setup a default "depth" where (1, 1) == (1, 1) after proejction (1 / tan(fov * .5f))
+	// - map z to w, so the z divide happens
+	// - map nearZ to 0, farZ to farZ, since a Z divide will happen
+	//   and this will result in mapping nearZ to 0, and farZ to 1. 
+	//   -> ((z - nz) / (fz - nz)) * fz + 0
+	//   -> -fz / (fz - nz) * z      + (fz * nz) / (fz - nz)
+
+	float height = 1.0f / TanDegrees( fovDegrees * .5f ); // how far away are we for the perspective point to be "one up" from our forward line. 
+	float zRange = farZ - nearZ;
+	float inverseZRange = 1.0f / zRange;
+
+	float projMatrix[] =
+	{
+		height / aspectRatio,	0.f,		0.f,								0.f,
+		0.f,					height,		0.f,								0.f,
+		0.f,					0.f,		-farZ * inverseZRange,				-1.f,
+		0.f,					0.f,		nearZ * farZ * inverseZRange,		0.f
+	};
+
+	return Mat44( projMatrix );
 }

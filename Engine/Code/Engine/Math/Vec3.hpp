@@ -1,4 +1,7 @@
 #pragma once
+//-----------------------------------------------------------------------------------------------
+struct Vec2;
+
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3
@@ -16,6 +19,7 @@ public:
 	~Vec3() {}															// destructor (do nothing)
 	Vec3() {}															// default constructor (do nothing)
 	Vec3( const Vec3& copyFrom );										// copy constructor (from another Vec3)
+	Vec3( const Vec2& copyFrom , float initialZ );						// copy constructor (from a Vec2)
 	explicit Vec3( float initialX, float initialY, float initialZ );	// explicit constructor (from x, y, z)
 	void SetFromText( const char* asText );
 
@@ -49,6 +53,9 @@ public:
 	// Rotation (return new vectors with const functions)
 	Vec3  GetRotatedAboutZDegrees( float angleDeg ) const;
 	Vec3  GetRotatedAboutZRadians( float angleRad ) const;
+
+	// Accessors
+	Vec2 XY();
 
 	// Standalone "friend" functions that are conceptually, but not actually, part of Vec3::
 	friend const Vec3 operator*( float uniformScale, const Vec3& vecToScale );	// float * vec3

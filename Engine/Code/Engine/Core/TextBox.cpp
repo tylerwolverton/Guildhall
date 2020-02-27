@@ -49,12 +49,12 @@ void TextBox::Render( const Vec2& worldMins ) const
 //-----------------------------------------------------------------------------------------------
 void TextBox::RenderBackground( const Vec2& worldMins ) const
 {
-	std::vector<Vertex_PCU> backgroundVertexes;
+	std::vector<Vertex_PCU> backgroundVertices;
 	AABB2 worldBoxBounds( worldMins + m_localBoxBounds.mins, worldMins + m_localBoxBounds.maxs );
-	m_renderer.AppendVertsForAABB2D( backgroundVertexes, worldBoxBounds, m_backgroundColor );
+	m_renderer.AppendVertsForAABB2D( backgroundVertices, worldBoxBounds, m_backgroundColor );
 
 	m_renderer.BindTexture( nullptr );
-	m_renderer.DrawVertexArray( backgroundVertexes );
+	m_renderer.DrawVertexArray( backgroundVertices );
 }
 
 
@@ -89,7 +89,7 @@ void TextBox::RenderText( const Vec2& worldMins ) const
 	// TODO: Use triangle font if font not available
 	BitmapFont* font = m_renderer.CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 
-	std::vector<Vertex_PCU> vertexes;
+	std::vector<Vertex_PCU> vertices;
 	float curLineY = 0;
 	int latestMessageIndex = (int)m_textBoxMessageLines.size() - 1;
 
@@ -100,12 +100,12 @@ void TextBox::RenderText( const Vec2& worldMins ) const
 
 		if ( font->GetTexture() != nullptr )
 		{
-			font->AppendVertsForText2D( vertexes, Vec2( worldMins.x + m_localBoxBounds.mins.x, worldMins.y + m_localBoxBounds.mins.y + curLineY ),
+			font->AppendVertsForText2D( vertices, Vec2( worldMins.x + m_localBoxBounds.mins.x, worldMins.y + m_localBoxBounds.mins.y + curLineY ),
 										lineHeight, logMessage.m_message, logMessage.m_color, .7f );
 		}
 		else
 		{
-			AppendTextTriangles2D( vertexes, logMessage.m_message, Vec2( worldMins.x + m_localBoxBounds.mins.x, worldMins.y + m_localBoxBounds.mins.y + curLineY ),
+			AppendTextTriangles2D( vertices, logMessage.m_message, Vec2( worldMins.x + m_localBoxBounds.mins.x, worldMins.y + m_localBoxBounds.mins.y + curLineY ),
 								   lineHeight, logMessage.m_color );
 		}
 		curLineY += lineHeight;
@@ -119,5 +119,5 @@ void TextBox::RenderText( const Vec2& worldMins ) const
 	{
 		m_renderer.BindTexture( nullptr );
 	}
-	m_renderer.DrawVertexArray( vertexes );
+	m_renderer.DrawVertexArray( vertices );
 }

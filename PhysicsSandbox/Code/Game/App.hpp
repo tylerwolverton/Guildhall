@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 
 
@@ -6,6 +7,7 @@
 class Camera;
 class RenderContext;
 class Game;
+enum class eWindowMode;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -22,14 +24,19 @@ public:
 	
 	bool HandleQuitRequested();
 	void RestartGame();
-	
+
 private:
+	void PopulateGameConfig();
+	eWindowMode GetWindowModeFromGameConfig();
+
 	void BeginFrame();
 	void Update( float deltaSeconds );
 	void UpdateFromKeyboard( float deltaSeconds );
 	void Render() const;
 	void EndFrame();
-	
+
+	static bool QuitGame( EventArgs* args );
+
 private:
 	bool m_isQuitting = false;
 

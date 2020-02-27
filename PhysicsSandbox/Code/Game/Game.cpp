@@ -35,11 +35,14 @@ void Game::Startup()
 {
 	m_worldCamera = new Camera();
 	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetColorTarget( nullptr );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 	m_worldCamera->SetPosition( m_focalPoint );
 	
 	m_uiCamera = new Camera();
 	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+	m_uiCamera->SetColorTarget( nullptr );
 
 	m_rng = new RandomNumberGenerator();
 
@@ -56,7 +59,7 @@ void Game::Startup()
 	m_mouseHistoryPoints[4].position = Vec2::ZERO;
 	m_mouseHistoryPoints[4].deltaSeconds = 0.f;
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
 
@@ -95,8 +98,11 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::Update( float deltaSeconds )
 {
-	UpdateFromKeyboard( deltaSeconds );
-	UpdateMouse( deltaSeconds );
+	if ( !g_devConsole->IsOpen() )
+	{
+		UpdateFromKeyboard( deltaSeconds );
+		UpdateMouse( deltaSeconds );
+	}
 
 	UpdateCameras( deltaSeconds );
 
@@ -112,10 +118,6 @@ void Game::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen( Rgba8::BLACK );
-
 	g_renderer->BeginCamera( *m_worldCamera );
 		
 	RenderGameObjects();
@@ -328,7 +330,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 		case eGameState::CREATE_POLYGON:
 		{
-			if ( g_inputSystem->ConsumeWasKeyJustPressed( KEY_ESC ) )
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ESC ) > 0 )
 			{
 				m_potentialPolygonPoints.clear();
 				m_gameState = eGameState::SANDBOX;
@@ -344,6 +346,7 @@ void Game::UpdateCameras( float deltaSeconds )
 	UNUSED( deltaSeconds );
 	m_worldCamera->SetPosition( m_focalPoint );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 }
 
 
@@ -353,7 +356,7 @@ void Game::UpdateMouse( float deltaSeconds )
 	UpdateMouseHistory( m_mouseWorldPosition, deltaSeconds );
 	
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
-	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition );
+	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition ).XY();
 
 	switch ( m_gameState )
 	{
@@ -656,7 +659,7 @@ void Game::SpawnPolygon( const std::vector<Vec2>& points )
 
 	if ( !newPolygon2.IsConvex() )
 	{
-		g_devConsole->PrintString( Rgba8::YELLOW, "Invalid polygon cannot be spawned" );
+		g_devConsole->PrintString( "Invalid polygon cannot be spawned", Rgba8::YELLOW );
 		return;
 	}
 

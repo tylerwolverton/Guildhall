@@ -70,7 +70,7 @@ public:
 	void				SetBasisVectors4D( const Vec4& iBasis4D, const Vec4& jBasis4D, const Vec4& kBasis4D, const Vec4& translation4D );
 
 	// Transformation mutators; concatenate a new transform to this matrix
-	void				RotateXDegrees( float degreesAboutX );
+	void				RotateXDegrees( float degreesAboutX ); // PushRotationByX
 	void				RotateYDegrees( float degreesAboutY );
 	void				RotateZDegrees( float degreesAboutZ );
 	void				Translate2D( const Vec2& translationXY );
@@ -79,18 +79,27 @@ public:
 	void				ScaleNonUniform2D( const Vec2& scaleFactorsXY );
 	void				ScaleUniform3D( float uniformScaleXYZ );
 	void				ScaleNonUniform3D( const Vec3& scaleFactorsXYZ );
-	void				TransformBy( const Mat44& transformationToConcatenate );
+	void				AppendTransform( const Mat44& transformationToConcatenate ); // PushMatrix
+	void				Transpose();
 
 	// Static creation methods
 	static const Mat44	CreateXRotationDegrees( float degreesAboutX );
 	static const Mat44	CreateYRotationDegrees( float degreesAboutY );
 	static const Mat44	CreateZRotationDegrees( float degreesAboutZ );
+	static const Mat44	CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw );
+	static const Mat44	CreateXYZRotationDegrees( const Vec3& rotation );
 	static const Mat44	CreateTranslation2D( const Vec2& translationXY );
 	static const Mat44	CreateTranslation3D( const Vec3& translation3D );
 	static const Mat44	CreateUniformScale2D( float scaleFactorXY );
 	static const Mat44	CreateNonUniformScale2D( const Vec2& scaleFactorsXY );
 	static const Mat44	CreateUniformScale3D( float scaleFactorsXYZ );
 	static const Mat44	CreateNonUniformScale3D( const Vec3& scaleFactorsXYZ );
+
+	// Projection
+	static const Mat44	CreateOrthographicProjection( const Vec3& min, const Vec3& max );
+	static const Mat44	CreatePerspectiveProjection( float fovDegrees,
+													 float aspectRatio,
+													 float nearZ, float farZ );
 
 private:
 	const Mat44 operator*( const Mat44& rhs ) const = delete; // Do not implement, forbidden!

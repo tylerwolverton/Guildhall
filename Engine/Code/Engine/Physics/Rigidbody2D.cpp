@@ -116,9 +116,9 @@ void Rigidbody2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor
 {
 	Rgba8 rigidbodyColor = m_isEnabled ? Rgba8::BLUE : Rgba8::RED;
 	Vec2 crossOffset( .1f, .1f );
-	g_renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
+	renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
 	crossOffset.x *= -1.f;
-	g_renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
+	renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
 
 	if ( m_collider != nullptr )
 	{

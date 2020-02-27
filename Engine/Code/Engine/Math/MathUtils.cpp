@@ -40,6 +40,13 @@ float SinDegrees( float angleDeg )
 
 
 //-----------------------------------------------------------------------------------------------
+float TanDegrees( float angleDeg )
+{
+	return tanf( ConvertDegreesToRadians( angleDeg ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float Atan2Degrees( float y, float x )
 {
 	return ConvertRadiansToDegrees( atan2f( y, x ) );
@@ -230,6 +237,18 @@ float RangeMapFloat( float inputBegin, float inputEnd, float outputBegin, float 
 	float outputValue = outputDisplacement + outputBegin;
 
 	return outputValue;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 RangeMapVec3( const Vec3& orginalBegin, const Vec3& originalEnd, const Vec3& newBegin, const Vec3& newEnd, const Vec3& value )
+{
+	Vec3 newVec;
+	newVec.x = RangeMapFloat( orginalBegin.x, originalEnd.x, newBegin.x, newEnd.x, value.x );
+	newVec.y = RangeMapFloat( orginalBegin.y, originalEnd.y, newBegin.y, newEnd.y, value.y );
+	newVec.z = RangeMapFloat( orginalBegin.z, originalEnd.z, newBegin.z, newEnd.z, value.z );
+
+	return newVec;
 }
 
 

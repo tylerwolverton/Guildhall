@@ -1,5 +1,4 @@
 #pragma once
-#include "Game/GameCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Physics/PhysicsMaterial.hpp"
 

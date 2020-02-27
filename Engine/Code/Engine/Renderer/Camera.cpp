@@ -1,71 +1,146 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/MatrixUtils.hpp"
+#include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec4.hpp"
+#include "Engine/Renderer/RenderBuffer.hpp"
+#include "Engine/Renderer/Texture.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-void Camera::SetOutputSize( const Vec2& size )
+Camera::Camera()
 {
-	m_outputSize = size;
+	//m_transform.m_position.z = -.1f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Camera::~Camera()
+{
+	delete m_cameraUBO;
+	m_cameraUBO = nullptr;
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec3 Camera::ClientToWorldPosition( const Vec2& clientPos, float ndcZ ) const
+{
+	// TODO: Make this work
+	Vec3 ndc = RangeMapVec3( Vec3::ZERO, Vec3::ONE,
+							  Vec3( -1.f, -1.f, 0.f ), Vec3::ONE,
+							  Vec3( clientPos, ndcZ ) );
+
+	Mat44 proj = GetProjectionMatrix();
+	Mat44 worldToClip = proj;
+	worldToClip.AppendTransform( GetViewMatrix() );
+
+	Mat44 clipToWorld = worldToClip;
+	InvertMatrix( clipToWorld );
+
+	Vec4 worldHomogeneous = clipToWorld.TransformHomogeneousPoint3D( Vec4( ndc, 1.f ) );
+	Vec3 worldPos = worldHomogeneous.XYZ() / worldHomogeneous.w;
+
+
+	return worldPos;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Camera::SetPosition( const Vec3& position )
 {
-	m_position = position;
+	m_transform.SetPosition( position );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::Translate( const Vec3& translation )
+{
+	m_transform.Translate( translation );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Camera::GetOrthoMin() const
+{
+	return ClientToWorldPosition( Vec2::ZERO, 0 ).XY();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Camera::GetOrthoMax() const
+{
+	return ClientToWorldPosition( Vec2::ONE, 0 ).XY();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetPitchRollYawRotation( float pitch, float roll, float yaw )
+{
+	m_transform.SetRotationFromPitchRollYawDegrees( pitch, roll, yaw );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Camera::SetProjectionOrthographic( float height, float nearZ, float farZ )
 {
-	UNUSED( nearZ );
-	UNUSED( farZ );
+	float aspect = GetAspectRatio();
+	float halfHeight = height * .5f;
+	float halfWidth = halfHeight * aspect;
 
-	float aspectRatio = GetAspectRatio();
+	Vec2 mins( -halfWidth, -halfHeight );
+	Vec2 maxs( halfWidth, halfHeight );
 
-	m_outputSize.x = aspectRatio * height;
-	m_outputSize.y = height;
+	m_projectionMatrix = MakeOrthographicProjectionMatrixD3D( mins.x, maxs.x,
+															  mins.y, maxs.y,
+															  nearZ, farZ );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 Camera::ClientToWorldPosition( const Vec2& clientPos )
+void Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )
 {
-	Vec2 worldPos;
-	Vec2 outputDimensions = m_outputSize;
+	m_projectionMatrix = MakePerspectiveProjectionMatrixD3D( fovDegrees,
+															 GetAspectRatio(),
+															 nearZClip, farZClip );
+}
 
-	// for now, you have an orthoMin and orthoMax.
-	// so...
-	// 1. Convert clientPos to pixel coordinates to normalized coordinates (0, 1) 
-	//    by range mapping them from your client size to (0,1) in both dimensions.
-	// 2. Convert to your ortho position by rangemapping the normalized coordinate 
-	//    from (0,1) to (min, max).
-	   
-	float worldX = RangeMapFloat( 0.f, 1.f, GetOrthoMin().x, GetOrthoMax().x, clientPos.x );
-	float worldY = RangeMapFloat( 0.f, 1.f, GetOrthoMin().y, GetOrthoMax().y, clientPos.y );
 
-	worldPos = Vec2( worldX, worldY );
+//-----------------------------------------------------------------------------------------------
+void Camera::SetClearMode( unsigned int clearFlags, Rgba8 color, float depth, unsigned int stencil )
+{
+	UNUSED( depth );
+	UNUSED( stencil );
 
-	// note: you could skip and just RangeMap from (clientSpace to orthoSpace), but the additional
-	// step is good practice for something coming up in SD2
+	m_clearMode = clearFlags;
+	m_clearColor = color;
+}
 
-	// note 2: client space is y-down, but your world space is y-up, be sure to 
-	// take this into account
 
-	// These TODOs are notes on things that will change in this function
-	// as MP2 & SD2 advance;
-	// TODO - take into account render target
-	//        clientPos being the pixel location on the texture
+//-----------------------------------------------------------------------------------------------
+void Camera::SetColorTarget( Texture* texture )
+{
+	m_colorTarget = texture;
+}
 
-	// TODO - use projection matrix to compute this
 
-	// TODO - Support ndc-depth paramater for 3D-coordinates, needed for ray casts.
+//-----------------------------------------------------------------------------------------------
+void Camera::SetDepthStencilTarget( Texture* texture )
+{
+	m_deptStencilTarget = texture;
+}
 
-	// TODO - take into account viewport
 
-	return worldPos;
+//-----------------------------------------------------------------------------------------------
+Texture* Camera::GetColorTarget() const
+{
+	return m_colorTarget;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetOutputSize( const Vec2& size )
+{
+	m_outputSize = size;
 }
 
 
@@ -82,44 +157,15 @@ float Camera::GetAspectRatio() const
 
 
 //-----------------------------------------------------------------------------------------------
-void Camera::SetOrthoView( const Vec2& bottomLeft, const Vec2& topRight )
+void Camera::UpdateCameraUBO()
 {
-	m_bottomLeft = bottomLeft;
-	m_topRight = topRight;
-}
+	CameraData cameraData;
+	cameraData.projection = m_projectionMatrix;
 
+	Mat44 model = m_transform.GetAsMatrix();
+	InvertOrthoNormalMatrix( model );
 
-//-----------------------------------------------------------------------------------------------
-void Camera::SetOrthoView( const AABB2& cameraBounds )
-{
-	m_bottomLeft = cameraBounds.mins;
-	m_topRight = cameraBounds.maxs;
-}
+	cameraData.view = model;
 
-
-////-----------------------------------------------------------------------------------------------
-//void Camera::Translate2D(const Vec2& translation)
-//{
-//	m_bottomLeft += translation;
-//	m_topRight += translation;
-//}
-
-
-//-----------------------------------------------------------------------------------------------
-Vec2 Camera::GetOrthoMin() const
-{
-	float orthoX = m_position.x - ( m_outputSize.x * .5f );
-	float orthoY = m_position.y - ( m_outputSize.y * .5f );
-
-	return Vec2( orthoX, orthoY );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Vec2 Camera::GetOrthoMax() const
-{
-	float orthoX = m_position.x + ( m_outputSize.x * .5f );
-	float orthoY = m_position.y + ( m_outputSize.y * .5f );
-
-	return Vec2( orthoX, orthoY );
+	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
 }

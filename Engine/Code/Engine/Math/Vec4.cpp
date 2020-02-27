@@ -1,4 +1,5 @@
 #include "Engine/Math/Vec4.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
@@ -28,6 +29,15 @@ Vec4::Vec4( float initialX, float initialY, float initialZ, float initialW )
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+Vec4::Vec4( const Vec3& copyFrom, float initialW )
+	: x( copyFrom.x )
+	, y( copyFrom.y )
+	, z( copyFrom.z )
+	, w( initialW )
+{
+}
 
 //-----------------------------------------------------------------------------------------------
 void Vec4::SetFromText( const char* asText )
@@ -169,4 +179,18 @@ float Vec4::GetLength() const
 float Vec4::GetLengthSquared() const
 {
 	return ( x * x ) + ( y * y ) + ( z * z ) + ( w * w );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Vec4::XY()
+{
+	return Vec2( x, y );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 Vec4::XYZ()
+{
+	return Vec3( x, y, z );
 }

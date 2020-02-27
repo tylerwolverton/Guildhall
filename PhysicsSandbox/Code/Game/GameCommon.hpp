@@ -1,4 +1,5 @@
 #pragma once
+class Window;
 class App;
 class InputSystem;
 class AudioSystem;
@@ -12,6 +13,7 @@ struct Rgba8;
 //-----------------------------------------------------------------------------------------------
 // External variable declarations
 //
+extern Window* g_window;
 extern App* g_app;
 extern InputSystem* g_inputSystem;
 extern AudioSystem* g_audioSystem;
@@ -49,13 +51,3 @@ constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
 
 constexpr float HIT_FLASH_SECONDS = .3f;
 
-
-//-----------------------------------------------------------------------------------------------
-enum eScreenEdgesBitField : unsigned int
-{
-	SCREEN_EDGE_NONE	= 0,
-	SCREEN_EDGE_RIGHT	= ( 1 << 0 ),
-	SCREEN_EDGE_LEFT	= ( 1 << 1 ),
-	SCREEN_EDGE_TOP		= ( 1 << 2 ),
-	SCREEN_EDGE_BOTTOM	= ( 1 << 3 )
-};

@@ -1,5 +1,9 @@
 #pragma once
 //-----------------------------------------------------------------------------------------------
+struct Vec2;
+struct Vec3;
+
+//-----------------------------------------------------------------------------------------------
 struct Vec4
 {
 public: // NOTE: this is one of the few cases where we break both the "m_" naming rule AND the avoid-public-members rule
@@ -14,6 +18,7 @@ public:
 	Vec4() {}																			// default constructor (do nothing)
 	Vec4( const Vec4& copyFrom );														// copy constructor (from another Vec3)
 	explicit Vec4( float initialX, float initialY, float initialZ, float initialW );	// explicit constructor (from x, y, z)
+	explicit Vec4( const Vec3& copyFrom, float initialW );	
 	void SetFromText( const char* asText );
 
 	// Operators (const)
@@ -36,6 +41,10 @@ public:
 	// Length 
 	float GetLength() const;
 	float GetLengthSquared() const;
+
+	// Accessors
+	Vec2 XY();
+	Vec3 XYZ();
 
 	// Standalone "friend" functions that are conceptually, but not actually, part of Vec4::
 	friend const Vec4 operator*( float uniformScale, const Vec4& vecToScale );	// float * vec4
