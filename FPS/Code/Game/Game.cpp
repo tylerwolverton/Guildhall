@@ -138,8 +138,8 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
 	
-	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
-	g_renderer->BindTexture( texture );
+	/*Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
+	g_renderer->BindTexture( texture );*/
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
 	
 	//g_renderer->DrawMesh( mesh );
@@ -191,14 +191,14 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		//cameraTranslation.z -= 1.f;
-		TranslateCameraFPS( Vec3( 0.f, 0.f, -1.f * deltaSeconds ));
+		cameraTranslation.z -= 1.f;
+		//TranslateCameraFPS( Vec3( 0.f, 0.f, -1.f * deltaSeconds ));
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		TranslateCameraFPS( Vec3( 0.f, 0.f, 1.f * deltaSeconds ));
-		//cameraTranslation.z += 1.f;
+		//TranslateCameraFPS( Vec3( 0.f, 0.f, 1.f * deltaSeconds ));
+		cameraTranslation.z += 1.f;
 	}
 	
 	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
@@ -225,7 +225,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 											0.f,
 											transform.m_rotation.z + yaw * deltaSeconds );
 
-	//TranslateCameraFPS( cameraTranslation * deltaSeconds );
+	TranslateCameraFPS( cameraTranslation * deltaSeconds );
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
 	{
@@ -290,8 +290,18 @@ void Game::UpdateCameras( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 {
-	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
-	Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
+	//Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
+	//Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
+
+	//Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_worldCamera->GetTransform().m_rotation );
+	Vec3 rotation = m_worldCamera->GetTransform().m_rotation;
+
+	Mat44 rotationMatrix;
+	rotationMatrix.AppendTransform( Mat44::CreateXRotationDegrees( rotation.x ) );
+	rotationMatrix.AppendTransform( Mat44::CreateZRotationDegrees( rotation.y ) );
+	rotationMatrix.AppendTransform( Mat44::CreateYRotationDegrees( rotation.z ) );
+
+	Vec3 absoluteTranslation = rotationMatrix.TransformPosition3D( relativeTranslation );
 
 	m_worldCamera->Translate( absoluteTranslation );
 }
