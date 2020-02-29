@@ -32,7 +32,7 @@ Vec3 Camera::ClientToWorldPosition( const Vec2& clientPos, float ndcZ ) const
 
 	Mat44 proj = GetProjectionMatrix();
 	Mat44 worldToClip = proj;
-	worldToClip.AppendTransform( GetViewMatrix() );
+	worldToClip.PushTransform( GetViewMatrix() );
 
 	Mat44 clipToWorld = worldToClip;
 	InvertMatrix( clipToWorld );

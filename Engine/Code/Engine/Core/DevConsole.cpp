@@ -129,6 +129,14 @@ void DevConsole::PrintString( const std::string& message, const Rgba8& textColor
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::Render( float lineHeight ) const
+{
+	AABB2 bounds( m_devConsoleCamera->GetOrthoMin(), m_devConsoleCamera->GetOrthoMax() );
+	Render( bounds, lineHeight );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::Render( const Camera& camera, float lineHeight ) const
 {
 	AABB2 bounds( camera.GetOrthoMin(), camera.GetOrthoMax() );
@@ -144,21 +152,19 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	{
 		return;
 	}
-
-	AABB2 cameraBounds = AABB2( m_devConsoleCamera->GetOrthoMin(), m_devConsoleCamera->GetOrthoMax() );
-
+	
 	m_renderer->SetBlendMode( eBlendMode::ALPHA );
 
 	m_renderer->BeginCamera( *m_devConsoleCamera );
 	
-	AABB2 logMessageBounds = cameraBounds.GetBoxAtTop( .95f );
-	AABB2 inputStringBounds = cameraBounds.GetBoxAtBottom( .045f );
-	AABB2 inputCursorBounds = cameraBounds.GetBoxAtBottom( .005f );
+	AABB2 logMessageBounds = bounds.GetBoxAtTop( .95f );
+	AABB2 inputStringBounds = bounds.GetBoxAtBottom( .045f );
+	AABB2 inputCursorBounds = bounds.GetBoxAtBottom( .005f );
 	inputStringBounds.mins.y = inputCursorBounds.maxs.y;
 
 	std::vector<Vertex_PCU> vertices;
 	
-	RenderBackground( cameraBounds );
+	RenderBackground( bounds );
 	AppendVertsForLatestLogMessages( vertices, logMessageBounds, lineHeight );
 	AppendVertsForInputString( vertices, inputStringBounds, lineHeight );
 	AppendVertsForCursor( vertices, inputCursorBounds, lineHeight );
@@ -377,11 +383,11 @@ void DevConsole::ToggleOpenFull()
 {
 	if ( m_isOpen )
 	{
-		m_inputSystem->SetCursorMode( CURSOR_RELATIVE );
 		Close();
 	}
 	else
 	{
+		m_previousCursorMode = m_inputSystem->GetCursorMode();
 		m_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
 		m_isOpen = true;
 	}
@@ -395,6 +401,7 @@ void DevConsole::Close()
 	m_currentCommandStr.clear();
 	SetCursorPosition( 0 );
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
+	m_inputSystem->SetCursorMode( m_previousCursorMode );
 }
 
 

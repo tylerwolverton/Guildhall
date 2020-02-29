@@ -24,6 +24,8 @@ GPUMesh::~GPUMesh()
 //-----------------------------------------------------------------------------------------------
 void GPUMesh::UpdateVertices( uint vertexCount, const void* vertexData, uint vertexStride, const BufferAttribute* layout )
 {
+	UNUSED( layout );
+
 	size_t dataByteSize = (size_t)vertexCount * (size_t)vertexStride;
 	size_t elementSize = vertexStride;
 	m_vertices->Update( vertexData, dataByteSize, elementSize );

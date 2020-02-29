@@ -188,12 +188,12 @@ void InputSystem::UpdateMouse()
 			m_mouseMovementDelta = mouseClientPos - m_mousePositionLastFrame;// move back to center
 
 			Vec2 windowCenter = GetCenterOfWindow();
-			SetCursorPos( windowCenter.x, windowCenter.y ); 
+			SetCursorPos( (int)windowCenter.x, (int)windowCenter.y ); 
 			
 			// one trick to prevent drift
 			GetCursorPos( &mousePos );
 			ScreenToClient( (HWND)m_window->m_hwnd, &mousePos );
-			windowCenter = Vec2( mousePos.x, mousePos.y );
+			windowCenter = Vec2( (float)mousePos.x, (float)mousePos.y );
 
 			m_mousePositionLastFrame = windowCenter;
 		} break;
@@ -235,6 +235,11 @@ void InputSystem::UnlockSystemCursor()
 //-----------------------------------------------------------------------------------------------
 void InputSystem::SetCursorMode( eCursorMode cursorMode )
 {
+	if ( cursorMode == m_cursorMode )
+	{
+		return;
+	}
+
 	m_cursorMode = cursorMode;
 	
 	switch ( m_cursorMode )
@@ -250,7 +255,7 @@ void InputSystem::SetCursorMode( eCursorMode cursorMode )
 			LockSystemCursor();
 			HideSystemCursor();
 			m_mousePositionLastFrame = GetCenterOfWindow();
-			SetCursorPos( m_mousePositionLastFrame.x, m_mousePositionLastFrame.y );
+			SetCursorPos( (int)m_mousePositionLastFrame.x, (int)m_mousePositionLastFrame.y );
 		} break;
 	}
 }
@@ -288,7 +293,7 @@ const Vec2 InputSystem::GetCenterOfWindow()
 
 	POINT windowOffset = POINT();
 	ClientToScreen( (HWND)m_window->m_hwnd, &windowOffset );
-	clientCenter += Vec2( windowOffset.x, windowOffset.y );
+	clientCenter += Vec2( (float)windowOffset.x, (float)windowOffset.y );
 	
 	return clientCenter;
 }

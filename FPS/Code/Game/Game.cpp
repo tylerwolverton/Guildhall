@@ -48,6 +48,9 @@ void Game::Startup()
 
 	m_worldCamera = new Camera();
 	m_worldCamera->SetColorTarget( nullptr );
+	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
+	//m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
+	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 
 	m_rng = new RandomNumberGenerator();
 
@@ -63,7 +66,7 @@ void Game::Startup()
 	g_renderer->AppendIndicesForCubeMesh( indices );
 
 	// Update buffers
-	m_mesh->UpdateVertices( vertices.size(), &vertices[0] );
+	m_mesh->UpdateVertices( (uint)vertices.size(), &vertices[0] );
 	m_mesh->UpdateIndices( indices );
 	/*mesh->AddVertices( 24, cubeVerts );
 	mesh->AddIndices( 36, indices );*/
@@ -115,7 +118,7 @@ void Game::Update( float deltaSeconds )
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 
-	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  GetCurrentTimeSeconds() * 20.f );
+	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
 }
 
 
@@ -163,7 +166,6 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	UNUSED( deltaSeconds );
 
 	Vec3 cameraTranslation;
-	Vec3 cameraRotation;
 
 	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
@@ -178,12 +180,10 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
 		cameraTranslation.z -= 1.f;
-		//TranslateCameraFPS( Vec3( 0.f, 0.f, -1.f * deltaSeconds ));
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		//TranslateCameraFPS( Vec3( 0.f, 0.f, 1.f * deltaSeconds ));
 		cameraTranslation.z += 1.f;
 	}
 	
@@ -202,15 +202,17 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		cameraTranslation *= 10.f;
 	}
 
+	// Rotation
 	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-	float yaw = mousePosition.x * 2.f;
-	float pitch = mousePosition.y * 2.f;
+	float yaw = -mousePosition.x * 2.f;
+	float pitch = -mousePosition.y * 2.f;
 
 	Transform transform = m_worldCamera->GetTransform();
 	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch * deltaSeconds,
 											0.f,
 											transform.m_rotation.z + yaw * deltaSeconds );
 
+	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
@@ -237,39 +239,24 @@ void Game::LoadNewMap( const std::string& mapName )
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras( float deltaSeconds )
 {
-	// World camera
-	/*m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
-	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.0);
-
-	float maxScreenShake = m_screenShakeIntensity * MAX_CAMERA_SHAKE_DIST;
-	float cameraShakeX = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
-	float cameraShakeY = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
-	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
-
-	m_worldCamera->Translate2D(cameraShakeOffset);*/
-
-	//m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
-	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
-	//m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
-	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
+	UNUSED( deltaSeconds );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 {
-	//Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
-	//Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
-
+	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
+	Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
 	//Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_worldCamera->GetTransform().m_rotation );
-	Vec3 rotation = m_worldCamera->GetTransform().m_rotation;
+	/*Vec3 rotation = m_worldCamera->GetTransform().m_rotation;
 
 	Mat44 rotationMatrix;
 	rotationMatrix.AppendTransform( Mat44::CreateXRotationDegrees( rotation.x ) );
 	rotationMatrix.AppendTransform( Mat44::CreateZRotationDegrees( rotation.y ) );
 	rotationMatrix.AppendTransform( Mat44::CreateYRotationDegrees( rotation.z ) );
 
-	Vec3 absoluteTranslation = rotationMatrix.TransformPosition3D( relativeTranslation );
+	Vec3 absoluteTranslation = rotationMatrix.TransformPosition3D( relativeTranslation );*/
 
 	m_worldCamera->Translate( absoluteTranslation );
 }

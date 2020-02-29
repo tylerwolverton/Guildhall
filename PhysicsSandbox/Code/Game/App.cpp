@@ -190,7 +190,7 @@ void App::UpdateFromKeyboard( float deltaSeconds )
 void App::Render() const
 {
 	g_game->Render();
-	g_devConsole->Render( AABB2( -1.f, -1.f, 1.f, 1.f ) );
+	g_devConsole->Render();
 }
 
 

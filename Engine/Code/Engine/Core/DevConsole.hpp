@@ -14,6 +14,7 @@ class InputSystem;
 class RenderContext;
 class BitmapFont;
 class Camera;
+enum eCursorMode : uint;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -52,6 +53,7 @@ public:
 
 	void PrintString( const std::string& message, const Rgba8& textColor = Rgba8::WHITE );
 
+	void Render( float lineHeight = 30.f ) const;
 	void Render( const Camera& camera, float lineHeight = 30.f ) const;
 	void Render( const AABB2& bounds, float lineHeight = 30.f ) const;
 
@@ -111,4 +113,6 @@ private:
 	Rgba8 m_cursorColor = Rgba8::WHITE;
 	float m_curCursorSeconds = 0.f;
 	float m_maxCursorBlinkStateSeconds = .5f;
+
+	eCursorMode m_previousCursorMode;
 };

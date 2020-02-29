@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Input/XboxController.hpp"
 #include "Engine/Input/KeyButtonState.hpp"
 #include "Engine/Math/Vec2.hpp"
@@ -56,7 +57,7 @@ extern const unsigned char CMD_PASTE;
 
 
 //-----------------------------------------------------------------------------------------------
-enum eCursorMode
+enum eCursorMode : uint
 {
 	CURSOR_ABSOLUTE,
 	CURSOR_RELATIVE
@@ -104,6 +105,7 @@ public:
 	void LockSystemCursor();
 	void UnlockSystemCursor();
 	void SetCursorMode( eCursorMode cursorMode );
+	eCursorMode GetCursorMode()																									{ return m_cursorMode; }
 
 	const char* GetTextFromClipboard() const;
 

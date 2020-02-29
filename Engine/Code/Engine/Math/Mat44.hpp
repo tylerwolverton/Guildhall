@@ -79,7 +79,7 @@ public:
 	void				ScaleNonUniform2D( const Vec2& scaleFactorsXY );
 	void				ScaleUniform3D( float uniformScaleXYZ );
 	void				ScaleNonUniform3D( const Vec3& scaleFactorsXYZ );
-	void				AppendTransform( const Mat44& transformationToConcatenate ); // PushMatrix
+	void				PushTransform( const Mat44& transformationToConcatenate ); // PushMatrix
 	void				Transpose();
 
 	// Static creation methods
