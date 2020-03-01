@@ -187,12 +187,12 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 		cameraTranslation.z += 1.f;
 	}
 	
-	if ( g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'C' ) )
 	{
 		cameraTranslation.y += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_SPACEBAR ) )
 	{
 		cameraTranslation.y -= 1.f;
 	}
@@ -204,8 +204,8 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	// Rotation
 	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-	float yaw = -mousePosition.x * 2.f;
-	float pitch = -mousePosition.y * 2.f;
+	float yaw = -mousePosition.x * 50.f;
+	float pitch = -mousePosition.y * 50.f;
 
 	Transform transform = m_worldCamera->GetTransform();
 	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch * deltaSeconds,
@@ -248,15 +248,6 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 {
 	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
 	Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
-	//Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_worldCamera->GetTransform().m_rotation );
-	/*Vec3 rotation = m_worldCamera->GetTransform().m_rotation;
-
-	Mat44 rotationMatrix;
-	rotationMatrix.AppendTransform( Mat44::CreateXRotationDegrees( rotation.x ) );
-	rotationMatrix.AppendTransform( Mat44::CreateZRotationDegrees( rotation.y ) );
-	rotationMatrix.AppendTransform( Mat44::CreateYRotationDegrees( rotation.z ) );
-
-	Vec3 absoluteTranslation = rotationMatrix.TransformPosition3D( relativeTranslation );*/
 
 	m_worldCamera->Translate( absoluteTranslation );
 }

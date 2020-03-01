@@ -20,6 +20,10 @@ void Transform::Translate( const Vec3& translation )
 //-----------------------------------------------------------------------------------------------
 void Transform::SetRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
 {
+	pitch = GetRotationInRangeDegrees( pitch, -90.f, 90.f );
+	roll = GetRotationInRangeDegrees( roll, -180.f, 180.f );
+	yaw = GetRotationInRangeDegrees( yaw, -180.f, 180.f );
+
 	m_rotation = Vec3( pitch, roll, yaw );
 }
 
@@ -36,4 +40,21 @@ const Mat44 Transform::GetAsMatrix() const
 	model.PushTransform( scale );
 
 	return model;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float Transform::GetRotationInRangeDegrees( float rotationDegrees, float minAngleDegrees, float maxAngleDegrees )
+{
+	float newRotation = rotationDegrees;
+
+	// Set between -360.f and 360.f
+	while ( newRotation > 360.f ) newRotation -= 360.f;
+	while ( newRotation < -360.f ) newRotation += 360.f;
+
+	// Clamp within range
+	if ( newRotation > maxAngleDegrees ) newRotation = -( 360.f - newRotation );
+	if ( newRotation < minAngleDegrees ) newRotation = ( 360.f - newRotation );
+
+	return newRotation;
 }

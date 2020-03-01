@@ -6,32 +6,32 @@ Project: FPS
 
 - [x] `Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )` implemented
     - [x] Set projection to `60 degrees`, and `-0.1` to `-100.0` for the clip planes.
-- [ ] Camera now has a `Transform`
+- [x] Camera now has a `Transform`
     - [x] Create the `Transform` class
     - [x] `Transform::SetPosition` implemented
     - [x] `Transform::Translate` implemented
-    - [ ] `Transform::SetRotationFromPitchRollYawDegrees`
-        - [ ] When storing degrees, make sure they are stored in sane ranges...
-            - [ ] Roll & Yaw is `-180` to `180` 
-            - [ ] Pitch is `-90` to `90`
+    - [x] `Transform::SetRotationFromPitchRollYawDegrees`
+        - [x] When storing degrees, make sure they are stored in sane ranges...
+            - [x] Roll & Yaw is `-180` to `180` 
+            - [x] Pitch is `-90` to `90`
 - [ ] Camera now calculates `view` matrix from their transform.
     - [x] `Transform::GetAsMatrix` implemented to calculate the camera's model matrix
     - [x] `MatrixInvertOrthoNormal` implemented to invert the camera's model into a view matrix
         - [] `MatrixIsOrthoNormal` check added
         - [x] `MatrixTranspose` added
 - [x] Draw a Quad at `(0, 0, -10)`, or 10 units in front of the origin (should be visible when you start)
-- [ ] Allow player to move the camera by change the camera transform position
+- [x] Allow player to move the camera by change the camera transform position
    - [x] `W` & `S`: Forward & Back (movement is relative to where you're looking)
    - [x] `A` & `D`: Left and Right (movement is relative to where you're looking)
-   - [] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
+   - [x] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
    - [x] `Left-Shift`: Move faster while held.
    - *Note:  If you want different controls, just make a note in your readme*
-- [ ] Allow player to turn the camera using the mouse.
+- [x] Allow player to turn the camera using the mouse.
     - [x] `InputSystem::HideSystemCursor` implemented
     - [x] `InputSystem::ClipSystemCursor` implemented
-    - [ ] `InputSystem::SetCursorMode` implemented
+    - [x] `InputSystem::SetCursorMode` implemented
         - [x] `ABSOLUTE` mode is what you currently have
-        - [-] `RELATIVE` move implemented
+        - [x] `RELATIVE` move implemented
             - [x] Move mouse to the center of the screen, and store off the cursor position
                 - *Note:  Be sure to actually make the system call, not just assume where you moved it is where it went.  This can cause drifting.*
             - [x] Each frame, get the cursor position, and calculate frame delta.
@@ -39,10 +39,10 @@ Project: FPS
     - [x] Game should be set to `RELATIVE` mode
         - [x] `DevConsole` should unlock the mouse and set to `ABSOLUTE` mode
     - [x] Associate `X` movement with `yaw`
-    - [-] Associate `Y` movement with `pitch`
-        - [ ] Do not allow pitch above `85` degrees or below `95` degrees - no going upside down... yet...
+    - [x] Associate `Y` movement with `pitch`
+        - [x] Do not allow pitch above `85` degrees or below `95` degrees - no going upside down... yet...
         - *Note:  Up to you if you want inverted-y or not.*
-- [ ] Support `RenderContext::SetModelMatrix`
+- [x] Support `RenderContext::SetModelMatrix`
     - [x] Create a new uniform buffer for storing a model matrix (slot 2)
     - [x] `SetModelMatrix` should update this uniform buffer
     - [x] `BeginCamera` should `SetModelMatrix` to the `IDENTITY`, and be sure to bind the buffer.
@@ -92,4 +92,3 @@ Tab - Autocomplete ( finish command or scroll through available commands when li
 Shift Tab - Movebackwards through Autocomplete suggestions
 F2 - Cycle Sampler (between point and bilinear)
 F3 - Cycle Blend Mode (Affects the debug image in the top middle)
-Arrows - Move camera during game only

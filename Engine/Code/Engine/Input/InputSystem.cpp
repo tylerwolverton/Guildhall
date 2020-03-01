@@ -159,8 +159,7 @@ void InputSystem::SetXboxControllerVibrationLevels( int controllerID, float left
 //-----------------------------------------------------------------------------------------------
 void InputSystem::UpdateMouse()
 {
-
-	switch ( m_cursorMode )
+	switch ( m_currentCursorMode )
 	{
 		case CURSOR_ABSOLUTE:
 		{
@@ -235,14 +234,16 @@ void InputSystem::UnlockSystemCursor()
 //-----------------------------------------------------------------------------------------------
 void InputSystem::SetCursorMode( eCursorMode cursorMode )
 {
-	if ( cursorMode == m_cursorMode )
+	m_lastCursorMode = m_currentCursorMode;
+
+	if ( cursorMode == m_currentCursorMode )
 	{
 		return;
 	}
 
-	m_cursorMode = cursorMode;
+	m_currentCursorMode = cursorMode;
 	
-	switch ( m_cursorMode )
+	switch ( m_currentCursorMode )
 	{
 		case CURSOR_ABSOLUTE:
 		{
@@ -258,6 +259,13 @@ void InputSystem::SetCursorMode( eCursorMode cursorMode )
 			SetCursorPos( (int)m_mousePositionLastFrame.x, (int)m_mousePositionLastFrame.y );
 		} break;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::ResetCursorModeToLastState()
+{
+	SetCursorMode( m_lastCursorMode );
 }
 
 

@@ -105,7 +105,8 @@ public:
 	void LockSystemCursor();
 	void UnlockSystemCursor();
 	void SetCursorMode( eCursorMode cursorMode );
-	eCursorMode GetCursorMode()																									{ return m_cursorMode; }
+	void ResetCursorModeToLastState();
+	eCursorMode GetCursorMode()																									{ return m_currentCursorMode; }
 
 	const char* GetTextFromClipboard() const;
 
@@ -126,7 +127,8 @@ private:
 	Vec2 m_normalizedMouseClientPos = Vec2::ZERO;
 	float m_mouseWheelScrollAmountDelta = 0.f;
 
-	eCursorMode m_cursorMode = CURSOR_ABSOLUTE;
+	eCursorMode m_currentCursorMode = CURSOR_ABSOLUTE;
+	eCursorMode m_lastCursorMode = CURSOR_ABSOLUTE;
 	Vec2 m_mousePositionLastFrame = Vec2::ZERO;
 	Vec2 m_mouseMovementDelta = Vec2::ZERO;
 

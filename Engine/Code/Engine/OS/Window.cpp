@@ -106,6 +106,32 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 			BeginPaint( windowHandle, &ps );
 			EndPaint( windowHandle, &ps );
 		} return 1;  // handled it
+
+		case WM_ACTIVATE:
+		{
+			if ( inputSystem == nullptr )
+			{
+				return 0;
+			}
+
+			short windowState = (short)LOWORD( wParam );
+
+			if ( windowState == WA_ACTIVE 
+				 || windowState == WA_CLICKACTIVE )
+			{
+				inputSystem->ResetCursorModeToLastState();
+				return 1;
+			}
+			else if ( windowState == WA_INACTIVE )
+			{
+				inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
 	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)
