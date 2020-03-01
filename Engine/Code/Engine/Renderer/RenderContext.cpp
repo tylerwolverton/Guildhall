@@ -667,10 +667,10 @@ void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray
 	maxs.z -= sideLength * .5f;
 
 	// Front 4 points
-	Vertex_PCU vert0( mins, tint, uvAtMins );
-	Vertex_PCU vert1( Vec3( maxs.x, mins.y, mins.z ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) );
-	Vertex_PCU vert2( Vec3( mins.x, maxs.y, mins.z ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) );
-	Vertex_PCU vert3( Vec3( maxs.x, maxs.y, mins.z ), tint, uvAtMaxs );
+	Vec3 vert0( mins );
+	Vec3 vert1( maxs.x, mins.y, mins.z );
+	Vec3 vert2( mins.x, maxs.y, mins.z );
+	Vec3 vert3( maxs.x, maxs.y, mins.z );
 
 	Vec3 backMins( mins );
 	backMins.z = center.z - sideLength * .5f;
@@ -679,47 +679,47 @@ void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray
 	backMaxs.z = center.z + sideLength * .5f;
 
 	// Back 4 points ( from front perspective for directions )	
-	Vertex_PCU vert4( backMins, tint, uvAtMins );
-	Vertex_PCU vert5( Vec3( backMaxs.x, backMins.y, backMins.z ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) );
-	Vertex_PCU vert6( Vec3( backMins.x, backMaxs.y, backMins.z ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) );
-	Vertex_PCU vert7( Vec3( backMaxs.x, backMaxs.y, backMins.z ), tint, uvAtMaxs );
+	Vec3 vert4( backMins );
+	Vec3 vert5( backMaxs.x, backMins.y, backMins.z );
+	Vec3 vert6( backMins.x, backMaxs.y, backMins.z );
+	Vec3 vert7( backMaxs.x, backMaxs.y, backMins.z );
 
 	vertexArray.reserve( 24 );
 	// Front
-	vertexArray.push_back( vert0 );
-	vertexArray.push_back( vert1 );
-	vertexArray.push_back( vert2 );
-	vertexArray.push_back( vert3 );
+	vertexArray.push_back( Vertex_PCU( vert0, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( vert1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert3, tint, uvAtMaxs ) );
 
 	// Right
-	vertexArray.push_back( vert1 );
-	vertexArray.push_back( vert5 );
-	vertexArray.push_back( vert3 );
-	vertexArray.push_back( vert7 );
+	vertexArray.push_back( Vertex_PCU( vert1, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( vert5, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert3, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert7, tint, uvAtMaxs ) );
 
 	// Back
-	vertexArray.push_back( vert4 );
-	vertexArray.push_back( vert5 );
-	vertexArray.push_back( vert6 );
-	vertexArray.push_back( vert7 );
+	vertexArray.push_back( Vertex_PCU( vert4, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert5, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( vert6, tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( vert7, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
 
 	// Left
-	vertexArray.push_back( vert4 );
-	vertexArray.push_back( vert0 );
-	vertexArray.push_back( vert6 );
-	vertexArray.push_back( vert2 );
+	vertexArray.push_back( Vertex_PCU( vert4, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert2, tint, uvAtMaxs ) );
 
 	// Top
-	vertexArray.push_back( vert2 );
-	vertexArray.push_back( vert3 );
-	vertexArray.push_back( vert6 );
-	vertexArray.push_back( vert7 );
+	vertexArray.push_back( Vertex_PCU( vert2, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( vert3, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert7, tint, uvAtMaxs ) );
 
 	// Bottom
-	vertexArray.push_back( vert0 );
-	vertexArray.push_back( vert1 );
-	vertexArray.push_back( vert4 );
-	vertexArray.push_back( vert5 );
+	vertexArray.push_back( Vertex_PCU( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( vert1, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( vert4, tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( vert5, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
 }
 
 

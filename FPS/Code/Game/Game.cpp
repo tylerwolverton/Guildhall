@@ -127,26 +127,16 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
 	
-	/*Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
-	g_renderer->BindTexture( texture );*/
+	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
+	g_renderer->BindTexture( texture );
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
 	
-	//g_renderer->DrawMesh( mesh );
 	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -10.f, Rgba8::WHITE );
 	
 	Mat44 model = m_meshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model );
 	g_renderer->DrawMesh( m_mesh );
-
-	/*std::vector<Vertex_PCU> vertices;
-	g_renderer->AppendVertsForAABB2D( vertices, AABB2( -.5f, -.5f, .5f, .5f ), Rgba8::WHITE );
-
-	std::vector<uint> indices = { 0, 1, 2, 3, 4, 5 };
-
-	g_renderer->DrawIndexed( vertices.size(), &vertices[0], indices );*/
-
-
-	
+		
 	g_renderer->EndCamera( *m_worldCamera );
 }
 
