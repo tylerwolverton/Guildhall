@@ -12,7 +12,6 @@ GPUMesh::GPUMesh( RenderContext* context )
 	m_indices = new IndexBuffer( context, MEMORY_HINT_DYNAMIC );
 }
 
-
 //-----------------------------------------------------------------------------------------------
 GPUMesh::~GPUMesh()
 {

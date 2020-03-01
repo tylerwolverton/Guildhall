@@ -49,27 +49,21 @@ void Game::Startup()
 	m_worldCamera = new Camera();
 	m_worldCamera->SetColorTarget( nullptr );
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
-	//m_worldCamera->SetProjectionOrthographic( Vec2( 2.f, 2.f ), 0.f, 1.f );
+	//m_worldCamera->SetProjectionOrthographic( 9.f, 0.f, -100.f );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 
 	m_rng = new RandomNumberGenerator();
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
-	m_mesh = new GPUMesh( g_renderer );
-	m_meshTransform.SetPosition( Vec3( 1.f, .5f, -12.f ) );
-
 	std::vector<Vertex_PCU> vertices;
-	std::vector<uint> indices;
-	
 	g_renderer->AppendVertsForCubeMesh( vertices, Vec3::ZERO, 2.f, Rgba8::WHITE );
-	g_renderer->AppendIndicesForCubeMesh( indices );
+	
+	std::vector<uint> indices;
+	g_renderer->AppendIndicesForCubeMesh( indices );	
 
-	// Update buffers
-	m_mesh->UpdateVertices( (uint)vertices.size(), &vertices[0] );
-	m_mesh->UpdateIndices( indices );
-	/*mesh->AddVertices( 24, cubeVerts );
-	mesh->AddIndices( 36, indices );*/
+	m_mesh = new GPUMesh( g_renderer, vertices, indices );
+	m_meshTransform.SetPosition( Vec3( 1.f, .5f, -12.f ) );
 }
 
 

@@ -46,10 +46,10 @@ Project: FPS
     - [x] Create a new uniform buffer for storing a model matrix (slot 2)
     - [x] `SetModelMatrix` should update this uniform buffer
     - [x] `BeginCamera` should `SetModelMatrix` to the `IDENTITY`, and be sure to bind the buffer.
-- [ ] Be able to draw a cube mesh at `(1, 0.5, -12.0)`
-    - [ ] Create a `GPUMesh` class
+- [x] Be able to draw a cube mesh at `(1, 0.5, -12.0)`
+    - [x] Create a `GPUMesh` class
         - [x] Implement `IndexBuffer`
-        - [ ] Be able to construct a mesh from a vertex and index array
+        - [x] Be able to construct a mesh from a vertex and index array
         - [x] Add `RenderContext::BindIndexBuffer`
         - [x] Add `RenderContext::DrawIndexed`
         - [-] Add `RenderContext::DrawMesh`
