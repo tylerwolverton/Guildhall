@@ -276,7 +276,7 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 //-----------------------------------------------------------------------------------------------
 bool Game::SetMouseSensitivity( EventArgs* args )
 {
-	s_mouseSensitivityMultiplier = args->GetValue( "SensitivityMultiplier", 1.f );
+	s_mouseSensitivityMultiplier = args->GetValue( "SetMouseSensitivity", 1.f );
 
 	return false;
 }

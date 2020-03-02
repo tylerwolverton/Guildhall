@@ -668,20 +668,14 @@ void DevConsole::ExecuteCommand()
 		if ( cmd != nullptr 
 			 && !_strcmpi( args[0].c_str(), cmd->m_eventName.c_str() ) )
 		{
-			EventArgs* eventArgs = new EventArgs();
+			EventArgs eventArgs;
 
-			if ( (int)args.size() > 1
-				 && ( (int)args.size() - 1 ) % 2 == 0 )
+			if ( (int)args.size() > 1 )
 			{
-				for ( int i = 1; i < (int)args.size(); i+=2 )
-				{
-					eventArgs->SetValue( args[i], args[i + 1] );
-				}
+				eventArgs.SetValue( args[0], args[1] );
 			}
-			g_eventSystem->FireEvent( m_currentCommandStr, eventArgs, eUsageLocation::DEV_CONSOLE );
 
-			delete eventArgs;
-			eventArgs = nullptr;
+			g_eventSystem->FireEvent( args[0], &eventArgs, eUsageLocation::DEV_CONSOLE );
 
 			return;
 		}

@@ -6,3 +6,7 @@ quit
 setmousesensitivity SensitivityMultiplier 2
 setmousesensitivity SensitivityMultiplier 20
 quit
+SetMouseSensitivity 5
+quit
+SetMouseSensitivity 5
+quit
