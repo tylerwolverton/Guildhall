@@ -9,6 +9,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
+#include "Engine/Time/Clock.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -30,6 +31,8 @@ DevConsole::~DevConsole()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Startup()
 {
+	m_clock = new Clock();
+
 	m_devConsoleCamera = new Camera();
 	m_devConsoleCamera->SetColorTarget( nullptr );
 	m_devConsoleCamera->SetOutputSize( Vec2( 1920.f, 1080.f ) );
@@ -49,14 +52,14 @@ void DevConsole::BeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::Update( float deltaSeconds )
+void DevConsole::Update()
 {
 	if ( !m_isOpen )
 	{
 		return;
 	}
 
-	UpdateCursorBlink( deltaSeconds );
+	UpdateCursorBlink();
 
 	ProcessInput();
 }
@@ -74,6 +77,9 @@ void DevConsole::Shutdown()
 {
 	delete m_devConsoleCamera;
 	m_devConsoleCamera = nullptr;
+
+	delete m_clock;
+	m_clock = nullptr;
 
 	m_renderer = nullptr;
 
@@ -184,9 +190,9 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::UpdateCursorBlink( float deltaSeconds )
+void DevConsole::UpdateCursorBlink()
 {
-	m_curCursorSeconds += deltaSeconds;
+	/*m_curCursorSeconds += deltaSeconds;
 
 	if ( m_curCursorSeconds > m_maxCursorBlinkStateSeconds )
 	{
@@ -200,7 +206,7 @@ void DevConsole::UpdateCursorBlink( float deltaSeconds )
 		}
 
 		m_curCursorSeconds = 0.f;
-	}
+	}*/
 }
 
 

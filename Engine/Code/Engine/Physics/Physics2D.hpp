@@ -7,6 +7,7 @@
 //-----------------------------------------------------------------------------------------------
 struct Manifold2;
 class Polygon2;
+class Clock;
 class Rigidbody2D;
 class Collider2D;
 class DiscCollider2D;
@@ -17,9 +18,11 @@ class PolygonCollider2D;
 class Physics2D
 {
 public:
+	void Startup( Clock* gameClock );
 	void BeginFrame();
-	void Update( float deltaSeconds );
+	void Update();
 	void EndFrame();
+	void Shutdown();
 
 	// factory style create/destroy
 	Rigidbody2D* CreateRigidbody();
@@ -34,9 +37,9 @@ public:
 	void SetSceneGravity( float forceOfGravityY );
 
 private:
-	void AdvanceSimulation( float deltaSeconds );
-	void ApplyEffectors( float deltaSeconds ); 	
-	void MoveRigidbodies( float deltaSeconds ); 	
+	void AdvanceSimulation();
+	void ApplyEffectors(); 	
+	void MoveRigidbodies(); 	
 	void DetectCollisions(); 	
 	void ResolveCollisions(); 	
 	void ResolveCollision( const Collision2D& collision ); 	
@@ -51,6 +54,9 @@ private:
 
 
 private:
+	Clock* m_gameClock = nullptr;
+	Clock* m_physicsClock = nullptr;
+
 	std::vector<Rigidbody2D*> m_rigidbodies;
 	std::vector<int> m_garbageRigidbodyIndexes;
 	std::vector<Collider2D*> m_colliders;

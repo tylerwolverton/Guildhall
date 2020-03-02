@@ -8,7 +8,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class Window;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
@@ -16,19 +15,21 @@ struct IDXGIDebug;
 struct ID3D11RenderTargetView;
 struct ID3D11Buffer;
 struct ID3D11BlendState;
-class SwapChain;
+struct Rgba8;
+struct Vertex_PCU;
 struct AABB2;
 struct OBB2;
 struct Capsule2;
+class Window;
+class Clock;
 class Polygon2;
-struct Rgba8;
-struct Vertex_PCU;
 class Camera;
 class Texture;
 class Sampler;
 class BitmapFont;
 class Shader;
 class RenderBuffer;
+class SwapChain;
 class VertexBuffer;
 class IndexBuffer;
 class GPUMesh;
@@ -71,6 +72,7 @@ class RenderContext
 {
 public:
 	void Startup( Window* window );
+	void Setup( Clock* gameClock );
 	void BeginFrame();
 	void EndFrame();
 	void Shutdown();
@@ -80,7 +82,7 @@ public:
 	void BeginCamera( Camera& camera );
 	void EndCamera	( const Camera& camera );
 
-	void UpdateFrameTime( float deltaSeconds );
+	void UpdateFrameTime();
 
 	void Draw( int numVertices, int vertexOffset = 0 );
 	void DrawIndexed( int indexCount, int indexOffset = 0, int vertexOffset = 0 );
@@ -172,26 +174,28 @@ public:
 	RenderBuffer* m_modelMatrixUBO	= nullptr;
 
 private:
+	Clock* m_gameClock								= nullptr;
+
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
 
-	ID3D11Buffer* m_lastVBOHandle = nullptr;
-	ID3D11Buffer* m_lastIBOHandle = nullptr;
+	ID3D11Buffer* m_lastVBOHandle					= nullptr;
+	ID3D11Buffer* m_lastIBOHandle					= nullptr;
 
-	Shader* m_defaultShader = nullptr;
-	Shader* m_currentShader = nullptr;
+	Shader* m_defaultShader							= nullptr;
+	Shader* m_currentShader							= nullptr;
 	std::vector<Shader*> m_loadedShaders;
 
-	Sampler* m_defaultPointSampler = nullptr;
-	Sampler* m_defaultLinearSampler = nullptr;
-	Sampler* m_currentSampler = nullptr;
+	Sampler* m_defaultPointSampler					= nullptr;
+	Sampler* m_defaultLinearSampler					= nullptr;
+	Sampler* m_currentSampler						= nullptr;
 	
-	Texture* m_defaultWhiteTexture = nullptr;
+	Texture* m_defaultWhiteTexture					= nullptr;
 
-	ID3D11BlendState* m_alphaBlendState = nullptr;
-	ID3D11BlendState* m_additiveBlendState = nullptr;
-	ID3D11BlendState* m_disabledBlendState = nullptr;
-	eBlendMode m_currentBlendMode = eBlendMode::ALPHA;
+	ID3D11BlendState* m_alphaBlendState				= nullptr;
+	ID3D11BlendState* m_additiveBlendState			= nullptr;
+	ID3D11BlendState* m_disabledBlendState			= nullptr;
+	eBlendMode m_currentBlendMode					= eBlendMode::ALPHA;
 
-	bool m_isDrawing = false;
+	bool m_isDrawing								= false;
 };

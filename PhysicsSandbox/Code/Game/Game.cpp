@@ -13,6 +13,7 @@
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/PolygonCollider2D.hpp"
+#include "Engine/Time/Clock.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/GameObject.hpp"
@@ -46,7 +47,11 @@ void Game::Startup()
 
 	m_rng = new RandomNumberGenerator();
 
+	m_gameClock = new Clock();
+	g_renderer->Setup( m_gameClock );
+
 	m_physics2D = new Physics2D();
+	m_physics2D->Startup( m_gameClock );
 
 	m_mouseHistoryPoints[0].position = Vec2::ZERO;
 	m_mouseHistoryPoints[0].deltaSeconds = 0.f;
@@ -73,8 +78,13 @@ void Game::BeginFrame()
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
+	m_physics2D->Shutdown();
+
 	delete m_physics2D;
 	m_physics2D = nullptr;
+
+	delete m_gameClock;
+	m_gameClock = nullptr;
 
 	delete m_rng;
 	m_rng = nullptr;
@@ -96,22 +106,22 @@ void Game::RestartGame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::Update( float deltaSeconds )
+void Game::Update()
 {
 	if ( !g_devConsole->IsOpen() )
 	{
-		UpdateFromKeyboard( deltaSeconds );
-		UpdateMouse( deltaSeconds );
+		UpdateFromKeyboard();
+		UpdateMouse();
 	}
 
-	UpdateCameras( deltaSeconds );
+	UpdateCameras();
 
 	UpdateGameObjects();
 	UpdateDraggedObject();
 	UpdatePotentialPolygon();
 	UpdateOffScreenGameObjects();
 
-	m_physics2D->Update( deltaSeconds );
+	m_physics2D->Update();
 }
 
 
@@ -205,9 +215,9 @@ void Game::RenderUI() const
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateFromKeyboard( float deltaSeconds )
+void Game::UpdateFromKeyboard()
 {
-	UNUSED( deltaSeconds );
+	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
 	switch ( m_gameState )
 	{
@@ -341,9 +351,8 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateCameras( float deltaSeconds )
+void Game::UpdateCameras()
 {
-	UNUSED( deltaSeconds );
 	m_worldCamera->SetPosition( m_focalPoint );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT * m_zoomFactor );
 	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
@@ -351,9 +360,9 @@ void Game::UpdateCameras( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMouse( float deltaSeconds )
+void Game::UpdateMouse()
 {
-	UpdateMouseHistory( m_mouseWorldPosition, deltaSeconds );
+	UpdateMouseHistory( m_mouseWorldPosition );
 	
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
 	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition ).XY();
@@ -424,7 +433,7 @@ void Game::UpdateMouse( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMouseHistory( const Vec2& position, float deltaSeconds )
+void Game::UpdateMouseHistory( const Vec2& position )
 {
 	for ( int historyIdx = 0; historyIdx < 4; ++historyIdx )
 	{
@@ -433,7 +442,7 @@ void Game::UpdateMouseHistory( const Vec2& position, float deltaSeconds )
 	}
 
 	m_mouseHistoryPoints[4].position = position;
-	m_mouseHistoryPoints[4].deltaSeconds = deltaSeconds;
+	m_mouseHistoryPoints[4].deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 }
 
 

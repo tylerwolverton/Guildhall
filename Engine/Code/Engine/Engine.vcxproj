@@ -167,7 +167,6 @@
     <ClCompile Include="Core\Rgba8.cpp" />
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\TextBox.cpp" />
-    <ClCompile Include="Core\Time.cpp" />
     <ClCompile Include="Core\Vertex_PCU.cpp" />
     <ClCompile Include="Core\XmlUtils.cpp" />
     <ClCompile Include="Input\AnalogJoystick.cpp" />
@@ -220,6 +219,9 @@
     <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Renderer\TextureView.cpp" />
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="Time\Clock.cpp" />
+    <ClCompile Include="Time\Time.cpp" />
+    <ClCompile Include="Time\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
@@ -243,7 +245,6 @@
     <ClInclude Include="Core\Rgba8.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
     <ClInclude Include="Core\TextBox.hpp" />
-    <ClInclude Include="Core\Time.hpp" />
     <ClInclude Include="Core\Vertex_PCU.hpp" />
     <ClInclude Include="Core\XmlUtils.hpp" />
     <ClInclude Include="Input\AnalogJoystick.hpp" />
@@ -297,6 +298,9 @@
     <ClInclude Include="Renderer\Texture.hpp" />
     <ClInclude Include="Renderer\TextureView.hpp" />
     <ClInclude Include="Renderer\VertexBuffer.hpp" />
+    <ClInclude Include="Time\Clock.hpp" />
+    <ClInclude Include="Time\Time.hpp" />
+    <ClInclude Include="Time\Timer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

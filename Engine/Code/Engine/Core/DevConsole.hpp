@@ -10,6 +10,7 @@
 struct Vertex_PCU;
 struct Vec2;
 struct AABB2;
+class Clock;
 class InputSystem;
 class RenderContext;
 class BitmapFont;
@@ -41,7 +42,7 @@ public:
 
 	void Startup();
 	void BeginFrame();
-	void Update( float deltaSeconds );
+	void Update();
 	void EndFrame();
 	void Shutdown();
 
@@ -75,7 +76,7 @@ private:
 
 	bool ProcessCharTyped( unsigned char character );
 	void UpdateFromKeyboard();
-	void UpdateCursorBlink( float deltaSeconds );
+	void UpdateCursorBlink();
 
 	void RenderBackground( const AABB2& bounds ) const;
 	void AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const;
@@ -96,6 +97,7 @@ private:
 
 	BitmapFont* m_bitmapFont = nullptr;
 
+	Clock* m_clock = nullptr;
 	bool m_isOpen = false;
 	Camera* m_devConsoleCamera = nullptr;
 	std::vector<DevConsoleLogMessage> m_logMessages;

@@ -12,8 +12,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class Entity;
 struct Rgba8;
+class Clock;
+class Entity;
 class RandomNumberGenerator;
 class Camera;
 class Physics2D;
@@ -45,7 +46,7 @@ public:
 
 	void Startup();
 	void BeginFrame();
-	void Update( float deltaSeconds );
+	void Update();
 	void Render() const;
 	void DebugRender() const;
 	void EndFrame();
@@ -61,10 +62,10 @@ private:
 	void RenderPolygonPoints() const;
 	void RenderUI() const;
 	
-	void UpdateFromKeyboard( float deltaSeconds );
-	void UpdateCameras( float deltaSeconds );
-	void UpdateMouse( float deltaSeconds );
-	void UpdateMouseHistory( const Vec2& position, float deltaSeconds );
+	void UpdateFromKeyboard();
+	void UpdateCameras();
+	void UpdateMouse();
+	void UpdateMouseHistory( const Vec2& position );
 	void UpdateGameObjects();
 	void UpdateDraggedObject();
 	void UpdatePotentialPolygon();
@@ -87,6 +88,7 @@ private:
 	MouseMovementHistoryPoint GetCummulativeMouseHistory();
 
 private:
+	Clock*				m_gameClock						= nullptr;
 	bool				m_isDebugRendering				= false;
 														
 	Camera*				m_worldCamera					= nullptr;

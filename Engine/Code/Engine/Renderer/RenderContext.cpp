@@ -5,7 +5,6 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/DevConsole.hpp"
-#include "Engine/Core/Time.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
@@ -24,6 +23,8 @@
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/OS/Window.hpp"
+#include "Engine/Time/Clock.hpp"
+#include "Engine/Time/Time.hpp"
 
 #include "ThirdParty/stb/stb_image.h"
 
@@ -107,8 +108,20 @@ void RenderContext::Startup( Window* window )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::Setup( Clock* gameClock )
+{
+	m_gameClock = gameClock;
+	if ( m_gameClock == nullptr )
+	{
+		m_gameClock = Clock::GetMaster();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::BeginFrame()
 {
+	UpdateFrameTime();
 }
 
 
@@ -274,11 +287,11 @@ void RenderContext::EndCamera( const Camera& camera )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::UpdateFrameTime( float deltaSeconds )
+void RenderContext::UpdateFrameTime()
 {
 	FrameData frameData;
-	frameData.systemTimeSeconds = (float)GetCurrentTimeSeconds();
-	frameData.systemDeltaTimeSeconds = deltaSeconds;
+	frameData.systemTimeSeconds = (float)Clock::GetMaster()->GetTotalElapsedSeconds();
+	frameData.systemDeltaTimeSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
 	m_frameUBO->Update( &frameData, sizeof( frameData ), sizeof( frameData ) );
 }

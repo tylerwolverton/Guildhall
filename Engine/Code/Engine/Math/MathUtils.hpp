@@ -51,6 +51,7 @@ bool		DoSpheresOverlap( const Vec3& center1, float radius1, const Vec3& center2,
 float		Interpolate			( float a, float b, float fractionOfB );
 const Vec2  InterpolatePoint2D	( const Vec2& a, const Vec2& b, float fractionOfB );
 float		ClampMinMax			( float value, float minimumValue, float maximumValue );
+double		ClampMinMax			( double value, double minimumValue, double maximumValue );
 float		ClampZeroToOne		( float value );
 int			ClampMinMaxInt		( int value, int minimumValue, int maximumValue );
 float		RangeMapFloat		( float orginalBegin, float originalEnd, float newBegin, float newEnd, float value );

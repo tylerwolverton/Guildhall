@@ -960,6 +960,24 @@ float ClampMinMax( float value, float minimumValue, float maximumValue )
 
 
 //-----------------------------------------------------------------------------------------------
+double ClampMinMax( double value, double minimumValue, double maximumValue )
+{
+	if ( value < minimumValue )
+	{
+		return minimumValue;
+	}
+	else if ( value > maximumValue )
+	{
+		return maximumValue;
+	}
+	else
+	{
+		return value;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float ClampZeroToOne( float value )
 {
 	return ClampMinMax( value, 0.f, 1.f );

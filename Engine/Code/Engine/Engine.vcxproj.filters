@@ -31,9 +31,12 @@
     </Filter>
     <Filter Include="Physics">
       <UniqueIdentifier>{36f29722-2039-46f4-a647-3bee08615ce3}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="OS">
       <UniqueIdentifier>{629a22df-2026-4ee0-b0b5-1d1e03ad3f41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Time">
+      <UniqueIdentifier>{2b06d991-dda8-4c55-9904-e3ed47542039}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -66,9 +69,6 @@
     </ClCompile>
     <ClCompile Include="Math\RandomNumberGenerator.cpp">
       <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Time.cpp">
-      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Input\AnalogJoystick.cpp">
       <Filter>Input</Filter>
@@ -232,6 +232,15 @@
     <ClCompile Include="Renderer\IndexBuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Time\Clock.cpp">
+      <Filter>Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Time\Timer.cpp">
+      <Filter>Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Time\Time.cpp">
+      <Filter>Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -265,9 +274,6 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\StringUtils.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Time.hpp">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Input\AnalogJoystick.hpp">
@@ -458,6 +464,15 @@
     </ClInclude>
     <ClInclude Include="Renderer\IndexBuffer.hpp">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Time\Clock.hpp">
+      <Filter>Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Time\Timer.hpp">
+      <Filter>Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Time\Time.hpp">
+      <Filter>Time</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
