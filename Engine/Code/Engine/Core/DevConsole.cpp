@@ -1,6 +1,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
@@ -656,6 +657,8 @@ void DevConsole::ExecuteCommand()
 		m_currentCommandHistoryPos = (int)m_commandHistory.size();
 	}
 
+	std::vector<std::string> args = SplitStringOnDelimiter( m_currentCommandStr, ' ' );
+
 	// Check for a match in supported commands with case insensitivity
 	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
 
@@ -663,9 +666,23 @@ void DevConsole::ExecuteCommand()
 	{
 		EventSubscription*& cmd = supportedCommands[cmdIdx];
 		if ( cmd != nullptr 
-			 && !_strcmpi( m_currentCommandStr.c_str(), cmd->m_eventName.c_str() ) )
+			 && !_strcmpi( args[0].c_str(), cmd->m_eventName.c_str() ) )
 		{
-			g_eventSystem->FireEvent( m_currentCommandStr, nullptr, eUsageLocation::DEV_CONSOLE );
+			EventArgs* eventArgs = new EventArgs();
+
+			if ( (int)args.size() > 1
+				 && ( (int)args.size() - 1 ) % 2 == 0 )
+			{
+				for ( int i = 1; i < (int)args.size(); i+=2 )
+				{
+					eventArgs->SetValue( args[i], args[i + 1] );
+				}
+			}
+			g_eventSystem->FireEvent( m_currentCommandStr, eventArgs, eUsageLocation::DEV_CONSOLE );
+
+			delete eventArgs;
+			eventArgs = nullptr;
+
 			return;
 		}
 	}

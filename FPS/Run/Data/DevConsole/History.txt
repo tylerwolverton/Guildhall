@@ -3,3 +3,6 @@ Tyler has a history
 quit
 help
 quit
+setmousesensitivity SensitivityMultiplier 2
+setmousesensitivity SensitivityMultiplier 20
+quit

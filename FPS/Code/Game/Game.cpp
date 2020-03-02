@@ -29,6 +29,9 @@
 #include "Game/ActorDefinition.hpp"
 
 
+static float s_mouseSensitivityMultiplier = 1.f;
+
+
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
@@ -44,6 +47,8 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	g_eventSystem->RegisterEvent( "SetMouseSensitivity", "Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
+
 	g_inputSystem->SetCursorMode( CURSOR_RELATIVE );
 
 	m_worldCamera = new Camera();
@@ -188,8 +193,8 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	// Rotation
 	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-	float yaw = -mousePosition.x * 50.f;
-	float pitch = -mousePosition.y * 50.f;
+	float yaw = -mousePosition.x * s_mouseSensitivityMultiplier;
+	float pitch = -mousePosition.y * s_mouseSensitivityMultiplier;
 
 	Transform transform = m_worldCamera->GetTransform();
 	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch * deltaSeconds,
@@ -265,4 +270,13 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 	{
 		m_debugInfoTextBox->AddLineOFText( color, textLines[ textLineIndex ] );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Game::SetMouseSensitivity( EventArgs* args )
+{
+	s_mouseSensitivityMultiplier = args->GetValue( "SensitivityMultiplier", 1.f );
+
+	return false;
 }

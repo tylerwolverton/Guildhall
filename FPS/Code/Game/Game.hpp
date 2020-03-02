@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
 
@@ -32,9 +33,6 @@ public:
 
 	void		RestartGame();
 	
-	void		SetWorldCameraOrthographicView( const AABB2& cameraBounds );
-	void		SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight );
-
 	bool		IsNoClipEnabled()														{ return m_isNoClipEnabled; }
 	bool		IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
 
@@ -43,17 +41,19 @@ public:
 	void		AddScreenShakeIntensity( float additionalIntensityFraction );
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
+
+	static bool SetMouseSensitivity( EventArgs* args );
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
+
+	static float m_mouseSensitivityMultiplier;
 
 private:
 	void LoadAssets();
 
 	void UpdateFromKeyboard( float deltaSeconds );
 	void LoadNewMap( const std::string& mapName );
-	void UpdateMousePositions( float deltaSeconds );
-	void UpdateMouseWorldPosition( float deltaSeconds );
 	void UpdateCameras( float deltaSeconds );
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
