@@ -37,6 +37,9 @@ public:
 	void SetSceneGravity( const Vec2& forceOfGravity );
 	void SetSceneGravity( float forceOfGravityY );
 
+	float GetFixedDeltaSeconds() const															{ return m_fixedDeltaSeconds; };
+	void SetFixedDeltaSeconds( float newDeltaSeconds );
+
 private:
 	void AdvanceSimulation( float deltaSeconds );
 	void ApplyEffectors(); 	

@@ -72,6 +72,18 @@ void GameObject::SetVelocity( const Vec2& velocity )
 
 
 //-----------------------------------------------------------------------------------------------
+Vec2 GameObject::GetVerletVelocity() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return Vec2::ZERO;
+	}
+
+	return m_rigidbody->GetVerletVelocity();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Vec2 GameObject::GetPosition()
 {
 	if ( m_rigidbody == nullptr )

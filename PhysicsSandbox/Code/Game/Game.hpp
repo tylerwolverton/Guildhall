@@ -118,4 +118,7 @@ private:
 	std::vector<int>			m_garbageGameObjectIndexes;
 
 	TextBox*					m_tooltipBox					= nullptr;
+	bool						m_isPhysicsPaused				= false;
+	float						m_currentFixedDeltaSeconds		= 1.f / 120.f;
+	float						m_currentTimeScale				= 1.f;
 };

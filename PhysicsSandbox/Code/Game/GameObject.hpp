@@ -28,6 +28,8 @@ public:
 	Vec2 GetVelocity() const;
 	void SetVelocity( const Vec2& velocity );
 
+	Vec2 GetVerletVelocity() const;
+
 	Vec2 GetPosition();
 	void SetPosition( const Vec2& position );
 	

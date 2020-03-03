@@ -349,3 +349,10 @@ void Physics2D::SetSceneGravity( float forceOfGravityY )
 {
 	m_forceOfGravity = Vec2( 0.f, forceOfGravityY );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::SetFixedDeltaSeconds( float newDeltaSeconds )
+{
+	m_fixedDeltaSeconds = newDeltaSeconds;
+}

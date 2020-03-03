@@ -219,6 +219,13 @@ void Game::RenderUI() const
 	DrawTextTriangles2D( *g_renderer, gravityStr, Vec2( 1600.f, 1000.f ), 30.f, Rgba8::WHITE );
 	DrawTextTriangles2D( *g_renderer, "- or + keys to change ", Vec2( 1600.f, 970.f ), 20.f, Rgba8::WHITE );
 
+	std::string timeStr = Stringf( "Time Scale: %.2fx", m_currentTimeScale );
+	DrawTextTriangles2D( *g_renderer, timeStr, Vec2( 100.f, 1000.f ), 30.f, Rgba8::WHITE );
+	if ( m_isPhysicsPaused )
+	{
+		DrawTextTriangles2D( *g_renderer, "Simulation Paused ", Vec2( 100.f, 970.f ), 20.f, Rgba8::WHITE );
+	}
+
 	RenderToolTipBox();
 }
 
@@ -367,6 +374,52 @@ void Game::UpdateFromKeyboard()
 					m_dragTarget = nullptr;
 				}
 			}
+
+			if ( g_inputSystem->WasKeyJustPressed( '0' ) )
+			{
+				m_currentFixedDeltaSeconds = 1.f / 120.f;
+				m_currentTimeScale = 1.f;
+				if ( !m_isPhysicsPaused )
+				{
+					m_physics2D->SetFixedDeltaSeconds( m_currentFixedDeltaSeconds );
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( '8' ) )
+			{
+				m_currentFixedDeltaSeconds *= .5f;
+				m_currentTimeScale *= .5f;
+				if ( !m_isPhysicsPaused )
+				{
+					m_physics2D->SetFixedDeltaSeconds( m_currentFixedDeltaSeconds );
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( '9' ) )
+			{
+				m_currentFixedDeltaSeconds *= 2.f;
+				m_currentTimeScale *= 2.f;
+				if ( !m_isPhysicsPaused )
+				{
+					m_physics2D->SetFixedDeltaSeconds( m_currentFixedDeltaSeconds );
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( 'P' ) )
+			{
+				if ( m_isPhysicsPaused )
+				{
+					m_physics2D->SetFixedDeltaSeconds( m_currentFixedDeltaSeconds );
+					m_isPhysicsPaused = false;
+				}
+				else
+				{
+					m_isPhysicsPaused = true;
+					m_currentFixedDeltaSeconds = m_physics2D->GetFixedDeltaSeconds();
+					m_physics2D->SetFixedDeltaSeconds( 0.f );
+				}
+			}
+
 		} break;
 
 		case eGameState::CREATE_POLYGON:
@@ -593,6 +646,7 @@ void Game::UpdateToolTipBox()
 	m_tooltipBox->SetText( Stringf( "Simulation Mode: %s", simulationModeStr.c_str() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Mass: %.2f", selectedObject->GetMass() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Verlet Velocity: ( %.2f, %.2f )", selectedObject->GetVerletVelocity().x, selectedObject->GetVerletVelocity().y ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Bounciness: %.2f", selectedObject->GetBounciness() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Friction: %.2f", selectedObject->GetFriction() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Drag: %.2f", selectedObject->GetDrag() ) );
