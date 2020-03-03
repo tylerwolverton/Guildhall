@@ -35,13 +35,17 @@ public:
 
 	Vec2 GetVelocity()																{ return m_velocity; }
 	void SetVelocity( const Vec2& velocity );
+	Vec2 GetVerletVelocity()														{ return m_verletVelocity; }
 
 	Vec2 GetPosition()																{ return m_worldPosition; }
 	void SetPosition( const Vec2& position );
 	void Translate2D( const Vec2& translation );
 
 	float GetMass() const															{ return m_mass; }
+	void ChangeMass( float deltaMass );
 	float GetInverseMass() const													{ return m_inverseMass; }
+
+	float GetDrag() const															{ return m_drag; }
 
 	void AddForce( const Vec2& force );
 	void ApplyImpulseAt( const Vec2& impulse, const Vec2& worldPosition );
@@ -62,9 +66,11 @@ private:
 
 	Vec2 m_forces = Vec2::ZERO;
 	Vec2 m_velocity = Vec2::ZERO;
-	//Vec2 m_acceleration = Vec2::ZERO;
+	Vec2 m_verletVelocity = Vec2::ZERO;
+
 	float m_mass = 1.f;
 	float m_inverseMass = 1.f;
+	float m_drag = 0.f;
 
 	bool m_isEnabled = true;
 	eSimulationMode m_simulationMode = SIMULATION_MODE_DYNAMIC;

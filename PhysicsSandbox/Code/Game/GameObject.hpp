@@ -46,7 +46,14 @@ public:
 	const AABB2 GetBoundingBox() const;
 
 	void ChangeBounciness( float deltaBounciness );
-	float GetBounciness();
+	void ChangeFriction( float deltaFriction );
+	void ChangeMass( float deltaMass );
+	void ChangeDrag( float deltaDrag );
+	
+	float GetBounciness() const;
+	float GetFriction() const;
+	float GetMass() const;
+	float GetDrag() const;
 
 private:
 	Rigidbody2D* m_rigidbody = nullptr;

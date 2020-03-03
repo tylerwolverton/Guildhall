@@ -10,14 +10,14 @@ Project - PhysicsSandbox
 - [ ] Allow user to adjust object drag when selected [minimum of 0]
     - [ ] Suggested keys are `:` and `\'` 
 - [ ] Switch to use a fixed time step
-    - [ ] Add a `Clock` class
-        - [ ] Engine should have a `Master` clock that is creaetd, that all clocks use as their parent by default
-        - [ ] Be sure to update your clock system in `App::BeginFrame`
-    - [ ] Give the physics engine its own clock (either basded off a game clock or master)
-    - [ ] Add a `Timer` class
+    - [x] Add a `Clock` class
+        - [x] Engine should have a `Master` clock that is creaetd, that all clocks use as their parent by default
+        - [x] Be sure to update your clock system in `App::BeginFrame`
+    - [x] Give the physics engine its own clock (either basded off a game clock or master)
+    - [-] Add a `Timer` class
     - [ ] Add `Physics2D::GetFixedDeltaTime()` && `Physics2D::SetFixedDeltaTime( float frameTimeSeconds )`
-        - [ ] This should default to `120hz` or `1.0f / 120.0f` seconds per frame. 
-    - [ ] Use timer to break up `Physics2D::Update` into equal steps
+        - [x] This should default to `120hz` or `1.0f / 120.0f` seconds per frame. 
+    - [x] Use timer to break up `Physics2D::Update` into equal steps
     - [ ] Add a console command `set_physics_update hz=NUMBER` to be able to change this at runtime.
 - [ ] Allow user to adjust time scale of the physics clock
     - [ ] `P`: Pause & Resume

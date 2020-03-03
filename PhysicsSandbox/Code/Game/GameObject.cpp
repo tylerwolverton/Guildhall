@@ -258,7 +258,33 @@ void GameObject::ChangeBounciness( float deltaBounciness )
 
 
 //-----------------------------------------------------------------------------------------------
-float GameObject::GetBounciness()
+void GameObject::ChangeFriction( float deltaFriction )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::ChangeMass( float deltaMass )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody->ChangeMass( deltaMass );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::ChangeDrag( float deltaDrag )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float GameObject::GetBounciness() const
 {
 	if ( m_rigidbody == nullptr )
 	{
@@ -272,4 +298,46 @@ float GameObject::GetBounciness()
 	}
 
 	return collider->m_material.m_bounciness;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float GameObject::GetFriction() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0.f;
+	}
+
+	Collider2D* collider = m_rigidbody->GetCollider();
+	if ( collider == nullptr )
+	{
+		return 0.f;
+	}
+
+	return collider->m_material.m_friction;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float GameObject::GetMass() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0.f;
+	}
+
+	return m_rigidbody->GetMass();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float GameObject::GetDrag() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0.f;
+	}
+
+	return m_rigidbody->GetDrag();
 }

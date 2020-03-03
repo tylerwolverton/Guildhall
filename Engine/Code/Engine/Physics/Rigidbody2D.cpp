@@ -1,6 +1,7 @@
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -82,6 +83,17 @@ void Rigidbody2D::Translate2D( const Vec2& translation )
 	{
 		m_collider->UpdateWorldShape();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Rigidbody2D::ChangeMass( float deltaMass )
+{
+	m_mass += deltaMass;
+
+	ClampMin( m_mass, .001f );
+
+	m_inverseMass = 1.f / m_mass;
 }
 
 

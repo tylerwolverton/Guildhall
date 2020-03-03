@@ -50,16 +50,14 @@ private:
 	void CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& collisionNormal );
 	void CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& collisionNormal );
 
-
 	void CleanupDestroyedObjects();  	
-
 
 private:
 	Clock* m_gameClock = nullptr;
 	Clock* m_physicsClock = nullptr;
 	Timer* m_stepTimer = nullptr;
 
-	float m_fixedDeltaSeconds = .01f;
+	float m_fixedDeltaSeconds = 1.0f / 120.0f;
 
 	std::vector<Rigidbody2D*> m_rigidbodies;
 	std::vector<int> m_garbageRigidbodyIndexes;

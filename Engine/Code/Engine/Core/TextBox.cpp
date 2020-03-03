@@ -24,17 +24,17 @@ TextBox::~TextBox()
 
 
 //-----------------------------------------------------------------------------------------------
-void TextBox::SetText( const Rgba8& textColor, const std::string& textBoxPrintString )
+void TextBox::SetText( const std::string& textBoxPrintString, const Rgba8& textColor )
 {
 	m_textBoxMessageLines.clear();
-	m_textBoxMessageLines.push_back( TextBoxMessageLine( textColor, textBoxPrintString ) );
+	m_textBoxMessageLines.push_back( TextBoxMessageLine( textBoxPrintString, textColor ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void TextBox::AddLineOFText( const Rgba8& textColor, const std::string& textBoxPrintString )
+void TextBox::AddLineOFText( const std::string& textBoxPrintString, const Rgba8& textColor )
 {
-	m_textBoxMessageLines.push_back( TextBoxMessageLine( textColor, textBoxPrintString ) );
+	m_textBoxMessageLines.push_back( TextBoxMessageLine( textBoxPrintString, textColor ) );
 }
 
 
@@ -50,7 +50,10 @@ void TextBox::Render( const Vec2& worldMins ) const
 void TextBox::RenderBackground( const Vec2& worldMins ) const
 {
 	std::vector<Vertex_PCU> backgroundVertices;
-	AABB2 worldBoxBounds( worldMins + m_localBoxBounds.mins, worldMins + m_localBoxBounds.maxs );
+
+	AABB2 textBounds = GetTextBounds();
+
+	AABB2 worldBoxBounds( worldMins + textBounds.mins, worldMins + textBounds.maxs );
 	m_renderer.AppendVertsForAABB2D( backgroundVertices, worldBoxBounds, m_backgroundColor );
 
 	m_renderer.BindTexture( nullptr );
@@ -120,4 +123,31 @@ void TextBox::RenderText( const Vec2& worldMins ) const
 		m_renderer.BindTexture( nullptr );
 	}
 	m_renderer.DrawVertexArray( vertices );
+}
+
+//-----------------------------------------------------------------------------------------------
+AABB2 TextBox::GetTextBounds() const
+{
+	float boundsHeightInPixels = m_localBoxBounds.maxs.y - m_localBoxBounds.mins.y;
+	float boundsWidthInPixels = m_localBoxBounds.maxs.x - m_localBoxBounds.mins.x;
+
+	float lineHeight = boundsHeightInPixels / (float)m_textBoxMessageLines.size();
+	float longestLineWidth = -1.f;
+	for ( int textBoxMessageIndex = 0; textBoxMessageIndex < (int)m_textBoxMessageLines.size(); ++textBoxMessageIndex )
+	{
+		float curLineWidth = lineHeight * m_textBoxMessageLines[textBoxMessageIndex].m_message.length();
+		if ( curLineWidth > longestLineWidth )
+		{
+			longestLineWidth = curLineWidth;
+		}
+	}
+
+	float maxWidth = longestLineWidth;
+	if ( longestLineWidth > boundsWidthInPixels )
+	{
+		lineHeight *= boundsWidthInPixels / longestLineWidth;
+		maxWidth = boundsWidthInPixels;
+	}
+
+	return AABB2( m_localBoxBounds.mins, Vec2( maxWidth, lineHeight * (int)m_textBoxMessageLines.size() ) );
 }

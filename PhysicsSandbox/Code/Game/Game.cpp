@@ -5,6 +5,7 @@
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/TextBox.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
@@ -46,6 +47,8 @@ void Game::Startup()
 	m_uiCamera->SetColorTarget( nullptr );
 
 	m_rng = new RandomNumberGenerator();
+
+	m_tooltipBox = new TextBox( *g_renderer, AABB2( Vec2::ZERO, Vec2( 600.f, 400.f ) ) );
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
@@ -89,6 +92,9 @@ void Game::Shutdown()
 	delete m_rng;
 	m_rng = nullptr;
 
+	delete m_tooltipBox;
+	m_tooltipBox = nullptr;
+
 	delete m_uiCamera;
 	m_uiCamera = nullptr;
 
@@ -120,6 +126,7 @@ void Game::Update()
 	UpdateDraggedObject();
 	UpdatePotentialPolygon();
 	UpdateOffScreenGameObjects();
+	UpdateToolTipBox();
 
 	m_physics2D->Update();
 }
@@ -211,6 +218,30 @@ void Game::RenderUI() const
 	std::string gravityStr = Stringf( "Gravity: %.1f", m_physics2D->GetSceneGravity().y );
 	DrawTextTriangles2D( *g_renderer, gravityStr, Vec2( 1600.f, 1000.f ), 30.f, Rgba8::WHITE );
 	DrawTextTriangles2D( *g_renderer, "- or + keys to change ", Vec2( 1600.f, 970.f ), 20.f, Rgba8::WHITE );
+
+	RenderToolTipBox();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderToolTipBox() const
+{
+	GameObject* selectedObject = nullptr;
+	if ( m_dragTarget != nullptr )
+	{
+		selectedObject = m_dragTarget;
+	}
+	else
+	{
+		selectedObject = GetTopGameObjectAtMousePosition();
+	}
+
+	if ( selectedObject == nullptr )
+	{
+		return;
+	}
+
+	m_tooltipBox->Render( g_inputSystem->GetNormalizedMouseClientPos() * Vec2(WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS) );
 }
 
 
@@ -534,6 +565,41 @@ void Game::UpdateOffScreenGameObjects()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateToolTipBox()
+{
+	GameObject* selectedObject = nullptr;
+	if ( m_dragTarget != nullptr )
+	{
+		selectedObject = m_dragTarget;
+	}
+	else
+	{
+		selectedObject = GetTopGameObjectAtMousePosition();
+	}
+
+	if ( selectedObject == nullptr )
+	{
+		return;
+	}
+
+	std::string simulationModeStr;
+	switch ( selectedObject->GetSimulationMode() )
+	{
+		case eSimulationMode::SIMULATION_MODE_DYNAMIC: simulationModeStr = "Dynamic"; break;
+		case eSimulationMode::SIMULATION_MODE_KINEMATIC: simulationModeStr = "Kinematic"; break;
+		case eSimulationMode::SIMULATION_MODE_STATIC: simulationModeStr = "Static"; break;
+	}
+
+	m_tooltipBox->SetText( Stringf( "Simulation Mode: %s", simulationModeStr.c_str() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Mass: %.2f", selectedObject->GetMass() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Bounciness: %.2f", selectedObject->GetBounciness() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Friction: %.2f", selectedObject->GetFriction() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Drag: %.2f", selectedObject->GetDrag() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ResetGameObjectColors()
 {
 	// Reset fill color for all game objects
@@ -677,7 +743,7 @@ void Game::SpawnPolygon( const std::vector<Vec2>& points )
 
 
 //-----------------------------------------------------------------------------------------------
-GameObject* Game::GetTopGameObjectAtMousePosition()
+GameObject* Game::GetTopGameObjectAtMousePosition() const
 {
 	int gameObjectIdx = GetIndexOfTopGameObjectAtMousePosition();
 
@@ -693,7 +759,7 @@ GameObject* Game::GetTopGameObjectAtMousePosition()
 
 
 //-----------------------------------------------------------------------------------------------
-int Game::GetIndexOfTopGameObjectAtMousePosition()
+int Game::GetIndexOfTopGameObjectAtMousePosition() const
 {
 	for ( int objectIdx = (int)m_gameObjects.size() - 1; objectIdx >= 0; --objectIdx )
 	{
@@ -714,7 +780,7 @@ int Game::GetIndexOfTopGameObjectAtMousePosition()
 
 
 //-----------------------------------------------------------------------------------------------
-int Game::GetIndexOfGameObject( GameObject* gameObjectToFind )
+int Game::GetIndexOfGameObject( GameObject* gameObjectToFind ) const
 {
 	if ( gameObjectToFind == nullptr )
 	{

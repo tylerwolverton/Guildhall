@@ -16,13 +16,13 @@ class Camera;
 struct TextBoxMessageLine
 {
 public:
-	Rgba8 m_color = Rgba8::WHITE;
 	std::string m_message;
+	Rgba8 m_color = Rgba8::WHITE;
 
 public:
-	explicit TextBoxMessageLine( const Rgba8& color, std::string message )
-		: m_color( color )
-		, m_message( message )
+	explicit TextBoxMessageLine( std::string message, const Rgba8& color)
+		: m_message( message )
+		, m_color( color )
 	{}
 };
 
@@ -34,13 +34,15 @@ public:
 	explicit TextBox( RenderContext& renderer, const AABB2& localBoxBounds );
 	~TextBox();
 
-	void SetText( const Rgba8& textColor, const std::string& textBoxPrintString );
-	void AddLineOFText( const Rgba8& textColor, const std::string& textBoxPrintString );
+	void SetText( const std::string& textBoxPrintString, const Rgba8& textColor = Rgba8::WHITE );
+	void AddLineOFText( const std::string& textBoxPrintString, const Rgba8& textColor = Rgba8::WHITE );
 	void Render( const Vec2& worldMins ) const;
 	
 private:
 	void RenderBackground( const Vec2& worldMins ) const;
 	void RenderText( const Vec2& worldMins ) const;
+
+	AABB2 GetTextBounds() const;
 
 private:
 	RenderContext& m_renderer;
