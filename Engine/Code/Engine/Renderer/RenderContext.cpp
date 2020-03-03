@@ -100,7 +100,7 @@ void RenderContext::Startup( Window* window )
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
 
 	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
-	SetDepthTest( eCompareFunc::COMPARISON_NEVER, false );
+	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
 
 	CreateBlendStates();
 }
@@ -192,7 +192,7 @@ void RenderContext::SetDepthTest( eCompareFunc compare, bool writeDepthOnPass )
 {
 	D3D11_DEPTH_STENCIL_DESC desc;
 	desc.DepthEnable = writeDepthOnPass;
-	desc.DepthFunc = D3D11_COMPARISON_LESS;//ToDxComparisonFunc( compare );
+	desc.DepthFunc = ToDxComparisonFunc( compare );
 	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	desc.StencilEnable = false;
 
@@ -291,7 +291,8 @@ void RenderContext::BeginCamera( Camera& camera )
 		ClearScreen( renderTargetView, camera.GetClearColor() );
 	}
 	
-	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT )
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT 
+		 && camera.GetDepthStencilTarget() != nullptr )
 	{
 		ClearDepth( camera.GetDepthStencilTarget(), camera.GetClearDepth() );
 	}
