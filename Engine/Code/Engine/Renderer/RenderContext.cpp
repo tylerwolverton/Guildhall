@@ -192,7 +192,7 @@ void RenderContext::SetDepthTest( eCompareFunc compare, bool writeDepthOnPass )
 {
 	D3D11_DEPTH_STENCIL_DESC desc;
 	desc.DepthEnable = writeDepthOnPass;
-	desc.DepthFunc = D3D11_COMPARISON_NOT_EQUAL;//ToDxComparisonFunc( compare );
+	desc.DepthFunc = D3D11_COMPARISON_LESS;//ToDxComparisonFunc( compare );
 	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	desc.StencilEnable = false;
 

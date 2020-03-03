@@ -445,6 +445,32 @@ void AppendIndicesForCubeMesh( std::vector<uint>& indices )
 
 
 //-----------------------------------------------------------------------------------------------
+void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& mins, const Vec2& dimensions, int horizontalCuts, int verticalCuts, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	float sectionWidth = dimensions.x / ( (float)verticalCuts + 1.f );
+	float sectionHeight = dimensions.y / ( (float)horizontalCuts + 1.f );
+
+	int numVertices = ( verticalCuts + 1 ) * ( horizontalCuts + 1 );
+	vertexArray.reserve( numVertices );
+
+	for ( int yIdx = 0; yIdx < horizontalCuts; ++yIdx )
+	{
+		for ( int xIdx = 0; xIdx < verticalCuts; ++xIdx )
+		{
+			vertexArray.push_back( Vertex_PCU( mins + Vec3( sectionWidth * xIdx, sectionHeight * yIdx, 0.f ), tint, uvAtMins ) );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendIndicesForPlaneMesh( std::vector<uint>& indices )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 mins( spriteBounds.mins, zDepth );

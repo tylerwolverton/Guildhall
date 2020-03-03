@@ -49,7 +49,7 @@ public:
 	void SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip );
 
 	// Rendering
-	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 0.f, unsigned int stencil = 0 );
+	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 1.f, unsigned int stencil = 0 );
 	
 	void SetColorTarget( Texture* texture );
 	void SetDepthStencilTarget( Texture* texture );

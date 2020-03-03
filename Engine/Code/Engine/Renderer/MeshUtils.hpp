@@ -6,6 +6,7 @@
 #include <vector>
 
 
+//-----------------------------------------------------------------------------------------------
 struct Rgba8;
 struct Vertex_PCU;
 struct AABB2;
@@ -14,6 +15,8 @@ struct Capsule2;
 class Polygon2;
 class RenderContext;
 
+
+//-----------------------------------------------------------------------------------------------
 void DrawLine2D( RenderContext* renderer, const Vec2& start, const Vec2& end, const Rgba8& color, float thickness );
 void DrawRing2D( RenderContext* renderer, const Vec2& center, float radius, const Rgba8& color, float thickness );
 void DrawDisc2D( RenderContext* renderer, const Vec2& center, float radius, const Rgba8& color );
@@ -29,7 +32,8 @@ void DrawPolygon2Outline( RenderContext* renderer, const std::vector<Vec2>& vert
 
 void DrawAABB2WithDepth( RenderContext* renderer, const AABB2& box, float zDepth, const Rgba8& tint );
 
-
+//-----------------------------------------------------------------------------------------------
+// Append vertices to given vector
 void AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint );
 void AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
@@ -41,3 +45,6 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const 
 
 void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendIndicesForCubeMesh( std::vector<uint>& indices );
+
+void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& mins, const Vec2& dimensions, int horizontalCuts, int verticalCuts, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+void AppendIndicesForPlaneMesh( std::vector<uint>& indices );
