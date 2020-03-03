@@ -16,6 +16,7 @@ struct IDXGIDebug;
 struct ID3D11RenderTargetView;
 struct ID3D11Buffer;
 struct ID3D11BlendState;
+struct ID3D11DepthStencilState;
 class SwapChain;
 struct AABB2;
 struct OBB2;
@@ -32,7 +33,7 @@ class RenderBuffer;
 class VertexBuffer;
 class IndexBuffer;
 class GPUMesh;
-
+enum class eCompareFunc : uint;
 
 //-----------------------------------------------------------------------------------------------
 enum class eBlendMode
@@ -43,6 +44,7 @@ enum class eBlendMode
 };
 
 
+//-----------------------------------------------------------------------------------------------
 enum eBufferSlot
 {
 	UBO_FRAME_SLOT = 0,
@@ -51,6 +53,7 @@ enum eBufferSlot
 };
 
 
+//-----------------------------------------------------------------------------------------------
 struct FrameData
 {
 	float systemTimeSeconds;
@@ -60,6 +63,7 @@ struct FrameData
 };
 
 
+//-----------------------------------------------------------------------------------------------
 struct ModelMatrixData
 {
 	Mat44 modelMatrix;
@@ -76,7 +80,11 @@ public:
 	void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
+	void SetDepthTest( eCompareFunc compare, bool writeDepthOnPass );
+
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
+	void ClearDepth( Texture* depthStencilTarget, float depth );
+
 	void BeginCamera( Camera& camera );
 	void EndCamera	( const Camera& camera );
 
@@ -116,6 +124,7 @@ public:
 	static void AppendVertsForAABB2DWithDepth ( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	
 	Texture* GetFrameColorTarget();
+	IntVec2 GetDefaultBackBufferSize();
 
 	// Binding Inputs
 	void BindVertexBuffer( VertexBuffer* vbo );
@@ -125,18 +134,17 @@ public:
 	// Binding State
 	void BindShader( Shader* shader );
 	void BindShader( const char* fileName );
+	void BindTexture( const Texture* constTexture );
+	void BindSampler( Sampler* sampler );
 
 	// Resource Creation
 	Shader* GetOrCreateShader( const char* filename );
 	Shader* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
-
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
-	void BindTexture( const Texture* constTexture );
-	void BindSampler( Sampler* sampler );
-
+	Texture* CreateTextureFromColor( const Rgba8& color );
+	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
 
-	Texture* CreateTextureFromColor( const Rgba8& color );
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
 	void SetModelMatrix( const Mat44& modelMatrix );
@@ -187,6 +195,9 @@ private:
 	Sampler* m_currentSampler = nullptr;
 	
 	Texture* m_defaultWhiteTexture = nullptr;
+	Texture* m_defaultDepthBuffer = nullptr;
+
+	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 
 	ID3D11BlendState* m_alphaBlendState = nullptr;
 	ID3D11BlendState* m_additiveBlendState = nullptr;

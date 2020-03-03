@@ -110,11 +110,11 @@ void Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float 
 //-----------------------------------------------------------------------------------------------
 void Camera::SetClearMode( unsigned int clearFlags, Rgba8 color, float depth, unsigned int stencil )
 {
-	UNUSED( depth );
 	UNUSED( stencil );
 
 	m_clearMode = clearFlags;
 	m_clearColor = color;
+	m_clearDepth = depth;
 }
 
 

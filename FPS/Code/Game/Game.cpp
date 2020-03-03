@@ -17,6 +17,7 @@
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
@@ -53,6 +54,9 @@ void Game::Startup()
 
 	m_worldCamera = new Camera();
 	m_worldCamera->SetColorTarget( nullptr );
+	Texture* depthTexture = g_renderer->GetOrCreateDepthStencil( g_renderer->GetDefaultBackBufferSize() );
+	m_worldCamera->SetDepthStencilTarget( depthTexture );
+
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	//m_worldCamera->SetProjectionOrthographic( 9.f, 0.f, -100.f );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
@@ -125,7 +129,9 @@ void Game::Update( float deltaSeconds )
 void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
-	
+
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );

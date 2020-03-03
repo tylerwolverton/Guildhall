@@ -67,7 +67,11 @@ Project: FPS
         - [ ] **IMPORANT:  Do not bind the default one automatically if the camera doesn't have one set.  There are reasons a camera may not want a depth buffer!**
     - [ ] Camera's clear options should now store off the `depth` and `stencil` clear values.
     - [ ] If camera has a depth buffer and says it should clear depth, also clear the depth buffer.
-
+        - Use `ID3D11DeviceConext::ClearDepthStencilView` to clear if camera says to.
+- [ ] Generate a **UV Sphere** mesh during `Game::Startup`
+    - [ ] `MeshUtils.hpp` has a function 
+          `AddUVSphereToIndexedVertexArray( std::vector<VertexPCU>& verts, std::vector<uint>& indices, vec3 center, float radius, uint horizintalCuts, uint verticalCuts, RGBA color )`
+    - [ ] Draw this UV sphere multiple times as a large moving ring in your game.  Each one rotating along a local axis as well as rotating along a global axis.  See demo.
    
 ------
 
@@ -81,8 +85,6 @@ Project: FPS
 - [ ] *X04.40: 02%*: Plane Generation (with subdivision count)
 - [ ] *X04.41: 04%*: **Requires X04.40** - Surface Generation for equations of the form "vec3 f(u, v)";
 - [ ] *X04.42: 04%*: **Requires X04.40** - NURB Generation (can use previous)
-
-------
 
 
 

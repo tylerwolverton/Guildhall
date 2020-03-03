@@ -52,3 +52,16 @@ DXGI_FORMAT ToDXGIFormat( eBufferFormatType formatType )
 			ERROR_AND_DIE( "Unknown DXGI format type" );
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+D3D11_COMPARISON_FUNC ToDxComparisonFunc( eCompareFunc funcType )
+{
+	switch ( funcType )
+	{
+		case eCompareFunc::COMPARISON_NEVER: return D3D11_COMPARISON_NEVER;
+		case eCompareFunc::COMPARISON_LESS: return D3D11_COMPARISON_LESS;
+		case eCompareFunc::COMPARISON_LESS_EQUAL: return D3D11_COMPARISON_LESS_EQUAL;
+		case eCompareFunc::COMPARISON_ALWAYS: return D3D11_COMPARISON_ALWAYS;
+	}
+}

@@ -102,6 +102,9 @@ void RenderContext::Startup( Window* window )
 
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
 
+	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
+	SetDepthTest( eCompareFunc::COMPARISON_NEVER, false );
+
 	CreateBlendStates();
 }
 
@@ -132,14 +135,7 @@ void RenderContext::Shutdown()
 
 	delete m_defaultLinearSampler;
 	m_defaultLinearSampler = nullptr;
-
-	delete m_defaultWhiteTexture;
-	m_defaultWhiteTexture = nullptr;
-
-	DX_SAFE_RELEASE( m_alphaBlendState );
-	DX_SAFE_RELEASE( m_additiveBlendState );
-	DX_SAFE_RELEASE( m_disabledBlendState );
-
+	
 	// Cleanup shader cache
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
 	{
@@ -167,7 +163,10 @@ void RenderContext::Shutdown()
 	delete m_swapchain;
 	m_swapchain = nullptr;
 
-	// release
+	DX_SAFE_RELEASE( m_alphaBlendState );
+	DX_SAFE_RELEASE( m_additiveBlendState );
+	DX_SAFE_RELEASE( m_disabledBlendState );
+	DX_SAFE_RELEASE( m_currentDepthStencilState );
 	DX_SAFE_RELEASE( m_context );
 	DX_SAFE_RELEASE( m_device );
 
@@ -192,6 +191,22 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::SetDepthTest( eCompareFunc compare, bool writeDepthOnPass )
+{
+	D3D11_DEPTH_STENCIL_DESC desc;
+	desc.DepthEnable = writeDepthOnPass;
+	desc.DepthFunc = D3D11_COMPARISON_NOT_EQUAL;//ToDxComparisonFunc( compare );
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc.StencilEnable = false;
+
+	DX_SAFE_RELEASE( m_currentDepthStencilState );
+
+	m_device->CreateDepthStencilState( &desc, &m_currentDepthStencilState );
+	m_context->OMSetDepthStencilState( m_currentDepthStencilState, 0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor )
 {
 	float clearFloats[4];
@@ -202,6 +217,16 @@ void RenderContext::ClearScreen( ID3D11RenderTargetView* renderTargetView, const
 
 	m_context->ClearRenderTargetView( renderTargetView, clearFloats );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ClearDepth( Texture* depthStencilTarget, float depth )
+{
+	TextureView* view = depthStencilTarget->GetOrCreateDepthStencilView();
+	ID3D11DepthStencilView* dsv = view->m_depthStencilView;
+	m_context->ClearDepthStencilView( dsv, D3D11_CLEAR_DEPTH, depth, 0 );
+}
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -219,6 +244,7 @@ void RenderContext::BeginCamera( Camera& camera )
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
 
+
 	if ( camera.m_cameraUBO == nullptr )
 	{
 		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
@@ -234,7 +260,21 @@ void RenderContext::BeginCamera( Camera& camera )
 	// Viewport creation
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
-	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
+
+	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
+	TextureView* depthView = nullptr;
+	if ( depthStencilTarget != nullptr )
+	{
+		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
+	}
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	if ( depthView != nullptr )
+	{
+		depthStencilView = depthView->m_depthStencilView;
+	}
+
+	m_context->OMSetRenderTargets( 1, &renderTargetView, depthStencilView );
 
 	IntVec2 outputSize = colorTarget->GetTexelSize();
 
@@ -252,6 +292,11 @@ void RenderContext::BeginCamera( Camera& camera )
 	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
 	{
 		ClearScreen( renderTargetView, camera.GetClearColor() );
+	}
+	
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT )
+	{
+		ClearDepth( camera.GetDepthStencilTarget(), camera.GetClearDepth() );
 	}
 
 	// Reset
@@ -807,6 +852,13 @@ Texture* RenderContext::GetFrameColorTarget()
 
 
 //-----------------------------------------------------------------------------------------------
+IntVec2 RenderContext::GetDefaultBackBufferSize()
+{
+	return m_swapchain->GetBackBuffer()->GetTexelSize();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::BindShader( Shader* shader )
 {
 	GUARANTEE_OR_DIE( m_isDrawing, "Tried to call BindShader while not drawing" );
@@ -987,7 +1039,6 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 //-----------------------------------------------------------------------------------------------
 Texture* RenderContext::RetrieveTextureFromCache( const char* filePath )
 {
-	UNUSED( filePath );
 	for ( int textureIndex = 0; textureIndex < (int)m_loadedTextures.size(); ++textureIndex )
 	{
 		if ( m_loadedTextures[textureIndex]->GetFilePath() == filePath )
@@ -1108,15 +1159,9 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
 //-----------------------------------------------------------------------------------------------
 Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 {
-	int imageTexelSizeX = 1; // This will be filled in for us to indicate image width
-	int imageTexelSizeY = 1; // This will be filled in for us to indicate image height
-	//int numComponents = 0; // This will be filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
-	//int numComponentsRequested = 4; // we support 4 (32-bit RGBA)
+	int imageTexelSizeX = 1; 
+	int imageTexelSizeY = 1; 
 
-	//// Load (and decompress) the image RGB(A) bytes from a file on disk into a memory buffer (array of bytes)
-	//stbi_set_flip_vertically_on_load( 0 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
-	//unsigned char* initialData = stbi_load_from_memory( &color, 4, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
-	
 	// Describe the texture
 	D3D11_TEXTURE2D_DESC desc;
 	desc.Width = imageTexelSizeX;
@@ -1139,12 +1184,40 @@ Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 	// DirectX creation
 	ID3D11Texture2D* texHandle = nullptr;
 	m_device->CreateTexture2D( &desc, &initialData, &texHandle );
-
-	// Free the raw image texel data now that we've sent a copy of it down to the GPU to be stored in video memory
-	//stbi_image_free( imageData );
-
+	
 	Texture* newTexture = new Texture( this, texHandle );
-	//m_loadedTextures.push_back( newTexture );
+	m_loadedTextures.push_back( newTexture );
+
+	return newTexture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions )
+{
+	// Find depth stencil in cache?
+
+	// Describe the texture
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = outputDimensions.x;
+	desc.Height = outputDimensions.y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_D32_FLOAT;
+	desc.SampleDesc.Count = 1;						// MSAA
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;		
+	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	// use BIND_DEPTH_STENCIL | BIND_SHADER_RESOURCE
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	
+	// DirectX creation
+	ID3D11Texture2D* texHandle = nullptr;
+	m_device->CreateTexture2D( &desc, nullptr, &texHandle );
+	
+	Texture* newTexture = new Texture( this, texHandle );
+	m_loadedTextures.push_back( newTexture );
 
 	return newTexture;
 }

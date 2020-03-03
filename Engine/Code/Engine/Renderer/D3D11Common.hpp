@@ -51,5 +51,16 @@ DXGI_FORMAT ToDXGIFormat( eBufferFormatType formatType );
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eCompareFunc : uint
+{
+	COMPARISON_NEVER,
+	COMPARISON_LESS,
+	COMPARISON_LESS_EQUAL,
+	COMPARISON_ALWAYS,
+};
+
+D3D11_COMPARISON_FUNC ToDxComparisonFunc( eCompareFunc funcType );
+
+//-----------------------------------------------------------------------------------------------
 static const char* DEFAULT_SHADER_FILENAME = "Data/Shaders/Default.hlsl";
 static const char* ERROR_SHADER_FILENAME = "Data/Shaders/Error.hlsl";

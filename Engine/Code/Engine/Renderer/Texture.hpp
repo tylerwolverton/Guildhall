@@ -3,6 +3,7 @@
 
 #include <string>
 
+
 //-----------------------------------------------------------------------------------------------
 class TextureView;
 class RenderContext;
@@ -20,8 +21,7 @@ public:
 	
 	TextureView* GetOrCreateRenderTargetView();
 	TextureView* GetOrCreateShaderResourceView();
-	//TextureView* GetOrCreateDepthStencilResourceView();
-
+	TextureView* GetOrCreateDepthStencilView();
 
 	IntVec2	GetTexelSize()												{ return m_texelSize; }
 	std::string& GetFilePath()											{ return m_filePath; }
@@ -35,6 +35,7 @@ public:
 	
 	TextureView* m_renderTargetView = nullptr;
 	TextureView* m_shaderResourceView = nullptr;
+	TextureView* m_depthStencilView = nullptr;
 
 	// all texture types inherit from m_handle, 
 	// and we'll be using `Texture` as basically an alias for all
