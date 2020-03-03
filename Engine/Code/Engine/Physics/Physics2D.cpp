@@ -8,6 +8,7 @@
 #include "Engine/Physics/PolygonCollider2D.hpp"
 #include "Engine/Physics/Manifold2.hpp"
 #include "Engine/Time/Clock.hpp"
+#include "Engine/Time/Timer.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -20,6 +21,9 @@ void Physics2D::Startup( Clock* gameClock )
 	}
 
 	m_physicsClock = new Clock( m_gameClock );
+	m_stepTimer = new Timer( m_physicsClock );
+
+	m_stepTimer->SetSeconds( m_fixedDeltaSeconds );
 }
 
 
@@ -33,17 +37,20 @@ void Physics2D::BeginFrame()
 //-----------------------------------------------------------------------------------------------
 void Physics2D::Update()
 {
-	AdvanceSimulation();
+	while ( m_stepTimer->CheckAndDecrement() )
+	{
+		AdvanceSimulation( m_fixedDeltaSeconds );
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::AdvanceSimulation()
+void Physics2D::AdvanceSimulation( float deltaSeconds )
 {
-	ApplyEffectors(); 	// apply gravity to all dynamic objects
-	MoveRigidbodies(); 	// apply an euler step to all rigidbodies, and reset per-frame data
-	DetectCollisions();	// determine all pairs of intersecting colliders
-	ResolveCollisions(); 	// resolve all collisions, firing appropraite events
+	ApplyEffectors(); 					// apply gravity to all dynamic objects
+	MoveRigidbodies( deltaSeconds ); 	// apply an euler step to all rigidbodies, and reset per-frame data
+	DetectCollisions();					// determine all pairs of intersecting colliders
+	ResolveCollisions(); 				// resolve all collisions, firing appropraite events
 	CleanupDestroyedObjects();  		// destroy objects 
 }
 
@@ -70,7 +77,7 @@ void Physics2D::ApplyEffectors()
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::MoveRigidbodies()
+void Physics2D::MoveRigidbodies( float deltaSeconds )
 {
 	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
 	{
@@ -82,7 +89,7 @@ void Physics2D::MoveRigidbodies()
 				case SIMULATION_MODE_DYNAMIC:
 				case SIMULATION_MODE_KINEMATIC:
 				{
-					rigidbody->Update( (float)m_physicsClock->GetLastDeltaSeconds() );
+					rigidbody->Update( deltaSeconds );
 				}
 			}
 		}
@@ -263,6 +270,9 @@ void Physics2D::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void Physics2D::Shutdown()
 {
+	delete m_stepTimer;
+	m_stepTimer = nullptr;
+
 	delete m_physicsClock;
 	m_physicsClock = nullptr;
 }
