@@ -12,6 +12,22 @@ struct AABB2;
 struct OBB2;
 struct Capsule2;
 class Polygon2;
+class RenderContext;
+
+void DrawLine2D( RenderContext* renderer, const Vec2& start, const Vec2& end, const Rgba8& color, float thickness );
+void DrawRing2D( RenderContext* renderer, const Vec2& center, float radius, const Rgba8& color, float thickness );
+void DrawDisc2D( RenderContext* renderer, const Vec2& center, float radius, const Rgba8& color );
+void DrawCapsule2D( RenderContext* renderer, const Capsule2& capsule, const Rgba8& color );
+void DrawAABB2( RenderContext* renderer, const AABB2& box, const Rgba8& tint );
+void DrawAABB2Outline( RenderContext* renderer, const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness );
+void DrawOBB2( RenderContext* renderer, const OBB2& box, const Rgba8& tint );
+void DrawOBB2Outline( RenderContext* renderer, const Vec2& center, const OBB2& box, const Rgba8& tint, float thickness );
+void DrawPolygon2( RenderContext* renderer, const Polygon2& polygon2, const Rgba8& tint );
+void DrawPolygon2( RenderContext* renderer, const std::vector<Vec2>& vertexPositions, const Rgba8& tint );
+void DrawPolygon2Outline( RenderContext* renderer, const Polygon2& polygon2, const Rgba8& tint, float thickness );
+void DrawPolygon2Outline( RenderContext* renderer, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness );
+
+void DrawAABB2WithDepth( RenderContext* renderer, const AABB2& box, float zDepth, const Rgba8& tint );
 
 
 void AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint );

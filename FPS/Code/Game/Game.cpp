@@ -137,7 +137,7 @@ void Game::Render() const
 	g_renderer->BindTexture( texture );
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
 	
-	g_renderer->DrawAABB2WithDepth( AABB2( -.5f, -.5f, .5f, .5f ), -10.f, Rgba8::WHITE );
+	DrawAABB2WithDepth( g_renderer, AABB2( -.5f, -.5f, .5f, .5f ), -10.f, Rgba8::WHITE );
 	
 	Mat44 model = m_meshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model );

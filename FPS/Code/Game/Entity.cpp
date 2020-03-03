@@ -57,8 +57,8 @@ void Entity::Die()
 void Entity::DebugRender() const
 {
 	g_renderer->BindTexture( nullptr );
-	g_renderer->DrawRing2D( m_position, m_entityDef->m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
-	g_renderer->DrawAABB2Outline( m_position, m_entityDef->m_localDrawBounds, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
+	DrawRing2D( g_renderer, m_position, m_entityDef->m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
+	DrawAABB2Outline( g_renderer, m_position, m_entityDef->m_localDrawBounds, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
 }
 
 

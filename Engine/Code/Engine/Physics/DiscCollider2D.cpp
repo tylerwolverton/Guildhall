@@ -3,6 +3,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/PolygonCollider2D.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 
@@ -117,8 +118,8 @@ void DiscCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderCo
 		return;
 	}
 
-	renderer->DrawDisc2D( m_worldPosition, m_radius, fillColor );
-	renderer->DrawRing2D( m_worldPosition, m_radius, borderColor, .04f );
+	DrawDisc2D( renderer, m_worldPosition, m_radius, fillColor );
+	DrawRing2D( renderer, m_worldPosition, m_radius, borderColor, .04f );
 }
 
 

@@ -19,10 +19,6 @@ struct ID3D11Buffer;
 struct ID3D11BlendState;
 struct ID3D11DepthStencilState;
 class SwapChain;
-struct AABB2;
-struct OBB2;
-struct Capsule2;
-class Polygon2;
 struct Rgba8;
 struct Vertex_PCU;
 class Camera;
@@ -97,21 +93,6 @@ public:
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
 	void DrawMesh( GPUMesh* mesh );
-	
-	void DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8& color, float thickness );
-	void DrawRing2D( const Vec2& center, float radius, const Rgba8& color, float thickness );
-	void DrawDisc2D( const Vec2& center, float radius, const Rgba8& color );
-	void DrawCapsule2D( const Capsule2& capsule, const Rgba8& color );
-	void DrawAABB2( const AABB2& box, const Rgba8& tint );
-	void DrawAABB2Outline( const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness );
-	void DrawOBB2( const OBB2& box, const Rgba8& tint );
-	void DrawOBB2Outline( const Vec2& center, const OBB2& box, const Rgba8& tint, float thickness );
-	void DrawPolygon2( const Polygon2& polygon2, const Rgba8& tint );
-	void DrawPolygon2( const std::vector<Vec2>& vertexPositions, const Rgba8& tint );
-	void DrawPolygon2Outline( const Polygon2& polygon2, const Rgba8& tint, float thickness );
-	void DrawPolygon2Outline( const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness );
-		
-	void DrawAABB2WithDepth( const AABB2& box, float zDepth, const Rgba8& tint );
 	
 	Texture* GetFrameColorTarget();
 	IntVec2 GetDefaultBackBufferSize();
