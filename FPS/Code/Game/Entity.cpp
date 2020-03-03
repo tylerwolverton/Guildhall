@@ -5,6 +5,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 
@@ -100,7 +101,7 @@ void Entity::PopulateVertices()
 {
 	m_texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" );
 	
-	g_renderer->AppendVertsForAABB2D( m_vertices, m_entityDef->m_localDrawBounds, Rgba8::WHITE,
+	AppendVertsForAABB2D( m_vertices, m_entityDef->m_localDrawBounds, Rgba8::WHITE,
 									  m_entityDef->m_uvCoords.mins,
 									  m_entityDef->m_uvCoords.maxs );
 }

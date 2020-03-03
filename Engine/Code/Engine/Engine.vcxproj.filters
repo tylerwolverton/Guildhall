@@ -31,7 +31,7 @@
     </Filter>
     <Filter Include="Physics">
       <UniqueIdentifier>{36f29722-2039-46f4-a647-3bee08615ce3}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="OS">
       <UniqueIdentifier>{629a22df-2026-4ee0-b0b5-1d1e03ad3f41}</UniqueIdentifier>
     </Filter>
@@ -231,6 +231,9 @@
     </ClCompile>
     <ClCompile Include="Renderer\IndexBuffer.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\MeshUtils.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -459,5 +462,6 @@
     <ClInclude Include="Renderer\IndexBuffer.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\MeshUtils.hpp" />
   </ItemGroup>
 </Project>

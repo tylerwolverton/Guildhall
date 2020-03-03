@@ -15,6 +15,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
@@ -66,10 +67,10 @@ void Game::Startup()
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
 	std::vector<Vertex_PCU> vertices;
-	g_renderer->AppendVertsForCubeMesh( vertices, Vec3::ZERO, 2.f, Rgba8::WHITE );
+	AppendVertsForCubeMesh( vertices, Vec3::ZERO, 2.f, Rgba8::WHITE );
 	
 	std::vector<uint> indices;
-	g_renderer->AppendIndicesForCubeMesh( indices );	
+	AppendIndicesForCubeMesh( indices );	
 
 	m_mesh = new GPUMesh( g_renderer, vertices, indices );
 	m_meshTransform.SetPosition( Vec3( 1.f, .5f, -12.f ) );

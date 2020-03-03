@@ -9,6 +9,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 
 #include <iostream>
@@ -212,7 +213,7 @@ void DevConsole::RenderBackground( const AABB2& bounds ) const
 	backgroundColor.a = 150;
 
 	std::vector<Vertex_PCU> backgroundVertices;
-	m_renderer->AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
+	AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
 
 	m_renderer->BindTexture( nullptr );
 	m_renderer->DrawVertexArray( backgroundVertices );

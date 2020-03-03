@@ -207,6 +207,7 @@
     <ClCompile Include="Renderer\D3D11Common.cpp" />
     <ClCompile Include="Renderer\GPUMesh.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Renderer\MeshUtils.cpp" />
     <ClCompile Include="Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />
     <ClCompile Include="Renderer\Sampler.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="Renderer\D3D11Common.hpp" />
     <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
+    <ClInclude Include="Renderer\MeshUtils.hpp" />
     <ClInclude Include="Renderer\RenderBuffer.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />
     <ClInclude Include="Renderer\Sampler.hpp" />
