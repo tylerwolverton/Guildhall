@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Physics/Collision2D.hpp"
 
@@ -37,8 +38,10 @@ public:
 	void SetSceneGravity( const Vec2& forceOfGravity );
 	void SetSceneGravity( float forceOfGravityY );
 
-	float GetFixedDeltaSeconds() const															{ return m_fixedDeltaSeconds; };
+	float GetFixedDeltaSeconds() const;
 	void SetFixedDeltaSeconds( float newDeltaSeconds );
+
+	static bool SetPhysicsUpdateRate( EventArgs* args );
 
 private:
 	void AdvanceSimulation( float deltaSeconds );
@@ -63,9 +66,7 @@ private:
 	Clock* m_gameClock = nullptr;
 	Clock* m_physicsClock = nullptr;
 	Timer* m_stepTimer = nullptr;
-
-	float m_fixedDeltaSeconds = 1.0f / 120.0f;
-
+	
 	std::vector<Rigidbody2D*> m_rigidbodies;
 	std::vector<int> m_garbageRigidbodyIndexes;
 	std::vector<Collider2D*> m_colliders;
