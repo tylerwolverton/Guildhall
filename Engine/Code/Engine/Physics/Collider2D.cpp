@@ -66,6 +66,15 @@ static CollisionCheckCallback g_CollisionChecks[NUM_COLLIDER_TYPES * NUM_COLLIDE
 
 
 //-----------------------------------------------------------------------------------------------
+void Collider2D::ChangeFriction( float deltaFriction )
+{
+	m_material.m_friction += deltaFriction;
+
+	m_material.m_friction = ClampZeroToOne( m_material.m_friction );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Collider2D::Intersects( const Collider2D* other ) const
 {
 	if ( other == nullptr
@@ -198,4 +207,13 @@ Manifold2 Collider2D::GetCollisionManifold( const Collider2D* other ) const
 float Collider2D::GetBounceWith( const Collider2D* otherCollider ) const
 {
 	return m_material.m_bounciness * otherCollider->m_material.m_bounciness;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float Collider2D::GetFrictionWith( const Collider2D* otherCollider ) const
+{
+	float combinedFriction = m_material.m_friction * otherCollider->m_material.m_friction;
+	combinedFriction = ClampZeroToOne( combinedFriction );
+	return combinedFriction;
 }

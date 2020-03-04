@@ -68,6 +68,7 @@ void Physics2D::ApplyEffectors()
 				case SIMULATION_MODE_DYNAMIC:
 				{
 					rigidbody->AddForce( m_forceOfGravity );
+					rigidbody->ApplyDragForce();
 				}
 				break;
 			}
@@ -157,6 +158,7 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 
 	CorrectCollidingRigidbodies( rigidbody1, rigidbody2, collision.m_collisionManifold );
 	ApplyCollisionImpulses( rigidbody1, rigidbody2, collision.m_collisionManifold );
+	ApplyFrictionImpulses( rigidbody1, rigidbody2, collision.m_collisionManifold );
 }
 
 
@@ -211,7 +213,7 @@ void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRi
 	float massesRatio = moveableRigidbody->GetMass();
 
 	float e = moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider );
-	float impulseMagnitude = massesRatio * ( 1.f + e ) * DotProduct2D( moveableRigidbody->GetVelocity(), collisionNormal );
+	float impulseMagnitude = massesRatio * ( 1.f + e ) * DotProduct2D( moveableRigidbody->GetImpaceVelocityAtPoint( Vec2::ZERO ), collisionNormal );
 
 	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * -collisionNormal, Vec2::ZERO );
 }
@@ -221,8 +223,8 @@ void Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRi
 void Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& collisionNormal )
 {
 	float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
-	Vec2 initialVelocity1 = rigidbody1->GetVelocity();
-	Vec2 initialVelocity2 = rigidbody2->GetVelocity();
+	Vec2 initialVelocity1 = rigidbody1->GetImpaceVelocityAtPoint( Vec2::ZERO );
+	Vec2 initialVelocity2 = rigidbody2->GetImpaceVelocityAtPoint( Vec2::ZERO );
 
 	float productOfMasses = rigidbody1->GetMass() * rigidbody2->GetMass();
 	float massesRatio = productOfMasses / sumOfMasses;
@@ -232,6 +234,58 @@ void Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1,
 
 	rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionNormal, Vec2::ZERO );
 	rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionNormal, Vec2::ZERO );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::ApplyFrictionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
+{
+	Vec2 tangent = collisionManifold.normal.GetRotated90Degrees();
+
+	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC
+		 || ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody2->GetSimulationMode() == SIMULATION_MODE_DYNAMIC ) )
+	{
+		CalculateFrictionImpulseAgainstImmoveableObject( rigidbody2, rigidbody1, tangent );
+	}
+	else if ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_STATIC
+			  || ( rigidbody2->GetSimulationMode() == SIMULATION_MODE_KINEMATIC && rigidbody1->GetSimulationMode() == SIMULATION_MODE_DYNAMIC ) )
+	{
+		CalculateFrictionImpulseAgainstImmoveableObject( rigidbody1, rigidbody2, tangent );
+	}
+	else
+	{
+		CalculateFrictionImpulseBetweenMoveableObjects( rigidbody1, rigidbody2, tangent );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CalculateFrictionImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& tangent )
+{
+	float massesRatio = moveableRigidbody->GetMass();
+
+	float friction = moveableRigidbody->m_collider->GetFrictionWith( immoveableRigidbody->m_collider );
+	float impulseMagnitude = massesRatio * friction * DotProduct2D( moveableRigidbody->GetImpaceVelocityAtPoint( Vec2::ZERO ), tangent );
+
+	moveableRigidbody->ApplyImpulseAt( impulseMagnitude * -tangent, Vec2::ZERO );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::CalculateFrictionImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& tangent )
+{
+	float sumOfMasses = rigidbody1->GetMass() + rigidbody2->GetMass();
+	Vec2 initialVelocity1 = rigidbody1->GetImpaceVelocityAtPoint( Vec2::ZERO );
+	Vec2 initialVelocity2 = rigidbody2->GetImpaceVelocityAtPoint( Vec2::ZERO );
+
+	float productOfMasses = rigidbody1->GetMass() * rigidbody2->GetMass();
+	float massesRatio = productOfMasses / sumOfMasses;
+	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
+
+	float impulseMagnitude = massesRatio *  rigidbody1->m_collider->GetFrictionWith( rigidbody2->m_collider ) * DotProduct2D( differenceOfInitialVelocities, tangent );
+
+	rigidbody1->ApplyImpulseAt( impulseMagnitude * tangent, Vec2::ZERO );
+	rigidbody2->ApplyImpulseAt( -impulseMagnitude * tangent, Vec2::ZERO );
 }
 
 

@@ -25,7 +25,7 @@ public:
 	void EndFrame();
 	void Shutdown();
 
-	// factory style create/destroy
+	// Factory style create/destroy
 	Rigidbody2D* CreateRigidbody();
 	void DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy );
 
@@ -52,6 +52,10 @@ private:
 	void ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
 	void CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& collisionNormal );
 	void CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& collisionNormal );
+
+	void ApplyFrictionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
+	void CalculateFrictionImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& tangent );
+	void CalculateFrictionImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& tangent );
 
 	void CleanupDestroyedObjects();  	
 

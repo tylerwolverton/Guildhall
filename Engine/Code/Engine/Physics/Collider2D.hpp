@@ -34,13 +34,16 @@ public: // Interface
 	// cache off the world shape representation of this object
 	// taking into account the owning rigidbody (if no owner, local is world)
 	virtual void UpdateWorldShape() = 0;
+	void ChangeFriction( float deltaFriction );
 
 	// queries 
 	virtual const Vec2 GetClosestPoint( const Vec2& pos ) const = 0;
 	virtual bool Contains( const Vec2& pos ) const = 0;
 	bool Intersects( const Collider2D* other ) const;
+
 	Manifold2 GetCollisionManifold( const Collider2D* other ) const;
 	float GetBounceWith( const Collider2D* otherCollider ) const;
+	float GetFrictionWith( const Collider2D* otherCollider ) const;
 
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;

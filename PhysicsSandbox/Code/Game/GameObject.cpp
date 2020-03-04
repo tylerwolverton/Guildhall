@@ -272,7 +272,18 @@ void GameObject::ChangeBounciness( float deltaBounciness )
 //-----------------------------------------------------------------------------------------------
 void GameObject::ChangeFriction( float deltaFriction )
 {
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
 
+	Collider2D* collider = m_rigidbody->GetCollider();
+	if ( collider == nullptr )
+	{
+		return;
+	}
+
+	collider->ChangeFriction( deltaFriction );
 }
 
 
@@ -291,7 +302,12 @@ void GameObject::ChangeMass( float deltaMass )
 //-----------------------------------------------------------------------------------------------
 void GameObject::ChangeDrag( float deltaDrag )
 {
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
 
+	m_rigidbody->ChangeDrag( deltaDrag );
 }
 
 

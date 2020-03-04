@@ -24,10 +24,22 @@ void Rigidbody2D::Update( float deltaSeconds )
 		return;
 	}
 
+	Vec2 oldPosition = m_worldPosition;
+
 	Vec2 acceleration = m_forces;
 	m_velocity += acceleration * deltaSeconds;
 	m_worldPosition += m_velocity * deltaSeconds;
 	m_collider->UpdateWorldShape();
+
+	if ( deltaSeconds > -.0001f
+		 && deltaSeconds < .0001f )
+	{
+		m_verletVelocity = Vec2::ZERO;
+	}
+	else
+	{
+		m_verletVelocity = ( m_worldPosition - oldPosition ) / deltaSeconds;
+	}
 
 	m_forces = Vec2::ZERO;
 }
@@ -59,6 +71,15 @@ void Rigidbody2D::TakeCollider( Collider2D* collider )
 void Rigidbody2D::SetVelocity( const Vec2& velocity )
 {
 	m_velocity = velocity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Rigidbody2D::GetImpaceVelocityAtPoint( const Vec2& point )
+{
+	UNUSED( point );
+
+	return GetVerletVelocity();
 }
 
 
@@ -98,6 +119,15 @@ void Rigidbody2D::ChangeMass( float deltaMass )
 
 
 //-----------------------------------------------------------------------------------------------
+void Rigidbody2D::ChangeDrag( float deltaDrag )
+{
+	m_drag += deltaDrag;
+
+	m_drag = ClampZeroToOne( m_drag );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Rigidbody2D::AddForce( const Vec2& force )
 {
 	if ( !m_isEnabled )
@@ -120,6 +150,14 @@ void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& worldPosition
 	}
 
 	m_velocity += ( impulse * m_inverseMass );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Rigidbody2D::ApplyDragForce()
+{
+	Vec2 dragForce = -GetVerletVelocity() * m_drag;
+	AddForce( dragForce );
 }
 
 

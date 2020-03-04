@@ -68,6 +68,13 @@ int PositiveMod( int left, int right )
 
 
 //-----------------------------------------------------------------------------------------------
+float SignFloat( float value )
+{
+	return ( value >= 0.f ) ? 1.f : -1.f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec2 TransformPosition2D( const Vec2& initialPos, float uniformScale, float rotationDeg, const Vec2& translation )
 {
 	Vec2 transformedPos( initialPos );

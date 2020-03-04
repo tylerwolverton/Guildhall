@@ -35,6 +35,9 @@ public:
 
 	Vec2 GetVelocity()																{ return m_velocity; }
 	void SetVelocity( const Vec2& velocity );
+	
+	Vec2 GetImpaceVelocityAtPoint( const Vec2& point );
+	
 	Vec2 GetVerletVelocity()														{ return m_verletVelocity; }
 
 	Vec2 GetPosition()																{ return m_worldPosition; }
@@ -46,9 +49,11 @@ public:
 	float GetInverseMass() const													{ return m_inverseMass; }
 
 	float GetDrag() const															{ return m_drag; }
+	void ChangeDrag( float deltaDrag );
 
 	void AddForce( const Vec2& force );
 	void ApplyImpulseAt( const Vec2& impulse, const Vec2& worldPosition );
+	void ApplyDragForce();
 
 	void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const;
 
