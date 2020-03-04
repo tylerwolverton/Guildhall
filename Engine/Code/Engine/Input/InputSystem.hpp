@@ -45,7 +45,13 @@ extern const unsigned char KEY_F9;
 extern const unsigned char KEY_F10;
 extern const unsigned char KEY_F11;
 extern const unsigned char KEY_F12;
+extern const unsigned char KEY_SEMICOLON;
 extern const unsigned char KEY_TILDE;
+extern const unsigned char KEY_LEFT_BRACKET;
+extern const unsigned char KEY_RIGHT_BRACKET;
+extern const unsigned char KEY_QUOTE;
+extern const unsigned char KEY_COMMA;
+extern const unsigned char KEY_PERIOD;
 extern const unsigned char KEY_PLUS;
 extern const unsigned char KEY_MINUS;
 

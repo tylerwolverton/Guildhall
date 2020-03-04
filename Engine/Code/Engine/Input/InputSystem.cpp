@@ -35,7 +35,13 @@ const unsigned char KEY_F9 = VK_F9;
 const unsigned char KEY_F10 = VK_F10;
 const unsigned char KEY_F11 = VK_F11;
 const unsigned char KEY_F12 = VK_F12;
+const unsigned char KEY_SEMICOLON = VK_OEM_1;
 const unsigned char KEY_TILDE = VK_OEM_3;
+const unsigned char KEY_LEFT_BRACKET = VK_OEM_4;
+const unsigned char KEY_RIGHT_BRACKET = VK_OEM_6;
+const unsigned char KEY_QUOTE = VK_OEM_7;
+const unsigned char KEY_COMMA = VK_OEM_COMMA;
+const unsigned char KEY_PERIOD = VK_OEM_PERIOD;
 const unsigned char KEY_PLUS = VK_OEM_PLUS;
 const unsigned char KEY_MINUS = VK_OEM_MINUS;
 

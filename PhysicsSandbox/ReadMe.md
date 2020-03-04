@@ -1,14 +1,14 @@
 Project - PhysicsSandbox
 
 ## Checklist
-- [ ] Allow user to adjust mass when selected [can not be 0, so clamp at 0.001 on the low end.  No high end limitation]
-    - [ ] Suggested keys are `[` and `]`
-- [ ] Add `friction` to the physics material, defaulted to 0
-- [ ] Allow user to adjust friction when selected [0 to 1]
-    - [ ] Suggested keys are `<` and `>'`
-- [ ] Add `drag` to the `Rigidbody2D`, defaulted to 0
-- [ ] Allow user to adjust object drag when selected [minimum of 0]
-    - [ ] Suggested keys are `:` and `\'` 
+- [x] Allow user to adjust mass when selected [can not be 0, so clamp at 0.001 on the low end.  No high end limitation]
+    - [x] Suggested keys are `[` and `]`
+- [x] Add `friction` to the physics material, defaulted to 0
+- [-] Allow user to adjust friction when selected [0 to 1]
+    - [x] Suggested keys are `<` and `>'`
+- [x] Add `drag` to the `Rigidbody2D`, defaulted to 0
+- [-] Allow user to adjust object drag when selected [minimum of 0]
+    - [-] Suggested keys are `:` and `\'` 
 - [ ] Switch to use a fixed time step
     - [x] Add a `Clock` class
         - [x] Engine should have a `Master` clock that is creaetd, that all clocks use as their parent by default

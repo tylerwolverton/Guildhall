@@ -375,6 +375,51 @@ void Game::UpdateFromKeyboard()
 				}
 			}
 
+			if ( g_inputSystem->WasKeyJustPressed( KEY_LEFT_BRACKET ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeMass( -.5f );
+				}
+			}
+			if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHT_BRACKET ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeMass( .5f );
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeFriction( -.1f );
+				}
+			}
+			if ( g_inputSystem->WasKeyJustPressed( KEY_PERIOD ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeFriction( .1f );
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_SEMICOLON ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeDrag( -.1f );
+				}
+			}
+			if ( g_inputSystem->WasKeyJustPressed( KEY_QUOTE ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeDrag( .1f );
+				}
+			}
+
 			if ( g_inputSystem->WasKeyJustPressed( '0' ) )
 			{
 				m_currentFixedDeltaSeconds = 1.f / 120.f;
