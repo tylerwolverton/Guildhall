@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
 struct Rgba8;
+class Clock;
 class Entity;
 class RandomNumberGenerator;
 class Camera;
@@ -25,16 +26,13 @@ public:
 	~Game();
 
 	void		Startup();
-	void		Update( float deltaSeconds );
+	void		Update();
 	void		Render() const;
 	void		DebugRender() const;
 	void		Shutdown();
 
 	void		RestartGame();
 	
-	void		SetWorldCameraOrthographicView( const AABB2& cameraBounds );
-	void		SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight );
-
 	bool		IsNoClipEnabled()														{ return m_isNoClipEnabled; }
 	bool		IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
 
@@ -50,14 +48,14 @@ public:
 private:
 	void LoadAssets();
 
-	void UpdateFromKeyboard( float deltaSeconds );
+	void UpdateFromKeyboard();
 	void LoadNewMap( const std::string& mapName );
-	void UpdateMousePositions( float deltaSeconds );
-	void UpdateMouseWorldPosition( float deltaSeconds );
-	void UpdateCameras( float deltaSeconds );
+	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
 private:
+	Clock* m_gameClock = nullptr;
+
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;
 	bool m_isFastMo = false;

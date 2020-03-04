@@ -10,7 +10,6 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/NamedStrings.hpp"
-#include "Engine/Core/Time.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -20,6 +19,8 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Time/Clock.hpp"
+#include "Engine/Time/Time.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -54,6 +55,9 @@ void Game::Startup()
 
 	m_rng = new RandomNumberGenerator();
 
+	m_gameClock = new Clock();
+	g_renderer->Setup( m_gameClock );
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
 	std::vector<Vertex_PCU> vertices;
@@ -81,6 +85,9 @@ void Game::Shutdown()
 	delete m_world;
 	m_world = nullptr;
 
+	delete m_gameClock;
+	m_gameClock = nullptr;
+
 	delete m_rng;
 	m_rng = nullptr;
 	
@@ -101,14 +108,14 @@ void Game::RestartGame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::Update( float deltaSeconds )
+void Game::Update()
 {
 	if ( !g_devConsole->IsOpen() ) 
 	{
-		UpdateFromKeyboard( deltaSeconds );
+		UpdateFromKeyboard();
 	}
 
-	UpdateCameras( deltaSeconds );
+	UpdateCameras();
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 
@@ -145,9 +152,9 @@ void Game::LoadAssets()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateFromKeyboard( float deltaSeconds )
+void Game::UpdateFromKeyboard()
 {
-	UNUSED( deltaSeconds );
+	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
 	Vec3 cameraTranslation;
 
@@ -221,9 +228,9 @@ void Game::LoadNewMap( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateCameras( float deltaSeconds )
+void Game::UpdateCameras()
 {
-	UNUSED( deltaSeconds );
+
 }
 
 
@@ -259,10 +266,10 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 		return;
 	}
 
-	m_debugInfoTextBox->SetText( color, textLines[0] );
+	m_debugInfoTextBox->SetText( textLines[0], color );
 
 	for ( int textLineIndex = 1; textLineIndex < (int)textLines.size(); ++textLineIndex )
 	{
-		m_debugInfoTextBox->AddLineOFText( color, textLines[ textLineIndex ] );
+		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
 	}
 }

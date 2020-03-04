@@ -29,8 +29,8 @@ private:
 	void PopulateGameConfig();
 	eWindowMode GetWindowModeFromGameConfig();
 	void BeginFrame();
-	void Update( float deltaSeconds );
-	void UpdateFromKeyboard( float deltaSeconds );
+	void Update();
+	void UpdateFromKeyboard();
 	void Render() const;
 	void EndFrame();
 

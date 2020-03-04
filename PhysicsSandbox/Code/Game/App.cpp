@@ -107,11 +107,6 @@ void App::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void App::RunFrame()
 {
-	//static double timeLastFrameStarted = GetCurrentTimeSeconds(); // Runs once only!	
-	//double timeThisFrameStarted = GetCurrentTimeSeconds();
-	//double deltaSeconds = timeThisFrameStarted - timeLastFrameStarted;
-	//timeLastFrameStarted = timeThisFrameStarted;
-
 	BeginFrame();											// for all engine systems (NOT the game)
 	Update();												// for the game only
 	Render();												// for the game only

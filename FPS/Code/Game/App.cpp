@@ -5,7 +5,6 @@
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Engine/Core/Time.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
@@ -15,6 +14,8 @@
 #include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Time/Time.hpp"
+#include "Engine/Time/Clock.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 
@@ -40,6 +41,8 @@ void App::Startup()
 	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
 	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
 	eWindowMode windowMode = GetWindowModeFromGameConfig();
+
+	Clock::MasterStartup();
 
 	g_window = new Window();
 	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowMode );
@@ -108,13 +111,8 @@ void App::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void App::RunFrame()
 {
-	static double timeLastFrameStarted = GetCurrentTimeSeconds(); // Runs once only!	
-	double timeThisFrameStarted = GetCurrentTimeSeconds();
-	double deltaSeconds = timeThisFrameStarted - timeLastFrameStarted;
-	timeLastFrameStarted = timeThisFrameStarted;
-
 	BeginFrame();											// for all engine systems (NOT the game)
-	Update( ClampMinMax( (float)deltaSeconds, 0.f, 0.1f) ); // for the game only
+	Update();												// for the game only
 	Render();												// for the game only
 	EndFrame();												// for all engine systems (NOT the game)
 }
@@ -179,6 +177,8 @@ eWindowMode App::GetWindowModeFromGameConfig()
 //-----------------------------------------------------------------------------------------------
 void App::BeginFrame()
 {
+	Clock::MasterBeginFrame();
+
 	g_window->BeginFrame();
 	g_eventSystem->BeginFrame();
 	g_devConsole->BeginFrame();
@@ -189,21 +189,19 @@ void App::BeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-void App::Update( float deltaSeconds )
+void App::Update()
 {
-	UpdateFromKeyboard( deltaSeconds );
+	//g_renderer->UpdateFrameTime();
+	g_devConsole->Update();
+	g_game->Update();
 
-	g_renderer->UpdateFrameTime( deltaSeconds );
-	g_devConsole->Update( deltaSeconds );
-	g_game->Update( deltaSeconds );
+	UpdateFromKeyboard();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void App::UpdateFromKeyboard( float deltaSeconds )
-{
-	UNUSED( deltaSeconds );
-	
+void App::UpdateFromKeyboard()
+{	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
 	{
 		if ( g_devConsole->IsOpen() )
