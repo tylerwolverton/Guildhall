@@ -9,6 +9,7 @@ Project - PhysicsSandbox
 - [x] Add `drag` to the `Rigidbody2D`, defaulted to 0
 - [x] Allow user to adjust object drag when selected [minimum of 0]
     - [x] Suggested keys are `:` and `\'` 
+        - Used `:` and `'`
 - [x] Switch to use a fixed time step
     - [x] Add a `Clock` class
         - [x] Engine should have a `Master` clock that is creaetd, that all clocks use as their parent by default
@@ -43,3 +44,6 @@ Project - PhysicsSandbox
     - [x] Follows similar rules to normal impulse when it comes to `DYNAMIC` vs `STATIC` vs `KINEMATIC` relative masses and when you apply it
     - [x] Applied only to dynamic objects
 - [x] Apply drag force to all dynamic objects
+
+Controls
+All are same as recommended except drag, I used `:` and `'`
