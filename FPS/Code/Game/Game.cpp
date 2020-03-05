@@ -49,7 +49,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	g_eventSystem->RegisterEvent( "SetMouseSensitivity", "Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
+	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 
 	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
 
@@ -93,15 +93,13 @@ void Game::Startup()
 	centerTransform.SetPosition( Vec3( 6.f, 4.f, -8.f ) );
 	m_sphereMeshTransforms.push_back( centerTransform );
 
-	constexpr int numSpheres = 30;
-	constexpr float outerRadius = 30.f;
-	constexpr float degreesPerSphere = 360.f / (float)numSpheres;
-	m_sphereMeshTransforms.reserve( numSpheres );
-	for ( int sphereNum = 0; sphereNum < numSpheres; ++sphereNum )
+	// Create sphere ring
+	m_sphereMeshTransforms.reserve( NUM_SPHERES );
+	for ( int sphereNum = 0; sphereNum < NUM_SPHERES; ++sphereNum )
 	{
-		float currentDegrees = (float)sphereNum * degreesPerSphere;
+		float currentDegrees = (float)sphereNum * DEGREES_PER_SPHERE;
 		Transform sphereTransform;
-		sphereTransform.SetPosition( Vec3( CosDegrees( currentDegrees ), SinDegrees( currentDegrees ), 0.f ) * outerRadius );
+		sphereTransform.SetPosition( Vec3( CosDegrees( currentDegrees ), SinDegrees( currentDegrees ), 0.f ) * SPHERE_RING_RADIUS );
 
 		m_sphereMeshTransforms.push_back( sphereTransform );
 	}
@@ -162,20 +160,15 @@ void Game::Update( float deltaSeconds )
 
 	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
 
-
 	for ( int transformIdx = 0; transformIdx < (int)m_sphereMeshTransforms.size(); ++transformIdx )
 	{
-		constexpr int numSpheres = 30;
-		constexpr float outerRadius = 30.f;
-		constexpr float degreesPerSphere = 360.f / (float)numSpheres;
-
-		float currentDegrees = (float)transformIdx * degreesPerSphere + (float)GetCurrentTimeSeconds() * 5.f;
+		float currentDegrees = (float)transformIdx * DEGREES_PER_SPHERE + (float)GetCurrentTimeSeconds() * 5.f;
 		Transform& sphereTransform = m_sphereMeshTransforms[transformIdx];
 		// Don't move initial sphere
 		if ( transformIdx != 0 )
 		{
 			Vec3 position = sphereTransform.GetPosition();
-			sphereTransform.SetPosition( Vec3( CosDegrees( currentDegrees ), SinDegrees( currentDegrees ), 0.f ) * outerRadius );
+			sphereTransform.SetPosition( Vec3( CosDegrees( currentDegrees ), SinDegrees( currentDegrees ), 0.f ) * SPHERE_RING_RADIUS );
 		}
 
 		sphereTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f, (float)( GetCurrentTimeSeconds() * ( 10.f * transformIdx + 5.f ) ) );
@@ -352,7 +345,7 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 //-----------------------------------------------------------------------------------------------
 bool Game::SetMouseSensitivity( EventArgs* args )
 {
-	s_mouseSensitivityMultiplier = args->GetValue( "SetMouseSensitivity", 1.f );
+	s_mouseSensitivityMultiplier = args->GetValue( "multiplier", 1.f );
 
 	return false;
 }

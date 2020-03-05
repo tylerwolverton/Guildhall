@@ -672,9 +672,15 @@ void DevConsole::ExecuteCommand()
 
 			if ( (int)args.size() > 1 )
 			{
-				eventArgs.SetValue( args[0], args[1] );
+				for ( int argIdx = 1; argIdx < (int)args.size(); ++argIdx )
+				{
+					std::vector<std::string> params = SplitStringOnDelimiter( args[argIdx], '=' );
+					if ( (int)params.size() == 2 )
+					{
+						eventArgs.SetValue( params[0], params[1] );
+					}
+				}
 			}
-
 			g_eventSystem->FireEvent( args[0], &eventArgs, eUsageLocation::DEV_CONSOLE );
 
 			return;

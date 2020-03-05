@@ -14,10 +14,10 @@ Project: FPS
         - [x] When storing degrees, make sure they are stored in sane ranges...
             - [x] Roll & Yaw is `-180` to `180` 
             - [x] Pitch is `-90` to `90`
-- [ ] Camera now calculates `view` matrix from their transform.
+- [x] Camera now calculates `view` matrix from their transform.
     - [x] `Transform::GetAsMatrix` implemented to calculate the camera's model matrix
     - [x] `MatrixInvertOrthoNormal` implemented to invert the camera's model into a view matrix
-        - [] `MatrixIsOrthoNormal` check added
+        - [x] `MatrixIsOrthoNormal` check added
         - [x] `MatrixTranspose` added
 - [x] Draw a Quad at `(0, 0, -10)`, or 10 units in front of the origin (should be visible when you start)
 - [x] Allow player to move the camera by change the camera transform position
@@ -58,12 +58,12 @@ Project: FPS
     - [x] Game has a `Transform` for the cube set at `(1, 0.5, -12.0f)`, 
     - [x] Cube transform sets `yaw` rotation to current time each frame
     - [x] Game should `SetModelMatrix` to the cube transform matrix
-- [ ] Support a depth buffer
+- [x] Support a depth buffer
     - [x] `Texture::CreateDepthStencilBuffer` added
     - [x] `Camera::SetDepthStencilBuffer` added
     - [x] `RenderContext` now automatcially creates a depth buffer during init matching the swap chain's size
-    - [ ] `RenderContext::GetDefaultBackbuffer` implemented to return this
-    - [ ] `RenderContext::BeginCamera`, now binds the camera's back buffer as well.
+    - [x] `RenderContext::GetFrameColorTarget` implemented to return this
+    - [x] `RenderContext::BeginCamera`, now binds the camera's back buffer as well.
         - [x] **IMPORANT:  Do not bind the default one automatically if the camera doesn't have one set.  There are reasons a camera may not want a depth buffer!**
     - [x] Camera's clear options should now store off the `depth` and `stencil` clear values.
     - [x] If camera has a depth buffer and says it should clear depth, also clear the depth buffer.
@@ -80,15 +80,11 @@ Project: FPS
     - Can be configured in GameConfig.xml windowMode="borderless" (or windowed for normal window)
 - [x] *X04.10: 03%*: Mouse input, show, and clip options should use a stack to track state `InputSystem::PushMouseOptions`, see notes...
 - [x] *X04.11: 02%*: **Requires X04.10** - Mouse options are disabled when window loses focus, and re-applied when gaining focus.
-- [ ] *X04.15: 04%*: CPU Mesh Subdivide (tesselation)
-- [ ] *X04.20: 02%*: Cube Sphere Generation
-- [ ] *X04.30: 04%*: IcoSphere Generation (No UV)
-- [ ] *X04.31: 02%*: **Requiers X04.30** - IcoSphere UVs (Can use spherical projection - there's no clean seam so  will require a wrapping sampler to wo -k)
 - [x] *X04.40: 02%*: Plane Generation (with subdivision count)
     - Uses dimensions and number of horizontal and vertical cuts to divide
 
 
-
+------
 Controls
 
 Tab - Autocomplete ( finish command or scroll through available commands when line is blank or command is present )
@@ -97,3 +93,7 @@ F2 - Cycle Sampler (between point and bilinear)
 F3 - Cycle Blend Mode (Affects the debug image in the top middle)
 WASD ( C and Spacebar for up down ) - Move camera
 Shift - Move faster 
+
+------
+Dev Console Commands
+set_mouse_sensitivity multiplier=NUMBER - change multiplier for mouse sensitivity

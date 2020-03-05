@@ -101,6 +101,9 @@ public:
 													 float aspectRatio,
 													 float nearZ, float farZ );
 
+	// TODO: Overload ==
+	static bool AreMatrixElementsEqual( const Mat44& a, const Mat44& b );
+
 private:
 	const Mat44 operator*( const Mat44& rhs ) const = delete; // Do not implement, forbidden!
 };

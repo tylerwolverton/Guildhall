@@ -68,6 +68,19 @@ int PositiveMod( int left, int right )
 
 
 //-----------------------------------------------------------------------------------------------
+bool IsNearlyEqual( float value, float target, float variance )
+{
+	if ( value > target - variance
+		 && value < target + variance )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec2 TransformPosition2D( const Vec2& initialPos, float uniformScale, float rotationDeg, const Vec2& translation )
 {
 	Vec2 transformedPos( initialPos );

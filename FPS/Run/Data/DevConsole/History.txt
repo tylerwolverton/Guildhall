@@ -11,3 +11,11 @@ quit
 SetMouseSensitivity 5
 quit
 help
+set_mouse_sensitivity 5
+set_mouse_sensitivity multiplier=5
+set_mouse_sensitivity 1
+set_mouse_sensitivity 99
+set_mouse_sensitivit
+set_mouse_sensitivity multiplier=2
+help
+set_mouse_sensitivity
