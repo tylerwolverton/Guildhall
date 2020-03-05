@@ -312,6 +312,7 @@ void RenderContext::BeginCamera( Camera& camera )
 void RenderContext::EndCamera( const Camera& camera )
 {
 	UNUSED( camera );
+	DX_SAFE_RELEASE( m_currentDepthStencilState );
 	m_isDrawing = false;
 }
 
