@@ -46,5 +46,5 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const 
 void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendIndicesForCubeMesh( std::vector<uint>& indices );
 
-void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& mins, const Vec2& dimensions, int horizontalCuts, int verticalCuts, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-void AppendIndicesForPlaneMesh( std::vector<uint>& indices );
+void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& mins, const Vec2& dimensions, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+void AppendIndicesForPlaneMesh( std::vector<uint>& indices, int horizontalSlices, int verticalSlices );

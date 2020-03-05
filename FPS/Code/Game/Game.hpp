@@ -77,6 +77,9 @@ private:
 	World* m_world = nullptr;
 	std::string m_curMap;
 
-	GPUMesh* m_mesh = nullptr;
-	Transform m_meshTransform;
+	GPUMesh* m_cubeMesh = nullptr;
+	Transform m_cubeMeshTransform;
+
+	GPUMesh* m_planeMesh = nullptr;
+	Transform m_planeMeshTransform;
 };

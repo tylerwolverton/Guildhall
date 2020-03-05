@@ -445,28 +445,46 @@ void AppendIndicesForCubeMesh( std::vector<uint>& indices )
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& mins, const Vec2& dimensions, int horizontalCuts, int verticalCuts, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& mins, const Vec2& dimensions, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	float sectionWidth = dimensions.x / ( (float)verticalCuts + 1.f );
-	float sectionHeight = dimensions.y / ( (float)horizontalCuts + 1.f );
+	float sectionWidth = dimensions.x / ( (float)verticalSlices + 1.f );
+	float sectionHeight = dimensions.y / ( (float)horizontalSlices + 1.f );
 
-	int numVertices = ( verticalCuts + 1 ) * ( horizontalCuts + 1 );
+	int numVertices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 );
 	vertexArray.reserve( numVertices );
 
-	for ( int yIdx = 0; yIdx < horizontalCuts; ++yIdx )
+	Vec2 uvRange( uvAtMaxs - uvAtMins );
+	Vec2 uvSteps( uvRange.x / (float)( verticalSlices ), uvRange.y / (float)( horizontalSlices ) );
+
+	for ( int yIdx = 0; yIdx < horizontalSlices + 1; ++yIdx )
 	{
-		for ( int xIdx = 0; xIdx < verticalCuts; ++xIdx )
+		for ( int xIdx = 0; xIdx < verticalSlices + 1; ++xIdx )
 		{
-			vertexArray.push_back( Vertex_PCU( mins + Vec3( sectionWidth * xIdx, sectionHeight * yIdx, 0.f ), tint, uvAtMins ) );
+			Vec2 uvs( uvAtMins.x + uvSteps.x * xIdx, uvAtMins.y + uvSteps.y * yIdx );
+			vertexArray.push_back( Vertex_PCU( mins + Vec3( sectionWidth * xIdx, sectionHeight * yIdx, 0.f ), tint, uvs ) );
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendIndicesForPlaneMesh( std::vector<uint>& indices )
+void AppendIndicesForPlaneMesh( std::vector<uint>& indices, int horizontalCuts, int verticalCuts )
 {
 
+	for ( int yIdx = 0; yIdx < horizontalCuts; ++yIdx )
+	{
+		for ( int xIdx = 0; xIdx < verticalCuts; ++xIdx )
+		{
+			int start = yIdx * ( horizontalCuts + 1 ) + xIdx;
+			indices.push_back( start );
+			indices.push_back( start + 1 );
+			indices.push_back( start + horizontalCuts + 2 );
+
+			indices.push_back( start );
+			indices.push_back( start + horizontalCuts + 2 );
+			indices.push_back( start + horizontalCuts + 1 );
+		}
+	}
 }
 
 

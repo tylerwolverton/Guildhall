@@ -72,8 +72,17 @@ void Game::Startup()
 	std::vector<uint> indices;
 	AppendIndicesForCubeMesh( indices );	
 
-	m_mesh = new GPUMesh( g_renderer, vertices, indices );
-	m_meshTransform.SetPosition( Vec3( 1.f, .5f, -12.f ) );
+	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_cubeMeshTransform.SetPosition( Vec3( 1.f, .5f, -12.f ) );
+
+	vertices.clear();
+	AppendVertsForPlaneMesh( vertices, Vec3::ZERO, Vec2( 4.f, 4.f ), 2, 2, Rgba8::WHITE );
+
+	indices.clear();
+	AppendIndicesForPlaneMesh( indices, 2, 2 );
+
+	m_planeMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_planeMeshTransform.SetPosition( Vec3( -5.f, .5f, -6.f ) );
 }
 
 
@@ -85,8 +94,11 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
-	delete m_mesh;
-	m_mesh = nullptr;
+	delete m_cubeMesh;
+	m_cubeMesh = nullptr;
+
+	delete m_planeMesh;
+	m_planeMesh = nullptr;
 
 	delete m_world;
 	m_world = nullptr;
@@ -122,7 +134,7 @@ void Game::Update( float deltaSeconds )
 	
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, Rgba8::BLACK );
 
-	m_meshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
+	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
 }
 
 
@@ -139,10 +151,14 @@ void Game::Render() const
 	
 	DrawAABB2WithDepth( g_renderer, AABB2( -.5f, -.5f, .5f, .5f ), -10.f, Rgba8::WHITE );
 	
-	Mat44 model = m_meshTransform.GetAsMatrix();
+	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model );
-	g_renderer->DrawMesh( m_mesh );
+	g_renderer->DrawMesh( m_cubeMesh );
 		
+	model = m_planeMeshTransform.GetAsMatrix();
+	g_renderer->SetModelMatrix( model );
+	g_renderer->DrawMesh( m_planeMesh );
+
 	g_renderer->EndCamera( *m_worldCamera );
 }
 
