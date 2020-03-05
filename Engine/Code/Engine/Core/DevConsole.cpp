@@ -389,8 +389,7 @@ void DevConsole::ToggleOpenFull()
 	}
 	else
 	{
-		m_previousCursorMode = m_inputSystem->GetCursorMode();
-		m_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
+		m_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 		m_isOpen = true;
 	}
 }
@@ -403,7 +402,7 @@ void DevConsole::Close()
 	m_currentCommandStr.clear();
 	SetCursorPosition( 0 );
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
-	m_inputSystem->SetCursorMode( m_previousCursorMode );
+	m_inputSystem->PopMouseOptions();
 }
 
 

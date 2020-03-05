@@ -51,7 +51,7 @@ void Game::Startup()
 {
 	g_eventSystem->RegisterEvent( "SetMouseSensitivity", "Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 
-	g_inputSystem->SetCursorMode( CURSOR_RELATIVE );
+	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
 
 	m_worldCamera = new Camera();
 	m_worldCamera->SetColorTarget( nullptr );
@@ -111,7 +111,8 @@ void Game::Startup()
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
-	g_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
+	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+	//g_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
 
 	TileDefinition::s_definitions.clear();
 	
@@ -168,7 +169,7 @@ void Game::Update( float deltaSeconds )
 		constexpr float outerRadius = 30.f;
 		constexpr float degreesPerSphere = 360.f / (float)numSpheres;
 
-		float currentDegrees = (float)transformIdx * degreesPerSphere + GetCurrentTimeSeconds() * 5.f;
+		float currentDegrees = (float)transformIdx * degreesPerSphere + (float)GetCurrentTimeSeconds() * 5.f;
 		Transform& sphereTransform = m_sphereMeshTransforms[transformIdx];
 		// Don't move initial sphere
 		if ( transformIdx != 0 )

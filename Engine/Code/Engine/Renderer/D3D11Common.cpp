@@ -64,4 +64,6 @@ D3D11_COMPARISON_FUNC ToDxComparisonFunc( eCompareFunc funcType )
 		case eCompareFunc::COMPARISON_LESS_EQUAL: return D3D11_COMPARISON_LESS_EQUAL;
 		case eCompareFunc::COMPARISON_ALWAYS: return D3D11_COMPARISON_ALWAYS;
 	}
+
+	ERROR_AND_DIE( "Unknown compare func type" );
 }

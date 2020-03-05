@@ -119,12 +119,12 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 			if ( windowState == WA_ACTIVE 
 				 || windowState == WA_CLICKACTIVE )
 			{
-				inputSystem->ResetCursorModeToLastState();
+				inputSystem->PopMouseOptions();
 				return 1;
 			}
 			else if ( windowState == WA_INACTIVE )
 			{
-				inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
+				inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 				return 1;
 			}
 			else

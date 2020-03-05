@@ -52,7 +52,7 @@ Project: FPS
         - [x] Be able to construct a mesh from a vertex and index array
         - [x] Add `RenderContext::BindIndexBuffer`
         - [x] Add `RenderContext::DrawIndexed`
-        - [-] Add `RenderContext::DrawMesh`
+        - [x] Add `RenderContext::DrawMesh`
             - This should bind the vertex buffer, index buffer, and then `DrawIndexed`
     - [x] Game creates a `cube mesh` around the origin with 2 unit sides. 
     - [x] Game has a `Transform` for the cube set at `(1, 0.5, -12.0f)`, 
@@ -76,21 +76,24 @@ Project: FPS
 ------
 
 ## Extras
-- [ ] *X04.10: 03%*: Mouse input, show, and clip options should use a stack to track state `InputSystem::PushMouseOptions`, see notes...
-- [ ] *X04.11: 02%*: **Requires X04.10** - Mouse options are disabled when window loses focus, and re-applied when gaining focus.
+- [x] *X01.00 : 05pts*:  Borderless Window Support
+    - Can be configured in GameConfig.xml windowMode="borderless" (or windowed for normal window)
+- [x] *X04.10: 03%*: Mouse input, show, and clip options should use a stack to track state `InputSystem::PushMouseOptions`, see notes...
+- [x] *X04.11: 02%*: **Requires X04.10** - Mouse options are disabled when window loses focus, and re-applied when gaining focus.
 - [ ] *X04.15: 04%*: CPU Mesh Subdivide (tesselation)
 - [ ] *X04.20: 02%*: Cube Sphere Generation
 - [ ] *X04.30: 04%*: IcoSphere Generation (No UV)
 - [ ] *X04.31: 02%*: **Requiers X04.30** - IcoSphere UVs (Can use spherical projection - there's no clean seam so  will require a wrapping sampler to wo -k)
 - [x] *X04.40: 02%*: Plane Generation (with subdivision count)
-- [ ] *X04.41: 04%*: **Requires X04.40** - Surface Generation for equations of the form "vec3 f(u, v)";
-- [ ] *X04.42: 04%*: **Requires X04.40** - NURB Generation (can use previous)
+    - Uses dimensions and number of horizontal and vertical cuts to divide
 
 
 
 Controls
 
 Tab - Autocomplete ( finish command or scroll through available commands when line is blank or command is present )
-Shift Tab - Movebackwards through Autocomplete suggestions
+Shift Tab - Move backwards through Autocomplete suggestions
 F2 - Cycle Sampler (between point and bilinear)
 F3 - Cycle Blend Mode (Affects the debug image in the top middle)
+WASD ( C and Spacebar for up down ) - Move camera
+Shift - Move faster 

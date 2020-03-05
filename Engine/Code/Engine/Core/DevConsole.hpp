@@ -113,6 +113,4 @@ private:
 	Rgba8 m_cursorColor = Rgba8::WHITE;
 	float m_curCursorSeconds = 0.f;
 	float m_maxCursorBlinkStateSeconds = .5f;
-
-	eCursorMode m_previousCursorMode;
 };

@@ -10,3 +10,4 @@ SetMouseSensitivity 5
 quit
 SetMouseSensitivity 5
 quit
+help
