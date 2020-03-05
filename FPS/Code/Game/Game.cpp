@@ -76,10 +76,8 @@ void Game::Startup()
 	m_cubeMeshTransform.SetPosition( Vec3( 1.f, .5f, -12.f ) );
 
 	vertices.clear();
-	AppendVertsForPlaneMesh( vertices, Vec3::ZERO, Vec2( 4.f, 4.f ), 2, 2, Rgba8::WHITE );
-
 	indices.clear();
-	AppendIndicesForPlaneMesh( indices, 2, 2 );
+	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 4.f, 32, 16, Rgba8::WHITE );
 
 	m_planeMesh = new GPUMesh( g_renderer, vertices, indices );
 	m_planeMeshTransform.SetPosition( Vec3( -5.f, .5f, -6.f ) );

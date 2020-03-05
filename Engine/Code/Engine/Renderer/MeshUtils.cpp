@@ -468,25 +468,64 @@ void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& 
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendIndicesForPlaneMesh( std::vector<uint>& indices, int horizontalCuts, int verticalCuts )
+void AppendIndicesForPlaneMesh( std::vector<uint>& indices, int horizontalSlices, int verticalSlices )
 {
+	int numIndices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 ) * 6;
+	indices.reserve( numIndices );
 
-	for ( int yIdx = 0; yIdx < horizontalCuts; ++yIdx )
+	for ( int yIdx = 0; yIdx < horizontalSlices; ++yIdx )
 	{
-		for ( int xIdx = 0; xIdx < verticalCuts; ++xIdx )
+		for ( int xIdx = 0; xIdx < verticalSlices; ++xIdx )
 		{
-			int start = yIdx * ( horizontalCuts + 1 ) + xIdx;
-			indices.push_back( start );
+			int start = yIdx * ( horizontalSlices + 1 ) + xIdx;
+			indices.push_back( start + horizontalSlices + 2 );
 			indices.push_back( start + 1 );
-			indices.push_back( start + horizontalCuts + 2 );
-
 			indices.push_back( start );
-			indices.push_back( start + horizontalCuts + 2 );
-			indices.push_back( start + horizontalCuts + 1 );
+
+			indices.push_back( start + horizontalSlices + 1 );
+			indices.push_back( start + horizontalSlices + 2 );
+			indices.push_back( start );
 		}
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& center, float radius, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+{
+	float sectionWidth = radius / ( (float)verticalSlices + 1.f );
+	float sectionHeight = radius / ( (float)horizontalSlices + 1.f );
+
+	int numVertices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 );
+	vertexArray.reserve( numVertices );
+	
+
+	Vec2 uvRange( uvAtMaxs - uvAtMins );
+	Vec2 uvSteps( uvRange.x / (float)( verticalSlices ), uvRange.y / (float)( horizontalSlices ) );
+
+	for ( int yIdx = 0; yIdx < horizontalSlices + 1; ++yIdx )
+	{
+		for ( int xIdx = 0; xIdx < verticalSlices + 1; ++xIdx )
+		{
+			float theta = RangeMapFloat( 0.f, (float)verticalSlices, 0.f, 360.f, (float)xIdx );
+			float phi = RangeMapFloat( 0.f, (float)horizontalSlices, -90.f, 90.f, (float)yIdx );
+
+			float cosPhi = CosDegrees( phi );
+
+			float posX = cosPhi * CosDegrees( theta );
+			float posY = SinDegrees( phi );
+			float posZ = cosPhi * SinDegrees( theta );
+
+			Vec3 position = center + Vec3( posX, posY, posZ) * radius;
+
+			Vec2 uvs( uvAtMins.x + uvSteps.x * xIdx, uvAtMins.y + uvSteps.y * yIdx );
+
+			vertexArray.push_back( Vertex_PCU( position, tint, uvs ) );
+		}
+	}
+
+	AppendIndicesForPlaneMesh( indices, horizontalSlices, verticalSlices );
+}
 
 //-----------------------------------------------------------------------------------------------
 void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
