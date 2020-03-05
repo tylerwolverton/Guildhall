@@ -237,7 +237,7 @@ Vec3 Vec3::GetRotatedAboutZRadians( float angleRad ) const
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 Vec3::XY()
+Vec2 Vec3::XY() const
 {
 	return Vec2( x, y );
 }

@@ -34,10 +34,6 @@ static bool DiscVPolygonCollisionCheck( const Collider2D* collider1, const Colli
 	const PolygonCollider2D* polygonCollider = (const PolygonCollider2D*)collider2;
 
 	Vec2 nearestPoint = polygonCollider->GetClosestPoint( discCollider->m_worldPosition );
-	//if ( polygonCollider->m_polygon.Contains( discCollider->m_worldPosition ) )
-	//{
-	//	return true;
-	//}
 
 	return IsPointInsideDisc( nearestPoint, discCollider->m_worldPosition, discCollider->m_radius );
 }

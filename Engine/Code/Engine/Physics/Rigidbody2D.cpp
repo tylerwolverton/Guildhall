@@ -79,7 +79,7 @@ Vec2 Rigidbody2D::GetImpaceVelocityAtPoint( const Vec2& point )
 {
 	UNUSED( point );
 
-	return GetVerletVelocity();
+	return GetVelocity();
 }
 
 
