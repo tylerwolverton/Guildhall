@@ -82,4 +82,7 @@ private:
 
 	GPUMesh* m_planeMesh = nullptr;
 	Transform m_planeMeshTransform;
+
+	GPUMesh* m_sphereMesh = nullptr;
+	std::vector<Transform> m_sphereMeshTransforms;
 };

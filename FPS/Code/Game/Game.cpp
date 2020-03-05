@@ -77,10 +77,34 @@ void Game::Startup()
 
 	vertices.clear();
 	indices.clear();
-	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 4.f, 32, 16, Rgba8::WHITE );
+	AppendVertsForPlaneMesh( vertices, Vec3::ZERO, Vec2( 7.f, 5.f) , 64, 32, Rgba8::WHITE );
+	AppendIndicesForPlaneMesh( indices, 64, 32 );
 
 	m_planeMesh = new GPUMesh( g_renderer, vertices, indices );
-	m_planeMeshTransform.SetPosition( Vec3( -5.f, .5f, -6.f ) );
+	m_planeMeshTransform.SetPosition( Vec3( -8.f, .5f, -6.f ) );
+
+	// Create Spheres
+	vertices.clear();
+	indices.clear();
+	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 32, 64, Rgba8::WHITE );
+
+	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
+	Transform centerTransform;
+	centerTransform.SetPosition( Vec3( 6.f, 4.f, -8.f ) );
+	m_sphereMeshTransforms.push_back( centerTransform );
+
+	constexpr int numSpheres = 30;
+	constexpr float outerRadius = 30.f;
+	constexpr float degreesPerSphere = 360.f / (float)numSpheres;
+	m_sphereMeshTransforms.reserve( numSpheres );
+	for ( int sphereNum = 0; sphereNum < numSpheres; ++sphereNum )
+	{
+		float currentDegrees = (float)sphereNum * degreesPerSphere;
+		Transform sphereTransform;
+		sphereTransform.SetPosition( Vec3( CosDegrees( currentDegrees ), SinDegrees( currentDegrees ), 0.f ) * outerRadius );
+
+		m_sphereMeshTransforms.push_back( sphereTransform );
+	}
 }
 
 
@@ -97,6 +121,9 @@ void Game::Shutdown()
 
 	delete m_planeMesh;
 	m_planeMesh = nullptr;
+
+	delete m_sphereMesh;
+	m_sphereMesh = nullptr;
 
 	delete m_world;
 	m_world = nullptr;
@@ -133,6 +160,26 @@ void Game::Update( float deltaSeconds )
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, Rgba8::BLACK );
 
 	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
+
+
+	for ( int transformIdx = 0; transformIdx < (int)m_sphereMeshTransforms.size(); ++transformIdx )
+	{
+		constexpr int numSpheres = 30;
+		constexpr float outerRadius = 30.f;
+		constexpr float degreesPerSphere = 360.f / (float)numSpheres;
+
+		float currentDegrees = (float)transformIdx * degreesPerSphere + GetCurrentTimeSeconds() * 5.f;
+		Transform& sphereTransform = m_sphereMeshTransforms[transformIdx];
+		// Don't move initial sphere
+		if ( transformIdx != 0 )
+		{
+			Vec3 position = sphereTransform.GetPosition();
+			sphereTransform.SetPosition( Vec3( CosDegrees( currentDegrees ), SinDegrees( currentDegrees ), 0.f ) * outerRadius );
+		}
+
+		sphereTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f, (float)( GetCurrentTimeSeconds() * ( 10.f * transformIdx + 5.f ) ) );
+	
+	}
 }
 
 
@@ -156,6 +203,13 @@ void Game::Render() const
 	model = m_planeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model );
 	g_renderer->DrawMesh( m_planeMesh );
+
+	for ( int transformIdx = 0; transformIdx < (int)m_sphereMeshTransforms.size(); ++transformIdx )
+	{
+		model = m_sphereMeshTransforms[transformIdx].GetAsMatrix();
+		g_renderer->SetModelMatrix( model );
+		g_renderer->DrawMesh( m_sphereMesh );
+	}
 
 	g_renderer->EndCamera( *m_worldCamera );
 }

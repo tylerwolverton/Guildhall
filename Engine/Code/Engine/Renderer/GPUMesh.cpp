@@ -34,6 +34,11 @@ void GPUMesh::UpdateVertices( uint vertexCount, const void* vertexData, uint ver
 //-----------------------------------------------------------------------------------------------
 int GPUMesh::GetIndexCount()
 {
+	if ( (int)m_indices->m_elementByteSize == 0 )
+	{
+		return 0;
+	}
+
 	return (int)m_indices->m_bufferByteSize / (int)m_indices->m_elementByteSize;
 }
 
