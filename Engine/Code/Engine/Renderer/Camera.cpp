@@ -11,7 +11,6 @@
 //-----------------------------------------------------------------------------------------------
 Camera::Camera()
 {
-	//m_transform.m_position.z = -.1f;
 }
 
 
@@ -22,10 +21,10 @@ Camera::~Camera()
 	m_cameraUBO = nullptr;
 }
 
+
 //-----------------------------------------------------------------------------------------------
 Vec3 Camera::ClientToWorldPosition( const Vec2& clientPos, float ndcZ ) const
 {
-	// TODO: Make this work
 	Vec3 ndc = RangeMapVec3( Vec3::ZERO, Vec3::ONE,
 							  Vec3( -1.f, -1.f, 0.f ), Vec3::ONE,
 							  Vec3( clientPos, ndcZ ) );
@@ -39,7 +38,6 @@ Vec3 Camera::ClientToWorldPosition( const Vec2& clientPos, float ndcZ ) const
 
 	Vec4 worldHomogeneous = clipToWorld.TransformHomogeneousPoint3D( Vec4( ndc, 1.f ) );
 	Vec3 worldPos = worldHomogeneous.XYZ() / worldHomogeneous.w;
-
 
 	return worldPos;
 }

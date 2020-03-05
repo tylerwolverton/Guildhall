@@ -327,29 +327,29 @@ void Game::UpdateFromKeyboard()
 				}
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_PLUS ) )
+			if ( g_inputSystem->IsKeyPressed( KEY_PLUS ) )
 			{
 				if ( m_isMouseDragging )
 				{
-					m_dragTarget->ChangeBounciness( .1f );
+					m_dragTarget->ChangeBounciness( .5f * deltaSeconds );
 				}
 				else
 				{
 					Vec2 currentGravity = m_physics2D->GetSceneGravity();
-					m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, -1.f ) );
+					m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, -5.f ) * deltaSeconds );
 				}
 			}
 			
-			if ( g_inputSystem->WasKeyJustPressed( KEY_MINUS ) )
+			if ( g_inputSystem->IsKeyPressed( KEY_MINUS ) )
 			{
 				if ( m_isMouseDragging )
 				{
-					m_dragTarget->ChangeBounciness( -.1f );
+					m_dragTarget->ChangeBounciness( -.5f * deltaSeconds );
 				}
 				else
 				{
 					Vec2 currentGravity = m_physics2D->GetSceneGravity();
-					m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, 1.f ) );
+					m_physics2D->SetSceneGravity( currentGravity + Vec2( 0.f, 5.f ) * deltaSeconds );
 				}
 			}
 
@@ -375,48 +375,48 @@ void Game::UpdateFromKeyboard()
 				}
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_LEFT_BRACKET ) )
+			if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
 			{
 				if ( m_isMouseDragging )
 				{
-					m_dragTarget->ChangeMass( -.5f );
+					m_dragTarget->ChangeMass( -1.f * deltaSeconds );
 				}
 			}
-			if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHT_BRACKET ) )
+			if ( g_inputSystem->IsKeyPressed( KEY_RIGHT_BRACKET ) )
 			{
 				if ( m_isMouseDragging )
 				{
-					m_dragTarget->ChangeMass( .5f );
-				}
-			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
-			{
-				if ( m_isMouseDragging )
-				{
-					m_dragTarget->ChangeFriction( -.1f );
-				}
-			}
-			if ( g_inputSystem->WasKeyJustPressed( KEY_PERIOD ) )
-			{
-				if ( m_isMouseDragging )
-				{
-					m_dragTarget->ChangeFriction( .1f );
+					m_dragTarget->ChangeMass( 1.f * deltaSeconds );
 				}
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_SEMICOLON ) )
+			if ( g_inputSystem->IsKeyPressed( KEY_COMMA ) )
 			{
 				if ( m_isMouseDragging )
 				{
-					m_dragTarget->ChangeDrag( -.1f );
+					m_dragTarget->ChangeFriction( -.5f * deltaSeconds );
 				}
 			}
-			if ( g_inputSystem->WasKeyJustPressed( KEY_QUOTE ) )
+			if ( g_inputSystem->IsKeyPressed( KEY_PERIOD ) )
 			{
 				if ( m_isMouseDragging )
 				{
-					m_dragTarget->ChangeDrag( .1f );
+					m_dragTarget->ChangeFriction( .5f * deltaSeconds );
+				}
+			}
+
+			if ( g_inputSystem->IsKeyPressed( KEY_SEMICOLON ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeDrag( -.5f * deltaSeconds );
+				}
+			}
+			if ( g_inputSystem->IsKeyPressed( KEY_QUOTE ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					m_dragTarget->ChangeDrag( .5f * deltaSeconds );
 				}
 			}
 
