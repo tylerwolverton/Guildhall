@@ -1,5 +1,6 @@
 #include "SimpleTriangleFont.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Math/AABB2.hpp"
 
@@ -55,7 +56,7 @@ void AppendGlyphTriangles2D( std::vector<Vertex_PCU>& verts, char glyph, const V
 			float minX = cellMins.x + pixelSize.x * (float) triTextCellIndex;
 			float maxX = minX + pixelSize.x;
 
-			RenderContext::AppendVertsForAABB2D( verts, AABB2( minX,minY, maxX,maxY ), color );
+			AppendVertsForAABB2D( verts, AABB2( minX,minY, maxX,maxY ), color );
 		}
 	}
 };

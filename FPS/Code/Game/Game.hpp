@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
 
@@ -41,9 +42,13 @@ public:
 	void		AddScreenShakeIntensity( float additionalIntensityFraction );
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
+
+	static bool SetMouseSensitivity( EventArgs* args );
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
+
+	static float m_mouseSensitivityMultiplier;
 
 private:
 	void LoadAssets();
@@ -75,6 +80,12 @@ private:
 	World* m_world = nullptr;
 	std::string m_curMap;
 
-	GPUMesh* m_mesh = nullptr;
-	Transform m_meshTransform;
+	GPUMesh* m_cubeMesh = nullptr;
+	Transform m_cubeMeshTransform;
+
+	GPUMesh* m_planeMesh = nullptr;
+	Transform m_planeMeshTransform;
+
+	GPUMesh* m_sphereMesh = nullptr;
+	std::vector<Transform> m_sphereMeshTransforms;
 };

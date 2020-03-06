@@ -232,9 +232,12 @@
     <ClCompile Include="Renderer\IndexBuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\MeshUtils.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
     <ClCompile Include="Time\Clock.cpp">
       <Filter>Time</Filter>
-    </ClCompile>
+	</ClCompile>
     <ClCompile Include="Time\Timer.cpp">
       <Filter>Time</Filter>
     </ClCompile>
@@ -474,5 +477,6 @@
     <ClInclude Include="Time\Time.hpp">
       <Filter>Time</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\MeshUtils.hpp" />
   </ItemGroup>
 </Project>

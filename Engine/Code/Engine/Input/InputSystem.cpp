@@ -209,7 +209,7 @@ void InputSystem::UpdateMouse()
 //-----------------------------------------------------------------------------------------------
 void InputSystem::HideSystemCursor()
 {
-	ShowCursor( false );
+	while ( ShowCursor( false ) >= 0 ) {}
 }
 
 
@@ -238,40 +238,63 @@ void InputSystem::UnlockSystemCursor()
 
 
 //-----------------------------------------------------------------------------------------------
-void InputSystem::SetCursorMode( eCursorMode cursorMode )
+void InputSystem::UpdateFromMouseOptions( const MouseOptions& options )
 {
-	m_lastCursorMode = m_currentCursorMode;
-
-	if ( cursorMode == m_currentCursorMode )
+	if ( options.m_isClipped )
 	{
-		return;
+		LockSystemCursor();
+	}
+	else
+	{
+		UnlockSystemCursor();
 	}
 
-	m_currentCursorMode = cursorMode;
-	
-	switch ( m_currentCursorMode )
+	if ( options.m_isVisible )
+	{
+		ShowSystemCursor();
+	}
+	else
+	{
+		HideSystemCursor();
+	}
+
+	switch ( options.m_cursorMode )
 	{
 		case CURSOR_ABSOLUTE:
 		{
-			ShowSystemCursor();
-			UnlockSystemCursor();
 		} break;
 
 		case CURSOR_RELATIVE:
 		{
-			LockSystemCursor();
-			HideSystemCursor();
 			m_mousePositionLastFrame = GetCenterOfWindow();
 			SetCursorPos( (int)m_mousePositionLastFrame.x, (int)m_mousePositionLastFrame.y );
 		} break;
 	}
+
+	m_currentCursorMode = options.m_cursorMode;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void InputSystem::ResetCursorModeToLastState()
+void InputSystem::PushMouseOptions( eCursorMode cursorMode, bool isVisible, bool isClipped )
 {
-	SetCursorMode( m_lastCursorMode );
+	MouseOptions newOptions;
+	newOptions.m_cursorMode = cursorMode;
+	newOptions.m_isVisible = isVisible;
+	newOptions.m_isClipped = isClipped;
+
+	m_mouseOptionsStack.push_back( newOptions );
+
+	UpdateFromMouseOptions( newOptions );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::PopMouseOptions()
+{
+	m_mouseOptionsStack.pop_back();
+
+	UpdateFromMouseOptions( m_mouseOptionsStack.back() );
 }
 
 

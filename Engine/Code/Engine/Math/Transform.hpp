@@ -16,6 +16,8 @@ public:
 
 	const Mat44 GetAsMatrix() const;
 
+	Vec3 GetPosition() const { return m_position; }
+
 private:
 	float GetRotationInRangeDegrees( float rotationDegrees, float minAngleDegrees = -360.f, float maxAngleDegrees = 360.f );
 

@@ -9,6 +9,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Time/Clock.hpp"
 
@@ -218,7 +219,7 @@ void DevConsole::RenderBackground( const AABB2& bounds ) const
 	backgroundColor.a = 150;
 
 	std::vector<Vertex_PCU> backgroundVertices;
-	m_renderer->AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
+	AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
 
 	m_renderer->BindTexture( nullptr );
 	m_renderer->DrawVertexArray( backgroundVertices );
@@ -394,8 +395,7 @@ void DevConsole::ToggleOpenFull()
 	}
 	else
 	{
-		m_previousCursorMode = m_inputSystem->GetCursorMode();
-		m_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
+		m_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 		m_isOpen = true;
 	}
 }
@@ -408,7 +408,7 @@ void DevConsole::Close()
 	m_currentCommandStr.clear();
 	SetCursorPosition( 0 );
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
-	m_inputSystem->SetCursorMode( m_previousCursorMode );
+	m_inputSystem->PopMouseOptions();
 }
 
 
@@ -671,7 +671,7 @@ void DevConsole::ExecuteCommand()
 	for ( int cmdIdx = 0; cmdIdx < (int)supportedCommands.size(); ++cmdIdx )
 	{
 		EventSubscription*& cmd = supportedCommands[cmdIdx];
-		if ( cmd != nullptr
+		if ( cmd != nullptr 
 			 && !_strcmpi( args[0].c_str(), cmd->m_eventName.c_str() ) )
 		{
 			EventArgs eventArgs;

@@ -49,7 +49,7 @@ public:
 	void SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip );
 
 	// Rendering
-	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 0.f, unsigned int stencil = 0 );
+	void SetClearMode( unsigned int clearFlags, Rgba8 color, float depth = 1.f, unsigned int stencil = 0 );
 	
 	void SetColorTarget( Texture* texture );
 	void SetDepthStencilTarget( Texture* texture );
@@ -67,6 +67,8 @@ public:
 	Rgba8 GetClearColor()				const	{ return m_clearColor; }
 	unsigned int GetClearMode()			const	{ return m_clearMode; }
 	Texture* GetColorTarget()			const;
+	Texture* GetDepthStencilTarget()	const	{ return m_deptStencilTarget; }
+	float GetClearDepth()				const	{ return m_clearDepth; }
 
 	const Mat44 GetViewMatrix()			const	{ return m_viewMatrix; }
 	const Mat44 GetProjectionMatrix()	const	{ return m_projectionMatrix; }
@@ -88,6 +90,7 @@ private:
 
 	unsigned int	m_clearMode = 0;
 	Rgba8			m_clearColor = Rgba8::BLACK;
+	float			m_clearDepth = 1.f;
 
 	Texture*		m_colorTarget = nullptr;
 	Texture*		m_deptStencilTarget = nullptr;

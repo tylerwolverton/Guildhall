@@ -1,4 +1,5 @@
 #include "Engine/Math/MatrixUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -28,6 +29,31 @@ Mat44 MakePerspectiveProjectionMatrixD3D( float fovDegrees,
 void TransposeMatrix( Mat44& matrix )
 {
 	matrix.Transpose();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool IsOrthoNormalMatrix( Mat44& matrix )
+{
+	Vec3 iBasis = matrix.GetIBasis3D();
+	Vec3 jBasis = matrix.GetJBasis3D();
+	Vec3 kBasis = matrix.GetKBasis3D();
+
+	if ( !IsNearlyEqual( iBasis.GetLength(), 1.f )
+		 || !IsNearlyEqual( jBasis.GetLength(), 1.f )
+		 || !IsNearlyEqual( kBasis.GetLength(), 1.f ) )
+	{
+		return false;
+	}
+
+	if ( !IsNearlyEqual( DotProduct3D( iBasis, jBasis ), 0.f )
+		 || !IsNearlyEqual( DotProduct3D( jBasis, kBasis ), 0.f )
+		 || !IsNearlyEqual( DotProduct3D( iBasis, kBasis ), 0.f ) )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 

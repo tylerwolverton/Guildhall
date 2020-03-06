@@ -71,6 +71,16 @@ enum eCursorMode : uint
 
 
 //-----------------------------------------------------------------------------------------------
+struct MouseOptions
+{
+public:
+	eCursorMode m_cursorMode = CURSOR_ABSOLUTE;
+	bool m_isVisible = true;
+	bool m_isClipped = false;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class InputSystem
 {
 public:
@@ -110,9 +120,11 @@ public:
 	void ShowSystemCursor();
 	void LockSystemCursor();
 	void UnlockSystemCursor();
-	void SetCursorMode( eCursorMode cursorMode );
-	void ResetCursorModeToLastState();
+	void UpdateFromMouseOptions( const MouseOptions& options );
 	eCursorMode GetCursorMode()																									{ return m_currentCursorMode; }
+
+	void PushMouseOptions( eCursorMode cursorMode, bool isVisible, bool isClipped );
+	void PopMouseOptions();
 
 	const char* GetTextFromClipboard() const;
 
@@ -139,4 +151,6 @@ private:
 	Vec2 m_mouseMovementDelta = Vec2::ZERO;
 
 	std::queue<char> m_characters;
+
+	std::vector<MouseOptions> m_mouseOptionsStack;
 };

@@ -7,6 +7,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -196,19 +197,19 @@ void Game::RenderPolygonPoints() const
 
 	for ( int pointIdx = 0; pointIdx < numPotentialPoints - 1; ++pointIdx )
 	{
-		g_renderer->DrawDisc2D( m_potentialPolygonPoints[pointIdx], .05f, Rgba8::WHITE );
+		DrawDisc2D( g_renderer, m_potentialPolygonPoints[pointIdx], .05f, Rgba8::WHITE );
 		
 		if ( pointIdx > 0 )
 		{
 			int lastIdx = pointIdx - 1;
-			g_renderer->DrawLine2D( m_potentialPolygonPoints[lastIdx], m_potentialPolygonPoints[pointIdx], Rgba8::BLUE, .05f );
+			DrawLine2D( g_renderer, m_potentialPolygonPoints[lastIdx], m_potentialPolygonPoints[pointIdx], Rgba8::BLUE, .05f );
 		}
 	}
 
 	Rgba8 lineColor = ( m_isPotentialPolygonConvex || numPotentialPoints < 3 ) ? Rgba8::BLUE : Rgba8::RED;
 
 	int lastPointIdx = numPotentialPoints - 2;
-	g_renderer->DrawLine2D( m_potentialPolygonPoints[lastPointIdx], m_mouseWorldPosition, lineColor, .05f );
+	DrawLine2D( g_renderer, m_potentialPolygonPoints[lastPointIdx], m_mouseWorldPosition, lineColor, .05f );
 }
 
 

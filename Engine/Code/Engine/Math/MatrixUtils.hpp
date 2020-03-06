@@ -13,5 +13,6 @@ Mat44 MakePerspectiveProjectionMatrixD3D( float fovDegrees,
 										  float nearZ, float farZ );
 
 void TransposeMatrix( Mat44& matrix );
+bool IsOrthoNormalMatrix( Mat44& matrix );
 void InvertOrthoNormalMatrix( Mat44& matrix );
 void InvertMatrix( Mat44& matrix );

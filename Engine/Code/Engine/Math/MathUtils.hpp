@@ -1,6 +1,5 @@
 #pragma once
 
-
 //-----------------------------------------------------------------------------------------------
 struct Vec2;
 struct IntVec2;
@@ -26,6 +25,7 @@ float		Atan2Degrees( float y, float x );
 // Utilities
 int			PositiveMod( int left, int right );
 float		SignFloat( float value );
+bool		IsNearlyEqual( float value, float target, float variance = .0001f );
 
 // Transforms
 const Vec2	TransformPosition2D( const Vec2& initialPos, float scaleUniform, float rotationDeg, const Vec2& translation );

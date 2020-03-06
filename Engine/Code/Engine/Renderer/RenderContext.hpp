@@ -3,6 +3,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+
 #include <vector>
 #include <map>
 
@@ -15,11 +16,9 @@ struct IDXGIDebug;
 struct ID3D11RenderTargetView;
 struct ID3D11Buffer;
 struct ID3D11BlendState;
+struct ID3D11DepthStencilState;
 struct Rgba8;
 struct Vertex_PCU;
-struct AABB2;
-struct OBB2;
-struct Capsule2;
 class Window;
 class Clock;
 class Polygon2;
@@ -33,7 +32,7 @@ class SwapChain;
 class VertexBuffer;
 class IndexBuffer;
 class GPUMesh;
-
+enum class eCompareFunc : uint;
 
 //-----------------------------------------------------------------------------------------------
 enum class eBlendMode
@@ -44,6 +43,7 @@ enum class eBlendMode
 };
 
 
+//-----------------------------------------------------------------------------------------------
 enum eBufferSlot
 {
 	UBO_FRAME_SLOT = 0,
@@ -52,6 +52,7 @@ enum eBufferSlot
 };
 
 
+//-----------------------------------------------------------------------------------------------
 struct FrameData
 {
 	float systemTimeSeconds;
@@ -61,6 +62,7 @@ struct FrameData
 };
 
 
+//-----------------------------------------------------------------------------------------------
 struct ModelMatrixData
 {
 	Mat44 modelMatrix;
@@ -78,7 +80,11 @@ public:
 	void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
+	void SetDepthTest( eCompareFunc compare, bool writeDepthOnPass );
+
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
+	void ClearDepth( Texture* depthStencilTarget, float depth );
+
 	void BeginCamera( Camera& camera );
 	void EndCamera	( const Camera& camera );
 
@@ -91,33 +97,8 @@ public:
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
 	void DrawMesh( GPUMesh* mesh );
 	
-	void DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8& color, float thickness );
-	void DrawRing2D( const Vec2& center, float radius, const Rgba8& color, float thickness );
-	void DrawDisc2D( const Vec2& center, float radius, const Rgba8& color );
-	void DrawCapsule2D( const Capsule2& capsule, const Rgba8& color );
-	void DrawAABB2( const AABB2& box, const Rgba8& tint );
-	void DrawAABB2Outline( const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness );
-	void DrawOBB2( const OBB2& box, const Rgba8& tint );
-	void DrawOBB2Outline( const Vec2& center, const OBB2& box, const Rgba8& tint, float thickness );
-	void DrawPolygon2( const Polygon2& polygon2, const Rgba8& tint );
-	void DrawPolygon2( const std::vector<Vec2>& vertexPositions, const Rgba8& tint );
-	void DrawPolygon2Outline( const Polygon2& polygon2, const Rgba8& tint, float thickness );
-	void DrawPolygon2Outline( const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness );
-
-	static void AppendVertsForArc		( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint );
-	static void AppendVertsForAABB2D	( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-	static void AppendVertsForOBB2D		( std::vector<Vertex_PCU>& vertexArray, const OBB2& spriteBounds,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-	static void AppendVertsForOBB2D		( std::vector<Vertex_PCU>& vertexArray, const Vec2& bottomLeft, const Vec2& bottomRight, const Vec2& topLeft, const Vec2& topRight, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-	static void AppendVertsForCapsule2D	( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule,	const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-	static void AppendVertsForPolygon2	( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-
-	static void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-	static void AppendIndicesForCubeMesh( std::vector<uint>& indices );
-	
-	void DrawAABB2WithDepth( const AABB2& box, float zDepth, const Rgba8& tint );
-	static void AppendVertsForAABB2DWithDepth ( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
-	
 	Texture* GetFrameColorTarget();
+	IntVec2 GetDefaultBackBufferSize();
 
 	// Binding Inputs
 	void BindVertexBuffer( VertexBuffer* vbo );
@@ -127,18 +108,17 @@ public:
 	// Binding State
 	void BindShader( Shader* shader );
 	void BindShader( const char* fileName );
+	void BindTexture( const Texture* constTexture );
+	void BindSampler( Sampler* sampler );
 
 	// Resource Creation
 	Shader* GetOrCreateShader( const char* filename );
 	Shader* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
-
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
-	void BindTexture( const Texture* constTexture );
-	void BindSampler( Sampler* sampler );
-
+	Texture* CreateTextureFromColor( const Rgba8& color );
+	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
 
-	Texture* CreateTextureFromColor( const Rgba8& color );
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
 	void SetModelMatrix( const Mat44& modelMatrix );
@@ -190,7 +170,10 @@ private:
 	Sampler* m_defaultLinearSampler					= nullptr;
 	Sampler* m_currentSampler						= nullptr;
 	
-	Texture* m_defaultWhiteTexture					= nullptr;
+	Texture* m_defaultWhiteTexture = nullptr;
+	Texture* m_defaultDepthBuffer = nullptr;
+
+	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 
 	ID3D11BlendState* m_alphaBlendState				= nullptr;
 	ID3D11BlendState* m_additiveBlendState			= nullptr;

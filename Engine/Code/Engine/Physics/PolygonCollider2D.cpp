@@ -5,6 +5,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 
@@ -122,6 +123,6 @@ void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borde
 		return;
 	}
 
-	renderer->DrawPolygon2( m_polygon.GetPoints(), fillColor );
-	renderer->DrawPolygon2Outline( m_polygon.GetPoints(), borderColor, .04f );
+	DrawPolygon2( renderer, m_polygon.GetPoints(), fillColor );
+	DrawPolygon2Outline( renderer, m_polygon.GetPoints(), borderColor, .04f );
 }

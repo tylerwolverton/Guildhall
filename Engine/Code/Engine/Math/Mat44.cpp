@@ -657,3 +657,30 @@ const Mat44 Mat44::CreatePerspectiveProjection( float fovDegrees,
 
 	return Mat44( projMatrix );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+bool Mat44::AreMatrixElementsEqual( const Mat44& a, const Mat44& b )
+{
+	if ( a.GetIBasis4D() != b.GetIBasis4D() )
+	{
+		return false;
+	}
+
+	if ( a.GetJBasis4D() != b.GetJBasis4D() )
+	{
+		return false;
+	}
+
+	if ( a.GetKBasis4D() != b.GetKBasis4D() )
+	{
+		return false;
+	}
+
+	if ( a.GetTranslation4D() != b.GetTranslation4D() )
+	{
+		return false;
+	}
+
+	return true;
+}

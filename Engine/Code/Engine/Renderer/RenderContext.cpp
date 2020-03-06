@@ -6,15 +6,12 @@
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Math/AABB2.hpp"
-#include "Engine/Math/OBB2.hpp"
-#include "Engine/Math/Capsule2.hpp"
-#include "Engine/Math/Polygon2.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/BuiltInShaders.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
@@ -103,6 +100,9 @@ void RenderContext::Startup( Window* window )
 
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
 
+	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
+	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
+
 	CreateBlendStates();
 }
 
@@ -145,14 +145,7 @@ void RenderContext::Shutdown()
 
 	delete m_defaultLinearSampler;
 	m_defaultLinearSampler = nullptr;
-
-	delete m_defaultWhiteTexture;
-	m_defaultWhiteTexture = nullptr;
-
-	DX_SAFE_RELEASE( m_alphaBlendState );
-	DX_SAFE_RELEASE( m_additiveBlendState );
-	DX_SAFE_RELEASE( m_disabledBlendState );
-
+	
 	// Cleanup shader cache
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
 	{
@@ -180,7 +173,10 @@ void RenderContext::Shutdown()
 	delete m_swapchain;
 	m_swapchain = nullptr;
 
-	// release
+	DX_SAFE_RELEASE( m_alphaBlendState );
+	DX_SAFE_RELEASE( m_additiveBlendState );
+	DX_SAFE_RELEASE( m_disabledBlendState );
+	DX_SAFE_RELEASE( m_currentDepthStencilState );
 	DX_SAFE_RELEASE( m_context );
 	DX_SAFE_RELEASE( m_device );
 
@@ -205,6 +201,22 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::SetDepthTest( eCompareFunc compare, bool writeDepthOnPass )
+{
+	D3D11_DEPTH_STENCIL_DESC desc;
+	desc.DepthEnable = writeDepthOnPass;
+	desc.DepthFunc = ToDxComparisonFunc( compare );
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc.StencilEnable = false;
+
+	DX_SAFE_RELEASE( m_currentDepthStencilState );
+
+	m_device->CreateDepthStencilState( &desc, &m_currentDepthStencilState );
+	m_context->OMSetDepthStencilState( m_currentDepthStencilState, 0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor )
 {
 	float clearFloats[4];
@@ -215,6 +227,16 @@ void RenderContext::ClearScreen( ID3D11RenderTargetView* renderTargetView, const
 
 	m_context->ClearRenderTargetView( renderTargetView, clearFloats );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ClearDepth( Texture* depthStencilTarget, float depth )
+{
+	TextureView* view = depthStencilTarget->GetOrCreateDepthStencilView();
+	ID3D11DepthStencilView* dsv = view->m_depthStencilView;
+	m_context->ClearDepthStencilView( dsv, D3D11_CLEAR_DEPTH, depth, 0 );
+}
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -232,6 +254,7 @@ void RenderContext::BeginCamera( Camera& camera )
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
 
+
 	if ( camera.m_cameraUBO == nullptr )
 	{
 		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
@@ -247,7 +270,21 @@ void RenderContext::BeginCamera( Camera& camera )
 	// Viewport creation
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
-	m_context->OMSetRenderTargets( 1, &renderTargetView, nullptr );
+
+	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
+	TextureView* depthView = nullptr;
+	if ( depthStencilTarget != nullptr )
+	{
+		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
+	}
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	if ( depthView != nullptr )
+	{
+		depthStencilView = depthView->m_depthStencilView;
+	}
+
+	m_context->OMSetRenderTargets( 1, &renderTargetView, depthStencilView );
 
 	IntVec2 outputSize = colorTarget->GetTexelSize();
 
@@ -266,6 +303,12 @@ void RenderContext::BeginCamera( Camera& camera )
 	{
 		ClearScreen( renderTargetView, camera.GetClearColor() );
 	}
+	
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT 
+		 && camera.GetDepthStencilTarget() != nullptr )
+	{
+		ClearDepth( camera.GetDepthStencilTarget(), camera.GetClearDepth() );
+	}
 
 	// Reset
 	BindShader( (Shader*)nullptr );
@@ -282,6 +325,7 @@ void RenderContext::BeginCamera( Camera& camera )
 void RenderContext::EndCamera( const Camera& camera )
 {
 	UNUSED( camera );
+	DX_SAFE_RELEASE( m_currentDepthStencilState );
 	m_isDrawing = false;
 }
 
@@ -364,458 +408,16 @@ void RenderContext::DrawMesh( GPUMesh* mesh )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::DrawLine2D( const Vec2& start, const Vec2& end, const Rgba8& color, float thickness )
-{
-	float radius = 0.5f * thickness;
-	Vec2 displacement = end - start;
-
-	// Create a small vector to be used to add a little
-	// extra to the end of each line to make overlapping look better
-	Vec2 forward = displacement.GetNormalized();
-	forward *= radius;
-
-	Vec2 left = forward.GetRotated90Degrees();
-
-	// Calculate each corner of the box that will represent the line
-	Vec2 startLeft = start - forward + left;
-	Vec2 startRight = start - forward - left;
-	Vec2 endLeft = end + forward + left;
-	Vec2 endRight = end + forward - left;
-
-	Vertex_PCU lineVertices[] =
-	{
-		Vertex_PCU( startRight, color ),
-		Vertex_PCU( endRight, color ),
-		Vertex_PCU( endLeft, color ),
-
-		Vertex_PCU( startRight, color ),
-		Vertex_PCU( endLeft, color ),
-		Vertex_PCU( startLeft, color )
-	};
-
-	constexpr int NUM_VERTICES = sizeof( lineVertices ) / sizeof( lineVertices[0] );
-	DrawVertexArray( NUM_VERTICES, lineVertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Render a ring as 64 small lines
-//
-void RenderContext::DrawRing2D( const Vec2& center, float radius, const Rgba8& color, float thickness )
-{
-	constexpr float NUM_SIDES = 64.f;
-	constexpr float DEG_PER_SIDE = 360.f / NUM_SIDES;
-
-	for ( int sideIndex = 0; sideIndex < NUM_SIDES; ++sideIndex )
-	{
-		float thetaDeg = DEG_PER_SIDE * (float)sideIndex;
-		float theta2Deg = DEG_PER_SIDE * (float)( sideIndex + 1 );
-
-		Vec2 start( radius * CosDegrees( thetaDeg ),
-					radius * SinDegrees( thetaDeg ) );
-
-		Vec2 end( radius * CosDegrees( theta2Deg ),
-				  radius * SinDegrees( theta2Deg ) );
-
-		// Translate start and end to be relative to the center of the ring
-		start += center;
-		end += center;
-
-		DrawLine2D( start, end, color, thickness );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawDisc2D( const Vec2& center, float radius, const Rgba8& color )
-{
-	std::vector<Vertex_PCU> vertices;
-
-	AppendVertsForArc( vertices, center, radius, 360.f, 0.f, color );
-
-	DrawVertexArray( vertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawCapsule2D( const Capsule2& capsule, const Rgba8& color )
-{
-	std::vector<Vertex_PCU> vertices;
-
-	AppendVertsForCapsule2D( vertices, capsule, color );
-
-	DrawVertexArray( vertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawAABB2( const AABB2& box, const Rgba8& tint )
-{
-	std::vector<Vertex_PCU> vertices;
-
-	AppendVertsForAABB2D( vertices, box, tint );
-
-	DrawVertexArray( vertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawAABB2WithDepth( const AABB2& box, float zDepth, const Rgba8& tint )
-{
-	std::vector<Vertex_PCU> vertices;
-
-	AppendVertsForAABB2DWithDepth( vertices, box, zDepth, tint );
-
-	DrawVertexArray( vertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawOBB2( const OBB2& box, const Rgba8& tint )
-{
-	std::vector<Vertex_PCU> vertices;
-
-	AppendVertsForOBB2D( vertices, box, tint );
-
-	DrawVertexArray( vertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// TODO: This doesn't draw at correct position
-void RenderContext::DrawAABB2Outline( const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness )
-{
-	Vec2 bottomLeft( box.mins + center );
-	Vec2 bottomRight( Vec2( box.maxs.x, box.mins.y ) + center );
-	Vec2 topLeft( Vec2( box.mins.x, box.maxs.y ) + center );
-	Vec2 topRight( box.maxs + center );
-
-	DrawLine2D( bottomLeft, bottomRight, tint, thickness );
-	DrawLine2D( bottomLeft, topLeft,	 tint, thickness );
-	DrawLine2D( topLeft,	topRight,	 tint, thickness );
-	DrawLine2D( topRight,	bottomRight, tint, thickness );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawOBB2Outline( const Vec2& center, const OBB2& box, const Rgba8& tint, float thickness )
-{
-	Vec2 boxHalfWidth( box.m_halfDimensions.x * box.m_iBasis );
-	Vec2 boxHalfHeight( box.m_halfDimensions.y * box.GetJBasisNormal() );
-
-	Vec2 topRight(    center + box.m_center + boxHalfWidth + boxHalfHeight );
-	Vec2 topLeft(	  center + box.m_center - boxHalfWidth + boxHalfHeight );
-	Vec2 bottomLeft(  center + box.m_center - boxHalfWidth - boxHalfHeight );
-	Vec2 bottomRight( center + box.m_center + boxHalfWidth - boxHalfHeight );
-
-	DrawLine2D( bottomLeft, bottomRight, tint, thickness );
-	DrawLine2D( bottomLeft, topLeft,	 tint, thickness );
-	DrawLine2D( topLeft,	topRight,	 tint, thickness );
-	DrawLine2D( topRight,	bottomRight, tint, thickness );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawPolygon2( const std::vector<Vec2>& vertexPositions, const Rgba8& tint )
-{
-	std::vector<Vertex_PCU> vertices;
-
-	AppendVertsForPolygon2( vertices, vertexPositions, tint );
-
-	DrawVertexArray( vertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawPolygon2( const Polygon2& polygon2, const Rgba8& tint )
-{
-	DrawPolygon2( polygon2.GetPoints(), tint );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawPolygon2Outline( const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness )
-{
-	int numVertices = (int)vertexPositions.size();
-
-	if ( numVertices < 3 )
-	{
-		g_devConsole->PrintString( Stringf( "Tried to draw a Polygon2Outline with %d vertices. At least 3 vertices are required.", numVertices ), Rgba8::YELLOW );
-		return;
-	}
-
-	for ( int vertexPosIdx = 0; vertexPosIdx < numVertices - 1; ++vertexPosIdx )
-	{
-		int nextVertexIdx = vertexPosIdx + 1;
-		DrawLine2D( vertexPositions[ vertexPosIdx ], vertexPositions[ nextVertexIdx ], tint, thickness );
-	}
-
-	// Connect last vertex to first
-	int lastVertexIdx = numVertices - 1;
-	DrawLine2D( vertexPositions[ lastVertexIdx ], vertexPositions[0], tint, thickness );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawPolygon2Outline( const Polygon2& polygon2, const Rgba8& tint, float thickness )
-{
-	DrawPolygon2Outline( polygon2.GetPoints(), tint, thickness );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint )
-{
-	constexpr float NUM_SIDES = 64.f;
-	float degreesPerSide = arcAngleDegrees / NUM_SIDES;
-
-	for ( int segmentNum = 0; segmentNum < NUM_SIDES; ++segmentNum )
-	{
-		float thetaDeg = startOrientationDegrees + ( degreesPerSide * (float)segmentNum );
-		float theta2Deg = startOrientationDegrees + ( degreesPerSide * (float)( segmentNum + 1 ) );
-
-		Vec2 start( radius * CosDegrees( thetaDeg ),
-					radius * SinDegrees( thetaDeg ) );
-
-		Vec2 end( radius * CosDegrees( theta2Deg ),
-				  radius * SinDegrees( theta2Deg ) );
-		
-		// Add triangle segment
-		vertexArray.push_back( Vertex_PCU( center, tint ) );
-		vertexArray.push_back( Vertex_PCU( center + start, tint ) );
-		vertexArray.push_back( Vertex_PCU( center + end, tint ) );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-{
-	vertexArray.push_back( Vertex_PCU( spriteBounds.mins,									tint,	uvAtMins) );
-	vertexArray.push_back( Vertex_PCU( Vec2( spriteBounds.maxs.x, spriteBounds.mins.y ),	tint,	Vec2( uvAtMaxs.x, uvAtMins.y )) );
-	vertexArray.push_back( Vertex_PCU( spriteBounds.maxs,									tint,	uvAtMaxs) );
-
-	vertexArray.push_back( Vertex_PCU( spriteBounds.mins,									tint,	uvAtMins) );
-	vertexArray.push_back( Vertex_PCU( spriteBounds.maxs,									tint,	uvAtMaxs) );
-	vertexArray.push_back( Vertex_PCU( Vec2( spriteBounds.mins.x, spriteBounds.maxs.y ),	tint,	Vec2( uvAtMins.x, uvAtMaxs.y )) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-{
-	Vec2 boxHalfWidth( spriteBounds.m_halfDimensions.x * spriteBounds.m_iBasis );
-	Vec2 boxHalfHeight( spriteBounds.m_halfDimensions.y * spriteBounds.GetJBasisNormal() );
-	
-	Vec2 topRight   ( spriteBounds.m_center + boxHalfWidth + boxHalfHeight );
-	Vec2 topLeft    ( spriteBounds.m_center - boxHalfWidth + boxHalfHeight );
-	Vec2 bottomLeft ( spriteBounds.m_center - boxHalfWidth - boxHalfHeight );
-	Vec2 bottomRight( spriteBounds.m_center + boxHalfWidth - boxHalfHeight );
-	
-	AppendVertsForOBB2D( vertexArray, bottomLeft, bottomRight, topLeft, topRight, tint, uvAtMins, uvAtMaxs );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& bottomLeft, const Vec2& bottomRight, const Vec2& topLeft, const Vec2& topRight, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-{
-	vertexArray.push_back( Vertex_PCU( bottomLeft,	tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( bottomRight, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( topRight,	tint, uvAtMaxs ) );
-
-	vertexArray.push_back( Vertex_PCU( bottomLeft,	tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( topRight,	tint, uvAtMaxs ) );
-	vertexArray.push_back( Vertex_PCU( topLeft,		tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-{
-	Vec2 iBasis = capsule.m_middleEnd - capsule.m_middleStart;
-	iBasis.Normalize();
-	iBasis.Rotate90Degrees();
-
-	// Add middle box
-	AppendVertsForOBB2D( vertexArray, capsule.GetCenterSectionAsOBB2(), tint, uvAtMins, uvAtMaxs );
-
-	// Add end caps
-	AppendVertsForArc( vertexArray, capsule.m_middleStart, capsule.m_radius, 180.f, iBasis.GetOrientationDegrees(), tint );
-	AppendVertsForArc( vertexArray, capsule.m_middleEnd,   capsule.m_radius, 180.f, iBasis.GetRotatedDegrees(- 180.f ).GetOrientationDegrees(), tint );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-{
-	int numVertices = (int)vertexPositions.size();
-
-	if ( numVertices < 3 )
-	{
-		g_devConsole->PrintString( Stringf( "Tried to append verts for a Polygon2 with %d vertices. At least 3 vertices are required.", numVertices ), Rgba8::YELLOW );
-		return;
-	}
-
-	for ( int vertexPosIdx = 1; vertexPosIdx < numVertices - 1; ++vertexPosIdx )
-	{
-		int nextVertexIdx = vertexPosIdx + 1;
-		vertexArray.push_back( Vertex_PCU( vertexPositions[0],			   tint, uvAtMins ) );
-		vertexArray.push_back( Vertex_PCU( vertexPositions[vertexPosIdx], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-		vertexArray.push_back( Vertex_PCU( vertexPositions[nextVertexIdx], tint, uvAtMaxs ) );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs)
-{
-	Vec3 mins( center );
-	mins.x -= sideLength * .5f;
-	mins.y -= sideLength * .5f;
-	mins.z += sideLength * .5f;
-
-	Vec3 maxs( center );
-	maxs.x += sideLength * .5f;
-	maxs.y += sideLength * .5f;
-	maxs.z -= sideLength * .5f;
-
-	// Front 4 points
-	Vec3 vert0( mins );
-	Vec3 vert1( maxs.x, mins.y, mins.z );
-	Vec3 vert2( mins.x, maxs.y, mins.z );
-	Vec3 vert3( maxs.x, maxs.y, mins.z );
-
-	Vec3 backMins( mins );
-	backMins.z = center.z - sideLength * .5f;
-
-	Vec3 backMaxs( maxs );
-	backMaxs.z = center.z + sideLength * .5f;
-
-	// Back 4 points ( from front perspective for directions )	
-	Vec3 vert4( backMins );
-	Vec3 vert5( backMaxs.x, backMins.y, backMins.z );
-	Vec3 vert6( backMins.x, backMaxs.y, backMins.z );
-	Vec3 vert7( backMaxs.x, backMaxs.y, backMins.z );
-
-	vertexArray.reserve( 24 );
-	// Front
-	vertexArray.push_back( Vertex_PCU( vert0, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert3, tint, uvAtMaxs ) );
-
-	// Right
-	vertexArray.push_back( Vertex_PCU( vert1, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert5, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert3, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert7, tint, uvAtMaxs ) );
-
-	// Back
-	vertexArray.push_back( Vertex_PCU( vert4, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert5, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert6, tint, uvAtMaxs ) );
-	vertexArray.push_back( Vertex_PCU( vert7, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-
-	// Left
-	vertexArray.push_back( Vertex_PCU( vert4, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert2, tint, uvAtMaxs ) );
-
-	// Top
-	vertexArray.push_back( Vertex_PCU( vert2, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert3, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert7, tint, uvAtMaxs ) );
-
-	// Bottom
-	vertexArray.push_back( Vertex_PCU( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert1, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert4, tint, uvAtMaxs ) );
-	vertexArray.push_back( Vertex_PCU( vert5, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendIndicesForCubeMesh( std::vector<uint>& indices )
-{
-	indices.reserve( 36 );
-	// Front face
-	indices.push_back( 0 );
-	indices.push_back( 1 );
-	indices.push_back( 3 );
-
-	indices.push_back( 0 );
-	indices.push_back( 3 );
-	indices.push_back( 2 );
-
-	// Right face
-	indices.push_back( 4 );
-	indices.push_back( 5 );
-	indices.push_back( 7 );
-	
-	indices.push_back( 4 );
-	indices.push_back( 7 );
-	indices.push_back( 6 );
-
-	// Back face
-	indices.push_back( 9 );
-	indices.push_back( 8 );
-	indices.push_back( 10 );
-	
-	indices.push_back( 9 );
-	indices.push_back( 10 );
-	indices.push_back( 11 );
-
-	// Left face
-	indices.push_back( 12 );
-	indices.push_back( 13 );
-	indices.push_back( 15 );
-	
-	indices.push_back( 12 );
-	indices.push_back( 15 );
-	indices.push_back( 14 );
-
-	// Top face
-	indices.push_back( 16 );
-	indices.push_back( 17 );
-	indices.push_back( 19 );
-	
-	indices.push_back( 16 );
-	indices.push_back( 19 );
-	indices.push_back( 18 );
-
-	// Bottom face
-	indices.push_back( 20 );
-	indices.push_back( 22 );
-	indices.push_back( 23 );
-	
-	indices.push_back( 20 );
-	indices.push_back( 23 );
-	indices.push_back( 21 );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-{
-	Vec3 mins( spriteBounds.mins, zDepth );
-	Vec3 maxs( spriteBounds.maxs, zDepth );
-
-	vertexArray.push_back( Vertex_PCU( mins, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( Vec3( spriteBounds.maxs.x, spriteBounds.mins.y, zDepth ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( maxs, tint, uvAtMaxs ) );
-
-	vertexArray.push_back( Vertex_PCU( mins, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( maxs, tint, uvAtMaxs ) );
-	vertexArray.push_back( Vertex_PCU( Vec3( spriteBounds.mins.x, spriteBounds.maxs.y, zDepth ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 Texture* RenderContext::GetFrameColorTarget()
 {
 	return m_swapchain->GetBackBuffer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+IntVec2 RenderContext::GetDefaultBackBufferSize()
+{
+	return m_swapchain->GetBackBuffer()->GetTexelSize();
 }
 
 
@@ -1000,7 +602,6 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 //-----------------------------------------------------------------------------------------------
 Texture* RenderContext::RetrieveTextureFromCache( const char* filePath )
 {
-	UNUSED( filePath );
 	for ( int textureIndex = 0; textureIndex < (int)m_loadedTextures.size(); ++textureIndex )
 	{
 		if ( m_loadedTextures[textureIndex]->GetFilePath() == filePath )
@@ -1121,15 +722,9 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
 //-----------------------------------------------------------------------------------------------
 Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 {
-	int imageTexelSizeX = 1; // This will be filled in for us to indicate image width
-	int imageTexelSizeY = 1; // This will be filled in for us to indicate image height
-	//int numComponents = 0; // This will be filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
-	//int numComponentsRequested = 4; // we support 4 (32-bit RGBA)
+	int imageTexelSizeX = 1; 
+	int imageTexelSizeY = 1; 
 
-	//// Load (and decompress) the image RGB(A) bytes from a file on disk into a memory buffer (array of bytes)
-	//stbi_set_flip_vertically_on_load( 0 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
-	//unsigned char* initialData = stbi_load_from_memory( &color, 4, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
-	
 	// Describe the texture
 	D3D11_TEXTURE2D_DESC desc;
 	desc.Width = imageTexelSizeX;
@@ -1152,12 +747,40 @@ Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 	// DirectX creation
 	ID3D11Texture2D* texHandle = nullptr;
 	m_device->CreateTexture2D( &desc, &initialData, &texHandle );
-
-	// Free the raw image texel data now that we've sent a copy of it down to the GPU to be stored in video memory
-	//stbi_image_free( imageData );
-
+	
 	Texture* newTexture = new Texture( this, texHandle );
-	//m_loadedTextures.push_back( newTexture );
+	m_loadedTextures.push_back( newTexture );
+
+	return newTexture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions )
+{
+	// Find depth stencil in cache?
+
+	// Describe the texture
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = outputDimensions.x;
+	desc.Height = outputDimensions.y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_D32_FLOAT;
+	desc.SampleDesc.Count = 1;						// MSAA
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;		
+	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	// use BIND_DEPTH_STENCIL | BIND_SHADER_RESOURCE
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	
+	// DirectX creation
+	ID3D11Texture2D* texHandle = nullptr;
+	m_device->CreateTexture2D( &desc, nullptr, &texHandle );
+	
+	Texture* newTexture = new Texture( this, texHandle );
+	m_loadedTextures.push_back( newTexture );
 
 	return newTexture;
 }

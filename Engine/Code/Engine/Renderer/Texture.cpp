@@ -35,6 +35,9 @@ Texture::~Texture()
 
 	delete m_shaderResourceView;
 	m_shaderResourceView = nullptr;
+
+	delete m_depthStencilView;
+	m_depthStencilView = nullptr;
 }
 
 
@@ -50,11 +53,7 @@ TextureView* Texture::GetOrCreateRenderTargetView()
 	{
 		return m_renderTargetView;
 	}
-
-	// now we create it.  If we need a special type of view
-	// we would have to fill out a `D3D11_RENDER_TARGET_VIEW_DESC`, but 
-	// in this case, the default will be fine; 
-
+	
 	ID3D11RenderTargetView* renderTargetView = nullptr;
 	// get the device, since we're creating something
 	ID3D11Device* device = m_owner->m_device;
@@ -74,16 +73,11 @@ TextureView* Texture::GetOrCreateRenderTargetView()
 //-----------------------------------------------------------------------------------------------
 TextureView* Texture::GetOrCreateShaderResourceView()
 {
-	// only need to create it once
 	if ( m_shaderResourceView != nullptr )
 	{
 		return m_shaderResourceView;
 	}
-
-	// now we create it.  If we need a special type of view
-	// we would have to fill out a `D3D11_RENDER_TARGET_VIEW_DESC`, but 
-	// in this case, the default will be fine; 
-
+	
 	ID3D11Device* device = m_owner->m_device;
 	ID3D11ShaderResourceView* shaderResourceView = nullptr;
 	device->CreateShaderResourceView( m_handle, nullptr, &shaderResourceView );
@@ -91,9 +85,32 @@ TextureView* Texture::GetOrCreateShaderResourceView()
 	if ( shaderResourceView != nullptr )
 	{
 		// great, we made it, so make OUR object for it
-		m_shaderResourceView = new TextureView(); // could pass in constructor, but would require a lot of constructors
-		m_shaderResourceView->m_shaderResourceView = shaderResourceView; // setup the member
+		m_shaderResourceView = new TextureView(); 
+		m_shaderResourceView->m_shaderResourceView = shaderResourceView; 
 	}
 
 	return m_shaderResourceView;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+TextureView* Texture::GetOrCreateDepthStencilView()
+{
+	if ( m_depthStencilView != nullptr )
+	{
+		return m_depthStencilView;
+	}
+
+	ID3D11Device* device = m_owner->m_device;
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	device->CreateDepthStencilView( m_handle, nullptr, &depthStencilView );
+
+	if ( depthStencilView != nullptr )
+	{
+		// great, we made it, so make OUR object for it
+		m_depthStencilView = new TextureView(); 
+		m_depthStencilView->m_depthStencilView = depthStencilView;
+	}
+
+	return m_depthStencilView;
 }

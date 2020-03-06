@@ -39,6 +39,11 @@ constexpr float WINDOW_HEIGHT = 9.f;
 constexpr float WINDOW_WIDTH_PIXELS = 1920.f;
 constexpr float WINDOW_HEIGHT_PIXELS = 1080.f;
 
+constexpr int NUM_SPHERES = 30;
+constexpr float SPHERE_RING_RADIUS = 20.f;
+constexpr float DEGREES_PER_SPHERE = 360.f / (float)NUM_SPHERES;
+
+
 constexpr float TILE_SIZE = 1.f;
 
 constexpr float PLAYER_PHYSICS_RADIUS = .25f;

@@ -4,6 +4,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 
@@ -166,9 +167,9 @@ void Rigidbody2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor
 {
 	Rgba8 rigidbodyColor = m_isEnabled ? Rgba8::BLUE : Rgba8::RED;
 	Vec2 crossOffset( .1f, .1f );
-	renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
+	DrawLine2D( renderer, m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
 	crossOffset.x *= -1.f;
-	renderer->DrawLine2D( m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
+	DrawLine2D( renderer, m_worldPosition + crossOffset, m_worldPosition - crossOffset, rigidbodyColor, .03f );
 
 	if ( m_collider != nullptr )
 	{

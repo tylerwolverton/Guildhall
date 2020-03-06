@@ -5,6 +5,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 
 
@@ -54,7 +55,7 @@ void TextBox::RenderBackground( const Vec2& worldMins ) const
 	AABB2 textBounds = GetTextBounds();
 
 	AABB2 worldBoxBounds( worldMins + textBounds.mins, worldMins + textBounds.maxs );
-	m_renderer.AppendVertsForAABB2D( backgroundVertices, worldBoxBounds, m_backgroundColor );
+	AppendVertsForAABB2D( backgroundVertices, worldBoxBounds, m_backgroundColor );
 
 	m_renderer.BindTexture( nullptr );
 	m_renderer.DrawVertexArray( backgroundVertices );
