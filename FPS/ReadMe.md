@@ -76,7 +76,7 @@ Project: FPS
 ------
 
 ## Extras
-- [x] *X01.00 : 05pts*:  Borderless Window Support
+- [-] *X01.00 : 05pts*:  Borderless Window Support
     - Can be configured in GameConfig.xml windowMode="borderless" (or windowed for normal window)
 - [x] *X04.10: 03%*: Mouse input, show, and clip options should use a stack to track state `InputSystem::PushMouseOptions`, see notes...
 - [x] *X04.11: 02%*: **Requires X04.10** - Mouse options are disabled when window loses focus, and re-applied when gaining focus.
