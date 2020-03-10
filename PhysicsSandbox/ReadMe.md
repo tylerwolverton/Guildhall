@@ -3,7 +3,6 @@ Project - PhysicsSandbox
 ------
 
 FIX CURSOR BLINK
-FIX MOUSE STATE FOR PHYSICS
 
 ## Checklist
 - [ ] Angular Update - Add members to `Rigidbody2D`

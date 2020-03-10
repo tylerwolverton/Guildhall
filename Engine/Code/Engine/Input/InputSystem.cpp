@@ -67,6 +67,16 @@ InputSystem::~InputSystem()
 void InputSystem::Startup( Window* window )
 {
 	m_window = window;
+
+	// Push default mouse options
+	MouseOptions newOptions;
+	newOptions.m_cursorMode = CURSOR_ABSOLUTE;
+	newOptions.m_isVisible = true;
+	newOptions.m_isClipped = false;
+
+	m_mouseOptionsStack.push_back( newOptions );
+
+	UpdateFromMouseOptions( newOptions );
 }
 
 
@@ -317,12 +327,7 @@ void InputSystem::PopMouseOptions()
 	}
 	else
 	{
-		MouseOptions newOptions;
-		newOptions.m_cursorMode = CURSOR_ABSOLUTE;
-		newOptions.m_isVisible = true;
-		newOptions.m_isClipped = false;
-
-		UpdateFromMouseOptions( newOptions );
+		g_devConsole->PrintString( "Tried to pop too many mouse states.", Rgba8::YELLOW );
 	}
 }
 
