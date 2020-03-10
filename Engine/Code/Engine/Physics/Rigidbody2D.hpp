@@ -72,6 +72,7 @@ public:
 	float GetAngularVelocity() const												{ return m_angularVelocity; }
 	float GetRotationDegrees() const;
 	float GetRotationRadians() const												{ return m_rotationInRadians; }
+	float GetMomentOfInertia() const												{ return m_moment; }
 
 private:
 	Physics2D* m_system = nullptr;			// which scene created/owns this object

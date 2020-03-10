@@ -59,6 +59,7 @@ public:
 	float GetBounciness() const;
 	float GetFriction() const;
 	float GetMass() const;
+	float GetMomentOfInertia() const;
 	float GetDrag() const;
 	float GetRotationDegrees() const;
 	float GetAngularVelocity() const;

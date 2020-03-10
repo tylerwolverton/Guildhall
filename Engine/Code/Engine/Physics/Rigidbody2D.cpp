@@ -87,6 +87,8 @@ Vec2 Rigidbody2D::GetImpaceVelocityAtPoint( const Vec2& point )
 {
 	UNUSED( point );
 
+	//Vec2 contactPoint = point - m_worldPosition
+
 	return GetVelocity();
 }
 
@@ -171,7 +173,7 @@ void Rigidbody2D::AddForce( const Vec2& force )
 
 
 //-----------------------------------------------------------------------------------------------
-void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& worldPosition )
+void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& point )
 {
 	if ( !m_isEnabled )
 	{
@@ -180,10 +182,8 @@ void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& worldPosition
 
 	m_velocity += ( impulse * m_inverseMass );
 
-
-	Vec2 contactPoint = m_worldPosition - worldPosition;
+	Vec2 contactPoint = point - m_worldPosition;
 	m_frameTorque += ( -impulse.x * contactPoint.y ) + ( impulse.y * contactPoint.x );
-	//m_frameTorque += impulse.GetLength() / m_moment;
 }
 
 

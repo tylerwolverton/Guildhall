@@ -10,10 +10,10 @@ FIX CURSOR BLINK
     - [x] Add `float m_angularVelocity`   
     - [x] Add `float m_frameTorque`       
     - [x] Add `float m_moment`
-    - [ ] Add appropriate getter/setter methods
+    - [-] Add appropriate getter/setter methods
 - [-] `Rigidbody2D::CalculateMoment` to calculate moment based on attached collider and mass
     - [x] `virtual float Collider2D::CalculateMoment( float mass )`
-    - [-] Implement `DiscCollider::CalculateMoment`
+    - [x] Implement `DiscCollider::CalculateMoment`
     - [ ] Implement `PolygonCollider::CalculateMoment`
     - [-] When setting **mass** or **collider** on a rigidbody - recalculate your moment.
         - *Note: When setting mass, you can do less work by taking advantage of the ratio of new mass to old mass should match the ratios of the moments*. 
@@ -27,10 +27,10 @@ FIX CURSOR BLINK
     - [x] Apply angular acceleration to update angular velocity
     - [x] Apply angular velocity to update rotation
 - [ ] Update `Rigidbody2D::GetImpactVelocity` to take into account rotational velocity.
-- [-] Update `ApplyImpulseAt` to apply impulse to torque based on positions. 
-- [-] Update impulse calculations to take into account rotational forces, see PDF in lnks
-- [ ] Update tooltip to show...
-    - [ ] Moment of Inertia
+- [x] Update `ApplyImpulseAt` to apply impulse to torque based on positions. 
+- [x] Update impulse calculations to take into account rotational forces, see PDF in lnks
+- [x] Update tooltip to show...
+    - [x] Moment of Inertia
     - [x] Current Rotation (degrees)
     - [x] Current Angular Velocity
 

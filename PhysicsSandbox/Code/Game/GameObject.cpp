@@ -408,6 +408,18 @@ float GameObject::GetMass() const
 
 
 //-----------------------------------------------------------------------------------------------
+float GameObject::GetMomentOfInertia() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0.f;
+	}
+
+	return m_rigidbody->GetMomentOfInertia();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float GameObject::GetDrag() const
 {
 	if ( m_rigidbody == nullptr )

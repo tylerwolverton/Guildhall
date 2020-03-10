@@ -742,6 +742,7 @@ void Game::UpdateToolTipBox()
 	m_tooltipBox->AddLineOFText( Stringf( "Bounciness: %.2f", selectedObject->GetBounciness() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Friction: %.2f", selectedObject->GetFriction() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Drag: %.2f", selectedObject->GetDrag() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Moment of Inertia: %.2f", selectedObject->GetMomentOfInertia() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
 }
