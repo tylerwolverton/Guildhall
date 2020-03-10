@@ -61,6 +61,16 @@ InputSystem::~InputSystem()
 void InputSystem::Startup( Window* window )
 {
 	m_window = window;
+
+	// Push default mouse options
+	MouseOptions newOptions;
+	newOptions.m_cursorMode = CURSOR_ABSOLUTE;
+	newOptions.m_isVisible = true;
+	newOptions.m_isClipped = false;
+
+	m_mouseOptionsStack.push_back( newOptions );
+
+	UpdateFromMouseOptions( newOptions );
 }
 
 
@@ -220,7 +230,21 @@ void InputSystem::LockSystemCursor()
 {
 	RECT clientRect;
 	GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
-	ClipCursor( &clientRect );
+	AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+	Vec2 clientCenter = clientBounds.GetCenter();
+
+	POINT windowOffset = POINT();
+	ClientToScreen( (HWND)m_window->m_hwnd, &windowOffset );
+	clientCenter += Vec2( (float)windowOffset.x, (float)windowOffset.y );
+
+	RECT clientBoundsRect;
+	clientBoundsRect.left = clientRect.left + windowOffset.x;
+	clientBoundsRect.top = clientRect.top + windowOffset.y;
+	clientBoundsRect.right = clientRect.right + windowOffset.x;
+	clientBoundsRect.bottom = clientRect.bottom + windowOffset.y;
+
+	ClipCursor( &clientBoundsRect );
 }
 
 
@@ -286,9 +310,19 @@ void InputSystem::PushMouseOptions( eCursorMode cursorMode, bool isVisible, bool
 //-----------------------------------------------------------------------------------------------
 void InputSystem::PopMouseOptions()
 {
-	m_mouseOptionsStack.pop_back();
+	if ( m_mouseOptionsStack.size() > 0 )
+	{
+		m_mouseOptionsStack.pop_back();
+	}
 
-	UpdateFromMouseOptions( m_mouseOptionsStack.back() );
+	if ( m_mouseOptionsStack.size() > 0 )
+	{
+		UpdateFromMouseOptions( m_mouseOptionsStack.back() );
+	}
+	else
+	{
+		g_devConsole->PrintString( "Tried to pop too many mouse states.", Rgba8::YELLOW );
+	}
 }
 
 
