@@ -1,50 +1,39 @@
 Project - PhysicsSandbox
 
-## Checklist
-- [x] Allow user to adjust mass when selected [can not be 0, so clamp at 0.001 on the low end.  No high end limitation]
-    - [x] Suggested keys are `[` and `]`
-- [x] Add `friction` to the physics material, defaulted to 0
-- [x] Allow user to adjust friction when selected [0 to 1]
-    - [x] Suggested keys are `<` and `>'`
-- [x] Add `drag` to the `Rigidbody2D`, defaulted to 0
-- [x] Allow user to adjust object drag when selected [minimum of 0]
-    - [x] Suggested keys are `:` and `\'` 
-        - Used `:` and `'`
-- [x] Switch to use a fixed time step
-    - [x] Add a `Clock` class
-        - [x] Engine should have a `Master` clock that is creaetd, that all clocks use as their parent by default
-        - [x] Be sure to update your clock system in `App::BeginFrame`
-    - [x] Give the physics engine its own clock (either basded off a game clock or master)
-    - [x] Add a `Timer` class
-    - [x] Add `Physics2D::GetFixedDeltaTime()` && `Physics2D::SetFixedDeltaTime( float frameTimeSeconds )`
-        - [x] This should default to `120hz` or `1.0f / 120.0f` seconds per frame. 
-    - [x] Use timer to break up `Physics2D::Update` into equal steps
-    - [x] Add a console command `set_physics_update hz=NUMBER` to be able to change this at runtime.
-- [x] Allow user to adjust time scale of the physics clock
-    - [x] `P`: Pause & Resume
-    - [x] `8`: Half the time scale
-    - [x] `9`: Double the time scale
-    - [x] `0`: Reset time scale to 1 and resume
-    - [x] Print current time scale and pause state to screen somewhere
-- [x] Implement `Rigidbody2D::GetVerletVelocity` to return an objects actual velocity this frame. 
-    - [x] Save off an objects position at the start of a fixed physics step.
-    - [x] Calculate verlet by taking `(currentPosition - frameStartPosition) / fixedDeltaTimeSeconds`
-- [x] Use `VerletVelocity` in impulse calculations. 
-    - Suggest using a function `Rigidbody2D::GetImpactVelocityAtPoint( vec2 point )` where point is unused atm, which 
-      in turn calls `GetVerletVelocity()`, as we'll be doing more with this when rotational velocity comes online. 
-- [x] Have a tooltip near the cursor when hovering over an object to tell information about it
-    - [x] Simulation Mode
-    - [x] Mass
-    - [x] Current Velocity
-    - [x] Current Verlet Velocity
-    - [x] Coefficient of Restitution (`bounce`)
-    - [x] Coefficient of Friction (`friction`)
-    - [x] Drag value
-- [x] Implement tangental impulse using friction 
-    - [x] Follows similar rules to normal impulse when it comes to `DYNAMIC` vs `STATIC` vs `KINEMATIC` relative masses and when you apply it
-    - [x] Applied only to dynamic objects
-- [x] Apply drag force to all dynamic objects
+------
 
+## Checklist
+- [ ] Angular Update - Add members to `Rigidbody2D`
+    - [x] Add `float m_rotationInRadians`
+    - [x] Add `float m_angularVelocity`   
+    - [x] Add `float m_frameTorque`       
+    - [x] Add `float m_moment`
+    - [ ] Add appropriate getter/setter methods
+- [-] `Rigidbody2D::CalculateMoment` to calculate moment based on attached collider and mass
+    - [x] `virtual float Collider2D::CalculateMoment( float mass )`
+    - [-] Implement `DiscCollider::CalculateMoment`
+    - [ ] Implement `PolygonCollider::CalculateMoment`
+    - [-] When setting **mass** or **collider** on a rigidbody - recalculate your moment.
+        - *Note: When setting mass, you can do less work by taking advantage of the ratio of new mass to old mass should match the ratios of the moments*. 
+- [ ] Rotating a `Rigidbody2D` properly updates the **world shape** of the collider.
+    - [x] Add controls to rotate a selected object
+        - Uses **Q** and **E** 
+    - [x] Add controls to update the rotational velocity of an object
+        - Uses **R**, **T**, and **Y** to increase, decrease, and reset
+- [x] `Rigidbody2D` now do angular calculations during their update.
+    - [x] Use torque to compute an angular acceleration
+    - [x] Apply angular acceleration to update angular velocity
+    - [x] Apply angular velocity to update rotation
+- [ ] Update `Rigidbody2D::GetImpactVelocity` to take into account rotational velocity.
+- [ ] Update `ApplyImpulseAt` to apply impulse to torque based on positions. 
+- [ ] Update impulse calculations to take into account rotational forces, see PDF in lnks
+- [ ] Update tooltip to show...
+    - [ ] Moment of Inertia
+    - [x] Current Rotation (degrees)
+    - [x] Current Angular Velocity
+
+
+------
 
 Controls
 All are same as recommended except drag, I used `:` and `'`

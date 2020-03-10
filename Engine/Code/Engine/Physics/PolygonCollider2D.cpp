@@ -116,6 +116,13 @@ unsigned int PolygonCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds,
 
 
 //-----------------------------------------------------------------------------------------------
+float PolygonCollider2D::CalculateMoment( float mass )
+{
+	return mass;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const
 {
 	if ( renderer == nullptr )

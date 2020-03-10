@@ -284,6 +284,48 @@ void Game::UpdateFromKeyboard()
 				m_focalPoint.x += 5.f * deltaSeconds;
 			}
 
+			if ( g_inputSystem->IsKeyPressed( 'Q' ) )
+			{
+				if ( m_isMouseDragging
+					 && m_dragTarget != nullptr )
+				{
+					m_dragTarget->RotateDegrees( 30.f * deltaSeconds );
+				}
+			}
+			if ( g_inputSystem->IsKeyPressed( 'E' ) )
+			{
+				if ( m_isMouseDragging
+					 && m_dragTarget != nullptr )
+				{
+					m_dragTarget->RotateDegrees( -30.f * deltaSeconds );
+				}
+			}
+
+			if ( g_inputSystem->IsKeyPressed( 'R' ) )
+			{
+				if ( m_isMouseDragging
+					 && m_dragTarget != nullptr )
+				{
+					m_dragTarget->ChangeAngularVelocity( .5f * deltaSeconds );
+				}
+			}
+			if ( g_inputSystem->IsKeyPressed( 'T' ) )
+			{
+				if ( m_isMouseDragging
+					 && m_dragTarget != nullptr )
+				{
+					m_dragTarget->ChangeAngularVelocity( -.5f * deltaSeconds );
+				}
+			}
+			if ( g_inputSystem->IsKeyPressed( 'Y' ) )
+			{
+				if ( m_isMouseDragging
+					 && m_dragTarget != nullptr )
+				{
+					m_dragTarget->SetAngularVelocity( 0.f );
+				}
+			}
+
 			if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 			{
 				if ( m_isMouseDragging )
@@ -698,6 +740,8 @@ void Game::UpdateToolTipBox()
 	m_tooltipBox->AddLineOFText( Stringf( "Bounciness: %.2f", selectedObject->GetBounciness() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Friction: %.2f", selectedObject->GetFriction() ) );
 	m_tooltipBox->AddLineOFText( Stringf( "Drag: %.2f", selectedObject->GetDrag() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
 }
 
 
@@ -802,6 +846,7 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, radius );
 	gameObject->SetCollider( discCollider );
 	gameObject->ChangeBounciness( .5f );
+	gameObject->ChangeFriction( .5f );
 
 	gameObject->SetBorderColor( Rgba8::BLUE );
 	gameObject->SetFillColor( Rgba8::WHITE );
@@ -821,6 +866,7 @@ void Game::SpawnPolygon( const Polygon2& polygon )
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
 	gameObject->SetCollider( polygonCollider );
 	gameObject->ChangeBounciness( .5f );
+	gameObject->ChangeFriction( .5f );
 
 	gameObject->SetBorderColor( Rgba8::BLUE );
 	gameObject->SetFillColor( Rgba8::WHITE );

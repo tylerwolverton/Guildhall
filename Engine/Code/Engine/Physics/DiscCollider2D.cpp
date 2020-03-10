@@ -22,6 +22,8 @@ void DiscCollider2D::UpdateWorldShape()
 {
 	m_worldPosition = m_localPosition;
 
+	
+
 	if ( m_rigidbody != nullptr )
 	{
 		m_worldPosition += m_rigidbody->GetPosition();
@@ -111,6 +113,13 @@ const AABB2 DiscCollider2D::CalculateWorldBounds()
 
 
 //-----------------------------------------------------------------------------------------------
+float DiscCollider2D::CalculateMoment( float mass )
+{
+	return .5f * mass * m_radius * m_radius;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DiscCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const
 {
 	if( renderer == nullptr )
@@ -120,6 +129,14 @@ void DiscCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderCo
 
 	DrawDisc2D( renderer, m_worldPosition, m_radius, fillColor );
 	DrawRing2D( renderer, m_worldPosition, m_radius, borderColor, .04f );
+
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	Vec2 endPoint = m_worldPosition + Vec2::MakeFromPolarRadians( m_rigidbody->GetRotationRadians() ) * m_radius;
+	DrawLine2D( renderer, m_worldPosition, endPoint, borderColor, .04f );
 }
 
 

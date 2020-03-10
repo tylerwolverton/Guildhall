@@ -251,6 +251,18 @@ const AABB2 GameObject::GetBoundingBox() const
 
 
 //-----------------------------------------------------------------------------------------------
+void GameObject::RotateDegrees( float deltaDegrees )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody->RotateDegrees( deltaDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void GameObject::ChangeBounciness( float deltaBounciness )
 {
 	if ( m_rigidbody == nullptr )
@@ -312,6 +324,42 @@ void GameObject::ChangeDrag( float deltaDrag )
 
 
 //-----------------------------------------------------------------------------------------------
+void GameObject::ChangeAngularVelocity( float deltaAnglularVelocity )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody->ChangeAngularVelocity( deltaAnglularVelocity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::SetRotationDegrees( float newDegrees )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody->SetRotationDegrees( newDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::SetAngularVelocity( float newAngularVelocity )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody->SetAngularVelocity( newAngularVelocity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float GameObject::GetBounciness() const
 {
 	if ( m_rigidbody == nullptr )
@@ -368,4 +416,28 @@ float GameObject::GetDrag() const
 	}
 
 	return m_rigidbody->GetDrag();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float GameObject::GetRotationDegrees() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0.f;
+	}
+
+	return m_rigidbody->GetRotationDegrees();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float GameObject::GetAngularVelocity() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0.f;
+	}
+
+	return m_rigidbody->GetAngularVelocity();
 }

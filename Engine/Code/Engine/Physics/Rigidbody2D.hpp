@@ -44,6 +44,11 @@ public:
 	void SetPosition( const Vec2& position );
 	void Translate2D( const Vec2& translation );
 
+	void SetRotationDegrees( float newRotationDegrees );
+	void RotateDegrees( float deltaDegrees );
+	void ChangeAngularVelocity( float deltaRadians );
+	void SetAngularVelocity( float newAngularVelocity );
+
 	float GetMass() const															{ return m_mass; }
 	void ChangeMass( float deltaMass );
 	float GetInverseMass() const													{ return m_inverseMass; }
@@ -64,6 +69,10 @@ public:
 	eSimulationMode GetSimulationMode()	const										{ return m_simulationMode; }
 	void SetSimulationMode( eSimulationMode mode )									{ m_simulationMode = mode; }
 
+	float GetAngularVelocity() const												{ return m_angularVelocity; }
+	float GetRotationDegrees() const;
+	float GetRotationRadians() const												{ return m_rotationInRadians; }
+
 private:
 	Physics2D* m_system = nullptr;			// which scene created/owns this object
 	Vec2 m_worldPosition = Vec2::ZERO;		// where in the world is this rigidbody
@@ -76,6 +85,11 @@ private:
 	float m_mass = 1.f;
 	float m_inverseMass = 1.f;
 	float m_drag = 0.f;
+
+	float m_rotationInRadians = 0.f;
+	float m_angularVelocity = 0.f;
+	float m_frameTorque = 0.f;
+	float m_moment = 0.f;
 
 	bool m_isEnabled = true;
 	eSimulationMode m_simulationMode = SIMULATION_MODE_DYNAMIC;

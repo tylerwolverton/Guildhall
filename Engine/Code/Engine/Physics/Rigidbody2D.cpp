@@ -30,10 +30,8 @@ void Rigidbody2D::Update( float deltaSeconds )
 	Vec2 acceleration = m_forces;
 	m_velocity += acceleration * deltaSeconds;
 	m_worldPosition += m_velocity * deltaSeconds;
-	m_collider->UpdateWorldShape();
 
-	if ( deltaSeconds > -.0001f
-		 && deltaSeconds < .0001f )
+	if ( IsNearlyEqual( deltaSeconds, 0.f ) )
 	{
 		m_verletVelocity = Vec2::ZERO;
 	}
@@ -42,7 +40,14 @@ void Rigidbody2D::Update( float deltaSeconds )
 		m_verletVelocity = ( m_worldPosition - oldPosition ) / deltaSeconds;
 	}
 
+	float angularAcceleration = m_frameTorque;
+	m_angularVelocity += angularAcceleration * deltaSeconds;
+	m_rotationInRadians += m_angularVelocity * deltaSeconds;
+
+	m_collider->UpdateWorldShape();
+
 	m_forces = Vec2::ZERO;
+	m_frameTorque = 0.f;
 }
 
 
@@ -62,8 +67,10 @@ void Rigidbody2D::Destroy()
 void Rigidbody2D::TakeCollider( Collider2D* collider )
 {
 	m_collider = collider;
-
 	m_collider->m_rigidbody = this;
+
+	m_moment = m_collider->CalculateMoment( m_mass );
+
 	m_collider->UpdateWorldShape();
 }
 
@@ -109,6 +116,27 @@ void Rigidbody2D::Translate2D( const Vec2& translation )
 
 
 //-----------------------------------------------------------------------------------------------
+void Rigidbody2D::RotateDegrees( float deltaDegrees )
+{
+	m_rotationInRadians += ConvertDegreesToRadians( deltaDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Rigidbody2D::ChangeAngularVelocity( float deltaRadians )
+{
+	m_angularVelocity += deltaRadians;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Rigidbody2D::SetAngularVelocity( float newAngularVelocity )
+{
+	m_angularVelocity = newAngularVelocity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Rigidbody2D::ChangeMass( float deltaMass )
 {
 	m_mass += deltaMass;
@@ -116,6 +144,8 @@ void Rigidbody2D::ChangeMass( float deltaMass )
 	ClampMin( m_mass, .001f );
 
 	m_inverseMass = 1.f / m_mass;
+
+	m_moment = m_collider->CalculateMoment( m_mass );
 }
 
 
@@ -143,14 +173,17 @@ void Rigidbody2D::AddForce( const Vec2& force )
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& worldPosition )
 {
-	UNUSED( worldPosition );
-
 	if ( !m_isEnabled )
 	{
 		return;
 	}
 
 	m_velocity += ( impulse * m_inverseMass );
+
+
+	Vec2 contactPoint = m_worldPosition - worldPosition;
+	m_frameTorque += ( -impulse.x * contactPoint.y ) + ( impulse.y * contactPoint.x );
+	//m_frameTorque += impulse.GetLength() / m_moment;
 }
 
 
@@ -175,6 +208,20 @@ void Rigidbody2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor
 	{
 		m_collider->DebugRender( renderer, borderColor, fillColor );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float Rigidbody2D::GetRotationDegrees() const
+{
+	return ConvertRadiansToDegrees( m_rotationInRadians );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Rigidbody2D::SetRotationDegrees( float newRotationDegrees )
+{
+	m_rotationInRadians = ConvertDegreesToRadians( newRotationDegrees );
 }
 
 

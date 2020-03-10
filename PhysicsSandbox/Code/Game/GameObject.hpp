@@ -47,15 +47,21 @@ public:
 	unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const;
 	const AABB2 GetBoundingBox() const;
 
+	void RotateDegrees( float deltaDegrees );
 	void ChangeBounciness( float deltaBounciness );
 	void ChangeFriction( float deltaFriction );
 	void ChangeMass( float deltaMass );
 	void ChangeDrag( float deltaDrag );
-	
+	void ChangeAngularVelocity( float deltaAnglularVelocity );
+	void SetRotationDegrees( float newDegrees );
+	void SetAngularVelocity( float newAngularVelocity );
+
 	float GetBounciness() const;
 	float GetFriction() const;
 	float GetMass() const;
 	float GetDrag() const;
+	float GetRotationDegrees() const;
+	float GetAngularVelocity() const;
 
 private:
 	Rigidbody2D* m_rigidbody = nullptr;

@@ -18,6 +18,8 @@ public:
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const override;
 	const AABB2 CalculateWorldBounds();
 
+	virtual float CalculateMoment( float mass ) override;
+
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const override;
 
