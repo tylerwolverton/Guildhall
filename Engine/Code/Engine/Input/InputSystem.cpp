@@ -226,7 +226,21 @@ void InputSystem::LockSystemCursor()
 {
 	RECT clientRect;
 	GetClientRect( (HWND)m_window->m_hwnd, &clientRect );
-	ClipCursor( &clientRect );
+	AABB2 clientBounds( (float)clientRect.left, (float)clientRect.top, (float)clientRect.right, (float)clientRect.bottom );
+
+	Vec2 clientCenter = clientBounds.GetCenter();
+
+	POINT windowOffset = POINT();
+	ClientToScreen( (HWND)m_window->m_hwnd, &windowOffset );
+	clientCenter += Vec2( (float)windowOffset.x, (float)windowOffset.y );
+
+	RECT clientBoundsRect;
+	clientBoundsRect.left = clientRect.left + windowOffset.x; 
+	clientBoundsRect.top = clientRect.top + windowOffset.y;
+	clientBoundsRect.right = clientRect.right + windowOffset.x;
+	clientBoundsRect.bottom = clientRect.bottom + windowOffset.y;
+
+	ClipCursor( &clientBoundsRect );
 }
 
 

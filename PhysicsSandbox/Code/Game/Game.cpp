@@ -69,6 +69,8 @@ void Game::Startup()
 	m_mouseHistoryPoints[4].deltaSeconds = 0.f;
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
+
+	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
 }
 
 
