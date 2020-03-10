@@ -292,9 +292,24 @@ void InputSystem::PushMouseOptions( eCursorMode cursorMode, bool isVisible, bool
 //-----------------------------------------------------------------------------------------------
 void InputSystem::PopMouseOptions()
 {
-	m_mouseOptionsStack.pop_back();
+	if ( m_mouseOptionsStack.size() > 0 )
+	{
+		m_mouseOptionsStack.pop_back();
+	}
 
-	UpdateFromMouseOptions( m_mouseOptionsStack.back() );
+	if ( m_mouseOptionsStack.size() > 0 )
+	{
+		UpdateFromMouseOptions( m_mouseOptionsStack.back() );
+	}
+	else
+	{
+		MouseOptions newOptions;
+		newOptions.m_cursorMode = CURSOR_ABSOLUTE;
+		newOptions.m_isVisible = true;
+		newOptions.m_isClipped = false;
+
+		UpdateFromMouseOptions( newOptions );
+	}
 }
 
 

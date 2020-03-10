@@ -201,8 +201,8 @@ float Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* r
 		 && rigidbody2->GetSimulationMode() == SIMULATION_MODE_DYNAMIC )
 	{
 		float impulseMagnitude = CalculateImpulseBetweenMoveableObjects( rigidbody1, rigidbody2, collisionManifold.normal );
-		rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
-		rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionManifold.normal, Vec2::ZERO );
+		rigidbody1->ApplyImpulseAt( impulseMagnitude * collisionManifold.normal, collisionManifold.contactPoint );
+		rigidbody2->ApplyImpulseAt( -impulseMagnitude * collisionManifold.normal, collisionManifold.contactPoint );
 		return impulseMagnitude;
 	}
 
@@ -227,7 +227,7 @@ float Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* r
 	}
 
 	float impulseMagnitude = CalculateImpulseAgainstImmoveableObject( moveableObj, immoveableObj, collisionManifold.normal );
-	moveableObj->ApplyImpulseAt( impulseMagnitude * -collisionManifold.normal, Vec2::ZERO );
+	moveableObj->ApplyImpulseAt( impulseMagnitude * -collisionManifold.normal, collisionManifold.contactPoint );
 	return impulseMagnitude;
 }
 

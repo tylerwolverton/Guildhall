@@ -115,6 +115,8 @@ static Manifold2 DiscVDiscCollisionManifoldGenerator( const Collider2D* collider
 	Vec2 disc2Edge = discCollider2->m_worldPosition + ( -manifold.normal * discCollider2->m_radius );
 	manifold.penetrationDepth = GetDistance2D( disc1Edge, disc2Edge );
 
+	manifold.contactPoint = disc1Edge - ( manifold.normal * manifold.penetrationDepth * .5f );
+
 	return manifold;
 }
 
@@ -140,6 +142,8 @@ static Manifold2 DiscVPolygonCollisionManifoldGenerator( const Collider2D* colli
 
 	Vec2 closestPointOnDiscToPolygon = discCollider->m_worldPosition + ( manifold.normal * discCollider->m_radius );
 	manifold.penetrationDepth = GetDistance2D( closestPointOnDiscToPolygon, closestPointOnPolygonToDisc );
+
+	manifold.contactPoint = closestPointOnDiscToPolygon - ( manifold.normal * manifold.penetrationDepth * .5f );
 
 	return manifold;
 }

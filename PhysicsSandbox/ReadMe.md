@@ -2,6 +2,9 @@ Project - PhysicsSandbox
 
 ------
 
+FIX CURSOR BLINK
+FIX MOUSE STATE FOR PHYSICS
+
 ## Checklist
 - [ ] Angular Update - Add members to `Rigidbody2D`
     - [x] Add `float m_rotationInRadians`
@@ -25,8 +28,8 @@ Project - PhysicsSandbox
     - [x] Apply angular acceleration to update angular velocity
     - [x] Apply angular velocity to update rotation
 - [ ] Update `Rigidbody2D::GetImpactVelocity` to take into account rotational velocity.
-- [ ] Update `ApplyImpulseAt` to apply impulse to torque based on positions. 
-- [ ] Update impulse calculations to take into account rotational forces, see PDF in lnks
+- [-] Update `ApplyImpulseAt` to apply impulse to torque based on positions. 
+- [-] Update impulse calculations to take into account rotational forces, see PDF in lnks
 - [ ] Update tooltip to show...
     - [ ] Moment of Inertia
     - [x] Current Rotation (degrees)
