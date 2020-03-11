@@ -91,6 +91,7 @@ private:
 	float m_angularVelocity = 0.f;
 	float m_frameTorque = 0.f;
 	float m_moment = 0.f;
+	float m_inverseMoment = 1.f;
 
 	bool m_isEnabled = true;
 	eSimulationMode m_simulationMode = SIMULATION_MODE_DYNAMIC;

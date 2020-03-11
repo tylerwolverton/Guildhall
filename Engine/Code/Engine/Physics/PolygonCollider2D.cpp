@@ -132,7 +132,8 @@ float PolygonCollider2D::CalculateMoment( float mass )
 		Vec2 u = v1 - v0;
 		Vec2 v = v2 - v0;
 		Vec2 center = ( v0 + v1 + v2 ) / 3.f;
-			   
+		center -= m_worldPosition;
+
 		float uu = DotProduct2D( u, u );
 		float vu = DotProduct2D( v, u );
 
