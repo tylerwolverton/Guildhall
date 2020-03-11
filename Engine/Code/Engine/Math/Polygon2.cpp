@@ -259,8 +259,6 @@ void Polygon2::Rotate2D( float rotationDegrees )
 
 		m_points[pointNumIdx] = translatedPoint;
 	}
-
-	m_orientationDegrees += rotationDegrees;
 }
 
 

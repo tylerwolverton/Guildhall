@@ -237,8 +237,8 @@ float Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableR
 {
 	float e = moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider );
 
-	Vec2 initialVelocity1 = immoveableRigidbody->GetImpaceVelocityAtPoint( Vec2::ZERO );
-	Vec2 initialVelocity2 = moveableRigidbody->GetImpaceVelocityAtPoint( Vec2::ZERO );
+	Vec2 initialVelocity1 = immoveableRigidbody->GetImpaceVelocityAtPoint( collisionManifold.contactPoint );
+	Vec2 initialVelocity2 = moveableRigidbody->GetImpaceVelocityAtPoint( collisionManifold.contactPoint );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 	   
 	float numerator = ( 1.f + e ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
@@ -257,8 +257,8 @@ float Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableR
 //-----------------------------------------------------------------------------------------------
 float Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
 {
-	Vec2 initialVelocity1 = rigidbody1->GetImpaceVelocityAtPoint( Vec2::ZERO );
-	Vec2 initialVelocity2 = rigidbody2->GetImpaceVelocityAtPoint( Vec2::ZERO );
+	Vec2 initialVelocity1 = rigidbody1->GetImpaceVelocityAtPoint( collisionManifold.contactPoint );
+	Vec2 initialVelocity2 = rigidbody2->GetImpaceVelocityAtPoint( collisionManifold.contactPoint );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
 	float e = rigidbody1->m_collider->GetBounceWith( rigidbody2->m_collider );
@@ -331,8 +331,8 @@ float Physics2D::CalculateFrictionImpulseAgainstImmoveableObject( Rigidbody2D* m
 {
 	float friction = moveableRigidbody->m_collider->GetFrictionWith( immoveableRigidbody->m_collider );
 
-	Vec2 initialVelocity1 = immoveableRigidbody->GetImpaceVelocityAtPoint( Vec2::ZERO );
-	Vec2 initialVelocity2 = moveableRigidbody->GetImpaceVelocityAtPoint( Vec2::ZERO );
+	Vec2 initialVelocity1 = immoveableRigidbody->GetImpaceVelocityAtPoint( contactPoint );
+	Vec2 initialVelocity2 = moveableRigidbody->GetImpaceVelocityAtPoint( contactPoint );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 		
 	float numerator = friction * DotProduct2D( differenceOfInitialVelocities, tangent );
@@ -356,8 +356,8 @@ float Physics2D::CalculateFrictionImpulseBetweenMoveableObjects( Rigidbody2D* ri
 {
 	float friction = rigidbody1->m_collider->GetFrictionWith( rigidbody2->m_collider );
 
-	Vec2 initialVelocity1 = rigidbody1->GetImpaceVelocityAtPoint( Vec2::ZERO );
-	Vec2 initialVelocity2 = rigidbody2->GetImpaceVelocityAtPoint( Vec2::ZERO );
+	Vec2 initialVelocity1 = rigidbody1->GetImpaceVelocityAtPoint( contactPoint );
+	Vec2 initialVelocity2 = rigidbody2->GetImpaceVelocityAtPoint( contactPoint );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
 	float numerator = friction * DotProduct2D( differenceOfInitialVelocities, tangent );

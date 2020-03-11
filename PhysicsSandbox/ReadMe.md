@@ -26,7 +26,7 @@ FIX CURSOR BLINK
     - [x] Use torque to compute an angular acceleration
     - [x] Apply angular acceleration to update angular velocity
     - [x] Apply angular velocity to update rotation
-- [ ] Update `Rigidbody2D::GetImpactVelocity` to take into account rotational velocity.
+- [-] Update `Rigidbody2D::GetImpactVelocity` to take into account rotational velocity.
 - [x] Update `ApplyImpulseAt` to apply impulse to torque based on positions. 
 - [x] Update impulse calculations to take into account rotational forces, see PDF in lnks
 - [x] Update tooltip to show...

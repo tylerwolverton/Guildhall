@@ -94,11 +94,10 @@ void Rigidbody2D::SetVelocity( const Vec2& velocity )
 //-----------------------------------------------------------------------------------------------
 Vec2 Rigidbody2D::GetImpaceVelocityAtPoint( const Vec2& point )
 {
-	UNUSED( point );
+	Vec2 contactPoint = point - m_worldPosition;
+	Vec2 tangent = contactPoint.GetRotated90Degrees();
 
-	//Vec2 contactPoint = point - m_worldPosition
-
-	return GetVelocity();
+	return GetVerletVelocity() + m_angularVelocity * tangent;
 }
 
 
