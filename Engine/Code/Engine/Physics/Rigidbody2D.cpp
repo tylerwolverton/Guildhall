@@ -40,7 +40,7 @@ void Rigidbody2D::Update( float deltaSeconds )
 		m_verletVelocity = ( m_worldPosition - oldPosition ) / deltaSeconds;
 	}
 
-	float angularAcceleration = m_frameTorque;
+	float angularAcceleration = m_frameTorque;// / m_moment;
 	m_angularVelocity += angularAcceleration * deltaSeconds;
 	m_orientationRadians += m_angularVelocity * deltaSeconds;
 	
@@ -191,8 +191,9 @@ void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& point )
 	m_velocity += ( impulse * m_inverseMass );
 
 	Vec2 contactPoint = point - m_worldPosition;
-	m_frameTorque += ( -impulse.x * contactPoint.y ) + ( impulse.y * contactPoint.x );
-	//m_angularVelocity -= ( ( -impulse.x * contactPoint.y ) + ( impulse.y * contactPoint.x ) / m_moment );
+	contactPoint.Rotate90Degrees();
+
+	m_angularVelocity += DotProduct2D( impulse, contactPoint ) / m_moment;
 }
 
 

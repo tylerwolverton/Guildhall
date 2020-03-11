@@ -121,7 +121,8 @@ unsigned int PolygonCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds,
 float PolygonCollider2D::CalculateMoment( float mass )
 {
 	Vec2 v0 = m_polygon.m_points[0];
-	float I = 0.f;
+	float totalI = 0.f;
+	float totalArea = 0.f;
 
 	for ( int pointIdx = 1; pointIdx < (int)m_polygon.m_points.size() - 1; ++pointIdx )
 	{
@@ -130,21 +131,25 @@ float PolygonCollider2D::CalculateMoment( float mass )
 
 		Vec2 u = v1 - v0;
 		Vec2 v = v2 - v0;
-
-		float a = DotProduct2D( v, u ) / u.GetLength();
-		float b = u.GetLength();
-
-		Vec2 h = v - ( ( a * u ) / u.GetLength() );
-
+		Vec2 center = ( v0 + v1 + v2 ) / 3.f;
+			   
 		float uu = DotProduct2D( u, u );
 		float vu = DotProduct2D( v, u );
 
-		I += uu - vu + ( vu * vu / uu ) + DotProduct2D( h, h );
+		Vec2 h = v - ( ( vu / uu ) * u );
 
-		//float I = ( ( b * h ) / 36.f ) * ( ( b * b ) - ( b * a ) + ( a * a ) + DotProduct2D( h, h ) );
+		float I = uu - vu + ( vu * vu / uu ) + DotProduct2D( h, h );
+
+		// get area of triangle
+		float area = .5f * u.GetLength() * h.GetLength();
+		I *= ( area / 18.f );
+		I += ( area * DotProduct2D( center, center ) );
+
+		totalI += I;
+		totalArea += area;
 	}
 
-	return ( mass / 18.f ) * I;
+	return ( mass / totalArea ) * totalI;
 }
 
 

@@ -335,6 +335,7 @@ float Physics2D::CalculateFrictionImpulseAgainstImmoveableObject( Rigidbody2D* m
 	Vec2 initialVelocity2 = moveableRigidbody->GetImpaceVelocityAtPoint( contactPoint );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 		
+	// TODO: Replace friction with restitution and only use friction for coulombs law
 	float numerator = friction * DotProduct2D( differenceOfInitialVelocities, tangent );
 
 	Manifold2 manifold;
