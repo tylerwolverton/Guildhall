@@ -22,8 +22,6 @@ void DiscCollider2D::UpdateWorldShape()
 {
 	m_worldPosition = m_localPosition;
 
-	
-
 	if ( m_rigidbody != nullptr )
 	{
 		m_worldPosition += m_rigidbody->GetPosition();
@@ -135,7 +133,7 @@ void DiscCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderCo
 		return;
 	}
 
-	Vec2 endPoint = m_worldPosition + Vec2::MakeFromPolarRadians( m_rigidbody->GetRotationRadians() ) * m_radius;
+	Vec2 endPoint = m_worldPosition + Vec2::MakeFromPolarRadians( m_rigidbody->GetOrientationRadians() ) * m_radius;
 	DrawLine2D( renderer, m_worldPosition, endPoint, borderColor, .04f );
 }
 

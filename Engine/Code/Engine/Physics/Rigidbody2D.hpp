@@ -70,8 +70,8 @@ public:
 	void SetSimulationMode( eSimulationMode mode )									{ m_simulationMode = mode; }
 
 	float GetAngularVelocity() const												{ return m_angularVelocity; }
-	float GetRotationDegrees() const;
-	float GetRotationRadians() const												{ return m_rotationInRadians; }
+	float GetOrientationDegrees() const;
+	float GetOrientationRadians() const												{ return m_orientationRadians; }
 	float GetMomentOfInertia() const												{ return m_moment; }
 
 private:
@@ -87,7 +87,7 @@ private:
 	float m_inverseMass = 1.f;
 	float m_drag = 0.f;
 
-	float m_rotationInRadians = 0.f;
+	float m_orientationRadians = 0.f;
 	float m_angularVelocity = 0.f;
 	float m_frameTorque = 0.f;
 	float m_moment = 0.f;

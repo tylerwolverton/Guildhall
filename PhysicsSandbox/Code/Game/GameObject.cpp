@@ -439,7 +439,7 @@ float GameObject::GetRotationDegrees() const
 		return 0.f;
 	}
 
-	return m_rigidbody->GetRotationDegrees();
+	return m_rigidbody->GetOrientationDegrees();
 }
 
 

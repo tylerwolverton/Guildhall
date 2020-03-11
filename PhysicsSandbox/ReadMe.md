@@ -5,19 +5,19 @@ Project - PhysicsSandbox
 FIX CURSOR BLINK
 
 ## Checklist
-- [ ] Angular Update - Add members to `Rigidbody2D`
+- [x] Angular Update - Add members to `Rigidbody2D`
     - [x] Add `float m_rotationInRadians`
     - [x] Add `float m_angularVelocity`   
     - [x] Add `float m_frameTorque`       
     - [x] Add `float m_moment`
-    - [-] Add appropriate getter/setter methods
+    - [x] Add appropriate getter/setter methods
 - [-] `Rigidbody2D::CalculateMoment` to calculate moment based on attached collider and mass
     - [x] `virtual float Collider2D::CalculateMoment( float mass )`
     - [x] Implement `DiscCollider::CalculateMoment`
-    - [ ] Implement `PolygonCollider::CalculateMoment`
+    - [x] Implement `PolygonCollider::CalculateMoment`
     - [-] When setting **mass** or **collider** on a rigidbody - recalculate your moment.
         - *Note: When setting mass, you can do less work by taking advantage of the ratio of new mass to old mass should match the ratios of the moments*. 
-- [ ] Rotating a `Rigidbody2D` properly updates the **world shape** of the collider.
+- [x] Rotating a `Rigidbody2D` properly updates the **world shape** of the collider.
     - [x] Add controls to rotate a selected object
         - Uses **Q** and **E** 
     - [x] Add controls to update the rotational velocity of an object

@@ -249,6 +249,39 @@ void Polygon2::Translate2D( const Vec2& translation )
 
 
 //-----------------------------------------------------------------------------------------------
+void Polygon2::Rotate2D( float rotationDegrees )
+{
+	for ( int pointNumIdx = 0; pointNumIdx < GetVertexCount(); ++pointNumIdx )
+	{
+		Vec2 translatedPoint = m_points[pointNumIdx] - GetCenterOfMass();
+		translatedPoint.RotateDegrees( -rotationDegrees );
+		translatedPoint += GetCenterOfMass();
+
+		m_points[pointNumIdx] = translatedPoint;
+	}
+
+	m_orientationDegrees += rotationDegrees;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::SetOrientation( float newOrientationDegrees )
+{
+	if ( IsNearlyEqual( newOrientationDegrees, m_orientationDegrees ) )
+	{
+		return;
+	}
+
+	float deltaDegrees = m_orientationDegrees - newOrientationDegrees;
+
+	Rotate2D( deltaDegrees );
+	CalculateCenterOfMass();
+
+	m_orientationDegrees = newOrientationDegrees;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // TODO: Calculate more accurately
 Vec2 Polygon2::GetCenterOfMass() const
 {

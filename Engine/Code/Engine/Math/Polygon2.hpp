@@ -30,15 +30,18 @@ public:
 	void GetEdge( int edgeIndex, Vec2* out_start, Vec2* out_end ) const;
 
 	void Translate2D( const Vec2& translation );
+	void SetOrientation( float newOrientationDegrees );
 
 	Vec2 GetCenterOfMass() const;
 	void SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass );
 
 private:
 	void CalculateCenterOfMass();
+	void Rotate2D( float rotationDegrees );
 
 public:
 	// Stored in counter clockwise order
 	std::vector<Vec2> m_points;
+	float m_orientationDegrees = 0.f;
 	AABB2 m_boundingBox;
 };

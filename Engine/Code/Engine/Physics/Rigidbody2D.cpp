@@ -42,7 +42,16 @@ void Rigidbody2D::Update( float deltaSeconds )
 
 	float angularAcceleration = m_frameTorque;
 	m_angularVelocity += angularAcceleration * deltaSeconds;
-	m_rotationInRadians += m_angularVelocity * deltaSeconds;
+	m_orientationRadians += m_angularVelocity * deltaSeconds;
+	
+	while ( m_orientationRadians > 2.f * 3.1459f )
+	{
+		m_orientationRadians -= 2.f * 3.1459f;
+	}
+	while ( m_orientationRadians < 0.f )
+	{
+		m_orientationRadians += 2.f * 3.1459f;
+	}
 
 	m_collider->UpdateWorldShape();
 
@@ -120,7 +129,7 @@ void Rigidbody2D::Translate2D( const Vec2& translation )
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::RotateDegrees( float deltaDegrees )
 {
-	m_rotationInRadians += ConvertDegreesToRadians( deltaDegrees );
+	m_orientationRadians += ConvertDegreesToRadians( deltaDegrees );
 }
 
 
@@ -184,6 +193,7 @@ void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& point )
 
 	Vec2 contactPoint = point - m_worldPosition;
 	m_frameTorque += ( -impulse.x * contactPoint.y ) + ( impulse.y * contactPoint.x );
+	//m_angularVelocity -= ( ( -impulse.x * contactPoint.y ) + ( impulse.y * contactPoint.x ) / m_moment );
 }
 
 
@@ -212,16 +222,16 @@ void Rigidbody2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor
 
 
 //-----------------------------------------------------------------------------------------------
-float Rigidbody2D::GetRotationDegrees() const
+float Rigidbody2D::GetOrientationDegrees() const
 {
-	return ConvertRadiansToDegrees( m_rotationInRadians );
+	return ConvertRadiansToDegrees( m_orientationRadians );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::SetRotationDegrees( float newRotationDegrees )
 {
-	m_rotationInRadians = ConvertDegreesToRadians( newRotationDegrees );
+	m_orientationRadians = ConvertDegreesToRadians( newRotationDegrees );
 }
 
 

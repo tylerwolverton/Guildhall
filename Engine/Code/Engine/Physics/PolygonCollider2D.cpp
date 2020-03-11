@@ -42,6 +42,8 @@ void PolygonCollider2D::UpdateWorldShape()
 
 	if ( m_rigidbody != nullptr )
 	{
+		m_polygon.SetOrientation( m_rigidbody->GetOrientationDegrees() );
+
 		m_worldPosition += m_rigidbody->GetPosition();
 	}
 
@@ -118,7 +120,31 @@ unsigned int PolygonCollider2D::CheckIfOutsideScreen( const AABB2& screenBounds,
 //-----------------------------------------------------------------------------------------------
 float PolygonCollider2D::CalculateMoment( float mass )
 {
-	return mass;
+	Vec2 v0 = m_polygon.m_points[0];
+	float I = 0.f;
+
+	for ( int pointIdx = 1; pointIdx < (int)m_polygon.m_points.size() - 1; ++pointIdx )
+	{
+		Vec2 v1 = m_polygon.m_points[pointIdx];
+		Vec2 v2 = m_polygon.m_points[pointIdx + 1];
+
+		Vec2 u = v1 - v0;
+		Vec2 v = v2 - v0;
+
+		float a = DotProduct2D( v, u ) / u.GetLength();
+		float b = u.GetLength();
+
+		Vec2 h = v - ( ( a * u ) / u.GetLength() );
+
+		float uu = DotProduct2D( u, u );
+		float vu = DotProduct2D( v, u );
+
+		I += uu - vu + ( vu * vu / uu ) + DotProduct2D( h, h );
+
+		//float I = ( ( b * h ) / 36.f ) * ( ( b * b ) - ( b * a ) + ( a * a ) + DotProduct2D( h, h ) );
+	}
+
+	return ( mass / 18.f ) * I;
 }
 
 
