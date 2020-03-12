@@ -9,7 +9,7 @@ Project - PhysicsSandbox
     - [x] Add `float m_frameTorque`       
     - [x] Add `float m_moment`
     - [x] Add appropriate getter/setter methods
-- [-] `Rigidbody2D::CalculateMoment` to calculate moment based on attached collider and mass
+- [x] `Rigidbody2D::CalculateMoment` to calculate moment based on attached collider and mass
     - [x] `virtual float Collider2D::CalculateMoment( float mass )`
     - [x] Implement `DiscCollider::CalculateMoment`
     - [x] Implement `PolygonCollider::CalculateMoment`
@@ -36,4 +36,6 @@ Project - PhysicsSandbox
 ------
 
 Controls
-All are same as recommended except drag, I used `:` and `'`
+1 - Create disc
+2 - Draw polygon
+Others in tooltip and on screen

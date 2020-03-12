@@ -170,7 +170,7 @@ void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borde
 	DrawPolygon2( renderer, m_polygon.GetPoints(), fillColor );
 	DrawPolygon2Outline( renderer, m_polygon.GetPoints(), borderColor, .04f );
 
-	Rgba8 boundingBoxColor = Rgba8::WHITE;
+	/*Rgba8 boundingBoxColor = Rgba8::WHITE;
 	boundingBoxColor.a = 100;
-	DrawAABB2( renderer, m_polygon.m_boundingBox, boundingBoxColor );
+	DrawAABB2( renderer, m_polygon.m_boundingBox, boundingBoxColor );*/
 }

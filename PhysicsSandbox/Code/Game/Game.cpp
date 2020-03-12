@@ -49,7 +49,7 @@ void Game::Startup()
 
 	m_rng = new RandomNumberGenerator();
 
-	m_tooltipBox = new TextBox( *g_renderer, AABB2( Vec2::ZERO, Vec2( 600.f, 400.f ) ) );
+	m_tooltipBox = new TextBox( *g_renderer, AABB2( Vec2::ZERO, Vec2( 800.f, 600.f ) ) );
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
@@ -224,9 +224,10 @@ void Game::RenderUI() const
 
 	std::string timeStr = Stringf( "Time Scale: %.2fx", m_currentTimeScale );
 	DrawTextTriangles2D( *g_renderer, timeStr, Vec2( 100.f, 1000.f ), 30.f, Rgba8::WHITE );
+	DrawTextTriangles2D( *g_renderer, "8 or 9 to change, P to pause ", Vec2( 100.f, 970.f ), 20.f, Rgba8::WHITE );
 	if ( m_isPhysicsPaused )
 	{
-		DrawTextTriangles2D( *g_renderer, "Simulation Paused ", Vec2( 100.f, 970.f ), 20.f, Rgba8::WHITE );
+		DrawTextTriangles2D( *g_renderer, "Simulation Paused ", Vec2( 750.f, 900.f ), 40.f, Rgba8::WHITE );
 	}
 
 	RenderToolTipBox();
@@ -735,16 +736,16 @@ void Game::UpdateToolTipBox()
 		case eSimulationMode::SIMULATION_MODE_STATIC: simulationModeStr = "Static"; break;
 	}
 
-	m_tooltipBox->SetText( Stringf( "Simulation Mode: %s", simulationModeStr.c_str() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Mass: %.2f", selectedObject->GetMass() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Verlet Velocity: ( %.2f, %.2f )", selectedObject->GetVerletVelocity().x, selectedObject->GetVerletVelocity().y ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Bounciness: %.2f", selectedObject->GetBounciness() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Friction: %.2f", selectedObject->GetFriction() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Drag: %.2f", selectedObject->GetDrag() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Moment of Inertia: %.2f", selectedObject->GetMomentOfInertia() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
+	m_tooltipBox->SetText(       Stringf( "[1, 2, 3]      | Simulation Mode: %s", simulationModeStr.c_str() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[ [ ] ]        | Mass: %.2f", selectedObject->GetMass() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "               | Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "               | Verlet Velocity: ( %.2f, %.2f )", selectedObject->GetVerletVelocity().x, selectedObject->GetVerletVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[- +]          | Bounciness: %.2f", selectedObject->GetBounciness() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[< >]          | Friction: %.2f", selectedObject->GetFriction() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[; ']          | Drag: %.2f", selectedObject->GetDrag() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "               | Moment of Inertia: %.2f", selectedObject->GetMomentOfInertia() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[Q E]          | Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[R T, Y-reset] | Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
 }
 
 
