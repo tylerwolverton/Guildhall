@@ -36,7 +36,7 @@ public:
 	void SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass );
 
 private:
-	void CalculateCenterOfMass();
+	void CalculateBoundingBox();
 	void Rotate2D( float rotationDegrees );
 
 public:
@@ -44,4 +44,6 @@ public:
 	std::vector<Vec2> m_points;
 	float m_orientationDegrees = 0.f;
 	AABB2 m_boundingBox;
+
+	Vec2 m_centerOfMass = Vec2::ZERO;
 };

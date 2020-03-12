@@ -7,7 +7,8 @@
 Polygon2::Polygon2( const std::vector<Vec2>& points )
 	: m_points( points )
 {
-	CalculateCenterOfMass();
+	CalculateBoundingBox();
+	m_centerOfMass = m_boundingBox.GetCenter();
 }
 
 
@@ -273,7 +274,7 @@ void Polygon2::SetOrientation( float newOrientationDegrees )
 	float deltaDegrees = m_orientationDegrees - newOrientationDegrees;
 
 	Rotate2D( deltaDegrees );
-	CalculateCenterOfMass();
+	CalculateBoundingBox();
 
 	m_orientationDegrees = newOrientationDegrees;
 }
@@ -283,7 +284,7 @@ void Polygon2::SetOrientation( float newOrientationDegrees )
 // TODO: Calculate more accurately
 Vec2 Polygon2::GetCenterOfMass() const
 {
-	return m_boundingBox.GetCenter();
+	return m_centerOfMass;
 }
 
 
@@ -296,12 +297,14 @@ void Polygon2::SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass )
 
 	Translate2D( translation );
 
-	m_boundingBox.SetCenter( newCenterOfMass );
+	m_centerOfMass = newCenterOfMass;
+
+	m_boundingBox.Translate( translation );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Polygon2::CalculateCenterOfMass()
+void Polygon2::CalculateBoundingBox()
 {
 	// Initialize with first point in polygon
 	AABB2 boundingBox( m_points[0], m_points[0] );

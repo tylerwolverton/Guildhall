@@ -317,9 +317,10 @@ void Physics2D::ApplyFrictionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rig
 	}
 
 	float tangentMagnitude = CalculateFrictionImpulseAgainstImmoveableObject( moveableObj, immoveableObj, tangent, collisionManifold.contactPoint );
-	if ( fabsf( tangentMagnitude ) > fabsf( normalImpulse ) )
+	float friction = rigidbody1->m_collider->GetFrictionWith( rigidbody2->m_collider );
+	if ( fabsf( tangentMagnitude ) > fabsf( normalImpulse * friction ) )
 	{
-		tangentMagnitude = SignFloat( tangentMagnitude ) * fabsf( normalImpulse );
+		tangentMagnitude = SignFloat( tangentMagnitude ) * fabsf( normalImpulse * friction );
 	}
 
 	moveableObj->ApplyImpulseAt( tangentMagnitude * -tangent, collisionManifold.contactPoint );
@@ -329,14 +330,14 @@ void Physics2D::ApplyFrictionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rig
 //-----------------------------------------------------------------------------------------------
 float Physics2D::CalculateFrictionImpulseAgainstImmoveableObject( Rigidbody2D* moveableRigidbody, Rigidbody2D* immoveableRigidbody, const Vec2& tangent, const Vec2& contactPoint )
 {
-	float friction = moveableRigidbody->m_collider->GetFrictionWith( immoveableRigidbody->m_collider );
-
 	Vec2 initialVelocity1 = immoveableRigidbody->GetImpaceVelocityAtPoint( contactPoint );
 	Vec2 initialVelocity2 = moveableRigidbody->GetImpaceVelocityAtPoint( contactPoint );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 		
 	// TODO: Replace friction with restitution and only use friction for coulombs law
-	float numerator = friction * DotProduct2D( differenceOfInitialVelocities, tangent );
+	float e = moveableRigidbody->m_collider->GetBounceWith( immoveableRigidbody->m_collider );
+
+	float numerator = ( 1.f + e ) * DotProduct2D( differenceOfInitialVelocities, tangent );
 
 	Manifold2 manifold;
 	manifold.normal = tangent;
@@ -355,13 +356,13 @@ float Physics2D::CalculateFrictionImpulseAgainstImmoveableObject( Rigidbody2D* m
 //-----------------------------------------------------------------------------------------------
 float Physics2D::CalculateFrictionImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Vec2& tangent, const Vec2& contactPoint )
 {
-	float friction = rigidbody1->m_collider->GetFrictionWith( rigidbody2->m_collider );
-
 	Vec2 initialVelocity1 = rigidbody1->GetImpaceVelocityAtPoint( contactPoint );
 	Vec2 initialVelocity2 = rigidbody2->GetImpaceVelocityAtPoint( contactPoint );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 
-	float numerator = friction * DotProduct2D( differenceOfInitialVelocities, tangent );
+	float e = rigidbody1->m_collider->GetBounceWith( rigidbody2->m_collider );
+
+	float numerator = ( 1.f + e ) * DotProduct2D( differenceOfInitialVelocities, tangent );
 
 	Manifold2 manifold;
 	manifold.normal = tangent;
