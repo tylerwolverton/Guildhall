@@ -74,7 +74,6 @@ public:
 	std::string GetFileName()															{ return m_fileName; }
 
 private:
-	void CreateRasterState();
 	void PopulateVertexDescription( const BufferAttribute* attributes );            
 
 public:
@@ -82,8 +81,7 @@ public:
 	ShaderStage				m_vertexStage;
 	ShaderStage				m_fragmentStage;
 
-	ID3D11InputLayout*		m_inputLayout = nullptr; // for now, we'll have 1, but in the future you could have one for each different vertex type you use with this
-	ID3D11RasterizerState*	m_rasterState = nullptr;
+	ID3D11InputLayout*		m_inputLayout = nullptr;
 
 private:
 	const BufferAttribute*					m_lastLayout = nullptr;

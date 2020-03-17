@@ -104,6 +104,8 @@ void RenderContext::Startup( Window* window )
 	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
 
 	CreateBlendStates();
+
+	m_defaultRasterState = m_currentRasterState = CreateRasterState();
 }
 
 
@@ -173,6 +175,7 @@ void RenderContext::Shutdown()
 	delete m_swapchain;
 	m_swapchain = nullptr;
 
+	DX_SAFE_RELEASE( m_defaultRasterState );
 	DX_SAFE_RELEASE( m_alphaBlendState );
 	DX_SAFE_RELEASE( m_additiveBlendState );
 	DX_SAFE_RELEASE( m_disabledBlendState );
@@ -433,7 +436,7 @@ void RenderContext::BindShader( Shader* shader )
 	}
 
 	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
-	m_context->RSSetState( m_currentShader->m_rasterState );
+	m_context->RSSetState( m_currentRasterState );
 	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 }
 
@@ -520,7 +523,6 @@ void RenderContext::BindIndexBuffer( IndexBuffer* ibo )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BindUniformBuffer( uint slot, RenderBuffer* ubo )
 {
-	// TODO: GetHandle
 	ID3D11Buffer* uboHandle =  ubo->m_handle;
 
 	m_context->VSSetConstantBuffers( slot, 1, &uboHandle );
@@ -667,6 +669,29 @@ void RenderContext::CreateBlendStates()
 	opaqueDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	m_device->CreateBlendState( &opaqueDesc, &m_disabledBlendState );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ID3D11RasterizerState* RenderContext::CreateRasterState( )
+{
+	D3D11_RASTERIZER_DESC desc;
+
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.CullMode = D3D11_CULL_BACK;
+	desc.FrontCounterClockwise = TRUE;
+	desc.DepthBias = 0U;
+	desc.DepthBiasClamp = 0.0f;
+	desc.SlopeScaledDepthBias = 0.0f;
+	desc.DepthClipEnable = TRUE;
+	desc.ScissorEnable = FALSE;
+	desc.MultisampleEnable = FALSE;
+	desc.AntialiasedLineEnable = FALSE;
+
+	ID3D11RasterizerState* newRasterState;
+	m_device->CreateRasterizerState( &desc, &newRasterState );
+
+	return newRasterState;
 }
 
 

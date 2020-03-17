@@ -6,6 +6,7 @@ struct Rgba8;
 struct Vec2;
 struct Vec3;
 struct AABB2;
+class Clock;
 class Camera;
 class Texture;
 
@@ -34,7 +35,7 @@ enum eDebugRenderMode
 //  System
 //------------------------------------------------------------------------
 // setup
-void DebugRenderSystemStartup();    // may be used to allocate resources to the system
+void DebugRenderSystemStartup( Clock* clock );    // may be used to allocate resources to the system
 void DebugRenderSystemShutdown();   // cleans up the system to prevent leaks.
 
 // control

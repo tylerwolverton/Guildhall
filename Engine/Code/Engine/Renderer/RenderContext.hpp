@@ -17,6 +17,7 @@ struct ID3D11RenderTargetView;
 struct ID3D11Buffer;
 struct ID3D11BlendState;
 struct ID3D11DepthStencilState;
+struct ID3D11RasterizerState;
 struct Rgba8;
 struct Vertex_PCU;
 class Window;
@@ -33,6 +34,7 @@ class VertexBuffer;
 class IndexBuffer;
 class GPUMesh;
 enum class eCompareFunc : uint;
+
 
 //-----------------------------------------------------------------------------------------------
 enum class eBlendMode
@@ -133,6 +135,8 @@ private:
 
 	void CreateBlendStates();
 
+	ID3D11RasterizerState* CreateRasterState();
+
 	BitmapFont* RetrieveBitmapFontFromCache( const char* filePath );
 
 	void CreateDebugModule();
@@ -170,8 +174,8 @@ private:
 	Sampler* m_defaultLinearSampler					= nullptr;
 	Sampler* m_currentSampler						= nullptr;
 	
-	Texture* m_defaultWhiteTexture = nullptr;
-	Texture* m_defaultDepthBuffer = nullptr;
+	Texture* m_defaultWhiteTexture					= nullptr;
+	Texture* m_defaultDepthBuffer					= nullptr;
 
 	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 
@@ -179,6 +183,9 @@ private:
 	ID3D11BlendState* m_additiveBlendState			= nullptr;
 	ID3D11BlendState* m_disabledBlendState			= nullptr;
 	eBlendMode m_currentBlendMode					= eBlendMode::ALPHA;
+
+	ID3D11RasterizerState* m_defaultRasterState		= nullptr;
+	ID3D11RasterizerState* m_currentRasterState		= nullptr;
 
 	bool m_isDrawing								= false;
 };

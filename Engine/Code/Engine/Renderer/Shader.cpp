@@ -16,14 +16,12 @@
 Shader::Shader( RenderContext* owner )
 	: m_owner( owner )
 {
-	CreateRasterState();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 Shader::~Shader()
 {
-	DX_SAFE_RELEASE( m_rasterState );
 	DX_SAFE_RELEASE( m_inputLayout );
 }
 
@@ -92,28 +90,6 @@ ID3D11InputLayout* Shader::GetOrCreateInputLayout( const BufferAttribute* attrib
 							   &m_inputLayout );
 
 	return m_inputLayout;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Shader::CreateRasterState()
-{
-	D3D11_RASTERIZER_DESC desc;
-
-	desc.FillMode = D3D11_FILL_SOLID;
-	//desc.CullMode = D3D11_CULL_NONE;
-	desc.CullMode = D3D11_CULL_BACK;
-	desc.FrontCounterClockwise = TRUE; // the only reason we're doing this; 
-	desc.DepthBias = 0U;
-	desc.DepthBiasClamp = 0.0f;
-	desc.SlopeScaledDepthBias = 0.0f;
-	desc.DepthClipEnable = TRUE;
-	desc.ScissorEnable = FALSE;
-	desc.MultisampleEnable = FALSE;
-	desc.AntialiasedLineEnable = FALSE;
-
-	ID3D11Device* device = m_owner->m_device;
-	device->CreateRasterizerState( &desc, &m_rasterState );
 }
 
 
