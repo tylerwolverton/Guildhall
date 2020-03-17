@@ -4,3 +4,5 @@ quit
 help
 quit
 help
+set_mouse_sensitivity multiplier=10
+set_mouse_sensitivity multiplier=25

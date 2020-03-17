@@ -237,12 +237,15 @@
     </ClCompile>
     <ClCompile Include="Time\Clock.cpp">
       <Filter>Time</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="Time\Timer.cpp">
       <Filter>Time</Filter>
     </ClCompile>
     <ClCompile Include="Time\Time.cpp">
       <Filter>Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\DebugRender.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -478,5 +481,8 @@
       <Filter>Time</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\MeshUtils.hpp" />
+    <ClInclude Include="Renderer\DebugRender.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

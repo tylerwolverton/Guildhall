@@ -11,6 +11,7 @@ struct Vertex_PCU;
 struct Vec2;
 struct AABB2;
 class Clock;
+class Timer;
 class InputSystem;
 class RenderContext;
 class BitmapFont;
@@ -98,6 +99,8 @@ private:
 	BitmapFont* m_bitmapFont = nullptr;
 
 	Clock* m_clock = nullptr;
+	Timer* m_cursorBlinkTimer = nullptr;
+
 	bool m_isOpen = false;
 	Camera* m_devConsoleCamera = nullptr;
 	std::vector<DevConsoleLogMessage> m_logMessages;
@@ -113,6 +116,4 @@ private:
 	int m_currentSelectionEndPosition = -1;
 
 	Rgba8 m_cursorColor = Rgba8::WHITE;
-	float m_curCursorSeconds = 0.f;
-	float m_maxCursorBlinkStateSeconds = .5f;
 };

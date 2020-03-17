@@ -12,6 +12,7 @@
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Time/Clock.hpp"
+#include "Engine/Time/Timer.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -34,6 +35,8 @@ DevConsole::~DevConsole()
 void DevConsole::Startup()
 {
 	m_clock = new Clock();
+	m_cursorBlinkTimer = new Timer( m_clock );
+	m_cursorBlinkTimer->SetSeconds( .5f );
 
 	m_devConsoleCamera = new Camera();
 	m_devConsoleCamera->SetColorTarget( nullptr );
@@ -79,6 +82,9 @@ void DevConsole::Shutdown()
 {
 	delete m_devConsoleCamera;
 	m_devConsoleCamera = nullptr;
+
+	delete m_cursorBlinkTimer;
+	m_cursorBlinkTimer = nullptr;
 
 	delete m_clock;
 	m_clock = nullptr;
@@ -194,9 +200,7 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 //-----------------------------------------------------------------------------------------------
 void DevConsole::UpdateCursorBlink()
 {
-	/*m_curCursorSeconds += deltaSeconds;
-
-	if ( m_curCursorSeconds > m_maxCursorBlinkStateSeconds )
+	if ( m_cursorBlinkTimer->CheckAndReset() )
 	{
 		if ( m_cursorColor == Rgba8::WHITE )
 		{
@@ -206,9 +210,7 @@ void DevConsole::UpdateCursorBlink()
 		{
 			m_cursorColor = Rgba8::WHITE;
 		}
-
-		m_curCursorSeconds = 0.f;
-	}*/
+	}
 }
 
 
@@ -438,7 +440,7 @@ void DevConsole::MoveCursorPosition( int deltaCursorPosition, bool updateInputIn
 	}
 
 	m_cursorColor = Rgba8::WHITE;
-	m_curCursorSeconds = 0.f;
+	m_cursorBlinkTimer->Reset();
 }
 
 

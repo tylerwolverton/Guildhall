@@ -1,87 +1,66 @@
 Project: FPS
 
-## Core Task List [85%]
-
-**Reminder:  You can use previously uncompleted extras as well as extras in this assignment to fill out the points.**
-
-- [x] `Camera::SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip )` implemented
-    - [x] Set projection to `60 degrees`, and `-0.1` to `-100.0` for the clip planes.
-- [x] Camera now has a `Transform`
-    - [x] Create the `Transform` class
-    - [x] `Transform::SetPosition` implemented
-    - [x] `Transform::Translate` implemented
-    - [x] `Transform::SetRotationFromPitchRollYawDegrees`
-        - [x] When storing degrees, make sure they are stored in sane ranges...
-            - [x] Roll & Yaw is `-180` to `180` 
-            - [x] Pitch is `-90` to `90`
-- [x] Camera now calculates `view` matrix from their transform.
-    - [x] `Transform::GetAsMatrix` implemented to calculate the camera's model matrix
-    - [x] `MatrixInvertOrthoNormal` implemented to invert the camera's model into a view matrix
-        - [x] `MatrixIsOrthoNormal` check added
-        - [x] `MatrixTranspose` added
-- [x] Draw a Quad at `(0, 0, -10)`, or 10 units in front of the origin (should be visible when you start)
-- [x] Allow player to move the camera by change the camera transform position
-   - [x] `W` & `S`: Forward & Back (movement is relative to where you're looking)
-   - [x] `A` & `D`: Left and Right (movement is relative to where you're looking)
-   - [x] `Space` & `C`: Up and Down Movement (movement is absolute (world up and world down)
-   - [x] `Left-Shift`: Move faster while held.
-   - *Note:  If you want different controls, just make a note in your readme*
-- [x] Allow player to turn the camera using the mouse.
-    - [x] `InputSystem::HideSystemCursor` implemented
-    - [x] `InputSystem::ClipSystemCursor` implemented
-    - [x] `InputSystem::SetCursorMode` implemented
-        - [x] `ABSOLUTE` mode is what you currently have
-        - [x] `RELATIVE` move implemented
-            - [x] Move mouse to the center of the screen, and store off the cursor position
-                - *Note:  Be sure to actually make the system call, not just assume where you moved it is where it went.  This can cause drifting.*
-            - [x] Each frame, get the cursor position, and calculate frame delta.
-            - [x] ...after which, reset to center of screen and reget the current position. 
-    - [x] Game should be set to `RELATIVE` mode
-        - [x] `DevConsole` should unlock the mouse and set to `ABSOLUTE` mode
-    - [x] Associate `X` movement with `yaw`
-    - [x] Associate `Y` movement with `pitch`
-        - [x] Do not allow pitch above `85` degrees or below `95` degrees - no going upside down... yet...
-        - *Note:  Up to you if you want inverted-y or not.*
-- [x] Support `RenderContext::SetModelMatrix`
-    - [x] Create a new uniform buffer for storing a model matrix (slot 2)
-    - [x] `SetModelMatrix` should update this uniform buffer
-    - [x] `BeginCamera` should `SetModelMatrix` to the `IDENTITY`, and be sure to bind the buffer.
-- [x] Be able to draw a cube mesh at `(1, 0.5, -12.0)`
-    - [x] Create a `GPUMesh` class
-        - [x] Implement `IndexBuffer`
-        - [x] Be able to construct a mesh from a vertex and index array
-        - [x] Add `RenderContext::BindIndexBuffer`
-        - [x] Add `RenderContext::DrawIndexed`
-        - [x] Add `RenderContext::DrawMesh`
-            - This should bind the vertex buffer, index buffer, and then `DrawIndexed`
-    - [x] Game creates a `cube mesh` around the origin with 2 unit sides. 
-    - [x] Game has a `Transform` for the cube set at `(1, 0.5, -12.0f)`, 
-    - [x] Cube transform sets `yaw` rotation to current time each frame
-    - [x] Game should `SetModelMatrix` to the cube transform matrix
-- [x] Support a depth buffer
-    - [x] `Texture::CreateDepthStencilBuffer` added
-    - [x] `Camera::SetDepthStencilBuffer` added
-    - [x] `RenderContext` now automatcially creates a depth buffer during init matching the swap chain's size
-    - [x] `RenderContext::GetFrameColorTarget` implemented to return this
-    - [x] `RenderContext::BeginCamera`, now binds the camera's back buffer as well.
-        - [x] **IMPORANT:  Do not bind the default one automatically if the camera doesn't have one set.  There are reasons a camera may not want a depth buffer!**
-    - [x] Camera's clear options should now store off the `depth` and `stencil` clear values.
-    - [x] If camera has a depth buffer and says it should clear depth, also clear the depth buffer.
-        - Use `ID3D11DeviceConext::ClearDepthStencilView` to clear if camera says to.
-- [x] Generate a **UV Sphere** mesh during `Game::Startup`
-    - [x] `MeshUtils.hpp` has a function 
-          `AddUVSphereToIndexedVertexArray( std::vector<VertexPCU>& verts, std::vector<uint>& indices, vec3 center, float radius, uint horizintalCuts, uint verticalCuts, RGBA color )`
-    - [x] Draw this UV sphere multiple times as a large moving ring in your game.  Each one rotating along a local axis as well as rotating along a global axis.  See demo.
-   
 ------
 
+## Checklist [90%]
+- [ ] RenderContext
+    - [ ] `RasterState` moved off shader, and added to `RenderContext`
+    - [ ] `RenderContext::SetCullMode`
+    - [ ] `RenderContext::SetFillMode`
+    - [ ] `RenderContext::SetFrontFaceWindOrder`
+    - [ ] Create a default raster state to set when `BeginCamera` is called.
+    - [ ] Have a transient raster state to create/set when above calls are used.
+
+- [ ] World Rendering
+    - [ ] Points
+    - [ ] Lines
+    - [ ] Arrows
+    - [ ] Basis
+    - [ ] Quad
+    - [ ] Wire Box
+    - [ ] Wire Sphere
+    - [ ] Text
+    - [ ] Billboarded Text
+    - [ ] All world commands support all rendering modes; 
+
+- [ ] Screen Rendering
+    - [ ] Points
+    - [ ] Lines
+    - [ ] Quads
+    - [ ] Textured Quads
+    - [ ] Text
+
+- [ ] Output
+    - [ ] Implement `DebugRenderWorldTo` to draw the debug objects into the passed camera's space.
+    - [ ] Implement `DebugRenderScreenTo` to add the screen-space debug calls to the passed in texture.
+    - [ ] Add a `DebugRenderWorldTo` call to your game after you render your scene
+    - [ ] Add a `DebugRenderScreenTo` call to your App before your present to render 2D objects
+
+- [ ] Controls
+    - [ ] Console command: `debug_render enabled=bool` 
+    - [ ] Console command: `debug_add_world_point position=vec3 duration=float`
+    - [ ] Console command: `debug_add_world_wire_disc position=vec3 radius=float duration=float`
+    - [ ] Console command: `debug_add_world_wire_bounds min=vec3 max=vec3 duration=float`
+    - [ ] Console command: `debug_add_world_billboard_text position=vec3 pivot=vec2 text=string`
+    - [ ] Console command: `debug_add_screen_point position=vec2 duration=float`
+    - [ ] Console command: `debug_add_screen_quad min=vec2 max=vec2 duration=float`
+    - [ ] Console command: `debug_add_screen_text position=vec2 pivot=vec2 text=string`
+
+
 ## Extras
-- [-] *X01.00 : 05pts*:  Borderless Window Support
-    - Can be configured in GameConfig.xml windowMode="borderless" (or windowed for normal window)
-- [x] *X04.10: 03%*: Mouse input, show, and clip options should use a stack to track state `InputSystem::PushMouseOptions`, see notes...
-- [x] *X04.11: 02%*: **Requires X04.10** - Mouse options are disabled when window loses focus, and re-applied when gaining focus.
-- [x] *X04.40: 02%*: Plane Generation (with subdivision count)
-    - Uses dimensions and number of horizontal and vertical cuts to divide
+- [ ] Screen Basis functions implemented
+- [ ] Message functions implemented
+- [ ] Border Around Text (one or two texel black border around text drawn in the world)
+- [ ] Option to include a background behind rendered text (color with alpha)
+- [ ] Option to pass bounds to text, and pass an alignment.  Text should wrap and align to within the box.  If the text
+      would be larger than the box, you may handle this in your preferred way (clip overflow, center it, or shrink to fit)
+- [ ] `DebugAddWorldLineStrip`
+- [ ] `DebugAddWireMeshToWorld( mat44 mode, GPUMesh* mesh, rgba start_tint, rgba end_tint, float duration, eDebugRenderMode mode );` 
+- [ ] `DebugRenderAddGrid`, see notes.
+    - [ ] Grid is clipped to area the camera can potentially see (allowing for an infinitly large grid)
+- [ ] MeshUtils: `AddCylindarToIndexedVertexArray`
+- [ ] MeshUtils: `AddConeToIndexedVertexArray`
+- [ ] `RGBA LerpAsHSL( RGBA const &a, RGBA const &b, float t );` 
 
 
 ------
