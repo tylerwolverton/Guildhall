@@ -34,6 +34,8 @@ class VertexBuffer;
 class IndexBuffer;
 class GPUMesh;
 enum class eCompareFunc : uint;
+enum class eFillMode : uint;
+enum class eCullMode : uint;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -125,9 +127,17 @@ public:
 
 	void SetModelMatrix( const Mat44& modelMatrix );
 
+	// Raster state setters
+	void SetCullMode( eCullMode cullMode );
+	void SetFillMode( eFillMode fillMode );
+	void SetFrontFaceWindOrder( bool windCCW );
+
 	// Debug methods
 	void CycleSampler();
 	void CycleBlendMode();
+	void CycleCullMode();
+	void CycleFillMode();
+	void CycleWindOrder();
 
 private:
 	void InitializeSwapChain( Window* window );
@@ -143,7 +153,7 @@ private:
 
 	void CreateBlendStates();
 
-	ID3D11RasterizerState* CreateRasterState();
+	void SetRasterState( ID3D11RasterizerState** rasterState, eFillMode fillMode, eCullMode cullMode, bool windCCW );
 
 	BitmapFont* RetrieveBitmapFontFromCache( const char* filePath );
 

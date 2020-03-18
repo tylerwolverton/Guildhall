@@ -85,6 +85,7 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_swapchain );
 
 	DX_SAFE_RELEASE( m_defaultRasterState );
+	DX_SAFE_RELEASE( m_currentRasterState );
 	DX_SAFE_RELEASE( m_alphaBlendState );
 	DX_SAFE_RELEASE( m_additiveBlendState );
 	DX_SAFE_RELEASE( m_disabledBlendState );
@@ -164,6 +165,11 @@ void RenderContext::BeginCamera( Camera& camera )
 	if ( colorTarget == nullptr )
 	{
 		colorTarget = m_swapchain->GetBackBuffer();
+	}
+
+	if ( m_currentRasterState == nullptr )
+	{
+		m_currentRasterState = m_defaultRasterState;
 	}
 
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
@@ -478,7 +484,8 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
 	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
 
-	m_defaultRasterState = m_currentRasterState = CreateRasterState();
+	//m_defaultRasterState = CreateRasterState( eFillMode::SOLID, eCullMode::BACK, true );
+	SetRasterState( &m_defaultRasterState, eFillMode::SOLID, eCullMode::BACK, true );
 
 	CreateBlendStates();
 }
@@ -692,13 +699,13 @@ void RenderContext::CreateBlendStates()
 
 
 //-----------------------------------------------------------------------------------------------
-ID3D11RasterizerState* RenderContext::CreateRasterState()
+void RenderContext::SetRasterState( ID3D11RasterizerState** rasterState, eFillMode fillMode, eCullMode cullMode, bool windCCW )
 {
 	D3D11_RASTERIZER_DESC desc;
 
-	desc.FillMode = D3D11_FILL_SOLID;
-	desc.CullMode = D3D11_CULL_BACK;
-	desc.FrontCounterClockwise = TRUE;
+	desc.FillMode = ToDXFillMode( fillMode );
+	desc.CullMode = ToDXCullMode( cullMode );
+	desc.FrontCounterClockwise = windCCW;
 	desc.DepthBias = 0U;
 	desc.DepthBiasClamp = 0.0f;
 	desc.SlopeScaledDepthBias = 0.0f;
@@ -707,10 +714,12 @@ ID3D11RasterizerState* RenderContext::CreateRasterState()
 	desc.MultisampleEnable = FALSE;
 	desc.AntialiasedLineEnable = FALSE;
 
-	ID3D11RasterizerState* newRasterState;
-	m_device->CreateRasterizerState( &desc, &newRasterState );
+	if ( rasterState != &m_defaultRasterState )
+	{
+		DX_SAFE_RELEASE( *rasterState );
+	}
 
-	return newRasterState;
+	m_device->CreateRasterizerState( &desc, rasterState );
 }
 
 
@@ -841,6 +850,72 @@ void RenderContext::SetModelMatrix( const Mat44& modelMatrix )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::SetCullMode( eCullMode cullMode )
+{
+	if ( m_currentRasterState == nullptr )
+	{
+		SetRasterState( &m_currentRasterState, eFillMode::SOLID, cullMode, true );
+		return;
+	}
+
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	// Don't do anything if the raster state already matches the requested change
+	if ( ToDXCullMode( cullMode ) == desc.CullMode )
+	{
+		return;
+	}
+
+	SetRasterState( &m_currentRasterState, FromDXFillMode( desc.FillMode ), cullMode, desc.FrontCounterClockwise );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetFillMode( eFillMode fillMode )
+{
+	if ( m_currentRasterState == nullptr )
+	{
+		SetRasterState( &m_currentRasterState, fillMode, eCullMode::BACK, true );
+		return;
+	}
+
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	// Don't do anything if the raster state already matches the requested change
+	if ( ToDXFillMode( fillMode ) == desc.FillMode )
+	{
+		return;
+	}
+	
+	SetRasterState( &m_currentRasterState, fillMode, FromDXCullMode( desc.CullMode ), desc.FrontCounterClockwise );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetFrontFaceWindOrder( bool windCCW )
+{
+	if ( m_currentRasterState == nullptr )
+	{
+		SetRasterState( &m_currentRasterState, eFillMode::SOLID, eCullMode::BACK, windCCW );
+		return;
+	}
+
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	// Don't do anything if the raster state already matches the requested change
+	if ( (BOOL)windCCW == desc.FrontCounterClockwise )
+	{
+		return;
+	}
+
+	SetRasterState( &m_currentRasterState, FromDXFillMode( desc.FillMode ), FromDXCullMode( desc.CullMode ), windCCW );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::CycleSampler()
 {
 	if ( m_currentSampler == m_defaultPointSampler )
@@ -859,10 +934,59 @@ void RenderContext::CycleBlendMode()
 {
 	switch ( m_currentBlendMode )
 	{
-		case eBlendMode::ALPHA: m_currentBlendMode = eBlendMode::ADDITIVE; return;
-		case eBlendMode::ADDITIVE: m_currentBlendMode = eBlendMode::DISABLED; return;
-		case eBlendMode::DISABLED: m_currentBlendMode = eBlendMode::ALPHA; return;
+		case eBlendMode::ALPHA:		m_currentBlendMode = eBlendMode::ADDITIVE; return;
+		case eBlendMode::ADDITIVE:	m_currentBlendMode = eBlendMode::DISABLED; return;
+		case eBlendMode::DISABLED:	m_currentBlendMode = eBlendMode::ALPHA; return;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CycleCullMode()
+{
+	if ( m_currentRasterState == nullptr )
+	{
+		return;
+	}
+
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	switch ( FromDXCullMode( desc.CullMode ) )
+	{
+		case eCullMode::NONE:	SetCullMode( eCullMode::FRONT ); return;
+		case eCullMode::FRONT:	SetCullMode( eCullMode::BACK ); return;
+		case eCullMode::BACK:	SetCullMode( eCullMode::NONE ); return;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CycleFillMode()
+{
+	if ( m_currentRasterState == nullptr )
+	{
+		return;
+	}
+
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	switch ( FromDXFillMode( desc.FillMode ) )
+	{
+		case eFillMode::SOLID:		SetFillMode( eFillMode::WIREFRAME ); return;
+		case eFillMode::WIREFRAME:	SetFillMode( eFillMode::SOLID ); return;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CycleWindOrder()
+{
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	SetFrontFaceWindOrder( !desc.FrontCounterClockwise );
 }
 
 

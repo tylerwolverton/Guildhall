@@ -30,9 +30,9 @@ enum eBufferFormatType : uint;
 // The "WHAT" are we using it for
 enum eRenderBufferUsageBit : uint
 {
-	VERTEX_BUFFER_BIT = BIT_FLAG( 0 ),	// A02: can be used to store vertices
-	INDEX_BUFFER_BIT = BIT_FLAG( 1 ),  	// we will discuss this later
-	UNIFORM_BUFFER_BIT = BIT_FLAG( 2 ),	// A03: used to store constants
+	VERTEX_BUFFER_BIT = BIT_FLAG( 0 ),	
+	INDEX_BUFFER_BIT = BIT_FLAG( 1 ),  
+	UNIFORM_BUFFER_BIT = BIT_FLAG( 2 ),	
 };
 typedef uint eRenderBufferUsage;			// typedef helps to describe to reader when an entire bit field can be sent as opposed to a single bit
 
@@ -59,8 +59,26 @@ enum class eCompareFunc : uint
 	COMPARISON_LESS_EQUAL,
 	COMPARISON_ALWAYS,
 };
-
 D3D11_COMPARISON_FUNC ToDxComparisonFunc( eCompareFunc funcType );
+
+//-----------------------------------------------------------------------------------------------
+enum class eFillMode : uint
+{
+	WIREFRAME,
+	SOLID,
+};
+D3D11_FILL_MODE ToDXFillMode( eFillMode fillMode );
+eFillMode FromDXFillMode( D3D11_FILL_MODE fillMode );
+
+//-----------------------------------------------------------------------------------------------
+enum class eCullMode : uint
+{
+	NONE,
+	FRONT,
+	BACK,
+};
+D3D11_CULL_MODE ToDXCullMode( eCullMode cullMode );
+eCullMode FromDXCullMode( D3D11_CULL_MODE cullMode );
 
 //-----------------------------------------------------------------------------------------------
 static const char* DEFAULT_SHADER_FILENAME = "Data/Shaders/Default.hlsl";

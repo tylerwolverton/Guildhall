@@ -67,3 +67,57 @@ D3D11_COMPARISON_FUNC ToDxComparisonFunc( eCompareFunc funcType )
 
 	ERROR_AND_DIE( "Unknown compare func type" );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+D3D11_FILL_MODE ToDXFillMode( eFillMode fillMode )
+{
+	switch ( fillMode )
+	{
+		case eFillMode::WIREFRAME: return D3D11_FILL_WIREFRAME;
+		case eFillMode::SOLID: return D3D11_FILL_SOLID;
+	}
+
+	ERROR_AND_DIE( "Unsupported fill mode" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eFillMode FromDXFillMode( D3D11_FILL_MODE fillMode )
+{
+	switch ( fillMode )
+	{
+		case D3D11_FILL_WIREFRAME: return eFillMode::WIREFRAME;
+		case D3D11_FILL_SOLID: return eFillMode::SOLID;
+	}
+
+	ERROR_AND_DIE( "Unsupported fill mode" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+D3D11_CULL_MODE ToDXCullMode( eCullMode cullMode )
+{
+	switch ( cullMode )
+	{
+		case eCullMode::NONE: return D3D11_CULL_NONE;
+		case eCullMode::FRONT: return D3D11_CULL_FRONT;
+		case eCullMode::BACK: return D3D11_CULL_BACK;
+	}
+
+	ERROR_AND_DIE( "Unsupported cull mode" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eCullMode FromDXCullMode( D3D11_CULL_MODE cullMode )
+{
+	switch ( cullMode )
+	{
+		case D3D11_CULL_NONE: return eCullMode::NONE;
+		case D3D11_CULL_FRONT: return eCullMode::FRONT;
+		case D3D11_CULL_BACK: return  eCullMode::BACK;
+	}
+
+	ERROR_AND_DIE( "Unsupported cull mode" );
+}

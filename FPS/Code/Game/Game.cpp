@@ -272,6 +272,18 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleBlendMode();
 	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
+	{
+		g_renderer->CycleCullMode();
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
+	{
+		g_renderer->CycleFillMode();
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
+	{
+		g_renderer->CycleWindOrder();
+	}
 }
 
 

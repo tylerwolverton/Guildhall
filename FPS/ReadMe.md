@@ -3,13 +3,13 @@ Project: FPS
 ------
 
 ## Checklist [90%]
-- [ ] RenderContext
+- [x] RenderContext
     - [x] `RasterState` moved off shader, and added to `RenderContext`
-    - [ ] `RenderContext::SetCullMode`
-    - [ ] `RenderContext::SetFillMode`
-    - [ ] `RenderContext::SetFrontFaceWindOrder`
-    - [ ] Create a default raster state to set when `BeginCamera` is called.
-    - [ ] Have a transient raster state to create/set when above calls are used.
+    - [x] `RenderContext::SetCullMode`
+    - [x] `RenderContext::SetFillMode`
+    - [x] `RenderContext::SetFrontFaceWindOrder`
+    - [x] Create a default raster state to set when `BeginCamera` is called.
+    - [x] Have a transient raster state to create/set when above calls are used.
 
 - [ ] World Rendering
     - [ ] Points
