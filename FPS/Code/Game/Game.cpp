@@ -67,6 +67,7 @@ void Game::Startup()
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
@@ -119,29 +120,14 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
-	delete m_cubeMesh;
-	m_cubeMesh = nullptr;
-
-	delete m_planeMesh;
-	m_planeMesh = nullptr;
-
-	delete m_sphereMesh;
-	m_sphereMesh = nullptr;
-
-	delete m_world;
-	m_world = nullptr;
-
-	delete m_gameClock;
-	m_gameClock = nullptr;
-
-	delete m_rng;
-	m_rng = nullptr;
-	
-	delete m_debugInfoTextBox;
-	m_debugInfoTextBox = nullptr;
-	
-	delete m_worldCamera;
-	m_worldCamera = nullptr;
+	PTR_SAFE_DELETE( m_cubeMesh );
+	PTR_SAFE_DELETE( m_planeMesh );
+	PTR_SAFE_DELETE( m_sphereMesh );
+	PTR_SAFE_DELETE( m_world );
+	PTR_SAFE_DELETE( m_gameClock );
+	PTR_SAFE_DELETE( m_rng );
+	PTR_SAFE_DELETE( m_debugInfoTextBox );
+	PTR_SAFE_DELETE( m_worldCamera );
 }
 
 
@@ -188,8 +174,6 @@ void Game::Update()
 void Game::Render() const
 {
 	g_renderer->BeginCamera(*m_worldCamera );
-
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );

@@ -15,8 +15,8 @@ GPUMesh::GPUMesh( RenderContext* context )
 //-----------------------------------------------------------------------------------------------
 GPUMesh::~GPUMesh()
 {
-	delete m_vertices;
-	delete m_indices;
+	PTR_SAFE_DELETE( m_vertices );
+	PTR_SAFE_DELETE( m_indices );
 }
 
 

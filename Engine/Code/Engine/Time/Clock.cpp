@@ -1,4 +1,5 @@
 #include "Engine/Time/Clock.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Time/Time.hpp"
 
@@ -124,8 +125,7 @@ void Clock::MasterStartup()
 //-----------------------------------------------------------------------------------------------
 void Clock::MasterShutdown()
 {
-	delete s_masterClock;
-	s_masterClock = nullptr;
+	PTR_SAFE_DELETE( s_masterClock );
 }
 
 

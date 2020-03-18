@@ -20,8 +20,7 @@ SwapChain::~SwapChain()
 	m_owner = nullptr;
 	DX_SAFE_RELEASE( m_handle );
 
-	delete m_backbuffer;
-	m_backbuffer = nullptr;
+	PTR_SAFE_DELETE( m_backbuffer );
 }
 
 

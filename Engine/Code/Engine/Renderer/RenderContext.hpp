@@ -130,6 +130,9 @@ public:
 	void CycleBlendMode();
 
 private:
+	void InitializeSwapChain( Window* window );
+	void InitializeDefaultRenderObjects();
+
 	Texture* CreateTextureFromFile( const char* filePath );
 	Texture* RetrieveTextureFromCache( const char* filePath );
 

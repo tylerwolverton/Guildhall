@@ -85,26 +85,13 @@ void App::Shutdown()
 	g_eventSystem->Shutdown();
 	g_window->Close();
 
-	delete g_game;
-	g_game = nullptr;
-
-	delete g_devConsole;
-	g_devConsole = nullptr;
-
-	delete g_renderer;
-	g_renderer = nullptr;
-
-	delete g_audioSystem;
-	g_audioSystem = nullptr;
-
-	delete g_inputSystem;
-	g_inputSystem = nullptr;
-
-	delete g_eventSystem;
-	g_eventSystem = nullptr;
-
-	delete g_window;
-	g_window = nullptr;
+	PTR_SAFE_DELETE( g_game );
+	PTR_SAFE_DELETE( g_devConsole );
+	PTR_SAFE_DELETE( g_renderer );
+	PTR_SAFE_DELETE( g_audioSystem );
+	PTR_SAFE_DELETE( g_inputSystem );
+	PTR_SAFE_DELETE( g_eventSystem );
+	PTR_SAFE_DELETE( g_window );
 }
 
 

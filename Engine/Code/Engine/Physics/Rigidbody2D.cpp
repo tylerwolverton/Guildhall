@@ -44,13 +44,14 @@ void Rigidbody2D::Update( float deltaSeconds )
 	m_angularVelocity += angularAcceleration * deltaSeconds;
 	m_orientationRadians += m_angularVelocity * deltaSeconds;
 	
-	while ( m_orientationRadians > 2.f * 3.1459f )
+	const float twoPI = fPI * 2.f;
+	while ( m_orientationRadians > twoPI )
 	{
-		m_orientationRadians -= 2.f * 3.1459f;
+		m_orientationRadians -= twoPI;
 	}
 	while ( m_orientationRadians < 0.f )
 	{
-		m_orientationRadians += 2.f * 3.1459f;
+		m_orientationRadians += twoPI;
 	}
 
 	m_collider->UpdateWorldShape();

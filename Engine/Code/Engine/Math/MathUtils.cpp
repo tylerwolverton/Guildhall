@@ -1,4 +1,5 @@
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -14,14 +15,14 @@
 //-----------------------------------------------------------------------------------------------
 float ConvertDegreesToRadians( float angleDeg )
 {
-	return angleDeg / ( 180.f / 3.14159265f );
+	return angleDeg / ( 180.f / fPI );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 float ConvertRadiansToDegrees( float angleRad )
 {
-	return angleRad * ( 180.f / 3.14159265f );
+	return angleRad * ( 180.f / fPI );
 }
 
 

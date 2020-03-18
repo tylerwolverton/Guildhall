@@ -54,8 +54,5 @@ SpriteAnimSetDefinition::SpriteAnimSetDefinition( RenderContext& renderer, const
 //-----------------------------------------------------------------------------------------------
 SpriteAnimSetDefinition::~SpriteAnimSetDefinition()
 {
-	delete m_spriteSheet;
-	m_spriteSheet = nullptr;
-
-	// delete all map elements
+	PTR_SAFE_DELETE( m_spriteSheet );
 }

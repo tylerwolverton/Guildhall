@@ -4,7 +4,7 @@ Project: FPS
 
 ## Checklist [90%]
 - [ ] RenderContext
-    - [ ] `RasterState` moved off shader, and added to `RenderContext`
+    - [x] `RasterState` moved off shader, and added to `RenderContext`
     - [ ] `RenderContext::SetCullMode`
     - [ ] `RenderContext::SetFillMode`
     - [ ] `RenderContext::SetFrontFaceWindOrder`

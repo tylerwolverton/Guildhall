@@ -4,6 +4,7 @@
 #include <cassert>
 #include <crtdbg.h>
 
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/App.hpp"
 
@@ -24,8 +25,7 @@ int WINAPI WinMain( _In_ HINSTANCE applicationInstanceHandle, _In_opt_ HINSTANCE
 	}
 
 	g_app->Shutdown();
-	delete g_app;
-	g_app = nullptr;
+	PTR_SAFE_DELETE( g_app );
 	
 	return 0;
 }

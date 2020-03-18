@@ -401,8 +401,7 @@ void Physics2D::CleanupDestroyedObjects()
 	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_garbageRigidbodyIndexes.size(); ++rigidbodyIdx )
 	{
 		Rigidbody2D*& garbageRigidbody = m_rigidbodies[m_garbageRigidbodyIndexes[rigidbodyIdx]];
-		delete garbageRigidbody;
-		garbageRigidbody = nullptr;
+		PTR_SAFE_DELETE( garbageRigidbody );
 	}
 
 	m_garbageRigidbodyIndexes.clear();
@@ -411,8 +410,7 @@ void Physics2D::CleanupDestroyedObjects()
 	for ( int colliderIdx = 0; colliderIdx < (int)m_garbageColliderIndexes.size(); ++colliderIdx )
 	{
 		Collider2D*& garbageCollider = m_colliders[m_garbageColliderIndexes[colliderIdx]];
-		delete garbageCollider;
-		garbageCollider = nullptr;
+		PTR_SAFE_DELETE( garbageCollider );
 	}
 
 	m_garbageColliderIndexes.clear();
@@ -429,11 +427,8 @@ void Physics2D::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void Physics2D::Shutdown()
 {
-	delete m_stepTimer;
-	m_stepTimer = nullptr;
-
-	delete m_physicsClock;
-	m_physicsClock = nullptr;
+	PTR_SAFE_DELETE( m_stepTimer );
+	PTR_SAFE_DELETE( m_physicsClock );
 }
 
 

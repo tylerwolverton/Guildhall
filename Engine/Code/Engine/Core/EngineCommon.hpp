@@ -29,9 +29,14 @@ typedef NamedStrings EventArgs;
 typedef unsigned int uint;
 typedef unsigned char byte;
 
+
+//-----------------------------------------------------------------------------------------------
+// Macros
 //-----------------------------------------------------------------------------------------------
 #define UNUSED(x) (void)(x);
 #define BIT_FLAG(b) (1<<(b))
+#define PTR_SAFE_DELETE(ptr) if( ptr != nullptr ) { delete ptr; ptr = nullptr; }
+#define PTR_VECTOR_SAFE_DELETE(vector) for( int vectorIdx = 0; vectorIdx < (int)vector.size(); ++vectorIdx ) {	PTR_SAFE_DELETE( vector[vectorIdx] ); } vector.clear();
 
 
 //-----------------------------------------------------------------------------------------------
@@ -45,7 +50,10 @@ const Vec2 ALIGN_TOP_LEFT		= Vec2( 0.f, 1.f );
 const Vec2 ALIGN_TOP_CENTER		= Vec2( 0.5f, 1.f );
 const Vec2 ALIGN_TOP_RIGHT		= Vec2( 1.f, 1.f );
 
+
 extern const float fSQRT_3_OVER_3;
+extern const float fPI;
+
 
 //-----------------------------------------------------------------------------------------------
 enum eScreenEdgesBitField : unsigned int

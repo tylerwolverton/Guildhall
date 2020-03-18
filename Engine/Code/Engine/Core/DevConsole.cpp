@@ -80,14 +80,9 @@ void DevConsole::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Shutdown()
 {
-	delete m_devConsoleCamera;
-	m_devConsoleCamera = nullptr;
-
-	delete m_cursorBlinkTimer;
-	m_cursorBlinkTimer = nullptr;
-
-	delete m_clock;
-	m_clock = nullptr;
+	PTR_SAFE_DELETE( m_devConsoleCamera );
+	PTR_SAFE_DELETE( m_cursorBlinkTimer );
+	PTR_SAFE_DELETE( m_clock );
 
 	m_renderer = nullptr;
 

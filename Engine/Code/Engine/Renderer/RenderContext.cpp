@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------------------------
 // DX3D11 Includes
-
+//-----------------------------------------------------------------------------------------------
 #pragma comment( lib, "d3d11.lib" )         // needed a01
 #pragma comment( lib, "dxgi.lib" )          // needed a01
 #pragma comment( lib, "d3dcompiler.lib" )   // needed when we get to shaders
@@ -37,75 +37,8 @@
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Startup( Window* window )
 {
-	IDXGISwapChain* swapchain = nullptr;
-	
-	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
-	#if defined(RENDER_DEBUG)
-		flags |= D3D11_CREATE_DEVICE_DEBUG;
-		CreateDebugModule();
-	#endif
-
-	DXGI_SWAP_CHAIN_DESC swapchainDesc;
-	memset( &swapchainDesc, 0, sizeof( swapchainDesc ) );
-
-	// how many back buffers in our chain - we'll double buffer (one we show, one we draw to)
-	swapchainDesc.BufferCount = 2;
-	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // on swap, the old buffer is discarded
-	swapchainDesc.Flags = 0; // additional flags - see docs.  Used in special cases like for video buffers
-
-	// how swap chain is to be used
-	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_BACK_BUFFER;
-	HWND hwnd = (HWND)window->m_hwnd;
-	swapchainDesc.OutputWindow = hwnd;		// HWND for the window to be used
-	swapchainDesc.SampleDesc.Count = 1;		// how many samples per pixel (1 so no MSAA)
-											// note, if we're doing MSAA, we'll do it on a secondary target
-
-	// describe the buffer
-	swapchainDesc.Windowed = TRUE;                                    // windowed/full-screen mode
-	swapchainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color RGBA8 color
-	swapchainDesc.BufferDesc.Width = window->GetClientWidth();
-	swapchainDesc.BufferDesc.Height = window->GetClientHeight();
-
-	HRESULT result = D3D11CreateDeviceAndSwapChain( nullptr,
-								   D3D_DRIVER_TYPE_HARDWARE,
-								   nullptr,
-								   flags, // controls the type of device we make
-								   nullptr,
-								   0,
-								   D3D11_SDK_VERSION,
-								   &swapchainDesc,
-								   &swapchain,
-								   &m_device,
-								   nullptr,
-								   &m_context );
-
-	GUARANTEE_OR_DIE( SUCCEEDED( result ), "Failed to create rendering device." );
-
-	if ( swapchain != nullptr ) 
-	{
-		m_swapchain = new SwapChain( this, swapchain );
-	}
-
-	// Create default shader
-	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
-
-	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
-	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
-	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-
-	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
-	m_defaultLinearSampler = new Sampler( this, SAMPLER_BILINEAR );
-	m_currentSampler = m_defaultPointSampler;
-
-	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
-
-	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
-	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
-
-	CreateBlendStates();
-
-	m_defaultRasterState = m_currentRasterState = CreateRasterState();
+	InitializeSwapChain( window );
+	InitializeDefaultRenderObjects();
 }
 
 
@@ -137,43 +70,19 @@ void RenderContext::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Shutdown()
 {
-	delete m_immediateVBO;
-	delete m_immediateIBO;
-	delete m_frameUBO;
-	delete m_modelMatrixUBO;
+	PTR_SAFE_DELETE( m_immediateVBO );
+	PTR_SAFE_DELETE( m_immediateIBO );
+	PTR_SAFE_DELETE( m_frameUBO );
+	PTR_SAFE_DELETE( m_modelMatrixUBO );
 
-	delete m_defaultPointSampler;
-	m_defaultPointSampler = nullptr;
-
-	delete m_defaultLinearSampler;
-	m_defaultLinearSampler = nullptr;
+	PTR_SAFE_DELETE( m_defaultPointSampler );
+	PTR_SAFE_DELETE( m_defaultLinearSampler );
 	
-	// Cleanup shader cache
-	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
-	{
-		delete m_loadedShaders[shaderIdx];
-		m_loadedShaders[shaderIdx] = nullptr;
-	}
-	m_loadedShaders.clear();
+	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
+	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
+	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
 
-	// Cleanup bitmap font cache
-	for ( int fontIndex = 0; fontIndex < (int)m_loadedBitmapFonts.size(); ++fontIndex )
-	{
-		delete m_loadedBitmapFonts[fontIndex];
-		m_loadedBitmapFonts[fontIndex] = nullptr;
-	}
-	m_loadedBitmapFonts.clear();
-
-	// Cleanup texture cache
-	for ( int textureIndex = 0; textureIndex < (int)m_loadedTextures.size(); ++textureIndex )
-	{
-		delete m_loadedTextures[textureIndex];
-		m_loadedTextures[textureIndex] = nullptr;
-	}
-	m_loadedTextures.clear();
-
-	delete m_swapchain;
-	m_swapchain = nullptr;
+	PTR_SAFE_DELETE( m_swapchain );
 
 	DX_SAFE_RELEASE( m_defaultRasterState );
 	DX_SAFE_RELEASE( m_alphaBlendState );
@@ -544,6 +453,90 @@ Texture* RenderContext::CreateOrGetTextureFromFile( const char* filePath )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::InitializeSwapChain( Window* window )
+{
+	IDXGISwapChain* swapchain = nullptr;
+
+	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+	#if defined(RENDER_DEBUG)
+		flags |= D3D11_CREATE_DEVICE_DEBUG;
+		CreateDebugModule();
+	#endif
+
+	DXGI_SWAP_CHAIN_DESC swapchainDesc;
+	memset( &swapchainDesc, 0, sizeof( swapchainDesc ) );
+
+	// how many back buffers in our chain - we'll double buffer (one we show, one we draw to)
+	swapchainDesc.BufferCount = 2;
+	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // on swap, the old buffer is discarded
+	swapchainDesc.Flags = 0; // additional flags - see docs.  Used in special cases like for video buffers
+
+	// how swap chain is to be used
+	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_BACK_BUFFER;
+	HWND hwnd = (HWND)window->m_hwnd;
+	swapchainDesc.OutputWindow = hwnd;		// HWND for the window to be used
+	swapchainDesc.SampleDesc.Count = 1;		// how many samples per pixel (1 so no MSAA)
+											// note, if we're doing MSAA, we'll do it on a secondary target
+
+	// describe the buffer
+	swapchainDesc.Windowed = TRUE;                                    // windowed/full-screen mode
+	swapchainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color RGBA8 color
+	swapchainDesc.BufferDesc.Width = window->GetClientWidth();
+	swapchainDesc.BufferDesc.Height = window->GetClientHeight();
+
+	HRESULT result = D3D11CreateDeviceAndSwapChain( nullptr,
+													D3D_DRIVER_TYPE_HARDWARE,
+													nullptr,
+													flags, // controls the type of device we make
+													nullptr,
+													0,
+													D3D11_SDK_VERSION,
+													&swapchainDesc,
+													&swapchain,
+													&m_device,
+													nullptr,
+													&m_context );
+
+	GUARANTEE_OR_DIE( SUCCEEDED( result ), "Failed to create rendering device." );
+
+	if ( swapchain != nullptr )
+	{
+		m_swapchain = new SwapChain( this, swapchain );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::InitializeDefaultRenderObjects()
+{
+	// Create default shader
+	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
+
+	// Create default buffers
+	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
+	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
+	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+
+	// Create default samplers
+	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
+	m_defaultLinearSampler = new Sampler( this, SAMPLER_BILINEAR );
+	m_currentSampler = m_defaultPointSampler;
+
+	// Create a white texture to use when no texture is needed
+	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
+
+	// Create a depth buffer and initialize it to draw pixels using painter's algorithm
+	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
+	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
+
+	m_defaultRasterState = m_currentRasterState = CreateRasterState();
+
+	CreateBlendStates();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 {
 	int imageTexelSizeX = 0; // This will be filled in for us to indicate image width
@@ -673,7 +666,7 @@ void RenderContext::CreateBlendStates()
 
 
 //-----------------------------------------------------------------------------------------------
-ID3D11RasterizerState* RenderContext::CreateRasterState( )
+ID3D11RasterizerState* RenderContext::CreateRasterState()
 {
 	D3D11_RASTERIZER_DESC desc;
 

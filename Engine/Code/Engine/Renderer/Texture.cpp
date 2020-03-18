@@ -30,14 +30,9 @@ Texture::~Texture()
 	m_owner = nullptr;
 	DX_SAFE_RELEASE( m_handle );
 
-	delete m_renderTargetView;
-	m_renderTargetView = nullptr;
-
-	delete m_shaderResourceView;
-	m_shaderResourceView = nullptr;
-
-	delete m_depthStencilView;
-	m_depthStencilView = nullptr;
+	PTR_SAFE_DELETE( m_renderTargetView );
+	PTR_SAFE_DELETE( m_shaderResourceView );
+	PTR_SAFE_DELETE( m_depthStencilView );
 }
 
 
