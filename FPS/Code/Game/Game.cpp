@@ -278,8 +278,8 @@ void Game::UpdateFromKeyboard()
 //-----------------------------------------------------------------------------------------------
 void Game::LoadNewMap( const std::string& mapName )
 {
-	delete m_world;
-	m_world = nullptr;
+	PTR_SAFE_DELETE( m_world );
+
 	m_world = new World();
 	m_world->BuildNewMap( mapName );
 }

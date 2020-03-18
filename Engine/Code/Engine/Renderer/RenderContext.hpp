@@ -132,6 +132,11 @@ public:
 private:
 	void InitializeSwapChain( Window* window );
 	void InitializeDefaultRenderObjects();
+	void InitializeViewport( const IntVec2& outputSize );
+	void UpdateAndBindBuffers( Camera& camera );
+	void SetupRenderTargetViewWithDepth( ID3D11RenderTargetView* renderTargetView, const Camera& camera );
+	void ClearCamera( ID3D11RenderTargetView* renderTargetView, const Camera& camera );
+	void ResetRenderObjects();
 
 	Texture* CreateTextureFromFile( const char* filePath );
 	Texture* RetrieveTextureFromCache( const char* filePath );

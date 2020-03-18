@@ -166,69 +166,17 @@ void RenderContext::BeginCamera( Camera& camera )
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
 
-
-	if ( camera.m_cameraUBO == nullptr )
-	{
-		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	}
-	
-	camera.UpdateCameraUBO();
-	SetModelMatrix( Mat44() );
-
-	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
-	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
-	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
-
-	// Viewport creation
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
 
-	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
-	TextureView* depthView = nullptr;
-	if ( depthStencilTarget != nullptr )
-	{
-		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
-	}
-
-	ID3D11DepthStencilView* depthStencilView = nullptr;
-	if ( depthView != nullptr )
-	{
-		depthStencilView = depthView->m_depthStencilView;
-	}
-
-	m_context->OMSetRenderTargets( 1, &renderTargetView, depthStencilView );
-
-	IntVec2 outputSize = colorTarget->GetTexelSize();
-
-	D3D11_VIEWPORT viewport;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = (float)outputSize.x;
-	viewport.Height = (float)outputSize.y;
-	viewport.MinDepth = 0.f;
-	viewport.MaxDepth = 1.f;
-
-	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-	m_context->RSSetViewports( 1, &viewport );
-		
-	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
-	{
-		ClearScreen( renderTargetView, camera.GetClearColor() );
-	}
+	UpdateAndBindBuffers( camera );
+	SetupRenderTargetViewWithDepth( renderTargetView, camera );
+	InitializeViewport( colorTarget->GetTexelSize() );
 	
-	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT 
-		 && camera.GetDepthStencilTarget() != nullptr )
-	{
-		ClearDepth( camera.GetDepthStencilTarget(), camera.GetClearDepth() );
-	}
+	ClearCamera( renderTargetView, camera );
+	ResetRenderObjects();
 
-	// Reset
-	BindShader( (Shader*)nullptr );
-	BindTexture( nullptr );
-	BindSampler( nullptr );
-	m_lastVBOHandle = nullptr;
-	m_lastIBOHandle = nullptr;
-
+	SetModelMatrix( Mat44() );
 	SetBlendMode( m_currentBlendMode );
 }
 
@@ -533,6 +481,84 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultRasterState = m_currentRasterState = CreateRasterState();
 
 	CreateBlendStates();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::InitializeViewport( const IntVec2& outputSize )
+{
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)outputSize.x;
+	viewport.Height = (float)outputSize.y;
+	viewport.MinDepth = 0.f;
+	viewport.MaxDepth = 1.f;
+
+	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+	m_context->RSSetViewports( 1, &viewport );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::UpdateAndBindBuffers( Camera& camera )
+{
+	if ( camera.m_cameraUBO == nullptr )
+	{
+		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	}
+	camera.UpdateCameraUBO();
+
+	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
+	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
+	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetupRenderTargetViewWithDepth( ID3D11RenderTargetView* renderTargetView, const Camera& camera )
+{
+	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
+	TextureView* depthView = nullptr;
+	if ( depthStencilTarget != nullptr )
+	{
+		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
+	}
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	if ( depthView != nullptr )
+	{
+		depthStencilView = depthView->m_depthStencilView;
+	}
+
+	m_context->OMSetRenderTargets( 1, &renderTargetView, depthStencilView );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const Camera& camera )
+{
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
+	{
+		ClearScreen( renderTargetView, camera.GetClearColor() );
+	}
+
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT
+		 && camera.GetDepthStencilTarget() != nullptr )
+	{
+		ClearDepth( camera.GetDepthStencilTarget(), camera.GetClearDepth() );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ResetRenderObjects()
+{
+	BindShader( ( Shader* )nullptr );
+	BindTexture( nullptr );
+	BindSampler( nullptr );
+	m_lastVBOHandle = nullptr;
+	m_lastIBOHandle = nullptr;
 }
 
 
