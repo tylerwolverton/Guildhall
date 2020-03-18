@@ -33,7 +33,7 @@
 #include "Game/ActorDefinition.hpp"
 
 
-static float s_mouseSensitivityMultiplier = 1.f;
+static float s_mouseSensitivityMultiplier = 20.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -291,7 +291,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'Q' ) )
 	{
-		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .1f, Rgba8::BLUE, Rgba8::RED, 3.f );
+		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 3.f );
 	}
 }
 

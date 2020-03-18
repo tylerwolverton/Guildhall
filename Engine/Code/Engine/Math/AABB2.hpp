@@ -33,9 +33,9 @@ public:
 
 	// Size and Center
 	Vec2		GetCenter() const;
-	void		SetCenter( Vec2 point );
+	void		SetCenter( const Vec2& point );
 	Vec2		GetDimensions() const;
-	void		SetDimensions( Vec2 dimensions );
+	void		SetDimensions( const Vec2& dimensions );
 	void		FitWithinBounds( const AABB2& boundingBox );
 
 	// Geometric Queries

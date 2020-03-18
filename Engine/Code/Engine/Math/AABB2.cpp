@@ -376,7 +376,7 @@ Vec2 AABB2::GetNearestPoint( const Vec2& point ) const
 
 
 //-----------------------------------------------------------------------------------------------
-void AABB2::SetCenter( Vec2 point )
+void AABB2::SetCenter( const Vec2& point )
 {
 	Vec2 halfDiagonal = ( maxs - mins ) * .5f;
 
@@ -386,7 +386,7 @@ void AABB2::SetCenter( Vec2 point )
 
 
 //-----------------------------------------------------------------------------------------------
-void AABB2::SetDimensions( Vec2 dimensions )
+void AABB2::SetDimensions( const Vec2& dimensions )
 {
 	Vec2 center( GetCenter() );
 	mins = center - ( dimensions * .5f );

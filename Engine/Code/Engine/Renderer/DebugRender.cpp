@@ -1,12 +1,15 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Timer.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Static variables
@@ -14,7 +17,6 @@
 class DebugRenderObject;
 
 static RenderContext* s_debugRenderContext = nullptr;
-static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
 static std::vector<DebugRenderObject*> s_debugRenderObjects;
 
@@ -26,7 +28,7 @@ class DebugRenderObject
 {
 public:
 	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f );
-	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<int>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f );
+	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f );
 	
 	bool IsReadyToBeCulled() const;
 
@@ -34,7 +36,7 @@ public:
 
 public:
 	std::vector<Vertex_PCU> m_vertices;
-	std::vector<int> m_indices;
+	std::vector<uint> m_indices;
 	float m_duration = 0.f;
 	Rgba8 m_startColor = Rgba8::MAGENTA;
 	Rgba8 m_endColor = Rgba8::BLACK;
@@ -61,7 +63,7 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 
 //-----------------------------------------------------------------------------------------------
-DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<int>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration )
+DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration )
 	: m_vertices( vertices )
 	, m_indices( indices )
 	, m_startColor( startColor )
@@ -80,7 +82,7 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 
 //-----------------------------------------------------------------------------------------------
-static void AppendDebugObjectToVertexArray( std::vector<Vertex_PCU>& vertices, std::vector<int>& indices, DebugRenderObject* obj )
+static void AppendDebugObjectToVertexArray( std::vector<Vertex_PCU>& vertices, std::vector<uint>& indices, DebugRenderObject* obj )
 {
 	// Update color based on age
 	std::vector<Vertex_PCU> objVerts = obj->GetVertices();
@@ -92,6 +94,8 @@ static void AppendDebugObjectToVertexArray( std::vector<Vertex_PCU>& vertices, s
 
 		vertices.push_back( vertex );
 	}
+
+	indices.insert( indices.end(), obj->m_indices.begin(), obj->m_indices.end() );
 }
 
 
@@ -135,7 +139,7 @@ void DisableDebugRendering()
 //-----------------------------------------------------------------------------------------------
 void ClearDebugRendering()
 {
-	s_debugRenderObjects.clear();
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderObjects );
 }
 
 
@@ -148,11 +152,9 @@ void DebugRenderBeginFrame()
 //-----------------------------------------------------------------------------------------------
 void DebugRenderWorldToCamera( Camera* camera )
 {
-	// should I clear?
 	camera->SetClearMode( CLEAR_NONE );
 
-	std::vector<Vertex_PCU> vertices;
-	std::vector<int> indices;
+	
 
 	s_debugRenderContext->BeginCamera( *camera );
 
@@ -161,14 +163,20 @@ void DebugRenderWorldToCamera( Camera* camera )
 		DebugRenderObject*& obj = s_debugRenderObjects[debugObjIdx];
 		if ( obj != nullptr )
 		{
+			std::vector<Vertex_PCU> vertices;
+			std::vector<uint> indices;
+
 			AppendDebugObjectToVertexArray( vertices, indices, obj );
+
+			GPUMesh mesh( s_debugRenderContext, vertices, indices );
+			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
 	
-	if ( vertices.size() > 0 )
-	{
-		s_debugRenderContext->DrawVertexArray( vertices );
-	}
+	//if ( vertices.size() > 0 )
+	//{
+	//	s_debugRenderContext->DrawVertexArray( vertices );
+	//}
 
 	s_debugRenderContext->EndCamera( *camera );
 }
@@ -199,15 +207,22 @@ void DebugRenderEndFrame()
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
 {
+	if ( !s_isDebugRenderEnabled )
+	{
+		return;
+	}
+
 	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
 
-	AABB2 pointBounds;
-	pointBounds.SetCenter( pos.XY() );
-	pointBounds.SetDimensions( Vec2( size, size ) );
+	AABB3 pointBounds( Vec3::ZERO, Vec3( size, size, size ) );
+	pointBounds.SetCenter( pos );
 
-	AppendVertsForAABB2DWithDepth( vertices, pointBounds, pos.z, start_color );
+	AppendVertsForAABB3D( vertices, pointBounds, start_color );
+	
+	AppendIndicesForCubeMesh( indices );
 
-	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 	
 	// Update to find next open slot?
 	s_debugRenderObjects.push_back( obj );
