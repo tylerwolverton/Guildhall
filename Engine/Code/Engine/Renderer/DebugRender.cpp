@@ -1,5 +1,6 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
@@ -31,7 +32,7 @@ public:
 
 	std::vector<Vertex_PCU> GetVertices() const { return m_vertices; }
 
-private:
+public:
 	std::vector<Vertex_PCU> m_vertices;
 	std::vector<int> m_indices;
 	float m_duration = 0.f;
@@ -85,7 +86,11 @@ static void AppendDebugObjectToVertexArray( std::vector<Vertex_PCU>& vertices, s
 	std::vector<Vertex_PCU> objVerts = obj->GetVertices();
 	for ( int vertIdx = 0; vertIdx < (int)objVerts.size(); ++vertIdx )
 	{
-		vertices.push_back( objVerts[vertIdx] );
+		Vertex_PCU vertex = objVerts[vertIdx];
+
+		vertex.m_color = InterpolateColor( obj->m_startColor, obj->m_endColor, obj->m_timer.GetElapsedSeconds() / obj->m_duration );
+
+		vertices.push_back( vertex );
 	}
 }
 

@@ -291,7 +291,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'Q' ) )
 	{
-		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .1f, Rgba8::BLUE, Rgba8::RED, 10.f );
+		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .1f, Rgba8::BLUE, Rgba8::RED, 3.f );
 	}
 }
 

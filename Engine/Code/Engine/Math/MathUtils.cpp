@@ -1,5 +1,6 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -231,6 +232,26 @@ bool DoSpheresOverlap( const Vec3& center1, float radius1, const Vec3& center2, 
 float Interpolate( float a, float b, float fractionOfB )
 {
 	return a + fractionOfB * ( b - a );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+unsigned char Interpolate( unsigned char a, unsigned char b, float fractionOfB )
+{
+	return a + fractionOfB * ( b - a );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Rgba8 InterpolateColor( const Rgba8& a, const Rgba8& b, float fractionOfB )
+{
+	// Don't quite get all the way to max to avoid wrapping color around
+	Rgba8 lerpedColor;
+	lerpedColor.r = Interpolate( a.r, b.r, fractionOfB - .01f );
+	lerpedColor.g = Interpolate( a.g, b.g, fractionOfB - .01f );
+	lerpedColor.b = Interpolate( a.b, b.b, fractionOfB - .01f );
+
+	return lerpedColor;
 }
 
 
