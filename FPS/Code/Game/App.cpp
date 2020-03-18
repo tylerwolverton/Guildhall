@@ -13,6 +13,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Engine/Time/Clock.hpp"
@@ -62,7 +63,8 @@ void App::Startup()
 
 	g_audioSystem->Startup();
 	g_renderer->Startup( g_window );
-
+	DebugRenderSystemStartup( g_renderer );
+	
 	g_devConsole->Startup();
 	g_devConsole->SetInputSystem( g_inputSystem );
 	g_devConsole->SetRenderer( g_renderer );
@@ -79,6 +81,7 @@ void App::Shutdown()
 {
 	g_game->Shutdown();
 	g_devConsole->Shutdown();
+	DebugRenderSystemShutdown();
 	g_renderer->Shutdown();
 	g_audioSystem->Shutdown();
 	g_inputSystem->Shutdown();
@@ -172,6 +175,7 @@ void App::BeginFrame()
 	g_inputSystem->BeginFrame();
 	g_audioSystem->BeginFrame();
 	g_renderer->BeginFrame();
+	DebugRenderBeginFrame();
 }
 
 
@@ -224,6 +228,7 @@ void App::Render() const
 //-----------------------------------------------------------------------------------------------
 void App::EndFrame()
 {
+	DebugRenderEndFrame();
 	g_renderer->EndFrame();
 	g_audioSystem->EndFrame();
 	g_inputSystem->EndFrame();

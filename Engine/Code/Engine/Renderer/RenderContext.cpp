@@ -84,8 +84,12 @@ void RenderContext::Shutdown()
 
 	PTR_SAFE_DELETE( m_swapchain );
 
+	if ( m_currentRasterState != m_defaultRasterState )
+	{
+		DX_SAFE_RELEASE( m_currentRasterState );
+	}
+
 	DX_SAFE_RELEASE( m_defaultRasterState );
-	DX_SAFE_RELEASE( m_currentRasterState );
 	DX_SAFE_RELEASE( m_alphaBlendState );
 	DX_SAFE_RELEASE( m_additiveBlendState );
 	DX_SAFE_RELEASE( m_disabledBlendState );

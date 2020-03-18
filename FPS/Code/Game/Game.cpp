@@ -12,6 +12,7 @@
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
@@ -68,6 +69,8 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+
+	EnableDebugRendering();
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
@@ -173,7 +176,7 @@ void Game::Update()
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	g_renderer->BeginCamera(*m_worldCamera );
+	g_renderer->BeginCamera( *m_worldCamera );
 
 	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->BindTexture( texture );
@@ -197,6 +200,8 @@ void Game::Render() const
 	}
 
 	g_renderer->EndCamera( *m_worldCamera );
+
+	DebugRenderWorldToCamera( m_worldCamera );
 }
 
 
@@ -283,6 +288,10 @@ void Game::UpdateFromKeyboard()
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
 	{
 		g_renderer->CycleWindOrder();
+	}
+	if ( g_inputSystem->WasKeyJustPressed( 'Q' ) )
+	{
+		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .1f, Rgba8::BLUE, Rgba8::RED, 10.f );
 	}
 }
 

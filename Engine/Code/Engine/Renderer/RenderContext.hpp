@@ -103,6 +103,7 @@ public:
 	
 	Texture* GetFrameColorTarget();
 	IntVec2 GetDefaultBackBufferSize();
+	Clock* GetClock()																					{ return m_gameClock; }
 
 	// Binding Inputs
 	void BindVertexBuffer( VertexBuffer* vbo );

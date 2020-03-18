@@ -9,6 +9,7 @@ struct AABB2;
 class Clock;
 class Camera;
 class Texture;
+class RenderContext;
 
 
 /************************************************************************/
@@ -35,7 +36,7 @@ enum eDebugRenderMode
 //  System
 //------------------------------------------------------------------------
 // setup
-void DebugRenderSystemStartup( Clock* clock );    // may be used to allocate resources to the system
+void DebugRenderSystemStartup( RenderContext* context );    // may be used to allocate resources to the system
 void DebugRenderSystemShutdown();   // cleans up the system to prevent leaks.
 
 // control
@@ -45,7 +46,7 @@ void ClearDebugRendering();
 
 // output
 void DebugRenderBeginFrame();                   // Does nothing, here for completeness.
-void DebugRenderWorldToCamera( Camera* cam );   // Draws all world objects to this camera 
+void DebugRenderWorldToCamera( Camera* camera );   // Draws all world objects to this camera 
 void DebugRenderScreenTo( Texture* output );    // Draws all screen objects onto this texture (screen coordinate system is up to you.  I like a 1080p default)
 void DebugRenderEndFrame();                     // Clean up dead objects
 
