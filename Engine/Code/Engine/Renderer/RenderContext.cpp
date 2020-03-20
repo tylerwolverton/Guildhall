@@ -791,11 +791,11 @@ Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.SampleDesc.Count = 1;						// MSAA
 	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_IMMUTABLE;				// if we do mip chains this needs to be GPU/DEFAULT; as of now the texture will never change
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;	// | RENDER_TAGET later
+	desc.Usage = D3D11_USAGE_DEFAULT;				// if we do mip chains this needs to be GPU/DEFAULT; as of now the texture will never change
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
-
+	
 	D3D11_SUBRESOURCE_DATA initialData;
 	initialData.pSysMem = &color;
 	initialData.SysMemPitch = sizeof( Rgba8 );
@@ -805,6 +805,46 @@ Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 	ID3D11Texture2D* texHandle = nullptr;
 	m_device->CreateTexture2D( &desc, &initialData, &texHandle );
 	
+	Texture* newTexture = new Texture( this, texHandle );
+	m_loadedTextures.push_back( newTexture );
+
+	return newTexture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::CreateTexture( const IntVec2& dimensions )
+{
+	int imageTexelSizeX = dimensions.x;
+	int imageTexelSizeY = dimensions.y;
+
+	// Describe the texture
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = imageTexelSizeX;
+	desc.Height = imageTexelSizeY;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;						// MSAA
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;				// if we do mip chains this needs to be GPU/DEFAULT; as of now the texture will never change
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	std::vector<byte> data;
+	int size = imageTexelSizeX * imageTexelSizeY * sizeof( Rgba8 );
+	data.resize( size );
+
+	D3D11_SUBRESOURCE_DATA initialData;
+	initialData.pSysMem = &data[0];
+	initialData.SysMemPitch = sizeof( Rgba8 ) * imageTexelSizeX;
+	initialData.SysMemSlicePitch = 0;
+
+	// DirectX creation
+	ID3D11Texture2D* texHandle = nullptr;
+	m_device->CreateTexture2D( &desc, &initialData, &texHandle );
+
 	Texture* newTexture = new Texture( this, texHandle );
 	m_loadedTextures.push_back( newTexture );
 

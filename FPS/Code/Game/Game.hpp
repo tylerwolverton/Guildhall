@@ -16,6 +16,7 @@ class RandomNumberGenerator;
 class Camera;
 class World;
 class TextBox;
+class Texture;
 class GPUMesh;
 
 
@@ -76,6 +77,8 @@ private:
 	float m_screenShakeIntensity = 0.f;
 
 	Camera* m_worldCamera = nullptr;
+	Camera* m_uiCamera = nullptr;
+	Texture* m_screenTexture;
 
 	World* m_world = nullptr;
 	std::string m_curMap;

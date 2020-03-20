@@ -238,7 +238,7 @@ float Interpolate( float a, float b, float fractionOfB )
 //-----------------------------------------------------------------------------------------------
 unsigned char Interpolate( unsigned char a, unsigned char b, float fractionOfB )
 {
-	return a + fractionOfB * ( b - a );
+	return a + (unsigned char)( fractionOfB * ( b - a ) );
 }
 
 
@@ -250,6 +250,7 @@ Rgba8 InterpolateColor( const Rgba8& a, const Rgba8& b, float fractionOfB )
 	lerpedColor.r = Interpolate( a.r, b.r, fractionOfB - .01f );
 	lerpedColor.g = Interpolate( a.g, b.g, fractionOfB - .01f );
 	lerpedColor.b = Interpolate( a.b, b.b, fractionOfB - .01f );
+	//lerpedColor.a = Interpolate( a.a, b.a, fractionOfB - .01f );
 
 	return lerpedColor;
 }
@@ -898,6 +899,19 @@ const Vec2 GetProjectedOnto2D( const Vec2& a, const Vec2& onto )
 float GetAngleDegreesBetweenVectors2D( const Vec2& a, const Vec2& b )
 {
 	return fabsf( GetShortestAngularDisplacementDegrees( a.GetOrientationDegrees(), b.GetOrientationDegrees() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 CrossProduct3D( const Vec3& a, const Vec3& b )
+{
+	Vec3 crossProduct;
+
+	crossProduct.x = ( a.y * b.z ) - ( b.y * a.z );
+	crossProduct.y = -( ( a.x * b.z ) - ( b.x * a.z ) );
+	crossProduct.z = ( a.y * b.x ) - ( b.y * a.x );
+
+	return crossProduct;
 }
 
 

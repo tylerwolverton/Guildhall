@@ -209,6 +209,40 @@ float Vec3::GetOrientationAboutZRadians() const
 
 
 //-----------------------------------------------------------------------------------------------
+const Vec3 Vec3::GetNormalized() const
+{
+	float magnitude = GetLength();
+
+	// If the length is 0 this is the zero vector
+	if ( magnitude == 0 )
+	{
+		return Vec3::ZERO;
+	}
+
+	float inverseMag = 1.f / magnitude;
+	return Vec3( x * inverseMag, y * inverseMag, z * inverseMag );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Vec3::Normalize()
+{
+	float magnitude = GetLength();
+
+	// If the length is 0 this is the zero vector, so leave as it is
+	if ( magnitude == 0 )
+	{
+		return;
+	}
+
+	float inverseMag = 1.f / magnitude;
+	x *= inverseMag;
+	y *= inverseMag;
+	z *= inverseMag;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Vec3 Vec3::GetRotatedAboutZDegrees( float angleDeg ) const
 {
 	float radius = GetLengthXY();

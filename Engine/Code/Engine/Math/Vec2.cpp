@@ -396,8 +396,7 @@ void Vec2::Normalize()
 	{
 		return;
 	}
-
-
+	
 	float inverseMag = 1.f / magnitude;
 	x *= inverseMag;
 	y *= inverseMag;

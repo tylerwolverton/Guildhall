@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/EngineCommon.hpp"
@@ -121,6 +122,7 @@ public:
 	Shader* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	Texture* CreateTextureFromColor( const Rgba8& color );
+	Texture* CreateTexture( const IntVec2& dimensions );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
 

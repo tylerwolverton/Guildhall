@@ -58,13 +58,13 @@ void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, 
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldPoint( const Vec3& pos, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
-//// lines
-//void DebugAddWorldLine( vec3 p0, rgba p0_start_color, rgba p0_end_color,
-//						vec3 p1, rgba p1_start_color, rgba p1_end_color,
-//						float duration,
-//						eDebugRenderMode mode );
-//void DebugAddWorldLine( vec3 start, vec3 end, rgba color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//
+// lines
+void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8& p0_end_color,
+						const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color,
+						float duration,
+						eDebugRenderMode mode );
+void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
 //// line strip [extra]
 //void DebugAddWorldLineStrip( uint count, vec3 const* positions,
 //							 rgba start_p0_color, rgba start_pf_color,    // color of first/end point at the beginning of duration

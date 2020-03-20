@@ -41,21 +41,25 @@ public:
 	void		operator=( const Vec3& copyFrom );				// vec3 = vec3
 	
 	// Length 
-	float GetLength() const;
-	float GetLengthXY() const;
-	float GetLengthSquared() const;
-	float GetLengthXYSquared() const;
+	float		GetLength() const;
+	float		GetLengthXY() const;
+	float		GetLengthSquared() const;
+	float		GetLengthXYSquared() const;
 	
 	// Angle
-	float GetOrientationAboutZDegrees() const;
-	float GetOrientationAboutZRadians() const;
+	float		GetOrientationAboutZDegrees() const;
+	float		GetOrientationAboutZRadians() const;
+
+	// Normalization
+	const Vec3	GetNormalized() const;
+	void		Normalize();
 
 	// Rotation (return new vectors with const functions)
-	Vec3  GetRotatedAboutZDegrees( float angleDeg ) const;
-	Vec3  GetRotatedAboutZRadians( float angleRad ) const;
+	Vec3		GetRotatedAboutZDegrees( float angleDeg ) const;
+	Vec3		GetRotatedAboutZRadians( float angleRad ) const;
 
 	// Accessors
-	Vec2 XY() const;
+	Vec2		XY() const;
 
 	// Standalone "friend" functions that are conceptually, but not actually, part of Vec3::
 	friend const Vec3 operator*( float uniformScale, const Vec3& vecToScale );	// float * vec3

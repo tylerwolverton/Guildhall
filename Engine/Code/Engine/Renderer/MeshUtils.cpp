@@ -7,6 +7,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB2.hpp"
+#include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -256,54 +257,21 @@ void AppendVertsForAABB3D( std::vector<Vertex_PCU>& vertexArray, const AABB3& bo
 	Vec3 mins = bounds.mins;
 	Vec3 maxs = bounds.maxs;
 	
+	std::vector<Vec3> corners;
+
 	// Front 4 points
-	Vec3 vert0( mins );
-	Vec3 vert1( maxs.x, mins.y, mins.z );
-	Vec3 vert2( mins.x, maxs.y, mins.z );
-	Vec3 vert3( maxs.x, maxs.y, mins.z );
+	corners.emplace_back( mins );
+	corners.emplace_back( maxs.x, mins.y, mins.z );
+	corners.emplace_back( mins.x, maxs.y, mins.z );
+	corners.emplace_back( maxs.x, maxs.y, mins.z );
 	
 	// Back 4 points ( from front perspective for directions )	
-	Vec3 vert4( mins.x, mins.y, maxs.z );
-	Vec3 vert5( maxs.x, mins.y, maxs.z );
-	Vec3 vert6( mins.x, maxs.y, maxs.z );
-	Vec3 vert7( maxs );
+	corners.emplace_back( mins.x, mins.y, maxs.z );
+	corners.emplace_back( maxs.x, mins.y, maxs.z );
+	corners.emplace_back( mins.x, maxs.y, maxs.z );
+	corners.emplace_back( maxs );
 
-	vertexArray.reserve( 24 );
-	// Front
-	vertexArray.push_back( Vertex_PCU( vert0, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert3, tint, uvAtMaxs ) );
-
-	// Right
-	vertexArray.push_back( Vertex_PCU( vert1, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert5, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert3, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert7, tint, uvAtMaxs ) );
-
-	// Back
-	vertexArray.push_back( Vertex_PCU( vert4, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert5, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert6, tint, uvAtMaxs ) );
-	vertexArray.push_back( Vertex_PCU( vert7, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-
-	// Left
-	vertexArray.push_back( Vertex_PCU( vert4, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert2, tint, uvAtMaxs ) );
-
-	// Top
-	vertexArray.push_back( Vertex_PCU( vert2, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert3, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert7, tint, uvAtMaxs ) );
-
-	// Bottom
-	vertexArray.push_back( Vertex_PCU( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
-	vertexArray.push_back( Vertex_PCU( vert1, tint, uvAtMins ) );
-	vertexArray.push_back( Vertex_PCU( vert4, tint, uvAtMaxs ) );
-	vertexArray.push_back( Vertex_PCU( vert5, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	AppendVertsFor3DBox( vertexArray, corners, tint, uvAtMins, uvAtMaxs );
 }
 
 
@@ -332,6 +300,17 @@ void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& bott
 	vertexArray.push_back( Vertex_PCU( bottomLeft, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( topRight, tint, uvAtMaxs ) );
 	vertexArray.push_back( Vertex_PCU( topLeft, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	Vec3 corners[8];
+
+	bounds.GetCornerPositions( corners );
+
+	AppendVertsFor3DBox( vertexArray, 8, corners, tint, uvAtMins, uvAtMaxs );
 }
 
 
@@ -439,6 +418,57 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& c
 	vertexArray.push_back( Vertex_PCU( vert1, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( vert4, tint, uvAtMaxs ) );
 	vertexArray.push_back( Vertex_PCU( vert5, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, std::vector<Vec3>& corners, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	AppendVertsFor3DBox( vertexArray, (int)corners.size(), &corners[0], tint, uvAtMins, uvAtMaxs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, int cornerCount, Vec3* corners, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	GUARANTEE_OR_DIE( cornerCount == 8, "Must call AppendVertsFor3DBox with exactly 8 points" );
+
+	vertexArray.reserve( 24 );
+	// Front
+	vertexArray.push_back( Vertex_PCU( corners[0], tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( corners[1], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[2], tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[3], tint, uvAtMaxs ) );
+
+	// Right
+	vertexArray.push_back( Vertex_PCU( corners[1], tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( corners[5], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[3], tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[7], tint, uvAtMaxs ) );
+
+	// Back
+	vertexArray.push_back( Vertex_PCU( corners[4], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[5], tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( corners[6], tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( corners[7], tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+
+	// Left
+	vertexArray.push_back( Vertex_PCU( corners[4], tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( corners[0], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[6], tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[2], tint, uvAtMaxs ) );
+
+	// Top
+	vertexArray.push_back( Vertex_PCU( corners[2], tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( corners[3], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[6], tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[7], tint, uvAtMaxs ) );
+
+	// Bottom
+	vertexArray.push_back( Vertex_PCU( corners[0], tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( corners[1], tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( corners[4], tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( corners[5], tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
 }
 
 

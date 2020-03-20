@@ -1,6 +1,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -17,8 +18,10 @@
 class DebugRenderObject;
 
 static RenderContext* s_debugRenderContext = nullptr;
+static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
-static std::vector<DebugRenderObject*> s_debugRenderObjects;
+static std::vector<DebugRenderObject*> s_debugRenderWorldObjects;
+static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -90,7 +93,7 @@ static void AppendDebugObjectToVertexArray( std::vector<Vertex_PCU>& vertices, s
 	{
 		Vertex_PCU vertex = objVerts[vertIdx];
 
-		vertex.m_color = InterpolateColor( obj->m_startColor, obj->m_endColor, obj->m_timer.GetElapsedSeconds() / obj->m_duration );
+		vertex.m_color = InterpolateColor( obj->m_startColor, obj->m_endColor, (float)obj->m_timer.GetElapsedSeconds() / obj->m_duration );
 
 		vertices.push_back( vertex );
 	}
@@ -112,13 +115,15 @@ bool DebugRenderObject::IsReadyToBeCulled() const
 void DebugRenderSystemStartup( RenderContext* context )
 {
 	s_debugRenderContext = context;
+	s_debugCamera = new Camera();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void DebugRenderSystemShutdown()
 {
-	PTR_VECTOR_SAFE_DELETE( s_debugRenderObjects );
+	PTR_SAFE_DELETE( s_debugCamera );
+	ClearDebugRendering();
 }
 
 
@@ -139,7 +144,8 @@ void DisableDebugRendering()
 //-----------------------------------------------------------------------------------------------
 void ClearDebugRendering()
 {
-	PTR_VECTOR_SAFE_DELETE( s_debugRenderObjects );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldObjects );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderScreenObjects );
 }
 
 
@@ -152,15 +158,18 @@ void DebugRenderBeginFrame()
 //-----------------------------------------------------------------------------------------------
 void DebugRenderWorldToCamera( Camera* camera )
 {
+	if ( !s_isDebugRenderEnabled )
+	{
+		return;
+	}
+
 	camera->SetClearMode( CLEAR_NONE );
-
 	
-
 	s_debugRenderContext->BeginCamera( *camera );
 
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderObjects.size(); ++debugObjIdx )
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldObjects.size(); ++debugObjIdx )
 	{
-		DebugRenderObject*& obj = s_debugRenderObjects[debugObjIdx];
+		DebugRenderObject*& obj = s_debugRenderWorldObjects[debugObjIdx];
 		if ( obj != nullptr )
 		{
 			std::vector<Vertex_PCU> vertices;
@@ -185,16 +194,58 @@ void DebugRenderWorldToCamera( Camera* camera )
 //-----------------------------------------------------------------------------------------------
 void DebugRenderScreenTo( Texture* output )
 {
+	if ( !s_isDebugRenderEnabled )
+	{
+		return;
+	}
 
+	RenderContext* context = output->m_owner;
+
+	s_debugCamera->SetColorTarget( output );
+	IntVec2 max = output->GetTexelSize();
+	s_debugCamera->SetProjectionOrthographic( (float)max.y, -1.f, 1.f );
+
+	s_debugCamera->SetClearMode( CLEAR_NONE );
+
+	context->BeginCamera( *s_debugCamera );
+
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderScreenObjects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = s_debugRenderScreenObjects[debugObjIdx];
+		if ( obj != nullptr )
+		{
+			AppendDebugObjectToVertexArray( vertices, indices, obj );
+		}
+	}
+
+	if ( vertices.size() > 0 )
+	{
+		context->DrawVertexArray( vertices );
+	}
+
+	context->EndCamera( *s_debugCamera );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void DebugRenderEndFrame()
 {
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderObjects.size(); ++debugObjIdx )
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldObjects.size(); ++debugObjIdx )
 	{
-		DebugRenderObject*& obj = s_debugRenderObjects[debugObjIdx];
+		DebugRenderObject*& obj = s_debugRenderWorldObjects[debugObjIdx];
+		if ( obj != nullptr
+			 && obj->IsReadyToBeCulled() )
+		{
+			PTR_SAFE_DELETE( obj );
+		}
+	}
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderScreenObjects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = s_debugRenderScreenObjects[debugObjIdx];
 		if ( obj != nullptr
 			 && obj->IsReadyToBeCulled() )
 		{
@@ -207,11 +258,6 @@ void DebugRenderEndFrame()
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
 {
-	if ( !s_isDebugRenderEnabled )
-	{
-		return;
-	}
-
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
@@ -225,19 +271,81 @@ void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 	
 	// Update to find next open slot?
-	s_debugRenderObjects.push_back( obj );
+	s_debugRenderWorldObjects.push_back( obj );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
-
+	DebugAddWorldPoint( pos, size, color, color, duration, mode );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldPoint( const Vec3& pos, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
+	DebugAddWorldPoint( pos, .01f, color, color, duration, mode );
+}
 
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8& p0_end_color, 
+						const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color, 
+						float duration, eDebugRenderMode mode )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	Vec3 obbBone = p1 - p0; // my new k vector
+	Vec3 iBasis = CrossProduct3D( Vec3( 0.f, 1.f, 0.f ), obbBone );
+	Vec3 obbCenter = obbBone * .5f;
+	Vec3 obbDimensions( .01f, .01f, obbBone.z );
+
+	OBB3 lineBounds( obbCenter, obbDimensions, iBasis );
+
+	AppendVertsForOBB3D( vertices, lineBounds, p0_start_color );
+	AppendIndicesForCubeMesh( indices );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, p0_start_color, p0_end_color, duration );
+
+	s_debugRenderWorldObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldLine( start, color, color, end, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugRenderSetScreenHeight( float height )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+AABB2 DebugGetScreenBounds()
+{
+	return AABB2::ONE_BY_ONE;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_color, float duration )
+{
+	std::vector<Vertex_PCU> vertices;
+
+	AABB2 pointBounds( Vec2::ZERO, Vec2( size, size ) );
+	pointBounds.SetCenter( pos );
+
+	AppendVertsForAABB2DWithDepth( vertices, pointBounds, 0.f, start_color );
+	
+	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
+
+	// Update to find next open slot?
+	s_debugRenderScreenObjects.push_back( obj );
 }

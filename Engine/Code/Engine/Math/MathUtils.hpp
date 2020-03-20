@@ -109,6 +109,8 @@ float			GetProjectedLength2D			( const Vec2& a, const Vec2& b );
 const Vec2		GetProjectedOnto2D				( const Vec2& a, const Vec2& onto );
 float			GetAngleDegreesBetweenVectors2D	( const Vec2& a, const Vec2& b );
 
+Vec3			CrossProduct3D					( const Vec3& a, const Vec3& b );
+
 // Easing
 float			SmoothStart2( float t);				// [0,1] quadratic ease-in
 float			SmoothStart3( float t);				// [0,1] cubic ease-in

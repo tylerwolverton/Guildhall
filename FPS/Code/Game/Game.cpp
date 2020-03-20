@@ -61,8 +61,15 @@ void Game::Startup()
 	m_worldCamera->SetDepthStencilTarget( depthTexture );
 
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
-	//m_worldCamera->SetProjectionOrthographic( 9.f, 0.f, -100.f );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
+	
+	Rgba8 transparentWhite( Rgba8::WHITE );
+	//transparentWhite.a = 0;
+	m_screenTexture = g_renderer->CreateTexture( IntVec2( 1920, 1080 ) );
+	/*m_uiCamera = new Camera();
+	m_uiCamera->SetColorTarget( nullptr );
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );*/
 
 	m_rng = new RandomNumberGenerator();
 
@@ -130,6 +137,7 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
+	//PTR_SAFE_DELETE( m_uiCamera );
 	PTR_SAFE_DELETE( m_worldCamera );
 }
 
@@ -151,8 +159,6 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-	
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, Rgba8::BLACK );
 
 	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
 
@@ -202,6 +208,8 @@ void Game::Render() const
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );
+
+	DebugRenderScreenTo( m_screenTexture );
 }
 
 
@@ -293,6 +301,14 @@ void Game::UpdateFromKeyboard()
 	{
 		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 3.f );
 	}
+	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
+	{
+		DebugAddWorldLine( m_sphereMeshTransforms[0].GetPosition(), m_cubeMeshTransform.GetPosition(), Rgba8::RED, 30.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
+	{
+		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 315.f, Rgba8::GREEN, Rgba8::RED, 10.f );
+	}
 }
 
 
@@ -309,7 +325,8 @@ void Game::LoadNewMap( const std::string& mapName )
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
-
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, Rgba8::BLACK );
+	//m_uiCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 }
 
 
