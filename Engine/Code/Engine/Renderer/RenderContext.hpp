@@ -102,7 +102,7 @@ public:
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
 	void DrawMesh( GPUMesh* mesh );
 	
-	Texture* GetFrameColorTarget();
+	Texture* GetBackBuffer();
 	IntVec2 GetDefaultBackBufferSize();
 	Clock* GetClock()																					{ return m_gameClock; }
 

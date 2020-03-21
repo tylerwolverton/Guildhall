@@ -4,6 +4,7 @@
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
@@ -22,6 +23,7 @@ static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjects;
 static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
+static float s_screenHeight = 1080.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -202,12 +204,17 @@ void DebugRenderScreenTo( Texture* output )
 	RenderContext* context = output->m_owner;
 
 	s_debugCamera->SetColorTarget( output );
+	
+	s_debugCamera->SetOutputSize( Vec2( 1920.f, s_screenHeight ) );
 	IntVec2 max = output->GetTexelSize();
-	s_debugCamera->SetProjectionOrthographic( (float)max.y, -1.f, 1.f );
+	s_debugCamera->SetProjectionOrthographic( s_screenHeight, -1.f, 1.f );
+	s_debugCamera->SetPosition( Vec3( 1920.f, 1080.f, 0.f ) * .5f );
 
 	s_debugCamera->SetClearMode( CLEAR_NONE );
 
 	context->BeginCamera( *s_debugCamera );
+
+	//context->SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, true );
 
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;

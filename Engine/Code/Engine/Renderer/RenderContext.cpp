@@ -278,7 +278,7 @@ void RenderContext::DrawMesh( GPUMesh* mesh )
 
 
 //-----------------------------------------------------------------------------------------------
-Texture* RenderContext::GetFrameColorTarget()
+Texture* RenderContext::GetBackBuffer()
 {
 	return m_swapchain->GetBackBuffer();
 }

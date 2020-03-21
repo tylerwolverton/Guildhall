@@ -209,7 +209,7 @@ void Game::Render() const
 
 	DebugRenderWorldToCamera( m_worldCamera );
 
-	DebugRenderScreenTo( m_screenTexture );
+	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
 
