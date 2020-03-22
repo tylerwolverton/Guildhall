@@ -28,13 +28,6 @@ OBB3::OBB3( const Vec3& center, const Vec3& fullDimensions, const Vec3& iBasisNo
 
 
 //-----------------------------------------------------------------------------------------------
-OBB3::OBB3( const AABB3& asAxisAlignedBox, const Vec3& orientationDegrees )
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
 OBB3::OBB3( const Vec3& center, const Vec3& fullDimensions, float pitch, float yaw, float roll )
 	: m_center( center )
 	, m_halfDimensions( fullDimensions * .5f )
@@ -44,8 +37,26 @@ OBB3::OBB3( const Vec3& center, const Vec3& fullDimensions, float pitch, float y
 
 	Mat44 rotation = trans.GetAsMatrix();
 
-	rotation.TransformVector3D( m_iBasis );
-	rotation.TransformVector3D( m_jBasis );
+	m_iBasis = rotation.TransformVector3D( m_iBasis );
+	m_jBasis = rotation.TransformVector3D( m_jBasis );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+OBB3::OBB3( const AABB3& asAxisAlignedBox, float pitch, float yaw, float roll )
+{
+	Vec3 aabb3Dimensions = asAxisAlignedBox.maxs - asAxisAlignedBox.mins;
+
+	m_halfDimensions = aabb3Dimensions * .5f;
+	m_center = asAxisAlignedBox.mins + m_halfDimensions;
+
+	Transform trans;
+	trans.SetRotationFromPitchRollYawDegrees( pitch, roll, yaw );
+
+	Mat44 rotation = trans.GetAsMatrix();
+
+	m_iBasis = rotation.TransformVector3D( m_iBasis );
+	m_jBasis = rotation.TransformVector3D( m_jBasis );
 }
 
 
@@ -104,20 +115,6 @@ void OBB3::SetCenter( const Vec3& newCenter )
 void OBB3::SetDimensions( const Vec3& newDimensions )
 {
 	m_halfDimensions = newDimensions * .5f;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void OBB3::SetOrientationDegrees( float newAbsoluteOrientation )
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void OBB3::RotateByDegrees( float relativeRotationDegrees )
-{
-
 }
 
 

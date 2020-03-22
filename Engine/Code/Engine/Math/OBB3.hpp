@@ -18,7 +18,7 @@ public:
 	OBB3( const OBB3& copyFrom );
 	explicit OBB3( const Vec3& center, const Vec3& fullDimensions, const Vec3& iBasisNormal = Vec3( 1.f, 0.f, 0.f ), const Vec3& jBasisNormal = Vec3( 0.f, 1.f, 0.f ) );
 	explicit OBB3( const Vec3& center, const Vec3& fullDimensions, float pitch, float yaw, float roll );
-	explicit OBB3( const AABB3& asAxisAlignedBox, const Vec3& orientationDegrees = Vec3::ZERO );
+	explicit OBB3( const AABB3& asAxisAlignedBox, float pitch, float yaw, float roll );
 
 	// Accessors (const methods)
 	const Vec3	GetCenter() const							{ return m_center; }
@@ -33,8 +33,8 @@ public:
 	void		Translate( const Vec3& translation );
 	void		SetCenter( const Vec3& newCenter );
 	void		SetDimensions( const Vec3& newDimensions );
-	void		SetOrientationDegrees( float newAbsoluteOrientation );
-	void		RotateByDegrees( float relativeRotationDegrees );
+	/*void		SetOrientationDegrees( float newAbsoluteOrientation );
+	void		RotateByDegrees( float relativeRotationDegrees );*/
 	void		Fix();	// "corrects" the box: abs() halfDimensions and normalize bases ( or restore to default if at (0,0) )
 
 	// Operators (self-mutating / non-const)

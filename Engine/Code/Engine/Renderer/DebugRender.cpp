@@ -265,13 +265,15 @@ void DebugRenderEndFrame()
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
 {
+	UNUSED( mode );
+
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
 	AABB3 pointBounds( Vec3::ZERO, Vec3( size, size, size ) );
 	pointBounds.SetCenter( pos );
 
-	AppendVertsForAABB3D( vertices, pointBounds, start_color );
+	AppendVertsAndIndicesForSphereMesh( vertices, indices, pos, size, 16, 16, start_color );
 	
 	AppendIndicesForCubeMesh( indices );
 
@@ -301,6 +303,10 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 						const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color, 
 						float duration, eDebugRenderMode mode )
 {
+	UNUSED( p1_start_color );
+	UNUSED( p1_end_color );
+	UNUSED( mode );
+
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
@@ -330,7 +336,7 @@ void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, 
 //-----------------------------------------------------------------------------------------------
 void DebugRenderSetScreenHeight( float height )
 {
-
+	s_screenHeight = height;
 }
 
 
@@ -349,10 +355,25 @@ void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_col
 	AABB2 pointBounds( Vec2::ZERO, Vec2( size, size ) );
 	pointBounds.SetCenter( pos );
 
-	AppendVertsForAABB2DWithDepth( vertices, pointBounds, 0.f, start_color );
+	AppendVertsForArc( vertices, pos, size, 360.f, 0.f, start_color );
+	//AppendVertsForAABB2DWithDepth( vertices, pointBounds, 0.f, start_color );
 	
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
 
 	// Update to find next open slot?
 	s_debugRenderScreenObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 color, float duration )
+{
+	DebugAddScreenPoint( pos, size, color, color, duration );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenPoint( Vec2 pos, Rgba8 color )
+{
+	DebugAddScreenPoint( pos, 1.f, color, 0.f );
 }

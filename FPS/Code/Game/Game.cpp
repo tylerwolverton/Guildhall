@@ -33,7 +33,7 @@
 #include "Game/ActorDefinition.hpp"
 
 
-static float s_mouseSensitivityMultiplier = 20.f;
+static float s_mouseSensitivityMultiplier = 2.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -307,7 +307,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
-		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 315.f, Rgba8::GREEN, Rgba8::RED, 10.f );
+		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN, 10.f );
 	}
 }
 
@@ -326,7 +326,6 @@ void Game::LoadNewMap( const std::string& mapName )
 void Game::UpdateCameras()
 {
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, Rgba8::BLACK );
-	//m_uiCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 }
 
 
