@@ -62,7 +62,7 @@ void DebugAddWorldPoint( const Vec3& pos, const Rgba8& color, float duration = 0
 void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8& p0_end_color,
 						const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color,
 						float duration,
-						eDebugRenderMode mode );
+						eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
 //// line strip [extra]

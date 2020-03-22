@@ -303,7 +303,16 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
 	{
-		DebugAddWorldLine( m_sphereMeshTransforms[0].GetPosition(), m_cubeMeshTransform.GetPosition(), Rgba8::RED, 30.f );
+		DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
+						   m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW, 
+						   30.f );
+		/*Vec3 pos1 = m_worldCamera->GetTransform().GetPosition();
+		Vec3 line = m_cubeMeshTransform.GetPosition() - m_worldCamera->GetTransform().GetPosition();
+		Vec3 normalizedLine = line.GetNormalized();
+		for ( int i = 0; i < (int)line.GetLength(); ++i )
+		{
+			DebugAddWorldPoint( pos1 + normalizedLine * i, .1f, Rgba8::BLUE, Rgba8::RED, 3.f );
+		}*/
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{

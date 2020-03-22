@@ -303,21 +303,24 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 						const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color, 
 						float duration, eDebugRenderMode mode )
 {
-	UNUSED( p1_start_color );
+	//UNUSED( p1_start_color );
 	UNUSED( p1_end_color );
 	UNUSED( mode );
 
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
-	Vec3 obbBone = p1 - p0; // my new k vector
-	Vec3 iBasis = CrossProduct3D( Vec3( 0.f, 1.f, 0.f ), obbBone );
-	Vec3 obbCenter = obbBone * .5f;
-	Vec3 obbDimensions( .01f, .01f, obbBone.z );
+	Vec3 obbBone = p1 - p0; // k vector of obb3
+	Vec3 normalizedK = obbBone.GetNormalized();
+	Vec3 iBasis = CrossProduct3D( Vec3( 0.f, 1.f, 0.f ), normalizedK );
+	Vec3 jBasis = CrossProduct3D( normalizedK, iBasis );
 
-	OBB3 lineBounds( obbCenter, obbDimensions, iBasis );
+	Vec3 obbCenter = p0 + ( obbBone * .5f );
+	Vec3 obbDimensions( .01f, .01f, obbBone.GetLength() );
 
-	AppendVertsForOBB3D( vertices, lineBounds, p0_start_color );
+	OBB3 lineBounds( obbCenter, obbDimensions, iBasis, jBasis );
+
+	AppendVertsForOBB3D( vertices, lineBounds, p0_start_color, p1_start_color );
 	AppendIndicesForCubeMesh( indices );
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, p0_start_color, p0_end_color, duration );
