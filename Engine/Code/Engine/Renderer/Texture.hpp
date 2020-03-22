@@ -23,8 +23,10 @@ public:
 	TextureView* GetOrCreateShaderResourceView();
 	TextureView* GetOrCreateDepthStencilView();
 
-	IntVec2	GetTexelSize()												{ return m_texelSize; }
+	IntVec2	GetTexelSize() const										{ return m_texelSize; }
 	std::string& GetFilePath()											{ return m_filePath; }
+
+	float GetAspectRatio() const;
 
 	// Could change to having static creator in class
 	//static Texture* CreateFromFile( RenderContext* context, const char* filename );

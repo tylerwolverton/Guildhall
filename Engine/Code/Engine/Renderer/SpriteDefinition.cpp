@@ -38,14 +38,12 @@ const Texture& SpriteDefinition::GetTexture() const
 //-----------------------------------------------------------------------------------------------
 float SpriteDefinition::GetAspect() const
 {
-	UNIMPLEMENTED();
-	/*float numSpritesX = 1.f / ( m_uvAtMaxs.x - m_uvAtMins.x );
+	float numSpritesX = 1.f / ( m_uvAtMaxs.x - m_uvAtMins.x );
 	float numSpritesY = 1.f / ( m_uvAtMaxs.y - m_uvAtMins.y );
 	
 	IntVec2 textureDimensions = m_spriteSheet.GetTexture().GetTexelSize();
 	float textureAspectX = textureDimensions.x / numSpritesX;
 	float textureAspectY = textureDimensions.y / numSpritesY;
 
-	return textureAspectX / textureAspectY;*/
-	return 1.f;
+	return textureAspectX / textureAspectY;
 }

@@ -83,8 +83,6 @@ public:
 	RenderBuffer* m_cameraUBO = nullptr;
 
 private:
-	Vec2			m_bottomLeft;
-	Vec2			m_topRight;
 	Vec2			m_outputSize;
 	
 	Transform		m_transform;

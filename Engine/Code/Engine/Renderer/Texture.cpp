@@ -109,3 +109,15 @@ TextureView* Texture::GetOrCreateDepthStencilView()
 
 	return m_depthStencilView;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+float Texture::GetAspectRatio() const
+{
+	if ( m_texelSize.y == 0 )
+	{
+		return 0.f;
+	}
+
+	return (float)m_texelSize.x / (float)m_texelSize.y;
+}
