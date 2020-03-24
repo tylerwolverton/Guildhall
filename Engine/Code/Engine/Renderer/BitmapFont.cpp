@@ -44,6 +44,48 @@ void BitmapFont::AppendVertsForText2D( std::vector<Vertex_PCU>& vertexArray, con
 
 
 //-----------------------------------------------------------------------------------------------
+void BitmapFont::AppendVertsAndIndicesForText2D( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indexArray, const Vec2& textMins, float cellHeight, const std::string& text, const Rgba8& tint, float cellAspect )
+{
+	float cellWidth = cellHeight * cellAspect;
+	int indexNum = 0;
+	std::vector<uint> indices;
+	for ( int charIndex = 0; charIndex < text.length(); ++charIndex )
+	{
+		Vec2 charMins( textMins.x + ( charIndex * cellWidth ), textMins.y );
+		Vec2 charMaxs( charMins.x + cellWidth, charMins.y + cellHeight );
+
+		Vec2 uvAtMins, uvAtMaxs;
+		m_glyphSpriteSheet.GetSpriteUVs( uvAtMins, uvAtMaxs, text[charIndex] );
+
+		vertexArray.push_back( Vertex_PCU( charMins, tint, uvAtMins ) );
+		vertexArray.push_back( Vertex_PCU( Vec2( charMaxs.x, charMins.y ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+		vertexArray.push_back( Vertex_PCU( Vec2( charMins.x, charMaxs.y ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+		vertexArray.push_back( Vertex_PCU( charMaxs, tint, uvAtMaxs ) );
+
+		indices.push_back( indexNum );
+		indices.push_back( indexNum + 1);
+		indices.push_back( indexNum + 3);
+		indices.push_back( indexNum );
+		indices.push_back( indexNum + 3);
+		indices.push_back( indexNum + 2);
+
+		indexNum += 4;
+	}
+
+	indexArray.insert( indexArray.end(), indices.begin(), indices.end() );
+
+	// Add reversed indices to show back of text
+	std::vector<uint> reversedIndices;
+	for ( int i = (int)indices.size() - 1; i >= 0; --i )
+	{
+		reversedIndices.push_back( indices[i] );
+	}
+
+	indexArray.insert( indexArray.end(), reversedIndices.begin(), reversedIndices.end() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void BitmapFont::AppendVertsForTextInBox2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float cellHeight, const std::string& text, const Rgba8& tint /*= Rgba8::WHITE*/, float cellAspect /*= 1.f*/, const Vec2& alignment /*= ALIGN_CENTERED */ )
 {
 	Vec2 textDimensions( GetDimensionsForText2D( cellHeight, text, cellAspect ) );

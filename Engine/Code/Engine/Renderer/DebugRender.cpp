@@ -9,6 +9,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Timer.hpp"
 
@@ -22,6 +23,7 @@ static RenderContext* s_debugRenderContext = nullptr;
 static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjects;
+static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjects;
 static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
 static float s_screenHeight = 1080.f;
 
@@ -175,9 +177,28 @@ void DebugRenderWorldToCamera( Camera* camera )
 	
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
+	s_debugRenderContext->BindTexture( nullptr );
 	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldObjects.size(); ++debugObjIdx )
 	{
 		DebugRenderObject*& obj = s_debugRenderWorldObjects[debugObjIdx];
+		if ( obj != nullptr )
+		{
+			std::vector<Vertex_PCU> vertices;
+			std::vector<uint> indices;
+
+			AppendDebugObjectToVertexArray( vertices, indices, obj );
+
+			GPUMesh mesh( s_debugRenderContext, vertices, indices );
+			s_debugRenderContext->DrawMesh( &mesh );
+		}
+	}
+	
+	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	s_debugRenderContext->BindTexture( font->GetTexture() );
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldTextObjects.size(); ++debugObjIdx )
+	{
+
+		DebugRenderObject*& obj = s_debugRenderWorldTextObjects[debugObjIdx];
 		if ( obj != nullptr )
 		{
 			std::vector<Vertex_PCU> vertices;
@@ -219,9 +240,7 @@ void DebugRenderScreenTo( Texture* output )
 	s_debugCamera->SetClearMode( CLEAR_NONE );
 
 	context->BeginCamera( *s_debugCamera );
-
-	//context->SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, true );
-
+	
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
@@ -259,6 +278,16 @@ void DebugRenderEndFrame()
 	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderScreenObjects.size(); ++debugObjIdx )
 	{
 		DebugRenderObject*& obj = s_debugRenderScreenObjects[debugObjIdx];
+		if ( obj != nullptr
+			 && obj->IsReadyToBeCulled() )
+		{
+			PTR_SAFE_DELETE( obj );
+		}
+	}
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldTextObjects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = s_debugRenderWorldTextObjects[debugObjIdx];
 		if ( obj != nullptr
 			 && obj->IsReadyToBeCulled() )
 		{
@@ -339,6 +368,26 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldLine( start, color, color, end, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
+{
+	// TODO: fall back to triangle font if none found?
+	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+
+	UNUSED( mode );
+
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	font->AppendVertsAndIndicesForText2D( vertices, indices, pivot, 1.f, text, start_color );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
+
+	// Update to find next open slot?
+	s_debugRenderWorldTextObjects.push_back( obj );
 }
 
 

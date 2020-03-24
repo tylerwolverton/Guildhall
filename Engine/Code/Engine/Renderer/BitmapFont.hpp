@@ -25,6 +25,8 @@ public:
 
 	void AppendVertsForText2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& textMins, float cellHeight, 
 							   const std::string& text, const Rgba8& tint = Rgba8::WHITE, float cellAspect = 1.f );
+	void AppendVertsAndIndicesForText2D( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indexArray, const Vec2& textMins, float cellHeight,
+										 const std::string& text, const Rgba8& tint = Rgba8::WHITE, float cellAspect = 1.f );
 
 	void AppendVertsForTextInBox2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float cellHeight,
 								 const std::string& text, const Rgba8& tint = Rgba8::WHITE, float cellAspect = 1.f,

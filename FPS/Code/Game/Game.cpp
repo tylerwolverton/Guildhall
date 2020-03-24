@@ -208,8 +208,6 @@ void Game::Render() const
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );
-
-	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
 
@@ -306,13 +304,10 @@ void Game::UpdateFromKeyboard()
 		DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
 						   m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW, 
 						   30.f );
-		/*Vec3 pos1 = m_worldCamera->GetTransform().GetPosition();
-		Vec3 line = m_cubeMeshTransform.GetPosition() - m_worldCamera->GetTransform().GetPosition();
-		Vec3 normalizedLine = line.GetNormalized();
-		for ( int i = 0; i < (int)line.GetLength(); ++i )
-		{
-			DebugAddWorldPoint( pos1 + normalizedLine * i, .1f, Rgba8::BLUE, Rgba8::RED, 3.f );
-		}*/
+	}
+	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
+	{
+		DebugAddWorldText( m_worldCamera->GetViewMatrix(), Vec2::ZERO, Rgba8::GREEN, Rgba8::RED, 10.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Text!" );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
