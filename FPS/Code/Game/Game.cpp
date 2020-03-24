@@ -309,8 +309,9 @@ void Game::UpdateFromKeyboard()
 	{
 		Mat44 textView = m_worldCamera->GetViewMatrix();
 		InvertOrthoNormalMatrix( textView );
-		DebugAddWorldText( textView, Vec2( .5f, .5f ), Rgba8::GREEN, Rgba8::RED, 10.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Text!" );
-		DebugAddWorldTextf( textView, Vec2::ONE, Rgba8::RED, 10.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Text %d!", 12 );
+		DebugAddWorldText( textView, Vec2::ZERO, Rgba8::BLUE, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Zero!" );
+		DebugAddWorldText( textView, Vec2( .5f, .5f ), Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Mid!" );
+		DebugAddWorldTextf( textView, Vec2::ONE, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "One!", 12 );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{

@@ -389,12 +389,10 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
-	Vec2 textDimensions = font->GetDimensionsForText2D( 1.f, text );
+	Vec2 textDimensions = font->GetDimensionsForText2D( .5f, text );
+	Vec2 textMins = -pivot * textDimensions;
 
-	Vec2 textMins = -textDimensions * .5f;
-	textMins +=	pivot * textDimensions;
-
-	font->AppendVertsAndIndicesForText2D( vertices, indices, -textMins, 1.f, text, start_color );
+	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, .5f, text, start_color );
 
 	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
 	{
