@@ -5,6 +5,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+const std::string Stringv( char const* format, va_list args );
 const std::string Stringf( const char* format, ... );
 const std::string Stringf( const int maxLength, const char* format, ... );
 

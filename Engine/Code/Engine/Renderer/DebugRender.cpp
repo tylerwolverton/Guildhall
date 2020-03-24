@@ -1,5 +1,6 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -374,6 +375,12 @@ void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, 
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
 {
+	if ( text == nullptr
+		 || strlen( text ) == 0 )
+	{
+		return;
+	}
+
 	// TODO: fall back to triangle font if none found?
 	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 
@@ -382,12 +389,44 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
-	font->AppendVertsAndIndicesForText2D( vertices, indices, pivot, 1.f, text, start_color );
+	Vec2 textDimensions = font->GetDimensionsForText2D( 1.f, text );
+
+	Vec2 textMins = -textDimensions * .5f;
+	textMins +=	pivot * textDimensions;
+
+	font->AppendVertsAndIndicesForText2D( vertices, indices, -textMins, 1.f, text, start_color );
+
+	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
+	{
+		vertices[vertIdx].m_position = basis.TransformPosition3D( vertices[vertIdx].m_position );
+	}
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 
 	// Update to find next open slot?
 	s_debugRenderWorldTextObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, float duration, eDebugRenderMode mode, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddWorldText( basis, pivot, color, color, duration, mode, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddWorldText( basis, pivot, color, color, 0.f, DEBUG_RENDER_USE_DEPTH, text.c_str() );
 }
 
 

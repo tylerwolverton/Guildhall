@@ -76,9 +76,9 @@ void BitmapFont::AppendVertsAndIndicesForText2D( std::vector<Vertex_PCU>& vertex
 
 	// Add reversed indices to show back of text
 	std::vector<uint> reversedIndices;
-	for ( int i = (int)indices.size() - 1; i >= 0; --i )
+	for ( int indicesIdx = (int)indices.size() - 1; indicesIdx >= 0; --indicesIdx )
 	{
-		reversedIndices.push_back( indices[i] );
+		reversedIndices.push_back( indices[indicesIdx] );
 	}
 
 	indexArray.insert( indexArray.end(), reversedIndices.begin(), reversedIndices.end() );

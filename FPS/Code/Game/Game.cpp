@@ -33,7 +33,7 @@
 #include "Game/ActorDefinition.hpp"
 
 
-static float s_mouseSensitivityMultiplier = 2.f;
+static float s_mouseSensitivityMultiplier = 20.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -307,7 +307,10 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
 	{
-		DebugAddWorldText( m_worldCamera->GetViewMatrix(), Vec2::ZERO, Rgba8::GREEN, Rgba8::RED, 10.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Text!" );
+		Mat44 textView = m_worldCamera->GetViewMatrix();
+		InvertOrthoNormalMatrix( textView );
+		DebugAddWorldText( textView, Vec2( .5f, .5f ), Rgba8::GREEN, Rgba8::RED, 10.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Text!" );
+		DebugAddWorldTextf( textView, Vec2::ONE, Rgba8::RED, 10.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Text %d!", 12 );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{

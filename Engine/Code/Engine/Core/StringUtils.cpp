@@ -8,6 +8,15 @@ const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
 
 
 //-----------------------------------------------------------------------------------------------
+const std::string Stringv( char const* format, va_list args )
+{
+	char buffer[STRINGF_STACK_LOCAL_TEMP_LENGTH];
+	vsnprintf_s( buffer, STRINGF_STACK_LOCAL_TEMP_LENGTH, format, args );
+	return buffer;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const std::string Stringf( const char* format, ... )
 {
 	char textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
