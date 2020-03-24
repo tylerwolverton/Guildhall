@@ -677,6 +677,7 @@ void DevConsole::ExecuteCommand()
 			{
 				for ( int argIdx = 1; argIdx < (int)args.size(); ++argIdx )
 				{
+					// Change this as a method in named strings that tokenizes and parses commands to support quoted strings with =
 					std::vector<std::string> params = SplitStringOnDelimiter( args[argIdx], '=' );
 					if ( (int)params.size() == 2 )
 					{

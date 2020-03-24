@@ -125,7 +125,7 @@ void Camera::SetColorTarget( Texture* texture )
 //-----------------------------------------------------------------------------------------------
 void Camera::SetDepthStencilTarget( Texture* texture )
 {
-	m_deptStencilTarget = texture;
+	m_depthStencilTarget = texture;
 }
 
 

@@ -304,13 +304,20 @@ void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& bott
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& frontTint, const Rgba8& backTint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 corners[8];
 
 	bounds.GetCornerPositions( corners );
 
-	AppendVertsFor3DBox( vertexArray, 8, corners, frontTint, backTint, uvAtMins, uvAtMaxs );
+	AppendVertsFor3DBox( vertexArray, 8, corners, tint, tint, uvAtMins, uvAtMaxs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForLine3D( std::vector<Vertex_PCU>& vertexArray, const Vec3& p0, const Vec3& p1, const Rgba8& p0_start_color, const Rgba8& p1_start_color, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+
 }
 
 

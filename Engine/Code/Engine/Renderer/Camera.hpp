@@ -54,21 +54,24 @@ public:
 	
 	void SetColorTarget( Texture* texture );
 	void SetDepthStencilTarget( Texture* texture );
-	
+	void SetViewMatrix( const Mat44& view )						{ m_viewMatrix = view; }
+	void SetProjectionMatrix( const Mat44& proj )				{ m_projectionMatrix = proj; }
+
 	Vec3 ClientToWorldPosition( const Vec2& clientPos, float ndcZ = 0.f ) const;
 
 	// RenderContext* UpdateAndGetUBO(RenderContext* context);
 	void UpdateCameraUBO();
 
 	// Accessors
-	const Transform GetTransform()		const	{ return m_transform; }
+	void			SetTransform( const Transform& transform )			{ m_transform = transform; }
 
+	const Transform GetTransform()								const	{ return m_transform; }
 	Vec2 GetOrthoMin() const;
 	Vec2 GetOrthoMax() const;
 	Rgba8 GetClearColor()				const	{ return m_clearColor; }
 	unsigned int GetClearMode()			const	{ return m_clearMode; }
 	Texture* GetColorTarget()			const;
-	Texture* GetDepthStencilTarget()	const	{ return m_deptStencilTarget; }
+	Texture* GetDepthStencilTarget()	const	{ return m_depthStencilTarget; }
 	float GetClearDepth()				const	{ return m_clearDepth; }
 
 	const Mat44 GetViewMatrix()			const	{ return m_viewMatrix; }
@@ -77,6 +80,7 @@ public:
 	// Helpers
 	// can use this to determine aspect ratio
 	void SetOutputSize( const Vec2& size );
+	Vec2 GetOutputSize() const					{ return m_outputSize; };
 	float GetAspectRatio() const;
 
 public:
@@ -92,9 +96,9 @@ private:
 	float			m_clearDepth = 1.f;
 
 	Texture*		m_colorTarget = nullptr;
-	Texture*		m_deptStencilTarget = nullptr;
+	Texture*		m_depthStencilTarget = nullptr;
 
-	Vec3 m_position;
+	Vec3			m_position;
 	Mat44			m_projectionMatrix;
 	Mat44			m_viewMatrix;
 };

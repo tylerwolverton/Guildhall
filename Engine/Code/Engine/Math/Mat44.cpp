@@ -91,6 +91,31 @@ Mat44::Mat44( const Vec4& iBasisHomogeneous, const Vec4& jBasisHomogeneous, cons
 
 
 //-----------------------------------------------------------------------------------------------
+void Mat44::operator=( const Mat44& copyFrom )
+{
+	Ix = 	  copyFrom.Ix;
+	Iy = 	  copyFrom.Iy;
+	Iz = 	  copyFrom.Iz;
+	Iw = 	  copyFrom.Iw;
+
+	Jx = 	  copyFrom.Jx;
+	Jy = 	  copyFrom.Jy;
+	Jz = 	  copyFrom.Jz;
+	Jw = 	  copyFrom.Jw;
+
+	Kx = 	  copyFrom.Kx;
+	Ky = 	  copyFrom.Ky;
+	Kz = 	  copyFrom.Kz;
+	Kw = 	  copyFrom.Kw;
+
+	Tx = 	  copyFrom.Tx;
+	Ty = 	  copyFrom.Ty;
+	Tz = 	  copyFrom.Tz;
+	Tw = 	  copyFrom.Tw;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec2 Mat44::TransformVector2D( const Vec2& vector ) const
 {
 	float newX = (Ix * vector.x ) + ( Jx * vector.y );

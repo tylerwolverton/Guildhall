@@ -165,9 +165,15 @@ void DebugRenderWorldToCamera( Camera* camera )
 		return;
 	}
 
-	camera->SetClearMode( CLEAR_NONE );
+	s_debugCamera->SetClearMode( CLEAR_NONE );
+	s_debugCamera->SetTransform( camera->GetTransform() );
+	s_debugCamera->SetColorTarget( camera->GetColorTarget() );
+	s_debugCamera->SetOutputSize( camera->GetOutputSize() );
+	s_debugCamera->SetDepthStencilTarget( camera->GetDepthStencilTarget() );
+	s_debugCamera->SetViewMatrix( camera->GetViewMatrix() );
+	s_debugCamera->SetProjectionMatrix( camera->GetProjectionMatrix() );
 	
-	s_debugRenderContext->BeginCamera( *camera );
+	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
 	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldObjects.size(); ++debugObjIdx )
 	{
@@ -189,7 +195,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	//	s_debugRenderContext->DrawVertexArray( vertices );
 	//}
 
-	s_debugRenderContext->EndCamera( *camera );
+	s_debugRenderContext->EndCamera( *s_debugCamera );
 }
 
 
@@ -320,7 +326,7 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 
 	OBB3 lineBounds( obbCenter, obbDimensions, iBasis, jBasis );
 
-	AppendVertsForOBB3D( vertices, lineBounds, p0_start_color, p1_start_color );
+	AppendVertsForOBB3D( vertices, lineBounds, p0_start_color );
 	AppendIndicesForCubeMesh( indices );
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, p0_start_color, p0_end_color, duration );
@@ -359,7 +365,6 @@ void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_col
 	pointBounds.SetCenter( pos );
 
 	AppendVertsForArc( vertices, pos, size, 360.f, 0.f, start_color );
-	//AppendVertsForAABB2DWithDepth( vertices, pointBounds, 0.f, start_color );
 	
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
 
