@@ -241,26 +241,17 @@ void RenderWorldBillboardTextObjects( const std::vector<DebugRenderObject*> obje
 
 			AppendDebugObjectToVertexArray( vertices, indices, obj );
 
-			Vec3 cameraRotation = s_debugCamera->GetTransform().m_rotation;
-			Mat44 rotationMatrix = Mat44::CreateRotationFromPitchRollYawDegrees( cameraRotation.x, cameraRotation.y, cameraRotation.z );
-			//Mat44 model = s_debugCamera->GetProjectionMatrix();
-			//model.SetTranslation3D( obj->m_origin );
-
-			Mat44 modelMatrix = Mat44::CreateTranslation3D( obj->m_origin );
-			Mat44 inverseTranslationMatrix = Mat44::CreateTranslation3D( -obj->m_origin );
-			modelMatrix.PushTransform( rotationMatrix );
-			modelMatrix.PushTransform( inverseTranslationMatrix );
-
-			for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
-			{
-				vertices[vertIdx].m_position = modelMatrix.TransformPosition3D( vertices[vertIdx].m_position );
-			}
+			Mat44 model = s_debugCamera->GetTransform().GetAsMatrix();
+			model.SetTranslation3D( obj->m_origin );
+			model.PushTransform( Mat44::CreateTranslation3D( -obj->m_origin ) );
+			s_debugRenderContext->SetModelMatrix( model );
 
 			GPUMesh mesh( s_debugRenderContext, vertices, indices );
-			//s_debugRenderContext->SetModelMatrix( modelMatrix );
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
+
+	s_debugRenderContext->SetModelMatrix( Mat44() );
 }
 
 
@@ -276,6 +267,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
+	s_debugRenderContext->BindShader( "Data/Shaders/Default.hlsl" );
 	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 
 	// Draw Depth
