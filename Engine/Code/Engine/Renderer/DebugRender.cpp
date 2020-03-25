@@ -5,6 +5,7 @@
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Transform.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/MatrixUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -336,13 +337,19 @@ void DebugRenderScreenTo( Texture* output )
 	
 	s_debugCamera->SetOutputSize( Vec2( 1920.f, s_screenHeight ) );
 	IntVec2 max = output->GetTexelSize();
-	s_debugCamera->SetProjectionOrthographic( s_screenHeight, -1.f, 1.f );
+	s_debugCamera->SetTransform(  Transform() );
 	s_debugCamera->SetPosition( Vec3( 1920.f, 1080.f, 0.f ) * .5f );
+	s_debugCamera->SetProjectionOrthographic( s_screenHeight );
 
 	s_debugCamera->SetClearMode( CLEAR_NONE );
 
 	context->BeginCamera( *s_debugCamera );
-	
+
+	s_debugRenderContext->BindShader( "Data/Shaders/Default.hlsl" );
+
+	s_debugRenderContext->SetCullMode( eCullMode::NONE );
+	s_debugRenderContext->SetBlendMode( eBlendMode::ALPHA );
+		
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
@@ -737,6 +744,7 @@ void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_col
 	AABB2 pointBounds( Vec2::ZERO, Vec2( size, size ) );
 	pointBounds.SetCenter( pos );
 
+	AppendVertsForAABB2DWithDepth( vertices, pointBounds, 0.f, start_color );
 	AppendVertsForArc( vertices, pos, size, 360.f, 0.f, start_color );
 	
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
