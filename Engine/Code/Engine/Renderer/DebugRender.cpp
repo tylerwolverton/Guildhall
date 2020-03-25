@@ -168,14 +168,8 @@ void DebugRenderBeginFrame()
 }
 
 
-//-----------------------------------------------------------------------------------------------
-void DebugRenderWorldToCamera( Camera* camera )
+void InitializeDebugCamera( Camera* camera )
 {
-	if ( !s_isDebugRenderEnabled )
-	{
-		return;
-	}
-
 	s_debugCamera->SetClearMode( CLEAR_NONE );
 	s_debugCamera->SetTransform( camera->GetTransform() );
 	s_debugCamera->SetColorTarget( camera->GetColorTarget() );
@@ -183,49 +177,15 @@ void DebugRenderWorldToCamera( Camera* camera )
 	s_debugCamera->SetDepthStencilTarget( camera->GetDepthStencilTarget() );
 	s_debugCamera->SetViewMatrix( camera->GetViewMatrix() );
 	s_debugCamera->SetProjectionMatrix( camera->GetProjectionMatrix() );
-	
-	s_debugRenderContext->BeginCamera( *s_debugCamera );
+}
 
-	s_debugRenderContext->BindTexture( nullptr );
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldObjects.size(); ++debugObjIdx )
+
+//-----------------------------------------------------------------------------------------------
+void RenderWorldObjects( const std::vector<DebugRenderObject*> objects )
+{
+	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
 	{
-		DebugRenderObject*& obj = s_debugRenderWorldObjects[debugObjIdx];
-		if ( obj != nullptr )
-		{
-			std::vector<Vertex_PCU> vertices;
-			std::vector<uint> indices;
-
-			AppendDebugObjectToVertexArray( vertices, indices, obj );
-			
-			GPUMesh mesh( s_debugRenderContext, vertices, indices );
-			s_debugRenderContext->DrawMesh( &mesh );
-		}
-	}
-
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldOutlineObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderWorldOutlineObjects[debugObjIdx];
-		if ( obj != nullptr )
-		{
-			std::vector<Vertex_PCU> vertices;
-			std::vector<uint> indices;
-
-			AppendDebugObjectToVertexArray( vertices, indices, obj );
-
-			s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
-
-			GPUMesh mesh( s_debugRenderContext, vertices, indices );
-			s_debugRenderContext->DrawMesh( &mesh );
-		}
-	}
-
-	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
-	
-	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
-	s_debugRenderContext->BindTexture( font->GetTexture() );
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldTextObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderWorldTextObjects[debugObjIdx];
+		DebugRenderObject*const& obj = objects[debugObjIdx];
 		if ( obj != nullptr )
 		{
 			std::vector<Vertex_PCU> vertices;
@@ -237,11 +197,15 @@ void DebugRenderWorldToCamera( Camera* camera )
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
+}
 
 
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldBillboardTextObjects.size(); ++debugObjIdx )
+//-----------------------------------------------------------------------------------------------
+void RenderWorldBillboardTextObjects( const std::vector<DebugRenderObject*> objects )
+{
+	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
 	{
-		DebugRenderObject*& obj = s_debugRenderWorldBillboardTextObjects[debugObjIdx];
+		DebugRenderObject*const& obj = objects[debugObjIdx];
 		if ( obj != nullptr )
 		{
 			std::vector<Vertex_PCU> vertices;
@@ -253,14 +217,14 @@ void DebugRenderWorldToCamera( Camera* camera )
 			Mat44 rotationMatrix = Mat44::CreateRotationFromPitchRollYawDegrees( cameraRotation.x, cameraRotation.y, cameraRotation.z );
 			//Mat44 model = s_debugCamera->GetProjectionMatrix();
 			//model.SetTranslation3D( obj->m_origin );
-		
+
 			Mat44 modelMatrix = Mat44::CreateTranslation3D( obj->m_origin );
 			Mat44 inverseTranslationMatrix = Mat44::CreateTranslation3D( -obj->m_origin );
 			modelMatrix.PushTransform( rotationMatrix );
 			modelMatrix.PushTransform( inverseTranslationMatrix );
 
 			for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
-			{				
+			{
 				vertices[vertIdx].m_position = modelMatrix.TransformPosition3D( vertices[vertIdx].m_position );
 			}
 
@@ -269,12 +233,35 @@ void DebugRenderWorldToCamera( Camera* camera )
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
-	
-	//if ( vertices.size() > 0 )
-	//{
-	//	s_debugRenderContext->DrawVertexArray( vertices );
-	//}
+}
 
+
+//-----------------------------------------------------------------------------------------------
+void DebugRenderWorldToCamera( Camera* camera )
+{
+	if ( !s_isDebugRenderEnabled )
+	{
+		return;
+	}
+
+	InitializeDebugCamera( camera );
+	
+	s_debugRenderContext->BeginCamera( *s_debugCamera );
+
+	s_debugRenderContext->BindTexture( nullptr );
+	
+	RenderWorldObjects( s_debugRenderWorldObjects );
+	
+	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
+	RenderWorldObjects( s_debugRenderWorldOutlineObjects );
+	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
+	
+	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	s_debugRenderContext->BindTexture( font->GetTexture() );
+	RenderWorldObjects( s_debugRenderWorldTextObjects );
+	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjects );
+
+	
 	s_debugRenderContext->EndCamera( *s_debugCamera );
 }
 
@@ -322,57 +309,28 @@ void DebugRenderScreenTo( Texture* output )
 
 
 //-----------------------------------------------------------------------------------------------
+void CullExpiredObjects( std::vector<DebugRenderObject*>& objects )
+{
+	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = objects[debugObjIdx];
+		if ( obj != nullptr
+			 && obj->IsReadyToBeCulled() )
+		{
+			PTR_SAFE_DELETE( obj );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DebugRenderEndFrame()
 {
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderWorldObjects[debugObjIdx];
-		if ( obj != nullptr
-			 && obj->IsReadyToBeCulled() )
-		{
-			PTR_SAFE_DELETE( obj );
-		}
-	}
-	
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldOutlineObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderWorldOutlineObjects[debugObjIdx];
-		if ( obj != nullptr
-			 && obj->IsReadyToBeCulled() )
-		{
-			PTR_SAFE_DELETE( obj );
-		}
-	}
-
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderScreenObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderScreenObjects[debugObjIdx];
-		if ( obj != nullptr
-			 && obj->IsReadyToBeCulled() )
-		{
-			PTR_SAFE_DELETE( obj );
-		}
-	}
-
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldTextObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderWorldTextObjects[debugObjIdx];
-		if ( obj != nullptr
-			 && obj->IsReadyToBeCulled() )
-		{
-			PTR_SAFE_DELETE( obj );
-		}
-	}
-
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldBillboardTextObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderWorldBillboardTextObjects[debugObjIdx];
-		if ( obj != nullptr
-			 && obj->IsReadyToBeCulled() )
-		{
-			PTR_SAFE_DELETE( obj );
-		}
-	}
+	CullExpiredObjects( s_debugRenderWorldObjects );
+	CullExpiredObjects( s_debugRenderWorldOutlineObjects );
+	CullExpiredObjects( s_debugRenderWorldTextObjects );
+	CullExpiredObjects( s_debugRenderWorldBillboardTextObjects );
+	CullExpiredObjects( s_debugRenderScreenObjects );
 }
 
 
@@ -485,6 +443,27 @@ void DebugAddWorldWireBounds( const AABB3& bounds, const Rgba8& color, float dur
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, color, color, duration );
 
 	s_debugRenderWorldOutlineObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	AppendVertsAndIndicesForSphereMesh( vertices, indices, pos, radius, 16, 16, start_color );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
+
+	s_debugRenderWorldOutlineObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color, float duration /*= 0.0f*/, eDebugRenderMode mode /*= DEBUG_RENDER_USE_DEPTH */ )
+{
+	DebugAddWorldWireSphere( pos, radius, color, color, duration, mode );
 }
 
 

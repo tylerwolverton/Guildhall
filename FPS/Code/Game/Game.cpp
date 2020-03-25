@@ -309,6 +309,10 @@ void Game::UpdateFromKeyboard()
 		AABB3 box( m_worldCamera->GetTransform().GetPosition(), m_worldCamera->GetTransform().GetPosition() + Vec3::ONE );
 		DebugAddWorldWireBounds( box, Rgba8::YELLOW, 10.f );
 	}
+	if ( g_inputSystem->WasKeyJustPressed( 'Y' ) )
+	{
+		DebugAddWorldWireSphere( m_worldCamera->GetTransform().GetPosition(), 2.f, Rgba8::PURPLE, Rgba8::YELLOW, 10.f );
+	}
 	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
 	{
 		Mat44 textView = m_worldCamera->GetViewMatrix();
