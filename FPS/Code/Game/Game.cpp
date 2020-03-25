@@ -327,6 +327,14 @@ void Game::UpdateFromKeyboard()
 		DebugAddWorldBillboardText( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ONE, Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_XRAY, "Mid!" );
 		DebugAddWorldBillboardTextf( m_worldCamera->GetTransform().GetPosition(), Vec2::ZERO, Rgba8::GREEN, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "%d!", 15 );
 	}
+	if ( g_inputSystem->WasKeyJustPressed( 'U' ) )
+	{
+		Vec3 p0 = m_worldCamera->GetTransform().GetPosition();
+		Vec3 p1 = p0 + Vec3( 10.f, 0.f, 0.f );
+		Vec3 p2 = p0 + Vec3( 0.f, 10.f, 0.f );
+		Vec3 p3 = p0 + Vec3( 10.f, 10.f, 0.f );
+		DebugAddWorldQuad( p0, p1, p2, p3, AABB2::ONE_BY_ONE, Rgba8::GREEN, Rgba8::RED, 20.f );
+	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
 		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN, 10.f );

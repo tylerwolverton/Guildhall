@@ -81,9 +81,9 @@ void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, 
 //						 float duration,
 //						 eDebugRenderMode mode );
 //void DebugAddWorldArrow( vec3 start, vec3 end, rgba color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//
-//// Quads
-//void DebugAddWorldQuad( vec3 p0, vec3 p1, vec3 p2, vec3 p4, aabb2 uvs, rgba start_color, rgba end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
+// Quads
+void DebugAddWorldQuad( const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& p3, const AABB2& uvs, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
 // bounds
 void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );

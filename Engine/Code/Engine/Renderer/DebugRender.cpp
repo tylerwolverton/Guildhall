@@ -413,8 +413,6 @@ void DebugRenderEndFrame()
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
 {
-	UNUSED( mode );
-
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
@@ -456,7 +454,6 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 {
 	//UNUSED( p1_start_color );
 	UNUSED( p1_end_color );
-	UNUSED( mode );
 
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
@@ -489,6 +486,31 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldLine( start, color, color, end, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldQuad( const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& p3, const AABB2& uvs, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	Vec3 corners[] = {
+		p0,p1,p2,p3,
+		p0,p1,p2,p3
+	};
+
+	AppendVertsFor3DBox( vertices, 8, corners, start_color, end_color, uvs.mins, uvs.maxs );
+	AppendIndicesForCubeMesh( indices );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
+
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -559,7 +581,7 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& start_
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color, float duration /*= 0.0f*/, eDebugRenderMode mode /*= DEBUG_RENDER_USE_DEPTH */ )
+void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldWireSphere( pos, radius, color, color, duration, mode );
 }
