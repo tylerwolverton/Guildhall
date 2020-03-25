@@ -2,6 +2,7 @@
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -199,13 +200,14 @@ void DebugRenderBeginFrame()
 //-----------------------------------------------------------------------------------------------
 void InitializeDebugCamera( Camera* camera )
 {
-	s_debugCamera->SetClearMode( CLEAR_NONE );
 	s_debugCamera->SetTransform( camera->GetTransform() );
 	s_debugCamera->SetColorTarget( camera->GetColorTarget() );
 	s_debugCamera->SetOutputSize( camera->GetOutputSize() );
 	s_debugCamera->SetDepthStencilTarget( camera->GetDepthStencilTarget() );
 	s_debugCamera->SetViewMatrix( camera->GetViewMatrix() );
 	s_debugCamera->SetProjectionMatrix( camera->GetProjectionMatrix() );
+
+	s_debugCamera->SetClearMode( CLEAR_NONE );
 }
 
 
@@ -737,14 +739,10 @@ AABB2 DebugGetScreenBounds()
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_color, float duration )
+void DebugAddScreenPoint( const Vec2& pos, float size, const Rgba8& start_color, const Rgba8& end_color, float duration )
 {
 	std::vector<Vertex_PCU> vertices;
-
-	AABB2 pointBounds( Vec2::ZERO, Vec2( size, size ) );
-	pointBounds.SetCenter( pos );
-
-	AppendVertsForAABB2DWithDepth( vertices, pointBounds, 0.f, start_color );
+	
 	AppendVertsForArc( vertices, pos, size, 360.f, 0.f, start_color );
 	
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
@@ -754,14 +752,77 @@ void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_col
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 color, float duration )
+void DebugAddScreenPoint( const Vec2& pos, float size, const Rgba8& color, float duration )
 {
 	DebugAddScreenPoint( pos, size, color, color, duration );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddScreenPoint( Vec2 pos, Rgba8 color )
+void DebugAddScreenPoint( const Vec2& pos, const Rgba8& color )
 {
 	DebugAddScreenPoint( pos, 1.f, color, 0.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenLine( const Vec2& p0, const Rgba8& p0_start_color, const Vec2& p1, const Rgba8& p1_start_color, const Rgba8& start_tint, const Rgba8& end_tint, float duration )
+{
+	std::vector<Vertex_PCU> vertices;
+
+	Vec2 bone( p1 - p0 );
+	Vec2 center( p0 + bone * .5f );
+	Vec2 fullDimensions( bone.GetLength(), 5.f );
+	Vec2 iBasis = bone.GetNormalized();
+	OBB2 bounds( center, fullDimensions, iBasis );
+
+	AppendVertsForOBB2D( vertices, bounds, p0_start_color );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, start_tint, end_tint, duration );
+
+	s_debugRenderScreenObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenLine( const Vec2& p0, const Vec2& p1, const Rgba8& color, float duration )
+{
+	DebugAddScreenLine( p0, color, p1, color, color, color, duration );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenArrow( const Vec2& p0, const Rgba8& p0_start_color, const Vec2& p1, const Rgba8& p1_start_color, const Rgba8& start_tint, const Rgba8& end_tint, float duration )
+{
+	const float arrowTipRatio = .05f;
+
+	Vec2 bone( p1 - p0 );
+	Vec2 lineDimensions( bone.GetLength(), 5.f );
+	Vec2 iBasis = bone.GetNormalized();
+	Vec2 jBasis = iBasis.GetRotatedMinus90Degrees();
+
+	Vec2 endOfLine = lineDimensions.x * iBasis * ( 1.f - arrowTipRatio );
+
+	std::vector<Vertex_PCU> vertices;
+	vertices.push_back( Vertex_PCU( p0 + endOfLine + 10.f * jBasis, p1_start_color ) );
+	vertices.push_back( Vertex_PCU( p1, p1_start_color ) );
+	vertices.push_back( Vertex_PCU( p0 + endOfLine - 10.f * jBasis, p1_start_color ) );
+
+
+	Vec2 center( p0 + bone * .5f );
+	lineDimensions.x *= 1.f - arrowTipRatio;
+	OBB2 bounds( center, lineDimensions, iBasis );
+
+	AppendVertsForOBB2D( vertices, bounds, p0_start_color );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, start_tint, end_tint, duration );
+
+	s_debugRenderScreenObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenArrow( const Vec2& p0, const Vec2& p1, const Rgba8& color, float duration )
+{
+	DebugAddScreenArrow( p0, color, p1, color, color, color, duration );
 }

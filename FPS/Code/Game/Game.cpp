@@ -339,9 +339,18 @@ void Game::UpdateFromKeyboard()
 	{
 		DebugAddWorldBasis( m_worldCamera->GetTransform().GetAsMatrix(), 20.f );
 	}
+
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
 		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN, 10.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '2' ) )
+	{
+		DebugAddScreenLine( Vec2::ZERO, Rgba8::BLUE, Vec2( 1920.f, 1080.f ) * .5f, Rgba8::GREEN, Rgba8::RED, Rgba8::YELLOW, 10.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '3' ) )
+	{
+		DebugAddScreenArrow( Vec2(250.f, 300.f), Rgba8::BLUE, Vec2( 1000.f, 12.f ), Rgba8::GREEN, Rgba8::RED, Rgba8::YELLOW, 10.f );
 	}
 }
 

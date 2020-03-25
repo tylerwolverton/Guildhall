@@ -129,22 +129,24 @@ void DebugRenderSetScreenHeight( float height ); // default to 1080.0f when syst
 AABB2 DebugGetScreenBounds();                    // useful if you want to align to top right for something
 
 // points
-void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_color, float duration );
-void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 color, float duration = 0.0f );
-void DebugAddScreenPoint( Vec2 pos, Rgba8 color ); // assumed size;
+void DebugAddScreenPoint( const Vec2& pos, float size, const Rgba8& start_color, const Rgba8& end_color, float duration );
+void DebugAddScreenPoint( const Vec2& pos, float size, const Rgba8& color, float duration = 0.0f );
+void DebugAddScreenPoint( const Vec2& pos, const Rgba8& color ); // assumed size;
 
-//// lines
-//void DebugAddScreenLine( vec2 p0, rgba p0_start_color, rgba p0_end_color,
-//						 vec2 p1, rgba p1_start_color, rgba p1_end_color,
-//						 float duration );
-//void DebugAddScreenLine( vec2 p0, vec2 p1, rgba color, float duration = 0.0f );
-//
-//// arrows
-//void DebugAddScreenArrow( vec2 p0, rgba p0_start_color, rgba p0_end_color,
-//						  vec2 p1, rgba p1_start_color, rgba p1_end_color,
-//						  float duration );
-//void DebugAddScreenArrow( vec2 p0, vec2 p1, rgba color, float duration = 0.0f );
-//
+// lines
+void DebugAddScreenLine( const Vec2& p0, const Rgba8& p0_start_color,
+						 const Vec2& p1, const Rgba8& p1_start_color,
+						 const Rgba8& start_tint, const Rgba8& end_tint,
+						 float duration );
+void DebugAddScreenLine( const Vec2& p0, const Vec2& p1, const Rgba8& color, float duration = 0.0f );
+
+// arrows
+void DebugAddScreenArrow( const Vec2& p0, const Rgba8& p0_start_color,
+						  const Vec2& p1, const Rgba8& p1_start_color,
+						  const Rgba8& start_tint, const Rgba8& end_tint,
+						  float duration );
+void DebugAddScreenArrow( const Vec2& p0, const Vec2& p1, const Rgba8& color, float duration = 0.0f );
+
 //// quad
 //void DebugAddScreenQuad( aabb2 bounds, rgba start_color, rgba end_color, float duration );
 //void DebugAddScreenQuad( aabb2 bounds, rgba color, float duration = 0.0f );
