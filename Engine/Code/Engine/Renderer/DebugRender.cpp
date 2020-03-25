@@ -588,6 +588,22 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color,
 
 
 //-----------------------------------------------------------------------------------------------
+void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldLine( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetIBasis3D().GetNormalized(), Rgba8::RED, duration, mode );
+	DebugAddWorldLine( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetJBasis3D().GetNormalized(), Rgba8::GREEN, duration, mode );
+	DebugAddWorldLine( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetKBasis3D().GetNormalized(), Rgba8::BLUE, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldBasis( const Mat44& basis, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldBasis( basis, Rgba8::WHITE, Rgba8::WHITE, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
 {
 	if ( text == nullptr

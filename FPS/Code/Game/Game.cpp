@@ -335,6 +335,10 @@ void Game::UpdateFromKeyboard()
 		Vec3 p3 = p0 + Vec3( 10.f, 10.f, 0.f );
 		DebugAddWorldQuad( p0, p1, p2, p3, AABB2::ONE_BY_ONE, Rgba8::GREEN, Rgba8::RED, 20.f );
 	}
+	if ( g_inputSystem->WasKeyJustPressed( 'I' ) )
+	{
+		DebugAddWorldBasis( m_worldCamera->GetTransform().GetAsMatrix(), 20.f );
+	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
 		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN, 10.f );

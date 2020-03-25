@@ -93,10 +93,10 @@ void DebugAddWorldWireBounds( const AABB3& bounds, const Rgba8& color, float dur
 void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
-//// basis
-//void DebugAddWorldBasis( mat44 basis, rgba start_tint, rgba end_tint, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//void DebugAddWorldBasis( mat44 basis, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//
+// basis
+void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+void DebugAddWorldBasis( const Mat44& basis, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
 // text
 // non-billboarded will be oriented in the world based on the passed in basis matrix 
 void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text );
