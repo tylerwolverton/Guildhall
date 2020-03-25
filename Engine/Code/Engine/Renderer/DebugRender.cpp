@@ -467,6 +467,28 @@ void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& start_color, cons
 
 
 //-----------------------------------------------------------------------------------------------
+void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& color, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldWireBounds( bounds, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldWireBounds( const AABB3& bounds, const Rgba8& color, float duration, eDebugRenderMode mode )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	AppendVertsForAABB3D( vertices, bounds, color );
+	AppendIndicesForCubeMesh( indices );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, color, color, duration );
+
+	s_debugRenderWorldOutlineObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
 {
 	if ( text == nullptr

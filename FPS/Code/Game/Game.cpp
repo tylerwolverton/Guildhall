@@ -3,6 +3,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/MatrixUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
@@ -276,7 +277,7 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleBlendMode();
 	}
-	/*if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
 	{
 		g_renderer->CycleCullMode();
 	}
@@ -287,7 +288,7 @@ void Game::UpdateFromKeyboard()
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
 	{
 		g_renderer->CycleWindOrder();
-	}*/
+	}
 	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
 		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 10.f );
@@ -300,8 +301,13 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'R' ) )
 	{
-		OBB3 box( m_worldCamera->GetTransform().GetPosition(),Vec3( 3.f, 6.f, 1.f ), 30.f, 30.f, 15.f );
-		DebugAddWorldWireBounds( box, Rgba8::YELLOW, Rgba8::GREEN, 10.f );
+		/*Vec3 iBasis( 1.f, 0.f, 0.f );
+		iBasis = iBasis.GetRotatedAboutZDegrees( 30.f );
+		Vec3 jBasis( 0.f, 1.f, 0.f );
+		jBasis = jBasis.GetRotatedAboutZDegrees( 30.f );
+		OBB3 box( m_worldCamera->GetTransform().GetPosition(), Vec3( 3.f, 2.f, 1.f ), iBasis, jBasis );*/
+		AABB3 box( m_worldCamera->GetTransform().GetPosition(), m_worldCamera->GetTransform().GetPosition() + Vec3::ONE );
+		DebugAddWorldWireBounds( box, Rgba8::YELLOW, 10.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
 	{

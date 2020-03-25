@@ -87,9 +87,9 @@ void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, 
 //
 // bounds
 void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//void DebugAddWorldWireBounds( const AABB3& bounds, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//
+void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+void DebugAddWorldWireBounds( const AABB3& bounds, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
 //void DebugAddWorldWireSphere( vec3 pos, float radius, rgba start_color, rgba end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 //void DebugAddWorldWireSphere( vec3 pos, float radius, rgba color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 //

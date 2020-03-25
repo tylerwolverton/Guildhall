@@ -17,8 +17,6 @@ public:
 	~OBB3() = default;
 	OBB3( const OBB3& copyFrom );
 	explicit OBB3( const Vec3& center, const Vec3& fullDimensions, const Vec3& iBasisNormal = Vec3( 1.f, 0.f, 0.f ), const Vec3& jBasisNormal = Vec3( 0.f, 1.f, 0.f ) );
-	explicit OBB3( const Vec3& center, const Vec3& fullDimensions, float pitch, float yaw, float roll );
-	explicit OBB3( const AABB3& asAxisAlignedBox, float pitch, float yaw, float roll );
 
 	// Accessors (const methods)
 	const Vec3	GetCenter() const							{ return m_center; }
