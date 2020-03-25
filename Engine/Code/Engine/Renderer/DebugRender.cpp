@@ -26,10 +26,22 @@ class DebugRenderObject;
 static RenderContext* s_debugRenderContext = nullptr;
 static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
+// Depth
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldOutlineObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjects;
+// Always
+static std::vector<DebugRenderObject*> s_debugRenderWorldObjectsAlways;
+static std::vector<DebugRenderObject*> s_debugRenderWorldOutlineObjectsAlways;
+static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjectsAlways;
+static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjectsAlways;
+// X-ray
+static std::vector<DebugRenderObject*> s_debugRenderWorldObjectsXRay;
+static std::vector<DebugRenderObject*> s_debugRenderWorldOutlineObjectsXRay;
+static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjectsXRay;
+static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjectsXRay;
+// Screen 
 static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
 static float s_screenHeight = 1080.f;
 
@@ -157,7 +169,22 @@ void DisableDebugRendering()
 //-----------------------------------------------------------------------------------------------
 void ClearDebugRendering()
 {
+	// Depth
 	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldObjects );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldOutlineObjects );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldTextObjects );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldBillboardTextObjects );
+	// Always
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldObjectsAlways );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldOutlineObjectsAlways );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldTextObjectsAlways );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldBillboardTextObjectsAlways );
+	// XRay
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldObjectsXRay );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldOutlineObjectsXRay );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldTextObjectsXRay );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldBillboardTextObjectsXRay );
+	// Screen
 	PTR_VECTOR_SAFE_DELETE( s_debugRenderScreenObjects );
 }
 
@@ -168,6 +195,7 @@ void DebugRenderBeginFrame()
 }
 
 
+//-----------------------------------------------------------------------------------------------
 void InitializeDebugCamera( Camera* camera )
 {
 	s_debugCamera->SetClearMode( CLEAR_NONE );
@@ -248,20 +276,56 @@ void DebugRenderWorldToCamera( Camera* camera )
 	
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
+	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+
+	// Draw Depth
+	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	s_debugRenderContext->BindTexture( nullptr );
-	
 	RenderWorldObjects( s_debugRenderWorldObjects );
+	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
 	
 	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
 	RenderWorldObjects( s_debugRenderWorldOutlineObjects );
+	RenderWorldObjects( s_debugRenderWorldOutlineObjectsXRay );
 	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
 	
-	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 	s_debugRenderContext->BindTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjects );
+	RenderWorldObjects( s_debugRenderWorldTextObjectsXRay );
 	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjects );
+	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjectsXRay );
 
-	
+	// Draw Always
+	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
+
+	s_debugRenderContext->BindTexture( nullptr );
+	RenderWorldObjects( s_debugRenderWorldObjectsAlways );
+
+	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
+	RenderWorldObjects( s_debugRenderWorldOutlineObjectsAlways );
+	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
+
+	s_debugRenderContext->BindTexture( font->GetTexture() );
+	RenderWorldObjects( s_debugRenderWorldTextObjectsAlways );
+	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjectsAlways );
+
+	// Draw XRay
+	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_GREATER, false );
+	s_debugRenderContext->BindShader( "Data/Shaders/XRay.hlsl" );
+
+	s_debugRenderContext->BindTexture( nullptr );
+	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
+
+	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
+	RenderWorldObjects( s_debugRenderWorldOutlineObjectsXRay );
+	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
+
+	s_debugRenderContext->BindTexture( font->GetTexture() );
+	RenderWorldObjects( s_debugRenderWorldTextObjectsXRay );
+	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjectsXRay );
+
+	s_debugRenderContext->BindShader( "Data/Shaders/Default.hlsl" );
+
 	s_debugRenderContext->EndCamera( *s_debugCamera );
 }
 
@@ -326,10 +390,22 @@ void CullExpiredObjects( std::vector<DebugRenderObject*>& objects )
 //-----------------------------------------------------------------------------------------------
 void DebugRenderEndFrame()
 {
+	// Depth
 	CullExpiredObjects( s_debugRenderWorldObjects );
 	CullExpiredObjects( s_debugRenderWorldOutlineObjects );
 	CullExpiredObjects( s_debugRenderWorldTextObjects );
 	CullExpiredObjects( s_debugRenderWorldBillboardTextObjects );
+	// Always
+	CullExpiredObjects( s_debugRenderWorldObjectsAlways );
+	CullExpiredObjects( s_debugRenderWorldOutlineObjectsAlways );
+	CullExpiredObjects( s_debugRenderWorldTextObjectsAlways );
+	CullExpiredObjects( s_debugRenderWorldBillboardTextObjectsAlways );
+	// XRay
+	CullExpiredObjects( s_debugRenderWorldObjectsXRay );
+	CullExpiredObjects( s_debugRenderWorldOutlineObjectsXRay );
+	CullExpiredObjects( s_debugRenderWorldTextObjectsXRay );
+	CullExpiredObjects( s_debugRenderWorldBillboardTextObjectsXRay );
+	// Screen
 	CullExpiredObjects( s_debugRenderScreenObjects );
 }
 
@@ -344,16 +420,18 @@ void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, 
 
 	AABB3 pointBounds( Vec3::ZERO, Vec3( size, size, size ) );
 	pointBounds.SetCenter( pos );
-
-	//AppendVertsAndIndicesForSphereMesh( vertices, indices, pos, size, 16, 16, start_color );
-	
+		
 	AppendVertsForCubeMesh( vertices, pos, size, start_color );
 	AppendIndicesForCubeMesh( indices );
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 	
-	// Update to find next open slot?
-	s_debugRenderWorldObjects.push_back( obj );
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -398,7 +476,12 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, p0_start_color, p0_end_color, duration );
 
-	s_debugRenderWorldObjects.push_back( obj );
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -420,7 +503,12 @@ void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& start_color, cons
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 
-	s_debugRenderWorldOutlineObjects.push_back( obj );
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldOutlineObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldOutlineObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldOutlineObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -442,7 +530,12 @@ void DebugAddWorldWireBounds( const AABB3& bounds, const Rgba8& color, float dur
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, color, color, duration );
 
-	s_debugRenderWorldOutlineObjects.push_back( obj );
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldOutlineObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldOutlineObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldOutlineObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -456,7 +549,12 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& start_
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 
-	s_debugRenderWorldOutlineObjects.push_back( obj );
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldOutlineObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldOutlineObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldOutlineObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -496,8 +594,12 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 
-	// Update to find next open slot?
-	s_debugRenderWorldTextObjects.push_back( obj );
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldTextObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldTextObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldTextObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -552,8 +654,12 @@ void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rg
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration, origin );
 
-	// Update to find next open slot?
-	s_debugRenderWorldBillboardTextObjects.push_back( obj );
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldBillboardTextObjects.push_back( obj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldBillboardTextObjectsAlways.push_back( obj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldBillboardTextObjectsXRay.push_back( obj ); return;
+	}
 }
 
 
@@ -605,7 +711,6 @@ void DebugAddScreenPoint( Vec2 pos, float size, Rgba8 start_color, Rgba8 end_col
 	
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
 
-	// Update to find next open slot?
 	s_debugRenderScreenObjects.push_back( obj );
 }
 

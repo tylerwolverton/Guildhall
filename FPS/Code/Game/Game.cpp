@@ -119,7 +119,6 @@ void Game::Startup()
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
-	//g_inputSystem->SetCursorMode( CURSOR_ABSOLUTE );
 
 	TileDefinition::s_definitions.clear();
 	
@@ -131,7 +130,6 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
-	//PTR_SAFE_DELETE( m_uiCamera );
 	PTR_SAFE_DELETE( m_worldCamera );
 }
 
@@ -178,19 +176,22 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
-	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
-	g_renderer->BindTexture( texture );
+	g_renderer->BindTexture( nullptr );
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
-	
-	DrawAABB2WithDepth( g_renderer, AABB2( -.5f, -.5f, .5f, .5f ), -10.f, Rgba8::WHITE );
 	
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model );
 	g_renderer->DrawMesh( m_cubeMesh );
-		
+
 	model = m_planeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model );
 	g_renderer->DrawMesh( m_planeMesh );
+
+	Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
+	g_renderer->SetModelMatrix( Mat44() );
+	g_renderer->BindTexture( texture );
+
+	DrawAABB2WithDepth( g_renderer, AABB2( -.5f, -.5f, .5f, .5f ), -10.f, Rgba8::WHITE );
 
 	for ( int transformIdx = 0; transformIdx < (int)m_sphereMeshTransforms.size(); ++transformIdx )
 	{
@@ -291,7 +292,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
-		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 10.f );
+		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 10.f, DEBUG_RENDER_XRAY );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
 	{
@@ -311,7 +312,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'Y' ) )
 	{
-		DebugAddWorldWireSphere( m_worldCamera->GetTransform().GetPosition(), 2.f, Rgba8::PURPLE, Rgba8::YELLOW, 10.f );
+		DebugAddWorldWireSphere( m_worldCamera->GetTransform().GetPosition(), 2.f, Rgba8::WHITE, Rgba8::WHITE, 10.f, DEBUG_RENDER_ALWAYS );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
 	{
@@ -323,7 +324,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
 	{
-		DebugAddWorldBillboardText( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ONE, Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Mid!" );
+		DebugAddWorldBillboardText( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ONE, Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_XRAY, "Mid!" );
 		DebugAddWorldBillboardTextf( m_worldCamera->GetTransform().GetPosition(), Vec2::ZERO, Rgba8::GREEN, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "%d!", 15 );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
