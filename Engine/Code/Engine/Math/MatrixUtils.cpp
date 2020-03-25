@@ -2,7 +2,6 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Mat44.hpp"
-#include "Engine/Math/Vec3.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -22,6 +21,24 @@ Mat44 MakePerspectiveProjectionMatrixD3D( float fovDegrees,
 										  float nearZ, float farZ )
 {
 	return Mat44::CreatePerspectiveProjection( fovDegrees, aspectRatio, nearZ, farZ );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Mat44 MakeLookAtMatrix( const Vec3& pos, const Vec3& target, const Vec3& worldUp )
+{
+	Vec3 forward = target - pos;
+	forward.Normalize();
+	
+	Vec3 right = CrossProduct3D( forward, worldUp );
+	right.Normalize();
+
+	Vec3 up = CrossProduct3D( right, forward );
+
+	Mat44 lookAt;
+	lookAt.SetBasisVectors3D( right, up, forward );
+
+	return lookAt;
 }
 
 
@@ -75,6 +92,12 @@ void InvertOrthoNormalMatrix( Mat44& matrix )
 //-----------------------------------------------------------------------------------------------
 void InvertMatrix( Mat44& matrix )
 {
+	if ( IsOrthoNormalMatrix( matrix ) )
+	{
+		InvertOrthoNormalMatrix( matrix );
+		return;
+	}
+
 	double inv[16];
 	double det;
 	double m[16];

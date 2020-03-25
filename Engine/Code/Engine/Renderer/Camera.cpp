@@ -162,14 +162,7 @@ void Camera::UpdateCameraUBO()
 	cameraData.projection = m_projectionMatrix;
 
 	Mat44 model = m_transform.GetAsMatrix();
-	if ( IsOrthoNormalMatrix( model ) )
-	{
-		InvertOrthoNormalMatrix( model );
-	}
-	else
-	{
-		InvertMatrix( model );
-	}
+	InvertMatrix( model );
 
 	cameraData.view = model;
 	m_viewMatrix = model;

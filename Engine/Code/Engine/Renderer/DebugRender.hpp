@@ -101,11 +101,11 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, float duration, eDebugRenderMode mode, char const* format, ... );
 void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, char const* format, ... ); // assume DEBUG_RENDER_USE_DEPTH
 
-//// this text will always orient itself to the current camera
-//void DebugAddWorldBillboardText( vec3 origin, vec2 pivot, rgba start_color, rgba end_color, float duration, eDebugRenderMode mode, char const* text );
-//void DebugAddWorldBillboardTextf( vec3 origin, vec2 pivot, rgba color, float duration, eDebugRenderMode mode, char const* format, ... );
-//void DebugAddWorldBillboardTextf( vec3 origin, vec2 pivot, rgba color, char const* format, ... );
-//
+// this text will always orient itself to the current camera
+void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text );
+void DebugAddWorldBillboardTextf( const Vec3& origin, const Vec2& pivot, const Rgba8& color, float duration, eDebugRenderMode mode, char const* format, ... );
+void DebugAddWorldBillboardTextf( const Vec3& origin, const Vec2& pivot, const Rgba8& color, char const* format, ... );
+
 //// grid [extra] 
 //void DebugAddWorldGrid( vec3 origin,
 //						vec3 i, float iMin, float iMax, float iMinorSegment, iMajorSegment, rgba iMinorColor, rgba iMajorColor, rgba iOriginColor,

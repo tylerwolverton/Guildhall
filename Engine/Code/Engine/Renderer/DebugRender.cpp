@@ -3,7 +3,10 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB3.hpp"
+#include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/MatrixUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -25,6 +28,7 @@ static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjects;
+static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjects;
 static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
 static float s_screenHeight = 1080.f;
 
@@ -35,8 +39,8 @@ static float s_screenHeight = 1080.f;
 class DebugRenderObject
 {
 public:
-	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f );
-	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f );
+	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f, const Vec3& origin = Vec3::ZERO );
+	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f, const Vec3& origin = Vec3::ZERO );
 	
 	bool IsReadyToBeCulled() const;
 
@@ -46,6 +50,7 @@ public:
 	std::vector<Vertex_PCU> m_vertices;
 	std::vector<uint> m_indices;
 	float m_duration = 0.f;
+	Vec3 m_origin = Vec3::ZERO;
 	Rgba8 m_startColor = Rgba8::MAGENTA;
 	Rgba8 m_endColor = Rgba8::BLACK;
 	Timer m_timer;
@@ -53,11 +58,12 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
-DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration )
+DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration, const Vec3& origin )
 	: m_vertices( vertices )
 	, m_startColor( startColor )
 	, m_endColor( endColor )
 	, m_duration( duration )
+	, m_origin( origin )
 {
 	m_timer.m_clock = s_debugRenderContext->GetClock();
 	if ( m_timer.m_clock == nullptr )
@@ -71,12 +77,13 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 
 //-----------------------------------------------------------------------------------------------
-DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration )
+DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration, const Vec3& origin )
 	: m_vertices( vertices )
 	, m_indices( indices )
 	, m_startColor( startColor )
 	, m_endColor( endColor )
 	, m_duration( duration )
+	, m_origin( origin )
 {
 	m_timer.m_clock = s_debugRenderContext->GetClock();
 	if ( m_timer.m_clock == nullptr )
@@ -188,7 +195,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 			std::vector<uint> indices;
 
 			AppendDebugObjectToVertexArray( vertices, indices, obj );
-
+			
 			GPUMesh mesh( s_debugRenderContext, vertices, indices );
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
@@ -198,7 +205,6 @@ void DebugRenderWorldToCamera( Camera* camera )
 	s_debugRenderContext->BindTexture( font->GetTexture() );
 	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldTextObjects.size(); ++debugObjIdx )
 	{
-
 		DebugRenderObject*& obj = s_debugRenderWorldTextObjects[debugObjIdx];
 		if ( obj != nullptr )
 		{
@@ -208,6 +214,38 @@ void DebugRenderWorldToCamera( Camera* camera )
 			AppendDebugObjectToVertexArray( vertices, indices, obj );
 
 			GPUMesh mesh( s_debugRenderContext, vertices, indices );
+			s_debugRenderContext->DrawMesh( &mesh );
+		}
+	}
+
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldBillboardTextObjects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = s_debugRenderWorldBillboardTextObjects[debugObjIdx];
+		if ( obj != nullptr )
+		{
+			std::vector<Vertex_PCU> vertices;
+			std::vector<uint> indices;
+
+			AppendDebugObjectToVertexArray( vertices, indices, obj );
+
+			Vec3 cameraRotation = s_debugCamera->GetTransform().m_rotation;
+			Mat44 rotationMatrix = Mat44::CreateRotationFromPitchRollYawDegrees( cameraRotation.x, cameraRotation.y, cameraRotation.z );
+			//Mat44 model = s_debugCamera->GetProjectionMatrix();
+			//model.SetTranslation3D( obj->m_origin );
+		
+			Mat44 modelMatrix = Mat44::CreateTranslation3D( obj->m_origin );
+			Mat44 inverseTranslationMatrix = Mat44::CreateTranslation3D( -obj->m_origin );
+			modelMatrix.PushTransform( rotationMatrix );
+			modelMatrix.PushTransform( inverseTranslationMatrix );
+
+			for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
+			{				
+				vertices[vertIdx].m_position = modelMatrix.TransformPosition3D( vertices[vertIdx].m_position );
+			}
+
+			GPUMesh mesh( s_debugRenderContext, vertices, indices );
+			//s_debugRenderContext->SetModelMatrix( modelMatrix );
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
@@ -295,6 +333,16 @@ void DebugRenderEndFrame()
 			PTR_SAFE_DELETE( obj );
 		}
 	}
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldBillboardTextObjects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = s_debugRenderWorldBillboardTextObjects[debugObjIdx];
+		if ( obj != nullptr
+			 && obj->IsReadyToBeCulled() )
+		{
+			PTR_SAFE_DELETE( obj );
+		}
+	}
 }
 
 
@@ -309,8 +357,9 @@ void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, 
 	AABB3 pointBounds( Vec3::ZERO, Vec3( size, size, size ) );
 	pointBounds.SetCenter( pos );
 
-	AppendVertsAndIndicesForSphereMesh( vertices, indices, pos, size, 16, 16, start_color );
+	//AppendVertsAndIndicesForSphereMesh( vertices, indices, pos, size, 16, 16, start_color );
 	
+	AppendVertsForCubeMesh( vertices, pos, size, start_color );
 	AppendIndicesForCubeMesh( indices );
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
@@ -348,13 +397,13 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 
 	Vec3 obbBone = p1 - p0; // k vector of obb3
 	Vec3 normalizedK = obbBone.GetNormalized();
-	Vec3 iBasis = CrossProduct3D( Vec3( 0.f, 1.f, 0.f ), normalizedK );
-	Vec3 jBasis = CrossProduct3D( normalizedK, iBasis );
+
+	Mat44 lookAt = MakeLookAtMatrix( p0, p1 );
 
 	Vec3 obbCenter = p0 + ( obbBone * .5f );
 	Vec3 obbDimensions( .01f, .01f, obbBone.GetLength() );
 
-	OBB3 lineBounds( obbCenter, obbDimensions, iBasis, jBasis );
+	OBB3 lineBounds( obbCenter, obbDimensions, lookAt.GetIBasis3D(), lookAt.GetJBasis3D() );
 
 	AppendVertsForOBB3D( vertices, lineBounds, p0_start_color );
 	AppendIndicesForCubeMesh( indices );
@@ -425,6 +474,62 @@ void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& col
 	std::string text = Stringv( format, args );
 
 	DebugAddWorldText( basis, pivot, color, color, 0.f, DEBUG_RENDER_USE_DEPTH, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
+{
+	if ( text == nullptr
+		 || strlen( text ) == 0 )
+	{
+		return;
+	}
+
+	// TODO: fall back to triangle font if none found?
+	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+
+	UNUSED( mode );
+
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	Vec2 textDimensions = font->GetDimensionsForText2D( .5f, text );
+	Vec2 textMins = -pivot * textDimensions;
+
+	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, .5f, text, start_color );
+
+	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
+	{
+		vertices[vertIdx].m_position += origin;
+	}
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration, origin );
+
+	// Update to find next open slot?
+	s_debugRenderWorldBillboardTextObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldBillboardTextf( const Vec3& origin, const Vec2& pivot, const Rgba8& color, float duration, eDebugRenderMode mode, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddWorldBillboardText( origin, pivot, color, color, duration, DEBUG_RENDER_USE_DEPTH, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldBillboardTextf( const Vec3& origin, const Vec2& pivot, const Rgba8& color, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddWorldBillboardText( origin, pivot, color, color, 0.f, DEBUG_RENDER_USE_DEPTH, text.c_str() );
 }
 
 

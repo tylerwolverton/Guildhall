@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Mat44.hpp"
+#include "Engine/Math/Vec3.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -11,6 +12,8 @@ Mat44 MakeOrthographicProjectionMatrixD3D( float minX, float maxX,
 Mat44 MakePerspectiveProjectionMatrixD3D( float fovDegrees, 
 										  float aspectRatio, 
 										  float nearZ, float farZ );
+
+Mat44 MakeLookAtMatrix( const Vec3& pos, const Vec3& target, const Vec3& worldUp = Vec3( 0.f, 1.f, 0.f ) );
 
 void TransposeMatrix( Mat44& matrix );
 bool IsOrthoNormalMatrix( Mat44& matrix );

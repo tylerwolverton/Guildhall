@@ -295,9 +295,9 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleWindOrder();
 	}
-	if ( g_inputSystem->WasKeyJustPressed( 'Q' ) )
+	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
-		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 3.f );
+		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 10.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
 	{
@@ -312,6 +312,11 @@ void Game::UpdateFromKeyboard()
 		DebugAddWorldText( textView, Vec2::ZERO, Rgba8::BLUE, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Zero!" );
 		DebugAddWorldText( textView, Vec2( .5f, .5f ), Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Mid!" );
 		DebugAddWorldTextf( textView, Vec2::ONE, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "One!", 12 );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
+	{
+		DebugAddWorldBillboardText( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ONE, Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Mid!" );
+		DebugAddWorldBillboardTextf( m_worldCamera->GetTransform().GetPosition(), Vec2::ZERO, Rgba8::GREEN, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "%d!", 15 );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
