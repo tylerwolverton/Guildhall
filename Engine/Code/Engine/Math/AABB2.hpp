@@ -14,6 +14,7 @@ public:
 	Vec2 maxs;
 
 	static const AABB2 ONE_BY_ONE;
+	static const AABB2 ZERO_TO_ONE;
 
 public:
 	AABB2();

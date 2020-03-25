@@ -5,6 +5,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB3.hpp"
+#include "Engine/Math/Vec4.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/TextBox.hpp"
@@ -351,6 +352,19 @@ void Game::UpdateFromKeyboard()
 	if ( g_inputSystem->WasKeyJustPressed( '3' ) )
 	{
 		DebugAddScreenArrow( Vec2(250.f, 300.f), Rgba8::BLUE, Vec2( 1000.f, 12.f ), Rgba8::GREEN, Rgba8::RED, Rgba8::YELLOW, 10.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '4' ) )
+	{
+		DebugAddScreenQuad( AABB2( Vec2( 250.f, 12.f ), Vec2( 1000.f, 120.f ) ), Rgba8::GREEN, Rgba8::RED, 10.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '5' ) )
+	{
+		Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
+		DebugAddScreenTexturedQuad( AABB2( Vec2( 10.f, 10.f ), Vec2( 500.f, 500.f ) ), texture, Rgba8::WHITE, 10.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '6' ) )
+	{
+		DebugAddScreenTextf( Vec4( .5f, .75f, 10.f, -10.f ), Vec2( .5f, .5f ), 10.f, Rgba8::WHITE, 10.f, "Here is some text %d", 13 );
 	}
 }
 

@@ -1,10 +1,11 @@
 #pragma once
+#include "Engine/Core/Rgba8.hpp"
 
 
 //------------------------------------------------------------------------
-struct Rgba8;
 struct Vec2;
 struct Vec3;
+struct Vec4;
 struct Mat44;
 struct AABB2;
 struct AABB3;
@@ -147,21 +148,21 @@ void DebugAddScreenArrow( const Vec2& p0, const Rgba8& p0_start_color,
 						  float duration );
 void DebugAddScreenArrow( const Vec2& p0, const Vec2& p1, const Rgba8& color, float duration = 0.0f );
 
-//// quad
-//void DebugAddScreenQuad( aabb2 bounds, rgba start_color, rgba end_color, float duration );
-//void DebugAddScreenQuad( aabb2 bounds, rgba color, float duration = 0.0f );
-//
-//// texture
-//void DebugAddScreenTexturedQuad( aabb2 bounds, Texture* tex, aabb2 uvs, rgba start_tint, rgba end_tint, float duration = 0.0f );
-//void DebugAddScreenTexturedQuad( aabb2 bounds, Texture* tex, aabb2 uvs, rgba tint, float duration = 0.0f );
-//void DebugAddScreenTexturedQuad( aabb2 bounds, Texture* tex, rgba tint = rgba::WHITE, float duration = 0.0f ); // assume UVs are full texture
-//
-//// text
-//void DebugAddScreenText( vec4 pos, vec2 pivot, float size, rgba start_color, rgba end_color, float duration, char const* text );
-//void DebugAddScreenTextf( vec4 pos, vec2 pivot, float size, rgba start_color, rgba end_color, float duration, char const* format, ... );
-//void DebugAddScreenTextf( vec4 pos, vec2 pivot, float size, rgba color, float duration, char const* format, ... );
-//void DebugAddScreenTextf( vec4 pos, vec2 pivot, float size, rgba color, char const* format, ... );
-//void DebugAddScreenTextf( vec4 pos, vec2 pivot, rgba color, char const* format, ... );
+// quad
+void DebugAddScreenQuad( const AABB2& bounds, const Rgba8& start_color, const Rgba8& end_color, float duration );
+void DebugAddScreenQuad( const AABB2& bounds, const Rgba8& color, float duration = 0.0f );
+
+// texture
+void DebugAddScreenTexturedQuad( const AABB2& bounds, Texture* tex, const AABB2& uvs, const Rgba8& start_tint, const Rgba8& end_tint, float duration = 0.0f );
+void DebugAddScreenTexturedQuad( const AABB2& bounds, Texture* tex, const AABB2& uvs, const Rgba8& tint, float duration = 0.0f );
+void DebugAddScreenTexturedQuad( const AABB2& bounds, Texture* tex, const Rgba8& tint = Rgba8::WHITE, float duration = 0.0f ); // assume UVs are full texture
+
+// text
+void DebugAddScreenText( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, char const* text );
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, char const* format, ... );
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& color, float duration, char const* format, ... );
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& color, char const* format, ... );
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, const Rgba8& color, char const* format, ... );
 
 //// screen basis [extra]
 //void DebugAddScreenBasis( vec2 screen_origin_location, mat44 basis_to_render, rgba start_tint, rgba end_tint, float duration );

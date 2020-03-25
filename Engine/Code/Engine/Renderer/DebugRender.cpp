@@ -6,6 +6,7 @@
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec4.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/MatrixUtils.hpp"
@@ -45,6 +46,8 @@ static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjectsXRay;
 static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjectsXRay;
 // Screen 
 static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
+static std::vector<DebugRenderObject*> s_debugRenderScreenTexturedObjects;
+static std::vector<DebugRenderObject*> s_debugRenderScreenTextObjects;
 static float s_screenHeight = 1080.f;
 
 
@@ -54,8 +57,10 @@ static float s_screenHeight = 1080.f;
 class DebugRenderObject
 {
 public:
-	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f, const Vec3& origin = Vec3::ZERO );
-	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f, const Vec3& origin = Vec3::ZERO );
+	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f );
+	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, Texture* texture, float duration = 0.f  );
+	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration = 0.f );
+	DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, const Vec3& origin, float duration = 0.f  );
 	
 	bool IsReadyToBeCulled() const;
 
@@ -66,6 +71,7 @@ public:
 	std::vector<uint> m_indices;
 	float m_duration = 0.f;
 	Vec3 m_origin = Vec3::ZERO;
+	Texture* m_texture = nullptr;
 	Rgba8 m_startColor = Rgba8::MAGENTA;
 	Rgba8 m_endColor = Rgba8::BLACK;
 	Timer m_timer;
@@ -73,8 +79,27 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
-DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration, const Vec3& origin )
+DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, float duration )
 	: m_vertices( vertices )
+	, m_startColor( startColor )
+	, m_endColor( endColor )
+	, m_duration( duration )
+{
+	m_timer.m_clock = s_debugRenderContext->GetClock();
+	if ( m_timer.m_clock == nullptr )
+	{
+		m_timer.m_clock = Clock::GetMaster();
+	}
+
+	m_timer.SetSeconds( m_duration );
+	m_timer.Reset();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, const Vec3& origin, float duration )
+	: m_vertices( vertices )
+	, m_indices( indices )
 	, m_startColor( startColor )
 	, m_endColor( endColor )
 	, m_duration( duration )
@@ -92,13 +117,31 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 
 //-----------------------------------------------------------------------------------------------
-DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration, const Vec3& origin )
+DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration )
 	: m_vertices( vertices )
 	, m_indices( indices )
 	, m_startColor( startColor )
 	, m_endColor( endColor )
 	, m_duration( duration )
-	, m_origin( origin )
+{
+	m_timer.m_clock = s_debugRenderContext->GetClock();
+	if ( m_timer.m_clock == nullptr )
+	{
+		m_timer.m_clock = Clock::GetMaster();
+	}
+
+	m_timer.SetSeconds( m_duration );
+	m_timer.Reset();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, Texture* texture, float duration )
+	: m_vertices( vertices )
+	, m_startColor( startColor )
+	, m_endColor( endColor )
+	, m_duration( duration )
+	, m_texture( texture )
 {
 	m_timer.m_clock = s_debugRenderContext->GetClock();
 	if ( m_timer.m_clock == nullptr )
@@ -188,6 +231,8 @@ void ClearDebugRendering()
 	PTR_VECTOR_SAFE_DELETE( s_debugRenderWorldBillboardTextObjectsXRay );
 	// Screen
 	PTR_VECTOR_SAFE_DELETE( s_debugRenderScreenObjects );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderScreenTexturedObjects );
+	PTR_VECTOR_SAFE_DELETE( s_debugRenderScreenTextObjects );
 }
 
 
@@ -326,6 +371,46 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderScreenObjects( RenderContext* context, std::vector<DebugRenderObject*> objects )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = objects[debugObjIdx];
+		if ( obj != nullptr )
+		{
+			AppendDebugObjectToVertexArray( vertices, indices, obj );
+		}
+	}
+
+	if ( vertices.size() > 0 )
+	{
+		context->DrawVertexArray( vertices );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderTexturedScreenObjects( RenderContext* context, std::vector<DebugRenderObject*> objects )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = objects[debugObjIdx];
+		if ( obj != nullptr )
+		{
+			context->BindTexture( obj->m_texture );
+			AppendDebugObjectToVertexArray( vertices, indices, obj );
+			context->DrawVertexArray( vertices );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void DebugRenderScreenTo( Texture* output )
 {
 	if ( !s_isDebugRenderEnabled )
@@ -347,27 +432,18 @@ void DebugRenderScreenTo( Texture* output )
 
 	context->BeginCamera( *s_debugCamera );
 
-	s_debugRenderContext->BindShader( "Data/Shaders/Default.hlsl" );
+	context->BindShader( "Data/Shaders/Default.hlsl" );
 
-	s_debugRenderContext->SetCullMode( eCullMode::NONE );
-	s_debugRenderContext->SetBlendMode( eBlendMode::ALPHA );
+	context->SetCullMode( eCullMode::NONE );
+	context->SetBlendMode( eBlendMode::ALPHA );
 		
-	std::vector<Vertex_PCU> vertices;
-	std::vector<uint> indices;
+	RenderScreenObjects( context, s_debugRenderScreenObjects );
+	RenderTexturedScreenObjects( context, s_debugRenderScreenTexturedObjects );
 
-	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderScreenObjects.size(); ++debugObjIdx )
-	{
-		DebugRenderObject*& obj = s_debugRenderScreenObjects[debugObjIdx];
-		if ( obj != nullptr )
-		{
-			AppendDebugObjectToVertexArray( vertices, indices, obj );
-		}
-	}
-
-	if ( vertices.size() > 0 )
-	{
-		context->DrawVertexArray( vertices );
-	}
+	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	context->BindTexture( font->GetTexture() );
+	RenderScreenObjects( context, s_debugRenderScreenTextObjects );
+	context->BindTexture( nullptr );
 
 	context->EndCamera( *s_debugCamera );
 }
@@ -408,6 +484,8 @@ void DebugRenderEndFrame()
 	CullExpiredObjects( s_debugRenderWorldBillboardTextObjectsXRay );
 	// Screen
 	CullExpiredObjects( s_debugRenderScreenObjects );
+	CullExpiredObjects( s_debugRenderScreenTexturedObjects );
+	CullExpiredObjects( s_debugRenderScreenTextObjects );
 }
 
 
@@ -691,7 +769,7 @@ void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rg
 		vertices[vertIdx].m_position += origin;
 	}
 
-	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration, origin );
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, origin, duration );
 
 	switch ( mode )
 	{
@@ -734,7 +812,7 @@ void DebugRenderSetScreenHeight( float height )
 //-----------------------------------------------------------------------------------------------
 AABB2 DebugGetScreenBounds()
 {
-	return AABB2::ONE_BY_ONE;
+	return AABB2( Vec2::ZERO, Vec2( 1920.f, 1080.f ) );
 }
 
 
@@ -825,4 +903,126 @@ void DebugAddScreenArrow( const Vec2& p0, const Rgba8& p0_start_color, const Vec
 void DebugAddScreenArrow( const Vec2& p0, const Vec2& p1, const Rgba8& color, float duration )
 {
 	DebugAddScreenArrow( p0, color, p1, color, color, color, duration );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenQuad( const AABB2& bounds, const Rgba8& start_color, const Rgba8& end_color, float duration )
+{
+	std::vector<Vertex_PCU> vertices;
+
+	AppendVertsForAABB2D( vertices, bounds, start_color );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
+
+	s_debugRenderScreenObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenQuad( const AABB2& bounds, const Rgba8& color, float duration )
+{
+	DebugAddScreenQuad( bounds, color, color, duration );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenTexturedQuad( const AABB2& bounds, Texture* tex, const AABB2& uvs, const Rgba8& start_tint, const Rgba8& end_tint, float duration )
+{
+	std::vector<Vertex_PCU> vertices;
+
+	AppendVertsForAABB2D( vertices, bounds, start_tint, uvs.mins, uvs.maxs );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, start_tint, end_tint, tex, duration );
+
+	s_debugRenderScreenTexturedObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenTexturedQuad( const AABB2& bounds, Texture* tex, const AABB2& uvs, const Rgba8& tint, float duration )
+{
+	DebugAddScreenTexturedQuad( bounds, tex, uvs, tint, tint, duration );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenTexturedQuad( const AABB2& bounds, Texture* tex, const Rgba8& tint, float duration )
+{
+	DebugAddScreenTexturedQuad( bounds, tex, AABB2::ZERO_TO_ONE, tint, tint, duration );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenText( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, char const* text )
+{
+	if ( text == nullptr
+		 || strlen( text ) == 0 )
+	{
+		return;
+	}
+
+	// TODO: fall back to triangle font if none found?
+	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	
+	std::vector<Vertex_PCU> vertices;
+
+	Vec2 textDimensions = font->GetDimensionsForText2D( size, text );
+	Vec2 textMins = -pivot * textDimensions;
+
+	font->AppendVertsForText2D( vertices, textMins, size, text, start_color );
+
+	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
+	{
+		vertices[vertIdx].m_position += Vec3( pos.XY() * DebugGetScreenBounds().GetDimensions(), 0.f );
+		vertices[vertIdx].m_position += Vec3( pos.ZW(), 0.f );
+	}
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
+
+	s_debugRenderScreenTextObjects.push_back( obj );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddScreenText( pos, pivot, size, start_color, end_color, duration, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& color, float duration, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddScreenText( pos, pivot, size, color, color, duration, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, float size, const Rgba8& color, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddScreenText( pos, pivot, size, color, color, 0.f, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddScreenTextf( const Vec4& pos, const Vec2& pivot, const Rgba8& color, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddScreenText( pos, pivot, 10.f, color, color, 0.f, text.c_str() );
 }

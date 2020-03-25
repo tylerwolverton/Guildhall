@@ -43,8 +43,9 @@ public:
 	float GetLengthSquared() const;
 
 	// Accessors
-	Vec2 XY();
-	Vec3 XYZ();
+	Vec2 XY() const;
+	Vec2 ZW() const;
+	Vec3 XYZ() const;
 
 	// Standalone "friend" functions that are conceptually, but not actually, part of Vec4::
 	friend const Vec4 operator*( float uniformScale, const Vec4& vecToScale );	// float * vec4
