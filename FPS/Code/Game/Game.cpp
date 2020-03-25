@@ -3,6 +3,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/MatrixUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/OBB3.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/TextBox.hpp"
@@ -63,14 +64,6 @@ void Game::Startup()
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 	
-	Rgba8 transparentWhite( Rgba8::WHITE );
-	//transparentWhite.a = 0;
-	m_screenTexture = g_renderer->CreateTexture( IntVec2( 1920, 1080 ) );
-	/*m_uiCamera = new Camera();
-	m_uiCamera->SetColorTarget( nullptr );
-	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
-	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );*/
-
 	m_rng = new RandomNumberGenerator();
 
 	m_gameClock = new Clock();
@@ -283,7 +276,7 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleBlendMode();
 	}
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
+	/*if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
 	{
 		g_renderer->CycleCullMode();
 	}
@@ -294,7 +287,7 @@ void Game::UpdateFromKeyboard()
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
 	{
 		g_renderer->CycleWindOrder();
-	}
+	}*/
 	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
 		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 10.f );
@@ -304,6 +297,11 @@ void Game::UpdateFromKeyboard()
 		DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
 						   m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW, 
 						   30.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( 'R' ) )
+	{
+		OBB3 box( m_worldCamera->GetTransform().GetPosition(),Vec3( 3.f, 6.f, 1.f ), 30.f, 30.f, 15.f );
+		DebugAddWorldWireBounds( box, Rgba8::YELLOW, Rgba8::GREEN, 10.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
 	{

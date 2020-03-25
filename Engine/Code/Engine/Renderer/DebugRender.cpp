@@ -27,6 +27,7 @@ static RenderContext* s_debugRenderContext = nullptr;
 static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjects;
+static std::vector<DebugRenderObject*> s_debugRenderWorldOutlineObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjects;
 static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
@@ -200,6 +201,25 @@ void DebugRenderWorldToCamera( Camera* camera )
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
+
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldOutlineObjects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = s_debugRenderWorldOutlineObjects[debugObjIdx];
+		if ( obj != nullptr )
+		{
+			std::vector<Vertex_PCU> vertices;
+			std::vector<uint> indices;
+
+			AppendDebugObjectToVertexArray( vertices, indices, obj );
+
+			s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
+
+			GPUMesh mesh( s_debugRenderContext, vertices, indices );
+			s_debugRenderContext->DrawMesh( &mesh );
+		}
+	}
+
+	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
 	
 	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 	s_debugRenderContext->BindTexture( font->GetTexture() );
@@ -313,6 +333,16 @@ void DebugRenderEndFrame()
 			PTR_SAFE_DELETE( obj );
 		}
 	}
+	
+	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderWorldOutlineObjects.size(); ++debugObjIdx )
+	{
+		DebugRenderObject*& obj = s_debugRenderWorldOutlineObjects[debugObjIdx];
+		if ( obj != nullptr
+			 && obj->IsReadyToBeCulled() )
+		{
+			PTR_SAFE_DELETE( obj );
+		}
+	}
 
 	for ( int debugObjIdx = 0; debugObjIdx < (int)s_debugRenderScreenObjects.size(); ++debugObjIdx )
 	{
@@ -418,6 +448,21 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldLine( start, color, color, end, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	AppendVertsForOBB3D( vertices, bounds, start_color );
+	AppendIndicesForCubeMesh( indices );
+
+	DebugRenderObject* obj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
+
+	s_debugRenderWorldOutlineObjects.push_back( obj );
 }
 
 

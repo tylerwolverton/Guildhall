@@ -84,12 +84,7 @@ void RenderContext::Shutdown()
 
 	PTR_SAFE_DELETE( m_swapchain );
 
-	if ( m_currentRasterState != m_defaultRasterState )
-	{
-		DX_SAFE_RELEASE( m_currentRasterState );
-	}
-
-	DX_SAFE_RELEASE( m_defaultRasterState );
+	DX_SAFE_RELEASE( m_currentRasterState );
 	DX_SAFE_RELEASE( m_alphaBlendState );
 	DX_SAFE_RELEASE( m_additiveBlendState );
 	DX_SAFE_RELEASE( m_disabledBlendState );
@@ -170,12 +165,7 @@ void RenderContext::BeginCamera( Camera& camera )
 	{
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
-
-	if ( m_currentRasterState == nullptr )
-	{
-		m_currentRasterState = m_defaultRasterState;
-	}
-
+	
 	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
 	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
 
@@ -303,7 +293,6 @@ void RenderContext::BindShader( Shader* shader )
 	}
 
 	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
-	m_context->RSSetState( m_currentRasterState );
 	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 }
 
@@ -488,8 +477,7 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
 	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
 
-	//m_defaultRasterState = CreateRasterState( eFillMode::SOLID, eCullMode::BACK, true );
-	SetRasterState( &m_defaultRasterState, eFillMode::SOLID, eCullMode::BACK, true );
+	SetRasterState( eFillMode::SOLID, eCullMode::BACK, true );
 
 	CreateBlendStates();
 }
@@ -568,6 +556,7 @@ void RenderContext::ResetRenderObjects()
 	BindShader( ( Shader* )nullptr );
 	BindTexture( nullptr );
 	BindSampler( nullptr );
+	m_context->RSSetState( m_currentRasterState );
 	m_lastVBOHandle = nullptr;
 	m_lastIBOHandle = nullptr;
 }
@@ -703,7 +692,7 @@ void RenderContext::CreateBlendStates()
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetRasterState( ID3D11RasterizerState** rasterState, eFillMode fillMode, eCullMode cullMode, bool windCCW )
+void RenderContext::SetRasterState( eFillMode fillMode, eCullMode cullMode, bool windCCW )
 {
 	D3D11_RASTERIZER_DESC desc;
 
@@ -717,13 +706,11 @@ void RenderContext::SetRasterState( ID3D11RasterizerState** rasterState, eFillMo
 	desc.ScissorEnable = FALSE;
 	desc.MultisampleEnable = FALSE;
 	desc.AntialiasedLineEnable = FALSE;
+		
+	DX_SAFE_RELEASE( m_currentRasterState );
 
-	if ( rasterState != &m_defaultRasterState )
-	{
-		DX_SAFE_RELEASE( *rasterState );
-	}
-
-	m_device->CreateRasterizerState( &desc, rasterState );
+	m_device->CreateRasterizerState( &desc, &m_currentRasterState );
+	m_context->RSSetState( m_currentRasterState );
 }
 
 
@@ -813,46 +800,6 @@ Texture* RenderContext::CreateTextureFromColor( const Rgba8& color )
 
 
 //-----------------------------------------------------------------------------------------------
-Texture* RenderContext::CreateTexture( const IntVec2& dimensions )
-{
-	int imageTexelSizeX = dimensions.x;
-	int imageTexelSizeY = dimensions.y;
-
-	// Describe the texture
-	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = imageTexelSizeX;
-	desc.Height = imageTexelSizeY;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	desc.SampleDesc.Count = 1;						// MSAA
-	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_DEFAULT;				// if we do mip chains this needs to be GPU/DEFAULT; as of now the texture will never change
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	std::vector<byte> data;
-	int size = imageTexelSizeX * imageTexelSizeY * sizeof( Rgba8 );
-	data.resize( size );
-
-	D3D11_SUBRESOURCE_DATA initialData;
-	initialData.pSysMem = &data[0];
-	initialData.SysMemPitch = sizeof( Rgba8 ) * imageTexelSizeX;
-	initialData.SysMemSlicePitch = 0;
-
-	// DirectX creation
-	ID3D11Texture2D* texHandle = nullptr;
-	m_device->CreateTexture2D( &desc, &initialData, &texHandle );
-
-	Texture* newTexture = new Texture( this, texHandle );
-	m_loadedTextures.push_back( newTexture );
-
-	return newTexture;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions )
 {
 	// Find depth stencil in cache?
@@ -896,12 +843,6 @@ void RenderContext::SetModelMatrix( const Mat44& modelMatrix )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::SetCullMode( eCullMode cullMode )
 {
-	if ( m_currentRasterState == nullptr )
-	{
-		SetRasterState( &m_currentRasterState, eFillMode::SOLID, cullMode, true );
-		return;
-	}
-
 	D3D11_RASTERIZER_DESC desc;
 	m_currentRasterState->GetDesc( &desc );
 
@@ -911,19 +852,13 @@ void RenderContext::SetCullMode( eCullMode cullMode )
 		return;
 	}
 
-	SetRasterState( &m_currentRasterState, FromDXFillMode( desc.FillMode ), cullMode, desc.FrontCounterClockwise );
+	SetRasterState( FromDXFillMode( desc.FillMode ), cullMode, desc.FrontCounterClockwise );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::SetFillMode( eFillMode fillMode )
 {
-	if ( m_currentRasterState == nullptr )
-	{
-		SetRasterState( &m_currentRasterState, fillMode, eCullMode::BACK, true );
-		return;
-	}
-
 	D3D11_RASTERIZER_DESC desc;
 	m_currentRasterState->GetDesc( &desc );
 
@@ -933,19 +868,13 @@ void RenderContext::SetFillMode( eFillMode fillMode )
 		return;
 	}
 	
-	SetRasterState( &m_currentRasterState, fillMode, FromDXCullMode( desc.CullMode ), desc.FrontCounterClockwise );
+	SetRasterState( fillMode, FromDXCullMode( desc.CullMode ), desc.FrontCounterClockwise );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::SetFrontFaceWindOrder( bool windCCW )
 {
-	if ( m_currentRasterState == nullptr )
-	{
-		SetRasterState( &m_currentRasterState, eFillMode::SOLID, eCullMode::BACK, windCCW );
-		return;
-	}
-
 	D3D11_RASTERIZER_DESC desc;
 	m_currentRasterState->GetDesc( &desc );
 
@@ -955,7 +884,7 @@ void RenderContext::SetFrontFaceWindOrder( bool windCCW )
 		return;
 	}
 
-	SetRasterState( &m_currentRasterState, FromDXFillMode( desc.FillMode ), FromDXCullMode( desc.CullMode ), windCCW );
+	SetRasterState( FromDXFillMode( desc.FillMode ), FromDXCullMode( desc.CullMode ), windCCW );
 }
 
 

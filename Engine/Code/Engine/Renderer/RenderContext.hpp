@@ -122,7 +122,6 @@ public:
 	Shader* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	Texture* CreateTextureFromColor( const Rgba8& color );
-	Texture* CreateTexture( const IntVec2& dimensions );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
 
@@ -156,7 +155,7 @@ private:
 
 	void CreateBlendStates();
 
-	void SetRasterState( ID3D11RasterizerState** rasterState, eFillMode fillMode, eCullMode cullMode, bool windCCW );
+	void SetRasterState( eFillMode fillMode, eCullMode cullMode, bool windCCW );
 
 	BitmapFont* RetrieveBitmapFontFromCache( const char* filePath );
 
@@ -205,7 +204,6 @@ private:
 	ID3D11BlendState* m_disabledBlendState			= nullptr;
 	eBlendMode m_currentBlendMode					= eBlendMode::ALPHA;
 
-	ID3D11RasterizerState* m_defaultRasterState		= nullptr;
 	ID3D11RasterizerState* m_currentRasterState		= nullptr;
 
 	bool m_isDrawing								= false;
