@@ -84,6 +84,7 @@ void RenderContext::Shutdown()
 
 	PTR_SAFE_DELETE( m_swapchain );
 
+	DX_SAFE_RELEASE( m_defaultRasterState );
 	DX_SAFE_RELEASE( m_currentRasterState );
 	DX_SAFE_RELEASE( m_alphaBlendState );
 	DX_SAFE_RELEASE( m_additiveBlendState );
@@ -477,6 +478,7 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
 	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
 
+	CreateDefaultRasterState();
 	SetRasterState( eFillMode::SOLID, eCullMode::BACK, true );
 
 	CreateBlendStates();
@@ -556,7 +558,7 @@ void RenderContext::ResetRenderObjects()
 	BindShader( ( Shader* )nullptr );
 	BindTexture( nullptr );
 	BindSampler( nullptr );
-	m_context->RSSetState( m_currentRasterState );
+	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
 	m_lastIBOHandle = nullptr;
 }
@@ -711,6 +713,26 @@ void RenderContext::SetRasterState( eFillMode fillMode, eCullMode cullMode, bool
 
 	m_device->CreateRasterizerState( &desc, &m_currentRasterState );
 	m_context->RSSetState( m_currentRasterState );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CreateDefaultRasterState()
+{
+	D3D11_RASTERIZER_DESC desc;
+
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.CullMode = D3D11_CULL_BACK;
+	desc.FrontCounterClockwise = true;
+	desc.DepthBias = 0U;
+	desc.DepthBiasClamp = 0.0f;
+	desc.SlopeScaledDepthBias = 0.0f;
+	desc.DepthClipEnable = TRUE;
+	desc.ScissorEnable = FALSE;
+	desc.MultisampleEnable = FALSE;
+	desc.AntialiasedLineEnable = FALSE;
+		
+	m_device->CreateRasterizerState( &desc, &m_defaultRasterState );
 }
 
 
@@ -885,6 +907,36 @@ void RenderContext::SetFrontFaceWindOrder( bool windCCW )
 	}
 
 	SetRasterState( FromDXFillMode( desc.FillMode ), FromDXCullMode( desc.CullMode ), windCCW );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eCullMode RenderContext::GetCullMode() const
+{
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	return FromDXCullMode( desc.CullMode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eFillMode RenderContext::GetFillMode() const
+{
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	return FromDXFillMode( desc.FillMode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool RenderContext::GetFrontFaceWindOrderCCW() const
+{
+	D3D11_RASTERIZER_DESC desc;
+	m_currentRasterState->GetDesc( &desc );
+
+	return desc.FrontCounterClockwise;
 }
 
 

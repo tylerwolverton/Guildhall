@@ -102,10 +102,6 @@ public:
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
 	void DrawMesh( GPUMesh* mesh );
 	
-	Texture* GetBackBuffer();
-	IntVec2 GetDefaultBackBufferSize();
-	Clock* GetClock()																					{ return m_gameClock; }
-
 	// Binding Inputs
 	void BindVertexBuffer( VertexBuffer* vbo );
 	void BindIndexBuffer( IndexBuffer* ibo );
@@ -134,6 +130,16 @@ public:
 	void SetFillMode( eFillMode fillMode );
 	void SetFrontFaceWindOrder( bool windCCW );
 
+	// Accessors
+	Texture* GetBackBuffer();
+	IntVec2 GetDefaultBackBufferSize();
+	Shader* GetCurrentShader() const					{ return m_currentShader; }
+	Clock* GetClock() const								{ return m_gameClock; }
+	eBlendMode GetBlendMode() const						{ return m_currentBlendMode; }
+	eCullMode GetCullMode() const;
+	eFillMode GetFillMode() const;
+	bool GetFrontFaceWindOrderCCW() const;
+
 	// Debug methods
 	void CycleSampler();
 	void CycleBlendMode();
@@ -160,6 +166,7 @@ private:
 	BitmapFont* RetrieveBitmapFontFromCache( const char* filePath );
 
 	void CreateDebugModule();
+	void CreateDefaultRasterState();
 	void DestroyDebugModule();
 	void ReportLiveObjects();
 
@@ -205,6 +212,7 @@ private:
 	eBlendMode m_currentBlendMode					= eBlendMode::ALPHA;
 
 	ID3D11RasterizerState* m_currentRasterState		= nullptr;
+	ID3D11RasterizerState* m_defaultRasterState		= nullptr;
 
 	bool m_isDrawing								= false;
 };

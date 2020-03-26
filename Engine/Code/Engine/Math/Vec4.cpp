@@ -39,6 +39,17 @@ Vec4::Vec4( const Vec3& copyFrom, float initialW )
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+Vec4::Vec4( const Vec2& copyFromXY, const Vec2& copyFromZW )
+	: x( copyFromXY.x )
+	, y( copyFromXY.y )
+	, z( copyFromZW.x )
+	, w( copyFromZW.y )
+{
+}
+
+
 //-----------------------------------------------------------------------------------------------
 void Vec4::SetFromText( const char* asText )
 {

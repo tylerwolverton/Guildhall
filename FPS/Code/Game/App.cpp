@@ -63,7 +63,7 @@ void App::Startup()
 
 	g_audioSystem->Startup();
 	g_renderer->Startup( g_window );
-	DebugRenderSystemStartup( g_renderer );
+	DebugRenderSystemStartup( g_renderer, g_eventSystem );
 	
 	g_devConsole->Startup();
 	g_devConsole->SetInputSystem( g_inputSystem );

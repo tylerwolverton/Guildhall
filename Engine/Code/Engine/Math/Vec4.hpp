@@ -19,6 +19,7 @@ public:
 	Vec4( const Vec4& copyFrom );														// copy constructor (from another Vec3)
 	explicit Vec4( float initialX, float initialY, float initialZ, float initialW );	// explicit constructor (from x, y, z)
 	explicit Vec4( const Vec3& copyFrom, float initialW );	
+	explicit Vec4( const Vec2& copyFromXY, const Vec2& copyFromZW );	
 	void SetFromText( const char* asText );
 
 	// Operators (const)

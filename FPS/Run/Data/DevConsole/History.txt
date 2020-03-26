@@ -10,3 +10,16 @@ set_mouse_sensitivity multiplier=15
 set_mouse_sensitivity multiplier=20
 set_mouse_sensitivity multiplier=25
 set_mouse_sensitivity multiplier=30
+debug_render enabled=false
+debug_render enabled=true
+debug_add_world_point position=(0,4,2) duration=10
+debug_add_world_point position=(0,4,-2) duration=10
+debug_add_world_point position=(0,0,0) duration=10
+debug_add_world_billboard_text text="This is a string"
+debug_add_screen_quad min=(0,0) max=(50,50)
+debug_add_screen_quad min=(0,0) max=(50,50) duration=50
+debug_add_world_point position=(0,0,0) duration=10
+debug_add_screen_quad min=0,0 max=50,50 duration=50
+help
+debug_add_screen_point position=1000,500 duration=20
+debug_add_world_billboard_text text=stringsarefun

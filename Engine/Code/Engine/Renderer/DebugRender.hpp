@@ -13,6 +13,7 @@ struct OBB3;
 class Clock;
 class Camera;
 class Texture;
+class EventSystem;
 class RenderContext;
 
 
@@ -40,7 +41,7 @@ enum eDebugRenderMode
 //  System
 //------------------------------------------------------------------------
 // setup
-void DebugRenderSystemStartup( RenderContext* context );    // may be used to allocate resources to the system
+void DebugRenderSystemStartup( RenderContext* context, EventSystem* eventSystem );    // may be used to allocate resources to the system
 void DebugRenderSystemShutdown();   // cleans up the system to prevent leaks.
 
 // control

@@ -1,6 +1,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
-#include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/OBB3.hpp"
@@ -178,14 +179,133 @@ bool DebugRenderObject::IsReadyToBeCulled() const
 	return m_timer.HasElapsed();
 }
 
+//-----------------------------------------------------------------------------------------------
+// Dev console event handlers
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderEnableEvent( EventArgs* args )
+{
+	if ( args->GetValue( "enabled", false ) )
+	{
+		EnableDebugRendering();
+	}
+	else
+	{
+		DisableDebugRendering();
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderWorldPointEvent( EventArgs* args )
+{
+	Vec3 pos = args->GetValue( "position", Vec3::ZERO );
+	float duration = args->GetValue( "duration", 5.f );
+	
+	DebugAddWorldPoint( pos, Rgba8::GREEN, duration );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderWorldWireSphereEvent( EventArgs* args )
+{
+	Vec3 pos = args->GetValue( "position", Vec3::ZERO );
+	float radius = args->GetValue( "radius", 1.f );
+	float duration = args->GetValue( "duration", 5.f );
+	
+	DebugAddWorldWireSphere( pos, radius, Rgba8::GREEN, duration );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderWorldWireBoundsEvent( EventArgs* args )
+{
+	Vec3 min = args->GetValue( "min", Vec3::ZERO );
+	Vec3 max = args->GetValue( "max", Vec3::ONE );
+	float duration = args->GetValue( "duration", 5.f );
+
+	DebugAddWorldWireBounds( AABB3( min, max ), Rgba8::GREEN, duration );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderWorldBillboardTextEvent( EventArgs* args )
+{
+	Vec3 pos = args->GetValue( "position", Vec3::ZERO );
+	Vec2 pivot = args->GetValue( "pivot", Vec2( .5f, .5f ) );
+	std::string text = args->GetValue( "text", "Hello" );
+	float duration = args->GetValue( "duration", 5.f );
+
+	DebugAddWorldBillboardText( pos, pivot, Rgba8::RED, Rgba8::RED, duration, DEBUG_RENDER_USE_DEPTH, text.c_str() );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderScreenPointEvent( EventArgs* args )
+{
+	Vec2 pos = args->GetValue( "position", Vec2::ZERO );
+	float duration = args->GetValue( "duration", 5.f );
+
+	DebugAddScreenPoint( pos, 10.f, Rgba8::GREEN, duration );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderScreenQuadEvent( EventArgs* args )
+{
+	Vec2 min = args->GetValue( "min", Vec2::ZERO );
+	Vec2 max = args->GetValue( "max", Vec2::ONE );
+	float duration = args->GetValue( "duration", 5.f );
+
+	DebugAddScreenQuad( AABB2( min, max ), Rgba8::CYAN, duration );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DebugRenderScreenTextEvent( EventArgs* args )
+{
+	if ( args->GetValue( "enabled", false ) )
+	{
+		EnableDebugRendering();
+	}
+	else
+	{
+		DisableDebugRendering();
+	}
+
+	return false;
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Debug Render System
 //-----------------------------------------------------------------------------------------------
-void DebugRenderSystemStartup( RenderContext* context )
+void DebugRenderSystemStartup( RenderContext* context, EventSystem* eventSystem )
 {
 	s_debugRenderContext = context;
 	s_debugCamera = new Camera();
+
+	eventSystem->RegisterEvent( "debug_render", "Usage: debug_render enabled=bool", eUsageLocation::DEV_CONSOLE, DebugRenderEnableEvent );
+	eventSystem->RegisterEvent( "debug_add_world_point", "Usage: debug_add_world_point position=vec3 duration=float", eUsageLocation::DEV_CONSOLE, DebugRenderWorldPointEvent );
+	eventSystem->RegisterEvent( "debug_add_world_wire_sphere", "Usage: debug_add_world_wire_sphere position=vec3 radius=float duration=float", eUsageLocation::DEV_CONSOLE, DebugRenderWorldWireSphereEvent );
+	eventSystem->RegisterEvent( "debug_add_world_wire_bounds", "Usage: debug_add_world_wire_bounds min=vec3 max=vec3 duration=float", eUsageLocation::DEV_CONSOLE, DebugRenderWorldWireBoundsEvent );
+	eventSystem->RegisterEvent( "debug_add_world_billboard_text", "Usage: debug_add_world_billboard_text position=vec3 pivot=vec2 text=string duration=float", eUsageLocation::DEV_CONSOLE, DebugRenderWorldBillboardTextEvent );
+	eventSystem->RegisterEvent( "debug_add_screen_point", "Usage: debug_add_screen_point position=vec2 duration=float", eUsageLocation::DEV_CONSOLE, DebugRenderScreenPointEvent );
+	eventSystem->RegisterEvent( "debug_add_screen_quad", "Usage: debug_add_screen_quad min=vec2 max=vec2 duration=float", eUsageLocation::DEV_CONSOLE, DebugRenderScreenQuadEvent );
+	eventSystem->RegisterEvent( "debug_add_screen_text", "Usage: debug_add_screen_text position=vec2 pivot=vec2 text=string", eUsageLocation::DEV_CONSOLE, DebugRenderScreenTextEvent );
 }
 
 
@@ -312,7 +432,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	}
 
 	InitializeDebugCamera( camera );
-	
+
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
 	s_debugRenderContext->BindShader( "Data/Shaders/Default.hlsl" );
@@ -325,9 +445,11 @@ void DebugRenderWorldToCamera( Camera* camera )
 	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
 	
 	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
+	s_debugRenderContext->SetCullMode( eCullMode::NONE );
 	RenderWorldObjects( s_debugRenderWorldOutlineObjects );
 	RenderWorldObjects( s_debugRenderWorldOutlineObjectsXRay );
 	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
+	s_debugRenderContext->SetCullMode( eCullMode::BACK );
 	
 	s_debugRenderContext->BindTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjects );
@@ -342,8 +464,10 @@ void DebugRenderWorldToCamera( Camera* camera )
 	RenderWorldObjects( s_debugRenderWorldObjectsAlways );
 
 	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
+	s_debugRenderContext->SetCullMode( eCullMode::NONE );
 	RenderWorldObjects( s_debugRenderWorldOutlineObjectsAlways );
 	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
+	s_debugRenderContext->SetCullMode( eCullMode::BACK );
 
 	s_debugRenderContext->BindTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjectsAlways );
@@ -357,8 +481,10 @@ void DebugRenderWorldToCamera( Camera* camera )
 	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
 
 	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
+	s_debugRenderContext->SetCullMode( eCullMode::NONE );
 	RenderWorldObjects( s_debugRenderWorldOutlineObjectsXRay );
 	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
+	s_debugRenderContext->SetCullMode( eCullMode::BACK );
 
 	s_debugRenderContext->BindTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjectsXRay );
@@ -428,6 +554,7 @@ void DebugRenderScreenTo( Texture* output )
 	s_debugCamera->SetPosition( Vec3( 1920.f, 1080.f, 0.f ) * .5f );
 	s_debugCamera->SetProjectionOrthographic( s_screenHeight );
 
+	s_debugCamera->SetDepthStencilTarget( nullptr );
 	s_debugCamera->SetClearMode( CLEAR_NONE );
 
 	context->BeginCamera( *s_debugCamera );

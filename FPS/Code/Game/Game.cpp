@@ -152,7 +152,6 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-	DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN );
 	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
 
 	for ( int transformIdx = 0; transformIdx < (int)m_sphereMeshTransforms.size(); ++transformIdx )
