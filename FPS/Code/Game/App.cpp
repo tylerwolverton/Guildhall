@@ -182,7 +182,6 @@ void App::BeginFrame()
 //-----------------------------------------------------------------------------------------------
 void App::Update()
 {
-	//g_renderer->UpdateFrameTime();
 	g_devConsole->Update();
 	g_game->Update();
 

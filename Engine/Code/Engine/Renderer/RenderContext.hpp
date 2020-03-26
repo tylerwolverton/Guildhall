@@ -143,9 +143,6 @@ public:
 	// Debug methods
 	void CycleSampler();
 	void CycleBlendMode();
-	void CycleCullMode();
-	void CycleFillMode();
-	void CycleWindOrder();
 
 private:
 	void InitializeSwapChain( Window* window );

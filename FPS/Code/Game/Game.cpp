@@ -278,18 +278,6 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleBlendMode();
 	}
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
-	{
-		g_renderer->CycleCullMode();
-	}
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
-	{
-		g_renderer->CycleFillMode();
-	}
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
-	{
-		g_renderer->CycleWindOrder();
-	}
 	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
 		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 10.f, DEBUG_RENDER_XRAY );
@@ -328,7 +316,7 @@ void Game::UpdateFromKeyboard()
 	if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
 	{
 		DebugAddWorldBillboardText( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ONE, Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_XRAY, "Mid!" );
-		DebugAddWorldBillboardTextf( m_worldCamera->GetTransform().GetPosition(), Vec2::ZERO, Rgba8::GREEN, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "%d!", 15 );
+		DebugAddWorldBillboardTextf( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ZERO, Rgba8::GREEN, 35.f, eDebugRenderMode::DEBUG_RENDER_XRAY, "%d!", 15 );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'U' ) )
 	{

@@ -967,55 +967,6 @@ void RenderContext::CycleBlendMode()
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::CycleCullMode()
-{
-	if ( m_currentRasterState == nullptr )
-	{
-		return;
-	}
-
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	switch ( FromDXCullMode( desc.CullMode ) )
-	{
-		case eCullMode::NONE:	SetCullMode( eCullMode::FRONT ); return;
-		case eCullMode::FRONT:	SetCullMode( eCullMode::BACK ); return;
-		case eCullMode::BACK:	SetCullMode( eCullMode::NONE ); return;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::CycleFillMode()
-{
-	if ( m_currentRasterState == nullptr )
-	{
-		return;
-	}
-
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	switch ( FromDXFillMode( desc.FillMode ) )
-	{
-		case eFillMode::SOLID:		SetFillMode( eFillMode::WIREFRAME ); return;
-		case eFillMode::WIREFRAME:	SetFillMode( eFillMode::SOLID ); return;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::CycleWindOrder()
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	SetFrontFaceWindOrder( !desc.FrontCounterClockwise );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 BitmapFont* RenderContext::RetrieveBitmapFontFromCache( const char* filePath )
 {
 	for ( int fontIndex = 0; fontIndex < (int)m_loadedBitmapFonts.size(); ++fontIndex )

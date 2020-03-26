@@ -316,13 +316,6 @@ void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& boun
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForLine3D( std::vector<Vertex_PCU>& vertexArray, const Vec3& p0, const Vec3& p1, const Rgba8& p0_start_color, const Rgba8& p1_start_color, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec2 iBasis = capsule.m_middleEnd - capsule.m_middleStart;
@@ -643,8 +636,11 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 										   const Vec3& p0, const Vec3& p1, float radius1, float radius2, 
 										   const Rgba8& tint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	GUARANTEE_OR_DIE( numSides > 2, "Can't draw a cylinder with less than 3 sides" );
+	// Not texturing cylinders for now
+	UNUSED( uvAtMaxs );
 
+	GUARANTEE_OR_DIE( numSides > 2, "Can't draw a cylinder with less than 3 sides" );
+	 
 	Mat44 lookAt = MakeLookAtMatrix( p0, p1 );
 
 	std::vector<Vec3> localDiscPoints;

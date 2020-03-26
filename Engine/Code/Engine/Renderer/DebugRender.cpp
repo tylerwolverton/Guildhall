@@ -179,6 +179,7 @@ bool DebugRenderObject::IsReadyToBeCulled() const
 	return m_timer.HasElapsed();
 }
 
+
 //-----------------------------------------------------------------------------------------------
 // Dev console event handlers
 //-----------------------------------------------------------------------------------------------
@@ -203,7 +204,7 @@ bool DebugRenderWorldPointEvent( EventArgs* args )
 	Vec3 pos = args->GetValue( "position", Vec3::ZERO );
 	float duration = args->GetValue( "duration", 5.f );
 	
-	DebugAddWorldPoint( pos, Rgba8::GREEN, duration );
+	DebugAddWorldPoint( pos, Rgba8::GREEN, duration, DEBUG_RENDER_XRAY );
 
 	return false;
 }
@@ -216,7 +217,7 @@ bool DebugRenderWorldWireSphereEvent( EventArgs* args )
 	float radius = args->GetValue( "radius", 1.f );
 	float duration = args->GetValue( "duration", 5.f );
 	
-	DebugAddWorldWireSphere( pos, radius, Rgba8::GREEN, duration );
+	DebugAddWorldWireSphere( pos, radius, Rgba8::GREEN, duration, DEBUG_RENDER_XRAY );
 
 	return false;
 }
@@ -229,7 +230,7 @@ bool DebugRenderWorldWireBoundsEvent( EventArgs* args )
 	Vec3 max = args->GetValue( "max", Vec3::ONE );
 	float duration = args->GetValue( "duration", 5.f );
 
-	DebugAddWorldWireBounds( AABB3( min, max ), Rgba8::GREEN, duration );
+	DebugAddWorldWireBounds( AABB3( min, max ), Rgba8::GREEN, duration, DEBUG_RENDER_XRAY );
 
 	return false;
 }
@@ -243,7 +244,7 @@ bool DebugRenderWorldBillboardTextEvent( EventArgs* args )
 	std::string text = args->GetValue( "text", "Hello" );
 	float duration = args->GetValue( "duration", 5.f );
 
-	DebugAddWorldBillboardText( pos, pivot, Rgba8::RED, Rgba8::RED, duration, DEBUG_RENDER_USE_DEPTH, text.c_str() );
+	DebugAddWorldBillboardText( pos, pivot, Rgba8::RED, Rgba8::RED, duration, DEBUG_RENDER_XRAY, text.c_str() );
 
 	return false;
 }
@@ -836,6 +837,9 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color,
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode )
 {
+	UNUSED( start_tint );
+	UNUSED( end_tint );
+
 	DebugAddWorldArrow( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetIBasis3D().GetNormalized(), Rgba8::RED, duration, mode );
 	DebugAddWorldArrow( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetJBasis3D().GetNormalized(), Rgba8::GREEN, duration, mode );
 	DebugAddWorldArrow( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetKBasis3D().GetNormalized(), Rgba8::BLUE, duration, mode );
@@ -954,7 +958,7 @@ void DebugAddWorldBillboardTextf( const Vec3& origin, const Vec2& pivot, const R
 	va_start( args, format );
 	std::string text = Stringv( format, args );
 
-	DebugAddWorldBillboardText( origin, pivot, color, color, duration, DEBUG_RENDER_USE_DEPTH, text.c_str() );
+	DebugAddWorldBillboardText( origin, pivot, color, color, duration, mode, text.c_str() );
 }
 
 
@@ -1013,6 +1017,8 @@ void DebugAddScreenPoint( const Vec2& pos, const Rgba8& color )
 //-----------------------------------------------------------------------------------------------
 void DebugAddScreenLine( const Vec2& p0, const Rgba8& p0_start_color, const Vec2& p1, const Rgba8& p1_start_color, const Rgba8& start_tint, const Rgba8& end_tint, float duration )
 {
+	UNUSED( p1_start_color );
+
 	std::vector<Vertex_PCU> vertices;
 
 	Vec2 bone( p1 - p0 );
