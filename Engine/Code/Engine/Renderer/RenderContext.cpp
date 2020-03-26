@@ -853,10 +853,13 @@ Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetModelMatrix( const Mat44& modelMatrix )
+void RenderContext::SetModelMatrix( const Mat44& modelMatrix, const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
 {
 	ModelMatrixData matrixData;
 	matrixData.modelMatrix = modelMatrix;
+	startTint.GetAsFloatArray( matrixData.startTint );
+	endTint.GetAsFloatArray( matrixData.endTint );
+	matrixData.tintRatio = tintRatio;
 
 	m_modelMatrixUBO->Update( &matrixData, sizeof( matrixData ), sizeof( matrixData ) );
 }

@@ -80,4 +80,5 @@ Shift - Move faster
 
 ------
 Dev Console Commands
+All the ones listed above in the assignment as well as
 set_mouse_sensitivity multiplier=NUMBER - change multiplier for mouse sensitivity

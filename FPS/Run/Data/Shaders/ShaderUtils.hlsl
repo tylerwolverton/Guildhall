@@ -40,12 +40,21 @@ cbuffer camera_constants : register( b1 )
 cbuffer model_matrix_constants : register( b2 )
 {
 	float4x4 MODEL;
+	float4   START_TINT;
+	float4   END_TINT;
+	float    TINT_RATIO;
 };
 
 
 // data - uniform/constant across entire draw call
 Texture2D<float4> tDiffuse : register( t0 );	// color of surface
 SamplerState sSampler : register( s0 );			// rules for how to sample texture
+
+
+float4 LerpFloat4( float4 a, float4 b, float fractionOfB  )
+{
+	return ( ( 1.0f - fractionOfB ) * a ) + ( b * fractionOfB );
+}
 
 
 //--------------------------------------------------------------------------------------
@@ -70,7 +79,8 @@ v2f_t DefaultVertexFunction( vs_input_t input )
 
 	// forward vertex input onto the next stage
 	v2f.position = float4( input.position, 1.0f );
-	v2f.color = input.color;
+	float4 tint = LerpFloat4( START_TINT, END_TINT, TINT_RATIO );
+	v2f.color = input.color * tint;
 	v2f.uv = input.uv;
 
 	float4 worldPos = float4( input.position, 1 );

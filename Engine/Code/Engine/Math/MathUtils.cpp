@@ -255,7 +255,7 @@ float Interpolate( float a, float b, float fractionOfB )
 //-----------------------------------------------------------------------------------------------
 unsigned char Interpolate( unsigned char a, unsigned char b, float fractionOfB )
 {
-	return a + (unsigned char)( fractionOfB * ( b - a ) );
+	return (unsigned char)( ( 1.f - fractionOfB ) * a ) + (unsigned char)( fractionOfB * b );
 }
 
 
@@ -264,10 +264,10 @@ Rgba8 InterpolateColor( const Rgba8& a, const Rgba8& b, float fractionOfB )
 {
 	// Don't quite get all the way to max to avoid wrapping color around
 	Rgba8 lerpedColor;
-	lerpedColor.r = Interpolate( a.r, b.r, fractionOfB - .01f );
-	lerpedColor.g = Interpolate( a.g, b.g, fractionOfB - .01f );
-	lerpedColor.b = Interpolate( a.b, b.b, fractionOfB - .01f );
-	//lerpedColor.a = Interpolate( a.a, b.a, fractionOfB - .01f );
+	lerpedColor.r = Interpolate( a.r, b.r, fractionOfB  );
+	lerpedColor.g = Interpolate( a.g, b.g, fractionOfB  );
+	lerpedColor.b = Interpolate( a.b, b.b, fractionOfB  );
+	lerpedColor.a = Interpolate( a.a, b.a, fractionOfB  );
 
 	return lerpedColor;
 }

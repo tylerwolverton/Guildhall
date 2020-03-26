@@ -18,6 +18,7 @@ public:
 
 	double GetElapsedSeconds() const;               // return amount of time accrued on this timer
 	double GetSecondsRemaining() const;             // returns amount of time until HasElapsed() will return true (0 or negative numbers means it has already elapsed)
+	float  GetRatioOfCompletion() const;			// returns a value from 0 to 1 for how much of the timer has elapsed
 
 	bool HasElapsed() const;                        // timer has elapsed the timer
 	bool CheckAndDecrement();                       // if has elapsed, removes one interval of time and returns true, otherwise returns false

@@ -3,6 +3,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Mat44.hpp"
+#include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 
 #include <vector>
@@ -19,7 +20,6 @@ struct ID3D11Buffer;
 struct ID3D11BlendState;
 struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
-struct Rgba8;
 struct Vertex_PCU;
 class Window;
 class Clock;
@@ -71,6 +71,11 @@ struct FrameData
 struct ModelMatrixData
 {
 	Mat44 modelMatrix;
+	float startTint[4];
+	float endTint[4];
+	float tintRatio;
+	
+	float padding[3];
 };
 
 
@@ -123,7 +128,7 @@ public:
 
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
-	void SetModelMatrix( const Mat44& modelMatrix );
+	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
 
 	// Raster state setters
 	void SetCullMode( eCullMode cullMode );

@@ -307,11 +307,18 @@ void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& bott
 //-----------------------------------------------------------------------------------------------
 void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
+	AppendVertsForOBB3D( vertexArray, bounds, tint, tint, uvAtMins, uvAtMaxs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& startTint, const Rgba8& endTint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+{
 	Vec3 corners[8];
 
 	bounds.GetCornerPositions( corners );
 
-	AppendVertsFor3DBox( vertexArray, 8, corners, tint, tint, uvAtMins, uvAtMaxs );
+	AppendVertsFor3DBox( vertexArray, 8, corners, startTint, endTint, uvAtMins, uvAtMaxs );
 }
 
 
@@ -636,15 +643,22 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 										   const Vec3& p0, const Vec3& p1, float radius1, float radius2, 
 										   const Rgba8& tint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
+	AppendVertsAndIndicesForCylinderMesh( vertexArray, indices, p0, p1, radius1, radius2, tint, tint, numSides, uvAtMins, uvAtMaxs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius1, float radius2, const Rgba8& startTint, const Rgba8& endTint, int numSides /*= 8*/, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+{
 	// Not texturing cylinders for now
 	UNUSED( uvAtMaxs );
 
 	GUARANTEE_OR_DIE( numSides > 2, "Can't draw a cylinder with less than 3 sides" );
-	 
+
 	Mat44 lookAt = MakeLookAtMatrix( p0, p1 );
 
 	std::vector<Vec3> localDiscPoints;
-	
+
 	const float degreesPerSide = 360.f / numSides;
 	float currentDegrees = 0.f;
 	for ( int pointCount = 0; pointCount < numSides; ++pointCount )
@@ -659,13 +673,13 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 	for ( uint pointIdx = 0; pointIdx < numLocalDiscPoints; ++pointIdx )
 	{
 		Vec3 startPoint = p0 + localDiscPoints[pointIdx] * radius1;
-		vertexArray.push_back( Vertex_PCU( startPoint, tint, uvAtMins ) );
+		vertexArray.push_back( Vertex_PCU( startPoint, startTint, uvAtMins ) );
 	}
 
 	for ( uint pointIdx = 0; pointIdx < numLocalDiscPoints; ++pointIdx )
 	{
 		Vec3 endPoint = p1 + localDiscPoints[pointIdx] * radius2;
-		vertexArray.push_back( Vertex_PCU( endPoint, tint, uvAtMins ) );
+		vertexArray.push_back( Vertex_PCU( endPoint, endTint, uvAtMins ) );
 	}
 
 	// Add indices for center
@@ -684,7 +698,7 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 		indices.push_back( index0 );
 		indices.push_back( index1 );
 		indices.push_back( index3 );
-		
+
 		indices.push_back( index0 );
 		indices.push_back( index3 );
 		indices.push_back( index2 );
@@ -715,6 +729,13 @@ void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std
 									   const Rgba8& tint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	AppendVertsAndIndicesForCylinderMesh( vertexArray, indices, p0, p1, radius, 0.f, tint, numSides, uvAtMins , uvAtMaxs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius, const Rgba8& startTint, const Rgba8& endTint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	AppendVertsAndIndicesForCylinderMesh( vertexArray, indices, p0, p1, radius, 0.f, startTint, endTint, numSides, uvAtMins, uvAtMaxs );
 }
 
 

@@ -54,7 +54,7 @@ void Timer::Stop()
 double Timer::GetElapsedSeconds() const
 {
 	double currentTime = m_clock->GetTotalElapsedSeconds();
-	return ( currentTime - ( m_startSeconds + m_durationSeconds ) );
+	return ( currentTime - m_startSeconds );
 }
 
 
@@ -62,6 +62,14 @@ double Timer::GetElapsedSeconds() const
 double Timer::GetSecondsRemaining() const
 {
 	return m_durationSeconds - GetElapsedSeconds();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float Timer::GetRatioOfCompletion() const
+{
+	double elapsedSeconds = GetElapsedSeconds();
+	return (float)( elapsedSeconds / m_durationSeconds );
 }
 
 

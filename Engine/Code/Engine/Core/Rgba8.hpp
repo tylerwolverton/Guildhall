@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -38,6 +39,8 @@ public:
 	void SetFromText( const char* asText );
 
 	bool IsRGBEqual( const Rgba8& otherColor );
+
+	void GetAsFloatArray( float* out_floats ) const;
 
 	bool		operator==( const Rgba8& compare ) const;		// Rgba8 == Rgba8
 	bool		operator!=( const Rgba8& compare ) const;		// Rgba8 != Rgba8

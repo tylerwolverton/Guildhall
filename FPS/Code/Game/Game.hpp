@@ -78,7 +78,6 @@ private:
 
 	Camera* m_worldCamera = nullptr;
 	Camera* m_uiCamera = nullptr;
-	Texture* m_screenTexture;
 
 	World* m_world = nullptr;
 	std::string m_curMap;

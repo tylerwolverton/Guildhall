@@ -36,7 +36,7 @@
 #include "Game/ActorDefinition.hpp"
 
 
-static float s_mouseSensitivityMultiplier = 20.f;
+static float s_mouseSensitivityMultiplier = 10.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -278,26 +278,27 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleBlendMode();
 	}
+
+
+	// Debug Commands
 	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
-		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::BLUE, Rgba8::RED, 10.f, DEBUG_RENDER_XRAY );
+		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::GREEN, Rgba8::RED, 10.f, DEBUG_RENDER_XRAY );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
+	{
+		DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
+						   m_cubeMeshTransform.GetPosition(), Rgba8::WHITE, Rgba8::BLACK, 
+						   30.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
 	{
-		/*DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
-						   m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW, 
-						   30.f );*/
 		DebugAddWorldArrow( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN,
-						   m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW,
-						   30.f );
+							m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW,
+							30.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'R' ) )
 	{
-		/*Vec3 iBasis( 1.f, 0.f, 0.f );
-		iBasis = iBasis.GetRotatedAboutZDegrees( 30.f );
-		Vec3 jBasis( 0.f, 1.f, 0.f );
-		jBasis = jBasis.GetRotatedAboutZDegrees( 30.f );
-		OBB3 box( m_worldCamera->GetTransform().GetPosition(), Vec3( 3.f, 2.f, 1.f ), iBasis, jBasis );*/
 		AABB3 box( m_worldCamera->GetTransform().GetPosition(), m_worldCamera->GetTransform().GetPosition() + Vec3::ONE );
 		DebugAddWorldWireBounds( box, Rgba8::YELLOW, 10.f );
 	}
@@ -328,20 +329,20 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'I' ) )
 	{
-		DebugAddWorldBasis( m_worldCamera->GetTransform().GetAsMatrix(), 20.f );
+		DebugAddWorldBasis( m_worldCamera->GetTransform().GetAsMatrix(), Rgba8::WHITE, Rgba8::BLACK, 20.f );
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
 	{
-		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN, 10.f );
+		DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN, Rgba8::RED, 5.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '2' ) )
 	{
-		DebugAddScreenLine( Vec2::ZERO, Rgba8::BLUE, Vec2( 1920.f, 1080.f ) * .5f, Rgba8::GREEN, Rgba8::RED, Rgba8::YELLOW, 10.f );
+		DebugAddScreenLine( Vec2::ZERO, Rgba8::BLUE, Vec2( 1920.f, 1080.f ) * .5f, Rgba8::WHITE, Rgba8::BLACK, Rgba8::YELLOW, 3.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '3' ) )
 	{
-		DebugAddScreenArrow( Vec2(250.f, 300.f), Rgba8::BLUE, Vec2( 1000.f, 12.f ), Rgba8::GREEN, Rgba8::RED, Rgba8::YELLOW, 10.f );
+		DebugAddScreenArrow( Vec2(250.f, 300.f), Rgba8::BLUE, Vec2( 1000.f, 12.f ), Rgba8::GREEN, Rgba8::RED, Rgba8::YELLOW, 3.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( '4' ) )
 	{
