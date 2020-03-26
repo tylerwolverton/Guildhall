@@ -4,6 +4,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/MatrixUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB2.hpp"
@@ -635,6 +636,91 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCU>& vertexArray, s
 		}
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, 
+										   const Vec3& p0, const Vec3& p1, float radius1, float radius2, 
+										   const Rgba8& tint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	GUARANTEE_OR_DIE( numSides > 2, "Can't draw a cylinder with less than 3 sides" );
+
+	Mat44 lookAt = MakeLookAtMatrix( p0, p1 );
+
+	std::vector<Vec3> localDiscPoints;
+	
+	const float degreesPerSide = 360.f / numSides;
+	float currentDegrees = 0.f;
+	for ( int pointCount = 0; pointCount < numSides; ++pointCount )
+	{
+		Vec3 newPointLocation = lookAt.GetIBasis3D() * CosDegrees( currentDegrees ) + lookAt.GetJBasis3D() * SinDegrees( currentDegrees );
+		localDiscPoints.push_back( newPointLocation );
+
+		currentDegrees += degreesPerSide;
+	}
+
+	uint numLocalDiscPoints = (uint)localDiscPoints.size();
+	for ( uint pointIdx = 0; pointIdx < numLocalDiscPoints; ++pointIdx )
+	{
+		Vec3 startPoint = p0 + localDiscPoints[pointIdx] * radius1;
+		vertexArray.push_back( Vertex_PCU( startPoint, tint, uvAtMins ) );
+	}
+
+	for ( uint pointIdx = 0; pointIdx < numLocalDiscPoints; ++pointIdx )
+	{
+		Vec3 endPoint = p1 + localDiscPoints[pointIdx] * radius2;
+		vertexArray.push_back( Vertex_PCU( endPoint, tint, uvAtMins ) );
+	}
+
+	// Add indices for center
+	for ( uint vertexNum = 0; vertexNum < numLocalDiscPoints; ++vertexNum )
+	{
+		uint index0 = vertexNum;
+		uint index1 = numLocalDiscPoints + vertexNum;
+		uint index2 = vertexNum + 1;
+		uint index3 = numLocalDiscPoints + vertexNum + 1;
+		if ( vertexNum == numLocalDiscPoints - 1 )
+		{
+			index2 = 0;
+			index3 = numLocalDiscPoints;
+		}
+
+		indices.push_back( index0 );
+		indices.push_back( index1 );
+		indices.push_back( index3 );
+		
+		indices.push_back( index0 );
+		indices.push_back( index3 );
+		indices.push_back( index2 );
+	}
+
+	// Add indices for caps/ends
+	uint startingIndex = 0;
+	for ( uint vertexNum = 1; vertexNum < numLocalDiscPoints - 1; ++vertexNum )
+	{
+		indices.push_back( startingIndex );
+		indices.push_back( startingIndex + vertexNum );
+		indices.push_back( startingIndex + vertexNum + 1 );
+	}
+
+	startingIndex = numLocalDiscPoints;
+	for ( uint vertexNum = 1; vertexNum < numLocalDiscPoints - 1; ++vertexNum )
+	{
+		indices.push_back( startingIndex );
+		indices.push_back( startingIndex + vertexNum );
+		indices.push_back( startingIndex + vertexNum + 1 );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, 
+									   const Vec3& p0, const Vec3& p1, float radius,
+									   const Rgba8& tint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	AppendVertsAndIndicesForCylinderMesh( vertexArray, indices, p0, p1, radius, 0.f, tint, numSides, uvAtMins , uvAtMaxs );
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )

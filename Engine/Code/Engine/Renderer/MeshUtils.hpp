@@ -57,3 +57,5 @@ void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& 
 void AppendIndicesForPlaneMesh( std::vector<uint>& indices, int horizontalSlices, int verticalSlices );
 
 void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& center, float radius, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius1, float radius2, const Rgba8& tint, int numSides = 8, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius, const Rgba8& tint, int numSides = 8, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );

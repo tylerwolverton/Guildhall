@@ -28,9 +28,23 @@ Mat44 MakePerspectiveProjectionMatrixD3D( float fovDegrees,
 Mat44 MakeLookAtMatrix( const Vec3& pos, const Vec3& target, const Vec3& worldUp )
 {
 	Vec3 forward = target - pos;
+	if ( IsNearlyEqual( forward.GetLength(), 0.f, .0001f ) )
+	{
+		return Mat44();
+	}
+
 	forward.Normalize();
 	
 	Vec3 right = CrossProduct3D( forward, worldUp );
+	if ( IsNearlyEqual( right.GetLength(), 0.f, .0001f ) )
+	{
+		right = CrossProduct3D( forward, Vec3( 0.f, 1.f, 0.f ) );
+		if( IsNearlyEqual( right.GetLength(), 0.f, .0001f ) )
+		{
+			right = Vec3( 1.f, 0.f, 0.f );
+		}
+	}
+
 	right.Normalize();
 
 	Vec3 up = CrossProduct3D( right, forward );

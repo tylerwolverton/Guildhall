@@ -531,7 +531,7 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 						const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color, 
 						float duration, eDebugRenderMode mode )
 {
-	//UNUSED( p1_start_color );
+	UNUSED( p1_start_color );
 	UNUSED( p1_end_color );
 
 	std::vector<Vertex_PCU> vertices;
@@ -565,6 +565,46 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8
 void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldLine( start, color, color, end, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8& p0_end_color, 
+						 const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color, 
+						 float duration, eDebugRenderMode mode )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+
+	Vec3 bone( p1 - p0 );
+	float cylinderLength = bone.GetLength() * .9f;
+
+	Mat44 lookAt = MakeLookAtMatrix( p0, p1 );
+
+	Vec3 endOfLine = p0 + lookAt.GetKBasis3D() * cylinderLength;
+
+	AppendVertsAndIndicesForCylinderMesh( vertices, indices, p0, endOfLine, .05f, .05f, p0_start_color );
+	DebugRenderObject* cylinderObj = new DebugRenderObject( vertices, indices, p0_start_color, p0_end_color, duration );
+
+	vertices.clear();
+	indices.clear();
+	AppendVertsAndIndicesForConeMesh( vertices, indices, endOfLine, p1, .15f, p1_start_color );
+	DebugRenderObject* coneObj = new DebugRenderObject( vertices, indices, p1_start_color, p1_end_color, duration );
+	
+
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( cylinderObj ); s_debugRenderWorldObjects.push_back( coneObj ); return;
+		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( cylinderObj );  s_debugRenderWorldObjectsAlways.push_back( coneObj ); return;
+		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( cylinderObj ); s_debugRenderWorldObjectsXRay.push_back( coneObj ); return;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldArrow( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldArrow( start, color, color, end, color, color, duration, mode );
 }
 
 
@@ -669,9 +709,9 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color,
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode )
 {
-	DebugAddWorldLine( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetIBasis3D().GetNormalized(), Rgba8::RED, duration, mode );
-	DebugAddWorldLine( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetJBasis3D().GetNormalized(), Rgba8::GREEN, duration, mode );
-	DebugAddWorldLine( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetKBasis3D().GetNormalized(), Rgba8::BLUE, duration, mode );
+	DebugAddWorldArrow( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetIBasis3D().GetNormalized(), Rgba8::RED, duration, mode );
+	DebugAddWorldArrow( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetJBasis3D().GetNormalized(), Rgba8::GREEN, duration, mode );
+	DebugAddWorldArrow( basis.GetTranslation3D(), basis.GetTranslation3D() + basis.GetKBasis3D().GetNormalized(), Rgba8::BLUE, duration, mode );
 }
 
 

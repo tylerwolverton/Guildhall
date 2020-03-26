@@ -75,13 +75,13 @@ void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, 
 //							 rgba end_p0_color, rgba end_pf_color,        // color of first/end point at the end of duration
 //							 float duration,
 //							 eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-//
-//// arrows
-//void DebugAddWorldArrow( vec3 p0, rgba p0_start_color, rgba p0_end_color,
-//						 vec3 p1, rgba p1_start_color, rgba p1_end_color,
-//						 float duration,
-//						 eDebugRenderMode mode );
-//void DebugAddWorldArrow( vec3 start, vec3 end, rgba color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
+// arrows
+void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_start_color, const Rgba8& p0_end_color,
+						 const Vec3& p1, const Rgba8& p1_start_color, const Rgba8& p1_end_color,
+						 float duration,
+						 eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+void DebugAddWorldArrow( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
 // Quads
 void DebugAddWorldQuad( const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& p3, const AABB2& uvs, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );

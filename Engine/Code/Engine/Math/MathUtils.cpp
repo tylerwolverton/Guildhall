@@ -90,6 +90,23 @@ bool IsNearlyEqual( float value, float target, float variance )
 
 
 //-----------------------------------------------------------------------------------------------
+bool IsNearlyEqual( const Vec3& value, const Vec3& target, float variance /*= .0001f */ )
+{
+	if ( ( value.x > target.x - variance
+			&& value.x < target.x + variance )
+		 || ( value.y > target.y - variance
+			  && value.y < target.y + variance )
+		 || ( value.z > target.z - variance
+			  && value.z < target.z + variance ) )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec2 TransformPosition2D( const Vec2& initialPos, float uniformScale, float rotationDeg, const Vec2& translation )
 {
 	Vec2 transformedPos( initialPos );
@@ -909,7 +926,7 @@ Vec3 CrossProduct3D( const Vec3& a, const Vec3& b )
 
 	crossProduct.x = ( a.y * b.z ) - ( b.y * a.z );
 	crossProduct.y = -( ( a.x * b.z ) - ( b.x * a.z ) );
-	crossProduct.z = ( a.y * b.x ) - ( b.y * a.x );
+	crossProduct.z = ( a.x * b.y ) - ( b.x * a.y );
 
 	return crossProduct;
 }

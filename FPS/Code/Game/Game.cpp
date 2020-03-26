@@ -152,7 +152,7 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-
+	DebugAddScreenPoint( Vec2( 1920.f, 1080.f ) * .5f, 4.f, Rgba8::GREEN );
 	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
 
 	for ( int transformIdx = 0; transformIdx < (int)m_sphereMeshTransforms.size(); ++transformIdx )
@@ -200,7 +200,7 @@ void Game::Render() const
 		g_renderer->SetModelMatrix( model );
 		g_renderer->DrawMesh( m_sphereMesh );
 	}
-
+	   
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );
@@ -297,8 +297,11 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
 	{
-		DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
+		/*DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
 						   m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW, 
+						   30.f );*/
+		DebugAddWorldArrow( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN,
+						   m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW,
 						   30.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'R' ) )
