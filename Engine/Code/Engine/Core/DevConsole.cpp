@@ -43,7 +43,7 @@ void DevConsole::Startup()
 	m_devConsoleCamera->SetOutputSize( Vec2( 1920.f, 1080.f ) );
 	m_devConsoleCamera->SetProjectionOrthographic( 1080.f );
 
-	g_eventSystem->RegisterEvent( "Help", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
+	g_eventSystem->RegisterEvent( "help", "Display help text for each supported dev console command.", eUsageLocation::DEV_CONSOLE, ShowHelp );
 
 	LoadPersistentHistory();
 }

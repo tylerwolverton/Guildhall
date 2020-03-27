@@ -72,7 +72,7 @@ void App::Startup()
 
 	g_game->Startup();
 
-	g_eventSystem->RegisterEvent( "Quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
+	g_eventSystem->RegisterEvent( "quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
 }
 
 

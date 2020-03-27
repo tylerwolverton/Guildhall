@@ -649,7 +649,7 @@ void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& color, float 
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldPoint( const Vec3& pos, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
-	DebugAddWorldPoint( pos, .01f, color, color, duration, mode );
+	DebugAddWorldPoint( pos, .05f, color, color, duration, mode );
 }
 
 

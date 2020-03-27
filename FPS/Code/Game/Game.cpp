@@ -180,7 +180,7 @@ void Game::Render() const
 	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
 	
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	g_renderer->SetModelMatrix( model );
+	g_renderer->SetModelMatrix( model, Rgba8::YELLOW );
 	g_renderer->DrawMesh( m_cubeMesh );
 
 	model = m_planeMeshTransform.GetAsMatrix();
@@ -289,13 +289,13 @@ void Game::UpdateFromKeyboard()
 	{
 		DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN, 
 						   m_cubeMeshTransform.GetPosition(), Rgba8::WHITE, Rgba8::BLACK, 
-						   30.f );
+						   10.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
 	{
 		DebugAddWorldArrow( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN,
-							m_cubeMeshTransform.GetPosition(), Rgba8::BLUE, Rgba8::YELLOW,
-							30.f );
+							m_cubeMeshTransform.GetPosition(), Rgba8::WHITE, Rgba8::BLACK,
+							10.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'R' ) )
 	{
@@ -304,7 +304,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'Y' ) )
 	{
-		DebugAddWorldWireSphere( m_worldCamera->GetTransform().GetPosition(), 2.f, Rgba8::WHITE, Rgba8::WHITE, 10.f, DEBUG_RENDER_ALWAYS );
+		DebugAddWorldWireSphere( m_worldCamera->GetTransform().GetPosition(), 2.f, Rgba8::WHITE, Rgba8::BLUE, 10.f, DEBUG_RENDER_ALWAYS );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
 	{
@@ -329,7 +329,7 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'I' ) )
 	{
-		DebugAddWorldBasis( m_worldCamera->GetTransform().GetAsMatrix(), Rgba8::WHITE, Rgba8::BLACK, 20.f );
+		DebugAddWorldBasis( m_worldCamera->GetTransform().GetAsMatrix(), Rgba8::WHITE, Rgba8::BLACK, 10.f );
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( '1' ) )
