@@ -7,6 +7,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
@@ -154,6 +155,8 @@ void Game::Render() const
 	RenderUI();
 	
 	g_renderer->EndCamera( *m_uiCamera );
+
+	DebugRenderWorldToCamera( m_worldCamera );
 }
 
 
@@ -541,7 +544,6 @@ void Game::UpdateMouse()
 	
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos();
 	m_mouseWorldPosition = m_worldCamera->ClientToWorldPosition( m_mouseWorldPosition ).XY();
-	m_mouseWorldPosition += m_worldCamera->GetTransform().m_position.XY();
 
 	switch ( m_gameState )
 	{
@@ -668,7 +670,6 @@ void Game::UpdatePotentialPolygon()
 void Game::UpdateOffScreenGameObjects()
 {
 	AABB2 screenBounds( m_worldCamera->GetOrthoMin(), m_worldCamera->GetOrthoMax() );
-	screenBounds.Translate( m_worldCamera->GetTransform().m_position.XY() );
 
 	for ( int objectIdx = 0; objectIdx < (int)m_gameObjects.size(); ++objectIdx )
 	{

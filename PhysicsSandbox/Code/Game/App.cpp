@@ -7,6 +7,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -60,6 +61,7 @@ void App::Startup()
 	g_window->SetInputSystem( g_inputSystem );
 
 	g_renderer->Startup( g_window );
+	DebugRenderSystemStartup( g_renderer, g_eventSystem );
 
 	g_devConsole->Startup();
 	g_devConsole->SetInputSystem( g_inputSystem );
@@ -77,6 +79,7 @@ void App::Shutdown()
 {
 	g_game->Shutdown();
 	g_devConsole->Shutdown();
+	DebugRenderSystemShutdown();
 	g_renderer->Shutdown();
 	g_inputSystem->Shutdown();
 	g_eventSystem->Shutdown();
@@ -144,6 +147,7 @@ void App::BeginFrame()
 	g_devConsole->BeginFrame();
 	g_inputSystem->BeginFrame();
 	g_renderer->BeginFrame();
+	DebugRenderBeginFrame();
 	g_game->BeginFrame();
 }
 
@@ -189,6 +193,7 @@ void App::UpdateFromKeyboard()
 void App::Render() const
 {
 	g_game->Render();
+	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 	g_devConsole->Render();
 }
 
@@ -197,6 +202,7 @@ void App::Render() const
 void App::EndFrame()
 {
 	g_game->EndFrame();
+	DebugRenderEndFrame();
 	g_renderer->EndFrame();
 	g_inputSystem->EndFrame();
 	g_devConsole->EndFrame();
