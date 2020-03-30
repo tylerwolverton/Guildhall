@@ -72,6 +72,12 @@ void Game::Startup()
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
+
+	Vec2 bottomLeft( -WINDOW_WIDTH * .5f, -WINDOW_HEIGHT * .5f );
+	Vec2 topRight( WINDOW_WIDTH * .5f, -WINDOW_HEIGHT * .5f + 1.f );
+	std::vector<Vec2> points {bottomLeft, Vec2(topRight.x, bottomLeft.y), topRight, Vec2( bottomLeft.x, topRight.y ) };
+	SpawnPolygon( Polygon2( points ) );
+	m_gameObjects[0]->ChangeBounciness( 1.f );
 }
 
 
@@ -682,30 +688,18 @@ void Game::UpdateOffScreenGameObjects()
 
 		const AABB2 objectBoundingBox = gameObject->GetBoundingBox();
 
-		// Check bouncing off bottom
-		unsigned int edgesOfScreenColliderIsOff = gameObject->CheckIfOutsideScreen( screenBounds, false );
+		// Delete objects that leave screen via sides or bottom
+		unsigned int edgesOfScreenColliderIsOff = gameObject->CheckIfOutsideScreen( screenBounds, true );
 		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_BOTTOM
-			 && gameObject->GetVelocity().y < 0.01f)
+			 || edgesOfScreenColliderIsOff & SCREEN_EDGE_LEFT 
+			 || edgesOfScreenColliderIsOff & SCREEN_EDGE_RIGHT )
 		{
-			Vec2 newVelocity( gameObject->GetVelocity() );
-			newVelocity.y = abs( newVelocity.y );
-
-			gameObject->SetVelocity( newVelocity );
-		}
-		
-		// Check side wraparound
-		edgesOfScreenColliderIsOff = gameObject->CheckIfOutsideScreen( screenBounds, true );
-		float yPos = gameObject->GetPosition().y;
-
-		if ( edgesOfScreenColliderIsOff & SCREEN_EDGE_LEFT )
-		{
-			float xDistanceToOtherSideOfScreen = objectBoundingBox.mins.x - screenBounds.maxs.x;
-			gameObject->SetPosition( Vec2( gameObject->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
-		}
-		if( edgesOfScreenColliderIsOff & SCREEN_EDGE_RIGHT )
-		{
-			float xDistanceToOtherSideOfScreen = objectBoundingBox.maxs.x - screenBounds.mins.x;
-			gameObject->SetPosition( Vec2( gameObject->GetPosition().x - xDistanceToOtherSideOfScreen, yPos ) );
+			int index = GetIndexOfGameObject( gameObject );
+			// Don't delete floor
+			if ( index != 0 )
+			{
+				m_garbageGameObjectIndexes.push_back( index );
+			}
 		}
 	}
 }
