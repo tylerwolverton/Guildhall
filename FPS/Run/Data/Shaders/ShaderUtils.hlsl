@@ -68,6 +68,21 @@ struct v2f_t
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
 	float2 uv : UV;
+
+	float3 world_position : WORLD_POSITION;
+	float3 world_normal : WORLD_NORMAL;
+};
+
+// AKA VertexLit
+struct VertexPCUTBN
+{
+	vec3 position;
+	rgba color;
+	vec2 uv;
+
+	vec3 tangent;
+	vec3 bitangent;
+	vec3 normal;
 };
 
 
@@ -83,12 +98,18 @@ v2f_t DefaultVertexFunction( vs_input_t input )
 	v2f.color = input.color * tint;
 	v2f.uv = input.uv;
 
-	float4 worldPos = float4( input.position, 1 );
+	float4 worldPos = float4( input.position, 1.0f );
 	float4 modelPos = mul( MODEL, worldPos );
 	float4 cameraPos = mul( VIEW, modelPos );
 	float4 clipPos = mul( PROJECTION, cameraPos );
 
 	v2f.position = clipPos;
+	v2f.world_position = worldPos.xyz;
+
+	vec4 localNormal = float4( input.normal, 0.0f );
+	vec4 worldNormal = world_normal.xyz;
+
+	v2f.world_normal = world_normal;
 
 	return v2f;
 }
