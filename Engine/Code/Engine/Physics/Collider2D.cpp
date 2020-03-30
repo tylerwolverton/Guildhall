@@ -40,19 +40,14 @@ static bool DiscVPolygonCollisionCheck( const Collider2D* collider1, const Colli
 
 
 //-----------------------------------------------------------------------------------------------
-static bool PolygonVPolygonCollisionCheck( const Collider2D* collider1, const Collider2D* collider2 )
+static std::vector<Vec2> GetSimplexForGJKCollision( const PolygonCollider2D* polygonCollider1, const PolygonCollider2D* polygonCollider2 )
 {
-	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
-	const PolygonCollider2D* polygonCollider1 = (const PolygonCollider2D*)collider1;
-	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;
-
 	// Initial point calculation
 	Vec2 initialDirection = polygonCollider2->m_worldPosition - polygonCollider1->m_worldPosition;
 	Vec2 supportPoint0 = polygonCollider1->GetSupportPoint( initialDirection ) - polygonCollider2->GetSupportPoint( -initialDirection );
 	Vec2 supportPoint1 = polygonCollider1->GetSupportPoint( -initialDirection ) - polygonCollider2->GetSupportPoint( initialDirection );
 
-	bool foundIntersection = false;
-	while ( !foundIntersection )
+	while ( true )
 	{
 		Vec2 supportEdge01 = supportPoint1 - supportPoint0;
 		Vec2 direction = TripleProduct2D( supportEdge01, -supportPoint0, supportEdge01 );
@@ -61,13 +56,13 @@ static bool PolygonVPolygonCollisionCheck( const Collider2D* collider1, const Co
 		if ( supportPoint2 == supportPoint0
 			 || supportPoint2 == supportPoint1 )
 		{
-			break;
+			return std::vector<Vec2>{};
 		}
 
 		// Get orthogonal vectors to each of the remaining edges to test for the origin
 		Vec2 supportPoint2ToOrigin = -supportPoint2;
-		Vec2 supportEdge21 = supportPoint1 - supportPoint2; 
-		Vec2 supportEdge20 = supportPoint0 - supportPoint2; 
+		Vec2 supportEdge21 = supportPoint1 - supportPoint2;
+		Vec2 supportEdge20 = supportPoint0 - supportPoint2;
 
 		Vec2 orthogonal21 = TripleProduct2D( supportEdge20, supportEdge21, supportEdge21 );
 		Vec2 orthogonal20 = TripleProduct2D( supportEdge21, supportEdge20, supportEdge20 );
@@ -86,10 +81,27 @@ static bool PolygonVPolygonCollisionCheck( const Collider2D* collider1, const Co
 			continue;
 		}
 
-		foundIntersection = true;
+		return std::vector<Vec2>{ supportPoint0, supportPoint1, supportPoint2 };
 	}
 
-	return foundIntersection;
+	return std::vector<Vec2>{};
+}
+
+
+//-----------------------------------------------------------------------------------------------
+static bool PolygonVPolygonCollisionCheck( const Collider2D* collider1, const Collider2D* collider2 )
+{
+	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
+	const PolygonCollider2D* polygonCollider1 = (const PolygonCollider2D*)collider1;
+	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;
+
+	std::vector<Vec2> simplex = GetSimplexForGJKCollision( polygonCollider1, polygonCollider2 );
+	if ( simplex.size() == 0 )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -193,11 +205,13 @@ static Manifold2 DiscVPolygonCollisionManifoldGenerator( const Collider2D* colli
 //-----------------------------------------------------------------------------------------------
 static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* collider1, const Collider2D* collider2 )
 {
-	UNUSED( collider1 );
-	UNUSED( collider2 );
 	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
-	/*const PolygonCollider2D* polygonCollider1 = (const PolygonCollider2D*)collider1;
-	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;*/
+	const PolygonCollider2D* polygonCollider1 = (const PolygonCollider2D*)collider1;
+	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;
+
+	std::vector<Vec2> simplex = GetSimplexForGJKCollision( polygonCollider1, polygonCollider2 );
+
+
 
 	return Manifold2();
 }
