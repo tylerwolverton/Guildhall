@@ -933,6 +933,23 @@ Vec3 CrossProduct3D( const Vec3& a, const Vec3& b )
 
 
 //-----------------------------------------------------------------------------------------------
+Vec3 TripleProduct3D( const Vec3& a, const Vec3& b, const Vec3& c )
+{
+	Vec3 axb = CrossProduct3D( a, b );
+	return CrossProduct3D( axb, c );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 TripleProduct2D( const Vec2& a, const Vec2& b, const Vec2& c )
+{
+	Vec3 tripleProduct3D = TripleProduct3D( Vec3( a, 0.f ), Vec3( b, 0.f ), Vec3( c, 0.f ) );
+
+	return Vec2( tripleProduct3D.x, tripleProduct3D.y );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float SmoothStart2( float t )
 {
 	return t * t;

@@ -47,6 +47,8 @@ public: // Interface
 
 	virtual float CalculateMoment( float mass ) = 0;
 
+	virtual Vec2 GetSupportPoint( const Vec2& direction ) const = 0;
+
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
 	virtual const AABB2 GetWorldBounds() const																				{ return m_worldBounds; };

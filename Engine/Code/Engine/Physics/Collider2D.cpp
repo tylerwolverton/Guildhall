@@ -42,13 +42,54 @@ static bool DiscVPolygonCollisionCheck( const Collider2D* collider1, const Colli
 //-----------------------------------------------------------------------------------------------
 static bool PolygonVPolygonCollisionCheck( const Collider2D* collider1, const Collider2D* collider2 )
 {
-	UNUSED( collider1 );
-	UNUSED( collider2 );
 	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
-	/*const PolygonCollider2D* polygonCollider1 = (const PolygonCollider2D*)collider1;
-	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;*/
+	const PolygonCollider2D* polygonCollider1 = (const PolygonCollider2D*)collider1;
+	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;
 
-	return false;
+	// Initial point calculation
+	Vec2 initialDirection = polygonCollider2->m_worldPosition - polygonCollider1->m_worldPosition;
+	Vec2 supportPoint0 = polygonCollider1->GetSupportPoint( initialDirection ) - polygonCollider2->GetSupportPoint( -initialDirection );
+	Vec2 supportPoint1 = polygonCollider1->GetSupportPoint( -initialDirection ) - polygonCollider2->GetSupportPoint( initialDirection );
+
+	bool foundIntersection = false;
+	while ( !foundIntersection )
+	{
+		Vec2 supportEdge01 = supportPoint1 - supportPoint0;
+		Vec2 direction = TripleProduct2D( supportEdge01, -supportPoint0, supportEdge01 );
+		Vec2 supportPoint2 = polygonCollider1->GetSupportPoint( direction ) - polygonCollider2->GetSupportPoint( -direction );
+		// If the new support point equals an existing one, we've hit the edge of the polygon so we know there is no intersection
+		if ( supportPoint2 == supportPoint0
+			 || supportPoint2 == supportPoint1 )
+		{
+			break;
+		}
+
+		// Get orthogonal vectors to each of the remaining edges to test for the origin
+		Vec2 supportPoint2ToOrigin = -supportPoint2;
+		Vec2 supportEdge21 = supportPoint1 - supportPoint2; 
+		Vec2 supportEdge20 = supportPoint0 - supportPoint2; 
+
+		Vec2 orthogonal21 = TripleProduct2D( supportEdge20, supportEdge21, supportEdge21 );
+		Vec2 orthogonal20 = TripleProduct2D( supportEdge21, supportEdge20, supportEdge20 );
+
+		// If origin is on opposite side of an edge, reset support points and try again
+		if ( DotProduct2D( orthogonal21, supportPoint2ToOrigin ) > 0.f )
+		{
+			supportPoint0 = supportPoint1;
+			supportPoint1 = supportPoint2;
+			continue;
+		}
+
+		if ( DotProduct2D( orthogonal20, supportPoint2ToOrigin ) > 0.f )
+		{
+			supportPoint1 = supportPoint2;
+			continue;
+		}
+
+		foundIntersection = true;
+	}
+
+	return foundIntersection;
 }
 
 

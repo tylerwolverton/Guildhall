@@ -118,6 +118,13 @@ float DiscCollider2D::CalculateMoment( float mass )
 
 
 //-----------------------------------------------------------------------------------------------
+Vec2 DiscCollider2D::GetSupportPoint( const Vec2& direction ) const
+{
+	return m_worldPosition + ( m_radius * direction.GetNormalized() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DiscCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const
 {
 	if( renderer == nullptr )

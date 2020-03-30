@@ -783,6 +783,13 @@ void Game::CheckCollisions()
 		}
 
 		UpdateBorderColor( gameObject );
+
+		// Check intersection with other game objects
+		for ( int otherObjIdx = (int)m_gameObjects.size() - 1; otherObjIdx >= 0; --otherObjIdx )
+		{
+			GameObject* otherGameObject = m_gameObjects[otherObjIdx];
+			HandleIntersection( gameObject, otherGameObject );
+		}
 	}
 }
 

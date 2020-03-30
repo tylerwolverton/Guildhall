@@ -160,6 +160,28 @@ float PolygonCollider2D::CalculateMoment( float mass )
 
 
 //-----------------------------------------------------------------------------------------------
+Vec2 PolygonCollider2D::GetSupportPoint( const Vec2& direction ) const
+{
+	const std::vector<Vec2>& points = m_polygon.GetPoints();
+
+	float farthestDist = -INFINITY;
+	Vec2 farthestPt( Vec2::ZERO );
+	
+	for ( int pointIdx = 0; pointIdx < (int)points.size(); ++pointIdx )
+	{
+		float distToPoint = DotProduct2D( points[pointIdx], direction );
+		if ( distToPoint > farthestDist )
+		{
+			farthestDist = distToPoint;
+			farthestPt = points[pointIdx];
+		}
+	}
+
+	return farthestPt;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void PolygonCollider2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const
 {
 	if ( renderer == nullptr )

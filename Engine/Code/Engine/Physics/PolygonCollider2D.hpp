@@ -28,6 +28,8 @@ public:
 
 	virtual float CalculateMoment( float mass ) override;
 
+	virtual Vec2 GetSupportPoint( const Vec2& direction ) const override;
+
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const override;
 
