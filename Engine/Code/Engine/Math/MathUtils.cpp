@@ -107,6 +107,20 @@ bool IsNearlyEqual( const Vec3& value, const Vec3& target, float variance /*= .0
 
 
 //-----------------------------------------------------------------------------------------------
+float Min( float a, float b )
+{
+	return a < b ? a : b;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float Max( float a, float b )
+{
+	return a > b ? a : b;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec2 TransformPosition2D( const Vec2& initialPos, float uniformScale, float rotationDeg, const Vec2& translation )
 {
 	Vec2 transformedPos( initialPos );
@@ -301,12 +315,24 @@ float RangeMapFloat( float inputBegin, float inputEnd, float outputBegin, float 
 
 
 //-----------------------------------------------------------------------------------------------
-Vec3 RangeMapVec3( const Vec3& orginalBegin, const Vec3& originalEnd, const Vec3& newBegin, const Vec3& newEnd, const Vec3& value )
+const Vec2 RangeMapFloatVec2( float inputBegin, float inputEnd, const Vec2& outputBegin, const Vec2& outputEnd, float value )
+{
+	float inputDomain = inputEnd - inputBegin;
+	Vec2 outputRange = outputEnd - outputBegin;
+
+	float fraction = ( value - inputBegin ) / inputDomain;
+
+	return outputBegin + ( fraction * outputRange );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Vec3 RangeMapVec3( const Vec3& inputBegin, const Vec3& inputEnd, const Vec3& outputBegin, const Vec3& outputEnd, const Vec3& value )
 {
 	Vec3 newVec;
-	newVec.x = RangeMapFloat( orginalBegin.x, originalEnd.x, newBegin.x, newEnd.x, value.x );
-	newVec.y = RangeMapFloat( orginalBegin.y, originalEnd.y, newBegin.y, newEnd.y, value.y );
-	newVec.z = RangeMapFloat( orginalBegin.z, originalEnd.z, newBegin.z, newEnd.z, value.z );
+	newVec.x = RangeMapFloat( inputBegin.x, inputEnd.x, outputBegin.x, outputEnd.x, value.x );
+	newVec.y = RangeMapFloat( inputBegin.y, inputEnd.y, outputBegin.y, outputEnd.y, value.y );
+	newVec.z = RangeMapFloat( inputBegin.z, inputEnd.z, outputBegin.z, outputEnd.z, value.z );
 
 	return newVec;
 }

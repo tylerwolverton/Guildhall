@@ -28,6 +28,9 @@ int				PositiveMod( int left, int right );
 float			SignFloat( float value );
 bool			IsNearlyEqual( float value, float target, float variance = .0001f );
 bool			IsNearlyEqual( const Vec3& value, const Vec3& target, float variance = .0001f );
+float			Min( float a, float b );
+float			Max( float a, float b );
+
 
 // Transforms
 const Vec2		TransformPosition2D( const Vec2& initialPos, float scaleUniform, float rotationDeg, const Vec2& translation );
@@ -61,8 +64,9 @@ float			ClampMin			( float value, float minimumValue );
 double			ClampMinMax			( double value, double minimumValue, double maximumValue );
 float			ClampZeroToOne		( float value );
 int				ClampMinMaxInt		( int value, int minimumValue, int maximumValue );
-float			RangeMapFloat		( float orginalBegin, float originalEnd, float newBegin, float newEnd, float value );
-Vec3			RangeMapVec3		( const Vec3& orginalBegin, const Vec3& originalEnd, const Vec3& newBegin, const Vec3& newEnd, const Vec3& value );
+float			RangeMapFloat		( float inputBegin, float inputEnd, float outputBegin, float outputEnd, float value );
+const Vec2		RangeMapFloatVec2	( float inputBegin, float inputEnd, const Vec2& outputBegin, const Vec2& outputEnd, float value );
+const Vec3		RangeMapVec3		( const Vec3& inputBegin, const Vec3& inputEnd, const Vec3& outputBegin, const Vec3& outputEnd, const Vec3& value );
 int				RoundDownToInt		( float value );
 
 // Geometric Queries 2D

@@ -236,6 +236,130 @@ static Manifold2 DiscVPolygonCollisionManifoldGenerator( const Collider2D* colli
 
 
 //-----------------------------------------------------------------------------------------------
+static bool GetClippedSegmentToSegment( const Vec2& segmentToClipStart, const Vec2& segmentToClipEnd,
+										const Vec2& refEdgeStart, const Vec2& refEdgeEnd,
+										Vec2* out_clippedMin, Vec2* out_clippedMax )
+{
+	if ( refEdgeStart == refEdgeEnd )
+	{
+		*out_clippedMin = refEdgeStart;
+		*out_clippedMax = refEdgeStart;
+
+		return true;
+	}
+
+	Vec2 refDir = ( refEdgeEnd - refEdgeStart ).GetNormalized();
+
+	float minDistAlongRefEdge = DotProduct2D( refEdgeStart, refDir );
+	float maxDistAlongRefEdge = DotProduct2D( refEdgeEnd, refDir );
+
+	float minDistAlongSegToClip = DotProduct2D( segmentToClipStart, refDir );
+	float maxDistAlongSegToClip = DotProduct2D( segmentToClipEnd, refDir );
+
+	float minClippedDist = Max( minDistAlongRefEdge, minDistAlongSegToClip );
+	float maxClippedDist = Min( maxDistAlongRefEdge, maxDistAlongSegToClip );
+
+	// Check for no intersection
+	if ( minClippedDist > maxClippedDist )
+	{
+		return false;
+	}
+
+	*out_clippedMin = RangeMapFloatVec2( minDistAlongSegToClip, maxDistAlongSegToClip, segmentToClipStart, segmentToClipEnd, minClippedDist );
+	*out_clippedMax = RangeMapFloatVec2( minDistAlongSegToClip, maxDistAlongSegToClip, segmentToClipStart, segmentToClipEnd, maxClippedDist );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonCollider1, const PolygonCollider2D* polygonCollider2,
+										   const Vec2& normal,
+										   Vec2* out_contactMin, Vec2* out_contactMax )
+{
+	Vec2 pointOnB = polygonCollider2->GetFarthestPointInDirection( normal );
+	Plane2D referencePlane( normal, pointOnB );
+
+	const std::vector<Vec2>& pointsOfB = polygonCollider2->m_polygon.GetPoints();
+	std::vector<Vec2> pointsAlongReferencePlane;
+	for ( int pointIdx = 0; pointIdx < (int)pointsOfB.size(); ++pointIdx )
+	{
+		float distFromPlane = DotProduct2D( pointsOfB[pointIdx], normal ) - referencePlane.distance;
+		if ( fabsf( distFromPlane ) < .001f )
+		{
+			pointsAlongReferencePlane.push_back( pointsOfB[pointIdx] );
+		}
+	}
+
+	Vec2 tangent = normal.GetRotatedMinus90Degrees();
+	float maxDistAlongTangent = -INFINITY;
+	float minDistAlongTangent = INFINITY;
+	// TODO: Can skip if only 1 or 2 points
+	for ( int pointIdx = 0; pointIdx < (int)pointsAlongReferencePlane.size(); ++pointIdx )
+	{
+		float distAlongTangent = DotProduct2D( pointsAlongReferencePlane[pointIdx], tangent );
+		if ( distAlongTangent > maxDistAlongTangent )
+		{
+			maxDistAlongTangent = distAlongTangent;
+		}
+		if ( distAlongTangent < minDistAlongTangent )
+		{
+			minDistAlongTangent = distAlongTangent;
+		}
+	}
+
+	Vec2 originPoint = normal * referencePlane.distance;
+	Vec2 minPointOnReferenceEdge = originPoint + minDistAlongTangent * tangent;
+	Vec2 maxPointOnReferenceEdge = originPoint + maxDistAlongTangent * tangent;
+
+	//std::vector<Vec2> potentialContactPoints;
+	maxDistAlongTangent = -INFINITY;
+	minDistAlongTangent = INFINITY;
+	for ( int edgeIdx = 0; edgeIdx < polygonCollider1->m_polygon.GetEdgeCount(); ++edgeIdx )
+	{
+		Vec2 edgeStart;
+		Vec2 edgeEnd;
+		polygonCollider1->m_polygon.GetEdge( edgeIdx, &edgeStart, &edgeEnd );
+
+		Vec2 clippedMin;
+		Vec2 clippedMax;
+		if ( GetClippedSegmentToSegment( edgeStart, edgeEnd, minPointOnReferenceEdge, maxPointOnReferenceEdge, &clippedMin, &clippedMax ) )
+		{
+			if ( DotProduct2D( normal, clippedMin ) > 0.f )
+			{
+				float distAlongTangent = DotProduct2D( clippedMin, tangent );
+				if ( distAlongTangent > maxDistAlongTangent )
+				{
+					maxDistAlongTangent = distAlongTangent;
+					*out_contactMax = clippedMin;
+				}
+				if ( distAlongTangent < minDistAlongTangent )
+				{
+					minDistAlongTangent = distAlongTangent;
+					*out_contactMin = clippedMin;
+				}
+			}
+
+			if ( DotProduct2D( normal, clippedMax ) > 0.f )
+			{
+				float distAlongTangent = DotProduct2D( clippedMax, tangent );
+				if ( distAlongTangent > maxDistAlongTangent )
+				{
+					maxDistAlongTangent = distAlongTangent;
+					*out_contactMax = clippedMax;
+				}
+				if ( distAlongTangent < minDistAlongTangent )
+				{
+					minDistAlongTangent = distAlongTangent;
+					*out_contactMin = clippedMax;
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* collider1, const Collider2D* collider2 )
 {
 	// this function is only called if the types tell me these casts are safe - so no need to a dynamic cast or type checks here.
@@ -283,6 +407,7 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 			manifold.contactPoint1 = startEdge;
 			manifold.contactPoint2 = endEdge;
 
+			GetContactEdgeBetweenPolygons( polygonCollider1, polygonCollider2, -normal, &manifold.contactPoint1, &manifold.contactPoint2 );
 			return manifold;
 		}
 		else
