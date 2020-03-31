@@ -62,6 +62,7 @@ void DebugRenderEndFrame();                     // Clean up dead objects
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldPoint( const Vec3& pos, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+void DebugAddWorldPoint( const Vec2& pos, const Rgba8& color, float duration = 0.f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
 // lines
 void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_color,
@@ -83,6 +84,7 @@ void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_
 						 float duration,
 						 eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldArrow( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+void DebugAddWorldArrow( const Vec2& start, const Vec2& end, const Rgba8& color, float duration = 0.f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
 // Quads
 void DebugAddWorldQuad( const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& p3, const AABB2& uvs, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );

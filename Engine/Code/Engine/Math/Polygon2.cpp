@@ -197,29 +197,34 @@ Vec2 Polygon2::GetClosestPointOnEdge( const Vec2& point ) const
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 Polygon2::GetClosestEdge( const Vec2& point ) const
+void Polygon2::GetClosestEdge( const Vec2& point, Vec2* out_start, Vec2* out_end ) const
 {
 	Vec2 nearestPoint = Vec2::ZERO;
-	Vec2 nearestEdge = Vec2::ZERO;
 	float minDistToPoint = 99999999.f;
 	for ( int edgeIdx = 0; edgeIdx < GetEdgeCount(); ++edgeIdx )
 	{
 		Vec2 startVert;
 		Vec2 endVert;
 		GetEdge( edgeIdx, &startVert, &endVert );
+		Vec2 edge = endVert - startVert;
 
 		Vec2 nearestLocalPoint = GetNearestPointOnLineSegment2D( point, startVert, endVert );
-		float distToPoint = GetDistance2D( nearestLocalPoint, point );
+		//float distToPoint = GetDistance2D( nearestLocalPoint, point );
+
+		Vec2 normal = edge.GetRotatedMinus90Degrees().GetNormalized();
+
+		float distToPoint = DotProduct2D( normal, startVert );
 
 		if ( distToPoint < minDistToPoint )
 		{
 			minDistToPoint = distToPoint;
 			nearestPoint = nearestLocalPoint;
-			nearestEdge = endVert - startVert;
+			*out_start = startVert;
+			*out_end = endVert;
 		}
 	}
 
-	return nearestEdge;
+	//return nearestEdge;
 }
 
 

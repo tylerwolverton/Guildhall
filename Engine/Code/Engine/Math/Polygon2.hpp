@@ -23,7 +23,7 @@ public:
 	float GetDistance( const Vec2& point ) const;
 	Vec2 GetClosestPoint( const Vec2& point ) const;
 	Vec2 GetClosestPointOnEdge( const Vec2& point ) const;
-	Vec2 GetClosestEdge( const Vec2& point ) const;
+	void GetClosestEdge( const Vec2& point, Vec2* out_start, Vec2* out_end ) const;
 
 	// accessors
 	int GetVertexCount() const;

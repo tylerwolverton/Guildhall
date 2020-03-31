@@ -654,6 +654,13 @@ void DebugAddWorldPoint( const Vec3& pos, const Rgba8& color, float duration, eD
 
 
 //-----------------------------------------------------------------------------------------------
+void DebugAddWorldPoint( const Vec2& pos, const Rgba8& color, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldPoint( Vec3( pos, 0.f ), color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_color, 
 						const Vec3& p1, const Rgba8& start_tint, const Rgba8& end_tint, 
 						float duration, eDebugRenderMode mode )
@@ -729,6 +736,13 @@ void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_
 void DebugAddWorldArrow( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldArrow( start, color, color, end, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldArrow( const Vec2& start, const Vec2& end, const Rgba8& color, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldArrow( Vec3( start, 0.f ), Vec3( end, 0.f ), color, duration, mode );
 }
 
 
