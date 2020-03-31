@@ -199,7 +199,6 @@ Vec2 Polygon2::GetClosestPointOnEdge( const Vec2& point ) const
 //-----------------------------------------------------------------------------------------------
 void Polygon2::GetClosestEdge( const Vec2& point, Vec2* out_start, Vec2* out_end ) const
 {
-	Vec2 nearestPoint = Vec2::ZERO;
 	float minDistToPoint = 99999999.f;
 	for ( int edgeIdx = 0; edgeIdx < GetEdgeCount(); ++edgeIdx )
 	{
@@ -208,17 +207,14 @@ void Polygon2::GetClosestEdge( const Vec2& point, Vec2* out_start, Vec2* out_end
 		GetEdge( edgeIdx, &startVert, &endVert );
 		Vec2 edge = endVert - startVert;
 
-		Vec2 nearestLocalPoint = GetNearestPointOnLineSegment2D( point, startVert, endVert );
-		//float distToPoint = GetDistance2D( nearestLocalPoint, point );
-
+		// TODO: Find real normal direction based on winding order
 		Vec2 normal = edge.GetRotatedMinus90Degrees().GetNormalized();
 
-		float distToPoint = DotProduct2D( normal, startVert );
+		float distToPoint = DotProduct2D( normal, startVert - point );
 
 		if ( distToPoint < minDistToPoint )
 		{
 			minDistToPoint = distToPoint;
-			nearestPoint = nearestLocalPoint;
 			*out_start = startVert;
 			*out_end = endVert;
 		}

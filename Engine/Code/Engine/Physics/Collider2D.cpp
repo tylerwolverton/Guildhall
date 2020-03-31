@@ -42,27 +42,41 @@ static bool DiscVPolygonCollisionCheck( const Collider2D* collider1, const Colli
 
 
 //-----------------------------------------------------------------------------------------------
+static Vec2 GetSupportPoint( const PolygonCollider2D* polygonCollider1, const PolygonCollider2D* polygonCollider2, const Vec2& direction )
+{
+	return polygonCollider1->GetFarthestPointInDirection( direction ) - polygonCollider2->GetFarthestPointInDirection( -direction );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 static std::vector<Vec2> GetSimplexForGJKCollision( const PolygonCollider2D* polygonCollider1, const PolygonCollider2D* polygonCollider2 )
 {
 	// Initial point calculation
-	Vec2 initialDirection = polygonCollider2->m_worldPosition - polygonCollider1->m_worldPosition;
-	Vec2 supportPoint0 = polygonCollider1->GetSupportPoint( initialDirection ) - polygonCollider2->GetSupportPoint( -initialDirection );
-	Vec2 supportPoint1 = polygonCollider1->GetSupportPoint( -initialDirection ) - polygonCollider2->GetSupportPoint( initialDirection );
+	Vec2 direction = polygonCollider2->m_worldPosition - polygonCollider1->m_worldPosition;
+	Vec2 supportPoint0 = GetSupportPoint( polygonCollider1, polygonCollider2, direction );
+	Vec2 supportPoint1 = GetSupportPoint( polygonCollider1, polygonCollider2, -direction );
+
+	Vec2 supportEdge01 = supportPoint1 - supportPoint0;
+	direction = TripleProduct2D( supportEdge01, -supportPoint0, supportEdge01 );
 
 	while ( true )
 	{
-		Vec2 supportEdge01 = supportPoint1 - supportPoint0;
-		Vec2 direction = TripleProduct2D( supportEdge01, -supportPoint0, supportEdge01 );
-		Vec2 supportPoint2 = polygonCollider1->GetSupportPoint( direction ) - polygonCollider2->GetSupportPoint( -direction );
+		Vec2 supportPoint2 = GetSupportPoint( polygonCollider1, polygonCollider2, direction );
 
-		DebugAddWorldPoint( supportPoint0, Rgba8::RED );
-		DebugAddWorldPoint( supportPoint1, Rgba8::GREEN );
-		DebugAddWorldPoint( supportPoint2, Rgba8::BLUE );
 		// If the new support point equals an existing one, we've hit the edge of the polygon so we know there is no intersection
 		if ( supportPoint2 == supportPoint0
 			 || supportPoint2 == supportPoint1 )
 		{
 			return std::vector<Vec2>{};
+		}
+
+		// Maintain ccw order
+		if ( supportEdge01.GetRotated90Degrees().GetNormalized() != direction.GetNormalized() )
+		{
+			Vec2 temp = supportPoint0;
+			supportPoint0 = supportPoint1;
+			supportPoint1 = temp;
+			supportEdge01 = supportPoint1 - supportPoint0;
 		}
 
 		// Get orthogonal vectors to each of the remaining edges to test for the origin
@@ -71,7 +85,6 @@ static std::vector<Vec2> GetSimplexForGJKCollision( const PolygonCollider2D* pol
 		Vec2 supportEdge20 = supportPoint0 - supportPoint2;
 
 		Vec2 orthogonal21 = TripleProduct2D( supportEdge20, supportEdge21, supportEdge21 );
-		//DebugAddWorldArrow( supportEdge21 * .5f + polygonCollider2->m_worldPosition, orthogonal21.GetClamped(.5f) + polygonCollider2->m_worldPosition, Rgba8::RED );
 		Vec2 orthogonal20 = TripleProduct2D( supportEdge21, supportEdge20, supportEdge20 );
 
 		// If origin is on opposite side of an edge, reset support points and try again
@@ -79,17 +92,22 @@ static std::vector<Vec2> GetSimplexForGJKCollision( const PolygonCollider2D* pol
 		{
 			supportPoint0 = supportPoint1;
 			supportPoint1 = supportPoint2;
+			direction = orthogonal21;
 			continue;
 		}
 
 		if ( DotProduct2D( orthogonal20, supportPoint2ToOrigin ) > 0.f )
 		{
-			supportPoint1 = supportPoint2;
+			supportPoint1 = supportPoint0;
+			supportPoint0 = supportPoint2;
+			direction = orthogonal20;
 			continue;
 		}
 
+	//	return std::vector<Vec2>{ supportPoint0, supportPoint1, supportPoint2 };
+
 		// Make sure simplex is in ccw order
-		if ( orthogonal21.GetNormalized() == supportEdge21.GetRotated90Degrees().GetNormalized() )
+		if ( orthogonal21.GetNormalized() != supportEdge21.GetRotated90Degrees().GetNormalized() )
 		{
 			return std::vector<Vec2>{ supportPoint0, supportPoint1, supportPoint2 };
 		}
@@ -230,6 +248,18 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 		return Manifold2();
 	}
 
+	DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::CYAN );
+	DebugAddWorldArrow( simplex[1], simplex[2], Rgba8::MAGENTA );
+	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::YELLOW );
+
+	Vec2 edge01 = simplex[1] - simplex[0];
+	if ( DotProduct2D( edge01.GetRotated90Degrees(), simplex[2] ) < 0.f )
+	{
+		Vec2 temp = simplex[0];
+		simplex[0] = simplex[2];
+		simplex[2] = temp;
+	}
+
 	DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::RED );
 	DebugAddWorldArrow( simplex[1], simplex[2], Rgba8::GREEN );
 	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::BLUE );
@@ -241,9 +271,9 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 		Vec2 endEdge;
 		simplexPoly.GetClosestEdge( Vec2::ZERO, &startEdge, &endEdge );
 		Vec2 normal = ( endEdge - startEdge ).GetRotatedMinus90Degrees().GetNormalized();
-		Vec2 support = polygonCollider1->GetSupportPoint( normal ) - polygonCollider2->GetSupportPoint( -normal );
+		Vec2 support = GetSupportPoint( polygonCollider1, polygonCollider2, normal );
 
-		Plane2D plane( normal, simplex[vertexIdx] );
+		Plane2D plane( normal, startEdge );
 
 		if ( fabsf( DotProduct2D( support, normal ) - plane.distance ) <= .0001f )
 		{
@@ -262,7 +292,7 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 				newSimplex.push_back( simplex[vertIdx] );
 				if ( simplex[vertIdx] == startEdge )
 				{
-					newSimplex.push_back( startEdge );
+					newSimplex.push_back( support );
 				}
 			}
 

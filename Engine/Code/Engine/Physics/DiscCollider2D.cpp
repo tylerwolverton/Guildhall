@@ -118,7 +118,7 @@ float DiscCollider2D::CalculateMoment( float mass )
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 DiscCollider2D::GetSupportPoint( const Vec2& direction ) const
+Vec2 DiscCollider2D::GetFarthestPointInDirection( const Vec2& direction ) const
 {
 	return m_worldPosition + ( m_radius * direction.GetNormalized() );
 }

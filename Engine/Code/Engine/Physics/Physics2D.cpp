@@ -129,8 +129,6 @@ void Physics2D::DetectCollisions()
 				collision.m_theirCollider = otherCollider;
 				collision.m_collisionManifold = collider->GetCollisionManifold( otherCollider );
 
-				/*DebugAddWorldArrow( Vec3( collision.m_collisionManifold.contactPoint, 0.f ), Vec3( collision.m_collisionManifold.normal, 0.f ), Rgba8::CYAN, 0.f, DEBUG_RENDER_ALWAYS );*/
-
 				m_collisions.push_back( collision );
 			}
 		}
@@ -167,8 +165,8 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 	}
 
 	CorrectCollidingRigidbodies( rigidbody1, rigidbody2, collision.m_collisionManifold );
-	float normalImpulse = ApplyCollisionImpulses( rigidbody1, rigidbody2, collision.m_collisionManifold );
-	ApplyFrictionImpulses( rigidbody1, rigidbody2, collision.m_collisionManifold, normalImpulse );
+	//float normalImpulse = ApplyCollisionImpulses( rigidbody1, rigidbody2, collision.m_collisionManifold );
+	//ApplyFrictionImpulses( rigidbody1, rigidbody2, collision.m_collisionManifold, normalImpulse );
 }
 
 

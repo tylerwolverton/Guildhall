@@ -160,7 +160,7 @@ float PolygonCollider2D::CalculateMoment( float mass )
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 PolygonCollider2D::GetSupportPoint( const Vec2& direction ) const
+Vec2 PolygonCollider2D::GetFarthestPointInDirection( const Vec2& direction ) const
 {
 	const std::vector<Vec2>& points = m_polygon.GetPoints();
 
