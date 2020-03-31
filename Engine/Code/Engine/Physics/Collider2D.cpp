@@ -248,9 +248,9 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 		return Manifold2();
 	}
 
-	DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::CYAN );
+	/*DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::CYAN );
 	DebugAddWorldArrow( simplex[1], simplex[2], Rgba8::MAGENTA );
-	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::YELLOW );
+	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::YELLOW );*/
 
 	Vec2 edge01 = simplex[1] - simplex[0];
 	if ( DotProduct2D( edge01.GetRotated90Degrees(), simplex[2] ) < 0.f )
@@ -260,9 +260,9 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 		simplex[2] = temp;
 	}
 
-	DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::RED );
+	/*DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::RED );
 	DebugAddWorldArrow( simplex[1], simplex[2], Rgba8::GREEN );
-	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::BLUE );
+	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::BLUE );*/
 
 	Polygon2 simplexPoly( simplex );
 	for ( int vertexIdx = 0; vertexIdx < 32; ++vertexIdx )
@@ -282,6 +282,7 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 			manifold.penetrationDepth = plane.distance;
 			manifold.contactPoint1 = startEdge;
 			manifold.contactPoint2 = endEdge;
+
 			return manifold;
 		}
 		else
