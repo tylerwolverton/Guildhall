@@ -68,6 +68,11 @@ double Timer::GetSecondsRemaining() const
 //-----------------------------------------------------------------------------------------------
 float Timer::GetRatioOfCompletion() const
 {
+	if ( m_durationSeconds == 0.0 )
+	{
+		return 1.f;
+	}
+
 	double elapsedSeconds = GetElapsedSeconds();
 	return (float)( elapsedSeconds / m_durationSeconds );
 }

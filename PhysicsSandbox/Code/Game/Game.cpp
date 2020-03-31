@@ -47,6 +47,8 @@ void Game::Startup()
 	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
 	m_uiCamera->SetColorTarget( nullptr );
+	
+	EnableDebugRendering();
 
 	m_rng = new RandomNumberGenerator();
 

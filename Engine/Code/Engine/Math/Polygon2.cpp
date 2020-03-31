@@ -92,7 +92,7 @@ bool Polygon2::IsConvex() const
 
 
 //-----------------------------------------------------------------------------------------------
-bool Polygon2::Contains( Vec2 point ) const
+bool Polygon2::Contains( const Vec2& point ) const
 {
 	if ( !IsValid() )
 	{
@@ -132,7 +132,7 @@ bool Polygon2::Contains( Vec2 point ) const
 
 
 //-----------------------------------------------------------------------------------------------
-float Polygon2::GetDistance( Vec2 point ) const
+float Polygon2::GetDistance( const Vec2& point ) const
 {
 	if ( Contains( point ) )
 	{
@@ -160,7 +160,7 @@ float Polygon2::GetDistance( Vec2 point ) const
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 Polygon2::GetClosestPoint( Vec2 point ) const
+Vec2 Polygon2::GetClosestPoint( const Vec2& point ) const
 {
 	if ( Contains( point ) )
 	{
@@ -172,7 +172,7 @@ Vec2 Polygon2::GetClosestPoint( Vec2 point ) const
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 Polygon2::GetClosestPointOnEdge( Vec2 point ) const
+Vec2 Polygon2::GetClosestPointOnEdge( const Vec2& point ) const
 {
 	Vec2 nearestPoint = Vec2::ZERO;
 	float minDistToPoint = 99999999.f;
@@ -193,6 +193,33 @@ Vec2 Polygon2::GetClosestPointOnEdge( Vec2 point ) const
 	}
 
 	return nearestPoint;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Polygon2::GetClosestEdge( const Vec2& point ) const
+{
+	Vec2 nearestPoint = Vec2::ZERO;
+	Vec2 nearestEdge = Vec2::ZERO;
+	float minDistToPoint = 99999999.f;
+	for ( int edgeIdx = 0; edgeIdx < GetEdgeCount(); ++edgeIdx )
+	{
+		Vec2 startVert;
+		Vec2 endVert;
+		GetEdge( edgeIdx, &startVert, &endVert );
+
+		Vec2 nearestLocalPoint = GetNearestPointOnLineSegment2D( point, startVert, endVert );
+		float distToPoint = GetDistance2D( nearestLocalPoint, point );
+
+		if ( distToPoint < minDistToPoint )
+		{
+			minDistToPoint = distToPoint;
+			nearestPoint = nearestLocalPoint;
+			nearestEdge = endVert - startVert;
+		}
+	}
+
+	return nearestEdge;
 }
 
 

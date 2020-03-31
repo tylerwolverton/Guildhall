@@ -2,12 +2,14 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/Collision2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/PolygonCollider2D.hpp"
 #include "Engine/Physics/Manifold2.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Timer.hpp"
 
@@ -127,6 +129,8 @@ void Physics2D::DetectCollisions()
 				collision.m_myCollider = collider;
 				collision.m_theirCollider = otherCollider;
 				collision.m_collisionManifold = collider->GetCollisionManifold( otherCollider );
+
+				DebugAddWorldArrow( Vec3( collision.m_collisionManifold.contactPoint, 0.f ), Vec3( collision.m_collisionManifold.normal, 0.f ), Rgba8::CYAN, 0.f, DEBUG_RENDER_ALWAYS );
 
 				m_collisions.push_back( collision );
 			}

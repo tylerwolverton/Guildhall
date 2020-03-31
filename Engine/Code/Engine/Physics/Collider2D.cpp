@@ -5,6 +5,7 @@
 #include "Engine/Physics/Manifold2.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Plane2D.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 
 
@@ -210,8 +211,32 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 	const PolygonCollider2D* polygonCollider2 = (const PolygonCollider2D*)collider2;
 
 	std::vector<Vec2> simplex = GetSimplexForGJKCollision( polygonCollider1, polygonCollider2 );
+	if ( simplex.size() == 0 )
+	{
+		return Manifold2();
+	}
 
+	Polygon2 simplexPoly( simplex );
+	for ( int vertexIdx = 0; vertexIdx < 32; ++vertexIdx )
+	{
+		Vec2 closestEdge = simplexPoly.GetClosestEdge( Vec2::ZERO );
+		Vec2 normal = closestEdge.GetRotatedMinus90Degrees().GetNormalized();
+		Vec2 support = polygonCollider1->GetSupportPoint( normal ) - polygonCollider2->GetSupportPoint( -normal );
 
+		Plane2D plane( normal, simplex[vertexIdx] );
+
+		if ( fabsf( DotProduct2D( support, normal ) - plane.distance ) <= .0001f )
+		{
+			Manifold2 manifold;
+			manifold.normal = normal;
+			manifold.penetrationDepth = plane.distance;
+			return manifold;
+		}
+		else
+		{
+			simplex.push_back( support );
+		}
+	}
 
 	return Manifold2();
 }

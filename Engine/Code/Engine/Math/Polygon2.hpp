@@ -19,10 +19,11 @@ public:
 	bool IsValid() const; // must have at least 3 points to be considered a polygon
 
 	bool IsConvex() const;
-	bool Contains( Vec2 point ) const;
-	float GetDistance( Vec2 point ) const;
-	Vec2 GetClosestPoint( Vec2 point ) const;
-	Vec2 GetClosestPointOnEdge( Vec2 point ) const;
+	bool Contains( const Vec2& point ) const;
+	float GetDistance( const Vec2& point ) const;
+	Vec2 GetClosestPoint( const Vec2& point ) const;
+	Vec2 GetClosestPointOnEdge( const Vec2& point ) const;
+	Vec2 GetClosestEdge( const Vec2& point ) const;
 
 	// accessors
 	int GetVertexCount() const;
