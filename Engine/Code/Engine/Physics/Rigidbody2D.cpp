@@ -108,6 +108,18 @@ Vec2 Rigidbody2D::GetImpaceVelocityAtPoint( const Vec2& point )
 
 
 //-----------------------------------------------------------------------------------------------
+Vec2 Rigidbody2D::GetCenterOfMass() const
+{
+	if ( m_collider != nullptr )
+	{
+		return m_collider->m_worldPosition;
+	}
+
+	return m_worldPosition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Rigidbody2D::SetPosition( const Vec2& position )
 {
 	m_worldPosition = position;

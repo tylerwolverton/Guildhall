@@ -29,7 +29,5 @@ protected:
 	virtual ~DiscCollider2D();
 
 public:
-	Vec2	m_localPosition; // my local offset from my parent
-	Vec2	m_worldPosition; // calculated from local position and owning rigidbody if present
 	float	m_radius = 0.f;
 };

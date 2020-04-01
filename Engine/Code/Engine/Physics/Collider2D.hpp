@@ -69,6 +69,9 @@ public:
 	Rigidbody2D* m_rigidbody	= nullptr;			// owning rigidbody, used for calculating world shape
 	PhysicsMaterial m_material;
 
+	Vec2	m_localPosition; // my local offset from my parent
+	Vec2	m_worldPosition; // calculated from local position and owning rigidbody if present
+
 protected:
 	Physics2D* m_system			= nullptr;			
 

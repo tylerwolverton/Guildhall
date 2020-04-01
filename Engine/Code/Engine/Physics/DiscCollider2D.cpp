@@ -9,11 +9,11 @@
 
 //-----------------------------------------------------------------------------------------------
 DiscCollider2D::DiscCollider2D( const Vec2& localPosition, float radius )
-	: m_localPosition( localPosition )
-	, m_radius( radius )
+	: m_radius( radius )
 {
 	m_type = COLLIDER2D_DISC;
 	m_worldBounds = CalculateWorldBounds();
+	m_localPosition = localPosition;
 }
 
 

@@ -41,6 +41,7 @@ public:
 	Vec2 GetVerletVelocity()														{ return m_verletVelocity; }
 
 	Vec2 GetPosition()																{ return m_worldPosition; }
+	Vec2 GetCenterOfMass() const;
 	void SetPosition( const Vec2& position );
 	void Translate2D( const Vec2& translation );
 

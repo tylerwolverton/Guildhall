@@ -312,7 +312,6 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 	Vec2 minPointOnReferenceEdge = originPoint + minDistAlongTangent * tangent;
 	Vec2 maxPointOnReferenceEdge = originPoint + maxDistAlongTangent * tangent;
 
-	//std::vector<Vec2> potentialContactPoints;
 	maxDistAlongTangent = -INFINITY;
 	minDistAlongTangent = INFINITY;
 	for ( int edgeIdx = 0; edgeIdx < polygonCollider1->m_polygon.GetEdgeCount(); ++edgeIdx )
