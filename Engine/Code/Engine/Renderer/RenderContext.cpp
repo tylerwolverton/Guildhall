@@ -74,6 +74,7 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_immediateIBO );
 	PTR_SAFE_DELETE( m_frameUBO );
 	PTR_SAFE_DELETE( m_modelMatrixUBO );
+	PTR_SAFE_DELETE( m_materialUBO );
 
 	PTR_SAFE_DELETE( m_defaultPointSampler );
 	PTR_SAFE_DELETE( m_defaultLinearSampler );
@@ -465,6 +466,7 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
 	// Create default samplers
 	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
@@ -513,6 +515,7 @@ void RenderContext::UpdateAndBindBuffers( Camera& camera )
 	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
 	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
 	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
+	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
 
@@ -853,15 +856,25 @@ Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetModelMatrix( const Mat44& modelMatrix, const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
+void RenderContext::SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint )
 {
 	ModelMatrixData matrixData;
 	matrixData.modelMatrix = modelMatrix;
-	startTint.GetAsFloatArray( matrixData.startTint );
-	endTint.GetAsFloatArray( matrixData.endTint );
-	matrixData.tintRatio = tintRatio;
+	tint.GetAsFloatArray( matrixData.tint );
 
 	m_modelMatrixUBO->Update( &matrixData, sizeof( matrixData ), sizeof( matrixData ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetMaterialData( const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
+{
+	MaterialData materialData;
+	startTint.GetAsFloatArray( materialData.startTint );
+	endTint.GetAsFloatArray( materialData.endTint );
+	materialData.tintRatio = tintRatio;
+
+	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
 }
 
 

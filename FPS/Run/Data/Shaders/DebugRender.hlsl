@@ -20,7 +20,10 @@ v2f_t VertexFunction( vs_input_t input )
 
 	// forward vertex input onto the next stage
 	v2f.position = float4( input.position, 1.0f );
-	v2f.color = input.color * TINT;
+
+	float4 tint = lerp( START_TINT, END_TINT, TINT_RATIO );
+	v2f.color = input.color * tint;
+
 	v2f.uv = input.uv;
 
 	float4 worldPos = float4( input.position, 1 );
@@ -42,8 +45,5 @@ v2f_t VertexFunction( vs_input_t input )
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
 	float4 color = tDiffuse.Sample( sSampler, input.uv );
-	color.r = 1.f - color.r;
-	color.g = 1.f - color.g;
-	color.b = 1.f - color.b;
 	return color * input.color;
 }

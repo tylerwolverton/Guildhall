@@ -409,7 +409,8 @@ static void RenderWorldObjects( const std::vector<DebugRenderObject*> objects )
 		DebugRenderObject* const& obj = objects[debugObjIdx];
 		if ( obj != nullptr )
 		{			
-			s_debugRenderContext->SetModelMatrix( Mat44(), obj->m_startColor, obj->m_endColor, obj->m_timer.GetRatioOfCompletion() );
+			s_debugRenderContext->SetModelMatrix( Mat44(), obj->m_startColor );
+			s_debugRenderContext->SetMaterialData( obj->m_startColor, obj->m_endColor, obj->m_timer.GetRatioOfCompletion() );
 
 			GPUMesh mesh( s_debugRenderContext, obj->m_vertices, obj->m_indices );
 			s_debugRenderContext->DrawMesh( &mesh );
@@ -432,7 +433,8 @@ static void RenderWorldBillboardTextObjects( const std::vector<DebugRenderObject
 			model.SetTranslation3D( obj->m_origin );
 			model.PushTransform( Mat44::CreateTranslation3D( -obj->m_origin ) );
 			
-			s_debugRenderContext->SetModelMatrix( model, obj->m_startColor, obj->m_endColor, obj->m_timer.GetRatioOfCompletion() );
+			s_debugRenderContext->SetModelMatrix( Mat44(), obj->m_startColor );
+			s_debugRenderContext->SetMaterialData( obj->m_startColor, obj->m_endColor, obj->m_timer.GetRatioOfCompletion() );
 
 			GPUMesh mesh( s_debugRenderContext, obj->m_vertices, obj->m_indices );
 			s_debugRenderContext->DrawMesh( &mesh );
@@ -455,7 +457,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
-	s_debugRenderContext->BindShader( "Data/Shaders/Default.hlsl" );
+	s_debugRenderContext->BindShader( "Data/Shaders/DebugRender.hlsl" );
 	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 
 	// Draw Depth
@@ -495,7 +497,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	// Draw XRay
 	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_GREATER, false );
-	s_debugRenderContext->BindShader( "Data/Shaders/XRay.hlsl" );
+	s_debugRenderContext->BindShader( "Data/Shaders/DebugRenderXRay.hlsl" );
 
 	s_debugRenderContext->BindTexture( nullptr );
 	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
@@ -509,8 +511,6 @@ void DebugRenderWorldToCamera( Camera* camera )
 	s_debugRenderContext->BindTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjectsXRay );
 	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjectsXRay );
-
-	s_debugRenderContext->BindShader( "Data/Shaders/Default.hlsl" );
 
 	s_debugRenderContext->EndCamera( *s_debugCamera );
 }

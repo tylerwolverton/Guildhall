@@ -1,11 +1,36 @@
-#include "ShaderUtils.hlsl"
+#include "ShaderCommon.hlsl"
+#include "PCUCommon.hlsl"
+
+
+// data - uniform/constant across entire draw call
+Texture2D<float4> tDiffuse : register( t0 );	// color of surface
+SamplerState sSampler : register( s0 );			// rules for how to sample texture
+
+
+//--------------------------------------------------------------------------------------
+// Programmable Shader Stages
+//--------------------------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 v2f_t VertexFunction( vs_input_t input )
 {
-	return DefaultVertexFunction( input );
+	v2f_t v2f = (v2f_t)0;
+
+	// forward vertex input onto the next stage
+	v2f.position = float4( input.position, 1.0f );
+	v2f.color = input.color * TINT;
+	v2f.uv = input.uv;
+
+	float4 worldPos = float4( input.position, 1 );
+	float4 modelPos = mul( MODEL, worldPos );
+	float4 cameraPos = mul( VIEW, modelPos );
+	float4 clipPos = mul( PROJECTION, cameraPos );
+
+	v2f.position = clipPos;
+
+	return v2f;
 }
 
 
@@ -16,5 +41,6 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	return DefaultFragmentFunction( input );
+	float4 color = tDiffuse.Sample( sSampler, input.uv );
+	return color * input.color;
 }

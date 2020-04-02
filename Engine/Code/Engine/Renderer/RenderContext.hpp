@@ -54,6 +54,7 @@ enum eBufferSlot
 	UBO_FRAME_SLOT = 0,
 	UBO_CAMERA_SLOT = 1,
 	UBO_MODEL_MATRIX_SLOT = 2,
+	UBO_MATERIAL_SLOT = 3,
 };
 
 
@@ -71,10 +72,17 @@ struct FrameData
 struct ModelMatrixData
 {
 	Mat44 modelMatrix;
+	float tint[4];
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct MaterialData
+{
 	float startTint[4];
 	float endTint[4];
 	float tintRatio;
-	
+
 	float padding[3];
 };
 
@@ -128,7 +136,8 @@ public:
 
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
-	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
+	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE );
+	void SetMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
 
 	// Raster state setters
 	void SetCullMode( eCullMode cullMode );
@@ -185,6 +194,7 @@ public:
 	IndexBuffer* m_immediateIBO		= nullptr;
 	RenderBuffer* m_frameUBO		= nullptr;
 	RenderBuffer* m_modelMatrixUBO	= nullptr;
+	RenderBuffer* m_materialUBO		= nullptr;
 
 private:
 	Clock* m_gameClock								= nullptr;
