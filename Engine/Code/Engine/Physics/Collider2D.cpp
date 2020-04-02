@@ -240,14 +240,6 @@ static bool GetClippedSegmentToSegment( const Vec2& segmentToClipStart, const Ve
 										const Vec2& refEdgeStart, const Vec2& refEdgeEnd,
 										Vec2* out_clippedMin, Vec2* out_clippedMax )
 {
-	if ( refEdgeStart == refEdgeEnd )
-	{
-		*out_clippedMin = refEdgeStart;
-		*out_clippedMax = refEdgeStart;
-
-		return true;
-	}
-
 	Vec2 refDir = ( refEdgeEnd - refEdgeStart ).GetNormalized();
 
 	float minDistAlongRefEdge = DotProduct2D( refEdgeStart, refDir );
@@ -258,7 +250,7 @@ static bool GetClippedSegmentToSegment( const Vec2& segmentToClipStart, const Ve
 
 	float minClippedDist = Max( minDistAlongRefEdge, minDistAlongSegToClip );
 	float maxClippedDist = Min( maxDistAlongRefEdge, maxDistAlongSegToClip );
-
+		
 	// Check for no intersection
 	if ( minClippedDist > maxClippedDist )
 	{
@@ -267,19 +259,20 @@ static bool GetClippedSegmentToSegment( const Vec2& segmentToClipStart, const Ve
 
 	*out_clippedMin = RangeMapFloatVec2( minDistAlongSegToClip, maxDistAlongSegToClip, segmentToClipStart, segmentToClipEnd, minClippedDist );
 	*out_clippedMax = RangeMapFloatVec2( minDistAlongSegToClip, maxDistAlongSegToClip, segmentToClipStart, segmentToClipEnd, maxClippedDist );
-
+	
 	return true;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonCollider1, const PolygonCollider2D* polygonCollider2,
-										   const Vec2& normal,
+										   const Vec2& normal, float penetrationDepth,
 										   Vec2* out_contactMin, Vec2* out_contactMax )
 {
 	Vec2 pointOnB = polygonCollider2->GetFarthestPointInDirection( normal );
 	Plane2D referencePlane( normal, pointOnB );
 
+	// Find every point of polygon2 that lies within a tolerance of the reference plane
 	const std::vector<Vec2>& pointsOfB = polygonCollider2->m_polygon.GetPoints();
 	std::vector<Vec2> pointsAlongReferencePlane;
 	for ( int pointIdx = 0; pointIdx < (int)pointsOfB.size(); ++pointIdx )
@@ -291,10 +284,11 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 		}
 	}
 
+	// Get the max and min values along the tangent to the normal, or the reference plane itself. 
+	// This gives the bounds of a reference edge ( or segment ) to check against
 	Vec2 tangent = normal.GetRotatedMinus90Degrees();
 	float maxDistAlongTangent = -INFINITY;
 	float minDistAlongTangent = INFINITY;
-	// TODO: Can skip if only 1 or 2 points
 	for ( int pointIdx = 0; pointIdx < (int)pointsAlongReferencePlane.size(); ++pointIdx )
 	{
 		float distAlongTangent = DotProduct2D( pointsAlongReferencePlane[pointIdx], tangent );
@@ -308,10 +302,25 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 		}
 	}
 
+	// Convert our tangent values into world points on reference edge
 	Vec2 originPoint = normal * referencePlane.distance;
 	Vec2 minPointOnReferenceEdge = originPoint + minDistAlongTangent * tangent;
 	Vec2 maxPointOnReferenceEdge = originPoint + maxDistAlongTangent * tangent;
 
+	// If the reference edge points are very close together, treat it as a single contact point
+	if ( IsNearlyEqual( minPointOnReferenceEdge, maxPointOnReferenceEdge, .0001f ) )
+	{
+		Vec2 contactPoint = minPointOnReferenceEdge - referencePlane.normal * penetrationDepth;
+		*out_contactMin = contactPoint;
+		*out_contactMax = contactPoint;
+
+		DebugAddWorldPoint( *out_contactMin, Rgba8::GREEN );
+		DebugAddWorldPoint( *out_contactMax, Rgba8::GREEN );
+
+		return;
+	}
+
+	// For each edge in polygon1, clip to reference edge and keep track of max and min clipped points
 	maxDistAlongTangent = -INFINITY;
 	minDistAlongTangent = INFINITY;
 	for ( int edgeIdx = 0; edgeIdx < polygonCollider1->m_polygon.GetEdgeCount(); ++edgeIdx )
@@ -324,7 +333,9 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 		Vec2 clippedMax;
 		if ( GetClippedSegmentToSegment( edgeStart, edgeEnd, minPointOnReferenceEdge, maxPointOnReferenceEdge, &clippedMin, &clippedMax ) )
 		{
-			if ( DotProduct2D( normal, clippedMin ) > 0.f )
+			// Check if clipped points are behind the normal, meaning they are inside polygon2 and should be considered contact points
+			// Keep track of max and min as we go so no further pruning is needed
+			if ( DotProduct2D( normal, clippedMin - originPoint ) < 0.f )
 			{
 				float distAlongTangent = DotProduct2D( clippedMin, tangent );
 				if ( distAlongTangent > maxDistAlongTangent )
@@ -339,7 +350,7 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 				}
 			}
 
-			if ( DotProduct2D( normal, clippedMax ) > 0.f )
+			if ( DotProduct2D( normal, clippedMax - originPoint ) < 0.f )
 			{
 				float distAlongTangent = DotProduct2D( clippedMax, tangent );
 				if ( distAlongTangent > maxDistAlongTangent )
@@ -355,6 +366,9 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 			}
 		}
 	}
+
+	DebugAddWorldPoint( *out_contactMin, Rgba8::GREEN );
+	DebugAddWorldPoint( *out_contactMax, Rgba8::GREEN );
 }
 
 
@@ -371,10 +385,6 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 		return Manifold2();
 	}
 
-	/*DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::CYAN );
-	DebugAddWorldArrow( simplex[1], simplex[2], Rgba8::MAGENTA );
-	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::YELLOW );*/
-
 	Vec2 edge01 = simplex[1] - simplex[0];
 	if ( DotProduct2D( edge01.GetRotated90Degrees(), simplex[2] ) < 0.f )
 	{
@@ -383,30 +393,29 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 		simplex[2] = temp;
 	}
 
-	/*DebugAddWorldArrow( simplex[0], simplex[1], Rgba8::RED );
-	DebugAddWorldArrow( simplex[1], simplex[2], Rgba8::GREEN );
-	DebugAddWorldArrow( simplex[2], simplex[0], Rgba8::BLUE );*/
-
 	Polygon2 simplexPoly( simplex );
 	for ( int vertexIdx = 0; vertexIdx < 32; ++vertexIdx )
 	{
 		Vec2 startEdge;
 		Vec2 endEdge;
 		simplexPoly.GetClosestEdge( Vec2::ZERO, &startEdge, &endEdge );
-		Vec2 normal = ( endEdge - startEdge ).GetRotatedMinus90Degrees().GetNormalized();
-		Vec2 support = GetSupportPoint( polygonCollider1, polygonCollider2, normal );
 
-		Plane2D plane( normal, startEdge );
+		Vec2 normal = ( endEdge - startEdge ).GetRotatedMinus90Degrees();
+		normal.Normalize();
 
-		if ( fabsf( DotProduct2D( support, normal ) - plane.distance ) <= .0001f )
+		Vec2 nextSupportPoint = GetSupportPoint( polygonCollider1, polygonCollider2, normal );
+		float distFromOriginToEdge = DotProduct2D( startEdge, normal );
+
+		if ( IsNearlyEqual( DotProduct2D( nextSupportPoint, normal ), distFromOriginToEdge, .0001f ) )
 		{
 			Manifold2 manifold;
 			manifold.normal = normal;
-			manifold.penetrationDepth = plane.distance;
+			manifold.penetrationDepth = distFromOriginToEdge;
 			manifold.contactPoint1 = startEdge;
 			manifold.contactPoint2 = endEdge;
 
-			GetContactEdgeBetweenPolygons( polygonCollider1, polygonCollider2, -normal, &manifold.contactPoint1, &manifold.contactPoint2 );
+			// For this next algorithm we need to use the normal from 2 to 1
+			GetContactEdgeBetweenPolygons( polygonCollider1, polygonCollider2, -normal, distFromOriginToEdge, &manifold.contactPoint1, &manifold.contactPoint2 );
 			return manifold;
 		}
 		else
@@ -417,7 +426,7 @@ static Manifold2 PolygonVPolygonCollisionManifoldGenerator( const Collider2D* co
 				newSimplex.push_back( simplex[vertIdx] );
 				if ( simplex[vertIdx] == startEdge )
 				{
-					newSimplex.push_back( support );
+					newSimplex.push_back( nextSupportPoint );
 				}
 			}
 

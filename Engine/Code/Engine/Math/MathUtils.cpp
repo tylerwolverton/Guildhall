@@ -94,7 +94,7 @@ bool IsNearlyEqual( const Vec2& value, const Vec2& target, float variance /*= .0
 {
 	if ( ( value.x > target.x - variance
 		   && value.x < target.x + variance )
-		 || ( value.y > target.y - variance
+		 && ( value.y > target.y - variance
 			  && value.y < target.y + variance ) )
 	{
 		return true;
@@ -109,9 +109,9 @@ bool IsNearlyEqual( const Vec3& value, const Vec3& target, float variance /*= .0
 {
 	if ( ( value.x > target.x - variance
 			&& value.x < target.x + variance )
-		 || ( value.y > target.y - variance
+		 && ( value.y > target.y - variance
 			  && value.y < target.y + variance )
-		 || ( value.z > target.z - variance
+		 && ( value.z > target.z - variance
 			  && value.z < target.z + variance ) )
 	{
 		return true;

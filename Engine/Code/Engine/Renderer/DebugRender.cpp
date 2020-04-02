@@ -714,7 +714,7 @@ void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_
 
 	Vec3 endOfLine = p0 + lookAt.GetKBasis3D() * cylinderLength;
 
-	AppendVertsAndIndicesForCylinderMesh( vertices, indices, p0, endOfLine, .05f, .05f, p0_color, p1_color );
+	AppendVertsAndIndicesForCylinderMesh( vertices, indices, p0, endOfLine, .03f, .03f, p0_color, p1_color );
 	DebugRenderObject* cylinderObj = new DebugRenderObject( vertices, indices, start_tint, end_tint, duration );
 
 	vertices.clear();
