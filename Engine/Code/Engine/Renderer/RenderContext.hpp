@@ -148,6 +148,7 @@ public:
 	Texture* GetBackBuffer();
 	IntVec2 GetDefaultBackBufferSize();
 	Shader* GetCurrentShader() const					{ return m_currentShader; }
+	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
 	Clock* GetClock() const								{ return m_gameClock; }
 	eBlendMode GetBlendMode() const						{ return m_currentBlendMode; }
 	eCullMode GetCullMode() const;
@@ -181,6 +182,8 @@ private:
 	void DestroyDebugModule();
 	void ReportLiveObjects();
 
+	void FinalizeContext();
+
 public:
 	// SD2 TODO: Move to D3D11Common.hpp
 	ID3D11Device* m_device			= nullptr;
@@ -201,6 +204,7 @@ private:
 
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
+	BitmapFont* m_systemFont						= nullptr;
 
 	ID3D11Buffer* m_lastVBOHandle					= nullptr;
 	ID3D11Buffer* m_lastIBOHandle					= nullptr;

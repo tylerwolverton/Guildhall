@@ -457,8 +457,8 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
-	s_debugRenderContext->BindShader( "Data/Shaders/DebugRender.hlsl" );
-	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	s_debugRenderContext->BindShader( "Data/Shaders/DebugRender.hlsl" ); 
+	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 
 	// Draw Depth
 	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
@@ -590,7 +590,7 @@ void DebugRenderScreenTo( Texture* output )
 	RenderScreenObjects( context, s_debugRenderScreenObjects );
 	RenderTexturedScreenObjects( context, s_debugRenderScreenTexturedObjects );
 
-	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 	context->BindTexture( font->GetTexture() );
 	RenderScreenObjects( context, s_debugRenderScreenTextObjects );
 	context->BindTexture( nullptr );
@@ -892,11 +892,8 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 		return;
 	}
 
-	// TODO: fall back to triangle font if none found?
-	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
-
-	UNUSED( mode );
-
+	BitmapFont* font = s_debugRenderContext->GetSystemFont();
+	
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
@@ -952,10 +949,7 @@ void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rg
 		return;
 	}
 
-	// TODO: fall back to triangle font if none found?
-	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
-
-	UNUSED( mode );
+	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
@@ -1169,8 +1163,7 @@ void DebugAddScreenText( const Vec4& pos, const Vec2& pivot, float size, const R
 		return;
 	}
 
-	// TODO: fall back to triangle font if none found?
-	BitmapFont* font = s_debugRenderContext->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 	
 	std::vector<Vertex_PCU> vertices;
 

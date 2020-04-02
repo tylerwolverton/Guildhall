@@ -91,7 +91,7 @@ void TextBox::RenderText( const Vec2& worldMins ) const
 	}
 
 	// TODO: Use triangle font if font not available
-	BitmapFont* font = m_renderer.CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+	BitmapFont* font = m_renderer.GetSystemFont();
 
 	std::vector<Vertex_PCU> vertices;
 	float curLineY = 0;

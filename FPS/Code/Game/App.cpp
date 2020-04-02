@@ -68,7 +68,7 @@ void App::Startup()
 	g_devConsole->Startup();
 	g_devConsole->SetInputSystem( g_inputSystem );
 	g_devConsole->SetRenderer( g_renderer );
-	g_devConsole->SetBitmapFont( g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" ) );
+	g_devConsole->SetBitmapFont( g_renderer->GetSystemFont() );
 
 	g_game->Startup();
 

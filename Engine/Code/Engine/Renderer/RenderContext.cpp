@@ -39,6 +39,10 @@ void RenderContext::Startup( Window* window )
 {
 	InitializeSwapChain( window );
 	InitializeDefaultRenderObjects();
+
+	m_systemFont = CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+
+	GUARANTEE_OR_DIE( m_systemFont != nullptr, "Could not load default system font. Make sure it is in the Data/Fonts directory." );
 }
 
 
@@ -206,11 +210,27 @@ void RenderContext::UpdateFrameTime()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Draw( int numVertices, int vertexOffset )
 {
+	FinalizeContext();
+
+	m_context->Draw( numVertices, vertexOffset );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawIndexed( int indexCount, int indexOffset, int vertexOffset )
+{
+	FinalizeContext();
+
+	m_context->DrawIndexed( indexCount, indexOffset, vertexOffset );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::FinalizeContext()
+{
 	// Describe Vertex Format to Shader
 	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_immediateVBO->m_attributes );
 	m_context->IASetInputLayout( inputLayout );
-
-	m_context->Draw( numVertices, vertexOffset );
 }
 
 
@@ -239,23 +259,11 @@ void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::DrawIndexed( int indexCount, int indexOffset, int vertexOffset )
-{
-	m_context->DrawIndexed( indexCount, indexOffset, vertexOffset );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void RenderContext::DrawMesh( GPUMesh* mesh )
 {	
 	// Bind
 	BindVertexBuffer( mesh->m_vertices );
-
-	// Describe Vertex Format to Shader
-	// UpdateLayoutFunctionIfNeeded
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( mesh->m_vertices->m_attributes );
-	m_context->IASetInputLayout( inputLayout );
-
+	
 	// Draw
 	if ( mesh->GetIndexCount() > 0 )
 	{
