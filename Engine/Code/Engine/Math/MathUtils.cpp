@@ -90,6 +90,21 @@ bool IsNearlyEqual( float value, float target, float variance )
 
 
 //-----------------------------------------------------------------------------------------------
+bool IsNearlyEqual( const Vec2& value, const Vec2& target, float variance /*= .0001f */ )
+{
+	if ( ( value.x > target.x - variance
+		   && value.x < target.x + variance )
+		 || ( value.y > target.y - variance
+			  && value.y < target.y + variance ) )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool IsNearlyEqual( const Vec3& value, const Vec3& target, float variance /*= .0001f */ )
 {
 	if ( ( value.x > target.x - variance

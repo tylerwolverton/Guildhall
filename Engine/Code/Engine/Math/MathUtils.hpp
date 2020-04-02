@@ -27,6 +27,7 @@ float			Atan2Degrees( float y, float x );
 int				PositiveMod( int left, int right );
 float			SignFloat( float value );
 bool			IsNearlyEqual( float value, float target, float variance = .0001f );
+bool			IsNearlyEqual( const Vec2& value, const Vec2& target, float variance = .0001f );
 bool			IsNearlyEqual( const Vec3& value, const Vec3& target, float variance = .0001f );
 float			Min( float a, float b );
 float			Max( float a, float b );

@@ -103,7 +103,7 @@ Vec2 Rigidbody2D::GetImpaceVelocityAtPoint( const Vec2& point )
 	Vec2 contactPoint = point - m_worldPosition;
 	Vec2 tangent = contactPoint.GetRotated90Degrees();
 
-	return GetVerletVelocity() + m_angularVelocity * tangent;
+	return GetVelocity() + m_angularVelocity * tangent;
 }
 
 

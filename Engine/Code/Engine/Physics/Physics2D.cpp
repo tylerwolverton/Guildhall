@@ -198,8 +198,10 @@ void Physics2D::CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2
 void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold )
 {
 	Manifold2 tangentManifold = collisionManifold;
-	// is this always correct?
-	tangentManifold.normal = collisionManifold.normal.GetRotated90Degrees();
+	tangentManifold.normal = collisionManifold.normal.GetRotatedMinus90Degrees();
+
+	/*DebugAddWorldArrow( collisionManifold.GetCenterOfContactEdge(), collisionManifold.GetCenterOfContactEdge() + collisionManifold.normal, Rgba8::BLUE );*/
+	/*DebugAddWorldArrow( tangentManifold.GetCenterOfContactEdge(), tangentManifold.GetCenterOfContactEdge() + tangentManifold.normal, Rgba8::GREEN );*/
 
 	// Handle dynamic vs dynamic
 	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_DYNAMIC
@@ -209,8 +211,8 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 		Vec2 impulsePosition1 = GetNearestPointOnLineSegment2D( rigidbody1->GetCenterOfMass(), collisionManifold.contactPoint1, collisionManifold.contactPoint2 );
 		Vec2 impulsePosition2 = GetNearestPointOnLineSegment2D( rigidbody2->GetCenterOfMass(), collisionManifold.contactPoint1, collisionManifold.contactPoint2 );
 
-		rigidbody1->ApplyImpulseAt( normalImpulseMagnitude * collisionManifold.normal, impulsePosition1 );
-		rigidbody2->ApplyImpulseAt( -normalImpulseMagnitude * collisionManifold.normal, impulsePosition2 );
+		rigidbody1->ApplyImpulseAt( normalImpulseMagnitude * -collisionManifold.normal, impulsePosition1 );
+		rigidbody2->ApplyImpulseAt( normalImpulseMagnitude * collisionManifold.normal, impulsePosition2 );
 
 		float tangentImpulseMagnitude = CalculateImpulseBetweenMoveableObjects( rigidbody1, rigidbody2, tangentManifold );
 		if ( fabsf( tangentImpulseMagnitude ) > fabsf( normalImpulseMagnitude ) )
@@ -218,14 +220,16 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 			tangentImpulseMagnitude = SignFloat( tangentImpulseMagnitude ) * fabsf( normalImpulseMagnitude );
 		}
 
-		rigidbody1->ApplyImpulseAt( tangentImpulseMagnitude * tangentManifold.normal, tangentManifold.GetCenterOfContactEdge() );
-		rigidbody2->ApplyImpulseAt( -tangentImpulseMagnitude * tangentManifold.normal, tangentManifold.GetCenterOfContactEdge() );
+		rigidbody1->ApplyImpulseAt( tangentImpulseMagnitude * -tangentManifold.normal, tangentManifold.GetCenterOfContactEdge() );
+		rigidbody2->ApplyImpulseAt( tangentImpulseMagnitude * tangentManifold.normal, tangentManifold.GetCenterOfContactEdge() );
 
 		return;
 	}
 
+	// Handle other valid simulation mode combinations
 	Rigidbody2D* immoveableObj = nullptr;
 	Rigidbody2D* moveableObj = nullptr;
+	Manifold2 normalManifold = collisionManifold;
 	if ( ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_STATIC || rigidbody1->GetSimulationMode() == SIMULATION_MODE_KINEMATIC )
 		 && rigidbody2->GetSimulationMode() == SIMULATION_MODE_DYNAMIC )
 	{
@@ -237,6 +241,9 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 	{
 		immoveableObj = rigidbody2;
 		moveableObj = rigidbody1;
+
+		normalManifold.normal *= -1.f;
+		tangentManifold.normal = normalManifold.normal.GetRotatedMinus90Degrees();
 	}
 	else
 	{
@@ -244,10 +251,12 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 		return;
 	}
 
-	float impulseMagnitude = CalculateImpulseAgainstImmoveableObject( moveableObj, immoveableObj, collisionManifold );
-	Vec2 impulsePosition = GetNearestPointOnLineSegment2D( moveableObj->GetCenterOfMass(), collisionManifold.contactPoint1, collisionManifold.contactPoint2 );
+	float impulseMagnitude = CalculateImpulseAgainstImmoveableObject( moveableObj, immoveableObj, normalManifold );
+	Vec2 impulsePosition = GetNearestPointOnLineSegment2D( moveableObj->GetCenterOfMass(), normalManifold.contactPoint1, normalManifold.contactPoint2 );
+	//Vec2 impulsePosition = collisionManifold.GetCenterOfContactEdge();
+	DebugAddWorldArrow( impulsePosition, impulsePosition + normalManifold.normal, Rgba8::BLUE );
 
-	moveableObj->ApplyImpulseAt( impulseMagnitude * -collisionManifold.normal, impulsePosition );
+	moveableObj->ApplyImpulseAt( impulseMagnitude * normalManifold.normal, impulsePosition );
 
 	float tangentMagnitude = CalculateImpulseAgainstImmoveableObject( moveableObj, immoveableObj, tangentManifold );
 	float friction = rigidbody1->m_collider->GetFrictionWith( rigidbody2->m_collider );
@@ -256,7 +265,7 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 		tangentMagnitude = SignFloat( tangentMagnitude ) * fabsf( impulseMagnitude * friction );
 	}
 
-	moveableObj->ApplyImpulseAt( tangentMagnitude * -tangentManifold.normal, tangentManifold.GetCenterOfContactEdge() );
+	moveableObj->ApplyImpulseAt( tangentMagnitude * tangentManifold.normal, tangentManifold.GetCenterOfContactEdge() );
 }
 
 
@@ -269,7 +278,7 @@ float Physics2D::CalculateImpulseAgainstImmoveableObject( Rigidbody2D* moveableR
 	Vec2 initialVelocity2 = moveableRigidbody->GetImpaceVelocityAtPoint( collisionManifold.GetCenterOfContactEdge() );
 	Vec2 differenceOfInitialVelocities = initialVelocity2 - initialVelocity1;
 	   
-	float numerator = ( 1.f + e ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+	float numerator = ( 1.f + e ) * DotProduct2D( differenceOfInitialVelocities, -collisionManifold.normal );
 
 	float moveableRigidbodyRotation = GetRotationalThingOverMomentOfInertia( moveableRigidbody, collisionManifold );
 
@@ -291,7 +300,8 @@ float Physics2D::CalculateImpulseBetweenMoveableObjects( Rigidbody2D* rigidbody1
 
 	float e = rigidbody1->m_collider->GetBounceWith( rigidbody2->m_collider );
 
-	float numerator = ( 1.f + e ) * DotProduct2D( differenceOfInitialVelocities, collisionManifold.normal );
+	// This algorithm uses normal from b to a, so flip our normal
+	float numerator = ( 1.f + e ) * DotProduct2D( differenceOfInitialVelocities, -collisionManifold.normal );
 
 	float rigidbody1Rotational = GetRotationalThingOverMomentOfInertia( rigidbody1, collisionManifold );
 	float rigidbody2Rotational = GetRotationalThingOverMomentOfInertia( rigidbody2, collisionManifold );
@@ -311,7 +321,8 @@ float Physics2D::GetRotationalThingOverMomentOfInertia( Rigidbody2D* rigidbody, 
 {
 	Vec2 centerOfMassToContact = collisionManifold.GetCenterOfContactEdge() - rigidbody->GetPosition();
 
-	float rigidbodyRotationOverInertia = DotProduct2D( centerOfMassToContact.GetRotated90Degrees(), collisionManifold.normal );
+	// This algorithm uses normal from b to a, so flip our normal
+	float rigidbodyRotationOverInertia = DotProduct2D( centerOfMassToContact.GetRotated90Degrees(), -collisionManifold.normal );
 	
 	rigidbodyRotationOverInertia *= rigidbodyRotationOverInertia;
 
