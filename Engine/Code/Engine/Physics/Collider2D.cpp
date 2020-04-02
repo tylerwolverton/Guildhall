@@ -314,8 +314,8 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 		*out_contactMin = contactPoint;
 		*out_contactMax = contactPoint;
 
-		DebugAddWorldPoint( *out_contactMin, Rgba8::GREEN );
-		DebugAddWorldPoint( *out_contactMax, Rgba8::GREEN );
+		DebugAddWorldPoint( *out_contactMin, Rgba8::GREEN, .03f );
+		DebugAddWorldPoint( *out_contactMax, Rgba8::GREEN, .03f );
 
 		return;
 	}
@@ -367,8 +367,8 @@ static void GetContactEdgeBetweenPolygons( const PolygonCollider2D* polygonColli
 		}
 	}
 
-	DebugAddWorldPoint( *out_contactMin, Rgba8::GREEN );
-	DebugAddWorldPoint( *out_contactMax, Rgba8::GREEN );
+	DebugAddWorldPoint( *out_contactMin, Rgba8::GREEN, .03f );
+	DebugAddWorldPoint( *out_contactMax, Rgba8::GREEN, .03f );
 }
 
 

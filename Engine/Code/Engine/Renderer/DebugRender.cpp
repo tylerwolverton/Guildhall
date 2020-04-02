@@ -30,27 +30,50 @@ class DebugRenderObject;
 static RenderContext* s_debugRenderContext = nullptr;
 static Camera* s_debugCamera = nullptr;
 static bool s_isDebugRenderEnabled = false;
+
 // Depth
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldOutlineObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjects;
 static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjects;
+
 // Always
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjectsAlways;
 static std::vector<DebugRenderObject*> s_debugRenderWorldOutlineObjectsAlways;
 static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjectsAlways;
 static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjectsAlways;
+
 // X-ray
 static std::vector<DebugRenderObject*> s_debugRenderWorldObjectsXRay;
 static std::vector<DebugRenderObject*> s_debugRenderWorldOutlineObjectsXRay;
 static std::vector<DebugRenderObject*> s_debugRenderWorldTextObjectsXRay;
 static std::vector<DebugRenderObject*> s_debugRenderWorldBillboardTextObjectsXRay;
+
 // Screen 
 static std::vector<DebugRenderObject*> s_debugRenderScreenObjects;
 static std::vector<DebugRenderObject*> s_debugRenderScreenTexturedObjects;
 static std::vector<DebugRenderObject*> s_debugRenderScreenTextObjects;
+
 static float s_screenWidth = 1920.f;
 static float s_screenHeight = 1080.f;
+
+
+//-----------------------------------------------------------------------------------------------
+// Data Helpers
+//-----------------------------------------------------------------------------------------------
+static void AddDebugRenderObjectToVector( DebugRenderObject* newObject, std::vector<DebugRenderObject*>& objectVector )
+{
+	for ( int i = 0; i < (int)objectVector.size(); ++i )
+	{
+		if ( objectVector[i] == nullptr )
+		{
+			objectVector[i] = newObject;
+			return;
+		}
+	}
+
+	objectVector.push_back( newObject );
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -184,9 +207,9 @@ bool DebugRenderObject::IsReadyToBeCulled() const
 //-----------------------------------------------------------------------------------------------
 // Dev console event handlers
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderEnableEvent( EventArgs* args )
+static bool DebugRenderEnableEvent( EventArgs* args )
 {
-	if ( args->GetValue( "enabled", false ) )
+	if ( args->GetValue( "enabled", true ) )
 	{
 		EnableDebugRendering();
 	}
@@ -200,7 +223,7 @@ bool DebugRenderEnableEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderWorldPointEvent( EventArgs* args )
+static bool DebugRenderWorldPointEvent( EventArgs* args )
 {
 	Vec3 pos = args->GetValue( "position", Vec3::ZERO );
 	float duration = args->GetValue( "duration", 5.f );
@@ -212,7 +235,7 @@ bool DebugRenderWorldPointEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderWorldWireSphereEvent( EventArgs* args )
+static bool DebugRenderWorldWireSphereEvent( EventArgs* args )
 {
 	Vec3 pos = args->GetValue( "position", Vec3::ZERO );
 	float radius = args->GetValue( "radius", 1.f );
@@ -225,7 +248,7 @@ bool DebugRenderWorldWireSphereEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderWorldWireBoundsEvent( EventArgs* args )
+static bool DebugRenderWorldWireBoundsEvent( EventArgs* args )
 {
 	Vec3 min = args->GetValue( "min", Vec3::ZERO );
 	Vec3 max = args->GetValue( "max", Vec3::ONE );
@@ -238,7 +261,7 @@ bool DebugRenderWorldWireBoundsEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderWorldBillboardTextEvent( EventArgs* args )
+static bool DebugRenderWorldBillboardTextEvent( EventArgs* args )
 {
 	Vec3 pos = args->GetValue( "position", Vec3::ZERO );
 	Vec2 pivot = args->GetValue( "pivot", Vec2( .5f, .5f ) );
@@ -252,7 +275,7 @@ bool DebugRenderWorldBillboardTextEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderScreenPointEvent( EventArgs* args )
+static bool DebugRenderScreenPointEvent( EventArgs* args )
 {
 	Vec2 pos = args->GetValue( "position", Vec2::ZERO );
 	float duration = args->GetValue( "duration", 5.f );
@@ -264,7 +287,7 @@ bool DebugRenderScreenPointEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderScreenQuadEvent( EventArgs* args )
+static bool DebugRenderScreenQuadEvent( EventArgs* args )
 {
 	Vec2 min = args->GetValue( "min", Vec2::ZERO );
 	Vec2 max = args->GetValue( "max", Vec2::ONE );
@@ -277,7 +300,7 @@ bool DebugRenderScreenQuadEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool DebugRenderScreenTextEvent( EventArgs* args )
+static bool DebugRenderScreenTextEvent( EventArgs* args )
 {
 	if ( args->GetValue( "enabled", false ) )
 	{
@@ -365,7 +388,7 @@ void DebugRenderBeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-void InitializeDebugCamera( Camera* camera )
+static void InitializeDebugCamera( Camera* camera )
 {
 	s_debugCamera->SetTransform( camera->GetTransform() );
 	s_debugCamera->SetColorTarget( camera->GetColorTarget() );
@@ -379,7 +402,7 @@ void InitializeDebugCamera( Camera* camera )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderWorldObjects( const std::vector<DebugRenderObject*> objects )
+static void RenderWorldObjects( const std::vector<DebugRenderObject*> objects )
 {
 	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
 	{
@@ -398,7 +421,7 @@ void RenderWorldObjects( const std::vector<DebugRenderObject*> objects )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderWorldBillboardTextObjects( const std::vector<DebugRenderObject*> objects )
+static void RenderWorldBillboardTextObjects( const std::vector<DebugRenderObject*> objects )
 {
 	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
 	{
@@ -494,7 +517,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderScreenObjects( RenderContext* context, std::vector<DebugRenderObject*> objects )
+static void RenderScreenObjects( RenderContext* context, std::vector<DebugRenderObject*> objects )
 {
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
@@ -516,7 +539,7 @@ void RenderScreenObjects( RenderContext* context, std::vector<DebugRenderObject*
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderTexturedScreenObjects( RenderContext* context, std::vector<DebugRenderObject*> objects )
+static void RenderTexturedScreenObjects( RenderContext* context, std::vector<DebugRenderObject*> objects )
 {
 	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
 	{
@@ -577,7 +600,7 @@ void DebugRenderScreenTo( Texture* output )
 
 
 //-----------------------------------------------------------------------------------------------
-void CullExpiredObjects( std::vector<DebugRenderObject*>& objects )
+static void CullExpiredObjects( std::vector<DebugRenderObject*>& objects )
 {
 	for ( int debugObjIdx = 0; debugObjIdx < (int)objects.size(); ++debugObjIdx )
 	{
@@ -632,9 +655,9 @@ void DebugAddWorldPoint( const Vec3& pos, float size, const Rgba8& start_color, 
 	
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( obj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( obj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( obj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector(obj, s_debugRenderWorldObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjectsXRay ); return;
 	}
 }
 
@@ -685,9 +708,9 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_c
 
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( obj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( obj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( obj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjectsXRay ); return;
 	}
 }
 
@@ -725,9 +748,9 @@ void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_
 
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( cylinderObj ); s_debugRenderWorldObjects.push_back( coneObj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( cylinderObj );  s_debugRenderWorldObjectsAlways.push_back( coneObj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( cylinderObj ); s_debugRenderWorldObjectsXRay.push_back( coneObj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( cylinderObj, s_debugRenderWorldObjects ); AddDebugRenderObjectToVector( coneObj, s_debugRenderWorldObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( cylinderObj, s_debugRenderWorldObjectsAlways );  AddDebugRenderObjectToVector( coneObj, s_debugRenderWorldObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( cylinderObj, s_debugRenderWorldObjectsXRay ); AddDebugRenderObjectToVector( coneObj, s_debugRenderWorldObjectsXRay ); return;
 	}
 }
 
@@ -764,9 +787,9 @@ void DebugAddWorldQuad( const Vec3& p0, const Vec3& p1, const Vec3& p2, const Ve
 
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldObjects.push_back( obj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldObjectsAlways.push_back( obj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldObjectsXRay.push_back( obj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldObjectsXRay ); return;
 	}
 }
 
@@ -784,9 +807,9 @@ void DebugAddWorldWireBounds( const OBB3& bounds, const Rgba8& start_color, cons
 
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldOutlineObjects.push_back( obj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldOutlineObjectsAlways.push_back( obj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldOutlineObjectsXRay.push_back( obj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( obj, s_debugRenderWorldOutlineObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldOutlineObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldOutlineObjectsXRay ); return;
 	}
 }
 
@@ -830,9 +853,9 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& start_
 
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldOutlineObjects.push_back( obj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldOutlineObjectsAlways.push_back( obj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldOutlineObjectsXRay.push_back( obj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( obj, s_debugRenderWorldOutlineObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldOutlineObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldOutlineObjectsXRay ); return;
 	}
 }
 
@@ -891,9 +914,9 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldTextObjects.push_back( obj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldTextObjectsAlways.push_back( obj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldTextObjectsXRay.push_back( obj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( obj, s_debugRenderWorldTextObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldTextObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldTextObjectsXRay ); return;
 	}
 }
 
@@ -951,9 +974,9 @@ void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rg
 
 	switch ( mode )
 	{
-		case DEBUG_RENDER_USE_DEPTH: s_debugRenderWorldBillboardTextObjects.push_back( obj ); return;
-		case DEBUG_RENDER_ALWAYS: s_debugRenderWorldBillboardTextObjectsAlways.push_back( obj ); return;
-		case DEBUG_RENDER_XRAY: s_debugRenderWorldBillboardTextObjectsXRay.push_back( obj ); return;
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( obj, s_debugRenderWorldBillboardTextObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldBillboardTextObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldBillboardTextObjectsXRay ); return;
 	}
 }
 
@@ -1003,7 +1026,7 @@ void DebugAddScreenPoint( const Vec2& pos, float size, const Rgba8& start_color,
 	
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
 
-	s_debugRenderScreenObjects.push_back( obj );
+	AddDebugRenderObjectToVector( obj, s_debugRenderScreenObjects );
 }
 
 
@@ -1039,7 +1062,7 @@ void DebugAddScreenLine( const Vec2& p0, const Rgba8& p0_start_color, const Vec2
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_tint, end_tint, duration );
 
-	s_debugRenderScreenObjects.push_back( obj );
+	AddDebugRenderObjectToVector( obj, s_debugRenderScreenObjects );
 }
 
 
@@ -1079,7 +1102,7 @@ void DebugAddScreenArrow( const Vec2& p0, const Rgba8& p0_start_color, const Vec
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_tint, end_tint, duration );
 
-	s_debugRenderScreenObjects.push_back( obj );
+	AddDebugRenderObjectToVector( obj, s_debugRenderScreenObjects );
 }
 
 
@@ -1099,7 +1122,7 @@ void DebugAddScreenQuad( const AABB2& bounds, const Rgba8& start_color, const Rg
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
 
-	s_debugRenderScreenObjects.push_back( obj );
+	AddDebugRenderObjectToVector( obj, s_debugRenderScreenObjects );
 }
 
 
@@ -1119,7 +1142,7 @@ void DebugAddScreenTexturedQuad( const AABB2& bounds, Texture* tex, const AABB2&
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_tint, end_tint, tex, duration );
 
-	s_debugRenderScreenTexturedObjects.push_back( obj );
+	AddDebugRenderObjectToVector( obj, s_debugRenderScreenTexturedObjects );
 }
 
 
@@ -1164,7 +1187,7 @@ void DebugAddScreenText( const Vec4& pos, const Vec2& pivot, float size, const R
 
 	DebugRenderObject* obj = new DebugRenderObject( vertices, start_color, end_color, duration );
 
-	s_debugRenderScreenTextObjects.push_back( obj );
+	AddDebugRenderObjectToVector( obj, s_debugRenderScreenTextObjects );
 }
 
 

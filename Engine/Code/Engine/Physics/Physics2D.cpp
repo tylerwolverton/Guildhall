@@ -210,10 +210,7 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 		float normalImpulseMagnitude = CalculateImpulseBetweenMoveableObjects( rigidbody1, rigidbody2, collisionManifold );
 		Vec2 impulsePosition1 = GetNearestPointOnLineSegment2D( rigidbody1->GetCenterOfMass(), collisionManifold.contactPoint1, collisionManifold.contactPoint2 );
 		Vec2 impulsePosition2 = GetNearestPointOnLineSegment2D( rigidbody2->GetCenterOfMass(), collisionManifold.contactPoint1, collisionManifold.contactPoint2 );
-
-		DebugAddWorldArrow( impulsePosition1, impulsePosition1 - collisionManifold.normal, Rgba8::BLUE );
-		DebugAddWorldArrow( impulsePosition2, impulsePosition2 + collisionManifold.normal, Rgba8::BLUE );
-
+		
 		rigidbody1->ApplyImpulseAt( normalImpulseMagnitude * -collisionManifold.normal, impulsePosition1 );
 		rigidbody2->ApplyImpulseAt( normalImpulseMagnitude * collisionManifold.normal, impulsePosition2 );
 
@@ -256,7 +253,6 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 
 	float impulseMagnitude = CalculateImpulseAgainstImmoveableObject( moveableObj, immoveableObj, normalManifold );
 	Vec2 impulsePosition = GetNearestPointOnLineSegment2D( moveableObj->GetCenterOfMass(), normalManifold.contactPoint1, normalManifold.contactPoint2 );
-	DebugAddWorldArrow( impulsePosition, impulsePosition + normalManifold.normal, Rgba8::BLUE );
 
 	moveableObj->ApplyImpulseAt( impulseMagnitude * normalManifold.normal, impulsePosition );
 
