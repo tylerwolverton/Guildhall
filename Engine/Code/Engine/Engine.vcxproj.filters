@@ -256,6 +256,9 @@
     <ClCompile Include="Math\Plane2D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Vertex_PCUTBN.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -496,5 +499,6 @@
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Math\OBB3.hpp" />
     <ClInclude Include="Math\Plane2D.hpp" />
+    <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
   </ItemGroup>
 </Project>

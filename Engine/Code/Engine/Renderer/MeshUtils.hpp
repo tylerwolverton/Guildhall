@@ -49,6 +49,7 @@ void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& boun
 void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& startTint, const Rgba8& endTint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
 void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, std::vector<Vec3>& corners, const Rgba8& frontTint, const Rgba8& backTint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, int cornerCount, Vec3* corners, const Rgba8& frontTint, const Rgba8& backTint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendIndicesForCubeMesh( std::vector<uint>& indices );

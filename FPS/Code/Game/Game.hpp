@@ -84,10 +84,7 @@ private:
 
 	GPUMesh* m_cubeMesh = nullptr;
 	Transform m_cubeMeshTransform;
-
-	GPUMesh* m_planeMesh = nullptr;
-	Transform m_planeMeshTransform;
-
+	
 	GPUMesh* m_sphereMesh = nullptr;
-	std::vector<Transform> m_sphereMeshTransforms;
+	Transform m_sphereMeshTransform;
 };

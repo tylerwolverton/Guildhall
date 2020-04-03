@@ -15,7 +15,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawLine2D( RenderContext* renderer, const Vec2& start, const Vec2& end, const Rgba8& color, float thickness )
+void DrawLine2D( RenderContext* renderer, 
+				 const Vec2& start, const Vec2& end, 
+				 const Rgba8& color, float thickness )
 {
 	float radius = 0.5f * thickness;
 	Vec2 displacement = end - start;
@@ -52,7 +54,9 @@ void DrawLine2D( RenderContext* renderer, const Vec2& start, const Vec2& end, co
 //-----------------------------------------------------------------------------------------------
 // Render a ring as 64 small lines
 //
-void DrawRing2D( RenderContext* renderer, const Vec2& center, float radius, const Rgba8& color, float thickness )
+void DrawRing2D( RenderContext* renderer, 
+				 const Vec2& center, float radius, 
+				 const Rgba8& color, float thickness )
 {
 	constexpr float NUM_SIDES = 64.f;
 	constexpr float DEG_PER_SIDE = 360.f / NUM_SIDES;
@@ -78,7 +82,9 @@ void DrawRing2D( RenderContext* renderer, const Vec2& center, float radius, cons
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawDisc2D( RenderContext* renderer, const Vec2& center, float radius, const Rgba8& color )
+void DrawDisc2D( RenderContext* renderer, 
+				 const Vec2& center, float radius, 
+				 const Rgba8& color )
 {
 	std::vector<Vertex_PCU> vertices;
 
@@ -89,7 +95,9 @@ void DrawDisc2D( RenderContext* renderer, const Vec2& center, float radius, cons
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawCapsule2D( RenderContext* renderer, const Capsule2& capsule, const Rgba8& color )
+void DrawCapsule2D( RenderContext* renderer, 
+					const Capsule2& capsule, 
+					const Rgba8& color )
 {
 	std::vector<Vertex_PCU> vertices;
 
@@ -100,7 +108,9 @@ void DrawCapsule2D( RenderContext* renderer, const Capsule2& capsule, const Rgba
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawAABB2( RenderContext* renderer, const AABB2& box, const Rgba8& tint )
+void DrawAABB2( RenderContext* renderer, 
+				const AABB2& box, 
+				const Rgba8& tint )
 {
 	std::vector<Vertex_PCU> vertices;
 
@@ -111,7 +121,9 @@ void DrawAABB2( RenderContext* renderer, const AABB2& box, const Rgba8& tint )
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawAABB2WithDepth( RenderContext* renderer, const AABB2& box, float zDepth, const Rgba8& tint )
+void DrawAABB2WithDepth( RenderContext* renderer, 
+						 const AABB2& box, float zDepth, 
+						 const Rgba8& tint )
 {
 	std::vector<Vertex_PCU> vertices;
 
@@ -122,7 +134,9 @@ void DrawAABB2WithDepth( RenderContext* renderer, const AABB2& box, float zDepth
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawOBB2( RenderContext* renderer, const OBB2& box, const Rgba8& tint )
+void DrawOBB2( RenderContext* renderer, 
+			   const OBB2& box, 
+			   const Rgba8& tint )
 {
 	std::vector<Vertex_PCU> vertices;
 
@@ -134,7 +148,9 @@ void DrawOBB2( RenderContext* renderer, const OBB2& box, const Rgba8& tint )
 
 //-----------------------------------------------------------------------------------------------
 // TODO: This doesn't draw at correct position
-void DrawAABB2Outline( RenderContext* renderer, const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness )
+void DrawAABB2Outline( RenderContext* renderer, 
+					   const Vec2& center, const AABB2& box, 
+					   const Rgba8& tint, float thickness )
 {
 	Vec2 bottomLeft( box.mins + center );
 	Vec2 bottomRight( Vec2( box.maxs.x, box.mins.y ) + center );
@@ -149,7 +165,9 @@ void DrawAABB2Outline( RenderContext* renderer, const Vec2& center, const AABB2&
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawOBB2Outline( RenderContext* renderer, const Vec2& center, const OBB2& box, const Rgba8& tint, float thickness )
+void DrawOBB2Outline( RenderContext* renderer, 
+					  const Vec2& center, const OBB2& box, 
+					  const Rgba8& tint, float thickness )
 {
 	Vec2 boxHalfWidth( box.m_halfDimensions.x * box.m_iBasis );
 	Vec2 boxHalfHeight( box.m_halfDimensions.y * box.GetJBasisNormal() );
@@ -167,7 +185,9 @@ void DrawOBB2Outline( RenderContext* renderer, const Vec2& center, const OBB2& b
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawPolygon2( RenderContext* renderer, const std::vector<Vec2>& vertexPositions, const Rgba8& tint )
+void DrawPolygon2( RenderContext* renderer, 
+				   const std::vector<Vec2>& vertexPositions, 
+				   const Rgba8& tint )
 {
 	std::vector<Vertex_PCU> vertices;
 
@@ -178,14 +198,18 @@ void DrawPolygon2( RenderContext* renderer, const std::vector<Vec2>& vertexPosit
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawPolygon2( RenderContext* renderer, const Polygon2& polygon2, const Rgba8& tint )
+void DrawPolygon2( RenderContext* renderer, 
+				   const Polygon2& polygon2, 
+				   const Rgba8& tint )
 {
 	DrawPolygon2( renderer, polygon2.GetPoints(), tint );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawPolygon2Outline( RenderContext* renderer, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness )
+void DrawPolygon2Outline( RenderContext* renderer, 
+						  const std::vector<Vec2>& vertexPositions, 
+						  const Rgba8& tint, float thickness )
 {
 	int numVertices = (int)vertexPositions.size();
 
@@ -208,14 +232,19 @@ void DrawPolygon2Outline( RenderContext* renderer, const std::vector<Vec2>& vert
 
 
 //-----------------------------------------------------------------------------------------------
-void DrawPolygon2Outline( RenderContext* renderer, const Polygon2& polygon2, const Rgba8& tint, float thickness )
+void DrawPolygon2Outline( RenderContext* renderer, 
+						  const Polygon2& polygon2, 
+						  const Rgba8& tint, float thickness )
 {
 	DrawPolygon2Outline( renderer, polygon2.GetPoints(), tint, thickness );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint )
+void AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, 
+						const Vec2& center, float radius, 
+						float arcAngleDegrees, float startOrientationDegrees, 
+						const Rgba8& tint )
 {
 	constexpr float NUM_SIDES = 64.f;
 	float degreesPerSide = arcAngleDegrees / NUM_SIDES;
@@ -240,7 +269,9 @@ void AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, const Vec2& center
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, 
+						   const AABB2& spriteBounds, 
+						   const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	vertexArray.push_back( Vertex_PCU( spriteBounds.mins, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( Vec2( spriteBounds.maxs.x, spriteBounds.mins.y ), tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
@@ -253,7 +284,9 @@ void AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& sp
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForAABB3D( std::vector<Vertex_PCU>& vertexArray, const AABB3& bounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForAABB3D( std::vector<Vertex_PCU>& vertexArray, 
+						   const AABB3& bounds, 
+						   const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 mins = bounds.mins;
 	Vec3 maxs = bounds.maxs;
@@ -277,7 +310,9 @@ void AppendVertsForAABB3D( std::vector<Vertex_PCU>& vertexArray, const AABB3& bo
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, 
+						  const OBB2& spriteBounds, 
+						  const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec2 boxHalfWidth( spriteBounds.m_halfDimensions.x * spriteBounds.m_iBasis );
 	Vec2 boxHalfHeight( spriteBounds.m_halfDimensions.y * spriteBounds.GetJBasisNormal() );
@@ -292,7 +327,9 @@ void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& spri
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& bottomLeft, const Vec2& bottomRight, const Vec2& topLeft, const Vec2& topRight, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, 
+						  const Vec2& bottomLeft, const Vec2& bottomRight, const Vec2& topLeft, const Vec2& topRight, 
+						  const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	vertexArray.push_back( Vertex_PCU( bottomLeft, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( bottomRight, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
@@ -305,14 +342,19 @@ void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& bott
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, 
+						  const OBB3& bounds, 
+						  const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	AppendVertsForOBB3D( vertexArray, bounds, tint, tint, uvAtMins, uvAtMaxs );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& bounds, const Rgba8& startTint, const Rgba8& endTint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, 
+						  const OBB3& bounds, 
+						  const Rgba8& startTint, const Rgba8& endTint, 
+						  const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 corners[8];
 
@@ -323,7 +365,9 @@ void AppendVertsForOBB3D( std::vector<Vertex_PCU>& vertexArray, const OBB3& boun
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const Capsule2& capsule, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, 
+							  const Capsule2& capsule, 
+							  const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec2 iBasis = capsule.m_middleEnd - capsule.m_middleStart;
 	iBasis.Normalize();
@@ -339,7 +383,9 @@ void AppendVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const Capsul
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, 
+							 const std::vector<Vec2>& vertexPositions, 
+							 const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	int numVertices = (int)vertexPositions.size();
 
@@ -360,7 +406,9 @@ void AppendVertsForPolygon2( std::vector<Vertex_PCU>& vertexArray, const std::ve
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, 
+							 const Vec3& center, float sideLength, 
+							 const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 mins( center );
 	mins.x -= sideLength * .5f;
@@ -430,14 +478,26 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& c
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, std::vector<Vec3>& corners, const Rgba8& frontTint, const Rgba8& backTint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, 
+									   const Vec3& center, float sideLength, 
+									   const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	AppendVertsForCubeMesh( vertexArray, center, sideLength, tint, uvAtMins, uvAtMaxs );
+	AppendIndicesForCubeMesh( indices );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, std::vector<Vec3>& corners, 
+						  const Rgba8& frontTint, const Rgba8& backTint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	AppendVertsFor3DBox( vertexArray, (int)corners.size(), &corners[0], frontTint, backTint, uvAtMins, uvAtMaxs );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, int cornerCount, Vec3* corners, const Rgba8& frontTint, const Rgba8& backTint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, int cornerCount, Vec3* corners, 
+						  const Rgba8& frontTint, const Rgba8& backTint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	GUARANTEE_OR_DIE( cornerCount == 8, "Must call AppendVertsFor3DBox with exactly 8 points" );
 
@@ -541,7 +601,10 @@ void AppendIndicesForCubeMesh( std::vector<uint>& indices )
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& mins, const Vec2& dimensions, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, 
+							  const Vec3& mins, const Vec2& dimensions, 
+							  int horizontalSlices, int verticalSlices, 
+							  const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	float sectionWidth = dimensions.x / ( (float)verticalSlices + 1.f );
 	float sectionHeight = dimensions.y / ( (float)horizontalSlices + 1.f );
@@ -564,7 +627,8 @@ void AppendVertsForPlaneMesh( std::vector<Vertex_PCU>& vertexArray, const Vec3& 
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendIndicesForPlaneMesh( std::vector<uint>& indices, int horizontalSlices, int verticalSlices )
+void AppendIndicesForPlaneMesh( std::vector<uint>& indices, 
+								int horizontalSlices, int verticalSlices )
 {
 	int numIndices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 ) * 6;
 	indices.reserve( numIndices );
@@ -587,7 +651,10 @@ void AppendIndicesForPlaneMesh( std::vector<uint>& indices, int horizontalSlices
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& center, float radius, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, 
+										 const Vec3& center, float radius, 
+										 int horizontalSlices, int verticalSlices, 
+										 const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	int numVertices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 );
 	vertexArray.reserve( numVertices );	
@@ -648,7 +715,10 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius1, float radius2, const Rgba8& startTint, const Rgba8& endTint, int numSides /*= 8*/, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, 
+										   const Vec3& p0, const Vec3& p1, 
+										   float radius1, float radius2, 
+										   const Rgba8& startTint, const Rgba8& endTint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	// Not texturing cylinders for now
 	UNUSED( uvAtMaxs );
@@ -733,14 +803,18 @@ void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius, const Rgba8& startTint, const Rgba8& endTint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, 
+									   const Vec3& p0, const Vec3& p1, float radius, 
+									   const Rgba8& startTint, const Rgba8& endTint, int numSides, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	AppendVertsAndIndicesForCylinderMesh( vertexArray, indices, p0, p1, radius, 0.f, startTint, endTint, numSides, uvAtMins, uvAtMaxs );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, 
+									const AABB2& spriteBounds, float zDepth, 
+									const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 mins( spriteBounds.mins, zDepth );
 	Vec3 maxs( spriteBounds.maxs, zDepth );

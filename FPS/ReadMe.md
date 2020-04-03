@@ -2,59 +2,43 @@ Project: FPS
 
 ------
 
-## Checklist [90%]
-- [x] RenderContext
-    - [x] `RasterState` moved off shader, and added to `RenderContext`
-    - [x] `RenderContext::SetCullMode`
-    - [x] `RenderContext::SetFillMode`
-    - [x] `RenderContext::SetFrontFaceWindOrder`
-    - [x] Create a default raster state to set when `BeginCamera` is called.
-    - [x] Have a transient raster state to create/set when above calls are used.
-
-- [x] World Rendering
-    - [x] Points
-    - [x] Lines
-    - [x] Arrows
-        - Lines and arrows can have their ends colored differently and then a tint applied to the whole object instead of different start and end colors for each end of the line/arrow
-    - [x] Basis
-    - [x] Quad
-    - [x] Wire Box
-    - [x] Wire Sphere
-    - [x] Text
-    - [x] Billboarded Text
-    - [x] All world commands support all rendering modes; 
-
-- [x] Screen Rendering
-    - [x] Points
-    - [x] Lines
-    - [x] Quads
-    - [x] Textured Quads
-    - [x] Text
-
-- [x] Output
-    - [x] Implement `DebugRenderWorldTo` to draw the debug objects into the passed camera's space.
-    - [x] Implement `DebugRenderScreenTo` to add the screen-space debug calls to the passed in texture.
-    - [x] Add a `DebugRenderWorldTo` call to your game after you render your scene
-    - [x] Add a `DebugRenderScreenTo` call to your App before your present to render 2D objects
-
-- [x] Controls
-    - [x] Console command: `debug_render enabled=bool` 
-    - [x] Console command: `debug_add_world_point position=vec3 duration=float`
-    - [x] Console command: `debug_add_world_wire_sphere position=vec3 radius=float duration=float`
-    - [x] Console command: `debug_add_world_wire_bounds min=vec3 max=vec3 duration=float`
-    - [x] Console command: `debug_add_world_billboard_text position=vec3 pivot=vec2 text=string`
-    - [x] Console command: `debug_add_screen_point position=vec2 duration=float`
-    - [x] Console command: `debug_add_screen_quad min=vec2 max=vec2 duration=float`
-    - [x] Console command: `debug_add_screen_text position=vec2 pivot=vec2 text=string`
-        - Note: added duration to this one too  
-
-
-## Extras
-- [x] *X05.00: 03%*: MeshUtils: `AddCylinderToIndexedVertexArray`
-- [x] *X05.00: 03%*: MeshUtils: `AddConeToIndexedVertexArray`
-
-------
-
+### Goal [100/100]
+- [ ] Have a Quad, Sphere, and Cube rendering in world with normals and tangents;
+    - [x] Make a new `Vertex_PCUTBN` or `VertexLit`
+    - [ ] Update or create new methods for generating these shapes, with normals/tangents/bitangents computed.
+    - [ ] Create meshes using this new vertex format.
+    - [ ] Be sure to update places where D3D11 needs to know format...
+        - Setting vertex buffer needs to know correct stride
+        - Creating an input layout needs the correct layout to tie it to the shader
+    - [ ] Be sure your vertex buffer stores the correct format for the vertices stored in it
+- [ ] Be able to switch to cycle active shader to show the following...  Use keys `<` and `>` for this
+    - [ ] Current shader and hotkeys are shown on screen using debug screen text.
+    - [ ] Normal lighting shader - `lit.hlsl`
+    - [ ] Diffuse color only (no lighting) - this is your `default` shader
+    - [ ] Vertex Normals (transformed by model) - `normals.hlsl`
+    - [ ] Vertex Tangents (transformed by model) - `tangents.hlsl`
+    - [ ] Vertex Bitangents (transformed by model) - `bitangents.hlsl`
+    - [ ] Surface Normals (uses TBN) - `surface_normals.hlsl`
+- [ ] Each object should be rotating around the `Y` and `X` axis at different speeds.  This is to correct a correct application to model matrices to TBN space.
+- [ ] `9,0` - Be able to adjust global ambient light
+    - [ ] Console command `light_set_ambient_color color=rgb` to set ambient color to whatever you want
+- [ ] There should be one point light in the scene that you can adjust.
+    - [ ] Be able to toggle attentuation using `T`
+        - [ ] Default to `linear attenuation`, or (0, 1, 0)
+        - [ ] Cycle from linear -> quadratic -> constant, ie (0,1,0) -> (0,0,1) -> (1,0,0)
+        - *Note: Suggest adding a `light_set_attenuation` command that allows you to set it arbitrarily so you can see how it affects the light behaviour.*
+    - [ ] Point light color and position is represented in world using a `DebugDrawWorld...` call.  Point or Sphere work well. 
+        - [ ] Don't do this if the light is following the camera it is will just get in the way. 
+    - [ ] Keyboard `-` and `+` should change its intensity
+    - [ ] A console command `light_set_color color=rgb` to set the light color.  
+    - [ ] Be able to switch the light's positioning mode... Keys are just suggestions, feel free to use whatever as long as it is in your readme. 
+        - [ ] `F5` - Origin (light is positioned at (0,0,0))
+        - [ ] `F6` - Move to Camera (light is moved to where the camera currently is, and stays there)
+        - [ ] `F7` - Follow Camera (light is moved to camera each frame while in this mode)
+        - [ ] `F8` - Animated.  Light follows a fixed path through the enfironment (cirlce your objects, or figure 8 through the objects)
+- [ ] Be able to adjust object material properties...
+    - [ ] `[,]` keys should adjust specular factor between 0 and 1 (how much does specular light show up
+    - [ ] `',"` keys should adjust specular power (min of 1, but allow it to go as high as you want.
 
 ------
 Controls
@@ -70,21 +54,6 @@ WASD ( C and Spacebar for up down ) - Move camera
 Shift - Move faster 
 
 Debug Commands
-Q - Draw world point at camera location XRAY
-O - Draw world line from camera to box DEPTH
-E - Draw Arrow from camera to box DEPTH
-R - Draw world bounds DEPTH
-T - Draw 3 world text objects at camera, pivoted to one, zero, and middle (.5, .5) respectively ALWAYS
-Y - Draw wire sphere ALWAYS
-B - Draw world billboard text and billboardf text in front of camera XRAY
-U - Draw world quad at fixed location DEPTH
-I - Draw basis at camera DEPTH
-1 - Draw screen point in center of screen
-2 - Draw screen line rom bottom left corner to middle of screen
-3 - Draw screen arrow to the right and down
-4 - Draw a screen quad in the bottom left corner roughly
-5 - Draw a textured quad in the bottom left corner
-6 - Draw screen textf in the middle top of the screen
 
 ------
 Dev Console Commands
