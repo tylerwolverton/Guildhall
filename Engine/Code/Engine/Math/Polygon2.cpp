@@ -207,7 +207,6 @@ void Polygon2::GetClosestEdge( const Vec2& point, Vec2* out_start, Vec2* out_end
 		GetEdge( edgeIdx, &startVert, &endVert );
 		Vec2 edge = endVert - startVert;
 
-		// TODO: Find real normal direction based on winding order
 		Vec2 normal = edge.GetRotatedMinus90Degrees().GetNormalized();
 
 		float distToPoint = DotProduct2D( normal, startVert - point );
@@ -219,8 +218,6 @@ void Polygon2::GetClosestEdge( const Vec2& point, Vec2* out_start, Vec2* out_end
 			*out_end = endVert;
 		}
 	}
-
-	//return nearestEdge;
 }
 
 
