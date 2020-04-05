@@ -685,7 +685,13 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCU>& vertexArray, s
 		}
 	}
 
-	// Append Indices
+	AppendIndicesForSphereMesh( indices, horizontalSlices, verticalSlices );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendIndicesForSphereMesh( std::vector<uint>& indices, int horizontalSlices, int verticalSlices )
+{
 	int numIndices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 ) * 6;
 	indices.reserve( numIndices );
 
@@ -831,7 +837,9 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray,
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray, 
+									const AABB2& spriteBounds, float zDepth, 
+									const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
 	Vec3 mins( spriteBounds.mins, zDepth );
 	Vec3 maxs( spriteBounds.maxs, zDepth );
@@ -844,34 +852,174 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray, con
 	Vec3 right = v1 - v0;
 	Vec3 up = v2 - v0;
 
-	Vec3 normal = CrossProduct3D( right, up );
+	Vec3 normal = CrossProduct3D( right, up ).GetNormalized();
+	Vec3 tangent = right.GetNormalized();
 
-	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, right ) );
-	vertexArray.push_back( Vertex_PCUTBN( v1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, right ) );
-	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, right ) );
+	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( v1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, tangent ) );
 
-	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, right ) );
-	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, right ) );
-	vertexArray.push_back( Vertex_PCUTBN( v2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, right ) );
+	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( v2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, const Vec3& center, float radius, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, 
+										 const Vec3& center, float radius, 
+										 int horizontalSlices, int verticalSlices, 
+										 const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
+	int numVertices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 );
+	vertexArray.reserve( numVertices );
 
+	Vec2 uvRange( uvAtMaxs - uvAtMins );
+	Vec2 uvSteps( uvRange.x / (float)( verticalSlices ), uvRange.y / (float)( horizontalSlices ) );
+
+	for ( int yIdx = 0; yIdx < horizontalSlices + 1; ++yIdx )
+	{
+		float phi = RangeMapFloat( 0.f, (float)horizontalSlices, -90.f, 90.f, (float)yIdx );
+
+		for ( int xIdx = 0; xIdx < verticalSlices + 1; ++xIdx )
+		{
+			float theta = RangeMapFloat( 0.f, (float)verticalSlices, 0.f, 360.f, (float)xIdx );
+
+			float cosPhi = CosDegrees( phi );
+
+			float posX = cosPhi * CosDegrees( theta );
+			float posY = SinDegrees( phi );
+			float posZ = cosPhi * SinDegrees( theta );
+
+			Vec3 position = center + Vec3( posX, posY, posZ ) * radius;
+
+			Vec2 uvs( 1.f - ( uvAtMins.x + uvSteps.x * xIdx ), uvAtMins.y + uvSteps.y * yIdx );
+
+			Vec3 normal = ( position - center ).GetNormalized();
+
+			Vec3 tangent = CrossProduct3D( Vec3( 0.f, 1.f, 0.f ), normal );
+
+			vertexArray.push_back( Vertex_PCUTBN( position, tint, uvs, normal, tangent ) );
+		}
+	}
+
+	AppendIndicesForSphereMesh( indices, horizontalSlices, verticalSlices );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, 
+							 const Vec3& center, float sideLength, 
+							 const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
+	Vec3 mins( center );
+	mins.x -= sideLength * .5f;
+	mins.y -= sideLength * .5f;
+	mins.z += sideLength * .5f;
 
+	Vec3 maxs( center );
+	maxs.x += sideLength * .5f;
+	maxs.y += sideLength * .5f;
+	maxs.z -= sideLength * .5f;
+
+	// Front 4 points
+	Vec3 vert0( mins );
+	Vec3 vert1( maxs.x, mins.y, mins.z );
+	Vec3 vert2( mins.x, maxs.y, mins.z );
+	Vec3 vert3( maxs.x, maxs.y, mins.z );
+
+	Vec3 backMins( mins );
+	backMins.z = center.z - sideLength * .5f;
+
+	Vec3 backMaxs( maxs );
+	backMaxs.z = center.z + sideLength * .5f;
+
+	// Back 4 points ( from front perspective for directions )	
+	Vec3 vert4( backMins );
+	Vec3 vert5( backMaxs.x, backMins.y, backMins.z );
+	Vec3 vert6( backMins.x, backMaxs.y, backMins.z );
+	Vec3 vert7( backMaxs.x, backMaxs.y, backMins.z );
+
+	vertexArray.reserve( 24 );
+	// Front
+	Vec3 right = vert1 - vert0;
+	Vec3 up = vert2 - vert0;
+
+	Vec3 normal = CrossProduct3D( right, up ).GetNormalized();
+	Vec3 tangent = right.GetNormalized();
+
+	vertexArray.push_back( Vertex_PCUTBN( vert0, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert3, tint, uvAtMaxs, normal, tangent ) );
+
+	// Right
+	right = vert5 - vert1;
+	up = vert3 - vert1;
+
+	normal = CrossProduct3D( right, up ).GetNormalized();
+	tangent = right.GetNormalized();
+
+	vertexArray.push_back( Vertex_PCUTBN( vert1, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert5, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert3, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert7, tint, uvAtMaxs, normal, tangent ) );
+
+	// Back
+	right = vert5 - vert4;
+	up = vert6 - vert4;
+
+	normal = CrossProduct3D( right, up ).GetNormalized();
+	tangent = right.GetNormalized();
+
+	vertexArray.push_back( Vertex_PCUTBN( vert4, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert5, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert6, tint, uvAtMaxs, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert7, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
+
+	// Left
+	right = vert0 - vert4;
+	up = vert6 - vert4;
+
+	normal = CrossProduct3D( right, up ).GetNormalized();
+	tangent = right.GetNormalized();
+
+	vertexArray.push_back( Vertex_PCUTBN( vert4, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert2, tint, uvAtMaxs, normal, tangent ) );
+
+	// Top
+	right = vert3 - vert2;
+	up = vert6 - vert2;
+
+	normal = CrossProduct3D( right, up ).GetNormalized();
+	tangent = right.GetNormalized();
+
+	vertexArray.push_back( Vertex_PCUTBN( vert2, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert3, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert7, tint, uvAtMaxs, normal, tangent ) );
+
+	// Bottom
+	right = vert1 - vert0;
+	up = vert4 - vert0;
+
+	normal = CrossProduct3D( right, up ).GetNormalized();
+	tangent = right.GetNormalized();
+
+	vertexArray.push_back( Vertex_PCUTBN( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert1, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert4, tint, uvAtMaxs, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert5, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, 
+									   const Vec3& center, float sideLength, 
+									   const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-
+	AppendVertsForCubeMesh( vertexArray, center, sideLength, tint, uvAtMins, uvAtMaxs );
+	AppendIndicesForCubeMesh( indices );
 }

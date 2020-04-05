@@ -78,7 +78,7 @@ void Game::Startup()
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
 	// Create Sphere and Cube
-	std::vector<Vertex_PCU> vertices;
+	std::vector<Vertex_PCUTBN> vertices;
 	AppendVertsForCubeMesh( vertices, Vec3::ZERO, 2.f, Rgba8::WHITE );
 	
 	std::vector<uint> indices;
