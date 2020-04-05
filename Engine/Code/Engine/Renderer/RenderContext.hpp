@@ -21,6 +21,7 @@ struct ID3D11BlendState;
 struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
 struct Vertex_PCU;
+struct Vertex_PCUTBN;
 class Window;
 class Clock;
 class Polygon2;
@@ -113,6 +114,8 @@ public:
 
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
+	void DrawVertexArray( int numVertices, const Vertex_PCUTBN* vertices );
+	void DrawVertexArray( const std::vector<Vertex_PCUTBN>& vertices );
 	void DrawMesh( GPUMesh* mesh );
 	
 	// Binding Inputs
@@ -182,7 +185,7 @@ private:
 	void DestroyDebugModule();
 	void ReportLiveObjects();
 
-	void FinalizeContext();
+	void FinalizeContext( VertexBuffer* vbo );
 
 public:
 	// SD2 TODO: Move to D3D11Common.hpp

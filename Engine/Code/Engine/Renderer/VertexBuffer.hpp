@@ -10,7 +10,14 @@ struct BufferAttribute;
 class VertexBuffer : public RenderBuffer
 {
 public:
-	VertexBuffer( RenderContext* owner, eRenderMemoryHint memHint );
+	template <typename VERTEX_TYPE>
+	VertexBuffer( RenderContext* owner, eRenderMemoryHint memHint, VERTEX_TYPE vertex )
+		: RenderBuffer( owner, VERTEX_BUFFER_BIT, memHint )
+		, m_stride( sizeof( VERTEX_TYPE ) )
+		, m_attributes( VERTEX_TYPE::LAYOUT )
+	{
+
+	}
 
 public:
 	// information about our vertex

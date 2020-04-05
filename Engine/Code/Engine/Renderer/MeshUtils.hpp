@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------------------
 struct Rgba8;
 struct Vertex_PCU;
+struct Vertex_PCUTBN;
 struct AABB2;
 struct AABB3;
 struct OBB2;
@@ -35,7 +36,9 @@ void DrawPolygon2Outline( RenderContext* renderer, const std::vector<Vec2>& vert
 void DrawAABB2WithDepth( RenderContext* renderer, const AABB2& box, float zDepth, const Rgba8& tint );
 
 //-----------------------------------------------------------------------------------------------
-// Append vertices to given vector
+// Vertex_PCU append methods
+//-----------------------------------------------------------------------------------------------
+// TODO: Move to master vertex operations 
 void AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float arcAngleDegrees, float startOrientationDegrees, const Rgba8& tint );
 void AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& spriteBounds, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
@@ -62,3 +65,24 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius1, float radius2, const Rgba8& tint, int numSides = 8, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius, const Rgba8& startTint, const Rgba8& endTint, int numSides = 8, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius, const Rgba8& tint, int numSides = 8, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+
+
+//-----------------------------------------------------------------------------------------------
+// Vertex_PCUTBN append methods
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray, 
+									const AABB2& spriteBounds, float zDepth, 
+									const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+
+void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, 
+										 const Vec3& center, float radius, 
+										 int horizontalSlices, int verticalSlices, 
+										 const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+
+void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, 
+									   const Vec3& center, float sideLength, 
+									   const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+
+void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, 
+							 const Vec3& center, float sideLength, 
+							 const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );

@@ -1,5 +1,7 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/IndexBuffer.hpp"
 
 #include <vector>
 
@@ -7,22 +9,21 @@
 //-----------------------------------------------------------------------------------------------
 struct BufferAttribute;
 class RenderContext;
-class VertexBuffer;
-class IndexBuffer;
 
 
 //-----------------------------------------------------------------------------------------------
 class GPUMesh
 {
 public:
-	GPUMesh( RenderContext* context );
 	~GPUMesh();
 
 	// Templated constructor to support different vertex types
 	template <typename VERTEX_TYPE>
 	GPUMesh( RenderContext* context, const std::vector<VERTEX_TYPE>& vertices, const std::vector<uint>& indices )
-		: GPUMesh( context )
 	{
+		m_vertices = new VertexBuffer( context, MEMORY_HINT_DYNAMIC, VERTEX_TYPE() );
+		m_indices = new IndexBuffer( context, MEMORY_HINT_DYNAMIC );
+
 		UpdateVertices( vertices );
 		UpdateIndices( indices );
 	}

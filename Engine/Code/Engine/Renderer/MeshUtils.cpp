@@ -1,6 +1,7 @@
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -826,4 +827,51 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray,
 	vertexArray.push_back( Vertex_PCU( mins, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( maxs, tint, uvAtMaxs ) );
 	vertexArray.push_back( Vertex_PCU( Vec3( spriteBounds.mins.x, spriteBounds.maxs.y, zDepth ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray, const AABB2& spriteBounds, float zDepth, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+{
+	Vec3 mins( spriteBounds.mins, zDepth );
+	Vec3 maxs( spriteBounds.maxs, zDepth );
+
+	Vec3 v0 = mins;
+	Vec3 v1( spriteBounds.maxs.x, spriteBounds.mins.y, zDepth );
+	Vec3 v2( spriteBounds.mins.x, spriteBounds.maxs.y, zDepth );
+	Vec3 v3 = maxs;
+
+	Vec3 right = v1 - v0;
+	Vec3 up = v2 - v0;
+
+	Vec3 normal = CrossProduct3D( right, up );
+
+	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, right ) );
+	vertexArray.push_back( Vertex_PCUTBN( v1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, right ) );
+	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, right ) );
+
+	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, right ) );
+	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, right ) );
+	vertexArray.push_back( Vertex_PCUTBN( v2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, right ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, const Vec3& center, float radius, int horizontalSlices, int verticalSlices, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices, const Vec3& center, float sideLength, const Rgba8& tint, const Vec2& uvAtMins /*= Vec2::ZERO*/, const Vec2& uvAtMaxs /*= Vec2::ONE */ )
+{
+
 }

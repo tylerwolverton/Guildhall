@@ -4,6 +4,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -210,8 +211,6 @@ void RenderContext::UpdateFrameTime()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Draw( int numVertices, int vertexOffset )
 {
-	FinalizeContext();
-
 	m_context->Draw( numVertices, vertexOffset );
 }
 
@@ -219,17 +218,15 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawIndexed( int indexCount, int indexOffset, int vertexOffset )
 {
-	FinalizeContext();
-
 	m_context->DrawIndexed( indexCount, indexOffset, vertexOffset );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::FinalizeContext()
+void RenderContext::FinalizeContext( VertexBuffer* vbo )
 {
 	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_immediateVBO->m_attributes );
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( vbo->m_attributes );
 	m_context->IASetInputLayout( inputLayout );
 }
 
@@ -241,9 +238,13 @@ void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices
 	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
 	size_t elementSize = sizeof( Vertex_PCU );
 	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
+	m_immediateVBO->m_stride = elementSize;
+	m_immediateVBO->m_attributes = Vertex_PCU::LAYOUT;
 
 	// Bind
 	BindVertexBuffer( m_immediateVBO );
+
+	FinalizeContext( m_immediateVBO );
 
 	// Draw
 	Draw( numVertices, 0 );
@@ -252,6 +253,34 @@ void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
+{
+	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
+	DrawVertexArray( (int)vertices.size(), &vertices[0] );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCUTBN* vertices )
+{
+	// Update a vertex buffer
+	size_t dataByteSize = numVertices * sizeof( Vertex_PCUTBN );
+	size_t elementSize = sizeof( Vertex_PCUTBN );
+	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
+	m_immediateVBO->m_stride = elementSize;
+	m_immediateVBO->m_attributes = Vertex_PCUTBN::LAYOUT;
+
+	// Bind
+	BindVertexBuffer( m_immediateVBO );
+
+	FinalizeContext( m_immediateVBO );
+
+	// Draw
+	Draw( numVertices, 0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawVertexArray( const std::vector<Vertex_PCUTBN>& vertices )
 {
 	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
 	DrawVertexArray( (int)vertices.size(), &vertices[0] );
@@ -268,10 +297,12 @@ void RenderContext::DrawMesh( GPUMesh* mesh )
 	if ( mesh->GetIndexCount() > 0 )
 	{
 		BindIndexBuffer( mesh->m_indices );
+		FinalizeContext( mesh->m_vertices );
 		DrawIndexed( mesh->GetIndexCount() );
 	}
 	else
 	{
+		FinalizeContext( mesh->m_vertices );
 		Draw( mesh->GetVertexCount() );
 	}
 }
@@ -470,7 +501,7 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	// Create default buffers
-	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC );
+	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, Vertex_PCU() );
 	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );

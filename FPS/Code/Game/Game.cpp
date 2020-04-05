@@ -14,6 +14,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
+#include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -152,8 +153,10 @@ void Game::Render() const
 	//Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
 	g_renderer->SetModelMatrix( Mat44() );
 	//g_renderer->BindTexture( texture );
+	std::vector<Vertex_PCUTBN> vertices;
 
-	DrawAABB2WithDepth( g_renderer, AABB2( -1.f, -1.f, 1.f, 1.f ), -6.f, Rgba8::WHITE );
+	AppendVertsForAABB2DWithDepth( vertices, AABB2( -1.f, -1.f, 1.f, 1.f ), -6.f, Rgba8::WHITE );
+	g_renderer->DrawVertexArray( vertices );
 
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model, Rgba8::GREEN );
