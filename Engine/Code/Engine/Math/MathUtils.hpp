@@ -63,6 +63,7 @@ const Vec2		InterpolatePoint2D	( const Vec2& a, const Vec2& b, float fractionOfB
 float			ClampMinMax			( float value, float minimumValue, float maximumValue );
 float			ClampMin			( float value, float minimumValue );
 double			ClampMinMax			( double value, double minimumValue, double maximumValue );
+unsigned char	ClampMinMax			( unsigned char value, unsigned char minimumValue, unsigned char maximumValue );
 float			ClampZeroToOne		( float value );
 int				ClampMinMaxInt		( int value, int minimumValue, int maximumValue );
 float			RangeMapFloat		( float inputBegin, float inputEnd, float outputBegin, float outputEnd, float value );

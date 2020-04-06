@@ -21,7 +21,7 @@ public:
 	template <typename VERTEX_TYPE>
 	GPUMesh( RenderContext* context, const std::vector<VERTEX_TYPE>& vertices, const std::vector<uint>& indices )
 	{
-		m_vertices = new VertexBuffer( context, MEMORY_HINT_DYNAMIC, VERTEX_TYPE() );
+		m_vertices = new VertexBuffer( context, MEMORY_HINT_DYNAMIC, sizeof( VERTEX_TYPE ), VERTEX_TYPE::LAYOUT );
 		m_indices = new IndexBuffer( context, MEMORY_HINT_DYNAMIC );
 
 		UpdateVertices( vertices );

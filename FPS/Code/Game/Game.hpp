@@ -1,7 +1,9 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
 #include <string>
 #include <vector>
@@ -9,7 +11,6 @@
 
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
-struct Rgba8;
 class Clock;
 class Entity;
 class RandomNumberGenerator;
@@ -87,4 +88,7 @@ private:
 	
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
+
+	Rgba8 m_ambientLight = Rgba8::WHITE;
+	Light_t m_pointLight;
 };

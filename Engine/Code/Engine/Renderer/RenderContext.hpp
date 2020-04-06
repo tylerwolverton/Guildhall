@@ -56,6 +56,7 @@ enum eBufferSlot
 	UBO_CAMERA_SLOT = 1,
 	UBO_MODEL_MATRIX_SLOT = 2,
 	UBO_MATERIAL_SLOT = 3,
+	UBO_LIGHT_SLOT = 4,
 };
 
 
@@ -85,6 +86,23 @@ struct MaterialData
 	float tintRatio;
 
 	float padding[3];
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct Light_t
+{
+	Vec3 position;
+	float pad00;
+	
+	Vec3 color;
+	float intensity;
+};
+
+struct LightData
+{
+	float ambientLight[4];
+	Light_t light;
 };
 
 
@@ -141,6 +159,7 @@ public:
 
 	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE );
 	void SetMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
+	void SetLightData( const Rgba8& ambientLight, const Light_t& light );
 
 	// Raster state setters
 	void SetCullMode( eCullMode cullMode );
@@ -201,6 +220,7 @@ public:
 	RenderBuffer* m_frameUBO		= nullptr;
 	RenderBuffer* m_modelMatrixUBO	= nullptr;
 	RenderBuffer* m_materialUBO		= nullptr;
+	RenderBuffer* m_lightUBO		= nullptr;
 
 private:
 	Clock* m_gameClock								= nullptr;

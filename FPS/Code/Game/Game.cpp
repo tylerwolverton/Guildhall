@@ -6,16 +6,15 @@
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/Vec4.hpp"
-#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
-#include "Engine/Core/TextBox.hpp"
-#include "Engine/Core/Image.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/Image.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/TextBox.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -133,7 +132,10 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( 0.f, 0.f,  (float)( GetCurrentTimeSeconds() * 20.f ) );
+	//m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 6.f ), 0.f, (float)( GetCurrentTimeSeconds() * 20.f ) );
+	//m_sphereMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 20.f ), 0.f, (float)( GetCurrentTimeSeconds() * 30.f ) );
+
+	m_pointLight.position = m_worldCamera->GetTransform().GetPosition();
 }
 
 
@@ -143,8 +145,10 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->BindTexture( nullptr );
-	g_renderer->BindShader( "Data/Shaders/Default.hlsl" );
+	g_renderer->BindShader( "Data/Shaders/Lit.hlsl" );
 	
+	g_renderer->SetLightData( m_ambientLight, m_pointLight );
+
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model, Rgba8::YELLOW );
 	g_renderer->DrawMesh( m_cubeMesh );
@@ -319,6 +323,32 @@ void Game::UpdateFromKeyboard()
 	{
 		DebugAddScreenTextf( Vec4( .5f, .75f, 10.f, -10.f ), Vec2( .5f, .5f ), 10.f, Rgba8::WHITE, 10.f, "Here is some text %d", 13 );
 	}
+
+	if ( g_inputSystem->WasKeyJustPressed( '9' ) )
+	{
+		if ( m_ambientLight.a >= 20 )
+		{
+			m_ambientLight.a -= 20;
+		}
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '0' ) )
+	{
+		if ( m_ambientLight.a <= 255 - 20 )
+		{
+			m_ambientLight.a += 20;
+		}
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_MINUS ) )
+	{
+		m_pointLight.intensity -= .1f;
+		m_pointLight.intensity = ClampZeroToOne( m_pointLight.intensity );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_PLUS ) )
+	{
+		m_pointLight.intensity += .1f;
+		m_pointLight.intensity = ClampZeroToOne( m_pointLight.intensity );
+	}
 }
 
 
@@ -335,7 +365,8 @@ void Game::LoadNewMap( const std::string& mapName )
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, Rgba8::BLACK );
+	Rgba8 backgroundColor( 30, 30, 30, 255 );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
 }
 
 

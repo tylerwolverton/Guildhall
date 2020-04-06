@@ -27,3 +27,20 @@ cbuffer material_constants : register( b3 )
 	float4   END_TINT;
 	float    TINT_RATIO;
 };
+
+
+struct light_t
+{
+	float3 world_position;
+	float pad00;  // this is not required, but know the GPU will add this padding to make the next variable 16-byte aligned
+
+	float3 color;
+	float intensity; // rgb and an intensity
+};
+
+
+cbuffer light_constants : register( b4 )
+{
+	float4 AMBIENT;
+	light_t LIGHT;
+};

@@ -1109,6 +1109,24 @@ double ClampMinMax( double value, double minimumValue, double maximumValue )
 
 
 //-----------------------------------------------------------------------------------------------
+unsigned char ClampMinMax( unsigned char value, unsigned char minimumValue, unsigned char maximumValue )
+{
+	if ( value < minimumValue )
+	{
+		return minimumValue;
+	}
+	else if ( value > maximumValue )
+	{
+		return maximumValue;
+	}
+	else
+	{
+		return value;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float ClampMin( float value, float minimumValue )
 {
 	if ( value < minimumValue )

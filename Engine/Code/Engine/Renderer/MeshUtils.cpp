@@ -13,6 +13,7 @@
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -855,6 +856,9 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray,
 	Vec3 normal = CrossProduct3D( right, up ).GetNormalized();
 	Vec3 tangent = right.GetNormalized();
 
+	Vec3 arrowPos = mins + ( maxs - mins ) * .5f;
+	DebugAddWorldArrow( arrowPos, arrowPos + normal, Rgba8::RED, 0.f, DEBUG_RENDER_USE_DEPTH );
+
 	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( v1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, tangent ) );
@@ -896,9 +900,8 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray
 			Vec2 uvs( 1.f - ( uvAtMins.x + uvSteps.x * xIdx ), uvAtMins.y + uvSteps.y * yIdx );
 
 			Vec3 normal = ( position - center ).GetNormalized();
-
 			Vec3 tangent = CrossProduct3D( Vec3( 0.f, 1.f, 0.f ), normal );
-
+			
 			vertexArray.push_back( Vertex_PCUTBN( position, tint, uvs, normal, tangent ) );
 		}
 	}
@@ -947,7 +950,7 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 
 	Vec3 normal = CrossProduct3D( right, up ).GetNormalized();
 	Vec3 tangent = right.GetNormalized();
-
+	
 	vertexArray.push_back( Vertex_PCUTBN( vert0, tint, uvAtMins, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );

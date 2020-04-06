@@ -18,17 +18,15 @@ v2f_t VertexFunction( vs_input_t input )
 {
 	v2f_t v2f = (v2f_t)0;
 
-	// forward vertex input onto the next stage
-	v2f.position = float4( input.position, 1.0f );
-	v2f.color = input.color * TINT;
-	v2f.uv = input.uv;
-
-	float4 worldPos = float4( input.position, 1 );
+	// move the vertex through the spaces
+	float4 worldPos = float4( input.position, 1.0f );
 	float4 modelPos = mul( MODEL, worldPos );
 	float4 cameraPos = mul( VIEW, modelPos );
 	float4 clipPos = mul( PROJECTION, cameraPos );
 
 	v2f.position = clipPos;
+	v2f.color = input.color * TINT;
+	v2f.uv = input.uv;
 
 	return v2f;
 }

@@ -80,6 +80,7 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_frameUBO );
 	PTR_SAFE_DELETE( m_modelMatrixUBO );
 	PTR_SAFE_DELETE( m_materialUBO );
+	PTR_SAFE_DELETE( m_lightUBO );
 
 	PTR_SAFE_DELETE( m_defaultPointSampler );
 	PTR_SAFE_DELETE( m_defaultLinearSampler );
@@ -501,11 +502,12 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	// Create default buffers
-	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, Vertex_PCU() );
+	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
 	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
 	// Create default samplers
 	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
@@ -555,6 +557,7 @@ void RenderContext::UpdateAndBindBuffers( Camera& camera )
 	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
 	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
 	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
+	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
 }
 
 
@@ -914,6 +917,17 @@ void RenderContext::SetMaterialData( const Rgba8& startTint, const Rgba8& endTin
 	materialData.tintRatio = tintRatio;
 
 	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetLightData( const Rgba8& ambientLight, const Light_t& light )
+{
+	LightData lightData;
+	ambientLight.GetAsFloatArray( lightData.ambientLight );
+	lightData.light = light;
+
+	m_lightUBO->Update( &lightData, sizeof( lightData ), sizeof( lightData ) );
 }
 
 
