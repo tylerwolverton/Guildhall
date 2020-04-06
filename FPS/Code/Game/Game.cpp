@@ -132,8 +132,8 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-	//m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 6.f ), 0.f, (float)( GetCurrentTimeSeconds() * 20.f ) );
-	//m_sphereMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 20.f ), 0.f, (float)( GetCurrentTimeSeconds() * 30.f ) );
+	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 6.f ), 0.f, (float)( GetCurrentTimeSeconds() * 20.f ) );
+	m_sphereMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 20.f ), 0.f, (float)( GetCurrentTimeSeconds() * 30.f ) );
 
 	m_pointLight.position = m_worldCamera->GetTransform().GetPosition();
 }

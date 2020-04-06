@@ -19,9 +19,9 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f_t v2f = (v2f_t)0;
 
 	// move the vertex through the spaces
-	float4 worldPos = float4( input.position, 1.0f );
-	float4 modelPos = mul( MODEL, worldPos );
-	float4 cameraPos = mul( VIEW, modelPos );
+	float4 localPos = float4( input.position, 1.0f );
+	float4 worldPos = mul( MODEL, localPos );
+	float4 cameraPos = mul( VIEW, worldPos );
 	float4 clipPos = mul( PROJECTION, cameraPos );
 
 	// tangent
@@ -40,7 +40,7 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f.color = input.color * TINT;
 	v2f.uv = input.uv;
 
-	v2f.world_position = modelPos.xyz;
+	v2f.world_position = worldPos.xyz;
 	v2f.world_tangent = worldTangent.xyz;
 	v2f.world_bitangent = worldBitangent.xyz;
 	v2f.world_normal = worldNormal.xyz;
