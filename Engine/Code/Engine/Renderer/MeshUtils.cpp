@@ -969,12 +969,12 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 	vertexArray.push_back( Vertex_PCUTBN( vert7, tint, uvAtMaxs, normal, tangent ) );
 
 	// Back
-	right = vert5 - vert4;
+	right = vert4 - vert5;
 	up = vert6 - vert4;
 
 	normal = CrossProduct3D( right, up ).GetNormalized();
 	tangent = right.GetNormalized();
-
+	
 	vertexArray.push_back( Vertex_PCUTBN( vert4, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert5, tint, uvAtMins, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert6, tint, uvAtMaxs, normal, tangent ) );
@@ -986,7 +986,7 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 
 	normal = CrossProduct3D( right, up ).GetNormalized();
 	tangent = right.GetNormalized();
-
+	
 	vertexArray.push_back( Vertex_PCUTBN( vert4, tint, uvAtMins, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
@@ -998,15 +998,15 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 
 	normal = CrossProduct3D( right, up ).GetNormalized();
 	tangent = right.GetNormalized();
-
+	
 	vertexArray.push_back( Vertex_PCUTBN( vert2, tint, uvAtMins, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert3, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert6, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( vert7, tint, uvAtMaxs, normal, tangent ) );
 
 	// Bottom
-	right = vert1 - vert0;
-	up = vert4 - vert0;
+	right = vert5 - vert4;
+	up = vert0 - vert4;
 
 	normal = CrossProduct3D( right, up ).GetNormalized();
 	tangent = right.GetNormalized();

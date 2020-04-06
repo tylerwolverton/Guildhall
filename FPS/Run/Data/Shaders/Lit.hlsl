@@ -40,7 +40,7 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f.color = input.color * TINT;
 	v2f.uv = input.uv;
 
-	v2f.world_position = worldPos.xyz;
+	v2f.world_position = modelPos.xyz;
 	v2f.world_tangent = worldTangent.xyz;
 	v2f.world_bitangent = worldBitangent.xyz;
 	v2f.world_normal = worldNormal.xyz;
@@ -61,7 +61,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 surface_color = ( input.color * texture_color ).xyz; // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = ( input.color.a * texture_color.a );
 
-	float3 diffuse = AMBIENT.xyz * AMBIENT.w; // ambient color * ambient intensity
+	float3 ambient = AMBIENT.xyz * AMBIENT.w; // ambient color * ambient intensity
 
 	// get my surface normal - this comes from the vertex format
 	// We now have a NEW vertex format
@@ -72,14 +72,14 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 dir_to_light = normalize( light_position - input.world_position );
 	float dot3 = max( 0.0f, dot( dir_to_light, surface_normal ) * LIGHT.intensity );
 
-	diffuse += dot3;
+	float3 diffuse = dot3;// *LIGHT.color;
 
 	// just diffuse lighting
 	diffuse = min( float3( 1,1,1 ), diffuse );
 	diffuse = saturate( diffuse ); // saturate is clamp01(v)
 
-	float3 final_color = diffuse * surface_color;
-	final_color += LIGHT.color;
+	float3 final_color = ( ambient + diffuse ) * surface_color;
+	//final_color += LIGHT.color;
 
 	return float4( final_color, surface_alpha );
 }
