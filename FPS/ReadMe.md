@@ -5,24 +5,24 @@ Project: FPS
 ### Goal [100/100]
 - [ ] Have a Quad, Sphere, and Cube rendering in world with normals and tangents;
     - [x] Make a new `Vertex_PCUTBN` or `VertexLit`
-    - [ ] Update or create new methods for generating these shapes, with normals/tangents/bitangents computed.
-    - [ ] Create meshes using this new vertex format.
-    - [ ] Be sure to update places where D3D11 needs to know format...
+    - [x] Update or create new methods for generating these shapes, with normals/tangents/bitangents computed.
+    - [x] Create meshes using this new vertex format.
+    - [x] Be sure to update places where D3D11 needs to know format...
         - Setting vertex buffer needs to know correct stride
         - Creating an input layout needs the correct layout to tie it to the shader
-    - [ ] Be sure your vertex buffer stores the correct format for the vertices stored in it
+    - [x] Be sure your vertex buffer stores the correct format for the vertices stored in it
 - [ ] Be able to switch to cycle active shader to show the following...  Use keys `<` and `>` for this
     - [ ] Current shader and hotkeys are shown on screen using debug screen text.
-    - [ ] Normal lighting shader - `lit.hlsl`
-    - [ ] Diffuse color only (no lighting) - this is your `default` shader
+    - [x] Normal lighting shader - `lit.hlsl`
+    - [x] Diffuse color only (no lighting) - this is your `default` shader
     - [ ] Vertex Normals (transformed by model) - `normals.hlsl`
     - [ ] Vertex Tangents (transformed by model) - `tangents.hlsl`
     - [ ] Vertex Bitangents (transformed by model) - `bitangents.hlsl`
     - [ ] Surface Normals (uses TBN) - `surface_normals.hlsl`
-- [ ] Each object should be rotating around the `Y` and `X` axis at different speeds.  This is to correct a correct application to model matrices to TBN space.
-- [ ] `9,0` - Be able to adjust global ambient light
+- [-] Each object should be rotating around the `Y` and `X` axis at different speeds.  This is to correct a correct application to model matrices to TBN space.
+- [-] `9,0` - Be able to adjust global ambient light
     - [ ] Console command `light_set_ambient_color color=rgb` to set ambient color to whatever you want
-- [ ] There should be one point light in the scene that you can adjust.
+- [-] There should be one point light in the scene that you can adjust.
     - [ ] Be able to toggle attentuation using `T`
         - [ ] Default to `linear attenuation`, or (0, 1, 0)
         - [ ] Cycle from linear -> quadratic -> constant, ie (0,1,0) -> (0,0,1) -> (1,0,0)

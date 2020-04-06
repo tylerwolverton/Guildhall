@@ -11,6 +11,7 @@ cbuffer camera_constants : register( b1 )
 {
 	float4x4 VIEW;		 // WORLD_TO_CAMERA_TRANSFORM;
 	float4x4 PROJECTION; // CAMERA_TO_CLIP_TRANSFORM;  
+	float3 CAMERA_WORLD_POSITION;
 };
 
 
