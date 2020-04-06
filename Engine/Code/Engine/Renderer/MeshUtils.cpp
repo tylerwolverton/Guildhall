@@ -838,16 +838,18 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray,
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray, 
-									const AABB2& spriteBounds, float zDepth, 
-									const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+// Vertex_PCUTBN
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForQuad( std::vector<Vertex_PCUTBN>& vertexArray, std::vector<uint>& indices,
+								   const AABB2& bounds, 
+								   const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	Vec3 mins( spriteBounds.mins, zDepth );
-	Vec3 maxs( spriteBounds.maxs, zDepth );
+	Vec3 mins( bounds.mins, 0.f );
+	Vec3 maxs( bounds.maxs, 0.f );
 
 	Vec3 v0 = mins;
-	Vec3 v1( spriteBounds.maxs.x, spriteBounds.mins.y, zDepth );
-	Vec3 v2( spriteBounds.mins.x, spriteBounds.maxs.y, zDepth );
+	Vec3 v1( bounds.maxs.x, bounds.mins.y, 0.f );
+	Vec3 v2( bounds.mins.x, bounds.maxs.y, 0.f );
 	Vec3 v3 = maxs;
 
 	Vec3 right = v1 - v0;
@@ -857,7 +859,6 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray,
 	Vec3 tangent = right.GetNormalized();
 
 	Vec3 arrowPos = mins + ( maxs - mins ) * .5f;
-	DebugAddWorldArrow( arrowPos, arrowPos + normal, Rgba8::RED, 0.f, DEBUG_RENDER_USE_DEPTH );
 
 	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( v1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
@@ -866,6 +867,14 @@ void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCUTBN>& vertexArray,
 	vertexArray.push_back( Vertex_PCUTBN( v0, tint, uvAtMins, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( v3, tint, uvAtMaxs, normal, tangent ) );
 	vertexArray.push_back( Vertex_PCUTBN( v2, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
+
+	indices.push_back( 0 );
+	indices.push_back( 1 );
+	indices.push_back( 2 );
+
+	indices.push_back( 3 );
+	indices.push_back( 4 );
+	indices.push_back( 5 );
 }
 
 

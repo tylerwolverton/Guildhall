@@ -83,12 +83,16 @@ private:
 	World* m_world = nullptr;
 	std::string m_curMap;
 
+	GPUMesh* m_quadMesh = nullptr;
+	Transform m_quadMeshTransform;
+
 	GPUMesh* m_cubeMesh = nullptr;
 	Transform m_cubeMeshTransform;
 	
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
 
-	Rgba8 m_ambientLight = Rgba8::WHITE;
+	Rgba8 m_ambientColor = Rgba8::WHITE;
+	float m_ambientIntensity = 1.f;
 	Light_t m_pointLight;
 };

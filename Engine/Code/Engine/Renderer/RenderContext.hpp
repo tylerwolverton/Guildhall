@@ -9,8 +9,13 @@
 #include <vector>
 #include <map>
 
+//-----------------------------------------------------------------------------------------------
+// Constants
+//-----------------------------------------------------------------------------------------------
+constexpr int MAX_LIGHTS = 8;
 
 //-----------------------------------------------------------------------------------------------
+//
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
@@ -132,8 +137,6 @@ public:
 
 	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
 	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
-	void DrawVertexArray( int numVertices, const Vertex_PCUTBN* vertices );
-	void DrawVertexArray( const std::vector<Vertex_PCUTBN>& vertices );
 	void DrawMesh( GPUMesh* mesh );
 	
 	// Binding Inputs
@@ -159,12 +162,21 @@ public:
 
 	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE );
 	void SetMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
-	void SetLightData( const Rgba8& ambientLight, const Light_t& light );
+	void SetLightData();
 
 	// Raster state setters
 	void SetCullMode( eCullMode cullMode );
 	void SetFillMode( eFillMode fillMode );
 	void SetFrontFaceWindOrder( bool windCCW );
+
+	// Light setters
+	void SetAmbientColor( const Rgba8& color );
+	void SetAmbientIntensity( float intensity );
+	void SetAmbientLight( const Rgba8& color, float intensity );
+
+	void EnableLight( uint idx, const Light_t& lightInfo );
+	// void EnablePointLight( uint idx, vec3 position, rgba color, float intensity, vec3 attenuation ); 
+	void DisableLight( uint idx );
 
 	// Accessors
 	Texture* GetBackBuffer();
@@ -204,7 +216,7 @@ private:
 	void DestroyDebugModule();
 	void ReportLiveObjects();
 
-	void FinalizeContext( VertexBuffer* vbo );
+	void FinalizeContext();
 
 public:
 	// SD2 TODO: Move to D3D11Common.hpp
@@ -230,6 +242,7 @@ private:
 	BitmapFont* m_systemFont						= nullptr;
 
 	ID3D11Buffer* m_lastVBOHandle					= nullptr;
+	VertexBuffer* m_lastBoundVBO					= nullptr;
 	ID3D11Buffer* m_lastIBOHandle					= nullptr;
 
 	Shader* m_defaultShader							= nullptr;
@@ -242,6 +255,10 @@ private:
 	
 	Texture* m_defaultWhiteTexture					= nullptr;
 	Texture* m_defaultDepthBuffer					= nullptr;
+
+	Rgba8 m_ambientLightColor						= Rgba8::WHITE;
+	float m_ambientLightIntensity					= 1.f;
+	Light_t m_pointLights[MAX_LIGHTS];
 
 	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 

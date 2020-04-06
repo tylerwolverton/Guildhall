@@ -78,14 +78,18 @@ void Game::Startup()
 
 	// Create Sphere and Cube
 	std::vector<Vertex_PCUTBN> vertices;
-	AppendVertsForCubeMesh( vertices, Vec3::ZERO, 2.f, Rgba8::WHITE );
-	
 	std::vector<uint> indices;
-	AppendIndicesForCubeMesh( indices );	
-
+	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 2.f, Rgba8::WHITE );
+	
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
 	m_cubeMeshTransform.SetPosition( Vec3( -5.f, 0.f, -6.f ) );
 	
+	vertices.clear();
+	indices.clear();
+	AppendVertsAndIndicesForQuad( vertices, indices, AABB2( -1.f, -1.f, 1.f, 1.f ), Rgba8::WHITE );
+	m_quadMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_quadMeshTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
+
 	vertices.clear();
 	indices.clear();
 	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 32, Rgba8::WHITE );
@@ -105,6 +109,7 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
 	PTR_SAFE_DELETE( m_world );
@@ -147,20 +152,16 @@ void Game::Render() const
 	g_renderer->BindTexture( nullptr );
 	g_renderer->BindShader( "Data/Shaders/Lit.hlsl" );
 	
-	g_renderer->SetLightData( m_ambientLight, m_pointLight );
+	g_renderer->SetAmbientLight( m_ambientColor, m_ambientIntensity );
+	g_renderer->EnableLight( 0, m_pointLight );
 
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model, Rgba8::YELLOW );
 	g_renderer->DrawMesh( m_cubeMesh );
 
-
-	//Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch_150305_06.png" );
-	g_renderer->SetModelMatrix( Mat44() );
-	//g_renderer->BindTexture( texture );
-	std::vector<Vertex_PCUTBN> vertices;
-
-	AppendVertsForAABB2DWithDepth( vertices, AABB2( -1.f, -1.f, 1.f, 1.f ), -6.f, Rgba8::WHITE );
-	g_renderer->DrawVertexArray( vertices );
+	model = m_quadMeshTransform.GetAsMatrix();
+	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
+	g_renderer->DrawMesh( m_quadMesh );
 
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model, Rgba8::GREEN );
@@ -324,29 +325,25 @@ void Game::UpdateFromKeyboard()
 		DebugAddScreenTextf( Vec4( .5f, .75f, 10.f, -10.f ), Vec2( .5f, .5f ), 10.f, Rgba8::WHITE, 10.f, "Here is some text %d", 13 );
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( '9' ) )
+	if ( g_inputSystem->IsKeyPressed( '9' ) )
 	{
-		if ( m_ambientLight.a >= 20 )
-		{
-			m_ambientLight.a -= 20;
-		}
+		m_ambientIntensity -= .5f * deltaSeconds;
+		m_ambientIntensity = ClampZeroToOne( m_ambientIntensity );
 	}
-	if ( g_inputSystem->WasKeyJustPressed( '0' ) )
+	if ( g_inputSystem->IsKeyPressed( '0' ) )
 	{
-		if ( m_ambientLight.a <= 255 - 20 )
-		{
-			m_ambientLight.a += 20;
-		}
+		m_ambientIntensity += .5f * deltaSeconds;
+		m_ambientIntensity = ClampZeroToOne( m_ambientIntensity );
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_MINUS ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_MINUS ) )
 	{
-		m_pointLight.intensity -= .1f;
+		m_pointLight.intensity -= .5f * deltaSeconds;
 		m_pointLight.intensity = ClampZeroToOne( m_pointLight.intensity );
 	}
-	if ( g_inputSystem->WasKeyJustPressed( KEY_PLUS ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_PLUS ) )
 	{
-		m_pointLight.intensity += .1f;
+		m_pointLight.intensity += .5f * deltaSeconds;
 		m_pointLight.intensity = ClampZeroToOne( m_pointLight.intensity );
 	}
 }
@@ -365,7 +362,7 @@ void Game::LoadNewMap( const std::string& mapName )
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
-	Rgba8 backgroundColor( 30, 30, 30, 255 );
+	Rgba8 backgroundColor( 10, 10, 10, 255 );
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
 }
 

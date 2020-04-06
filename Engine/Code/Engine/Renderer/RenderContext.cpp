@@ -186,6 +186,9 @@ void RenderContext::BeginCamera( Camera& camera )
 
 	SetModelMatrix( Mat44() );
 	SetBlendMode( m_currentBlendMode );
+	SetMaterialData();
+	m_ambientLightColor = Rgba8::WHITE;
+	m_ambientLightIntensity = 1.f;
 }
 
 
@@ -212,6 +215,8 @@ void RenderContext::UpdateFrameTime()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Draw( int numVertices, int vertexOffset )
 {
+	FinalizeContext();
+
 	m_context->Draw( numVertices, vertexOffset );
 }
 
@@ -219,16 +224,22 @@ void RenderContext::Draw( int numVertices, int vertexOffset )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DrawIndexed( int indexCount, int indexOffset, int vertexOffset )
 {
+	FinalizeContext();
+
 	m_context->DrawIndexed( indexCount, indexOffset, vertexOffset );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::FinalizeContext( VertexBuffer* vbo )
+void RenderContext::FinalizeContext()
 {
+	GUARANTEE_OR_DIE( m_lastBoundVBO != nullptr, "No vbo bound before draw call" );
+
 	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( vbo->m_attributes );
+	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_lastBoundVBO->m_attributes );
 	m_context->IASetInputLayout( inputLayout );
+
+	SetLightData();
 }
 
 
@@ -239,14 +250,10 @@ void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices
 	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
 	size_t elementSize = sizeof( Vertex_PCU );
 	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
-	m_immediateVBO->m_stride = elementSize;
-	m_immediateVBO->m_attributes = Vertex_PCU::LAYOUT;
 
 	// Bind
 	BindVertexBuffer( m_immediateVBO );
-
-	FinalizeContext( m_immediateVBO );
-
+	
 	// Draw
 	Draw( numVertices, 0 );
 }
@@ -261,49 +268,20 @@ void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCUTBN* vertices )
-{
-	// Update a vertex buffer
-	size_t dataByteSize = numVertices * sizeof( Vertex_PCUTBN );
-	size_t elementSize = sizeof( Vertex_PCUTBN );
-	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
-	m_immediateVBO->m_stride = elementSize;
-	m_immediateVBO->m_attributes = Vertex_PCUTBN::LAYOUT;
-
-	// Bind
-	BindVertexBuffer( m_immediateVBO );
-
-	FinalizeContext( m_immediateVBO );
-
-	// Draw
-	Draw( numVertices, 0 );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawVertexArray( const std::vector<Vertex_PCUTBN>& vertices )
-{
-	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
-	DrawVertexArray( (int)vertices.size(), &vertices[0] );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void RenderContext::DrawMesh( GPUMesh* mesh )
 {	
 	// Bind
 	BindVertexBuffer( mesh->m_vertices );
+	//BindVertexBuffer( mesh->m_vertices, mesh->GetVertexLayout() );
 	
 	// Draw
 	if ( mesh->GetIndexCount() > 0 )
 	{
 		BindIndexBuffer( mesh->m_indices );
-		FinalizeContext( mesh->m_vertices );
 		DrawIndexed( mesh->GetIndexCount() );
 	}
 	else
 	{
-		FinalizeContext( mesh->m_vertices );
 		Draw( mesh->GetVertexCount() );
 	}
 }
@@ -391,6 +369,7 @@ Shader* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName
 void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 {
 	ID3D11Buffer* vboHandle = vbo->m_handle;
+	m_lastBoundVBO = vbo;
 	if ( vboHandle == m_lastVBOHandle )
 	{
 		return;
@@ -921,11 +900,12 @@ void RenderContext::SetMaterialData( const Rgba8& startTint, const Rgba8& endTin
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetLightData( const Rgba8& ambientLight, const Light_t& light )
+void RenderContext::SetLightData()
 {
 	LightData lightData;
-	ambientLight.GetAsFloatArray( lightData.ambientLight );
-	lightData.light = light;
+	m_ambientLightColor.GetAsFloatArray( lightData.ambientLight );
+	lightData.ambientLight[3] = m_ambientLightIntensity;
+	lightData.light = m_pointLights[0];
 
 	m_lightUBO->Update( &lightData, sizeof( lightData ), sizeof( lightData ) );
 }
@@ -976,6 +956,42 @@ void RenderContext::SetFrontFaceWindOrder( bool windCCW )
 	}
 
 	SetRasterState( FromDXFillMode( desc.FillMode ), FromDXCullMode( desc.CullMode ), windCCW );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientColor( const Rgba8& color )
+{
+	m_ambientLightColor = color;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientIntensity( float intensity )
+{
+	m_ambientLightIntensity = intensity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientLight( const Rgba8& color, float intensity )
+{
+	SetAmbientColor( color );
+	SetAmbientIntensity( intensity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::EnableLight( uint idx, const Light_t& lightInfo )
+{
+	m_pointLights[idx] = lightInfo;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DisableLight( uint idx )
+{
+	m_pointLights[idx] = Light_t();
 }
 
 
