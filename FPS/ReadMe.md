@@ -6,12 +6,12 @@ Project: FPS
 - [ ] Have a Quad, Sphere, and Cube rendering in world with normals and tangents;
     - [x] Make a new `Vertex_PCUTBN` or `VertexLit`
     - [x] Update or create new methods for generating these shapes, with normals/tangents/bitangents computed.
-    - [x] Create meshes using this new vertex format.
+    - [-] Create meshes using this new vertex format.
     - [x] Be sure to update places where D3D11 needs to know format...
         - Setting vertex buffer needs to know correct stride
         - Creating an input layout needs the correct layout to tie it to the shader
     - [x] Be sure your vertex buffer stores the correct format for the vertices stored in it
-- [ ] Be able to switch to cycle active shader to show the following...  Use keys `<` and `>` for this
+- [-] Be able to switch to cycle active shader to show the following...  Use keys `<` and `>` for this
     - [ ] Current shader and hotkeys are shown on screen using debug screen text.
     - [x] Normal lighting shader - `lit.hlsl`
     - [x] Diffuse color only (no lighting) - this is your `default` shader

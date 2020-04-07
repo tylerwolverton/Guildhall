@@ -108,14 +108,14 @@ void Game::Startup()
 	m_shaderPaths.push_back( "Data/Shaders/Default.hlsl" );
 	m_shaderNames.push_back( "Default" );
 
-	/*m_shaderPaths.push_back( "Data/Shaders/Normals.hlsl" );
+	m_shaderPaths.push_back( "Data/Shaders/Normals.hlsl" );
 	m_shaderNames.push_back( "Normals" );
 	m_shaderPaths.push_back( "Data/Shaders/Tangents.hlsl" );
 	m_shaderNames.push_back( "Tangents" );
 	m_shaderPaths.push_back( "Data/Shaders/Bitangents.hlsl" );
 	m_shaderNames.push_back( "Bitangents" );
 	m_shaderPaths.push_back( "Data/Shaders/SurfaceNormals.hlsl" );
-	m_shaderNames.push_back( "Surface Normals" );*/
+	m_shaderNames.push_back( "Surface Normals" );
 }
 
 
