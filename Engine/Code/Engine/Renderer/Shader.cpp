@@ -76,13 +76,15 @@ bool Shader::CreateFromSourceString( const std::string& shaderName, const char* 
 ID3D11InputLayout* Shader::GetOrCreateInputLayout( const BufferAttribute* attributes )
 {
 	if ( m_inputLayout != nullptr 
-		 || attributes == m_lastLayout )
+		 && attributes == m_lastLayout )
 	{
 		return m_inputLayout;
 	}
 
 	m_vertexDesc.clear();
 	PopulateVertexDescription( attributes );
+	
+	DX_SAFE_RELEASE( m_inputLayout );
 
 	ID3D11Device* device = m_owner->m_device;
 	device->CreateInputLayout( m_vertexDesc.data(), (uint)m_vertexDesc.size(),					// describe vertex

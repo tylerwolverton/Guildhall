@@ -66,7 +66,7 @@ void Actor::Render() const
 
 	Vertex_PCU::TransformVertexArray( vertices, 1.f, 0.f, m_position );
 
-	g_renderer->BindTexture( &( spriteDef.GetTexture() ) );
+	g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
 	g_renderer->DrawVertexArray( vertices );
 }
 

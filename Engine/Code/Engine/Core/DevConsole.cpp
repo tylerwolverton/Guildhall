@@ -180,11 +180,11 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	
 	if ( m_bitmapFont != nullptr )
 	{
-		m_renderer->BindTexture( m_bitmapFont->GetTexture() );
+		m_renderer->BindDiffuseTexture( m_bitmapFont->GetTexture() );
 	}
 	else
 	{
-		m_renderer->BindTexture( nullptr );
+		m_renderer->BindDiffuseTexture( nullptr );
 	}
 	m_renderer->DrawVertexArray( vertices );
 	
@@ -218,7 +218,7 @@ void DevConsole::RenderBackground( const AABB2& bounds ) const
 	std::vector<Vertex_PCU> backgroundVertices;
 	AppendVertsForAABB2D( backgroundVertices, bounds, backgroundColor );
 
-	m_renderer->BindTexture( nullptr );
+	m_renderer->BindDiffuseTexture( nullptr );
 	m_renderer->DrawVertexArray( backgroundVertices );
 }
 

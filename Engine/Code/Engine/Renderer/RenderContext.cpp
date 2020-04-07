@@ -85,9 +85,9 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_defaultPointSampler );
 	PTR_SAFE_DELETE( m_defaultLinearSampler );
 	
-	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
+	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
 
 	PTR_SAFE_DELETE( m_swapchain );
 
@@ -189,6 +189,8 @@ void RenderContext::BeginCamera( Camera& camera )
 	SetMaterialData();
 	m_ambientLightColor = Rgba8::WHITE;
 	m_ambientLightIntensity = 1.f;
+
+	// Dirty all state, booleans or a uint flags
 }
 
 
@@ -376,6 +378,12 @@ void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 	}
 	m_lastVBOHandle = vboHandle;
 
+	// Finalize state can check this bool || if shader has changed before setting input layout
+	// if(m_lastBoundLayout != vb0->GetLayout)
+	// m_layoutHasChanged=  true
+
+
+
 	uint stride = (uint)vbo->m_stride;
 	uint offset = 0;
 
@@ -495,6 +503,7 @@ void RenderContext::InitializeDefaultRenderObjects()
 
 	// Create a white texture to use when no texture is needed
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
+	m_flatNormalMap = CreateTextureFromColor( Rgba8( 127, 127, 255, 255 ) );
 
 	// Create a depth buffer and initialize it to draw pixels using painter's algorithm
 	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
@@ -580,7 +589,8 @@ void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const
 void RenderContext::ResetRenderObjects()
 {
 	BindShader( ( Shader* )nullptr );
-	BindTexture( nullptr );
+	BindDiffuseTexture( nullptr );
+	BindNormalTexture( nullptr );
 	BindSampler( nullptr );
 	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
@@ -761,7 +771,7 @@ void RenderContext::CreateDefaultRasterState()
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindTexture( const Texture* constTexture )
+void RenderContext::BindDiffuseTexture( const Texture* constTexture )
 {
 	Texture* texture = const_cast<Texture*>( constTexture );
 	if ( texture == nullptr )
@@ -772,6 +782,21 @@ void RenderContext::BindTexture( const Texture* constTexture )
 	TextureView* shaderResourceView = texture->GetOrCreateShaderResourceView();
 	ID3D11ShaderResourceView* srvHandle = shaderResourceView->m_shaderResourceView;
 	m_context->PSSetShaderResources( 0, 1, &srvHandle ); //srv
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindNormalTexture( const Texture* constTexture )
+{
+	Texture* texture = const_cast<Texture*>( constTexture );
+	if ( texture == nullptr )
+	{
+		texture = m_flatNormalMap;
+	}
+
+	TextureView* shaderResourceView = texture->GetOrCreateShaderResourceView();
+	ID3D11ShaderResourceView* srvHandle = shaderResourceView->m_shaderResourceView;
+	m_context->PSSetShaderResources( 1, 1, &srvHandle ); //srv
 }
 
 

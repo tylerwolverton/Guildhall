@@ -41,7 +41,7 @@ void Entity::Render() const
 	std::vector<Vertex_PCU> verticesCopy( m_vertices );
 	Vertex_PCU::TransformVertexArray( verticesCopy, 1.f, 0.f, m_position );
 
-	g_renderer->BindTexture( m_texture );
+	g_renderer->BindDiffuseTexture( m_texture );
 	g_renderer->DrawVertexArray( verticesCopy );
 }
 
@@ -56,7 +56,7 @@ void Entity::Die()
 //-----------------------------------------------------------------------------------------------
 void Entity::DebugRender() const
 {
-	g_renderer->BindTexture( nullptr );
+	g_renderer->BindDiffuseTexture( nullptr );
 	DrawRing2D( g_renderer, m_position, m_entityDef->m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
 	DrawAABB2Outline( g_renderer, m_position, m_entityDef->m_localDrawBounds, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
 }

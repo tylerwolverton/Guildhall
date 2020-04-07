@@ -1,11 +1,6 @@
 #include "ShaderCommon.hlsl"
+#include "ShaderUtils.hlsl"
 #include "PCUTBN_Common.hlsl"
-
-
-// Textures & Samplers are also a form of constant
-// data - uniform/constant across the entire call
-Texture2D <float4> tDiffuse   : register( t0 );   // color of the surface
-SamplerState sSampler : register( s0 );           // sampler are rules on how to sample (read) from the texture.
 
 
 //--------------------------------------------------------------------------------------
@@ -56,13 +51,7 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	float3 surface_normal = normalize( input.world_normal );
-	float3 surface_tangent = normalize( input.world_tangent );
-	float3 surface_bitangent = normalize( input.world_bitangent );
-
-	float3x3 tbn = float3x3( surface_tangent, surface_bitangent, surface_normal );
-
-	float3 final_color = mul( surface_normal, tbn );
-
-	return float4( final_color, 1.0f );
+	float4 texture_color = tNormals.Sample( sSampler, input.uv ); 
+	
+	return texture_color;
 }

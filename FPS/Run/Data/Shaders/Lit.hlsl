@@ -1,11 +1,6 @@
 #include "ShaderCommon.hlsl"
+#include "ShaderUtils.hlsl"
 #include "PCUTBN_Common.hlsl"
-
-
-// Textures & Samplers are also a form of constant
-// data - uniform/constant across the entire call
-Texture2D <float4> tDiffuse   : register( t0 );   // color of the surface
-SamplerState sSampler : register( s0 );           // sampler are rules on how to sample (read) from the texture.
 
 
 //--------------------------------------------------------------------------------------
@@ -61,12 +56,17 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 surface_color = ( input.color * texture_color ).xyz; // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = ( input.color.a * texture_color.a );
 
-	float3 ambient = AMBIENT.xyz * AMBIENT.w; // ambient color * ambient intensity
+	float3 ambient = AMBIENT.xyz * AMBIENT.w;
 
-	// get my surface normal - this comes from the vertex format
-	// We now have a NEW vertex format
-	float3 surface_normal = normalize( input.world_normal );
+	float4 normal_color = tNormals.Sample( sSampler, input.uv );
+	float3 surface_normal = ColorToSurfaceColor( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
+	//surface_normal = normalize( input.world_normal ) * surface_normal;
+	float3 surface_tangent = normalize( input.world_tangent );
+	float3 surface_bitangent = normalize( input.world_bitangent );
 
+	float3x3 tbn = float3x3( surface_tangent, surface_bitangent, normalize( input.world_normal ) );
+	surface_normal = mul( surface_normal, tbn );
+	
 	// for each light, we going to add in dot3 factor it
 	float3 light_position = LIGHT.world_position;
 	float3 dir_to_light = normalize( light_position - input.world_position );
@@ -86,7 +86,6 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 specular = SPECULAR_FACTOR * spec;
 
 	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
-	//final_color += LIGHT.color;
 
 	return float4( final_color, surface_alpha );
 }

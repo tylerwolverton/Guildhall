@@ -57,7 +57,7 @@ void TextBox::RenderBackground( const Vec2& worldMins ) const
 	AABB2 worldBoxBounds( worldMins + textBounds.mins, worldMins + textBounds.maxs );
 	AppendVertsForAABB2D( backgroundVertices, worldBoxBounds, m_backgroundColor );
 
-	m_renderer.BindTexture( nullptr );
+	m_renderer.BindDiffuseTexture( nullptr );
 	m_renderer.DrawVertexArray( backgroundVertices );
 }
 
@@ -117,11 +117,11 @@ void TextBox::RenderText( const Vec2& worldMins ) const
 
 	if ( font->GetTexture() != nullptr )
 	{
-		m_renderer.BindTexture( font->GetTexture() );
+		m_renderer.BindDiffuseTexture( font->GetTexture() );
 	}
 	else
 	{
-		m_renderer.BindTexture( nullptr );
+		m_renderer.BindDiffuseTexture( nullptr );
 	}
 	m_renderer.DrawVertexArray( vertices );
 }

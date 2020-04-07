@@ -1,12 +1,6 @@
 #include "ShaderCommon.hlsl"
 #include "PCUCommon.hlsl"
 
-
-// data - uniform/constant across entire draw call
-Texture2D<float4> tDiffuse : register( t0 );	// color of surface
-SamplerState sSampler : register( s0 );			// rules for how to sample texture
-
-
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------

@@ -893,23 +893,29 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray
 	for ( int yIdx = 0; yIdx < horizontalSlices + 1; ++yIdx )
 	{
 		float phi = RangeMapFloat( 0.f, (float)horizontalSlices, -90.f, 90.f, (float)yIdx );
+		float cosPhi = CosDegrees( phi );
 
 		for ( int xIdx = 0; xIdx < verticalSlices + 1; ++xIdx )
 		{
 			float theta = RangeMapFloat( 0.f, (float)verticalSlices, 0.f, 360.f, (float)xIdx );
+			float cosTheta = CosDegrees( theta );
+			float sinTheta = SinDegrees( theta );
 
-			float cosPhi = CosDegrees( phi );
-
-			float posX = cosPhi * CosDegrees( theta );
+			float posX = cosPhi * cosTheta;
 			float posY = SinDegrees( phi );
-			float posZ = cosPhi * SinDegrees( theta );
+			float posZ = cosPhi * sinTheta;
 
 			Vec3 position = center + Vec3( posX, posY, posZ ) * radius;
 
 			Vec2 uvs( 1.f - ( uvAtMins.x + uvSteps.x * xIdx ), uvAtMins.y + uvSteps.y * yIdx );
 
 			Vec3 normal = ( position - center ).GetNormalized();
-			Vec3 tangent = CrossProduct3D( Vec3( 0.f, 1.f, 0.f ), normal );
+
+			float tanPosX = -cosPhi * sinTheta;
+			float tanPosY = 0.f;
+			float tanPosZ = -cosPhi * cosTheta;
+			Vec3 tanPosition( tanPosX, tanPosY, tanPosZ );
+			Vec3 tangent = tanPosition.GetNormalized();
 			
 			vertexArray.push_back( Vertex_PCUTBN( position, tint, uvs, normal, tangent ) );
 		}

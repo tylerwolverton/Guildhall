@@ -462,7 +462,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	// Draw Depth
 	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-	s_debugRenderContext->BindTexture( nullptr );
+	s_debugRenderContext->BindDiffuseTexture( nullptr );
 	RenderWorldObjects( s_debugRenderWorldObjects );
 	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
 	
@@ -473,7 +473,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
 	s_debugRenderContext->SetCullMode( eCullMode::BACK );
 	
-	s_debugRenderContext->BindTexture( font->GetTexture() );
+	s_debugRenderContext->BindDiffuseTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjects );
 	RenderWorldObjects( s_debugRenderWorldTextObjectsXRay );
 	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjects );
@@ -482,7 +482,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	// Draw Always
 	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
 
-	s_debugRenderContext->BindTexture( nullptr );
+	s_debugRenderContext->BindDiffuseTexture( nullptr );
 	RenderWorldObjects( s_debugRenderWorldObjectsAlways );
 
 	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
@@ -491,7 +491,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
 	s_debugRenderContext->SetCullMode( eCullMode::BACK );
 
-	s_debugRenderContext->BindTexture( font->GetTexture() );
+	s_debugRenderContext->BindDiffuseTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjectsAlways );
 	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjectsAlways );
 
@@ -499,7 +499,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_GREATER, false );
 	s_debugRenderContext->BindShader( "Data/Shaders/DebugRenderXRay.hlsl" );
 
-	s_debugRenderContext->BindTexture( nullptr );
+	s_debugRenderContext->BindDiffuseTexture( nullptr );
 	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
 
 	s_debugRenderContext->SetFillMode( eFillMode::WIREFRAME );
@@ -508,7 +508,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 	s_debugRenderContext->SetFillMode( eFillMode::SOLID );
 	s_debugRenderContext->SetCullMode( eCullMode::BACK );
 
-	s_debugRenderContext->BindTexture( font->GetTexture() );
+	s_debugRenderContext->BindDiffuseTexture( font->GetTexture() );
 	RenderWorldObjects( s_debugRenderWorldTextObjectsXRay );
 	RenderWorldBillboardTextObjects( s_debugRenderWorldBillboardTextObjectsXRay );
 
@@ -549,7 +549,7 @@ static void RenderTexturedScreenObjects( RenderContext* context, std::vector<Deb
 			std::vector<Vertex_PCU> vertices;
 			std::vector<uint> indices;
 
-			context->BindTexture( obj->m_texture );
+			context->BindDiffuseTexture( obj->m_texture );
 			AppendDebugObjectToVertexArrayAndLerpTint( vertices, indices, obj );
 			context->DrawVertexArray( vertices );
 		}
@@ -591,9 +591,9 @@ void DebugRenderScreenTo( Texture* output )
 	RenderTexturedScreenObjects( context, s_debugRenderScreenTexturedObjects );
 
 	BitmapFont* font = s_debugRenderContext->GetSystemFont();
-	context->BindTexture( font->GetTexture() );
+	context->BindDiffuseTexture( font->GetTexture() );
 	RenderScreenObjects( context, s_debugRenderScreenTextObjects );
-	context->BindTexture( nullptr );
+	context->BindDiffuseTexture( nullptr );
 
 	context->EndCamera( *s_debugCamera );
 }

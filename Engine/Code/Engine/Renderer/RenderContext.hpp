@@ -150,7 +150,8 @@ public:
 	// Binding State
 	void BindShader( Shader* shader );
 	void BindShader( const char* fileName );
-	void BindTexture( const Texture* constTexture );
+	void BindDiffuseTexture( const Texture* constTexture );
+	void BindNormalTexture( const Texture* constTexture );
 	void BindSampler( Sampler* sampler );
 
 	// Resource Creation
@@ -258,6 +259,7 @@ private:
 	Sampler* m_currentSampler						= nullptr;
 	
 	Texture* m_defaultWhiteTexture					= nullptr;
+	Texture* m_flatNormalMap					= nullptr;
 	Texture* m_defaultDepthBuffer					= nullptr;
 
 	Rgba8 m_ambientLightColor						= Rgba8::WHITE;
