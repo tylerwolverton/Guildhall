@@ -888,14 +888,24 @@ void RenderContext::SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint 
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetMaterialData( const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
+void RenderContext::SetMaterialData( const Rgba8& startTint, const Rgba8& endTint, float tintRatio, float specularFactor, float specularPower )
 {
 	MaterialData materialData;
 	startTint.GetAsFloatArray( materialData.startTint );
 	endTint.GetAsFloatArray( materialData.endTint );
 	materialData.tintRatio = tintRatio;
 
+	materialData.specularFactor = specularFactor;
+	materialData.specularPower = specularPower;
+
 	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetMaterialData( float specularFactor, float specularPower, const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
+{
+	SetMaterialData( startTint, endTint, tintRatio, specularFactor, specularPower );
 }
 
 

@@ -27,18 +27,18 @@ Project: FPS
         - [ ] Default to `linear attenuation`, or (0, 1, 0)
         - [ ] Cycle from linear -> quadratic -> constant, ie (0,1,0) -> (0,0,1) -> (1,0,0)
         - *Note: Suggest adding a `light_set_attenuation` command that allows you to set it arbitrarily so you can see how it affects the light behaviour.*
-    - [ ] Point light color and position is represented in world using a `DebugDrawWorld...` call.  Point or Sphere work well. 
-        - [ ] Don't do this if the light is following the camera it is will just get in the way. 
-    - [ ] Keyboard `-` and `+` should change its intensity
+    - [x] Point light color and position is represented in world using a `DebugDrawWorld...` call.  Point or Sphere work well. 
+        - [x] Don't do this if the light is following the camera it is will just get in the way. 
+    - [x] Keyboard `-` and `+` should change its intensity
     - [ ] A console command `light_set_color color=rgb` to set the light color.  
-    - [ ] Be able to switch the light's positioning mode... Keys are just suggestions, feel free to use whatever as long as it is in your readme. 
-        - [ ] `F5` - Origin (light is positioned at (0,0,0))
-        - [ ] `F6` - Move to Camera (light is moved to where the camera currently is, and stays there)
-        - [ ] `F7` - Follow Camera (light is moved to camera each frame while in this mode)
+    - [-] Be able to switch the light's positioning mode... Keys are just suggestions, feel free to use whatever as long as it is in your readme. 
+        - [x] `F5` - Origin (light is positioned at (0,0,0))
+        - [x] `F6` - Move to Camera (light is moved to where the camera currently is, and stays there)
+        - [x] `F7` - Follow Camera (light is moved to camera each frame while in this mode)
         - [ ] `F8` - Animated.  Light follows a fixed path through the enfironment (cirlce your objects, or figure 8 through the objects)
-- [ ] Be able to adjust object material properties...
-    - [ ] `[,]` keys should adjust specular factor between 0 and 1 (how much does specular light show up
-    - [ ] `',"` keys should adjust specular power (min of 1, but allow it to go as high as you want.
+- [x] Be able to adjust object material properties...
+    - [x] `[,]` keys should adjust specular factor between 0 and 1 (how much does specular light show up
+    - [x] `',"` keys should adjust specular power (min of 1, but allow it to go as high as you want.
 
 ------
 Controls

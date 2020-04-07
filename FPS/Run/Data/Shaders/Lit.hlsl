@@ -72,7 +72,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 dir_to_light = normalize( light_position - input.world_position );
 	float dot3 = max( 0.0f, dot( dir_to_light, surface_normal ) * LIGHT.intensity );
 
-	float3 diffuse = dot3;// *LIGHT.color;
+	float3 diffuse = dot3 * LIGHT.color;
 
 	// just diffuse lighting
 	diffuse = min( float3( 1,1,1 ), diffuse );
@@ -82,8 +82,8 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 viewDir = normalize( CAMERA_WORLD_POSITION - input.world_position );
 	float3 reflectDir = reflect( -dir_to_light, surface_normal );
 
-	float spec = pow( max( dot( viewDir, reflectDir ), 0.0f ), 32 );
-	float3 specular = LIGHT.intensity * spec;
+	float spec = pow( max( dot( viewDir, reflectDir ), 0.0f ), SPECULAR_POWER );
+	float3 specular = SPECULAR_FACTOR * spec;
 
 	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
 	//final_color += LIGHT.color;

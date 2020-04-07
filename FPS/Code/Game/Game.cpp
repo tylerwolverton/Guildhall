@@ -36,7 +36,7 @@
 #include "Game/ActorDefinition.hpp"
 
 
-static float s_mouseSensitivityMultiplier = 10.f;
+static float s_mouseSensitivityMultiplier = 1.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -98,6 +98,24 @@ void Game::Startup()
 	Transform centerTransform;
 	centerTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
 	m_sphereMeshTransform = centerTransform;
+
+	m_pointLight.color = Vec3::ONE;
+
+	// Init shaders
+	m_shaderPaths.push_back( "Data/Shaders/Lit.hlsl" );
+	m_shaderNames.push_back( "Lit" );
+
+	m_shaderPaths.push_back( "Data/Shaders/Default.hlsl" );
+	m_shaderNames.push_back( "Default" );
+
+	/*m_shaderPaths.push_back( "Data/Shaders/Normals.hlsl" );
+	m_shaderNames.push_back( "Normals" );
+	m_shaderPaths.push_back( "Data/Shaders/Tangents.hlsl" );
+	m_shaderNames.push_back( "Tangents" );
+	m_shaderPaths.push_back( "Data/Shaders/Bitangents.hlsl" );
+	m_shaderNames.push_back( "Bitangents" );
+	m_shaderPaths.push_back( "Data/Shaders/SurfaceNormals.hlsl" );
+	m_shaderNames.push_back( "Surface Normals" );*/
 }
 
 
@@ -140,7 +158,23 @@ void Game::Update()
 	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 6.f ), 0.f, (float)( GetCurrentTimeSeconds() * 20.f ) );
 	m_sphereMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 20.f ), 0.f, (float)( GetCurrentTimeSeconds() * 30.f ) );
 
-	m_pointLight.position = m_worldCamera->GetTransform().GetPosition();
+	switch ( m_lightMode )
+	{
+		case eLightMode::STATIONARY:
+		{
+			DebugAddWorldPoint( m_pointLight.position, Rgba8::GREEN );
+		} break;
+		case eLightMode::FOLLOW_CAMERA:
+		{
+			m_pointLight.position = m_worldCamera->GetTransform().GetPosition();
+		} break;
+		case eLightMode::LOOP:
+		{
+			DebugAddWorldPoint( m_pointLight.position, Rgba8::GREEN );
+		}
+	}
+
+	PrintHotkeys();
 }
 
 
@@ -150,10 +184,12 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->BindTexture( nullptr );
-	g_renderer->BindShader( "Data/Shaders/Lit.hlsl" );
+	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
 	
 	g_renderer->SetAmbientLight( m_ambientColor, m_ambientIntensity );
 	g_renderer->EnableLight( 0, m_pointLight );
+
+	g_renderer->SetMaterialData( m_specularFactor, m_specularPower );
 
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model, Rgba8::YELLOW );
@@ -170,6 +206,44 @@ void Game::Render() const
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::DebugRender() const
+{
+	m_world->DebugRender();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::PrintHotkeys()
+{
+	DebugAddScreenText( Vec4( 0.f, .95f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5 - Move light to origin" );
+	DebugAddScreenText( Vec4( 0.f, .90f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6 - Move light to camera" );
+	DebugAddScreenText( Vec4( 0.f, .85f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7 - Make light follow camera" );
+	DebugAddScreenText( Vec4( 0.f, .80f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8 - Make light loop" );
+	DebugAddScreenTextf( Vec4( 0.f, .75f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Change intensity of ambient light : %.2f", m_ambientIntensity );
+	DebugAddScreenTextf( Vec4( 0.f, .70f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Change intensity of point light : %.2f", m_pointLight.intensity );
+	DebugAddScreenTextf( Vec4( 0.f, .65f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Change specular factor : %.2f", m_specularFactor );
+	DebugAddScreenTextf( Vec4( 0.f, .60f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Change specular power : %.2f", m_specularPower );
+	DebugAddScreenTextf( Vec4( 0.f, .55f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Change shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ChangeShader( int nextShaderIdx )
+{
+	if ( nextShaderIdx > (int)m_shaderPaths.size() - 1 )
+	{
+		nextShaderIdx = 0;
+	}
+	else if ( nextShaderIdx < 0 )
+	{
+		nextShaderIdx = (int)m_shaderPaths.size() - 1;
+	}
+
+	m_currentShaderIdx = nextShaderIdx;
 }
 
 
@@ -245,7 +319,24 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleBlendMode();
 	}
-
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
+	{
+		m_pointLight.position = Vec3::ZERO;
+		m_lightMode = eLightMode::STATIONARY;
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
+	{
+		m_pointLight.position = m_worldCamera->GetTransform().GetPosition();
+		m_lightMode = eLightMode::STATIONARY;
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F7 ) )
+	{
+		m_lightMode = eLightMode::FOLLOW_CAMERA;
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F8 ) )
+	{
+		m_lightMode = eLightMode::LOOP;
+	}
 
 	// Debug Commands
 	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
@@ -346,6 +437,34 @@ void Game::UpdateFromKeyboard()
 		m_pointLight.intensity += .5f * deltaSeconds;
 		m_pointLight.intensity = ClampZeroToOne( m_pointLight.intensity );
 	}
+	if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
+	{
+		m_specularFactor -= .5f * deltaSeconds;
+		m_specularFactor = ClampZeroToOne( m_specularFactor );
+	}
+	if ( g_inputSystem->IsKeyPressed( KEY_RIGHT_BRACKET ) )
+	{
+		m_specularFactor += .5f * deltaSeconds;
+		m_specularFactor = ClampZeroToOne( m_specularFactor );
+	}
+	if ( g_inputSystem->IsKeyPressed( KEY_SEMICOLON ) )
+	{
+		m_specularPower -= 2.f * deltaSeconds;
+		m_specularPower = ClampMin( m_specularPower, 1.f );
+	}
+	if ( g_inputSystem->IsKeyPressed( KEY_QUOTE ) )
+	{
+		m_specularPower += 2.f * deltaSeconds;
+		m_specularPower = ClampMin( m_specularPower, 1.f );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
+	{
+		ChangeShader( m_currentShaderIdx - 1 );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_PERIOD ) )
+	{
+		ChangeShader( m_currentShaderIdx + 1 );
+	}
 }
 
 
@@ -374,13 +493,6 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
 
 	m_worldCamera->Translate( absoluteTranslation );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::DebugRender() const
-{
-	m_world->DebugRender();
 }
 
 

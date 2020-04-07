@@ -101,7 +101,6 @@ private:
 	Texture*		m_colorTarget = nullptr;
 	Texture*		m_depthStencilTarget = nullptr;
 
-	Vec3			m_position;
 	Mat44			m_projectionMatrix;
 	Mat44			m_viewMatrix;
 };

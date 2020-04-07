@@ -90,7 +90,10 @@ struct MaterialData
 	float endTint[4];
 	float tintRatio;
 
-	float padding[3];
+	float specularFactor;
+	float specularPower;
+
+	float padding;
 };
 
 
@@ -161,7 +164,8 @@ public:
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
 	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE );
-	void SetMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
+	void SetMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f, float specularFactor = 0.f, float specularPower = 1.f );
+	void SetMaterialData( float specularFactor, float specularPower, const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
 	void SetLightData();
 
 	// Raster state setters

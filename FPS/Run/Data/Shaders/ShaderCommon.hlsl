@@ -27,6 +27,9 @@ cbuffer material_constants : register( b3 )
 	float4   START_TINT;
 	float4   END_TINT;
 	float    TINT_RATIO;
+
+	float    SPECULAR_FACTOR;
+	float    SPECULAR_POWER;
 };
 
 

@@ -22,6 +22,15 @@ class GPUMesh;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eLightMode
+{
+	STATIONARY,
+	FOLLOW_CAMERA,
+	LOOP
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -60,6 +69,9 @@ private:
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
+	void PrintHotkeys();
+	void ChangeShader( int nextShaderIdx );
+
 private:
 	Clock* m_gameClock = nullptr;
 
@@ -95,4 +107,11 @@ private:
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 1.f;
 	Light_t m_pointLight;
+	eLightMode m_lightMode = eLightMode::FOLLOW_CAMERA;
+	float m_specularFactor = 0.f;
+	float m_specularPower = 1.f;
+
+	std::vector<std::string> m_shaderPaths;
+	std::vector<std::string> m_shaderNames;
+	int m_currentShaderIdx = 0;
 };

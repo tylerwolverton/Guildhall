@@ -167,7 +167,7 @@ void Camera::UpdateCameraUBO()
 	cameraData.view = model;
 	m_viewMatrix = model;
 
-	cameraData.worldPosition = m_position;
+	cameraData.worldPosition = m_transform.GetPosition();
 
 	m_cameraUBO->Update( &cameraData, sizeof( cameraData ), sizeof( cameraData ) );
 }
