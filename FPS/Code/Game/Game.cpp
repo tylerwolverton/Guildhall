@@ -163,8 +163,8 @@ void Game::Update()
 
 	UpdateCameras();
 	m_cubeMeshTransform.RotatePitchRollYawDegrees( cosine * .25f, 0.f, cosine * .5f );
-	m_sphereMeshTransform.RotatePitchRollYawDegrees( cosine * .55f, 0.f, cosine * .35f );
-
+	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, deltaSeconds * 20.f );
+ 
 	switch ( m_lightMode )
 	{
 		case eLightMode::STATIONARY:

@@ -366,6 +366,29 @@ int RoundDownToInt( float value )
 
 
 //-----------------------------------------------------------------------------------------------
+float GetRotationInRangeDegrees( float rotationDegrees, float minAngleDegrees /*= -360.f*/, float maxAngleDegrees /*= 360.f */ )
+{
+	float newRotation = rotationDegrees;
+
+	// Set between -360.f and 360.f
+	while ( newRotation > 360.f ) newRotation -= 360.f;
+	while ( newRotation < -360.f ) newRotation += 360.f;
+
+	// Clamp within range
+	if ( newRotation > maxAngleDegrees )
+	{
+		newRotation = minAngleDegrees + ( newRotation - maxAngleDegrees );
+	}
+	if ( newRotation < minAngleDegrees )
+	{
+		newRotation = maxAngleDegrees - ( minAngleDegrees - newRotation );
+	}
+
+	return newRotation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool IsPointInsideDisc( const Vec2& point, const Vec2& center, float radius )
 {
 	return GetDistance2D( center, point ) < radius;

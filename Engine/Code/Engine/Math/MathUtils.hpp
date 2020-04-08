@@ -71,6 +71,8 @@ const Vec2		RangeMapFloatVec2	( float inputBegin, float inputEnd, const Vec2& ou
 const Vec3		RangeMapVec3		( const Vec3& inputBegin, const Vec3& inputEnd, const Vec3& outputBegin, const Vec3& outputEnd, const Vec3& value );
 int				RoundDownToInt		( float value );
 
+float			GetRotationInRangeDegrees( float rotationDegrees, float minAngleDegrees = -360.f, float maxAngleDegrees = 360.f );
+
 // Geometric Queries 2D
 const Vec2		GetNearestPointOnDisc2D			( const Vec2& point, const Vec2& center, float radius );
 const Vec2		GetNearestPointInsideDisc2D		( const Vec2& point, const Vec2& center, float radius );
