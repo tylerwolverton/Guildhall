@@ -2,6 +2,7 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec4.hpp"
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/EngineCommon.hpp"
@@ -115,7 +116,7 @@ struct Light_t
 
 struct LightData
 {
-	float ambientLight[4];
+	Vec4 ambientLight;
 	Light_t light;
 };
 
@@ -182,8 +183,10 @@ public:
 
 	// Light setters
 	void SetAmbientColor( const Rgba8& color );
+	void SetAmbientColor( const Vec3& color );
 	void SetAmbientIntensity( float intensity );
 	void SetAmbientLight( const Rgba8& color, float intensity );
+	void SetAmbientLight( const Vec3& color, float intensity );
 
 	void EnableLight( uint idx, const Light_t& lightInfo );
 	// void EnablePointLight( uint idx, vec3 position, rgba color, float intensity, vec3 attenuation ); 
@@ -265,10 +268,10 @@ private:
 	Sampler* m_currentSampler						= nullptr;
 	
 	Texture* m_defaultWhiteTexture					= nullptr;
-	Texture* m_flatNormalMap					= nullptr;
+	Texture* m_flatNormalMap						= nullptr;
 	Texture* m_defaultDepthBuffer					= nullptr;
 
-	Rgba8 m_ambientLightColor						= Rgba8::WHITE;
+	Vec3 m_ambientLightColor						= Vec3::ONE;
 	float m_ambientLightIntensity					= 1.f;
 	Light_t m_pointLights[MAX_LIGHTS];
 

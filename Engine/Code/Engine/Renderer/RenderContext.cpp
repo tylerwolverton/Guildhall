@@ -187,8 +187,7 @@ void RenderContext::BeginCamera( Camera& camera )
 	SetModelMatrix( Mat44() );
 	SetBlendMode( m_currentBlendMode );
 	SetMaterialData();
-	m_ambientLightColor = Rgba8::WHITE;
-	m_ambientLightIntensity = 1.f;
+	SetAmbientLight( Rgba8::WHITE, 1.f );
 
 	// Dirty all state, booleans or a uint flags
 }
@@ -938,8 +937,7 @@ void RenderContext::SetMaterialData( float specularFactor, float specularPower, 
 void RenderContext::SetLightData()
 {
 	LightData lightData;
-	m_ambientLightColor.GetAsFloatArray( lightData.ambientLight );
-	lightData.ambientLight[3] = m_ambientLightIntensity;
+	lightData.ambientLight = Vec4( m_ambientLightColor, m_ambientLightIntensity );
 	lightData.light = m_pointLights[0];
 
 	m_lightUBO->Update( &lightData, sizeof( lightData ), sizeof( lightData ) );
@@ -997,6 +995,16 @@ void RenderContext::SetFrontFaceWindOrder( bool windCCW )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::SetAmbientColor( const Rgba8& color )
 {
+	float vals[4];
+	color.GetAsFloatArray( vals );
+
+	m_ambientLightColor = Vec3( vals[0], vals[1], vals[2] );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientColor( const Vec3& color )
+{
 	m_ambientLightColor = color;
 }
 
@@ -1010,6 +1018,14 @@ void RenderContext::SetAmbientIntensity( float intensity )
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::SetAmbientLight( const Rgba8& color, float intensity )
+{
+	SetAmbientColor( color );
+	SetAmbientIntensity( intensity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientLight( const Vec3& color, float intensity )
 {
 	SetAmbientColor( color );
 	SetAmbientIntensity( intensity );

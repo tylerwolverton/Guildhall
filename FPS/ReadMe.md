@@ -20,9 +20,9 @@ Project: FPS
     - [x] Vertex Bitangents (transformed by model) - `bitangents.hlsl`
     - [x] Surface Normals (uses TBN) - `surface_normals.hlsl`
 - [-] Each object should be rotating around the `Y` and `X` axis at different speeds.  This is to correct a correct application to model matrices to TBN space.
-- [-] `9,0` - Be able to adjust global ambient light
-    - [ ] Console command `light_set_ambient_color color=rgb` to set ambient color to whatever you want
-- [-] There should be one point light in the scene that you can adjust.
+- [x] `9,0` - Be able to adjust global ambient light
+    - [x] Console command `light_set_ambient_color color=rgb` to set ambient color to whatever you want
+- [x] There should be one point light in the scene that you can adjust.
     - [x] Be able to toggle attentuation using `T`
         - [x] Default to `linear attenuation`, or (0, 1, 0)
         - [x] Cycle from linear -> quadratic -> constant, ie (0,1,0) -> (0,0,1) -> (1,0,0)
@@ -30,7 +30,7 @@ Project: FPS
     - [x] Point light color and position is represented in world using a `DebugDrawWorld...` call.  Point or Sphere work well. 
         - [x] Don't do this if the light is following the camera it is will just get in the way. 
     - [x] Keyboard `-` and `+` should change its intensity
-    - [ ] A console command `light_set_color color=rgb` to set the light color.  
+    - [x] A console command `light_set_color color=rgb` to set the light color.  
     - [x] Be able to switch the light's positioning mode... Keys are just suggestions, feel free to use whatever as long as it is in your readme. 
         - [x] `F5` - Origin (light is positioned at (0,0,0))
         - [x] `F6` - Move to Camera (light is moved to where the camera currently is, and stays there)

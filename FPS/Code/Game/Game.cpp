@@ -37,6 +37,8 @@
 
 
 static float s_mouseSensitivityMultiplier = 1.f;
+static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
+static Vec3 s_pointLightColor = Vec3( 1.f, 1.f, 1.f);
 
 
 //-----------------------------------------------------------------------------------------------
@@ -55,6 +57,8 @@ Game::~Game()
 void Game::Startup()
 {
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
+	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
+	g_eventSystem->RegisterEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetPointLightColor );
 
 	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
 
@@ -182,6 +186,8 @@ void Game::Update()
 	}
 
 	PrintHotkeys();
+
+	m_pointLight.color = s_pointLightColor;
 }
 
 
@@ -194,7 +200,7 @@ void Game::Render() const
 	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
 	
-	g_renderer->SetAmbientLight( m_ambientColor, m_ambientIntensity );
+	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	g_renderer->EnableLight( 0, m_pointLight );
 
 	g_renderer->SetMaterialData( m_specularFactor, m_specularPower );
@@ -227,16 +233,16 @@ void Game::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Game::PrintHotkeys()
 {
-	DebugAddScreenText( Vec4( 0.f, .95f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5 - Light to origin" );
-	DebugAddScreenText( Vec4( 0.f, .90f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6 - Light to camera" );
-	DebugAddScreenText( Vec4( 0.f, .85f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7 - Light follow camera" );
-	DebugAddScreenText( Vec4( 0.f, .80f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8 - Light loop" );
-	DebugAddScreenTextf( Vec4( 0.f, .75f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Intensity of ambient light : %.2f", m_ambientIntensity );
-	DebugAddScreenTextf( Vec4( 0.f, .70f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Intensity of point light : %.2f", m_pointLight.intensity );
-	DebugAddScreenTextf( Vec4( 0.f, .65f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t - Attenuation : ( %.2f, %.2f, %.2f )", m_pointLight.attenuation.x, m_pointLight.attenuation.y, m_pointLight.attenuation.z );
-	DebugAddScreenTextf( Vec4( 0.f, .60f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
-	DebugAddScreenTextf( Vec4( 0.f, .55f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
-	DebugAddScreenTextf( Vec4( 0.f, .50f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
+	DebugAddScreenText( Vec4( 0.f, .95f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5  - Light to origin" );
+	DebugAddScreenText( Vec4( 0.f, .92f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6  - Light to camera" );
+	DebugAddScreenText( Vec4( 0.f, .89f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7  - Light follow camera" );
+	DebugAddScreenText( Vec4( 0.f, .86f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8  - Light loop" );
+	DebugAddScreenTextf( Vec4( 0.f, .83f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Intensity of ambient light : %.2f", m_ambientIntensity );
+	DebugAddScreenTextf( Vec4( 0.f, .80f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Intensity of point light : %.2f", m_pointLight.intensity );
+	DebugAddScreenTextf( Vec4( 0.f, .77f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", m_pointLight.attenuation.x, m_pointLight.attenuation.y, m_pointLight.attenuation.z );
+	DebugAddScreenTextf( Vec4( 0.f, .74f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
+	DebugAddScreenTextf( Vec4( 0.f, .71f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
+	DebugAddScreenTextf( Vec4( 0.f, .68f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
 }
 
 
@@ -542,6 +548,24 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 bool Game::SetMouseSensitivity( EventArgs* args )
 {
 	s_mouseSensitivityMultiplier = args->GetValue( "multiplier", 1.f );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Game::SetAmbientLightColor( EventArgs* args )
+{
+	s_ambientLightColor = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Game::SetPointLightColor( EventArgs* args )
+{
+	s_pointLightColor = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
 
 	return false;
 }

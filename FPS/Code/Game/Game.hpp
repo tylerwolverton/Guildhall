@@ -55,6 +55,8 @@ public:
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
 	static bool SetMouseSensitivity( EventArgs* args );
+	static bool SetAmbientLightColor( EventArgs* args );
+	static bool SetPointLightColor( EventArgs* args );
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;

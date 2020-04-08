@@ -29,3 +29,8 @@ debug_add_world_point position=(0,0,0) duration=10
 help
 debug_add_world_wire_sphere position=0,0,0 radius=3
 hello
+help
+light_set_ambient_color color=1,0,0
+light_set_ambient_color color=1,1,0
+light_set_color color=0,0,1
+light_set_color color=.5,.75,.2
