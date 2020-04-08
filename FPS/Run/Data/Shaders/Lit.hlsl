@@ -53,7 +53,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
 	// use the uv to sample the texture
 	float4 texture_color = tDiffuse.Sample( sSampler, input.uv );
-	float3 surface_color = ( input.color * texture_color ).xyz; // multiply our tint with our texture color to get our final color; 
+	float3 surface_color = ( input.color.xyz * pow( max( texture_color.xyz, 0.f ), 1.f / GAMMA ) ); // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = ( input.color.a * texture_color.a );
 
 	float3 ambient = AMBIENT.xyz * AMBIENT.w;
@@ -87,7 +87,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	// specular
 	float3 viewDir = normalize( CAMERA_WORLD_POSITION - input.world_position );
-	float3 reflectDir = reflect( -dir_to_light, surface_normal );
+	float3 reflectDir = normalize( reflect( -dir_to_light, surface_normal ) );
 
 	float spec = pow( max( dot( viewDir, reflectDir ), 0.0f ), SPECULAR_POWER );
 
@@ -100,6 +100,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 specular = SPECULAR_FACTOR * spec * specular_attenuation;
 
 	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
+	final_color = pow( max( final_color, 0.f ), GAMMA );
 
 	return float4( final_color, surface_alpha );
 }

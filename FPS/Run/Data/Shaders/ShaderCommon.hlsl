@@ -3,6 +3,8 @@ cbuffer time_constants : register( b0 )
 {
 	float SYSTEM_TIME_SECONDS;
 	float SYSTEM_TIME_DELTA_SECONDS;
+
+	float GAMMA;
 };
 
 

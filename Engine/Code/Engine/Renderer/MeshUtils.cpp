@@ -914,7 +914,7 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray
 
 			float tanPosX = -cosPhi * sinTheta;
 			float tanPosY = 0.f;
-			float tanPosZ = -cosPhi * cosTheta;
+			float tanPosZ = cosPhi * cosTheta;
 			Vec3 tanPosition( tanPosX, tanPosY, tanPosZ );
 			Vec3 tangent = tanPosition.GetNormalized();
 			

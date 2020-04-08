@@ -433,7 +433,7 @@ static void RenderWorldBillboardTextObjects( const std::vector<DebugRenderObject
 			model.SetTranslation3D( obj->m_origin );
 			model.PushTransform( Mat44::CreateTranslation3D( -obj->m_origin ) );
 			
-			s_debugRenderContext->SetModelMatrix( Mat44(), obj->m_startColor );
+			s_debugRenderContext->SetModelMatrix( model, obj->m_startColor );
 			s_debugRenderContext->SetMaterialData( obj->m_startColor, obj->m_endColor, obj->m_timer.GetRatioOfCompletion() );
 
 			GPUMesh mesh( s_debugRenderContext, obj->m_vertices, obj->m_indices );

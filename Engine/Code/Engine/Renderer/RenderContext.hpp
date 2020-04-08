@@ -72,7 +72,9 @@ struct FrameData
 	float systemTimeSeconds;
 	float systemDeltaTimeSeconds;
 	
-	float padding[2];
+	float gamma;
+
+	float padding[1];
 };
 
 
@@ -140,7 +142,7 @@ public:
 	void BeginCamera( Camera& camera );
 	void EndCamera	( const Camera& camera );
 
-	void UpdateFrameTime();
+	void UpdateFrameData();
 
 	void Draw( int numVertices, int vertexOffset = 0 );
 	void DrawIndexed( int indexCount, int indexOffset = 0, int vertexOffset = 0 );
@@ -274,6 +276,7 @@ private:
 	Vec3 m_ambientLightColor						= Vec3::ONE;
 	float m_ambientLightIntensity					= 1.f;
 	Light_t m_pointLights[MAX_LIGHTS];
+	float m_gamma									= 2.2f;
 
 	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 

@@ -61,7 +61,7 @@ void RenderContext::Setup( Clock* gameClock )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginFrame()
 {
-	UpdateFrameTime();
+	UpdateFrameData();
 }
 
 
@@ -203,11 +203,12 @@ void RenderContext::EndCamera( const Camera& camera )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::UpdateFrameTime()
+void RenderContext::UpdateFrameData()
 {
 	FrameData frameData;
 	frameData.systemTimeSeconds = (float)Clock::GetMaster()->GetTotalElapsedSeconds();
 	frameData.systemDeltaTimeSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	frameData.gamma = m_gamma;
 
 	m_frameUBO->Update( &frameData, sizeof( frameData ), sizeof( frameData ) );
 }
