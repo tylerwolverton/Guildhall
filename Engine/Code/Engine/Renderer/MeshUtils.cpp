@@ -909,7 +909,8 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray
 
 			Vec2 uvs( 1.f - ( uvAtMins.x + uvSteps.x * xIdx ), uvAtMins.y + uvSteps.y * yIdx );
 
-			Vec3 normal = ( position - center ).GetNormalized();
+			Vec3 normal = ( position - center );
+			normal.Normalize();
 
 			float tanPosX = -cosPhi * sinTheta;
 			float tanPosY = 0.f;

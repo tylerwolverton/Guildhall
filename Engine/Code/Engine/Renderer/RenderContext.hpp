@@ -105,6 +105,12 @@ struct Light_t
 	
 	Vec3 color;
 	float intensity;
+
+	Vec3 attenuation = Vec3( 0.f, 1.f, 0.f );
+	float pad01;
+
+	Vec3 specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	float pad02;
 };
 
 struct LightData

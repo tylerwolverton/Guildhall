@@ -29,6 +29,13 @@ void Transform::SetRotationFromPitchRollYawDegrees( float pitch, float roll, flo
 
 
 //-----------------------------------------------------------------------------------------------
+void Transform::RotatePitchRollYawDegrees( float pitch, float roll, float yaw )
+{
+	SetRotationFromPitchRollYawDegrees( m_rotation.x + pitch, m_rotation.y + roll, m_rotation.z + yaw );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetAsMatrix() const
 {
 	Mat44 translation = Mat44::CreateTranslation3D( m_position );

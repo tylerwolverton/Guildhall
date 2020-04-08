@@ -60,7 +60,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );
 	float3 surface_normal = ColorToSurfaceColor( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
-	//surface_normal = normalize( input.world_normal ) * surface_normal;
+
 	float3 surface_tangent = normalize( input.world_tangent );
 	float3 surface_bitangent = normalize( input.world_bitangent );
 
@@ -72,7 +72,14 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 dir_to_light = normalize( light_position - input.world_position );
 	float dot3 = max( 0.0f, dot( dir_to_light, surface_normal ) * LIGHT.intensity );
 
-	float3 diffuse = dot3 * LIGHT.color;
+	float a = LIGHT.attenuation.x;
+	float b = LIGHT.attenuation.y;
+	float c = LIGHT.attenuation.z;
+	float d = distance( input.world_position, light_position );
+
+	float attenuation = 1.f / ( a + (b*d) + (c*d*d) );
+
+	float3 diffuse = dot3 * LIGHT.color * attenuation;
 
 	// just diffuse lighting
 	diffuse = min( float3( 1,1,1 ), diffuse );
@@ -83,7 +90,14 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 reflectDir = reflect( -dir_to_light, surface_normal );
 
 	float spec = pow( max( dot( viewDir, reflectDir ), 0.0f ), SPECULAR_POWER );
-	float3 specular = SPECULAR_FACTOR * spec;
+
+	a = LIGHT.specular_attenuation.x;
+	b = LIGHT.specular_attenuation.y;
+	c = LIGHT.specular_attenuation.z;
+
+	float specular_attenuation = 1.f / ( a + ( b * d ) + ( c * d * d ) );
+
+	float3 specular = SPECULAR_FACTOR * spec * specular_attenuation;
 
 	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
 

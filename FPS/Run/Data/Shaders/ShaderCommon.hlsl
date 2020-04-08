@@ -40,6 +40,12 @@ struct light_t
 
 	float3 color;
 	float intensity; // rgb and an intensity
+
+	float3 attenuation;
+	float pad01;
+
+	float3 specular_attenuation;
+	float pad02;
 };
 
 

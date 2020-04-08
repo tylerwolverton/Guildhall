@@ -13,6 +13,7 @@ public:
 	void SetPosition( const Vec3& position );
 	void Translate( const Vec3& translation );
 	void SetRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw );
+	void RotatePitchRollYawDegrees( float pitch, float roll, float yaw );
 
 	const Mat44 GetAsMatrix() const;
 

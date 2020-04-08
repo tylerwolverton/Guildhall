@@ -92,7 +92,7 @@ void Game::Startup()
 
 	vertices.clear();
 	indices.clear();
-	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 32, Rgba8::WHITE );
+	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 64, Rgba8::WHITE );
 
 	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
 	Transform centerTransform;
@@ -154,9 +154,12 @@ void Game::Update()
 		UpdateFromKeyboard();
 	}
 
+	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	float cosine = CosDegrees( deltaSeconds );
+
 	UpdateCameras();
-	m_cubeMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 6.f ), 0.f, (float)( GetCurrentTimeSeconds() * 20.f ) );
-	m_sphereMeshTransform.SetRotationFromPitchRollYawDegrees( (float)( GetCurrentTimeSeconds() * 20.f ), 0.f, (float)( GetCurrentTimeSeconds() * 30.f ) );
+	m_cubeMeshTransform.RotatePitchRollYawDegrees( cosine * .25f, 0.f, cosine * .5f );
+	m_sphereMeshTransform.RotatePitchRollYawDegrees( cosine * .55f, 0.f, cosine * .35f );
 
 	switch ( m_lightMode )
 	{
@@ -170,6 +173,10 @@ void Game::Update()
 		} break;
 		case eLightMode::LOOP:
 		{
+			m_pointLight.position = m_quadMeshTransform.GetPosition();
+			m_pointLight.position.x += CosDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
+			m_pointLight.position.z += SinDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
+
 			DebugAddWorldPoint( m_pointLight.position, Rgba8::GREEN );
 		}
 	}
@@ -220,15 +227,16 @@ void Game::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Game::PrintHotkeys()
 {
-	DebugAddScreenText( Vec4( 0.f, .95f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5 - Move light to origin" );
-	DebugAddScreenText( Vec4( 0.f, .90f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6 - Move light to camera" );
-	DebugAddScreenText( Vec4( 0.f, .85f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7 - Make light follow camera" );
-	DebugAddScreenText( Vec4( 0.f, .80f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8 - Make light loop" );
-	DebugAddScreenTextf( Vec4( 0.f, .75f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Change intensity of ambient light : %.2f", m_ambientIntensity );
-	DebugAddScreenTextf( Vec4( 0.f, .70f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Change intensity of point light : %.2f", m_pointLight.intensity );
-	DebugAddScreenTextf( Vec4( 0.f, .65f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Change specular factor : %.2f", m_specularFactor );
-	DebugAddScreenTextf( Vec4( 0.f, .60f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Change specular power : %.2f", m_specularPower );
-	DebugAddScreenTextf( Vec4( 0.f, .55f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Change shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
+	DebugAddScreenText( Vec4( 0.f, .95f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5 - Light to origin" );
+	DebugAddScreenText( Vec4( 0.f, .90f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6 - Light to camera" );
+	DebugAddScreenText( Vec4( 0.f, .85f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7 - Light follow camera" );
+	DebugAddScreenText( Vec4( 0.f, .80f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8 - Light loop" );
+	DebugAddScreenTextf( Vec4( 0.f, .75f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Intensity of ambient light : %.2f", m_ambientIntensity );
+	DebugAddScreenTextf( Vec4( 0.f, .70f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Intensity of point light : %.2f", m_pointLight.intensity );
+	DebugAddScreenTextf( Vec4( 0.f, .65f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t - Attenuation : ( %.2f, %.2f, %.2f )", m_pointLight.attenuation.x, m_pointLight.attenuation.y, m_pointLight.attenuation.z );
+	DebugAddScreenTextf( Vec4( 0.f, .60f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
+	DebugAddScreenTextf( Vec4( 0.f, .55f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
+	DebugAddScreenTextf( Vec4( 0.f, .50f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
 }
 
 
@@ -365,14 +373,6 @@ void Game::UpdateFromKeyboard()
 	{
 		DebugAddWorldWireSphere( m_worldCamera->GetTransform().GetPosition(), 2.f, Rgba8::WHITE, Rgba8::BLUE, 10.f, DEBUG_RENDER_ALWAYS );
 	}
-	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
-	{
-		Mat44 textView = m_worldCamera->GetViewMatrix();
-		InvertOrthoNormalMatrix( textView );
-		DebugAddWorldText( textView, Vec2::ZERO, Rgba8::BLUE, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Zero!" );
-		DebugAddWorldText( textView, Vec2( .5f, .5f ), Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "Mid!" );
-		DebugAddWorldTextf( textView, Vec2::ONE, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, "One!", 12 );
-	}
 	if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
 	{
 		DebugAddWorldBillboardText( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ONE, Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_XRAY, "Mid!" );
@@ -465,6 +465,23 @@ void Game::UpdateFromKeyboard()
 	if ( g_inputSystem->WasKeyJustPressed( KEY_PERIOD ) )
 	{
 		ChangeShader( m_currentShaderIdx + 1 );
+	}
+	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
+	{
+		if ( m_pointLight.attenuation == Vec3( 1.f, 0.f, 0.f ) )
+		{
+			m_pointLight.attenuation = Vec3( 0.f, 1.f, 0.f );
+		}
+		else if ( m_pointLight.attenuation == Vec3( 0.f, 1.f, 0.f ) )
+		{
+			m_pointLight.attenuation = Vec3( 0.f, 0.f, 1.f );
+		}
+		else if ( m_pointLight.attenuation == Vec3( 0.f, 0.f, 1.f ) )
+		{
+			m_pointLight.attenuation = Vec3( 1.f, 0.f, 0.f );
+		}
+
+		m_pointLight.specularAttenuation = m_pointLight.attenuation;
 	}
 }
 

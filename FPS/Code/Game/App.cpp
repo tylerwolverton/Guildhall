@@ -203,12 +203,7 @@ void App::UpdateFromKeyboard()
 			HandleQuitRequested();
 		}
 	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F8 ) )
-	{
-		g_app->RestartGame();
-	}
-
+	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
 	{
 		g_devConsole->ToggleOpenFull();
