@@ -43,7 +43,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
 	float3 surface_bitangent = normalize( input.world_bitangent );
 
-	float3 final_color = SurfaceColorToColor( surface_bitangent );
+	float3 final_color = VectorToColor( surface_bitangent );
 
 	return float4( final_color, 1.0f );
 }

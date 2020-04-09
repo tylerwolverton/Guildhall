@@ -59,7 +59,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 ambient = AMBIENT.xyz * AMBIENT.w;
 
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );
-	float3 surface_normal = ColorToSurfaceColor( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
+	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
 
 	float3 surface_tangent = normalize( input.world_tangent );
 	float3 surface_bitangent = normalize( input.world_bitangent );
