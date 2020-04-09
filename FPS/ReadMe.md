@@ -19,7 +19,7 @@ Project: FPS
     - [x] Vertex Tangents (transformed by model) - `tangents.hlsl`
     - [x] Vertex Bitangents (transformed by model) - `bitangents.hlsl`
     - [x] Surface Normals (uses TBN) - `surface_normals.hlsl`
-- [-] Each object should be rotating around the `Y` and `X` axis at different speeds.  This is to correct a correct application to model matrices to TBN space.
+- [x] Each object should be rotating around the `Y` and `X` axis at different speeds.  This is to correct a correct application to model matrices to TBN space.
 - [x] `9,0` - Be able to adjust global ambient light
     - [x] Console command `light_set_ambient_color color=rgb` to set ambient color to whatever you want
 - [x] There should be one point light in the scene that you can adjust.
