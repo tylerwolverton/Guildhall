@@ -52,6 +52,13 @@ v2f_t VertexFunction( vs_input_t input )
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
 	float4 texture_color = tNormals.Sample( sSampler, input.uv ); 
-	
-	return texture_color;
+	float3 surface_normal = ColorToVector( texture_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
+
+	float3 surface_tangent = normalize( input.world_tangent );
+	float3 surface_bitangent = normalize( input.world_bitangent );
+
+	float3x3 tbn = float3x3( surface_tangent, surface_bitangent, normalize( input.world_normal ) );
+	surface_normal = mul( surface_normal, tbn );
+
+	return float4( VectorToColor( surface_normal ), 1.f );
 }

@@ -43,7 +43,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
 	float3 surface_normal = normalize( input.world_normal );
 
-	float3 final_color = SurfaceColorToColor( surface_normal );
+	float3 final_color = VectorToColor( surface_normal );
 
 	return float4( final_color, 1.0f );
 }
