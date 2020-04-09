@@ -2,43 +2,45 @@ Project: FPS
 
 ------
 
-### Goal [100/100]
-- [x] Have a Quad, Sphere, and Cube rendering in world with normals and tangents;
-    - [x] Make a new `Vertex_PCUTBN` or `VertexLit`
-    - [x] Update or create new methods for generating these shapes, with normals/tangents/bitangents computed.
-    - [x] Create meshes using this new vertex format.
-    - [x] Be sure to update places where D3D11 needs to know format...
-        - Setting vertex buffer needs to know correct stride
-        - Creating an input layout needs the correct layout to tie it to the shader
-    - [x] Be sure your vertex buffer stores the correct format for the vertices stored in it
-- [x] Be able to switch to cycle active shader to show the following...  Use keys `<` and `>` for this
-    - [x] Current shader and hotkeys are shown on screen using debug screen text.
-    - [x] Normal lighting shader - `lit.hlsl`
-    - [x] Diffuse color only (no lighting) - this is your `default` shader
-    - [x] Vertex Normals (transformed by model) - `normals.hlsl`
-    - [x] Vertex Tangents (transformed by model) - `tangents.hlsl`
-    - [x] Vertex Bitangents (transformed by model) - `bitangents.hlsl`
-    - [x] Surface Normals (uses TBN) - `surface_normals.hlsl`
-- [x] Each object should be rotating around the `Y` and `X` axis at different speeds.  This is to correct a correct application to model matrices to TBN space.
-- [x] `9,0` - Be able to adjust global ambient light
-    - [x] Console command `light_set_ambient_color color=rgb` to set ambient color to whatever you want
-- [x] There should be one point light in the scene that you can adjust.
-    - [x] Be able to toggle attentuation using `T`
-        - [x] Default to `linear attenuation`, or (0, 1, 0)
-        - [x] Cycle from linear -> quadratic -> constant, ie (0,1,0) -> (0,0,1) -> (1,0,0)
-        - *Note: Suggest adding a `light_set_attenuation` command that allows you to set it arbitrarily so you can see how it affects the light behaviour.*
-    - [x] Point light color and position is represented in world using a `DebugDrawWorld...` call.  Point or Sphere work well. 
-        - [x] Don't do this if the light is following the camera it is will just get in the way. 
-    - [x] Keyboard `-` and `+` should change its intensity
-    - [x] A console command `light_set_color color=rgb` to set the light color.  
-    - [x] Be able to switch the light's positioning mode... Keys are just suggestions, feel free to use whatever as long as it is in your readme. 
-        - [x] `F5` - Origin (light is positioned at (0,0,0))
-        - [x] `F6` - Move to Camera (light is moved to where the camera currently is, and stays there)
-        - [x] `F7` - Follow Camera (light is moved to camera each frame while in this mode)
-        - [x] `F8` - Animated.  Light follows a fixed path through the enfironment (cirlce your objects, or figure 8 through the objects)
-- [x] Be able to adjust object material properties...
-    - [x] `[,]` keys should adjust specular factor between 0 and 1 (how much does specular light show up
-    - [x] `',"` keys should adjust specular power (min of 1, but allow it to go as high as you want.
+### Goal [80/80]
+- [ ] Be able to support up to at least 8 concurrent lights
+- [ ] Be able to support different light types...
+    - [ ] Point Light...
+        - [ ] Local 
+        - [ ] Infinite
+    - [ ] Infinite Directional Light...
+    - [ ] Spot Light
+       - [ ] Local
+       - [ ] Infinite
+    - *Have all these visible in the scene concurrently*
+    - *Note: Local and Infinite are just attenuation values...*
+- [ ] Shader should be branchless using a unified lighting structure 
+- [ ] Support linear fog...
+      - [ ] `RenderContext::EnableFog( float nearFog, float farFog, rgba nearFogColor, rgba farFogColor );` 
+      - [ ] `RenderContext::DisableFog()` (shader is just 'always' going to do fog, so what do you set this to to make it not have an effect?)
+- [ ] Dissolve Shader Effect
+    - [ ] Support a `Material Block` uniform buffer with your `RenderContext`
+        - Suggest a `RenderContext::SetMaterialBuffer( RenderBuffer* buf )`  
+    - [ ] When binding a dissolve pattern to use, be sure to use a free slot.   
+        - Suggest having a slot titled `USER_SLOT_START`, defined to likely 8.  That way when binding a texture 
+          a user can just say `USER_SLOT_START + idx` for the slot they want.  
+          You can also move your common textures (diffuse, normal, et.al.) to a later slot if you like users starting at 0. 
+    - [ ] Have your dissolve shader expose the following controls...
+        - [ ] A dissolve "depth" or value set to 0 to 1 to control how dissolved something is.
+        - [ ] A dissolve "range" to give a *burned edge* to the dissolve effect.  This is the range near the edge at which is interpolates between burn_start_color and burn_end_color.  
+        - [ ] A burn start color.
+        - [ ] A burn end color
+        - *Note, the full range you will be moving through with this effect is not 0 to 1, but `(1 + 2 * dissolve_range)` (why?).  You can think of it kinda like a scroll bar.  Meaning - how does the `dissolve_value` or depth that is 0 to 1 actually affect our dissolve range we're using in the shader?*
+
+### Extras
+- [ ] *X07.10: 05%*: Triplanar Shader
+- [ ] *X07.11: 05%*: Projected Texture Effect
+- [ ] *X07.12: 05%*: Interior Mapping Shader
+- [ ] *X07.20: 05%*: Parallax Mapping Shader
+    - [ ] *X07.21 05%*: Self Occluding Parallax Shader, aka Deep/Steep Parallax Shader
+- [ ] *X07.30: 05%*: Support a Cube Map
+    - [ ] *X07.31: 05%*: Support skybox clearing mode for a camera
+    - [ ] *X07.32: 03%*: Support reflections into a skybox (can use specular factor to determine how shiny something is)
 
 ------
 Controls
