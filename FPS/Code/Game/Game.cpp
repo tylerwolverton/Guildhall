@@ -316,13 +316,15 @@ void Game::UpdateFromKeyboard()
 
 	// Rotation
 	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-	float yaw = -mousePosition.x * s_mouseSensitivityMultiplier;
+	float yaw = -mousePosition.x  * s_mouseSensitivityMultiplier;
 	float pitch = -mousePosition.y * s_mouseSensitivityMultiplier;
+	yaw *= .009f;
+	pitch *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch * deltaSeconds,
+	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch,
 											0.f,
-											transform.m_rotation.z + yaw * deltaSeconds );
+											transform.m_rotation.z + yaw );
 
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
