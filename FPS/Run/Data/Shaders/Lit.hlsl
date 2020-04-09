@@ -53,7 +53,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
 	// use the uv to sample the texture
 	float4 texture_color = tDiffuse.Sample( sSampler, input.uv );
-	float3 surface_color = ( input.color.xyz * pow( max( texture_color.xyz, 0.f ), 1.f / GAMMA ) ); // multiply our tint with our texture color to get our final color; 
+	float3 surface_color = ( input.color.xyz * pow( max( texture_color.xyz, 0.f ), GAMMA ) ); // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = ( input.color.a * texture_color.a );
 
 	float3 ambient = AMBIENT.xyz * AMBIENT.w;
@@ -80,27 +80,27 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float attenuation = 1.f / ( a + (b*d) + (c*d*d) );
 
 	float3 diffuse = dot3 * LIGHT.color * attenuation;
-
-	// just diffuse lighting
-	diffuse = min( float3( 1,1,1 ), diffuse );
-	diffuse = saturate( diffuse ); // saturate is clamp01(v)
-
+	
 	// specular
 	float3 viewDir = normalize( CAMERA_WORLD_POSITION - input.world_position );
-	float3 reflectDir = normalize( reflect( -dir_to_light, surface_normal ) );
+	float3 halfDir = normalize( dir_to_light + viewDir );
 
-	float spec = pow( max( dot( viewDir, reflectDir ), 0.0f ), SPECULAR_POWER );
+	float spec = pow( max( dot( normalize( surface_normal ), halfDir ), 0.0f ), SPECULAR_POWER );
 
 	a = LIGHT.specular_attenuation.x;
 	b = LIGHT.specular_attenuation.y;
 	c = LIGHT.specular_attenuation.z;
 
-	float specular_attenuation = 1.f / ( a + ( b * d ) + ( c * d * d ) );
+	float specular_attenuation = 1.f / ( a + ( b*d ) + ( c*d*d) );
 
 	float3 specular = SPECULAR_FACTOR * spec * specular_attenuation;
 
 	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
-	final_color = pow( max( final_color, 0.f ), GAMMA );
+	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
+
+	// just diffuse lighting
+	final_color = min( float3( 1, 1, 1 ), final_color );
+	final_color = saturate( final_color ); // saturate is clamp01(v)
 
 	return float4( final_color, surface_alpha );
 }

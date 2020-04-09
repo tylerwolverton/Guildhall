@@ -112,6 +112,7 @@ private:
 	eLightMode m_lightMode = eLightMode::FOLLOW_CAMERA;
 	float m_specularFactor = 0.f;
 	float m_specularPower = 1.f;
+	float m_gamma = 2.2f;
 
 	std::vector<std::string> m_shaderPaths;
 	std::vector<std::string> m_shaderNames;

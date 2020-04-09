@@ -1048,6 +1048,13 @@ void RenderContext::DisableLight( uint idx )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::SetGamma( float gamma )
+{
+	m_gamma = gamma;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 eCullMode RenderContext::GetCullMode() const
 {
 	D3D11_RASTERIZER_DESC desc;

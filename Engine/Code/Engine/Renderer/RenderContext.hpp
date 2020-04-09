@@ -194,6 +194,8 @@ public:
 	// void EnablePointLight( uint idx, vec3 position, rgba color, float intensity, vec3 attenuation ); 
 	void DisableLight( uint idx );
 
+	void SetGamma( float gamma );
+
 	// Accessors
 	Texture* GetBackBuffer();
 	IntVec2 GetDefaultBackBufferSize();

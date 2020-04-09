@@ -3,10 +3,10 @@ Project: FPS
 ------
 
 ### Goal [100/100]
-- [-] Have a Quad, Sphere, and Cube rendering in world with normals and tangents;
+- [x] Have a Quad, Sphere, and Cube rendering in world with normals and tangents;
     - [x] Make a new `Vertex_PCUTBN` or `VertexLit`
     - [x] Update or create new methods for generating these shapes, with normals/tangents/bitangents computed.
-    - [-] Create meshes using this new vertex format.
+    - [x] Create meshes using this new vertex format.
     - [x] Be sure to update places where D3D11 needs to know format...
         - Setting vertex buffer needs to know correct stride
         - Creating an input layout needs the correct layout to tie it to the shader
@@ -59,5 +59,7 @@ Debug Commands
 Dev Console Commands
 All the ones listed above in the assignment as well as
 set_mouse_sensitivity multiplier=NUMBER - change multiplier for mouse sensitivity
+light_set_ambient_color color=rgb - passed in as 0-1,0-1,0-1
+light_set_color color=rgb - passed in as 0-1,0-1,0-1
 
 Note: my dev console can't handle spaces in strings or parentheses around vec values for now

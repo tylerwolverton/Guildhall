@@ -913,22 +913,11 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray
 
 			Vec3 position = center + Vec3( posX, posY, posZ ) * radius;
 
-			float tanPosX = -cosPhi * sinTheta;
+			float tanPosX = -sinTheta;
 			float tanPosY = 0.f;
-			float tanPosZ = -cosPhi * cosTheta;
+			float tanPosZ =  -cosTheta;
 			
 			Vec3 tanPosition( tanPosX, tanPosY, tanPosZ );
-
-			if ( yIdx == 0 
-				 || yIdx == horizontalSlices )
-			{
-				position.x = 0.f;
-				position.z = 0.f;
-
-				tanPosition.x = 0.f;
-				tanPosition.y = 0.f;
-				tanPosition.z = -position.y;
-			}
 
 			Vec2 uvs( uvAtMins.x + ( uvSteps.x * xIdx ), uvAtMins.y + ( uvSteps.y * yIdx ) );
 

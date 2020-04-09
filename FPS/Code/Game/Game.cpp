@@ -202,6 +202,7 @@ void Game::Render() const
 	
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	g_renderer->EnableLight( 0, m_pointLight );
+	g_renderer->SetGamma( m_gamma );
 
 	g_renderer->SetMaterialData( m_specularFactor, m_specularPower );
 
@@ -242,7 +243,8 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, .77f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", m_pointLight.attenuation.x, m_pointLight.attenuation.y, m_pointLight.attenuation.z );
 	DebugAddScreenTextf( Vec4( 0.f, .74f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
 	DebugAddScreenTextf( Vec4( 0.f, .71f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
-	DebugAddScreenTextf( Vec4( 0.f, .68f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
+	DebugAddScreenTextf( Vec4( 0.f, .68f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
+	DebugAddScreenTextf( Vec4( 0.f, .65f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
 }
 
 
@@ -488,6 +490,16 @@ void Game::UpdateFromKeyboard()
 		}
 
 		m_pointLight.specularAttenuation = m_pointLight.attenuation;
+	}
+	if ( g_inputSystem->IsKeyPressed( 'G' ) )
+	{
+		m_gamma -= 1.f * deltaSeconds;
+		m_gamma = ClampMin( m_gamma, 1.f );
+	}
+	if ( g_inputSystem->IsKeyPressed( 'H' ) )
+	{
+		m_gamma += 1.f * deltaSeconds;
+		m_gamma = ClampMin( m_gamma, 1.f );
 	}
 }
 
