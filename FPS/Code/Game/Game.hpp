@@ -107,7 +107,7 @@ private:
 	Transform m_sphereMeshTransform;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 1.f;
+	float m_ambientIntensity = .1f;
 	Light_t m_pointLight;
 	eLightMode m_lightMode = eLightMode::FOLLOW_CAMERA;
 	float m_specularFactor = 0.f;

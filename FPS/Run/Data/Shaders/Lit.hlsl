@@ -70,7 +70,8 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	// for each light, we going to add in dot3 factor it
 	float3 light_position = LIGHT.world_position;
 	float3 dir_to_light = normalize( light_position - input.world_position );
-	float dot3 = max( 0.0f, dot( dir_to_light, surface_normal ) * LIGHT.intensity );
+	float dotIncident = dot( dir_to_light, surface_normal );
+	float dot3 = max( 0.0f, dotIncident * LIGHT.intensity );
 
 	float a = LIGHT.attenuation.x;
 	float b = LIGHT.attenuation.y;
@@ -84,6 +85,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	// specular
 	float3 viewDir = normalize( CAMERA_WORLD_POSITION - input.world_position );
 	float3 halfDir = normalize( dir_to_light + viewDir );
+	float facing = smoothstep( -.3f, 0.1f, dotIncident );
 
 	float spec = pow( max( dot( normalize( surface_normal ), halfDir ), 0.0f ), SPECULAR_POWER );
 
@@ -94,6 +96,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float specular_attenuation = 1.f / ( a + ( b*d ) + ( c*d*d) );
 
 	float3 specular = SPECULAR_FACTOR * spec * specular_attenuation;
+	specular = facing * specular;
 
 	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
 	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );

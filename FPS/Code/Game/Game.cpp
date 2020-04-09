@@ -108,10 +108,8 @@ void Game::Startup()
 	// Init shaders
 	m_shaderPaths.push_back( "Data/Shaders/Lit.hlsl" );
 	m_shaderNames.push_back( "Lit" );
-
 	m_shaderPaths.push_back( "Data/Shaders/Default.hlsl" );
 	m_shaderNames.push_back( "Default" );
-
 	m_shaderPaths.push_back( "Data/Shaders/Normals.hlsl" );
 	m_shaderNames.push_back( "Normals" );
 	m_shaderPaths.push_back( "Data/Shaders/Tangents.hlsl" );
@@ -162,7 +160,7 @@ void Game::Update()
 
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
-	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, deltaSeconds * 20.f );
+	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, -deltaSeconds * 20.f );
  
 	switch ( m_lightMode )
 	{
@@ -459,12 +457,12 @@ void Game::UpdateFromKeyboard()
 	}
 	if ( g_inputSystem->IsKeyPressed( KEY_SEMICOLON ) )
 	{
-		m_specularPower -= 2.f * deltaSeconds;
+		m_specularPower -= 5.f * deltaSeconds;
 		m_specularPower = ClampMin( m_specularPower, 1.f );
 	}
 	if ( g_inputSystem->IsKeyPressed( KEY_QUOTE ) )
 	{
-		m_specularPower += 2.f * deltaSeconds;
+		m_specularPower += 5.f * deltaSeconds;
 		m_specularPower = ClampMin( m_specularPower, 1.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
