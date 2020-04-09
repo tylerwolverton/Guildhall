@@ -158,11 +158,10 @@ void Game::Update()
 		UpdateFromKeyboard();
 	}
 
-	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-	float cosine = CosDegrees( deltaSeconds );
-
 	UpdateCameras();
-	m_cubeMeshTransform.RotatePitchRollYawDegrees( cosine * .25f, 0.f, cosine * .5f );
+
+	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
 	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, deltaSeconds * 20.f );
  
 	switch ( m_lightMode )
