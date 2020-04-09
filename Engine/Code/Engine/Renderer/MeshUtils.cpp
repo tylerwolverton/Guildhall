@@ -676,11 +676,11 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCU>& vertexArray, s
 
 			float posX = cosPhi * CosDegrees( theta );
 			float posY = SinDegrees( phi );
-			float posZ = cosPhi * SinDegrees( theta );
+			float posZ = -cosPhi * SinDegrees( theta );
 
 			Vec3 position = center + Vec3( posX, posY, posZ) * radius;
 
-			Vec2 uvs( 1.f - ( uvAtMins.x + uvSteps.x * xIdx ), uvAtMins.y + uvSteps.y * yIdx );
+			Vec2 uvs( uvAtMins.x + ( uvSteps.x * xIdx ), uvAtMins.y + ( uvSteps.y * yIdx ) );
 
 			vertexArray.push_back( Vertex_PCU( position, tint, uvs ) );
 		}
@@ -696,18 +696,24 @@ void AppendIndicesForSphereMesh( std::vector<uint>& indices, int horizontalSlice
 	int numIndices = ( verticalSlices + 1 ) * ( horizontalSlices + 1 ) * 6;
 	indices.reserve( numIndices );
 
-	for ( int yIdx = 0; yIdx < horizontalSlices; ++yIdx )
+	for ( uint yIdx = 0; yIdx < (uint)horizontalSlices; ++yIdx )
 	{
-		for ( int xIdx = 0; xIdx < verticalSlices; ++xIdx )
+		for ( uint xIdx = 0; xIdx < (uint)verticalSlices; ++xIdx )
 		{
-			int start = yIdx * ( verticalSlices + 1 ) + xIdx;
-			indices.push_back( start + verticalSlices + 2 );
-			indices.push_back( start + 1 );
-			indices.push_back( start );
+			uint start = yIdx * ( (uint)verticalSlices + 1 ) + xIdx;
 
-			indices.push_back( start + verticalSlices + 1 );
-			indices.push_back( start + verticalSlices + 2 );
-			indices.push_back( start );
+			uint bottomLeft = start;
+			uint bottomRight = start + 1;
+			uint topLeft = start + verticalSlices + 1;
+			uint topRight = start + verticalSlices + 2;
+
+			indices.push_back( bottomLeft );
+			indices.push_back( bottomRight );
+			indices.push_back( topRight );
+
+			indices.push_back( bottomLeft );
+			indices.push_back( topRight );
+			indices.push_back( topLeft );
 		}
 	}
 }
@@ -903,20 +909,34 @@ void AppendVertsAndIndicesForSphereMesh( std::vector<Vertex_PCUTBN>& vertexArray
 
 			float posX = cosPhi * cosTheta;
 			float posY = SinDegrees( phi );
-			float posZ = cosPhi * sinTheta;
+			float posZ = -cosPhi * sinTheta;
 
 			Vec3 position = center + Vec3( posX, posY, posZ ) * radius;
 
-			Vec2 uvs( 1.f - ( uvAtMins.x + uvSteps.x * xIdx ), uvAtMins.y + uvSteps.y * yIdx );
+			float tanPosX = -cosPhi * sinTheta;
+			float tanPosY = 0.f;
+			float tanPosZ = -cosPhi * cosTheta;
+			
+			Vec3 tanPosition( tanPosX, tanPosY, tanPosZ );
+
+			if ( yIdx == 0 
+				 || yIdx == horizontalSlices )
+			{
+				position.x = 0.f;
+				position.z = 0.f;
+
+				tanPosition.x = 0.f;
+				tanPosition.y = 0.f;
+				tanPosition.z = -position.y;
+			}
+
+			Vec2 uvs( uvAtMins.x + ( uvSteps.x * xIdx ), uvAtMins.y + ( uvSteps.y * yIdx ) );
 
 			Vec3 normal = ( position - center );
 			normal.Normalize();
 
-			float tanPosX = -cosPhi * sinTheta;
-			float tanPosY = 0.f;
-			float tanPosZ = cosPhi * cosTheta;
-			Vec3 tanPosition( tanPosX, tanPosY, tanPosZ );
-			Vec3 tangent = tanPosition.GetNormalized();
+			Vec3 tangent = tanPosition;
+			tangent.Normalize();
 			
 			vertexArray.push_back( Vertex_PCUTBN( position, tint, uvs, normal, tangent ) );
 		}

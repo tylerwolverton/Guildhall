@@ -206,15 +206,15 @@ void Game::Render() const
 	g_renderer->SetMaterialData( m_specularFactor, m_specularPower );
 
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	g_renderer->SetModelMatrix( model, Rgba8::YELLOW );
+	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
 	g_renderer->DrawMesh( m_cubeMesh );
 
 	model = m_quadMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
 	g_renderer->DrawMesh( m_quadMesh );
-
+	
 	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelMatrix( model, Rgba8::GREEN );
+	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
 	g_renderer->DrawMesh( m_sphereMesh );
    
 	g_renderer->EndCamera( *m_worldCamera );
