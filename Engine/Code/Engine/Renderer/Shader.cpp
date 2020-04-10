@@ -36,13 +36,27 @@ bool Shader::CreateFromFile( const std::string& fileName )
 		return false;
 	}
 
-	bool isVertexShaderValid = m_vertexStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_VERTEX );
-	bool isFragmentShaderValid = m_fragmentStage.Compile( m_owner, fileName, source, fileSize, SHADER_TYPE_FRAGMENT );
+	bool isValid = CreateFromSourceString( fileName, (char*)source );
 
 	delete[] source;
-
 	m_fileName = fileName;
-	
+
+	return isValid;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Shader::CreateFromSourceString( const std::string& shaderName, const char* source )
+{
+	bool isVertexShaderValid = m_vertexStage.Compile( m_owner, shaderName, source, strlen( source ), SHADER_TYPE_VERTEX );
+	bool isFragmentShaderValid = false;
+
+	if ( isVertexShaderValid )
+	{
+		isFragmentShaderValid = m_fragmentStage.Compile( m_owner, shaderName, source, strlen( source ), SHADER_TYPE_FRAGMENT );
+	}
+	m_fileName = shaderName;
+
 	// Set error shader if compilation failed
 	if ( !isVertexShaderValid || !isFragmentShaderValid )
 	{
@@ -55,20 +69,11 @@ bool Shader::CreateFromFile( const std::string& fileName )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Shader::CreateFromSourceString( const std::string& shaderName, const char* source )
+bool Shader::ReloadFromDisc()
 {
-	bool isVertexShaderValid = m_vertexStage.Compile( m_owner, shaderName, source, strlen( source ), SHADER_TYPE_VERTEX );
-	bool isFragmentShaderValid = m_fragmentStage.Compile( m_owner, shaderName, source, strlen( source ), SHADER_TYPE_FRAGMENT );
-	m_fileName = shaderName;
+	DX_SAFE_RELEASE( m_inputLayout );
 
-	// Set error shader if compilation failed
-	if ( !isVertexShaderValid || !isFragmentShaderValid )
-	{
-		m_vertexStage.Compile( m_owner, "ErrorBuiltInShader", g_errorShaderCode, strlen( g_errorShaderCode ), SHADER_TYPE_VERTEX );
-		m_fragmentStage.Compile( m_owner, "ErrorBuiltInShader", g_errorShaderCode, strlen( g_errorShaderCode ), SHADER_TYPE_FRAGMENT );
-	}
-
-	return isVertexShaderValid && isFragmentShaderValid;
+	return CreateFromFile( m_fileName );
 }
 
 
@@ -168,6 +173,23 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 	const char* entryPoint = GetDefaultEntryPointForStage( stage );
 	const char* shaderModel = GetShaderModelForStage( stage );
 
+	// Cleanup old stage if one exists
+	switch ( stage )
+	{
+		case SHADER_TYPE_VERTEX:
+		{
+			DX_SAFE_RELEASE( m_vertexShader );
+
+		} break;
+		case SHADER_TYPE_FRAGMENT:
+		{
+			DX_SAFE_RELEASE( m_fragmentShader );
+
+		} break;
+
+		default: GUARANTEE_OR_DIE( false, "Unimplemented stage." ); break;
+	}
+
 	DWORD compileFlags = 0U;
 	#if defined(DEBUG_SHADERS)
 		compileFlags |= D3DCOMPILE_DEBUG;
@@ -203,8 +225,7 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 							 filename.c_str(),
 							 error_string );
 
-			g_devConsole->PrintString( Stringf( "Failed to compile [%s].  Compiler gave the following output;\n%s",	filename.c_str(), error_string ), 
-									   Rgba8::RED );
+			g_devConsole->PrintString( Stringf( "%s", error_string ), Rgba8::RED );
 		}	
 	}
 	else
@@ -215,7 +236,7 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 		switch ( stage )
 		{
 			case SHADER_TYPE_VERTEX:
-			{
+			{				
 				hr = device->CreateVertexShader( bytecodePtr, bytecodeSize, nullptr, &m_vertexShader );
 				GUARANTEE_OR_DIE( SUCCEEDED( hr ), "Failed to link vertex shader stage" );
 			} break;

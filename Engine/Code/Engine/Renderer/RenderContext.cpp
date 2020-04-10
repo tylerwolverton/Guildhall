@@ -368,6 +368,20 @@ Shader* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::ReloadShaders()
+{
+	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
+	{
+		Shader*& shader = m_loadedShaders[shaderIdx];
+		if ( shader != nullptr )
+		{
+			shader->ReloadFromDisc();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
 {
 	ID3D11Buffer* vboHandle = vbo->m_handle;

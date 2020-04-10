@@ -335,6 +335,10 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->CycleBlendMode();
 	}
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
+	{
+		g_renderer->ReloadShaders();
+	}
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 	{
 		m_pointLight.position = Vec3::ZERO;

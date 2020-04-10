@@ -171,6 +171,7 @@ public:
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
 
+	void ReloadShaders();
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
 	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE );
