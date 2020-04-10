@@ -1,3 +1,5 @@
+int MAX_LIGHTS = 8;
+
 
 cbuffer time_constants : register( b0 )
 {
@@ -54,7 +56,7 @@ struct light_t
 cbuffer light_constants : register( b4 )
 {
 	float4 AMBIENT;
-	light_t LIGHT;
+	light_t LIGHTS[8];
 };
 
 // Textures & Samplers are also a form of constant

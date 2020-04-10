@@ -54,6 +54,7 @@ const Vec2 ALIGN_TOP_RIGHT		= Vec2( 1.f, 1.f );
 extern const float fSQRT_3_OVER_3;
 extern const float fPI;
 
+constexpr int MAX_LIGHTS = 8;
 
 //-----------------------------------------------------------------------------------------------
 enum eScreenEdgesBitField : unsigned int

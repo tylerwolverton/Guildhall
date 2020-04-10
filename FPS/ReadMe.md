@@ -41,6 +41,7 @@ Project: FPS
 - [ ] *X07.30: 05%*: Support a Cube Map
     - [ ] *X07.31: 05%*: Support skybox clearing mode for a camera
     - [ ] *X07.32: 03%*: Support reflections into a skybox (can use specular factor to determine how shiny something is)
+ - [x] X02.10 : 02pts: Shader Reloading. On key press (F4), reload all shaders in your shader database
 
 ------
 Controls

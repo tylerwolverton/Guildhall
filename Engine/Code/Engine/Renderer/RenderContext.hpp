@@ -10,10 +10,6 @@
 #include <vector>
 #include <map>
 
-//-----------------------------------------------------------------------------------------------
-// Constants
-//-----------------------------------------------------------------------------------------------
-constexpr int MAX_LIGHTS = 8;
 
 //-----------------------------------------------------------------------------------------------
 //
@@ -106,8 +102,8 @@ struct Light_t
 	Vec3 position;
 	float pad00;
 	
-	Vec3 color;
-	float intensity;
+	Vec3 color = Vec3::ONE;
+	float intensity = 0.f;
 
 	Vec3 attenuation = Vec3( 0.f, 1.f, 0.f );
 	float pad01;
@@ -119,7 +115,7 @@ struct Light_t
 struct LightData
 {
 	Vec4 ambientLight;
-	Light_t light;
+	Light_t lights[MAX_LIGHTS];
 };
 
 
@@ -192,8 +188,8 @@ public:
 	void SetAmbientLight( const Vec3& color, float intensity );
 
 	void EnableLight( uint idx, const Light_t& lightInfo );
-	// void EnablePointLight( uint idx, vec3 position, rgba color, float intensity, vec3 attenuation ); 
 	void DisableLight( uint idx );
+	void DisableAllLights();
 
 	void SetGamma( float gamma );
 
@@ -278,7 +274,7 @@ private:
 
 	Vec3 m_ambientLightColor						= Vec3::ONE;
 	float m_ambientLightIntensity					= 1.f;
-	Light_t m_pointLights[MAX_LIGHTS];
+	Light_t m_lights[MAX_LIGHTS];
 	float m_gamma									= 2.2f;
 
 	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;

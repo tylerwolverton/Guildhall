@@ -22,11 +22,21 @@ class GPUMesh;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class eLightMode
+enum class eLightMovementMode
 {
 	STATIONARY,
 	FOLLOW_CAMERA,
 	LOOP
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct GameLight
+{
+	Light_t light;
+
+	eLightMovementMode movementMode = eLightMovementMode::STATIONARY;
+	bool enabled = false;
 };
 
 
@@ -65,14 +75,22 @@ public:
 
 private:
 	void LoadAssets();
+	void LoadNewMap( const std::string& mapName );
 
 	void UpdateFromKeyboard();
-	void LoadNewMap( const std::string& mapName );
+	void UpdateCameraTransform( float deltaSeconds );
+	void UpdateDebugDrawCommands();
+	void UpdateLightingCommands( float deltaSeconds );
+
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
+	void UpdateLights();
 
 	void PrintHotkeys();
 	void ChangeShader( int nextShaderIdx );
+
+	GameLight& GetCurGameLight()											{ return m_lights[m_currentLightIdx]; }
+	Light_t& GetCurLight()													{ return m_lights[m_currentLightIdx].light; }
 
 private:
 	Clock* m_gameClock = nullptr;
@@ -108,8 +126,8 @@ private:
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = .1f;
-	Light_t m_pointLight;
-	eLightMode m_lightMode = eLightMode::FOLLOW_CAMERA;
+	GameLight m_lights[MAX_LIGHTS];
+	int m_currentLightIdx = 0;
 	float m_specularFactor = 0.f;
 	float m_specularPower = 1.f;
 	float m_gamma = 2.2f;

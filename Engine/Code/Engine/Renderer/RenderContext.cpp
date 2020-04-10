@@ -953,7 +953,7 @@ void RenderContext::SetLightData()
 {
 	LightData lightData;
 	lightData.ambientLight = Vec4( m_ambientLightColor, m_ambientLightIntensity );
-	lightData.light = m_pointLights[0];
+	memcpy( lightData.lights, m_lights, sizeof( m_lights ) );
 
 	m_lightUBO->Update( &lightData, sizeof( lightData ), sizeof( lightData ) );
 }
@@ -1050,14 +1050,24 @@ void RenderContext::SetAmbientLight( const Vec3& color, float intensity )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::EnableLight( uint idx, const Light_t& lightInfo )
 {
-	m_pointLights[idx] = lightInfo;
+	m_lights[idx] = lightInfo;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DisableLight( uint idx )
 {
-	m_pointLights[idx] = Light_t();
+	m_lights[idx] = Light_t();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DisableAllLights()
+{
+	for ( int lightNum = 0; lightNum < MAX_LIGHTS; ++lightNum )
+	{
+		DisableLight( lightNum );
+	}
 }
 
 
