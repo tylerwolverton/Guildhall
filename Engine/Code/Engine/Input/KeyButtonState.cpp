@@ -47,6 +47,7 @@ void KeyButtonState::Reset()
 {
 	m_isPressed = false;
 	m_wasPressedLastFrame = false;
+	m_numTimesPressed = 0;
 }
 
 

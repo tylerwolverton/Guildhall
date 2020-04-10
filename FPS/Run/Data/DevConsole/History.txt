@@ -39,3 +39,7 @@ set_mouse_sensitivity multiplier=2
 help
 set_mouse_sensitivity multiplier=10
 set_mouse_sensitivity multiplier=.5
+light_set_color rgb=1,0,0
+light_set_color color=1,0,0
+light_set_color color=0,0,1
+light_set_color color=0,1,1

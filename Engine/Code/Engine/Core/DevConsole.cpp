@@ -393,6 +393,7 @@ void DevConsole::ToggleOpenFull()
 	else
 	{
 		m_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+		m_inputSystem->ResetAllKeys();
 		m_isOpen = true;
 	}
 }

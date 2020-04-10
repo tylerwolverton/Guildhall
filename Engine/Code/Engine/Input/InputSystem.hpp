@@ -101,6 +101,7 @@ public:
 	
 	bool ConsumeKeyPress( unsigned char keyCode );
 	int ConsumeAllKeyPresses( unsigned char keyCode );
+	void ResetAllKeys();
 
 	void PushCharacter( char c );
 	bool PopCharacter( char* out );

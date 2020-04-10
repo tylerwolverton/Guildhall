@@ -420,3 +420,13 @@ int InputSystem::ConsumeAllKeyPresses( unsigned char keyCode )
 {
 	return m_keyStates[keyCode].ConsumeAllKeyPresses();
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void InputSystem::ResetAllKeys()
+{
+	for ( int keyCodeIdx = 0; keyCodeIdx < MAX_KEY_CODES; ++keyCodeIdx )
+	{
+		m_keyStates[keyCodeIdx].Reset();
+	}
+}
