@@ -95,7 +95,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	float specular_attenuation = 1.f / ( a + ( b*d ) + ( c*d*d) );
 
-	float3 specular = SPECULAR_FACTOR * spec * specular_attenuation;
+	float3 specular = SPECULAR_FACTOR * spec * specular_attenuation * LIGHT.color;
 	specular = facing * specular;
 
 	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
