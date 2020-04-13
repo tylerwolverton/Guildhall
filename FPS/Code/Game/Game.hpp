@@ -145,6 +145,8 @@ private:
 	float m_specularPower = 1.f;
 	float m_gamma = 2.2f;
 
+	float m_dissolveFactor = 0.f;
+
 	std::vector<std::string> m_shaderPaths;
 	std::vector<std::string> m_shaderNames;
 	int m_currentShaderIdx = 0;

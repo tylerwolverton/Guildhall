@@ -26,12 +26,13 @@ cbuffer model_matrix_constants : register( b2 )
 };
 
 
-cbuffer material_constants : register( b3 )
+cbuffer material_constants : register( b5 )
 {
 	float4   START_TINT;
 	float4   END_TINT;
 	float    TINT_RATIO;
 
+	// Move to model constants
 	float    SPECULAR_FACTOR;
 	float    SPECULAR_POWER;
 };
@@ -62,8 +63,10 @@ cbuffer light_constants : register( b4 )
 	light_t LIGHTS[8];
 };
 
+
 // Textures & Samplers are also a form of constant
 // data - uniform/constant across the entire call
 Texture2D <float4> tDiffuse   : register( t0 );   // color of the surface
 Texture2D <float4> tNormals   : register( t1 );   // normal map of the surface
+Texture2D <float4> tPattern   : register( t8 );   
 SamplerState sSampler : register( s0 );           // sampler are rules on how to sample (read) from the texture.

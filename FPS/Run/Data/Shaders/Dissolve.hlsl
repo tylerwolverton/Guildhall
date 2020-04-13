@@ -7,6 +7,7 @@
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------
 
+
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 v2f_t VertexFunction( vs_input_t input )
@@ -22,7 +23,7 @@ v2f_t VertexFunction( vs_input_t input )
 	// tangent
 	float4 localTangent = float4( input.tangent, 0.0f );
 	float4 worldTangent = mul( MODEL, localTangent );
-	
+
 	// bitangent
 	float4 localBitangent = float4( input.bitangent, 0.0f );
 	float4 worldBitangent = mul( MODEL, localBitangent );
@@ -55,11 +56,14 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );
 
+	float dissolve_height = tPattern.Sample( sSampler, input.uv ).x;
+	clip( SPECULAR_POWER - dissolve_height );
+
 	float3 surface_color = input.color.xyz * pow( max( diffuse_color.xyz, 0.f ), GAMMA ); // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = input.color.a * diffuse_color.a;
 
-	float3x3 tbn = float3x3( normalize( input.world_tangent ), 
-							 normalize( input.world_bitangent ), 
+	float3x3 tbn = float3x3( normalize( input.world_tangent ),
+							 normalize( input.world_bitangent ),
 							 normalize( input.world_normal ) );
 
 	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
@@ -67,21 +71,21 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	float3 ambient = AMBIENT.xyz * AMBIENT.w;
 	// for each light, we going to add the dot3 and specular factors
-	float3 diffuse = float3(0.f, 0.f, 0.f);
+	float3 diffuse = float3( 0.f, 0.f, 0.f );
 	float3 specular = float3( 0.f, 0.f, 0.f );
 
 	for ( int i = 0; i < MAX_NUM_LIGHTS; ++i )
 	{
 		float3 light_position = LIGHTS[i].world_position;
-		float3 incident_dir = normalize( lerp( input.world_position - light_position, 
-											   LIGHTS[i].direction, 
+		float3 incident_dir = normalize( lerp( input.world_position - light_position,
+											   LIGHTS[i].direction,
 											   LIGHTS[i].is_directional ) );
 
 		float dot_incident = dot( -incident_dir, world_normal );
 		float dot3 = max( 0.0f, dot_incident );
-		
+
 		float dist_to_light = distance( input.world_position, light_position );
-		float dist = lerp( dist_to_light, 
+		float dist = lerp( dist_to_light,
 						   dot( dist_to_light, LIGHTS[i].direction ),
 						   LIGHTS[i].is_directional );
 

@@ -158,7 +158,7 @@ void Game::Update()
 
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
-	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, -deltaSeconds * 20.f );
+	//m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, -deltaSeconds * 20.f );
  
 	UpdateLights();
 
@@ -491,6 +491,18 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		m_gamma += 1.f * deltaSeconds;
 		m_gamma = ClampMin( m_gamma, 1.f );
 	}
+
+	if ( g_inputSystem->IsKeyPressed( 'N' ) )
+	{
+		m_dissolveFactor -= .5f * deltaSeconds;
+		m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'M' ) )
+	{
+		m_dissolveFactor += .5f * deltaSeconds;
+		m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -574,7 +586,7 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->BindDiffuseTexture( nullptr );
-	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
+	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
 	
 	g_renderer->DisableAllLights();
@@ -599,10 +611,37 @@ void Game::Render() const
 	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
 	g_renderer->DrawMesh( m_quadMesh );
 	
+	// Sphere
+	//model = m_sphereMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelMatrix( model, Rgba8::WHITE );
+	//g_renderer->DrawMesh( m_sphereMesh );
+
+	// Fresnel
+	/*g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
+	g_renderer->SetBlendMode( eBlendMode::ALPHA );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
+
+	MaterialData material;
+	Rgba8::GREEN.GetAsFloatArray( material.startTint );
+	material.specularPower = 32.f;
+	g_renderer->SetMaterialData( material );
+
+	model = m_sphereMeshTransform.GetAsMatrix();
+	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
+	g_renderer->DrawMesh( m_sphereMesh );*/
+   
+	// Dissolve
+	g_renderer->BindPatternTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
+
+	MaterialData dissolveMaterial;
+	dissolveMaterial.specularPower = m_dissolveFactor;
+	g_renderer->SetMaterialData( dissolveMaterial );
+
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
 	g_renderer->DrawMesh( m_sphereMesh );
-   
+
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );

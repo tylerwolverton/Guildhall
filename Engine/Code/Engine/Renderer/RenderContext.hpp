@@ -57,7 +57,7 @@ enum eBufferSlot
 	UBO_FRAME_SLOT = 0,
 	UBO_CAMERA_SLOT = 1,
 	UBO_MODEL_MATRIX_SLOT = 2,
-	UBO_MATERIAL_SLOT = 3,
+	UBO_MATERIAL_SLOT = 5,
 	UBO_LIGHT_SLOT = 4,
 };
 
@@ -160,6 +160,7 @@ public:
 	void BindShader( const char* fileName );
 	void BindDiffuseTexture( const Texture* constTexture );
 	void BindNormalTexture( const Texture* constTexture );
+	void BindPatternTexture( const Texture* constTexture );
 	void BindSampler( Sampler* sampler );
 
 	// Resource Creation
@@ -174,6 +175,7 @@ public:
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
 	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE );
+	void SetMaterialData( const MaterialData& materialData );
 	void SetMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f, float specularFactor = 0.f, float specularPower = 1.f );
 	void SetMaterialData( float specularFactor, float specularPower, const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
 	void SetLightData();

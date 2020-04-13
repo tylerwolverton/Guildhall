@@ -815,6 +815,21 @@ void RenderContext::BindNormalTexture( const Texture* constTexture )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::BindPatternTexture( const Texture* constTexture )
+{
+	Texture* texture = const_cast<Texture*>( constTexture );
+	if ( texture == nullptr )
+	{
+		texture = m_flatNormalMap;
+	}
+
+	TextureView* shaderResourceView = texture->GetOrCreateShaderResourceView();
+	ID3D11ShaderResourceView* srvHandle = shaderResourceView->m_shaderResourceView;
+	m_context->PSSetShaderResources( 8, 1, &srvHandle ); //srv
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::BindSampler( Sampler* sampler )
 {
 	if ( sampler == nullptr )
@@ -945,6 +960,13 @@ void RenderContext::SetMaterialData( const Rgba8& startTint, const Rgba8& endTin
 void RenderContext::SetMaterialData( float specularFactor, float specularPower, const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
 {
 	SetMaterialData( startTint, endTint, tintRatio, specularFactor, specularPower );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetMaterialData( const MaterialData& materialData )
+{
+	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
 }
 
 
