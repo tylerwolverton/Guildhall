@@ -97,25 +97,28 @@ struct MaterialData
 
 
 //-----------------------------------------------------------------------------------------------
-struct Light_t
+struct Light
 {
 	Vec3 position;
 	float pad00;
 	
+	Vec3 direction = Vec3::ZERO;
+	float isDirectional = 0.f;
+
 	Vec3 color = Vec3::ONE;
 	float intensity = 0.f;
 
 	Vec3 attenuation = Vec3( 0.f, 1.f, 0.f );
-	float pad01;
+	float halfCosOfInnerAngle = 0.f;
 
 	Vec3 specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	float pad02;
+	float halfCosOfOuterAngle = 0.f;
 };
 
 struct LightData
 {
 	Vec4 ambientLight;
-	Light_t lights[MAX_LIGHTS];
+	Light lights[MAX_LIGHTS];
 };
 
 
@@ -187,7 +190,7 @@ public:
 	void SetAmbientLight( const Rgba8& color, float intensity );
 	void SetAmbientLight( const Vec3& color, float intensity );
 
-	void EnableLight( uint idx, const Light_t& lightInfo );
+	void EnableLight( uint idx, const Light& lightInfo );
 	void DisableLight( uint idx );
 	void DisableAllLights();
 
@@ -274,7 +277,7 @@ private:
 
 	Vec3 m_ambientLightColor						= Vec3::ONE;
 	float m_ambientLightIntensity					= 1.f;
-	Light_t m_lights[MAX_LIGHTS];
+	Light m_lights[MAX_LIGHTS];
 	float m_gamma									= 2.2f;
 
 	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;

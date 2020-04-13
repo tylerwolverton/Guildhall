@@ -242,6 +242,11 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 											0.f,
 											transform.m_rotation.z + yaw );
 
+	if ( GetCurGameLight().movementMode == eLightMovementMode::FOLLOW_CAMERA )
+	{
+		GetCurLight().direction = m_worldCamera->GetViewMatrix().TransformVector3D( m_worldCamera->GetTransform().m_rotation ).GetNormalized();
+	}
+
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
 }
@@ -336,6 +341,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		
 		s_currentLightColor = GetCurLight().color;
 	}
+
 	if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
 	{
 		m_currentLightIdx--;
@@ -348,6 +354,26 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+	{
+		switch ( GetCurGameLight().type )
+		{
+			case eLightType::POINT:	ChangeCurrentLightType( eLightType::SPOT ); break;
+			case eLightType::DIRECTIONAL: ChangeCurrentLightType( eLightType::POINT ); break;
+			case eLightType::SPOT: ChangeCurrentLightType( eLightType::DIRECTIONAL ); break;
+		}
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+	{
+		switch ( GetCurGameLight().type )
+		{
+			case eLightType::POINT:	ChangeCurrentLightType( eLightType::DIRECTIONAL ); break;
+			case eLightType::DIRECTIONAL: ChangeCurrentLightType( eLightType::SPOT ); break;
+			case eLightType::SPOT: ChangeCurrentLightType( eLightType::POINT ); break;
+		}
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_ENTER ) )
 	{
 		GetCurGameLight().enabled = !GetCurGameLight().enabled;
 	}
@@ -525,18 +551,20 @@ void Game::UpdateLights()
 //-----------------------------------------------------------------------------------------------
 void Game::PrintHotkeys()
 {
-	DebugAddScreenTextf( Vec4( 0.f, .95f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "L,R Arrows - Current light: %d", m_currentLightIdx );
-	//DebugAddScreenText( Vec4( 0.f, .95f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5  - Light to origin" );
-	DebugAddScreenText( Vec4( 0.f, .92f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6  - Light to camera" );
-	DebugAddScreenText( Vec4( 0.f, .89f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7  - Light follow camera" );
-	DebugAddScreenText( Vec4( 0.f, .86f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8  - Light loop" );
-	DebugAddScreenTextf( Vec4( 0.f, .83f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Intensity of ambient light : %.2f", m_ambientIntensity );
-	DebugAddScreenTextf( Vec4( 0.f, .80f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Intensity of point light : %.2f", GetCurLight().intensity );
-	DebugAddScreenTextf( Vec4( 0.f, .77f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
-	DebugAddScreenTextf( Vec4( 0.f, .74f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
-	DebugAddScreenTextf( Vec4( 0.f, .71f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
-	DebugAddScreenTextf( Vec4( 0.f, .68f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
-	DebugAddScreenTextf( Vec4( 0.f, .65f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
+	float y = .97f;
+	DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "L,R Arrows - Current light: %d", m_currentLightIdx );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "U,D Arrows - Light type: %s", LightTypeToStr( GetCurGameLight().type ).c_str() );
+	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5  - Light to origin" );
+	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6  - Light to camera" );
+	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7  - Light follow camera" );
+	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8  - Light loop" );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Intensity of ambient light : %.2f", m_ambientIntensity );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Intensity of point light : %.2f", GetCurLight().intensity );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
 }
 
 
@@ -558,8 +586,6 @@ void Game::Render() const
 		{
 			g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
 		}
-		
-
 	}
 	g_renderer->SetGamma( m_gamma );
 
@@ -603,6 +629,47 @@ void Game::ChangeShader( int nextShaderIdx )
 	}
 
 	m_currentShaderIdx = nextShaderIdx;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ChangeCurrentLightType( eLightType newLightype )
+{
+	switch ( newLightype )
+	{
+		case eLightType::POINT:
+		{
+			GetCurLight().isDirectional = 0.f;
+			GetCurLight().halfCosOfInnerAngle = 180.f;
+			GetCurLight().halfCosOfOuterAngle = 180.f;
+		} break;
+
+		case eLightType::DIRECTIONAL:
+		{
+			GetCurLight().isDirectional = 1.f;
+		} break;
+
+		case eLightType::SPOT:
+		{
+			GetCurLight().isDirectional = 0.f;
+		} break;
+	}
+
+	GetCurGameLight().type = newLightype;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Game::LightTypeToStr( eLightType lightType )
+{
+	switch ( lightType )
+	{
+		case eLightType::POINT:	return "Point";
+		case eLightType::DIRECTIONAL: return "Directional";
+		case eLightType::SPOT: return "Spot";
+	}
+
+	return "Invalid";
 }
 
 

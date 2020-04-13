@@ -1048,7 +1048,7 @@ void RenderContext::SetAmbientLight( const Vec3& color, float intensity )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::EnableLight( uint idx, const Light_t& lightInfo )
+void RenderContext::EnableLight( uint idx, const Light& lightInfo )
 {
 	m_lights[idx] = lightInfo;
 }
@@ -1057,7 +1057,7 @@ void RenderContext::EnableLight( uint idx, const Light_t& lightInfo )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::DisableLight( uint idx )
 {
-	m_lights[idx] = Light_t();
+	m_lights[idx] = Light();
 }
 
 

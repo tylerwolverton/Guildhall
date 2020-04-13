@@ -31,11 +31,21 @@ enum class eLightMovementMode
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eLightType
+{
+	POINT,
+	DIRECTIONAL,
+	SPOT
+};
+
+
+//-----------------------------------------------------------------------------------------------
 struct GameLight
 {
-	Light_t light;
+	Light light;
 
 	eLightMovementMode movementMode = eLightMovementMode::FOLLOW_CAMERA;
+	eLightType type = eLightType::POINT;
 	bool enabled = false;
 };
 
@@ -90,7 +100,10 @@ private:
 	void ChangeShader( int nextShaderIdx );
 
 	GameLight& GetCurGameLight()											{ return m_lights[m_currentLightIdx]; }
-	Light_t& GetCurLight()													{ return m_lights[m_currentLightIdx].light; }
+	Light& GetCurLight()													{ return m_lights[m_currentLightIdx].light; }
+
+	void ChangeCurrentLightType( eLightType newLightype );
+	std::string LightTypeToStr( eLightType lightType );
 
 private:
 	Clock* m_gameClock = nullptr;

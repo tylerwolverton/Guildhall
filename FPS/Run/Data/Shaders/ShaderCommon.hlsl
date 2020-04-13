@@ -42,14 +42,17 @@ struct light_t
 	float3 world_position;
 	float pad00;  // this is not required, but know the GPU will add this padding to make the next variable 16-byte aligned
 
+	float3 direction;
+	float is_directional;
+
 	float3 color;
-	float intensity; // rgb and an intensity
+	float intensity; 
 
 	float3 attenuation;
-	float pad01;
+	float half_cos_inner_angle;
 
 	float3 specular_attenuation;
-	float pad02;
+	float half_cos_outer_angle;
 };
 
 
