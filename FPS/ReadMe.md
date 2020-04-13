@@ -3,10 +3,10 @@ Project: FPS
 ------
 
 ### Goal [80/80]
-- [ ] Be able to support up to at least 8 concurrent lights
-- [ ] Be able to support different light types...
+- [x] Be able to support up to at least 8 concurrent lights
+- [-] Be able to support different light types...
     - [ ] Point Light...
-        - [ ] Local 
+        - [x] Local 
         - [ ] Infinite
     - [ ] Infinite Directional Light...
     - [ ] Spot Light

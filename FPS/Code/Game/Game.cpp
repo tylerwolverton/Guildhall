@@ -546,7 +546,7 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->BindDiffuseTexture( nullptr );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
+	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
 	
 	g_renderer->DisableAllLights();

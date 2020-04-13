@@ -1,4 +1,4 @@
-int MAX_LIGHTS = 8;
+static const int MAX_NUM_LIGHTS = 8;
 
 
 cbuffer time_constants : register( b0 )

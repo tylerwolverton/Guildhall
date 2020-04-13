@@ -45,6 +45,21 @@ v2f_t VertexFunction( vs_input_t input )
 
 
 //--------------------------------------------------------------------------------------
+float CalculateAttenuation( float3 attenuation_factors, float light_intensity, 
+							float3 pixel_world_position, float3 light_position )
+{
+	float constant_att_factor = attenuation_factors.x;
+	float linear_att_factor = attenuation_factors.y;
+	float quadratic_att_factor = attenuation_factors.z;
+	float dist = distance( pixel_world_position, light_position );
+
+	return light_intensity / ( constant_att_factor
+							+ ( linear_att_factor * dist )
+							+ ( quadratic_att_factor * dist * dist ) );
+}
+
+
+//--------------------------------------------------------------------------------------
 // Fragment Shader
 // 
 // SV_Target0 at the end means the float4 being returned
@@ -52,64 +67,54 @@ v2f_t VertexFunction( vs_input_t input )
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
 	// use the uv to sample the texture
-	float4 texture_color = tDiffuse.Sample( sSampler, input.uv );
-	float3 surface_color = ( input.color.xyz * pow( max( texture_color.xyz, 0.f ), GAMMA ) ); // multiply our tint with our texture color to get our final color; 
-	float surface_alpha = ( input.color.a * texture_color.a );
+	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
+	float4 normal_color = tNormals.Sample( sSampler, input.uv );
+
+	float3 surface_color = input.color.xyz * pow( max( diffuse_color.xyz, 0.f ), GAMMA ); // multiply our tint with our texture color to get our final color; 
+	float surface_alpha = input.color.a * diffuse_color.a;
+
+	float3x3 tbn = float3x3( normalize( input.world_tangent ), 
+							 normalize( input.world_bitangent ), 
+							 normalize( input.world_normal ) );
+
+	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
+	float3 world_normal = mul( surface_normal, tbn );
 
 	float3 ambient = AMBIENT.xyz * AMBIENT.w;
-
-	float4 normal_color = tNormals.Sample( sSampler, input.uv );
-	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
-
-	float3 surface_tangent = normalize( input.world_tangent );
-	float3 surface_bitangent = normalize( input.world_bitangent );
-
-	float3x3 tbn = float3x3( surface_tangent, surface_bitangent, normalize( input.world_normal ) );
-	surface_normal = mul( surface_normal, tbn );
-	
 	// for each light, we going to add the dot3 and specular factors
 	float3 diffuse = float3(0.f, 0.f, 0.f);
 	float3 specular = float3( 0.f, 0.f, 0.f );
 
-	for ( int i = 0; i < 8; ++i )
+	for ( int i = 0; i < MAX_NUM_LIGHTS; ++i )
 	{
 		float3 light_position = LIGHTS[i].world_position;
 		float3 dir_to_light = normalize( light_position - input.world_position );
-		float dotIncident = dot( dir_to_light, surface_normal );
 
-		float dot3 = max( 0.0f, dotIncident * LIGHTS[i].intensity );
+		float dot_incident = dot( dir_to_light, world_normal );
+		float dot3 = max( 0.0f, dot_incident );
+		
+		float attenuation = CalculateAttenuation( LIGHTS[i].attenuation, LIGHTS[i].intensity,
+												  input.world_position, light_position );
 
-		float a = LIGHTS[i].attenuation.x;
-		float b = LIGHTS[i].attenuation.y;
-		float c = LIGHTS[i].attenuation.z;
-		float d = distance( input.world_position, light_position );
-
-		float attenuation = 1.f / ( a + ( b*d ) + ( c*d*d ) );
-
-		diffuse += dot3 * LIGHTS[i].color * attenuation;
+		diffuse += dot3 * attenuation * LIGHTS[i].color;
 
 		// specular
-		float3 viewDir = normalize( CAMERA_WORLD_POSITION - input.world_position );
-		float3 halfDir = normalize( dir_to_light + viewDir );
-		float facing = smoothstep( -.3f, 0.1f, dotIncident );
+		float3 view_dir = normalize( CAMERA_WORLD_POSITION - input.world_position );
+		float3 half_dir = normalize( dir_to_light + view_dir );
+		float facing_factor = smoothstep( -.3f, 0.1f, dot_incident );
 
-		float spec = pow( max( dot( normalize( surface_normal ), halfDir ), 0.0f ), SPECULAR_POWER );
+		float spec = pow( max( dot( world_normal, half_dir ), 0.0f ), SPECULAR_POWER );
 
-		a = LIGHTS[i].specular_attenuation.x;
-		b = LIGHTS[i].specular_attenuation.y;
-		c = LIGHTS[i].specular_attenuation.z;
+		float specular_attenuation = CalculateAttenuation( LIGHTS[i].specular_attenuation, LIGHTS[i].intensity,
+														   input.world_position, light_position );
 
-		float specular_attenuation = 1.f / ( a + ( b*d ) + ( c*d*d ) );
-
-		specular += SPECULAR_FACTOR * spec * specular_attenuation * facing;
+		specular += SPECULAR_FACTOR * spec * specular_attenuation * facing_factor * LIGHTS[i].color;
 	}
 
-	float3 final_color = ( ambient + diffuse + specular ) * surface_color;
-	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
+	diffuse = min( diffuse, float3( 1.f, 1.f, 1.f ) );
 
-	// just diffuse lighting
-	final_color = min( float3( 1, 1, 1 ), final_color );
-	final_color = saturate( final_color ); // saturate is clamp01(v)
+	float3 final_color = ( ambient + diffuse ) * surface_color + specular;
+	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
 
 	return float4( final_color, surface_alpha );
 }

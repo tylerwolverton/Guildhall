@@ -35,7 +35,7 @@ struct GameLight
 {
 	Light_t light;
 
-	eLightMovementMode movementMode = eLightMovementMode::STATIONARY;
+	eLightMovementMode movementMode = eLightMovementMode::FOLLOW_CAMERA;
 	bool enabled = false;
 };
 
