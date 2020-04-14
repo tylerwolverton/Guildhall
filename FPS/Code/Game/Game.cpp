@@ -629,7 +629,7 @@ void Game::Render() const
 	//g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	g_renderer->BindPatternTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
 	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
 
 	DissolveConstants dissolveData;

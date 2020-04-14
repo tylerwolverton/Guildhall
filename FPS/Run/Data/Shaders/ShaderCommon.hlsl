@@ -60,5 +60,4 @@ cbuffer light_constants : register( b3 )
 // data - uniform/constant across the entire call
 Texture2D <float4> tDiffuse   : register( t0 );   // color of the surface
 Texture2D <float4> tNormals   : register( t1 );   // normal map of the surface
-Texture2D <float4> tPattern   : register( t8 );   
 SamplerState sSampler : register( s0 );           // sampler are rules on how to sample (read) from the texture.

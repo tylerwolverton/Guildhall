@@ -14,6 +14,8 @@ cbuffer material_dissolve_constants : register( b5 )
 };
 
 
+Texture2D <float4> tPattern   : register( t8 );
+
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------

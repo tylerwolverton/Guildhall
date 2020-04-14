@@ -163,7 +163,7 @@ public:
 	void BindShader( const char* fileName );
 	void BindDiffuseTexture( const Texture* constTexture );
 	void BindNormalTexture( const Texture* constTexture );
-	void BindPatternTexture( const Texture* constTexture );
+	void BindTexture( uint slot, const Texture* constTexture );
 	void BindSampler( Sampler* sampler );
 
 	// Resource Creation

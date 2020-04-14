@@ -607,7 +607,7 @@ void RenderContext::ResetRenderObjects()
 	BindShader( ( Shader* )nullptr );
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
-	BindPatternTexture( nullptr );
+	BindTexture( 8, nullptr );
 	BindSampler( nullptr );
 	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
@@ -818,17 +818,18 @@ void RenderContext::BindNormalTexture( const Texture* constTexture )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindPatternTexture( const Texture* constTexture )
+void RenderContext::BindTexture( uint slot, const Texture* constTexture )
 {
 	Texture* texture = const_cast<Texture*>( constTexture );
 	if ( texture == nullptr )
 	{
-		texture = m_flatNormalMap;
+		// TODO: Make error texture
+		texture = m_defaultWhiteTexture;
 	}
 
 	TextureView* shaderResourceView = texture->GetOrCreateShaderResourceView();
 	ID3D11ShaderResourceView* srvHandle = shaderResourceView->m_shaderResourceView;
-	m_context->PSSetShaderResources( 8, 1, &srvHandle ); //srv
+	m_context->PSSetShaderResources( slot, 1, &srvHandle ); //srv
 }
 
 
