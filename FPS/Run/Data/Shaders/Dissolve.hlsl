@@ -3,6 +3,17 @@
 #include "PCUTBN_Common.hlsl"
 
 
+//-----------------------------------------------------------------------------------------------
+cbuffer material_dissolve_constants : register( b5 )
+{
+	float3 START_COLOR;
+	float DISSOLVE_FACTOR;
+
+	float3 END_COLOR;
+	float EDGE_WIDTH;
+};
+
+
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------
@@ -57,7 +68,16 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );
 
 	float dissolve_height = tPattern.Sample( sSampler, input.uv ).x;
-	clip( .5f - dissolve_height );
+	float range = EDGE_WIDTH + 1.f;
+	float min_edge = -EDGE_WIDTH + range * DISSOLVE_FACTOR;
+	float max_edge = min_edge + EDGE_WIDTH;
+
+	clip( dissolve_height - min_edge );
+
+	float t = ( dissolve_height - min_edge ) / ( max_edge - min_edge );
+	t = clamp( t, 0.f, 1.f );
+
+	float3 burn_color = lerp( START_COLOR, END_COLOR, t );
 
 	float3 surface_color = input.color.xyz * pow( max( diffuse_color.xyz, 0.f ), GAMMA ); // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = input.color.a * diffuse_color.a;
@@ -109,6 +129,8 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	float3 final_color = ( ambient + diffuse ) * surface_color + specular;
 	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
+
+	final_color = lerp( final_color, burn_color, 1 - t );
 
 	return float4( final_color, surface_alpha );
 }

@@ -59,6 +59,17 @@ struct FresnelConstants
 
 
 //-----------------------------------------------------------------------------------------------
+struct DissolveConstants
+{
+	Vec3 startColor;
+	float dissolveFactor;
+
+	Vec3 endColor;
+	float edgeWidth;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:

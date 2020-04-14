@@ -613,33 +613,36 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_quadMesh );
 	
 	// Sphere
-	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE );
-	g_renderer->DrawMesh( m_sphereMesh );
+	//model = m_sphereMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE );
+	//g_renderer->DrawMesh( m_sphereMesh );
 
-	// Fresnel
-	g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
-	g_renderer->SetBlendMode( eBlendMode::ALPHA );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
+	//// Fresnel
+	//g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
+	//g_renderer->SetBlendMode( eBlendMode::ALPHA );
+	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
 
-	g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
+	//g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
 
-	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_sphereMesh );
+	//model = m_sphereMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	/*g_renderer->BindPatternTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindPatternTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
 	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
 
-	MaterialData dissolveMaterial;
-	dissolveMaterial.specularPower = m_dissolveFactor;
-	g_renderer->SetMaterialData( dissolveMaterial );
+	DissolveConstants dissolveData;
+	dissolveData.dissolveFactor = m_dissolveFactor;
+	dissolveData.edgeWidth = .3f;
+	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
 
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_sphereMesh );
-*/
+
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );
