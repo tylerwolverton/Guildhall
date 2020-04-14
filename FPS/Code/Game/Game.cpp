@@ -161,7 +161,7 @@ void Game::Update()
 
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
-	//m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, -deltaSeconds * 20.f );
+	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, -deltaSeconds * 20.f );
  
 	UpdateLights();
 
@@ -245,9 +245,12 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 											0.f,
 											transform.m_rotation.z + yaw );
 
+	// Update light direction
 	if ( GetCurGameLight().movementMode == eLightMovementMode::FOLLOW_CAMERA )
 	{
-		GetCurLight().direction = m_worldCamera->GetViewMatrix().TransformVector3D( m_worldCamera->GetTransform().m_rotation ).GetNormalized();
+		Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
+		Vec3 cameraForwardDir = model.TransformVector3D( Vec3( 0.f, 0.f, 1.f ) ).GetNormalized();
+		GetCurLight().direction = cameraForwardDir;
 	}
 
 	// Translation
@@ -613,9 +616,9 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_quadMesh );
 	
 	// Sphere
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	/*model = m_sphereMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );*/
 
 	//// Fresnel
 	//g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );

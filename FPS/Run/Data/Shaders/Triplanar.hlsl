@@ -119,7 +119,6 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	
 	final_color = pow( max( final_color, 0.f ), GAMMA.xxxx );
 
-	//return float4( normalize( final_normal ), 1 );
 	float3 surface_color = CalculateDot3Light( input.world_position, final_normal, final_color.xyz );
 
 	surface_color = pow( max( surface_color, 0.f ), ( 1 / GAMMA ).xxx );
