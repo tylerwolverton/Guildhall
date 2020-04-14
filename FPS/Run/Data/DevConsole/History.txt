@@ -45,3 +45,5 @@ light_set_color color=0,0,1
 light_set_color color=0,1,1
 light_set_color color=0,0,1
 light_set_color color=1,0,0
+light_set_color color=1,1,0
+light_set_color color=1,0,1

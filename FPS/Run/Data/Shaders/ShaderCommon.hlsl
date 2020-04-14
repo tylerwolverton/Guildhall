@@ -19,12 +19,11 @@ cbuffer camera_constants : register( b1 )
 };
 
 
-cbuffer model_matrix_constants : register( b2 )
+cbuffer model_constants : register( b2 )
 {
 	float4x4 MODEL;
 	float4   TINT;
 
-	// Move to model constants
 	float    SPECULAR_FACTOR;
 	float    SPECULAR_POWER;
 };
