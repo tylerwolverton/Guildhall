@@ -57,8 +57,8 @@ enum eBufferSlot
 	UBO_FRAME_SLOT = 0,
 	UBO_CAMERA_SLOT = 1,
 	UBO_MODEL_MATRIX_SLOT = 2,
+	UBO_LIGHT_SLOT = 3,
 	UBO_MATERIAL_SLOT = 5,
-	UBO_LIGHT_SLOT = 4,
 };
 
 
@@ -75,25 +75,28 @@ struct FrameData
 
 
 //-----------------------------------------------------------------------------------------------
-struct ModelMatrixData
+struct ModelData
 {
 	Mat44 modelMatrix;
 	float tint[4];
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct MaterialData
-{
-	float startTint[4];
-	float endTint[4];
-	float tintRatio;
 
 	float specularFactor;
 	float specularPower;
 
-	float padding;
+	float padding0;
+	float padding1;
 };
+
+
+////-----------------------------------------------------------------------------------------------
+//struct MaterialData
+//{
+//	float startTint[4];
+//	float endTint[4];
+//	float tintRatio;
+//	
+//	float padding;
+//};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -174,10 +177,9 @@ public:
 	void ReloadShaders();
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
-	void SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE );
-	void SetMaterialData( const MaterialData& materialData );
-	void SetMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f, float specularFactor = 0.f, float specularPower = 1.f );
-	void SetMaterialData( float specularFactor, float specularPower, const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
+	void SetModelData( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE, float specularFactor = 0.f, float specularPower = 32.f );
+	void SetMaterialData( void* materialData, int dataSize );
+	//void SetDebugRenderMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
 	void SetLightData();
 
 	// Raster state setters

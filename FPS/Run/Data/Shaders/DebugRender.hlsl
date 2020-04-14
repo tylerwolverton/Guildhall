@@ -1,6 +1,13 @@
 #include "ShaderCommon.hlsl"
 #include "PCUCommon.hlsl"
 
+cbuffer material_color_constants : register( b5 )
+{
+	float4   START_TINT;
+	float4   END_TINT;
+	float    TINT_RATIO;
+};
+
 
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages

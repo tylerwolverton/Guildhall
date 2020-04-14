@@ -51,6 +51,14 @@ struct GameLight
 
 
 //-----------------------------------------------------------------------------------------------
+struct FresnelConstants
+{
+	Vec3 color;
+	float power;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -145,6 +153,7 @@ private:
 	float m_specularPower = 1.f;
 	float m_gamma = 2.2f;
 
+	FresnelConstants m_fresnelData;
 	float m_dissolveFactor = 0.f;
 
 	std::vector<std::string> m_shaderPaths;

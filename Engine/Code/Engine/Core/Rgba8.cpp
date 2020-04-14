@@ -1,6 +1,8 @@
-#include "Rgba8.hpp"
+#include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec4.hpp"
 
 #include <math.h>
 #include <string>
@@ -84,6 +86,25 @@ void Rgba8::GetAsFloatArray( float* out_floats ) const
 	out_floats[1] = ( (float)g / 255.f );
 	out_floats[2] = ( (float)b / 255.f );
 	out_floats[3] = ( (float)a / 255.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 Rgba8::GetAsRGBVector() const
+{
+	return Vec3( (float)r / 255.f, 
+				 (float)g / 255.f, 
+				 (float)b / 255.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec4 Rgba8::GetAsRGBAVector() const
+{
+	return Vec4( (float)r / 255.f, 
+				 (float)g / 255.f, 
+				 (float)b / 255.f,
+				 (float)a / 255.f );
 }
 
 

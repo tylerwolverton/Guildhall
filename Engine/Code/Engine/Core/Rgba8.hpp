@@ -3,6 +3,11 @@
 
 
 //-----------------------------------------------------------------------------------------------
+struct Vec3;
+struct Vec4;
+
+
+//-----------------------------------------------------------------------------------------------
 struct Rgba8
 {
 public:
@@ -41,6 +46,8 @@ public:
 	bool IsRGBEqual( const Rgba8& otherColor );
 
 	void GetAsFloatArray( float* out_floats ) const;
+	Vec3 GetAsRGBVector() const;
+	Vec4 GetAsRGBAVector() const;
 
 	bool		operator==( const Rgba8& compare ) const;		// Rgba8 == Rgba8
 	bool		operator!=( const Rgba8& compare ) const;		// Rgba8 != Rgba8

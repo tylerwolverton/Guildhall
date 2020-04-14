@@ -59,6 +59,19 @@ static float s_screenHeight = 1080.f;
 
 
 //-----------------------------------------------------------------------------------------------
+struct MaterialData
+{
+	float startTint[4];
+	float endTint[4];
+	float tintRatio;
+
+	float padding0;
+	float padding1;
+	float padding2;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 // Data Helpers
 //-----------------------------------------------------------------------------------------------
 static void AddDebugRenderObjectToVector( DebugRenderObject* newObject, std::vector<DebugRenderObject*>& objectVector )
@@ -100,6 +113,7 @@ public:
 	Rgba8 m_startColor = Rgba8::MAGENTA;
 	Rgba8 m_endColor = Rgba8::BLACK;
 	Timer m_timer;
+	MaterialData m_materialData;
 };
 
 
@@ -118,6 +132,9 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 	m_timer.SetSeconds( m_duration );
 	m_timer.Reset();
+
+	startColor.GetAsFloatArray( m_materialData.startTint );
+	endColor.GetAsFloatArray( m_materialData.endTint );
 }
 
 
@@ -138,6 +155,9 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 	m_timer.SetSeconds( m_duration );
 	m_timer.Reset();
+
+	startColor.GetAsFloatArray( m_materialData.startTint );
+	endColor.GetAsFloatArray( m_materialData.endTint );
 }
 
 
@@ -157,6 +177,9 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 	m_timer.SetSeconds( m_duration );
 	m_timer.Reset();
+
+	startColor.GetAsFloatArray( m_materialData.startTint );
+	endColor.GetAsFloatArray( m_materialData.endTint );
 }
 
 
@@ -176,6 +199,9 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 	m_timer.SetSeconds( m_duration );
 	m_timer.Reset();
+
+	startColor.GetAsFloatArray( m_materialData.startTint );
+	endColor.GetAsFloatArray( m_materialData.endTint );
 }
 
 
@@ -409,15 +435,16 @@ static void RenderWorldObjects( const std::vector<DebugRenderObject*> objects )
 		DebugRenderObject* const& obj = objects[debugObjIdx];
 		if ( obj != nullptr )
 		{			
-			s_debugRenderContext->SetModelMatrix( Mat44(), obj->m_startColor );
-			s_debugRenderContext->SetMaterialData( obj->m_startColor, obj->m_endColor, obj->m_timer.GetRatioOfCompletion() );
+			s_debugRenderContext->SetModelData( Mat44(), obj->m_startColor );
+			obj->m_materialData.tintRatio = obj->m_timer.GetRatioOfCompletion();
+			s_debugRenderContext->SetMaterialData( (void*)&obj->m_materialData, sizeof( obj->m_materialData ) );
 
 			GPUMesh mesh( s_debugRenderContext, obj->m_vertices, obj->m_indices );
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
 
-	s_debugRenderContext->SetModelMatrix( Mat44() );
+	s_debugRenderContext->SetModelData( Mat44() );
 }
 
 
@@ -433,15 +460,16 @@ static void RenderWorldBillboardTextObjects( const std::vector<DebugRenderObject
 			model.SetTranslation3D( obj->m_origin );
 			model.PushTransform( Mat44::CreateTranslation3D( -obj->m_origin ) );
 			
-			s_debugRenderContext->SetModelMatrix( model, obj->m_startColor );
-			s_debugRenderContext->SetMaterialData( obj->m_startColor, obj->m_endColor, obj->m_timer.GetRatioOfCompletion() );
+			s_debugRenderContext->SetModelData( model, obj->m_startColor );
+			obj->m_materialData.tintRatio = obj->m_timer.GetRatioOfCompletion();
+			s_debugRenderContext->SetMaterialData( (void*)& obj->m_materialData, sizeof( obj->m_materialData ) );
 
 			GPUMesh mesh( s_debugRenderContext, obj->m_vertices, obj->m_indices );
 			s_debugRenderContext->DrawMesh( &mesh );
 		}
 	}
 
-	s_debugRenderContext->SetModelMatrix( Mat44() );
+	s_debugRenderContext->SetModelData( Mat44() );
 }
 
 

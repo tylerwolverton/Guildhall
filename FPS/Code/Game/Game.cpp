@@ -103,6 +103,9 @@ void Game::Startup()
 	centerTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
 	m_sphereMeshTransform = centerTransform;
 
+	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
+	m_fresnelData.power = 32.f;
+
 	// Init shaders
 	m_shaderPaths.push_back( "Data/Shaders/Lit.hlsl" );
 	m_shaderNames.push_back( "Lit" );
@@ -600,38 +603,33 @@ void Game::Render() const
 		}
 	}
 	g_renderer->SetGamma( m_gamma );
-
-	g_renderer->SetMaterialData( m_specularFactor, m_specularPower );
-
+	
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_cubeMesh );
 
 	model = m_quadMeshTransform.GetAsMatrix();
-	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_quadMesh );
 	
 	// Sphere
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelMatrix( model, Rgba8::WHITE );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	model = m_sphereMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE );
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	// Fresnel
-	/*g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
+	g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
 	g_renderer->SetBlendMode( eBlendMode::ALPHA );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
 
-	MaterialData material;
-	Rgba8::GREEN.GetAsFloatArray( material.startTint );
-	material.specularPower = 32.f;
-	g_renderer->SetMaterialData( material );
+	g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
 
 	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
-	g_renderer->DrawMesh( m_sphereMesh );*/
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	g_renderer->BindPatternTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	/*g_renderer->BindPatternTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
 	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
 
 	MaterialData dissolveMaterial;
@@ -639,9 +637,9 @@ void Game::Render() const
 	g_renderer->SetMaterialData( dissolveMaterial );
 
 	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelMatrix( model, Rgba8::WHITE );
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_sphereMesh );
-
+*/
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );

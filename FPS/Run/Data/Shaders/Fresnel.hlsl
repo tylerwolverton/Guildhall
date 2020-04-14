@@ -4,6 +4,14 @@
 
 
 //--------------------------------------------------------------------------------------
+cbuffer material_fresnel_constants : register( b5 )
+{
+	float3   FRESNEL_COLOR;
+	float    FRESNEL_POWER;
+};
+
+
+//--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------
 
@@ -56,7 +64,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	float sin_view_dir = length( cross( -view_dir, normalize( input.world_normal ) ) );
 
-	float fresnel = pow( sin_view_dir, SPECULAR_POWER );
+	float fresnel = pow( sin_view_dir, FRESNEL_POWER );
 
-	return float4( START_TINT.xyz, fresnel );
+	return float4( FRESNEL_COLOR, fresnel );
 }

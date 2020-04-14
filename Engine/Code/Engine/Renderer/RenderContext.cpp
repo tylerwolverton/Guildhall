@@ -184,9 +184,8 @@ void RenderContext::BeginCamera( Camera& camera )
 	ClearCamera( renderTargetView, camera );
 	ResetRenderObjects();
 
-	SetModelMatrix( Mat44() );
+	SetModelData( Mat44() );
 	SetBlendMode( m_currentBlendMode );
-	SetMaterialData();
 	SetAmbientLight( Rgba8::WHITE, 1.f );
 
 	// Dirty all state, booleans or a uint flags
@@ -242,6 +241,9 @@ void RenderContext::FinalizeContext()
 	m_context->IASetInputLayout( inputLayout );
 
 	SetLightData();
+
+	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
+	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
 
@@ -558,8 +560,8 @@ void RenderContext::UpdateAndBindBuffers( Camera& camera )
 	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
 	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
 	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
-	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
+	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
 
@@ -605,6 +607,7 @@ void RenderContext::ResetRenderObjects()
 	BindShader( ( Shader* )nullptr );
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
+	BindPatternTexture( nullptr );
 	BindSampler( nullptr );
 	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
@@ -931,42 +934,35 @@ Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetModelMatrix( const Mat44& modelMatrix, const Rgba8& tint )
+void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, float specularFactor, float specularPower )
 {
-	ModelMatrixData matrixData;
+	ModelData matrixData;
 	matrixData.modelMatrix = modelMatrix;
 	tint.GetAsFloatArray( matrixData.tint );
+
+	matrixData.specularFactor = specularFactor;
+	matrixData.specularPower = specularPower;
 
 	m_modelMatrixUBO->Update( &matrixData, sizeof( matrixData ), sizeof( matrixData ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetMaterialData( const Rgba8& startTint, const Rgba8& endTint, float tintRatio, float specularFactor, float specularPower )
-{
-	MaterialData materialData;
-	startTint.GetAsFloatArray( materialData.startTint );
-	endTint.GetAsFloatArray( materialData.endTint );
-	materialData.tintRatio = tintRatio;
-
-	materialData.specularFactor = specularFactor;
-	materialData.specularPower = specularPower;
-
-	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
-}
+//void RenderContext::SetDebugRenderMaterialData( const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
+//{
+//	MaterialData materialData;
+//	startTint.GetAsFloatArray( materialData.startTint );
+//	endTint.GetAsFloatArray( materialData.endTint );
+//	materialData.tintRatio = tintRatio;
+//
+//	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
+//}
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::SetMaterialData( float specularFactor, float specularPower, const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
+void RenderContext::SetMaterialData( void* materialData, int dataSize )
 {
-	SetMaterialData( startTint, endTint, tintRatio, specularFactor, specularPower );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::SetMaterialData( const MaterialData& materialData )
-{
-	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
+	m_materialUBO->Update( materialData, dataSize, dataSize );
 }
 
 

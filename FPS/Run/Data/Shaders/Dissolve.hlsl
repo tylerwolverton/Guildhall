@@ -57,7 +57,7 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );
 
 	float dissolve_height = tPattern.Sample( sSampler, input.uv ).x;
-	clip( SPECULAR_POWER - dissolve_height );
+	clip( .5f - dissolve_height );
 
 	float3 surface_color = input.color.xyz * pow( max( diffuse_color.xyz, 0.f ), GAMMA ); // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = input.color.a * diffuse_color.a;

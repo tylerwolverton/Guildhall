@@ -23,14 +23,6 @@ cbuffer model_matrix_constants : register( b2 )
 {
 	float4x4 MODEL;
 	float4   TINT;
-};
-
-
-cbuffer material_constants : register( b5 )
-{
-	float4   START_TINT;
-	float4   END_TINT;
-	float    TINT_RATIO;
 
 	// Move to model constants
 	float    SPECULAR_FACTOR;
@@ -57,7 +49,7 @@ struct light_t
 };
 
 
-cbuffer light_constants : register( b4 )
+cbuffer light_constants : register( b3 )
 {
 	float4 AMBIENT;
 	light_t LIGHTS[8];
