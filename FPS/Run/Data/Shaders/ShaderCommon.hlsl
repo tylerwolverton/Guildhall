@@ -29,32 +29,6 @@ cbuffer model_constants : register( b2 )
 };
 
 
-struct light_t
-{
-	float3 world_position;
-	float pad00;  // this is not required, but know the GPU will add this padding to make the next variable 16-byte aligned
-
-	float3 direction;
-	float is_directional;
-
-	float3 color;
-	float intensity; 
-
-	float3 attenuation;
-	float half_cos_inner_angle;
-
-	float3 specular_attenuation;
-	float half_cos_outer_angle;
-};
-
-
-cbuffer light_constants : register( b3 )
-{
-	float4 AMBIENT;
-	light_t LIGHTS[8];
-};
-
-
 // Textures & Samplers are also a form of constant
 // data - uniform/constant across the entire call
 Texture2D <float4> tDiffuse   : register( t0 );   // color of the surface

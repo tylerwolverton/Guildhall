@@ -46,7 +46,7 @@ struct GameLight
 
 	eLightMovementMode movementMode = eLightMovementMode::FOLLOW_CAMERA;
 	eLightType type = eLightType::POINT;
-	bool enabled = false;
+	bool enabled = true;
 };
 
 
@@ -123,6 +123,8 @@ private:
 
 	void ChangeCurrentLightType( eLightType newLightype );
 	std::string LightTypeToStr( eLightType lightType );
+
+	void SetCurrentLightDirectionToCamera();
 
 private:
 	Clock* m_gameClock = nullptr;

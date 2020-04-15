@@ -248,9 +248,7 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	// Update light direction
 	if ( GetCurGameLight().movementMode == eLightMovementMode::FOLLOW_CAMERA )
 	{
-		Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
-		Vec3 cameraForwardDir = model.TransformVector3D( Vec3( 0.f, 0.f, 1.f ) ).GetNormalized();
-		GetCurLight().direction = cameraForwardDir;
+		SetCurrentLightDirectionToCamera();
 	}
 
 	// Translation
@@ -265,12 +263,6 @@ void Game::UpdateDebugDrawCommands()
 	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
 		DebugAddWorldPoint( m_worldCamera->GetTransform().GetPosition(), .01f, Rgba8::GREEN, Rgba8::RED, 10.f, DEBUG_RENDER_XRAY );
-	}
-	if ( g_inputSystem->WasKeyJustPressed( 'O' ) )
-	{
-		DebugAddWorldLine( m_worldCamera->GetTransform().GetPosition(), Rgba8::RED, Rgba8::GREEN,
-						   m_cubeMeshTransform.GetPosition(), Rgba8::WHITE, Rgba8::BLACK,
-						   10.f );
 	}
 	if ( g_inputSystem->WasKeyJustPressed( 'E' ) )
 	{
@@ -394,6 +386,8 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
 	{
 		GetCurLight().position = m_worldCamera->GetTransform().GetPosition();
+		SetCurrentLightDirectionToCamera();
+
 		GetCurGameLight().movementMode = eLightMovementMode::STATIONARY;
 	}
 
@@ -500,14 +494,38 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'N' ) )
 	{
-		m_dissolveFactor -= .5f * deltaSeconds;
+		m_dissolveFactor -= 1.f * deltaSeconds;
 		m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'M' ) )
 	{
-		m_dissolveFactor += .5f * deltaSeconds;
+		m_dissolveFactor += 1.f * deltaSeconds;
 		m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'J' ) )
+	{
+		GetCurLight().halfCosOfInnerAngle -= 1.f * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, 180.f );
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'K' ) )
+	{
+		GetCurLight().halfCosOfInnerAngle += 1.f * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, 180.f );
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'O' ) )
+	{
+		GetCurLight().halfCosOfOuterAngle -= 1.f * deltaSeconds;
+		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, 0.f, 180.f );
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'P' ) )
+	{
+		GetCurLight().halfCosOfOuterAngle += 1.f * deltaSeconds;
+		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, 0.f, 180.f );
 	}
 }
 
@@ -535,7 +553,7 @@ void Game::UpdateLights()
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
 		GameLight& gameLight = m_lights[lightIdx];
-		if ( !gameLight.enabled )
+		if ( gameLight.light.intensity == 0.f )
 		{
 			continue;
 		}
@@ -544,19 +562,35 @@ void Game::UpdateLights()
 		{
 			case eLightMovementMode::STATIONARY:
 			{
-				DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+				if ( gameLight.type == eLightType::POINT )
+				{
+					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+				}
+				else
+				{
+					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
+				}
 			} break;
+
 			case eLightMovementMode::FOLLOW_CAMERA:
 			{
 				gameLight.light.position = m_worldCamera->GetTransform().GetPosition();
 			} break;
+
 			case eLightMovementMode::LOOP:
 			{
 				gameLight.light.position = m_quadMeshTransform.GetPosition();
 				gameLight.light.position.x += CosDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
 				gameLight.light.position.z += SinDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
 
-				DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+				if ( gameLight.type == eLightType::POINT )
+				{
+					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+				}
+				else
+				{
+					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
+				}
 			}
 		}
 	}
@@ -599,11 +633,7 @@ void Game::Render() const
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
-		const GameLight gameLight = m_lights[lightIdx];
-		if ( gameLight.enabled )
-		{
-			g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
-		}
+		g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
 	}
 	g_renderer->SetGamma( m_gamma );
 	
@@ -632,22 +662,22 @@ void Game::Render() const
 	//g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	//g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
-	//g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
+	g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
 
-	//DissolveConstants dissolveData;
-	//dissolveData.dissolveFactor = m_dissolveFactor;
-	//dissolveData.edgeWidth = .3f;
-	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	//g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
+	DissolveConstants dissolveData;
+	dissolveData.dissolveFactor = m_dissolveFactor;
+	dissolveData.edgeWidth = .3f;
+	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
 
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	model = m_sphereMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
 	
 	// Triplanar
-	g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
+	/*g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 
@@ -658,7 +688,7 @@ void Game::Render() const
 	g_renderer->BindTexture( 12, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
 	g_renderer->BindTexture( 13, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
 
-	g_renderer->DrawMesh( m_sphereMesh );
+	g_renderer->DrawMesh( m_sphereMesh );*/
 
 	g_renderer->EndCamera( *m_worldCamera );
 
@@ -697,18 +727,22 @@ void Game::ChangeCurrentLightType( eLightType newLightype )
 		case eLightType::POINT:
 		{
 			GetCurLight().isDirectional = 0.f;
-			GetCurLight().halfCosOfInnerAngle = 180.f;
-			GetCurLight().halfCosOfOuterAngle = 180.f;
+			GetCurLight().halfCosOfInnerAngle = 0.f;
+			GetCurLight().halfCosOfOuterAngle = 0.f;
 		} break;
 
 		case eLightType::DIRECTIONAL:
 		{
 			GetCurLight().isDirectional = 1.f;
+			GetCurLight().halfCosOfInnerAngle = 0.f;
+			GetCurLight().halfCosOfOuterAngle = 0.f;
 		} break;
 
 		case eLightType::SPOT:
 		{
 			GetCurLight().isDirectional = 0.f;
+			GetCurLight().halfCosOfInnerAngle = CosDegrees( 5.f );
+			GetCurLight().halfCosOfOuterAngle = CosDegrees( 10.f );
 		} break;
 	}
 
@@ -727,6 +761,15 @@ std::string Game::LightTypeToStr( eLightType lightType )
 	}
 
 	return "Invalid";
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetCurrentLightDirectionToCamera()
+{
+	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
+	Vec3 cameraForwardDir = model.TransformVector3D( Vec3( 0.f, 0.f, -1.f ) ).GetNormalized();
+	GetCurLight().direction = cameraForwardDir;
 }
 
 

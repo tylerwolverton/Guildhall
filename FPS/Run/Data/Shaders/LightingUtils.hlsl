@@ -1,4 +1,31 @@
 //--------------------------------------------------------------------------------------
+struct light_t
+{
+	float3 world_position;
+	float pad00;  // this is not required, but know the GPU will add this padding to make the next variable 16-byte aligned
+
+	float3 direction;
+	float is_directional;
+
+	float3 color;
+	float intensity;
+
+	float3 attenuation;
+	float half_cos_inner_angle;
+
+	float3 specular_attenuation;
+	float half_cos_outer_angle;
+};
+
+
+cbuffer light_constants : register( b3 )
+{
+	float4 AMBIENT;
+	light_t LIGHTS[8];
+};
+
+
+//--------------------------------------------------------------------------------------
 float CalculateAttenuation( float3 attenuation_factors, float light_intensity, float dist )
 {
 	float constant_att_factor = attenuation_factors.x;
@@ -34,7 +61,12 @@ float3 CalculateDot3Light( float3 world_position, float3 world_normal, float3 su
 						   dot( dist_to_light, LIGHTS[i].direction ),
 						   LIGHTS[i].is_directional );
 
+
+		float dot_angle = dot( LIGHTS[i].direction, normalize( world_position - light_position ) );
+		float val = saturate( RangeMap( dot_angle, LIGHTS[i].half_cos_outer_angle, LIGHTS[i].half_cos_inner_angle, 0.f, 1.f ) );
+
 		float attenuation = CalculateAttenuation( LIGHTS[i].attenuation, LIGHTS[i].intensity, dist );
+		attenuation *= val;
 
 		diffuse += dot3 * attenuation * LIGHTS[i].color;
 
@@ -46,6 +78,7 @@ float3 CalculateDot3Light( float3 world_position, float3 world_normal, float3 su
 		float spec = pow( max( dot( world_normal, half_dir ), 0.0f ), SPECULAR_POWER );
 
 		float specular_attenuation = CalculateAttenuation( LIGHTS[i].specular_attenuation, LIGHTS[i].intensity, dist );
+		specular_attenuation *= val;
 
 		specular += SPECULAR_FACTOR * spec * specular_attenuation * facing_factor * LIGHTS[i].color;
 	}
