@@ -66,9 +66,11 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	float2 z_uv = frac( input.world_position.xy );
 	float2 x_uv = frac( input.world_position.zy );
+	//x_uv.x = lerp( x_uv.x, 1.f - x_uv.x, saturate( sign( input.world_normal.x ) ) );
+		
 	float2 y_uv = frac( input.world_position.xz );
+	float2 z_uv = frac( input.world_position.xy );
 
 	float4 x_color = tDiffuse1.Sample( sSampler, x_uv );
 	float4 y_color = tDiffuse2.Sample( sSampler, y_uv );
@@ -83,7 +85,6 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	float sum = weights.x + weights.y + weights.z;
 	weights /= sum;
-	//weights = weights * weights;
 
 	float4 final_color =  weights.x * x_color
 						+ weights.y * y_color 

@@ -662,22 +662,22 @@ void Game::Render() const
 	//g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
-	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
+	//g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	//g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
 
-	DissolveConstants dissolveData;
-	dissolveData.dissolveFactor = m_dissolveFactor;
-	dissolveData.edgeWidth = .3f;
-	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
+	//DissolveConstants dissolveData;
+	//dissolveData.dissolveFactor = m_dissolveFactor;
+	//dissolveData.edgeWidth = .3f;
+	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	//g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
 
-	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_sphereMesh );
+	//model = m_sphereMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_sphereMesh );
 	
 	// Triplanar
-	/*g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
+	g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 
@@ -688,7 +688,7 @@ void Game::Render() const
 	g_renderer->BindTexture( 12, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
 	g_renderer->BindTexture( 13, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
 
-	g_renderer->DrawMesh( m_sphereMesh );*/
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	g_renderer->EndCamera( *m_worldCamera );
 
