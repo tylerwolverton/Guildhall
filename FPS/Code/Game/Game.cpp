@@ -119,6 +119,8 @@ void Game::Startup()
 	m_shaderNames.push_back( "Bitangents" );
 	m_shaderPaths.push_back( "Data/Shaders/SurfaceNormals.hlsl" );
 	m_shaderNames.push_back( "Surface Normals" );
+
+	m_lights[0].light.intensity = .5f;
 }
 
 
@@ -506,26 +508,26 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'J' ) )
 	{
-		GetCurLight().halfCosOfInnerAngle -= 1.f * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, 180.f );
+		GetCurLight().halfCosOfInnerAngle -= .1f * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, GetCurLight().halfCosOfOuterAngle );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'K' ) )
 	{
-		GetCurLight().halfCosOfInnerAngle += 1.f * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, 180.f );
+		GetCurLight().halfCosOfInnerAngle += .1f * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, GetCurLight().halfCosOfOuterAngle );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'O' ) )
 	{
-		GetCurLight().halfCosOfOuterAngle -= 1.f * deltaSeconds;
-		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, 0.f, 180.f );
+		GetCurLight().halfCosOfOuterAngle -= .1f * deltaSeconds;
+		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle, 1.f );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'P' ) )
 	{
-		GetCurLight().halfCosOfOuterAngle += 1.f * deltaSeconds;
-		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, 0.f, 180.f );
+		GetCurLight().halfCosOfOuterAngle += .1f * deltaSeconds;
+		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle, 1.f );
 	}
 }
 
@@ -625,6 +627,7 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
+	g_renderer->EnableFog( 25.f, 50.f, Rgba8::BLACK );
 	g_renderer->BindDiffuseTexture( nullptr );
 	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
@@ -646,20 +649,29 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_quadMesh );
 	
 	// Sphere
-	/*model = m_sphereMeshTransform.GetAsMatrix();
+	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_sphereMesh );*/
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	//// Fresnel
-	//g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
-	//g_renderer->SetBlendMode( eBlendMode::ALPHA );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
+	g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
+	g_renderer->BindNormalTexture( nullptr );
+	g_renderer->SetBlendMode( eBlendMode::ALPHA );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
 
-	//g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
+	g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
 
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	model = m_cubeMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_cubeMesh );
+
+	model = m_quadMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_quadMesh );
+
+	model = m_sphereMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
 	//g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
@@ -677,7 +689,7 @@ void Game::Render() const
 	//g_renderer->DrawMesh( m_sphereMesh );
 	
 	// Triplanar
-	g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
+	/*g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 
@@ -688,7 +700,42 @@ void Game::Render() const
 	g_renderer->BindTexture( 12, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
 	g_renderer->BindTexture( 13, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
 
-	g_renderer->DrawMesh( m_sphereMesh );
+	g_renderer->DrawMesh( m_sphereMesh );*/
+
+	//g_renderer->BindShader( "Data/Shaders/Projection.hlsl" );
+	//g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
+	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
+	//ProjectionConstants projMaterial;
+	//projMaterial.position = m_lights[0].light.position;
+	//
+	//Mat44 lookAt = MakeLookAtMatrix( m_lights[0].light.position, m_lights[0].light.position + m_lights[0].light.direction );
+	//InvertMatrix( lookAt );
+	//lookAt.SetTranslation3D( m_lights[0].light.position );
+	////projMaterial.projectionMatrix.SetTranslation3D( projMaterial.position );
+	//
+	//Mat44 perspective = MakePerspectiveProjectionMatrixD3D( 90.f, 1.f, .1f, 100.f );
+	////perspective.PushTransform( lookAt );
+	//lookAt.PushTransform( perspective );
+
+	////projMaterial.projectionMatrix = perspective;
+	//projMaterial.projectionMatrix = lookAt;
+	//projMaterial.power = 1.f;
+
+	//g_renderer->SetMaterialData( (void*)&projMaterial, sizeof( projMaterial ) );
+	//g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
+
+	//model = m_cubeMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_cubeMesh );
+
+	//model = m_quadMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_quadMesh );
+
+	//// Sphere
+	//model = m_sphereMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_sphereMesh );
 
 	g_renderer->EndCamera( *m_worldCamera );
 

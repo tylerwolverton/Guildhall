@@ -70,5 +70,6 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	
 	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
 
-	return float4( final_color, surface_alpha );
+	float4 final_color_with_fog = AddFogToColor( float4( final_color, surface_alpha ), input.world_position );
+	return final_color_with_fog;
 }

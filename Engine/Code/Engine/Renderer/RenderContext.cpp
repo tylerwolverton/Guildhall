@@ -187,7 +187,6 @@ void RenderContext::BeginCamera( Camera& camera )
 	SetModelData( Mat44() );
 	SetBlendMode( m_currentBlendMode );
 	SetAmbientLight( Rgba8::WHITE, 1.f );
-
 	// Dirty all state, booleans or a uint flags
 }
 
@@ -207,6 +206,11 @@ void RenderContext::UpdateFrameData()
 	FrameData frameData;
 	frameData.systemTimeSeconds = (float)Clock::GetMaster()->GetTotalElapsedSeconds();
 	frameData.systemDeltaTimeSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+
+	frameData.nearFogDistance = m_linearFog.nearFogDistance;
+	frameData.farFogDistance = m_linearFog.farFogDistance;
+	frameData.fogColor = m_linearFog.fogColor;
+
 	frameData.gamma = m_gamma;
 
 	m_frameUBO->Update( &frameData, sizeof( frameData ), sizeof( frameData ) );
@@ -1094,6 +1098,24 @@ void RenderContext::DisableAllLights()
 void RenderContext::SetGamma( float gamma )
 {
 	m_gamma = gamma;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::EnableFog( float nearFogDist, float farFogDist, const Rgba8& fogColor )
+{
+	m_linearFog.nearFogDistance = nearFogDist;
+	m_linearFog.farFogDistance = farFogDist;
+	m_linearFog.fogColor = fogColor.GetAsRGBAVector();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DisableFog()
+{
+	m_linearFog.nearFogDistance = 99999.f;
+	m_linearFog.farFogDistance = 99999.f;
+	m_linearFog.fogColor = Rgba8::BLACK.GetAsRGBAVector();
 }
 
 

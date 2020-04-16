@@ -4,12 +4,6 @@
 #include "PCUTBN_Common.hlsl"
 
 
-//--------------------------------------------------------------------------------------
-cbuffer material_constants : register( b5 )
-{
-	
-};
-
 Texture2D <float4> tDiffuse1 : register( t8 );
 Texture2D <float4> tDiffuse2 : register( t9 );
 Texture2D <float4> tDiffuse3 : register( t10 );

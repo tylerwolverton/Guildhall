@@ -1,11 +1,15 @@
 static const int MAX_NUM_LIGHTS = 8;
 
 
-cbuffer time_constants : register( b0 )
+cbuffer frame_constants : register( b0 )
 {
 	float SYSTEM_TIME_SECONDS;
 	float SYSTEM_TIME_DELTA_SECONDS;
+	
+	float FOG_NEAR_DISTANCE;
+	float FOG_FAR_DISTANCE;
 
+	float4 FOG_COLOR;
 	float GAMMA;
 };
 

@@ -70,6 +70,16 @@ struct DissolveConstants
 
 
 //-----------------------------------------------------------------------------------------------
+struct ProjectionConstants
+{
+	Mat44 projectionMatrix;
+
+	Vec3 position;
+	float power;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:

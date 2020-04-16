@@ -87,3 +87,14 @@ float3 CalculateDot3Light( float3 world_position, float3 world_normal, float3 su
 
 	return ( ambient + diffuse ) * surface_color + specular;
 }
+
+
+//--------------------------------------------------------------------------------------
+float4 AddFogToColor( float4 color, float3 world_position )
+{
+	float dist_from_camera = distance( CAMERA_WORLD_POSITION, world_position );
+
+	float fog_factor = saturate( RangeMap( dist_from_camera, FOG_NEAR_DISTANCE, FOG_FAR_DISTANCE, 0.f, 1.f ) );
+
+	return lerp( color, FOG_COLOR, fog_factor );
+}

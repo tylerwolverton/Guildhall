@@ -68,9 +68,15 @@ struct FrameData
 	float systemTimeSeconds;
 	float systemDeltaTimeSeconds;
 	
-	float gamma;
+	float nearFogDistance = 50.f;
+	float farFogDistance = 100.f;
 
-	float padding[1];
+	Vec4 fogColor;
+	
+	float gamma = 2.2f;
+	float padding0;
+	float padding1;
+	float padding2;
 };
 
 
@@ -86,17 +92,6 @@ struct ModelData
 	float padding0;
 	float padding1;
 };
-
-
-////-----------------------------------------------------------------------------------------------
-//struct MaterialData
-//{
-//	float startTint[4];
-//	float endTint[4];
-//	float tintRatio;
-//	
-//	float padding;
-//};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -122,6 +117,16 @@ struct LightData
 {
 	Vec4 ambientLight;
 	Light lights[MAX_LIGHTS];
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct Fog
+{
+	float nearFogDistance = 999999.f;
+	float farFogDistance = 999999.f;
+
+	Vec4 fogColor = Rgba8::BLACK.GetAsRGBAVector();
 };
 
 
@@ -199,6 +204,9 @@ public:
 	void DisableAllLights();
 
 	void SetGamma( float gamma );
+
+	void EnableFog( float nearFogDist, float farFogDist, const Rgba8& fogColor );
+	void DisableFog();
 
 	// Accessors
 	Texture* GetBackBuffer();
@@ -283,6 +291,7 @@ private:
 	float m_ambientLightIntensity					= 1.f;
 	Light m_lights[MAX_LIGHTS];
 	float m_gamma									= 2.2f;
+	Fog m_linearFog;
 
 	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 

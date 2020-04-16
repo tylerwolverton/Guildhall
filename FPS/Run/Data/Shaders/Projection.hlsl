@@ -1,20 +1,23 @@
 #include "ShaderCommon.hlsl"
 #include "ShaderUtils.hlsl"
+#include "LightingUtils.hlsl"
 #include "PCUTBN_Common.hlsl"
 
 
-//--------------------------------------------------------------------------------------
-cbuffer material_fresnel_constants : register( b5 )
+cbuffer material_constants : register( b5 )
 {
-	float3   FRESNEL_COLOR;
-	float    FRESNEL_POWER;
+	float4x4 PROJECTION_MATRIX;
+
+	float3 PROJECTOR_POSITION;
+	float PROJECTOR_POWER;
 };
 
+
+Texture2D <float4> tImage : register( t8 );
 
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------
-
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
@@ -28,13 +31,6 @@ v2f_t VertexFunction( vs_input_t input )
 	float4 cameraPos = mul( VIEW, worldPos );
 	float4 clipPos = mul( PROJECTION, cameraPos );
 
-	// tangent
-	float4 localTangent = float4( input.tangent, 0.0f );
-	float4 worldTangent = mul( MODEL, localTangent );
-
-	// bitangent
-	float4 localBitangent = float4( input.bitangent, 0.0f );
-	float4 worldBitangent = mul( MODEL, localBitangent );
 
 	// normal is currently in model/local space
 	float4 localNormal = float4( input.normal, 0.0f );
@@ -45,8 +41,6 @@ v2f_t VertexFunction( vs_input_t input )
 	v2f.uv = input.uv;
 
 	v2f.world_position = worldPos.xyz;
-	v2f.world_tangent = worldTangent.xyz;
-	v2f.world_bitangent = worldBitangent.xyz;
 	v2f.world_normal = worldNormal.xyz;
 
 	return v2f;
@@ -60,20 +54,27 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	float4 normal_color = tNormals.Sample( sSampler, input.uv );
+	float4 clip_pos = mul( float4( input.world_position, 1.f ), PROJECTION_MATRIX );
+	//float z_local = clip_pos.w;
 
-	float3x3 tbn = float3x3( normalize( input.world_tangent ),
-							 normalize( input.world_bitangent ),
-							 normalize( input.world_normal ) );
+	float3 ndc = clip_pos.xyz / clip_pos.w;
+	float2 uv = ( ndc.xy + float2( 1.f, 1.f ) * .5f );
 
-	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
-	float3 world_normal = mul( surface_normal, tbn );
+	// 1 when inside 0-1, 0 otherwise
+	float u_blend = step( 0.f, uv.x ) * ( 1.f - step( 1.f, uv.x ) );
+	float v_blend = step( 0.f, uv.y ) * ( 1.f - step( 1.f, uv.y ) );
+	float blend = u_blend * v_blend;
 
-	float3 view_dir = normalize( input.world_position - CAMERA_WORLD_POSITION );
+	float4 texture_color = tImage.Sample( sSampler, uv );
 
-	float sin_view_dir = length( cross( -view_dir, normalize( world_normal ) ) );
+	float3 dir_to_camera = normalize( PROJECTOR_POSITION - input.world_position );
+	float3 world_normal = normalize( input.world_normal );
 
-	float fresnel = pow( sin_view_dir, FRESNEL_POWER );
+	float facing = step( 0.f, max( 0.f, dot( dir_to_camera, world_normal ) ) );
+	blend *= facing;
 
-	return float4( FRESNEL_COLOR, fresnel );
+	blend *= step( 0.f, ndc.z ); // maybe 1.f - 
+
+	float4 final_color = lerp( 0.f.xxxx, texture_color, blend );
+	return final_color * PROJECTOR_POWER;
 }
