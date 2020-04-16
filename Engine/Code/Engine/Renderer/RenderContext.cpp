@@ -953,18 +953,6 @@ void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, f
 
 
 //-----------------------------------------------------------------------------------------------
-//void RenderContext::SetDebugRenderMaterialData( const Rgba8& startTint, const Rgba8& endTint, float tintRatio )
-//{
-//	MaterialData materialData;
-//	startTint.GetAsFloatArray( materialData.startTint );
-//	endTint.GetAsFloatArray( materialData.endTint );
-//	materialData.tintRatio = tintRatio;
-//
-//	m_materialUBO->Update( &materialData, sizeof( materialData ), sizeof( materialData ) );
-//}
-
-
-//-----------------------------------------------------------------------------------------------
 void RenderContext::SetMaterialData( void* materialData, int dataSize )
 {
 	m_materialUBO->Update( materialData, dataSize, dataSize );

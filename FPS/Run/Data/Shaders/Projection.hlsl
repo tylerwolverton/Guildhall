@@ -67,12 +67,14 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	float4 texture_color = tImage.Sample( sSampler, uv );
 
-	float3 dir_to_camera = normalize( PROJECTOR_POSITION - input.world_position );
+	float3 dir_to_projector = normalize( PROJECTOR_POSITION - input.world_position );
 	float3 world_normal = normalize( input.world_normal );
 
-	float facing = max( 0.f, dot( dir_to_camera, world_normal ) );
+	float facing = max( 0.f, dot( dir_to_projector, world_normal ) );
 	blend *= facing;
-	
+
+	blend *= step( 0.f, 1.f - ndc.z );
+
 	float4 final_color = lerp( 0.f.xxxx, texture_color, blend );
 	return final_color * PROJECTOR_POWER;
 }

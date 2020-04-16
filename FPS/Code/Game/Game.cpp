@@ -873,7 +873,13 @@ void Game::Render() const
 
 	ProjectionConstants projMaterial;
 	projMaterial.position = m_lights[0].light.position;
-	projMaterial.projectionMatrix = m_projectionViewMatrix;
+
+	Mat44 view = m_projectionViewMatrix;
+	Mat44 projection = MakePerspectiveProjectionMatrixD3D( 90.f, 1.f, -.1f, -100.f );
+
+	projection.PushTransform( view );
+
+	projMaterial.projectionMatrix = projection;
 	projMaterial.power = 1.f;
 
 	g_renderer->SetMaterialData( (void*)&projMaterial, sizeof( projMaterial ) );
