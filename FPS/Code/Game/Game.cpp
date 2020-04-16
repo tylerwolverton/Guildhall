@@ -654,24 +654,24 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_sphereMesh );
 
 	//// Fresnel
-	g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
-	g_renderer->BindNormalTexture( nullptr );
-	g_renderer->SetBlendMode( eBlendMode::ALPHA );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
+	//g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
+	//g_renderer->BindNormalTexture( nullptr );
+	//g_renderer->SetBlendMode( eBlendMode::ALPHA );
+	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
 
-	g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
+	//g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
 
-	model = m_cubeMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_cubeMesh );
+	//model = m_cubeMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_cubeMesh );
 
-	model = m_quadMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_quadMesh );
+	//model = m_quadMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_quadMesh );
 
-	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_sphereMesh );
+	//model = m_sphereMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
 	//g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
@@ -702,23 +702,35 @@ void Game::Render() const
 
 	g_renderer->DrawMesh( m_sphereMesh );*/
 
+	// Projection
 	//g_renderer->BindShader( "Data/Shaders/Projection.hlsl" );
 	//g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
 	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
 	//ProjectionConstants projMaterial;
 	//projMaterial.position = m_lights[0].light.position;
 	//
-	//Mat44 lookAt = MakeLookAtMatrix( m_lights[0].light.position, m_lights[0].light.position + m_lights[0].light.direction );
-	//InvertMatrix( lookAt );
-	//lookAt.SetTranslation3D( m_lights[0].light.position );
+	////Mat44 translation = Mat44::CreateTranslation3D( Vec3(10.f, 3.f, 1.f) );
+	//Mat44 translation = Mat44::CreateTranslation3D( -m_lights[0].light.position );
+	//Mat44 lookAt = MakeLookAtMatrix( Vec3::ZERO, m_lights[0].light.direction );
+	//Mat44 perspective = MakePerspectiveProjectionMatrixD3D( 90.f, 1.f, -.1f, -100.f );
+	//perspective.Tw = 1.f;
+
+	////InvertMatrix( lookAt );
+	///*perspective.PushTransform( lookAt );
+	//perspective.PushTransform( translation );*/
+
+
+	//translation.PushTransform( lookAt );
+	//InvertMatrix( translation );
+	//translation.PushTransform( perspective );
+
+	//// create view matrix
 	////projMaterial.projectionMatrix.SetTranslation3D( projMaterial.position );
 	//
-	//Mat44 perspective = MakePerspectiveProjectionMatrixD3D( 90.f, 1.f, .1f, 100.f );
 	////perspective.PushTransform( lookAt );
-	//lookAt.PushTransform( perspective );
 
 	////projMaterial.projectionMatrix = perspective;
-	//projMaterial.projectionMatrix = lookAt;
+	//projMaterial.projectionMatrix = translation;
 	//projMaterial.power = 1.f;
 
 	//g_renderer->SetMaterialData( (void*)&projMaterial, sizeof( projMaterial ) );

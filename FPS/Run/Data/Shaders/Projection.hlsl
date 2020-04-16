@@ -70,10 +70,11 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 dir_to_camera = normalize( PROJECTOR_POSITION - input.world_position );
 	float3 world_normal = normalize( input.world_normal );
 
-	float facing = step( 0.f, max( 0.f, dot( dir_to_camera, world_normal ) ) );
+	float facing = max( 0.f, dot( dir_to_camera, world_normal ) );
+	//float facing = step( 0.f, max( 0.f, dot( dir_to_camera, world_normal ) ) );
 	blend *= facing;
 
-	blend *= step( 0.f, ndc.z ); // maybe 1.f - 
+	//blend *= step( 0.f, ndc.z ); // maybe 1.f - 
 
 	float4 final_color = lerp( 0.f.xxxx, texture_color, blend );
 	return final_color * PROJECTOR_POWER;
