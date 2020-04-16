@@ -98,5 +98,6 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 
 	final_color = lerp( final_color, burn_color, 1 - t );
 
-	return float4( final_color, surface_alpha );
+	float4 final_color_with_fog = AddFogToColor( float4( final_color, surface_alpha ), input.world_position );
+	return final_color_with_fog;
 }

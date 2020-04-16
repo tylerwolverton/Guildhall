@@ -646,13 +646,19 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, -1.f, 1.f );
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( '5' ) )
+	if ( g_inputSystem->IsKeyPressed( '5' ) )
 	{
-		
+		m_nearFogDist -= 5.f * deltaSeconds;
+		m_farFogDist -= 5.f * deltaSeconds;
+		m_farFogDist = ClampMinMax( m_farFogDist, 10.f, 100.f );
+		m_nearFogDist = ClampMinMax( m_nearFogDist, 0.f, m_farFogDist - 10.f );
 	}
-	if ( g_inputSystem->WasKeyJustPressed( '6' ) )
+	if ( g_inputSystem->IsKeyPressed( '6' ) )
 	{
-		
+		m_nearFogDist += 5.f * deltaSeconds;
+		m_farFogDist += 5.f * deltaSeconds;
+		m_farFogDist = ClampMinMax( m_farFogDist, 10.f, 100.f );
+		m_nearFogDist = ClampMinMax( m_nearFogDist, 0.f, m_farFogDist - 10.f );
 	}
 }
 
@@ -755,6 +761,7 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
 }
 
@@ -781,7 +788,7 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
-	g_renderer->EnableFog( 25.f, 50.f, Rgba8::BLACK );
+	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
 	g_renderer->BindDiffuseTexture( nullptr );
 	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 

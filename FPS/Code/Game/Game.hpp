@@ -186,6 +186,8 @@ private:
 	float m_specularFactor = 0.f;
 	float m_specularPower = 1.f;
 	float m_gamma = 2.2f;
+	float m_nearFogDist = 25.f;
+	float m_farFogDist = 50.f;
 
 	FresnelConstants m_fresnelData;
 	float m_dissolveFactor = 0.f;
