@@ -116,7 +116,8 @@ private:
 	void LoadAssets();
 	void LoadNewMap( const std::string& mapName );
 
-	void SetupInitialLights();
+	void InitializeMeshes();
+	void InitializeLights();
 
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
@@ -161,6 +162,8 @@ private:
 	World* m_world = nullptr;
 	std::string m_curMap;
 
+	// Meshes
+	// Normal
 	GPUMesh* m_quadMesh = nullptr;
 	Transform m_quadMeshTransform;
 
@@ -169,6 +172,11 @@ private:
 	
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
+	
+	// Shader demos
+	Transform m_sphereMeshFresnelTransform;
+	Transform m_sphereMeshTriplanarTransform;
+	Transform m_cubeMeshTransformDissolve;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 0.f;

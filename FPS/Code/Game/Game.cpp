@@ -80,29 +80,6 @@ void Game::Startup()
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
-	// Create Sphere and Cube
-	std::vector<Vertex_PCUTBN> vertices;
-	std::vector<uint> indices;
-	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 2.f, Rgba8::WHITE );
-	
-	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
-	m_cubeMeshTransform.SetPosition( Vec3( -5.f, 0.f, -6.f ) );
-	
-	vertices.clear();
-	indices.clear();
-	AppendVertsAndIndicesForQuad( vertices, indices, AABB2( -1.f, -1.f, 1.f, 1.f ), Rgba8::WHITE );
-	m_quadMesh = new GPUMesh( g_renderer, vertices, indices );
-	m_quadMeshTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
-
-	vertices.clear();
-	indices.clear();
-	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 64, Rgba8::WHITE );
-
-	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
-	Transform centerTransform;
-	centerTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
-	m_sphereMeshTransform = centerTransform;
-
 	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
 	m_fresnelData.power = 32.f;
 
@@ -120,12 +97,49 @@ void Game::Startup()
 	m_shaderPaths.push_back( "Data/Shaders/SurfaceNormals.hlsl" );
 	m_shaderNames.push_back( "Surface Normals" );
 
-	SetupInitialLights();
+	InitializeMeshes();
+
+	InitializeLights();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::SetupInitialLights()
+void Game::InitializeMeshes()
+{
+	// Cubes
+	std::vector<Vertex_PCUTBN> vertices;
+	std::vector<uint> indices;
+	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 2.f, Rgba8::WHITE );
+
+	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
+
+	m_cubeMeshTransform.SetPosition( Vec3( -5.f, 0.f, -6.f ) );
+	m_cubeMeshTransformDissolve.SetPosition( Vec3( -5.f, 0.f, 6.f ) );
+
+	// Quad
+	vertices.clear();
+	indices.clear();
+	AppendVertsAndIndicesForQuad( vertices, indices, AABB2( -1.f, -1.f, 1.f, 1.f ), Rgba8::WHITE );
+
+	m_quadMesh = new GPUMesh( g_renderer, vertices, indices );
+
+	m_quadMeshTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
+
+	// Spheres
+	vertices.clear();
+	indices.clear();
+	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 64, Rgba8::WHITE );
+
+	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
+
+	m_sphereMeshTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
+	m_sphereMeshFresnelTransform.SetPosition( Vec3( 0.f, 0.f, 6.f ) );
+	m_sphereMeshTriplanarTransform.SetPosition( Vec3( 5.f, 0.f, 6.f ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::InitializeLights()
 {
 	// Finite spot
 	m_lights[0].light.intensity = .5f;
@@ -596,26 +610,26 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'J' ) )
 	{
-		GetCurLight().halfCosOfInnerAngle -= .1f * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, GetCurLight().halfCosOfOuterAngle );
+		GetCurLight().halfCosOfInnerAngle -= CosDegrees( 10.f ) * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'K' ) )
 	{
-		GetCurLight().halfCosOfInnerAngle += .1f * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, 0.f, GetCurLight().halfCosOfOuterAngle );
+		GetCurLight().halfCosOfInnerAngle += CosDegrees( 10.f) * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'O' ) )
 	{
-		GetCurLight().halfCosOfOuterAngle -= .1f * deltaSeconds;
-		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle, 1.f );
+		GetCurLight().halfCosOfOuterAngle -= CosDegrees( 10.f ) * deltaSeconds;
+		GetCurLight().halfCosOfOuterAngle = ClampMin( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'P' ) )
 	{
-		GetCurLight().halfCosOfOuterAngle += .1f * deltaSeconds;
-		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle, 1.f );
+		GetCurLight().halfCosOfOuterAngle += .001f * deltaSeconds;
+		GetCurLight().halfCosOfOuterAngle = ClampMin( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle );
 	}
 }
 
@@ -706,6 +720,7 @@ void Game::PrintHotkeys()
 	float y = .97f;
 	DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "L,R Arrows - Current light: %d", m_currentLightIdx );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "U,D Arrows - Light type: %s", LightTypeToStr( GetCurGameLight().type ).c_str() );
+	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Enter - Enable/Disable light" );
 	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5  - Light to origin" );
 	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6  - Light to camera" );
 	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7  - Light follow camera" );
@@ -728,7 +743,9 @@ void Game::Render() const
 	g_renderer->EnableFog( 25.f, 50.f, Rgba8::BLACK );
 	g_renderer->BindDiffuseTexture( nullptr );
 	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
+
 	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
@@ -741,6 +758,7 @@ void Game::Render() const
 	}
 	g_renderer->SetGamma( m_gamma );
 	
+	// Render normal objects
 	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_cubeMesh );
@@ -749,50 +767,45 @@ void Game::Render() const
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_quadMesh );
 	
-	// Sphere
 	model = m_sphereMeshTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_sphereMesh );
 
-	//// Fresnel
-	//g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
-	//g_renderer->BindNormalTexture( nullptr );
-	//g_renderer->SetBlendMode( eBlendMode::ALPHA );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
+	// Fresnel
+	model = m_sphereMeshFresnelTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
 
-	//g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
+	g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
+	g_renderer->BindNormalTexture( nullptr );
+	g_renderer->SetBlendMode( eBlendMode::ALPHA );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
 
-	//model = m_cubeMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
+	g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
 
-	//model = m_quadMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_quadMesh );
-
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	model = m_sphereMeshFresnelTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	//g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
-	//g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
+	g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
-	//DissolveConstants dissolveData;
-	//dissolveData.dissolveFactor = m_dissolveFactor;
-	//dissolveData.edgeWidth = .3f;
-	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	//g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
+	DissolveConstants dissolveData;
+	dissolveData.dissolveFactor = m_dissolveFactor;
+	dissolveData.edgeWidth = .3f;
+	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
 
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	model = m_cubeMeshTransformDissolve.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_cubeMesh );
 	
 	// Triplanar
-	/*g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
-	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
 	g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_d.png" ) );
 	g_renderer->BindTexture( 9, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_d.png" ) );
@@ -801,7 +814,9 @@ void Game::Render() const
 	g_renderer->BindTexture( 12, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
 	g_renderer->BindTexture( 13, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
 
-	g_renderer->DrawMesh( m_sphereMesh );*/
+	model = m_sphereMeshTriplanarTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	// Projection
 	//g_renderer->BindShader( "Data/Shaders/Projection.hlsl" );
