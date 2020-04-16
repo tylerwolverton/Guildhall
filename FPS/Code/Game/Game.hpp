@@ -190,6 +190,7 @@ private:
 	FresnelConstants m_fresnelData;
 	float m_dissolveFactor = 0.f;
 	float m_dissolveEdge = .3f;
+	Mat44 m_projectionViewMatrix;
 
 	std::vector<std::string> m_shaderPaths;
 	std::vector<std::string> m_shaderNames;

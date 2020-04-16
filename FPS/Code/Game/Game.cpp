@@ -354,6 +354,11 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 		}
 	
 		SetLightDirectionToCamera( gameLight.light );
+
+		if ( lightIdx == 0 )
+		{
+			m_projectionViewMatrix = m_worldCamera->GetViewMatrix();
+		}
 	}
 
 	// Translation
@@ -485,6 +490,8 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		SetLightDirectionToCamera( GetCurLight() );
 
 		GetCurGameLight().movementMode = eLightMovementMode::STATIONARY;
+
+		m_projectionViewMatrix = m_worldCamera->GetViewMatrix();
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F7 ) )
@@ -822,7 +829,7 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	g_renderer->BindTexture( USER_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
 	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
@@ -841,63 +848,54 @@ void Game::Render() const
 	g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
-	g_renderer->BindTexture( USER_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_d.png" ) );
-	g_renderer->BindTexture( USER_SLOT_START + 1, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_d.png" ) );
-	g_renderer->BindTexture( USER_SLOT_START + 2, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_d.png" ) );
-	g_renderer->BindTexture( USER_SLOT_START + 3, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_n.png" ) );
-	g_renderer->BindTexture( USER_SLOT_START + 4, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
-	g_renderer->BindTexture( USER_SLOT_START + 5, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_d.png" ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 1, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_d.png" ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 2, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_d.png" ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 3, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_n.png" ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 4, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 5, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
 
 	model = m_sphereMeshTriplanarTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_sphereMesh );
 
 	// Projection
-	//g_renderer->BindShader( "Data/Shaders/Projection.hlsl" );
-	//g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
-	//ProjectionConstants projMaterial;
-	//projMaterial.position = m_lights[0].light.position;
-	//
-	////Mat44 translation = Mat44::CreateTranslation3D( Vec3(10.f, 3.f, 1.f) );
-	//Mat44 translation = Mat44::CreateTranslation3D( -m_lights[0].light.position );
-	//Mat44 lookAt = MakeLookAtMatrix( Vec3::ZERO, m_lights[0].light.direction );
-	//Mat44 perspective = MakePerspectiveProjectionMatrixD3D( 90.f, 1.f, -.1f, -100.f );
-	//perspective.Tw = 1.f;
+	g_renderer->BindShader( "Data/Shaders/Projection.hlsl" );
+	g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
 
-	////InvertMatrix( lookAt );
-	///*perspective.PushTransform( lookAt );
-	//perspective.PushTransform( translation );*/
+	ProjectionConstants projMaterial;
+	projMaterial.position = m_lights[0].light.position;
+	projMaterial.projectionMatrix = m_projectionViewMatrix;
+	projMaterial.power = 1.f;
 
+	g_renderer->SetMaterialData( (void*)&projMaterial, sizeof( projMaterial ) );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
 
-	//translation.PushTransform( lookAt );
-	//InvertMatrix( translation );
-	//translation.PushTransform( perspective );
+	// Redraw scene with projection
+	model = m_cubeMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_cubeMesh );
 
-	//// create view matrix
-	////projMaterial.projectionMatrix.SetTranslation3D( projMaterial.position );
-	//
-	////perspective.PushTransform( lookAt );
+	model = m_quadMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_quadMesh );
 
-	////projMaterial.projectionMatrix = perspective;
-	//projMaterial.projectionMatrix = translation;
-	//projMaterial.power = 1.f;
+	model = m_sphereMeshTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
 
-	//g_renderer->SetMaterialData( (void*)&projMaterial, sizeof( projMaterial ) );
-	//g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
+	model = m_cubeMeshTransformDissolve.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_cubeMesh );
 
-	//model = m_cubeMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
+	model = m_sphereMeshFresnelTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
 
-	//model = m_quadMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_quadMesh );
-
-	//// Sphere
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	model = m_sphereMeshTriplanarTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	g_renderer->EndCamera( *m_worldCamera );
 

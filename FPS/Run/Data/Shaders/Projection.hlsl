@@ -54,10 +54,10 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	float4 clip_pos = mul( float4( input.world_position, 1.f ), PROJECTION_MATRIX );
-	//float z_local = clip_pos.w;
+	float4 clip_pos = mul( PROJECTION_MATRIX, float4( input.world_position, 1.f ) );
 
 	float3 ndc = clip_pos.xyz / clip_pos.w;
+	
 	float2 uv = ( ndc.xy + float2( 1.f, 1.f ) * .5f );
 
 	// 1 when inside 0-1, 0 otherwise
@@ -71,11 +71,8 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 world_normal = normalize( input.world_normal );
 
 	float facing = max( 0.f, dot( dir_to_camera, world_normal ) );
-	//float facing = step( 0.f, max( 0.f, dot( dir_to_camera, world_normal ) ) );
 	blend *= facing;
-
-	//blend *= step( 0.f, ndc.z ); // maybe 1.f - 
-
+	
 	float4 final_color = lerp( 0.f.xxxx, texture_color, blend );
 	return final_color * PROJECTOR_POWER;
 }

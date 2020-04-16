@@ -35,7 +35,7 @@ Project: FPS
 
 ### Extras
 - [x] *X07.10: 05%*: Triplanar Shader
-- [-] *X07.11: 05%*: Projected Texture Effect
+- [x] *X07.11: 05%*: Projected Texture Effect
 - [ ] *X07.12: 05%*: Interior Mapping Shader
 - [x] *X07.13: 03%*: Fresnel or Highlight Shader
 - [ ] *X07.20: 05%*: Parallax Mapping Shader
@@ -49,8 +49,7 @@ Project: FPS
 Controls
 
 Dev Console
-Tab - Autocomplete ( finish command or scroll through available commands when line is blank or command is present )
-Shift Tab - Move backwards through Autocomplete suggestions
+
 
 Game
 F2 - Cycle Sampler (between point and bilinear)
