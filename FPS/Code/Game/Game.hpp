@@ -46,7 +46,7 @@ struct GameLight
 
 	eLightMovementMode movementMode = eLightMovementMode::FOLLOW_CAMERA;
 	eLightType type = eLightType::POINT;
-	bool enabled = true;
+	bool isEnabled = true;
 };
 
 
@@ -116,6 +116,8 @@ private:
 	void LoadAssets();
 	void LoadNewMap( const std::string& mapName );
 
+	void SetupInitialLights();
+
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
 	void UpdateDebugDrawCommands();
@@ -134,7 +136,7 @@ private:
 	void ChangeCurrentLightType( eLightType newLightype );
 	std::string LightTypeToStr( eLightType lightType );
 
-	void SetCurrentLightDirectionToCamera();
+	void SetLightDirectionToCamera( Light& light );
 
 private:
 	Clock* m_gameClock = nullptr;
@@ -169,7 +171,7 @@ private:
 	Transform m_sphereMeshTransform;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = .1f;
+	float m_ambientIntensity = 0.f;
 	GameLight m_lights[MAX_LIGHTS];
 	int m_currentLightIdx = 0;
 	float m_specularFactor = 0.f;

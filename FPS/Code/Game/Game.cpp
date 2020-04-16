@@ -120,7 +120,88 @@ void Game::Startup()
 	m_shaderPaths.push_back( "Data/Shaders/SurfaceNormals.hlsl" );
 	m_shaderNames.push_back( "Surface Normals" );
 
+	SetupInitialLights();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetupInitialLights()
+{
+	// Finite spot
 	m_lights[0].light.intensity = .5f;
+	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
+	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 7.f );
+	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 15.f );
+	m_lights[0].type = eLightType::SPOT;
+	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
+
+	// Finite point
+	m_lights[1].light.intensity = .3f;
+	m_lights[1].light.color = Rgba8::RED.GetAsRGBVector();
+	m_lights[1].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[1].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[1].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, -.5f, .5f );
+	m_lights[1].type = eLightType::POINT;
+	m_lights[1].movementMode = eLightMovementMode::STATIONARY;
+
+	// Infinite point
+	m_lights[2].light.intensity = .4f;
+	m_lights[2].light.color = Rgba8::BLUE.GetAsRGBVector();
+	m_lights[2].light.attenuation = Vec3( 1.f, 0.f, 0.f );
+	m_lights[2].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
+	m_lights[2].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, -.5f, .5f );
+	m_lights[2].type = eLightType::POINT;
+	m_lights[2].movementMode = eLightMovementMode::STATIONARY;
+	
+	// Infinite Directional
+	m_lights[3].light.intensity = .5f;
+	m_lights[3].light.color = Rgba8::WHITE.GetAsRGBVector();
+	m_lights[3].light.attenuation = Vec3( 1.f, 0.f, 0.f );
+	m_lights[3].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
+	m_lights[3].light.position = Vec3( -5.f, 3.f, -10.f );
+	m_lights[3].light.direction = Vec3( 0.f, -1.f, 1.f ).GetNormalized();
+	m_lights[3].type = eLightType::DIRECTIONAL;
+	m_lights[3].movementMode = eLightMovementMode::STATIONARY;
+
+	// Infinite spot
+	m_lights[4].light.intensity = .2f;
+	m_lights[4].light.color = Rgba8::PURPLE.GetAsRGBVector();
+	m_lights[4].light.attenuation = Vec3( 1.f, 0.f, 0.f );
+	m_lights[4].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
+	m_lights[4].light.position = m_sphereMeshTransform.GetPosition() + Vec3( 1.5f, -2.5f, 1.f );
+	m_lights[4].light.direction = Vec3( -.5f, 1.f, -1.f ).GetNormalized();
+	m_lights[4].light.halfCosOfInnerAngle = CosDegrees( 10.f );
+	m_lights[4].light.halfCosOfOuterAngle = CosDegrees( 15.f );
+	m_lights[4].type = eLightType::SPOT;
+	m_lights[4].movementMode = eLightMovementMode::STATIONARY;
+	
+	// Finite point
+	m_lights[5].light.intensity = .3f;
+	m_lights[5].light.color = Rgba8::GREEN.GetAsRGBVector();
+	m_lights[5].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[5].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[5].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, .5f, .5f );
+	m_lights[5].type = eLightType::POINT;
+	m_lights[5].movementMode = eLightMovementMode::STATIONARY;
+
+	// Finite point
+	m_lights[6].light.intensity = .3f;
+	m_lights[6].light.color = Rgba8::YELLOW.GetAsRGBVector();
+	m_lights[6].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[6].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[6].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, .5f, .5f );
+	m_lights[6].type = eLightType::POINT;
+	m_lights[6].movementMode = eLightMovementMode::STATIONARY;
+
+	// Rotating point
+	m_lights[7].light.intensity = .3f;
+	m_lights[7].light.color = Rgba8::ORANGE.GetAsRGBVector();
+	m_lights[7].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[7].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	m_lights[7].type = eLightType::POINT;
+	m_lights[7].movementMode = eLightMovementMode::LOOP;
 }
 
 
@@ -248,9 +329,16 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 											transform.m_rotation.z + yaw );
 
 	// Update light direction
-	if ( GetCurGameLight().movementMode == eLightMovementMode::FOLLOW_CAMERA )
+	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
-		SetCurrentLightDirectionToCamera();
+		GameLight& gameLight = m_lights[lightIdx];
+		if ( !gameLight.isEnabled
+			 || gameLight.movementMode != eLightMovementMode::FOLLOW_CAMERA )
+		{
+			continue;
+		}
+	
+		SetLightDirectionToCamera( gameLight.light );
 	}
 
 	// Translation
@@ -375,7 +463,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_ENTER ) )
 	{
-		GetCurGameLight().enabled = !GetCurGameLight().enabled;
+		GetCurGameLight().isEnabled = !GetCurGameLight().isEnabled;
 	}
 
 	// Movement
@@ -388,7 +476,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
 	{
 		GetCurLight().position = m_worldCamera->GetTransform().GetPosition();
-		SetCurrentLightDirectionToCamera();
+		SetLightDirectionToCamera( GetCurLight() );
 
 		GetCurGameLight().movementMode = eLightMovementMode::STATIONARY;
 	}
@@ -531,6 +619,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 	}
 }
 
+
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
@@ -555,7 +644,8 @@ void Game::UpdateLights()
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
 		GameLight& gameLight = m_lights[lightIdx];
-		if ( gameLight.light.intensity == 0.f )
+		//if ( gameLight.light.intensity == 0.f )
+		if ( !gameLight.isEnabled )
 		{
 			continue;
 		}
@@ -567,6 +657,10 @@ void Game::UpdateLights()
 				if ( gameLight.type == eLightType::POINT )
 				{
 					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+				}
+				else if ( gameLight.type == eLightType::SPOT )
+				{
+					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
 				}
 				else
 				{
@@ -588,6 +682,10 @@ void Game::UpdateLights()
 				if ( gameLight.type == eLightType::POINT )
 				{
 					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+				}
+				else if ( gameLight.type == eLightType::SPOT )
+				{
+					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
 				}
 				else
 				{
@@ -612,8 +710,8 @@ void Game::PrintHotkeys()
 	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6  - Light to camera" );
 	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7  - Light follow camera" );
 	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8  - Light loop" );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Intensity of ambient light : %.2f", m_ambientIntensity );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Intensity of point light : %.2f", GetCurLight().intensity );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Ambient Light intensity : %.2f", m_ambientIntensity );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Light intensity : %.2f", GetCurLight().intensity );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
@@ -636,7 +734,10 @@ void Game::Render() const
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
-		g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
+		if ( m_lights[lightIdx].isEnabled )
+		{
+			g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
+		}
 	}
 	g_renderer->SetGamma( m_gamma );
 	
@@ -824,11 +925,11 @@ std::string Game::LightTypeToStr( eLightType lightType )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::SetCurrentLightDirectionToCamera()
+void Game::SetLightDirectionToCamera( Light& light )
 {
 	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
 	Vec3 cameraForwardDir = model.TransformVector3D( Vec3( 0.f, 0.f, -1.f ) ).GetNormalized();
-	GetCurLight().direction = cameraForwardDir;
+	light.direction = cameraForwardDir;
 }
 
 

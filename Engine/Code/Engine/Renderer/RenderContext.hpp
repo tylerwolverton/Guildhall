@@ -97,20 +97,20 @@ struct ModelData
 //-----------------------------------------------------------------------------------------------
 struct Light
 {
-	Vec3 position;
+	Vec3 position = Vec3::ONE;
 	float pad00;
 	
-	Vec3 direction = Vec3::ZERO;
+	Vec3 direction = Vec3( 0.f, 0.f, -1.f );
 	float isDirectional = 0.f;
 
 	Vec3 color = Vec3::ONE;
 	float intensity = 0.f;
 
 	Vec3 attenuation = Vec3( 0.f, 1.f, 0.f );
-	float halfCosOfInnerAngle = 0.f;
+	float halfCosOfInnerAngle = -1.f;
 
 	Vec3 specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	float halfCosOfOuterAngle = 0.f;
+	float halfCosOfOuterAngle = -1.f;
 };
 
 struct LightData
