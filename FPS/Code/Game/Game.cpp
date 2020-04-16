@@ -418,15 +418,6 @@ void Game::UpdateDebugDrawCommands()
 	{
 		DebugAddScreenQuad( AABB2( Vec2( 250.f, 12.f ), Vec2( 1000.f, 120.f ) ), Rgba8::GREEN, Rgba8::RED, 10.f );
 	}
-	if ( g_inputSystem->WasKeyJustPressed( '5' ) )
-	{
-		Texture* texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/firewatch.png" );
-		DebugAddScreenTexturedQuad( AABB2( Vec2( 10.f, 10.f ), Vec2( 500.f, 500.f ) ), texture, Rgba8::WHITE, 10.f );
-	}
-	if ( g_inputSystem->WasKeyJustPressed( '6' ) )
-	{
-		DebugAddScreenTextf( Vec4( .5f, .75f, 10.f, -10.f ), Vec2( .5f, .5f ), 10.f, Rgba8::WHITE, 10.f, "Here is some text %d", 13 );
-	}
 }
 
 
@@ -622,30 +613,39 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'J' ) )
 	{
-		/*GetCurLight().halfCosOfInnerAngle -= CosDegrees( 10.f ) * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );*/
 		m_dissolveEdge -= 1.f * deltaSeconds;
 		m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'K' ) )
 	{
-		/*GetCurLight().halfCosOfInnerAngle += CosDegrees( 10.f) * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );*/
 		m_dissolveEdge += 1.f * deltaSeconds;
 		m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'O' ) )
 	{
-		GetCurLight().halfCosOfOuterAngle -= CosDegrees( 10.f ) * deltaSeconds;
-		GetCurLight().halfCosOfOuterAngle = ClampMin( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle );
+		GetCurLight().halfCosOfInnerAngle += CosDegrees( 1.f ) * deltaSeconds * .05f;
+		GetCurLight().halfCosOfOuterAngle += CosDegrees( 1.f ) * deltaSeconds * .05f;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, 1.f );
+		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, -1.f, 1.f );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'P' ) )
 	{
-		GetCurLight().halfCosOfOuterAngle += .001f * deltaSeconds;
-		GetCurLight().halfCosOfOuterAngle = ClampMin( GetCurLight().halfCosOfOuterAngle, GetCurLight().halfCosOfInnerAngle );
+		GetCurLight().halfCosOfInnerAngle -= CosDegrees( 1.f ) * deltaSeconds * .05f;
+		GetCurLight().halfCosOfOuterAngle -= CosDegrees( 1.f ) * deltaSeconds * .05f;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, 1.f );
+		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, -1.f, 1.f );
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( '5' ) )
+	{
+		
+	}
+	if ( g_inputSystem->WasKeyJustPressed( '6' ) )
+	{
+		
 	}
 }
 
@@ -744,6 +744,7 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Ambient Light intensity : %.2f", m_ambientIntensity );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Light intensity : %.2f", GetCurLight().intensity );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "O,P - Adjust spot light angle" );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
