@@ -982,10 +982,10 @@ void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rg
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
-	Vec2 textDimensions = font->GetDimensionsForText2D( .5f, text );
+	Vec2 textDimensions = font->GetDimensionsForText2D( .1f, text );
 	Vec2 textMins = -pivot * textDimensions;
 
-	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, .5f, text, Rgba8::WHITE );
+	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, .1f, text, Rgba8::WHITE );
 
 	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
 	{

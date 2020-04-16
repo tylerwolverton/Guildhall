@@ -263,6 +263,7 @@ void Game::Update()
 	UpdateLights();
 
 	PrintHotkeys();
+	PrintDiageticHotkeys();
 }
 
 
@@ -518,6 +519,17 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		m_ambientIntensity = ClampZeroToOne( m_ambientIntensity );
 	}
 
+	if ( g_inputSystem->IsKeyPressed( '7' ) )
+	{
+		m_fresnelData.power -= 5.f * deltaSeconds;
+		m_fresnelData.power = ClampMin( m_fresnelData.power, 0.f );
+	}
+
+	if ( g_inputSystem->IsKeyPressed( '8' ) )
+	{
+		m_fresnelData.power += 5.f * deltaSeconds;
+	}
+
 	// Current light
 	if ( g_inputSystem->IsKeyPressed( KEY_MINUS ) )
 	{
@@ -610,14 +622,18 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'J' ) )
 	{
-		GetCurLight().halfCosOfInnerAngle -= CosDegrees( 10.f ) * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );
+		/*GetCurLight().halfCosOfInnerAngle -= CosDegrees( 10.f ) * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );*/
+		m_dissolveEdge -= 1.f * deltaSeconds;
+		m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'K' ) )
 	{
-		GetCurLight().halfCosOfInnerAngle += CosDegrees( 10.f) * deltaSeconds;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );
+		/*GetCurLight().halfCosOfInnerAngle += CosDegrees( 10.f) * deltaSeconds;
+		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, GetCurLight().halfCosOfOuterAngle );*/
+		m_dissolveEdge += 1.f * deltaSeconds;
+		m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'O' ) )
@@ -736,6 +752,23 @@ void Game::PrintHotkeys()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::PrintDiageticHotkeys()
+{
+	// Dissolve
+	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.m_position + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Dissolve Shader" );
+	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.m_position + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "N,M - intensity : %.2f", m_dissolveFactor );
+	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.m_position + Vec3( 0.f, 1.5f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "J.K - edge size : %.2f", m_dissolveEdge );
+
+	// Fresnel
+	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.m_position + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Fresnel Shader" );
+	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.m_position + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "7,8 - power : %.2f", m_fresnelData.power );
+	
+	// Triplanar
+	DebugAddWorldBillboardTextf( m_sphereMeshTriplanarTransform.m_position + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Triplanar Shader" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
@@ -788,13 +821,13 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_sphereMesh );
    
 	// Dissolve
-	g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindTexture( USER_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
 	g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
 	DissolveConstants dissolveData;
 	dissolveData.dissolveFactor = m_dissolveFactor;
-	dissolveData.edgeWidth = .3f;
+	dissolveData.edgeWidth = m_dissolveEdge;
 	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
 	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
 	g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
@@ -807,12 +840,12 @@ void Game::Render() const
 	g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
-	g_renderer->BindTexture( 8, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_d.png" ) );
-	g_renderer->BindTexture( 9, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_d.png" ) );
-	g_renderer->BindTexture( 10, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_d.png" ) );
-	g_renderer->BindTexture( 11, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_n.png" ) );
-	g_renderer->BindTexture( 12, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
-	g_renderer->BindTexture( 13, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
+	g_renderer->BindTexture( USER_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_d.png" ) );
+	g_renderer->BindTexture( USER_SLOT_START + 1, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_d.png" ) );
+	g_renderer->BindTexture( USER_SLOT_START + 2, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_d.png" ) );
+	g_renderer->BindTexture( USER_SLOT_START + 3, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_n.png" ) );
+	g_renderer->BindTexture( USER_SLOT_START + 4, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
+	g_renderer->BindTexture( USER_SLOT_START + 5, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
 
 	model = m_sphereMeshTriplanarTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );

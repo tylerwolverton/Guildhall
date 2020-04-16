@@ -129,6 +129,7 @@ private:
 	void UpdateLights();
 
 	void PrintHotkeys();
+	void PrintDiageticHotkeys();
 	void ChangeShader( int nextShaderIdx );
 
 	GameLight& GetCurGameLight()											{ return m_lights[m_currentLightIdx]; }
@@ -188,6 +189,7 @@ private:
 
 	FresnelConstants m_fresnelData;
 	float m_dissolveFactor = 0.f;
+	float m_dissolveEdge = .3f;
 
 	std::vector<std::string> m_shaderPaths;
 	std::vector<std::string> m_shaderNames;
