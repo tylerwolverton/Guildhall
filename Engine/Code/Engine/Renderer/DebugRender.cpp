@@ -969,7 +969,7 @@ void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& col
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
+void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, float textHeight, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
 {
 	if ( text == nullptr
 		 || strlen( text ) == 0 )
@@ -982,10 +982,10 @@ void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rg
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
-	Vec2 textDimensions = font->GetDimensionsForText2D( .1f, text );
+	Vec2 textDimensions = font->GetDimensionsForText2D( textHeight, text );
 	Vec2 textMins = -pivot * textDimensions;
 
-	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, .1f, text, Rgba8::WHITE );
+	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, textHeight, text, Rgba8::WHITE );
 
 	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
 	{
@@ -1000,6 +1000,13 @@ void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rg
 		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( obj, s_debugRenderWorldBillboardTextObjectsAlways ); return;
 		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( obj, s_debugRenderWorldBillboardTextObjectsXRay ); return;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
+{
+	DebugAddWorldBillboardText( origin, pivot, .1f, start_color, end_color, duration, mode, text );
 }
 
 

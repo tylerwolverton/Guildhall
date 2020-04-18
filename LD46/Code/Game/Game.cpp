@@ -89,6 +89,8 @@ void Game::Startup()
 	InitializeMaterials();
 	InitializeMeshes();
 
+	SpawnSwitch( Vec3( 9.5f, 0.f, 0.f ), Vec3( 0.f, 0.f, 90.f ), Vec3(.1f, .1f, .01f) );
+
 	//m_world = new World();
 	//m_world->BuildNewMap( g_gameConfigBlackboard.GetValue( "startMap", "MutateDemo" ) );
 
@@ -192,6 +194,12 @@ void Game::InitializeMaterials()
 	m_floorMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
 	m_floorMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
 	m_floorMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_n.png" ) );
+
+	// Floor
+	m_whiteMaterial = new Material();
+	m_whiteMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
+	m_whiteMaterial->SetDiffuseTexture( nullptr );
+	m_whiteMaterial->SetNormalTexture( nullptr );
 }
 
 
@@ -409,7 +417,7 @@ void Game::SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec
 	switchTransform.SetScale( dimensions );
 	
 	InteractableSwitch* gameSwitch = new InteractableSwitch( m_player, .25f );
-	gameSwitch->SetMaterial( m_wallMaterial );
+	gameSwitch->SetMaterial( m_whiteMaterial );
 	gameSwitch->SetMesh( m_cubeMesh );
 	gameSwitch->SetTransform( switchTransform );
 

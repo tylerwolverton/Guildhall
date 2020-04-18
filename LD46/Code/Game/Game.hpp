@@ -128,4 +128,5 @@ private:
 	// Materials ( move to XML eventually )
 	Material* m_wallMaterial;
 	Material* m_floorMaterial;
+	Material* m_whiteMaterial;
 };

@@ -20,7 +20,7 @@ void InteractableSwitch::Update()
 	Vec2 playerPosition2D( m_player->GetPosition().x, m_player->GetPosition().z );
 	Vec2 position2D( m_transform.GetPosition().x, m_transform.GetPosition().z );
 
-	if ( !DoDiscsOverlap( playerPosition2D, .25f, position2D, m_radius ) )
+	if ( !DoDiscsOverlap( playerPosition2D, .5f, position2D, m_radius ) )
 	{
 		return;
 	}
@@ -34,5 +34,5 @@ void InteractableSwitch::Update()
 		return;
 	}
 
-	DebugAddWorldBillboardText( m_transform.GetPosition(), Vec2( 0.f, 0.f ), Rgba8::WHITE, Rgba8::WHITE, 0.f, DEBUG_RENDER_USE_DEPTH, m_helpText.c_str() );
+	DebugAddWorldBillboardText( m_transform.GetPosition() + direction * .1f, Vec2( .5f, .5f ), .01f, Rgba8::WHITE, Rgba8::WHITE, 0.f, DEBUG_RENDER_USE_DEPTH, m_helpText.c_str() );
 }

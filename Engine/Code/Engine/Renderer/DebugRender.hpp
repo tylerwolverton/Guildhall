@@ -108,6 +108,7 @@ void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& col
 void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, char const* format, ... ); // assume DEBUG_RENDER_USE_DEPTH
 
 // this text will always orient itself to the current camera
+void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, float textHeight, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text );
 void DebugAddWorldBillboardText( const Vec3& origin, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text );
 void DebugAddWorldBillboardTextf( const Vec3& origin, const Vec2& pivot, const Rgba8& color, float duration, eDebugRenderMode mode, char const* format, ... );
 void DebugAddWorldBillboardTextf( const Vec3& origin, const Vec2& pivot, const Rgba8& color, char const* format, ... );
