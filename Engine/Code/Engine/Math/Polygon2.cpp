@@ -25,8 +25,26 @@ void Polygon2::SetPoints( const std::vector<Vec2>& points )
 	m_points.clear();
 
 	m_points = points;
+
+	CalculateBoundingBox();
+	m_centerOfMass = m_boundingBox.GetCenter();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::SetPoints( Vec2* points, int numPoints )
+{
+	m_points.clear();
+	m_points.reserve( numPoints );
+
+	for ( int pointIdx = 0; pointIdx < numPoints; ++pointIdx )
+	{
+		m_points.push_back( points[pointIdx] );
+	}
+
+	CalculateBoundingBox();
+	m_centerOfMass = m_boundingBox.GetCenter();
+}
 
 //-----------------------------------------------------------------------------------------------
 bool Polygon2::IsValid() const

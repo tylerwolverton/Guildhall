@@ -31,9 +31,11 @@ public:
 	~Game();
 
 	void		Startup();
+	void		BeginFrame();
 	void		Update();
 	void		Render() const;
 	void		DebugRender() const;
+	void		EndFrame();
 	void		Shutdown();
 
 	void		RestartGame();

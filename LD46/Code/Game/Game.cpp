@@ -73,9 +73,10 @@ void Game::Startup()
 
 	m_physics2D = new Physics2D();
 	m_physics2D->Startup( m_gameClock );
+	m_physics2D->SetSceneGravity( 0.f );
 
 	m_playerRigidbody = m_physics2D->CreateRigidbody();
-	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, .5f );
+	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, .75f );
 	m_playerRigidbody->TakeCollider( discCollider );
 
 	InitializeCameras();
@@ -89,6 +90,13 @@ void Game::Startup()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::BeginFrame()
+{
+	m_physics2D->BeginFrame();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::InitializeCameras()
 {
 	m_worldCamera = new Camera();
@@ -98,7 +106,9 @@ void Game::InitializeCameras()
 
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
+	//m_worldCamera->SetProjectionOrthographic( 60.f, -.1f, -100.f );
 }
+
 
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeMeshes()
@@ -113,10 +123,28 @@ void Game::InitializeMeshes()
 	m_cubeMeshTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
 
 	m_cubeRigidbody = m_physics2D->CreateRigidbody();
-	std::vector<Vec2> m_polygonPoints;
-	//PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( Polygon2() );
-	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( m_cubeMeshTransform.GetPosition().XY(), 1.f );
-	m_cubeRigidbody->TakeCollider( discCollider );
+	m_cubeRigidbody->SetSimulationMode( SIMULATION_MODE_STATIC );
+	m_cubeRigidbody->SetPosition( m_cubeMeshTransform.GetPosition().XZ() );
+
+	Vec2 polygonPoints[4];
+	float minX = m_cubeMeshTransform.GetPosition().x - .5f;
+	float minY = -m_cubeMeshTransform.GetPosition().z - .5f;
+	float maxX = m_cubeMeshTransform.GetPosition().x + .5f;
+	float maxY = -m_cubeMeshTransform.GetPosition().z + .5f;
+
+	Polygon2 polygon;
+	AABB2 boundingBox( minX, minY, maxX, maxY );
+	boundingBox.GetCornerPositionsCCW( polygonPoints );
+	polygon.SetPoints( polygonPoints, 4 );
+	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
+
+	Vec3 mins = Vec3( minX, 0.f, maxY );
+	Vec3 maxs = Vec3( maxX, 1.f, minY );
+	AABB3 collisionBox( mins, maxs );
+	DebugAddWorldWireBounds( collisionBox, Rgba8::RED, 120.f );
+
+	//DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( m_cubeMeshTransform.GetPosition().XZ(), 1.f );
+	m_cubeRigidbody->TakeCollider( polygonCollider );
 
 	// Quad
 	vertices.clear();
@@ -138,6 +166,8 @@ void Game::InitializeMeshes()
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+
+	m_physics2D->Shutdown();
 
 	TileDefinition::s_definitions.clear();
 	
@@ -164,6 +194,7 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::Update()
 {
+
 	if ( !g_devConsole->IsOpen() ) 
 	{
 		UpdateFromKeyboard();
@@ -172,6 +203,15 @@ void Game::Update()
 	UpdateCameras();
 
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	
+	m_physics2D->Update();
+
+	//m_playerRigidbody->SetPosition( Vec2( m_playerRigidbody->GetPosition().x, m_playerRigidbody->GetPosition().y ) );
+	m_worldCamera->SetPosition( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ) );
+
+	DebugAddWorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), 1.5f, Rgba8::GREEN );
+	
+	
 	//m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
 
 	//m_world->Update( deltaSeconds );
@@ -265,6 +305,11 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	absoluteTranslation.y = 0.f;
 
 	m_worldCamera->Translate( absoluteTranslation );
+
+	Vec2 cameraPosition = m_worldCamera->GetTransform().GetPosition().XZ();
+	//cameraPosition.y *= -1.f;
+	//cameraPosition.y -= 2.f * cameraPosition.y;
+	m_playerRigidbody->SetPosition( cameraPosition );
 }
 
 
@@ -301,6 +346,13 @@ void Game::Render() const
 void Game::DebugRender() const
 {
 	m_world->DebugRender();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::EndFrame()
+{
+	m_physics2D->EndFrame();
 }
 
 

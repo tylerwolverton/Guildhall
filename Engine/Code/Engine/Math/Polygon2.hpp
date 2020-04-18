@@ -13,6 +13,7 @@ public:
 	Polygon2( const std::vector<Vec2>& points );
 	~Polygon2();
 
+	void SetPoints( Vec2* points, int numPoints );
 	void SetPoints( const std::vector<Vec2>& points );
 	std::vector<Vec2> GetPoints() const											{ return m_points; };
 

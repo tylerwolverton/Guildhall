@@ -276,9 +276,19 @@ void AABB2::GetCornerPositions( Vec2* out_fourPoints ) const
 
 
 //-----------------------------------------------------------------------------------------------
+void AABB2::GetCornerPositionsCCW( Vec2* out_fourPoints ) const
+{
+	out_fourPoints[0] = mins;
+	out_fourPoints[1] = Vec2( maxs.x, mins.y );
+	out_fourPoints[2] = maxs;
+	out_fourPoints[3] = Vec2( mins.x, maxs.y );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void AABB2::GetPositionOnEachEdge( float wallFraction, Vec2* out_fourPoints ) const
 {
-	// TODO: Roll rng for each pointon wall using FloatRange
+	// TODO: Roll rng for each point on wall using FloatRange
 
 	// Move corner positions over based on fraction to get random point on edge
 	Vec2 corners[4];

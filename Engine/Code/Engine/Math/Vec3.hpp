@@ -60,6 +60,7 @@ public:
 
 	// Accessors
 	Vec2		XY() const;
+	Vec2		XZ() const;
 
 	// Standalone "friend" functions that are conceptually, but not actually, part of Vec3::
 	friend const Vec3 operator*( float uniformScale, const Vec3& vecToScale );	// float * vec3
