@@ -149,10 +149,10 @@ void Game::InitializeMeshes()
 	
 	m_cubeRigidbody->TakeCollider( polygonCollider );
 
-	SpawnEnvironmentBox( Vec3( 10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
-	SpawnEnvironmentBox( Vec3( -10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
-	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -10.f ), Vec3( 20.f, 1.f, 1.f ) );
-	SpawnEnvironmentBox( Vec3( 0.f, 0.f, 10.f ), Vec3( 20.f, 1.f, 1.f ) );
+	SpawnEnvironmentBox( Vec3( 10.f, 0.f, 0.f ), Vec3( 1.f, 8.f, 20.f ) );
+	SpawnEnvironmentBox( Vec3( -10.f, 0.f, 0.f ), Vec3( 1.f, 8.f, 20.f ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -10.f ), Vec3( 20.f, 8.f, 1.f ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, 10.f ), Vec3( 20.f, 8.f, 1.f ) );
 
 	m_floorTransform.SetPosition( Vec3( 0.f, -.5f, 0.f ) );
 	m_floorTransform.SetScale( Vec3( 20.f, .1f, 20.f ) );
@@ -163,6 +163,16 @@ void Game::InitializeMeshes()
 	floor->SetTransform( m_floorTransform );
 
 	m_gameObjects.push_back( floor );
+	
+	Transform ceilingTransform = m_floorTransform;
+	ceilingTransform.Translate( Vec3( 0.f, 4.f, 0.f ) );
+
+	GameObject* ceiling = new GameObject();
+	ceiling->SetMaterial( m_ceilingMaterial );
+	ceiling->SetMesh( m_cubeMesh );
+	ceiling->SetTransform( ceilingTransform );
+
+	m_gameObjects.push_back( ceiling );
 
 	// Quad
 	vertices.clear();
@@ -195,7 +205,13 @@ void Game::InitializeMaterials()
 	m_floorMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
 	m_floorMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_n.png" ) );
 
-	// Floor
+	// Ceiling
+	m_ceilingMaterial = new Material();
+	m_ceilingMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
+	m_ceilingMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/yellow_plaster_d.png" ) );
+	m_ceilingMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/yellow_plaster_n.png" ) );
+
+	// No texture
 	m_whiteMaterial = new Material();
 	m_whiteMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
 	m_whiteMaterial->SetDiffuseTexture( nullptr );
