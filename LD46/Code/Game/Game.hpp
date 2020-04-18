@@ -5,6 +5,7 @@
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Game/Material.hpp"
 
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@ class Clock;
 class Entity;
 class RandomNumberGenerator;
 class Camera;
+class GameObject;
 class GPUMesh;
 class Physics2D;
 class TextBox;
@@ -63,6 +65,7 @@ private:
 
 	void InitializeCameras();
 	void InitializeMeshes();
+	void InitializeMaterials();
 
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
@@ -117,4 +120,10 @@ private:
 
 	std::vector<Transform> m_wallTransforms;
 	Transform m_floorTransform;
+
+	std::vector<GameObject> m_gameObjects;
+
+	// Materials ( move to XML eventually )
+	Material* m_wallMaterial;
+	Material* m_floorMaterial;
 };

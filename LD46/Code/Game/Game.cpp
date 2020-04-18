@@ -33,6 +33,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
+#include "Game/GameObject.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
@@ -79,6 +80,7 @@ void Game::Startup()
 	m_playerRigidbody->TakeCollider( discCollider );
 
 	InitializeCameras();
+	InitializeMaterials();
 	InitializeMeshes();
 
 	//m_world = new World();
@@ -147,6 +149,13 @@ void Game::InitializeMeshes()
 	m_floorTransform.SetPosition( Vec3( 0.f, -.5f, 0.f ) );
 	m_floorTransform.SetScale( Vec3( 20.f, .1f, 20.f ) );
 
+	GameObject floor;
+	floor.SetMaterial( m_floorMaterial );
+	floor.SetMesh( m_cubeMesh );
+	floor.SetTransform( m_floorTransform );
+
+	m_gameObjects.push_back( floor );
+
 	// Quad
 	vertices.clear();
 	indices.clear();
@@ -164,6 +173,23 @@ void Game::InitializeMeshes()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::InitializeMaterials()
+{
+	// Wall
+	m_wallMaterial = new Material();
+	m_wallMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
+	m_wallMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_d.png" ) );
+	m_wallMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_n.png" ) );
+
+	// Floor
+	m_floorMaterial = new Material();
+	m_floorMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
+	m_floorMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
+	m_floorMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_n.png" ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
@@ -176,6 +202,8 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
+	PTR_SAFE_DELETE( m_wallMaterial );
+	PTR_SAFE_DELETE( m_floorMaterial );
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
@@ -334,6 +362,14 @@ void Game::SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eS
 	wallRigidbody->TakeCollider( polygonCollider );
 
 	m_wallTransforms.push_back( wallTransform );
+
+	GameObject gameObject;
+	gameObject.SetRigidbody( wallRigidbody );
+	gameObject.SetMaterial( m_wallMaterial );
+	gameObject.SetMesh( m_cubeMesh );
+	gameObject.SetTransform( wallTransform );
+
+	m_gameObjects.push_back( gameObject );
 }
 
 
@@ -342,14 +378,14 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
-	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_d.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_n.png" ) );
+	/*g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_d.png" ) );
+	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_n.png" ) );*/
 	g_renderer->SetSampler( eSampler::POINT_WRAP );
 	g_renderer->BindSampler( nullptr );
-
-	g_renderer->BindShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
-
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+
+	//g_renderer->BindShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
+
 	
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
@@ -360,20 +396,25 @@ void Game::Render() const
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_cubeMesh );
 	
-	for ( int transformIdx = 0; transformIdx < (int)m_wallTransforms.size(); ++transformIdx )
+	for ( int gameObjIdx = 0; gameObjIdx < (int)m_gameObjects.size(); ++gameObjIdx )
+	{
+		m_gameObjects[gameObjIdx].Render();
+	}
+
+	/*for ( int transformIdx = 0; transformIdx < (int)m_wallTransforms.size(); ++transformIdx )
 	{
 		model = m_wallTransforms[transformIdx].GetAsMatrix();
 		g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 		g_renderer->DrawMesh( m_cubeMesh );
-	}
+	}*/
 
 	// Draw floor
-	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
+	/*g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
 	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_n.png" ) );
 
 	model = m_floorTransform.GetAsMatrix();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_cubeMesh );
+	g_renderer->DrawMesh( m_cubeMesh );*/
 	
 
 	//m_world->Render();

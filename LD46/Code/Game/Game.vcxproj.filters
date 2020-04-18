@@ -52,6 +52,12 @@
     <ClCompile Include="EntityDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -91,6 +97,12 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
