@@ -1,0 +1,74 @@
+<TileDefinitions spriteSheet="Terrain_32x32.png" spriteLayout="32,32">
+
+  <TileDefinition
+		name="Grass"
+    tileImageColor="0,255,0"
+		spriteCoords="7,0"
+		spriteTint="180,180,180"
+		allowsSight="true"
+		allowsWalking="true"
+		allowsFlying="true"
+		allowsSwimming="false"
+	/>
+
+  <TileDefinition
+		name="Water"
+    tileImageColor="0,0,255"
+		spriteCoords="25,31"
+		allowsSight="true"
+		allowsWalking="false"
+		allowsSwimming="false"
+		allowsFlying="true"
+	/>
+
+  <TileDefinition
+   name="Lava"
+   tileImageColor="255,0,0"
+   spriteCoords="13,29"
+   allowsSight="true"
+   allowsWalking="false"
+   allowsSwimming="false"
+   allowsFlying="true"
+	/>
+
+  <TileDefinition
+   name="Stone"
+   tileImageColor="127,127,127"
+   spriteCoords="24,22"
+   allowsSight="false"
+   allowsWalking="false"
+   allowsSwimming="false"
+   allowsFlying="false"
+	/>
+
+  <TileDefinition
+    name="Wood"
+    tileImageColor="165,42,42"
+    spriteCoords="29,1"
+    allowsSight="true"
+    allowsWalking="true"
+    allowsSwimming="false"
+    allowsFlying="true"
+	/>
+
+  <TileDefinition
+    name="Sand"
+    tileImageColor="165,0,0"
+    spriteCoords="7,1"
+    allowsSight="true"
+    allowsWalking="true"
+    allowsSwimming="false"
+    allowsFlying="true"
+	/>
+  
+  <TileDefinition
+    name="BurnedEarth"
+    tileImageColor="0,0,0"
+    spriteCoords="10,29"
+    allowsSight="true"
+    allowsWalking="true"
+    allowsSwimming="false"
+    allowsFlying="true"
+	/>
+
+</TileDefinitions>

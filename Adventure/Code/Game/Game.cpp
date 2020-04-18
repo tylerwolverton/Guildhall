@@ -58,7 +58,7 @@ void Game::Startup()
 	m_world = new World();
 
 	m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
-	g_devConsole->PrintString( Rgba8::WHITE, Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
+	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
 	m_world->BuildNewMap( m_curMap );
 
 	LogMapDebugCommands();
