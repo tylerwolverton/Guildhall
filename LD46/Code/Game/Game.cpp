@@ -16,7 +16,6 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Physics/Physics2D.hpp"
-#include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/PolygonCollider2D.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
@@ -140,11 +139,13 @@ void Game::InitializeMeshes()
 	
 	m_cubeRigidbody->TakeCollider( polygonCollider );
 
-	SpawnWallBox( Vec3( 10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
-	SpawnWallBox( Vec3( -10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
-	SpawnWallBox( Vec3( 0.f, 0.f, -10.f ), Vec3( 20.f, 1.f, 1.f ) );
-	SpawnWallBox( Vec3( 0.f, 0.f, 10.f ), Vec3( 20.f, 1.f, 1.f ) );
+	SpawnEnvironmentBox( Vec3( 10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
+	SpawnEnvironmentBox( Vec3( -10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -10.f ), Vec3( 20.f, 1.f, 1.f ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, 10.f ), Vec3( 20.f, 1.f, 1.f ) );
 
+	m_floorTransform.SetPosition( Vec3( 0.f, -.5f, 0.f ) );
+	m_floorTransform.SetScale( Vec3( 20.f, .1f, 20.f ) );
 
 	// Quad
 	vertices.clear();
@@ -308,7 +309,7 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::SpawnWallBox( const Vec3& location, const Vec3& dimensions )
+void Game::SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eSimulationMode simMode )
 {
 	Transform wallTransform;
 	wallTransform.SetPosition( location );
@@ -327,7 +328,7 @@ void Game::SpawnWallBox( const Vec3& location, const Vec3& dimensions )
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
 
 	Rigidbody2D* wallRigidbody = m_physics2D->CreateRigidbody();
-	wallRigidbody->SetSimulationMode( SIMULATION_MODE_STATIC );
+	wallRigidbody->SetSimulationMode( simMode );
 	wallRigidbody->SetPosition( wallTransform.GetPosition().XZ() );
 
 	wallRigidbody->TakeCollider( polygonCollider );
@@ -342,7 +343,7 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_d.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/factory_wall_n.png" ) );
+	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_n.png" ) );
 	g_renderer->SetSampler( eSampler::POINT_WRAP );
 	g_renderer->BindSampler( nullptr );
 
@@ -365,6 +366,15 @@ void Game::Render() const
 		g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 		g_renderer->DrawMesh( m_cubeMesh );
 	}
+
+	// Draw floor
+	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
+	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_n.png" ) );
+
+	model = m_floorTransform.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_cubeMesh );
+	
 
 	//m_world->Render();
 

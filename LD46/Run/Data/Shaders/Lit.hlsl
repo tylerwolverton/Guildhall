@@ -56,7 +56,6 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	uv.x *= length( input.world_tangent );
 	uv.y *= length( input.world_bitangent );
 
-
 	float4 diffuse_color = tDiffuse.Sample( sSampler, uv );
 	float4 normal_color = tNormals.Sample( sSampler, uv );
 

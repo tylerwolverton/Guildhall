@@ -3,6 +3,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
+#include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include <string>
@@ -17,7 +18,6 @@ class RandomNumberGenerator;
 class Camera;
 class GPUMesh;
 class Physics2D;
-class Rigidbody2D;
 class TextBox;
 class Texture;
 class World;
@@ -71,7 +71,7 @@ private:
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
-	void SpawnWallBox( const Vec3& location, const Vec3& dimensions );
+	void SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eSimulationMode simMode = SIMULATION_MODE_STATIC );
 
 private:
 	Clock* m_gameClock = nullptr;
@@ -116,4 +116,5 @@ private:
 	float m_playerRadius = .25f;
 
 	std::vector<Transform> m_wallTransforms;
+	Transform m_floorTransform;
 };
