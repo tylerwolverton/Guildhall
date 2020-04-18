@@ -34,6 +34,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
 #include "Game/GameObject.hpp"
+#include "Game/InteractableSwitch.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
@@ -78,6 +79,11 @@ void Game::Startup()
 	m_playerRigidbody = m_physics2D->CreateRigidbody();
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, m_playerRadius );
 	m_playerRigidbody->TakeCollider( discCollider );
+
+	m_player = new GameObject();
+	m_player->SetRigidbody( m_playerRigidbody );
+
+	m_gameObjects.push_back( m_player );
 
 	InitializeCameras();
 	InitializeMaterials();
@@ -149,10 +155,10 @@ void Game::InitializeMeshes()
 	m_floorTransform.SetPosition( Vec3( 0.f, -.5f, 0.f ) );
 	m_floorTransform.SetScale( Vec3( 20.f, .1f, 20.f ) );
 
-	GameObject floor;
-	floor.SetMaterial( m_floorMaterial );
-	floor.SetMesh( m_cubeMesh );
-	floor.SetTransform( m_floorTransform );
+	GameObject* floor = new GameObject();
+	floor->SetMaterial( m_floorMaterial );
+	floor->SetMesh( m_cubeMesh );
+	floor->SetTransform( m_floorTransform );
 
 	m_gameObjects.push_back( floor );
 
@@ -199,6 +205,7 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	PTR_VECTOR_SAFE_DELETE( m_gameObjects );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
@@ -231,11 +238,28 @@ void Game::Update()
 
 	UpdateCameras();
 
-	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	
+	for ( int gameObjIdx = 0; gameObjIdx < (int)m_gameObjects.size(); ++gameObjIdx )
+	{
+		if ( m_gameObjects[gameObjIdx] != nullptr )
+		{
+			m_gameObjects[gameObjIdx]->Update();
+		}
+	}
+
 	m_physics2D->Update();
 
-	m_worldCamera->SetPosition( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ) );
+	for ( int gameObjIdx = 0; gameObjIdx < (int)m_gameObjects.size(); ++gameObjIdx )
+	{
+		if ( m_gameObjects[gameObjIdx] != nullptr )
+		{
+			m_gameObjects[gameObjIdx]->UpdateTransform();
+		}
+	}
+
+	m_worldCamera->SetPosition( m_player->GetPosition() );
+	//m_worldCamera->SetPosition( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ) );
 
 	//WorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), m_playerRadius, Rgba8::GREEN );
 
@@ -296,9 +320,9 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	pitch *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch,
+	m_worldCamera->SetPitchRollYawRotation( transform.m_orientation.x + pitch,
 											0.f,
-											transform.m_rotation.z + yaw );
+											transform.m_orientation.z + yaw );
 
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
@@ -332,7 +356,10 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	m_worldCamera->Translate( absoluteTranslation );
 
 	Vec2 cameraPosition = m_worldCamera->GetTransform().GetPosition().XZ();
-	m_playerRigidbody->SetPosition( cameraPosition );
+	//m_playerRigidbody->SetPosition( cameraPosition );
+	//m_player->SetTransform( m_worldCamera->GetTransform() );
+	m_player->Translate( absoluteTranslation );
+	m_player->SetOrientation( m_worldCamera->GetTransform().m_orientation );
 }
 
 
@@ -363,13 +390,30 @@ void Game::SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eS
 
 	m_wallTransforms.push_back( wallTransform );
 
-	GameObject gameObject;
-	gameObject.SetRigidbody( wallRigidbody );
-	gameObject.SetMaterial( m_wallMaterial );
-	gameObject.SetMesh( m_cubeMesh );
-	gameObject.SetTransform( wallTransform );
+	GameObject* gameObject = new GameObject();
+	gameObject->SetRigidbody( wallRigidbody );
+	gameObject->SetMaterial( m_wallMaterial );
+	gameObject->SetMesh( m_cubeMesh );
+	gameObject->SetTransform( wallTransform );
 
 	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec3& dimensions )
+{
+	Transform switchTransform;
+	switchTransform.SetPosition( location );
+	switchTransform.SetOrientation( orientation );
+	switchTransform.SetScale( dimensions );
+	
+	InteractableSwitch* gameSwitch = new InteractableSwitch( m_player, .25f );
+	gameSwitch->SetMaterial( m_wallMaterial );
+	gameSwitch->SetMesh( m_cubeMesh );
+	gameSwitch->SetTransform( switchTransform );
+
+	m_gameObjects.push_back( gameSwitch );
 }
 
 
@@ -398,7 +442,10 @@ void Game::Render() const
 	
 	for ( int gameObjIdx = 0; gameObjIdx < (int)m_gameObjects.size(); ++gameObjIdx )
 	{
-		m_gameObjects[gameObjIdx].Render();
+		if ( m_gameObjects[gameObjIdx] != nullptr )
+		{
+			m_gameObjects[gameObjIdx]->Render();
+		}
 	}
 
 	/*for ( int transformIdx = 0; transformIdx < (int)m_wallTransforms.size(); ++transformIdx )

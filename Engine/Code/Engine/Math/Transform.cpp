@@ -19,20 +19,20 @@ void Transform::Translate( const Vec3& translation )
 
 
 //-----------------------------------------------------------------------------------------------
-void Transform::SetRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
+void Transform::SetOrientationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
 {
 	pitch = GetRotationInRangeDegrees( pitch, -180.f, 180.f );
 	roll = GetRotationInRangeDegrees( roll, -180.f, 180.f );
 	yaw = GetRotationInRangeDegrees( yaw, -180.f, 180.f );
 
-	m_rotation = Vec3( pitch, roll, yaw );
+	m_orientation = Vec3( pitch, roll, yaw );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Transform::RotatePitchRollYawDegrees( float pitch, float roll, float yaw )
 {
-	SetRotationFromPitchRollYawDegrees( m_rotation.x + pitch, m_rotation.y + roll, m_rotation.z + yaw );
+	SetOrientationFromPitchRollYawDegrees( m_orientation.x + pitch, m_orientation.y + roll, m_orientation.z + yaw );
 }
 
 
@@ -44,10 +44,17 @@ void Transform::SetScale( const Vec3& scale )
 
 
 //-----------------------------------------------------------------------------------------------
+void Transform::SetOrientation( const Vec3& rotation )
+{
+	m_orientation = rotation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetAsMatrix() const
 {
 	Mat44 translation = Mat44::CreateTranslation3D( m_position );
-	Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_rotation );
+	Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_orientation );
 	Mat44 scale = Mat44::CreateNonUniformScale3D( m_scale );
 
 	Mat44 model = translation;
@@ -55,4 +62,13 @@ const Mat44 Transform::GetAsMatrix() const
 	model.PushTransform( scale );
 
 	return model;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 Transform::GetForwardVector() const
+{
+	Vec3 forwardVec = GetAsMatrix().TransformVector3D( Vec3( 0.f, 0.f, -1.f ) ).GetNormalized();
+
+	return forwardVec;
 }

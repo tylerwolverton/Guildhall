@@ -13,7 +13,7 @@ class Rigidbody2D;
 class GameObject
 {
 public:
-	void Update();
+	virtual void Update();
 	void UpdateTransform();
 	void Render() const;
 
@@ -22,9 +22,13 @@ public:
 	void SetMaterial( Material* material )								{ m_material = material; }
 	void SetTransform( const Transform& transform )						{ m_transform = transform; }
 
-	Vec3 GetPosition();
+	void Translate( const Vec3& translation );
+	void SetOrientation( const Vec3& orientation );
 
-private:
+	Vec3 GetPosition() const;
+	Vec3 GetForwardVector() const;
+
+protected:
 	Transform m_transform;
 	GPUMesh* m_mesh = nullptr;
 	Rigidbody2D* m_rigidbody = nullptr;

@@ -75,6 +75,7 @@ private:
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
 	void SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eSimulationMode simMode = SIMULATION_MODE_STATIC );
+	void SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec3& dimensions );
 
 private:
 	Clock* m_gameClock = nullptr;
@@ -121,7 +122,8 @@ private:
 	std::vector<Transform> m_wallTransforms;
 	Transform m_floorTransform;
 
-	std::vector<GameObject> m_gameObjects;
+	std::vector<GameObject*> m_gameObjects;
+	GameObject* m_player = nullptr;
 
 	// Materials ( move to XML eventually )
 	Material* m_wallMaterial;

@@ -39,9 +39,12 @@ void GameObject::Render() const
 		m_material->Bind();
 	}
 
-	Mat44 model = m_transform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, specularFactor, specularPower );
-	g_renderer->DrawMesh( m_mesh );
+	if ( m_mesh != nullptr )
+	{
+		Mat44 model = m_transform.GetAsMatrix();
+		g_renderer->SetModelData( model, Rgba8::WHITE, specularFactor, specularPower );
+		g_renderer->DrawMesh( m_mesh );
+	}
 }
 
 
@@ -55,7 +58,33 @@ void GameObject::SetRigidbody( Rigidbody2D* rigidbody )
 
 
 //-----------------------------------------------------------------------------------------------
-Vec3 GameObject::GetPosition()
+void GameObject::Translate( const Vec3& translation )
+{
+	m_transform.Translate( translation );
+	
+	if ( m_rigidbody != nullptr )
+	{
+		m_rigidbody->Translate2D( Vec2( translation.x, translation.z ) );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::SetOrientation( const Vec3& orientation )
+{
+	m_transform.SetOrientation( orientation );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 GameObject::GetPosition() const
 {
 	return m_transform.GetPosition();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 GameObject::GetForwardVector() const
+{
+	return m_transform.GetForwardVector();
 }

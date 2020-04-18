@@ -75,7 +75,7 @@ void Camera::SetPitchRollYawRotation( float pitch, float roll, float yaw )
 {
 	pitch = ClampMinMax( pitch, -85.f, 85.f );
 
-	m_transform.SetRotationFromPitchRollYawDegrees( pitch, roll, yaw );
+	m_transform.SetOrientationFromPitchRollYawDegrees( pitch, roll, yaw );
 }
 
 
