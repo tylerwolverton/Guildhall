@@ -56,6 +56,16 @@ enum class eBlendMode
 
 
 //-----------------------------------------------------------------------------------------------
+// Should this be controlled by 2 separate enums?
+enum class eSampler
+{
+	POINT_CLAMP,
+	LINEAR_CLAMP,
+	POINT_WRAP,
+};
+
+
+//-----------------------------------------------------------------------------------------------
 enum eBufferSlot
 {
 	UBO_FRAME_SLOT = 0,
@@ -145,6 +155,7 @@ public:
 	void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
+	void SetSampler( eSampler sampler );
 	void SetDepthTest( eCompareFunc compare, bool writeDepthOnPass );
 
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
@@ -283,8 +294,9 @@ private:
 	Shader* m_currentShader							= nullptr;
 	std::vector<Shader*> m_loadedShaders;
 
-	Sampler* m_defaultPointSampler					= nullptr;
-	Sampler* m_defaultLinearSampler					= nullptr;
+	Sampler* m_pointClampSampler					= nullptr;
+	Sampler* m_linearClampSampler					= nullptr;
+	Sampler* m_pointWrapSampler						= nullptr;
 	Sampler* m_currentSampler						= nullptr;
 	
 	Texture* m_defaultWhiteTexture					= nullptr;

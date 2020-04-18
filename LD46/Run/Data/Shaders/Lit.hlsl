@@ -52,9 +52,13 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	// use the uv to sample the texture
-	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
-	float4 normal_color = tNormals.Sample( sSampler, input.uv );
+	float2 uv = input.uv;
+	uv.x *= length( input.world_tangent );
+	uv.y *= length( input.world_bitangent );
+
+
+	float4 diffuse_color = tDiffuse.Sample( sSampler, uv );
+	float4 normal_color = tNormals.Sample( sSampler, uv );
 
 	float3 surface_color = input.color.xyz * pow( max( diffuse_color.xyz, 0.f ), GAMMA ); // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = input.color.a * diffuse_color.a;

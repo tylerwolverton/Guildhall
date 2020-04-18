@@ -4,7 +4,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Sampler::Sampler( RenderContext* context, eSamplerType type )
+Sampler::Sampler( RenderContext* context, eSamplerType type, eSamplerUVMode mode )
 	: m_owner( context )
 {
 	ID3D11Device* device = context->m_device;
@@ -18,9 +18,20 @@ Sampler::Sampler( RenderContext* context, eSamplerType type )
 	{
 		desc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 	}
-	desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+	if ( mode == UV_MODE_CLAMP )
+	{
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	}
+	else if ( mode == UV_MODE_WRAP )
+	{
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	}
+
 	desc.MipLODBias = 0;
 	desc.MaxAnisotropy = 0;
 	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;

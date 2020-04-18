@@ -82,8 +82,9 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_materialUBO );
 	PTR_SAFE_DELETE( m_lightUBO );
 
-	PTR_SAFE_DELETE( m_defaultPointSampler );
-	PTR_SAFE_DELETE( m_defaultLinearSampler );
+	PTR_SAFE_DELETE( m_pointClampSampler );
+	PTR_SAFE_DELETE( m_linearClampSampler );
+	PTR_SAFE_DELETE( m_pointWrapSampler );
 	
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
@@ -116,6 +117,20 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ALPHA; return;
 		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ADDITIVE; return;
 		case eBlendMode::DISABLED: m_context->OMSetBlendState( m_disabledBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::DISABLED; return;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetSampler( eSampler sampler )
+{
+	float const zeroes[] = { 0,0,0,0 };
+
+	switch ( sampler )
+	{
+		case eSampler::POINT_CLAMP: m_currentSampler = m_pointClampSampler; return;
+		case eSampler::LINEAR_CLAMP: m_currentSampler = m_linearClampSampler; return;
+		case eSampler::POINT_WRAP: m_currentSampler = m_pointWrapSampler; return;
 	}
 }
 
@@ -517,9 +532,10 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
 	// Create default samplers
-	m_defaultPointSampler = new Sampler( this, SAMPLER_POINT );
-	m_defaultLinearSampler = new Sampler( this, SAMPLER_BILINEAR );
-	m_currentSampler = m_defaultPointSampler;
+	m_pointClampSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_CLAMP );
+	m_linearClampSampler = new Sampler( this, SAMPLER_BILINEAR, UV_MODE_CLAMP );
+	m_pointWrapSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_WRAP );
+	m_currentSampler = m_pointClampSampler;
 
 	// Create a white texture to use when no texture is needed
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
@@ -1140,13 +1156,13 @@ bool RenderContext::GetFrontFaceWindOrderCCW() const
 //-----------------------------------------------------------------------------------------------
 void RenderContext::CycleSampler()
 {
-	if ( m_currentSampler == m_defaultPointSampler )
+	if ( m_currentSampler == m_pointClampSampler )
 	{
-		m_currentSampler = m_defaultLinearSampler;
+		m_currentSampler = m_linearClampSampler;
 	}
-	else if ( m_currentSampler == m_defaultLinearSampler )
+	else if ( m_currentSampler == m_linearClampSampler )
 	{
-		m_currentSampler = m_defaultPointSampler;
+		m_currentSampler = m_pointClampSampler;
 	}
 }
 

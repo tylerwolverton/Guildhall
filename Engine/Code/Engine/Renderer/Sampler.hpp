@@ -1,4 +1,7 @@
 #pragma once
+#include "Engine/Core/Rgba8.hpp"
+
+
 //-----------------------------------------------------------------------------------------------
 struct ID3D11SamplerState;
 class RenderContext;
@@ -13,10 +16,18 @@ enum eSamplerType
 
 
 //-----------------------------------------------------------------------------------------------
+enum eSamplerUVMode
+{
+	UV_MODE_CLAMP,		
+	UV_MODE_WRAP
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Sampler
 {
 public:
-	Sampler( RenderContext* context, eSamplerType type );
+	Sampler( RenderContext* context, eSamplerType type, eSamplerUVMode mode );
 	~Sampler();
 
 	//inline ID3D11SamplerState* GetHandle() const							{ return m_handle; }

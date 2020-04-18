@@ -140,7 +140,10 @@ void Game::InitializeMeshes()
 	
 	m_cubeRigidbody->TakeCollider( polygonCollider );
 
-	SpawnWallBox( Vec3( 5.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 10.f ) );
+	SpawnWallBox( Vec3( 10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
+	SpawnWallBox( Vec3( -10.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 20.f ) );
+	SpawnWallBox( Vec3( 0.f, 0.f, -10.f ), Vec3( 20.f, 1.f, 1.f ) );
+	SpawnWallBox( Vec3( 0.f, 0.f, 10.f ), Vec3( 20.f, 1.f, 1.f ) );
 
 
 	// Quad
@@ -205,7 +208,7 @@ void Game::Update()
 
 	m_worldCamera->SetPosition( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ) );
 
-	DebugAddWorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), m_playerRadius, Rgba8::GREEN );
+	//WorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), m_playerRadius, Rgba8::GREEN );
 
 	//m_world->Update( deltaSeconds );
 }
@@ -300,8 +303,6 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	m_worldCamera->Translate( absoluteTranslation );
 
 	Vec2 cameraPosition = m_worldCamera->GetTransform().GetPosition().XZ();
-	//cameraPosition.y *= -1.f;
-	//cameraPosition.y -= 2.f * cameraPosition.y;
 	m_playerRigidbody->SetPosition( cameraPosition );
 }
 
@@ -340,8 +341,10 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
-	g_renderer->BindDiffuseTexture( nullptr );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
+	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_d.png" ) );
+	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/factory_wall_n.png" ) );
+	g_renderer->SetSampler( eSampler::POINT_WRAP );
+	g_renderer->BindSampler( nullptr );
 
 	g_renderer->BindShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
 
