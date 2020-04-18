@@ -76,7 +76,7 @@ void Game::Startup()
 	m_physics2D->SetSceneGravity( 0.f );
 
 	m_playerRigidbody = m_physics2D->CreateRigidbody();
-	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, .75f );
+	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, m_playerRadius );
 	m_playerRigidbody->TakeCollider( discCollider );
 
 	InitializeCameras();
@@ -116,7 +116,7 @@ void Game::InitializeMeshes()
 	// Cube
 	std::vector<Vertex_PCUTBN> vertices;
 	std::vector<uint> indices;
-	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 2.f, Rgba8::WHITE );
+	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
 
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
 
@@ -137,14 +137,11 @@ void Game::InitializeMeshes()
 	boundingBox.GetCornerPositionsCCW( polygonPoints );
 	polygon.SetPoints( polygonPoints, 4 );
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
-
-	Vec3 mins = Vec3( minX, 0.f, maxY );
-	Vec3 maxs = Vec3( maxX, 1.f, minY );
-	AABB3 collisionBox( mins, maxs );
-	DebugAddWorldWireBounds( collisionBox, Rgba8::RED, 120.f );
-
-	//DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( m_cubeMeshTransform.GetPosition().XZ(), 1.f );
+	
 	m_cubeRigidbody->TakeCollider( polygonCollider );
+
+	SpawnWallBox( Vec3( 5.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 10.f ) );
+
 
 	// Quad
 	vertices.clear();
@@ -153,7 +150,7 @@ void Game::InitializeMeshes()
 
 	m_quadMesh = new GPUMesh( g_renderer, vertices, indices );
 
-	// Spheres
+	// Spheres 
 	vertices.clear();
 	indices.clear();
 	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 64, Rgba8::WHITE );
@@ -206,13 +203,9 @@ void Game::Update()
 	
 	m_physics2D->Update();
 
-	//m_playerRigidbody->SetPosition( Vec2( m_playerRigidbody->GetPosition().x, m_playerRigidbody->GetPosition().y ) );
 	m_worldCamera->SetPosition( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ) );
 
-	DebugAddWorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), 1.5f, Rgba8::GREEN );
-	
-	
-	//m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
+	DebugAddWorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), m_playerRadius, Rgba8::GREEN );
 
 	//m_world->Update( deltaSeconds );
 }
@@ -314,6 +307,35 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::SpawnWallBox( const Vec3& location, const Vec3& dimensions )
+{
+	Transform wallTransform;
+	wallTransform.SetPosition( location );
+	wallTransform.SetScale( dimensions );
+
+	Vec2 polygonPoints[4];
+	float minX = wallTransform.GetPosition().x - dimensions.x * .5f;
+	float minY = -wallTransform.GetPosition().z - dimensions.z * .5f;
+	float maxX = wallTransform.GetPosition().x + dimensions.x * .5f;
+	float maxY = -wallTransform.GetPosition().z + dimensions.z * .5f;
+
+	Polygon2 polygon;
+	AABB2 boundingBox( minX, minY, maxX, maxY );
+	boundingBox.GetCornerPositionsCCW( polygonPoints );
+	polygon.SetPoints( polygonPoints, 4 );
+	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
+
+	Rigidbody2D* wallRigidbody = m_physics2D->CreateRigidbody();
+	wallRigidbody->SetSimulationMode( SIMULATION_MODE_STATIC );
+	wallRigidbody->SetPosition( wallTransform.GetPosition().XZ() );
+
+	wallRigidbody->TakeCollider( polygonCollider );
+
+	m_wallTransforms.push_back( wallTransform );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
@@ -334,6 +356,13 @@ void Game::Render() const
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_cubeMesh );
 	
+	for ( int transformIdx = 0; transformIdx < (int)m_wallTransforms.size(); ++transformIdx )
+	{
+		model = m_wallTransforms[transformIdx].GetAsMatrix();
+		g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+		g_renderer->DrawMesh( m_cubeMesh );
+	}
+
 	//m_world->Render();
 
 	g_renderer->EndCamera( *m_worldCamera );

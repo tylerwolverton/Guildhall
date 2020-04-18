@@ -37,6 +37,13 @@ void Transform::RotatePitchRollYawDegrees( float pitch, float roll, float yaw )
 
 
 //-----------------------------------------------------------------------------------------------
+void Transform::SetScale( const Vec3& scale )
+{
+	m_scale = scale;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetAsMatrix() const
 {
 	Mat44 translation = Mat44::CreateTranslation3D( m_position );

@@ -71,6 +71,8 @@ private:
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
+	void SpawnWallBox( const Vec3& location, const Vec3& dimensions );
+
 private:
 	Clock* m_gameClock = nullptr;
 
@@ -110,4 +112,8 @@ private:
 	float m_specularFactor = 0.f;
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;
+
+	float m_playerRadius = .25f;
+
+	std::vector<Transform> m_wallTransforms;
 };
