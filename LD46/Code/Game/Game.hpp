@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+const int NUM_GAME_LIGHTS = 5;
 
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
@@ -105,7 +106,7 @@ private:
 	bool m_isDebugRendering = false;
 	bool m_isNoClipEnabled = false;
 	bool m_isDebugCameraEnabled = false;
-
+	
 	TextBox* m_debugInfoTextBox = nullptr;
 
 	Vec2 m_mouseWorldPosition = Vec2::ZERO;
@@ -136,7 +137,7 @@ private:
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;
 
-	Light m_lights[MAX_LIGHTS];
+	Light m_lights[NUM_GAME_LIGHTS];
 	Light& m_activeSwitchLight = m_lights[0];
 	
 	FresnelConstants m_fresnelData;

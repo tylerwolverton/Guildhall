@@ -45,8 +45,9 @@ static float s_mouseSensitivityMultiplier = 1.f;
 static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 
 static std::vector<InteractableSwitch*> s_lightSwitches;
-static float s_powerLevel = 1.f;
+static float s_powerLevel = .0f;
 static int s_curSwitchIdx = 0;
+static bool s_isPartyModeEnabled = false;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -89,9 +90,11 @@ void Game::Startup()
 	m_playerRigidbody->TakeCollider( discCollider );
 	m_playerRigidbody->ChangeMass( -9.f );
 	m_playerRigidbody->ChangeDrag( .08f );
+	m_playerRigidbody->SetPosition( Vec2( -5.f, -5.f ) );
 
 	m_player = new GameObject();
 	m_player->SetRigidbody( m_playerRigidbody );
+	m_player->EnableTransformUpdate();
 
 	m_gameObjects.push_back( m_player );
 
@@ -199,26 +202,57 @@ void Game::InitializeLights()
 	m_activeSwitchLight.color = Rgba8::GREEN.GetAsRGBVector();
 	m_activeSwitchLight.intensity = .5f;
 
+	Vec3 attentuation = Vec3( 1.f, 0.f, 0.f );
+
 	Light overheadLight0;
 	overheadLight0.position = Vec3( 5.f, 3.75f, 5.f );
+	//overheadLight0.color = Rgba8::GREEN.GetAsRGBVector();
 	overheadLight0.intensity = 1.f;
+	overheadLight0.attenuation = attentuation;
 
 	Light overheadLight1;
 	overheadLight1.position = Vec3( 5.f, 3.75f, -5.f );
+	//overheadLight1.color = Rgba8::BLUE.GetAsRGBVector();
 	overheadLight1.intensity = 1.f;
+	overheadLight1.attenuation = attentuation;
 	
 	Light overheadLight2;
 	overheadLight2.position = Vec3( -5.f, 3.75f, 5.f );
+	//overheadLight2.color = Rgba8::RED.GetAsRGBVector();
 	overheadLight2.intensity = 1.f;
+	overheadLight2.attenuation = attentuation;
 
 	Light overheadLight3;
 	overheadLight3.position = Vec3( -5.f, 3.75f, -5.f );
+	//overheadLight3.color = Rgba8::YELLOW.GetAsRGBVector();
 	overheadLight3.intensity = 1.f;
+	overheadLight3.attenuation = attentuation;
+
+	Light overheadLight4;
+	overheadLight4.position = Vec3( -2.5f, 3.75f, 2.5f );
+	overheadLight4.color = Rgba8::PURPLE.GetAsRGBVector();
+	overheadLight4.intensity = 1.f;
+	overheadLight4.attenuation = attentuation;
+
+	Light overheadLight5;
+	overheadLight5.position = Vec3( 2.5f, 3.75f, -2.5f );
+	overheadLight5.color = Rgba8::ORANGE.GetAsRGBVector();
+	overheadLight5.intensity = 1.f;
+	overheadLight5.attenuation = attentuation;
+
+	Light overheadLight6;
+	overheadLight6.position = Vec3( 0.f, 3.75f, 0.f );
+	overheadLight6.color = Rgba8::CYAN.GetAsRGBVector();
+	overheadLight6.intensity = 1.f;
+	overheadLight6.attenuation = attentuation;
 
 	m_lights[1] = overheadLight0;
 	m_lights[2] = overheadLight1;
 	m_lights[3] = overheadLight2;
 	m_lights[4] = overheadLight3;
+	//m_lights[5] = overheadLight4;
+	//m_lights[6] = overheadLight5;
+	//m_lights[7] = overheadLight6;
 }
 
 
@@ -271,23 +305,71 @@ void Game::BuildEnvironment()
 
 	m_gameObjects.push_back( ceiling );
 
-	SpawnEnvironmentBox( Vec3( ( 10.f + WALL_THICKNESS * .5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
+
+	/*SpawnEnvironmentBox( Vec3( ( 10.f + WALL_THICKNESS * .5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
 	SpawnEnvironmentBox( Vec3( -( 10.f + WALL_THICKNESS * .5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
 	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
-	SpawnEnvironmentBox( Vec3( 0.f, 0.f, ( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
-
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, ( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );*/
 	
+	// Outer wall
+	SpawnEnvironmentBox( Vec3( ( MAP_WIDTH_HALF + WALL_THICKNESS * .5f ),	0.f, 0.f ),											Vec3( WALL_THICKNESS,						8.f, MAP_HEIGHT + WALL_THICKNESS * 2.f ) );
+	SpawnEnvironmentBox( Vec3( -( MAP_WIDTH_HALF + WALL_THICKNESS * .5f ),	0.f, 0.f ),											Vec3( WALL_THICKNESS,						8.f, MAP_HEIGHT + WALL_THICKNESS * 2.f ) );
+	SpawnEnvironmentBox( Vec3( 0.f,											0.f, -( MAP_HEIGHT_HALF + WALL_THICKNESS * .5f ) ),	Vec3( MAP_HEIGHT + WALL_THICKNESS * 2.f,	8.f, WALL_THICKNESS ) );
+	SpawnEnvironmentBox( Vec3( 0.f,											0.f, ( MAP_HEIGHT_HALF + WALL_THICKNESS * .5f ) ),	Vec3( MAP_HEIGHT + WALL_THICKNESS * 2.f,	8.f, WALL_THICKNESS ) );
+
+	// Central wall
+	SpawnEnvironmentBox( Vec3::ZERO, Vec3( MAP_WIDTH * .8f, 
+										   8.f, 
+										   WALL_THICKNESS ) );
+
+	// Top half
+	Vec3 topHalfStart( -3.f, -.3f, -5.f );
+	float wallHeight = .6f;
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 0.f, 0.f, -3.f ), Vec3( WALL_THICKNESS,
+																	  wallHeight,
+																	  4.f ) );
+	
+	SpawnEnvironmentBox( topHalfStart + Vec3( 0.f, 0.f, 3.f ), Vec3( WALL_THICKNESS,
+																	 wallHeight,
+																	  4.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 2.f, 0.f, 0.f ), Vec3( WALL_THICKNESS,
+																	 wallHeight,
+																	 6.5f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 4.f, 0.f, 0.f ), Vec3( 3.f,
+																	 wallHeight,
+																	 WALL_THICKNESS ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 5.f, 0.f, 3.f ), Vec3( WALL_THICKNESS,
+																	 wallHeight,
+																	 5.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 6.5f, 0.f, -3.f ), Vec3( 2.f,
+																	   wallHeight,
+																	   2.f ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::SpawnLightSwitches()
 {
+	Vec3 switchScale( .1f, .1f, .01f );
+	float switchHeight = -.15;
 
-	SpawnSwitch( Vec3( 10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 90.f ), Vec3( .1f, .1f, .01f ) );
-	SpawnSwitch( Vec3( 0.f, 0.f, 10.f ), Vec3( 0.f, 0.f, 0.f ), Vec3( .1f, .1f, .01f ) );
-	SpawnSwitch( Vec3( -10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 270.f ), Vec3( .1f, .1f, .01f ) );
-	SpawnSwitch( Vec3( 0.f, 0.f, -10.f ), Vec3( 0.f, 0.f, 180.f ), Vec3( .1f, .1f, .01f ) );
+	//SpawnSwitch( Vec3( -5.f,				0.f, -MAP_HEIGHT_HALF ),	Vec3( 0.f, 0.f, 180.f ),	switchScale );
+	//SpawnSwitch( Vec3( MAP_WIDTH_HALF,	0.f, 0.f ),					Vec3( 0.f, 0.f, 90.f ),		switchScale );
+	//SpawnSwitch( Vec3( 0.f,				0.f, MAP_HEIGHT_HALF ),		Vec3( 0.f, 0.f, 0.f ),		switchScale );
+	//SpawnSwitch( Vec3( -MAP_WIDTH_HALF, 0.f, 0.f ),					Vec3( 0.f, 0.f, 270.f ),	switchScale );
+
+	SpawnSwitch( Vec3( -5.f, switchHeight, -MAP_HEIGHT_HALF ), Vec3( 0.f, 0.f, 180.f ), switchScale );
+	SpawnSwitch( Vec3( 1.5f, switchHeight, -3.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
+
+
+	SpawnSwitch( Vec3( MAP_WIDTH_HALF, switchHeight, 0.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
+	SpawnSwitch( Vec3( 0.f, switchHeight, MAP_HEIGHT_HALF ), Vec3( 0.f, 0.f, 0.f ), switchScale );
+	SpawnSwitch( Vec3( -MAP_WIDTH_HALF, switchHeight, 0.f ), Vec3( 0.f, 0.f, 270.f ), switchScale );
 }
 
 
@@ -356,7 +438,19 @@ void Game::Update()
 
 	m_worldCamera->SetPosition( m_player->GetPosition() );
 
-	m_activeSwitchLight.position = s_lightSwitches[s_curSwitchIdx]->GetPosition();
+	//if ( m_player->GetPosition().z > MAP_HEIGHT_HALF )
+	//{
+	//	m_playerRigidbody->SetPosition( Vec2( m_playerRigidbody->GetPosition().x, MAP_HEIGHT_HALF ) );
+	//}
+	//if ( m_player->GetPosition().x < -MAP_WIDTH_HALF )
+	//{
+	//	m_playerRigidbody->SetPosition( Vec2( -MAP_WIDTH_HALF, m_playerRigidbody->GetPosition().y ) );
+	//}
+	//if ( m_player->GetPosition().x > MAP_WIDTH_HALF )
+	//{
+	//	m_playerRigidbody->SetPosition( Vec2( MAP_WIDTH_HALF, m_playerRigidbody->GetPosition().y ) );
+	//}
+
 	//m_worldCamera->SetPosition( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ) );
 
 	//WorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), m_playerRadius, Rgba8::GREEN );
@@ -449,14 +543,28 @@ void Game::UpdateDebugDrawCommands()
 void Game::UpdateLights()
 {
 	float deltaSeconds = m_gameClock->GetLastDeltaSeconds();
-	s_powerLevel -= .05f * deltaSeconds;
+	s_powerLevel -= .025f * deltaSeconds;
 
-	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
 	{
 		if ( m_lights[lightIdx].intensity > 0.01f )
 		{
 			m_lights[lightIdx].intensity = s_powerLevel;
 		}
+	}
+
+	if ( s_isPartyModeEnabled )
+	{
+		for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
+		{
+			m_lights[lightIdx].intensity = 1.f;
+		}
+
+		m_activeSwitchLight.intensity = 0.f;
+	}
+	else
+	{
+		m_activeSwitchLight.position = s_lightSwitches[s_curSwitchIdx]->GetPosition() + s_lightSwitches[s_curSwitchIdx]->GetForwardVector() * .1f;
 	}
 }
 
@@ -484,8 +592,8 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	//m_playerRigidbody->SetPosition( cameraPosition );
 	//m_player->SetTransform( m_worldCamera->GetTransform() );
 	
-	//m_player->Translate( absoluteTranslation );
-	m_player->ApplyImpulseAt( absoluteTranslation * 50.f );
+	m_player->Translate( absoluteTranslation * 3.5f );
+	//m_player->ApplyImpulseAt( absoluteTranslation * 50.f );
 	m_player->SetOrientation( m_worldCamera->GetTransform().m_orientation );
 }
 
@@ -509,6 +617,7 @@ void Game::SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eS
 	polygon.SetPoints( polygonPoints, 4 );
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
 	polygonCollider->m_material.m_bounciness = 1.f;
+	polygonCollider->m_material.m_friction = 0.f;
 
 	Rigidbody2D* wallRigidbody = m_physics2D->CreateRigidbody();
 	wallRigidbody->SetSimulationMode( simMode );
@@ -552,6 +661,7 @@ void Game::SpawnEnvironmentBall( const Vec3& location, float radius, eSimulation
 	gameObject->SetMaterial( m_whiteMaterial );
 	gameObject->SetMesh( m_sphereMesh );
 	gameObject->SetTransform( ballTransform );
+	gameObject->EnableTransformUpdate();
 
 	m_gameObjects.push_back( gameObject );
 }
@@ -583,6 +693,8 @@ void Game::EnableNextSwitch()
 	if ( s_curSwitchIdx == (int)s_lightSwitches.size() )
 	{
 		s_curSwitchIdx = 0;
+		s_isPartyModeEnabled = true;
+		return;
 	}
 
 	s_lightSwitches[s_curSwitchIdx]->Enable();
@@ -602,7 +714,7 @@ void Game::Render() const
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	g_renderer->SetGamma( m_gamma );
 	
-	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	for ( int lightIdx = 0; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
 	{
 		//if ( m_lights[lightIdx].isEnabled )
 		//{
@@ -708,7 +820,7 @@ bool Game::SetAmbientLightColor( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 bool Game::SetPowerLevel( EventArgs* args )
 {
-	s_powerLevel = 1.f;
+	//s_powerLevel = .25f;
 	EnableNextSwitch();
 
 	return false;

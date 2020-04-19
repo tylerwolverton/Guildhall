@@ -19,7 +19,8 @@ void GameObject::Update()
 //-----------------------------------------------------------------------------------------------
 void GameObject::UpdateTransform()
 {
-	if ( m_rigidbody != nullptr )
+	if ( m_rigidbody != nullptr 
+		 && m_shouldUpdateTransform )
 	{
 		m_transform.SetPosition( Vec3( m_rigidbody->GetPosition().x, 0.f, m_rigidbody->GetPosition().y ) );
 	}

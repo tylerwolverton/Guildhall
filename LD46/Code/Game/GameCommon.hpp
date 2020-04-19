@@ -62,3 +62,7 @@ constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
 
 
 constexpr float WALL_THICKNESS = 1.f;
+constexpr float MAP_WIDTH = 20.f;
+constexpr float MAP_WIDTH_HALF = 10.f;
+constexpr float MAP_HEIGHT = 20.f;
+constexpr float MAP_HEIGHT_HALF = 10.f;

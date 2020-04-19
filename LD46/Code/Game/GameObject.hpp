@@ -26,6 +26,8 @@ public:
 	void SetOrientation( const Vec3& orientation );
 	void SetSelectedSwitch( InteractableSwitch* gameObject )			{ m_selectedSwitch = gameObject; }
 
+	void EnableTransformUpdate()										{ m_shouldUpdateTransform = true; }
+
 	void Translate( const Vec3& translation );
 	void ApplyImpulseAt( const Vec3& impulse, const Vec3& position = Vec3::ZERO );
 
@@ -34,6 +36,7 @@ public:
 	InteractableSwitch* GetSelectedSwitch() const						{ return m_selectedSwitch; }
 ;
 protected:
+	bool m_shouldUpdateTransform = false;
 	Transform m_transform;
 	GPUMesh* m_mesh = nullptr;
 	Rigidbody2D* m_rigidbody = nullptr;
