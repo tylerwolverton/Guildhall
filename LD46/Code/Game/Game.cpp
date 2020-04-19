@@ -323,7 +323,7 @@ void Game::BuildEnvironment()
 	SpawnEnvironmentBox( Vec3( 0.f,											0.f, ( MAP_HEIGHT_HALF + WALL_THICKNESS * .5f ) ),	Vec3( MAP_HEIGHT + WALL_THICKNESS * 2.f,	8.f, WALL_THICKNESS ) );
 
 	// Central wall
-	SpawnEnvironmentBox( Vec3::ZERO, Vec3( MAP_WIDTH * .8f, 
+	SpawnEnvironmentBox( Vec3( -1.f, 0.f, 0.f ), Vec3( MAP_WIDTH * .9f, 
 										   8.f, 
 										   WALL_THICKNESS ) );
 
@@ -399,6 +399,15 @@ void Game::BuildEnvironment()
 																	   wallHeight,
 																	   1.f ) );
 
+
+	// Obstacle course
+	SpawnEnvironmentBox( Vec3( 3.f, -.3f, 5.5f ), Vec3( 1.f,
+													   wallHeight,
+													   9.f ) );
+
+	SpawnEnvironmentBox( Vec3( 7.f, -.3f, 4.5f ), Vec3( 1.f,
+													   wallHeight,
+													   9.f ) );
 }
 
 
@@ -413,6 +422,7 @@ void Game::SpawnLightSwitches()
 	//SpawnSwitch( Vec3( 0.f,				0.f, MAP_HEIGHT_HALF ),		Vec3( 0.f, 0.f, 0.f ),		switchScale );
 	//SpawnSwitch( Vec3( -MAP_WIDTH_HALF, 0.f, 0.f ),					Vec3( 0.f, 0.f, 270.f ),	switchScale );
 
+	// Maze
 	SpawnSwitch( Vec3( -5.5f, switchHeight, -5.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
 
 	SpawnSwitch( Vec3( 1.5f, switchHeight, -3.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
@@ -423,15 +433,49 @@ void Game::SpawnLightSwitches()
 
 	SpawnSwitch( Vec3( MAP_WIDTH_HALF, switchHeight, 0.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
 
+	// Obstacles
+	SpawnSwitch( Vec3( 8.f, switchHeight, MAP_HEIGHT_HALF ), Vec3( 0.f, 0.f, 0.f ), switchScale );
+	SpawnSwitch( Vec3( 5.5f, switchHeight, .5f ), Vec3( 0.f, 0.f, 180.f ), switchScale );
+
+
 	SpawnSwitch( Vec3( 0.f, switchHeight, MAP_HEIGHT_HALF ), Vec3( 0.f, 0.f, 0.f ), switchScale );
-	SpawnSwitch( Vec3( -MAP_WIDTH_HALF, switchHeight, 0.f ), Vec3( 0.f, 0.f, 270.f ), switchScale );
+	SpawnSwitch( Vec3( -3.5f, switchHeight, .5f ), Vec3( 0.f, 0.f, 180.f ), switchScale );
+	SpawnSwitch( Vec3( -7.f, switchHeight, MAP_HEIGHT_HALF ), Vec3( 0.f, 0.f, 0.f ), switchScale );
+
+	SpawnSwitch( Vec3( -MAP_WIDTH_HALF, switchHeight, 5.f ), Vec3( 0.f, 0.f, 270.f ), switchScale );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::SpawnObstacles()
 {
-	SpawnMovingObstacle( Vec3( -9.f, 0.f, -5.f ), Vec3::ONE, 3.f, Vec3( 0.f, 0.f, 1.f ) );
+	// Intro
+	SpawnMovingObstacle( Vec3( 9.f, 0.f, 2.5f ), Vec3(1.f, 1.f, 2.f ), 3.f, Vec3( 0.f, 0.f, 2.f ) );
+
+	// Hallway
+	SpawnMovingObstacle( Vec3( 4.5f, 0.f, 6.5f ), Vec3(1.f, 1.f, 1.f ), .5f, Vec3( -4.f, 0.f, 0.f ) );
+	SpawnMovingObstacle( Vec3( 4.5f, 0.f, 4.5f ), Vec3(1.f, 1.f, 1.f ), .42f, Vec3( 3.f, 0.f, 0.f ) );
+	SpawnMovingObstacle( Vec3( 5.f, 0.f, 2.5f ), Vec3(1.f, 1.f, 1.f ), .35f, Vec3( -7.f, 0.f, 0.f ) );
+	SpawnMovingObstacle( Vec3( 4.5f, 0.f, 0.5f ), Vec3(1.f, 1.f, 1.f ), .65f, Vec3( 5.f, 0.f, 0.f ) );
+
+	// Chaos
+	SpawnMovingObstacle( Vec3( -.5f, 0.f, 2.f ), Vec3(1.f, 1.f, 1.f ), 1.3f, Vec3( -4.f, 0.f, 1.f ) );
+	SpawnMovingObstacle( Vec3( -2.5f, 0.f, 6.f ), Vec3(1.f, 1.f, 1.f ), .5f, Vec3( 2.f, 0.f, -3.f ) );
+	SpawnMovingObstacle( Vec3( -4.5f, 0.f, 5.f ), Vec3(1.f, 1.f, 1.f ), 1.5f, Vec3( -7.f, 0.f, 7.f ) );
+	SpawnMovingObstacle( Vec3( -.5f, 0.f, 7.f ), Vec3(1.f, 1.f, 1.f ), 3.f, Vec3( -1.f, 0.f, 2.f ) );
+	SpawnMovingObstacle( Vec3( -2.5f, 0.f, 3.f ), Vec3(1.f, 1.f, 1.f ), 1.f, Vec3( -5.f, 0.f, -3.f ) );
+	SpawnMovingObstacle( Vec3( -7.5f, 0.f, 4.f ), Vec3( 1.f, 1.f, 1.f ), 3.f, Vec3( 2.f, 0.f, 3.f ) );
+	SpawnMovingObstacle( Vec3( -1.5f, 0.f, 2.5f ), Vec3( 1.f, 1.f, 1.f ), 6.f, Vec3( 2.f, 0.f, -1.f ) );
+	SpawnMovingObstacle( Vec3( -3.5f, 0.f, 6.f ), Vec3( 1.f, 1.f, 1.f ), 1.75f, Vec3( 4.f, 0.f, .5f ) );
+
+	SpawnEnvironmentBall( Vec3( -5.f, 0.f, 7.f ), .5f );
+	SpawnEnvironmentBall( Vec3( -7.f, 0.f, 5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( -2.f, 0.f, 2.f ), .5f );
+	SpawnEnvironmentBall( Vec3( -1.f, 0.f, 6.f ), .5f );
+	SpawnEnvironmentBall( Vec3( -6.f, 0.f, 3.f ), .5f );
+	SpawnEnvironmentBall( Vec3( -2.f, 0.f, 1.f ), .5f );
+	SpawnEnvironmentBall( Vec3( -5.6f, 0.f, 1.f ), .5f );
+	SpawnEnvironmentBall( Vec3( -1.3f, 0.f, 3.f ), .5f );
 }
 
 
@@ -708,7 +752,7 @@ void Game::SpawnEnvironmentBall( const Vec3& location, float radius, eSimulation
 
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2( 0.f, 0.f ), radius );
 	discCollider->m_material.m_friction = 0.f;
-	discCollider->m_material.m_bounciness = 1.f;
+	discCollider->m_material.m_bounciness = .6f;
 
 	Rigidbody2D* ballRigidbody = m_physics2D->CreateRigidbody();
 	ballRigidbody->SetSimulationMode( simMode );
@@ -716,7 +760,7 @@ void Game::SpawnEnvironmentBall( const Vec3& location, float radius, eSimulation
 	ballRigidbody->ChangeMass( -5.f );
 
 	ballRigidbody->TakeCollider( discCollider );
-	ballRigidbody->SetVelocity( Vec2( 10.f, 1.f ) );
+	//ballRigidbody->SetVelocity( Vec2( 10.f, 1.f ) );
 
 	GameObject* gameObject = new GameObject();
 	gameObject->SetRigidbody( ballRigidbody );
