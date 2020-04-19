@@ -151,8 +151,8 @@ private:
 	GameObject* m_player = nullptr;
 
 	// Materials ( move to XML eventually )
-	Material* m_wallMaterial;
-	Material* m_floorMaterial;
-	Material* m_ceilingMaterial;
-	Material* m_whiteMaterial;
+	Material* m_wallMaterial = nullptr;
+	Material* m_floorMaterial = nullptr;
+	Material* m_ceilingMaterial = nullptr;
+	Material* m_whiteMaterial = nullptr;
 };

@@ -90,12 +90,13 @@ void Game::Startup()
 	m_playerRigidbody->TakeCollider( discCollider );
 	m_playerRigidbody->ChangeMass( -9.f );
 	m_playerRigidbody->ChangeDrag( .08f );
-	m_playerRigidbody->SetPosition( Vec2( -5.f, -5.f ) );
+	m_playerRigidbody->SetPosition( Vec2( -7.f, -5.f ) );
 
 	m_player = new GameObject();
 	m_player->SetRigidbody( m_playerRigidbody );
 	m_player->EnableTransformUpdate();
-
+	m_player->SetOrientation( Vec3( 0.f, 0.f, 90.f ) );
+	
 	m_gameObjects.push_back( m_player );
 
 	InitializeCameras();
@@ -137,6 +138,8 @@ void Game::InitializeCameras()
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 	//m_worldCamera->SetProjectionOrthographic( 60.f, -.1f, -100.f );
+
+	m_worldCamera->SetPitchRollYawRotation( 0.f, 0.f, -90.f );
 }
 
 
@@ -326,6 +329,10 @@ void Game::BuildEnvironment()
 	Vec3 topHalfStart( -3.f, -.3f, -5.f );
 	float wallHeight = .6f;
 
+	SpawnEnvironmentBox( topHalfStart + Vec3( -2.f, 0.f, 0.f ), Vec3( WALL_THICKNESS,
+																	  wallHeight,
+																	  1.f ) );
+
 	SpawnEnvironmentBox( topHalfStart + Vec3( 0.f, 0.f, -3.f ), Vec3( WALL_THICKNESS,
 																	  wallHeight,
 																	  4.f ) );
@@ -349,6 +356,47 @@ void Game::BuildEnvironment()
 	SpawnEnvironmentBox( topHalfStart + Vec3( 6.5f, 0.f, -3.f ), Vec3( 2.f,
 																	   wallHeight,
 																	   2.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 9.f, 0.f, -4.f ), Vec3( WALL_THICKNESS,
+																		wallHeight,
+																		2.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 11.f, 0.f, -3.5f ), Vec3( WALL_THICKNESS,
+																	  wallHeight,
+																	  1.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 12.f, 0.f, -4.f ), Vec3( WALL_THICKNESS,
+																	  wallHeight,
+																	  2.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 9.f, 0.f, 0.f ), Vec3( 5.f,
+																	   wallHeight,
+																	   1.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 9.f, 0.f, -1.f ), Vec3( 1.f,
+																	 wallHeight,
+																	 1.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 13.f, 0.f, -1.f ), Vec3( 1.f,
+																	 wallHeight,
+																	 1.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 8.f, 0.f, 2.f ), Vec3( 3.f,
+																	   wallHeight,
+																	   1.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 7.f, 0.f, 1.f ), Vec3( 1.f,
+																	   wallHeight,
+																	   1.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 11.5f, 0.f, 2.f ), Vec3( 2.f,
+																	   wallHeight,
+																	   3.f ) );
+
+	SpawnEnvironmentBox( topHalfStart + Vec3( 8.f, 0.f, 4.f ), Vec3( 1.f,
+																	   wallHeight,
+																	   1.f ) );
+
 }
 
 
@@ -356,18 +404,23 @@ void Game::BuildEnvironment()
 void Game::SpawnLightSwitches()
 {
 	Vec3 switchScale( .1f, .1f, .01f );
-	float switchHeight = -.15;
+	float switchHeight = -.15f;
 
 	//SpawnSwitch( Vec3( -5.f,				0.f, -MAP_HEIGHT_HALF ),	Vec3( 0.f, 0.f, 180.f ),	switchScale );
 	//SpawnSwitch( Vec3( MAP_WIDTH_HALF,	0.f, 0.f ),					Vec3( 0.f, 0.f, 90.f ),		switchScale );
 	//SpawnSwitch( Vec3( 0.f,				0.f, MAP_HEIGHT_HALF ),		Vec3( 0.f, 0.f, 0.f ),		switchScale );
 	//SpawnSwitch( Vec3( -MAP_WIDTH_HALF, 0.f, 0.f ),					Vec3( 0.f, 0.f, 270.f ),	switchScale );
 
-	SpawnSwitch( Vec3( -5.f, switchHeight, -MAP_HEIGHT_HALF ), Vec3( 0.f, 0.f, 180.f ), switchScale );
+	SpawnSwitch( Vec3( -5.5f, switchHeight, -5.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
+
 	SpawnSwitch( Vec3( 1.5f, switchHeight, -3.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
+	SpawnSwitch( Vec3( 4.5f, switchHeight, -7.5f ), Vec3( 0.f, 0.f, 270.f ), switchScale );
+	SpawnSwitch( Vec3( 9.75f, switchHeight, -10.f ), Vec3( 0.f, 0.f, 180.f ), switchScale );
+	SpawnSwitch( Vec3( 4.5f, switchHeight, -4.f ), Vec3( 0.f, 0.f, 270.f ), switchScale );
 
 
 	SpawnSwitch( Vec3( MAP_WIDTH_HALF, switchHeight, 0.f ), Vec3( 0.f, 0.f, 90.f ), switchScale );
+
 	SpawnSwitch( Vec3( 0.f, switchHeight, MAP_HEIGHT_HALF ), Vec3( 0.f, 0.f, 0.f ), switchScale );
 	SpawnSwitch( Vec3( -MAP_WIDTH_HALF, switchHeight, 0.f ), Vec3( 0.f, 0.f, 270.f ), switchScale );
 }
@@ -542,7 +595,7 @@ void Game::UpdateDebugDrawCommands()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateLights()
 {
-	float deltaSeconds = m_gameClock->GetLastDeltaSeconds();
+	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	s_powerLevel -= .025f * deltaSeconds;
 
 	for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
@@ -820,6 +873,7 @@ bool Game::SetAmbientLightColor( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 bool Game::SetPowerLevel( EventArgs* args )
 {
+	UNUSED( args );
 	//s_powerLevel = .25f;
 	EnableNextSwitch();
 
