@@ -90,12 +90,14 @@ private:
 
 	void SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eSimulationMode simMode = SIMULATION_MODE_STATIC );
 	void SpawnEnvironmentBall( const Vec3& location, float radius, eSimulationMode simMode = SIMULATION_MODE_DYNAMIC );
+	void SpawnMovingObstacle( const Vec3& location, const Vec3& dimensions, float moveDuration, const Vec3& velocity, eSimulationMode simMode = SIMULATION_MODE_KINEMATIC );
 	void SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec3& dimensions );
 
 	static void EnableNextSwitch();
 
 	void BuildEnvironment();
 	void SpawnLightSwitches();
+	void SpawnObstacles();
 
 private:
 	Clock* m_gameClock = nullptr;

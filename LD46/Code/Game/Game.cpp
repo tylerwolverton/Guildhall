@@ -35,6 +35,7 @@
 #include "Game/Entity.hpp"
 #include "Game/GameObject.hpp"
 #include "Game/InteractableSwitch.hpp"
+#include "Game/MovingObstacle.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
@@ -107,6 +108,7 @@ void Game::Startup()
 
 	BuildEnvironment();
 	SpawnLightSwitches();
+	SpawnObstacles();
 
 	//m_world = new World();
 	//m_world->BuildNewMap( g_gameConfigBlackboard.GetValue( "startMap", "MutateDemo" ) );
@@ -427,6 +429,13 @@ void Game::SpawnLightSwitches()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::SpawnObstacles()
+{
+	SpawnMovingObstacle( Vec3( -9.f, 0.f, -5.f ), Vec3::ONE, 3.f, Vec3( 0.f, 0.f, 1.f ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
@@ -717,6 +726,48 @@ void Game::SpawnEnvironmentBall( const Vec3& location, float radius, eSimulation
 	gameObject->EnableTransformUpdate();
 
 	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SpawnMovingObstacle( const Vec3& location, const Vec3& dimensions, float moveDuration, const Vec3& velocity, eSimulationMode simMode )
+{
+	Transform transform;
+	transform.SetPosition( location );
+	transform.SetScale( dimensions );
+
+	Vec2 polygonPoints[4];
+	float minX = transform.GetPosition().x - dimensions.x * .5f;
+	float minY = -transform.GetPosition().z - dimensions.z * .5f;
+	float maxX = transform.GetPosition().x + dimensions.x * .5f;
+	float maxY = -transform.GetPosition().z + dimensions.z * .5f;
+
+	Polygon2 polygon;
+	AABB2 boundingBox( minX, minY, maxX, maxY );
+	boundingBox.GetCornerPositionsCCW( polygonPoints );
+	polygon.SetPoints( polygonPoints, 4 );
+
+	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
+	polygonCollider->m_material.m_bounciness = 1.f;
+	polygonCollider->m_material.m_friction = 0.f;
+
+	Rigidbody2D* rigidbody = m_physics2D->CreateRigidbody();
+	rigidbody->SetSimulationMode( simMode );
+	rigidbody->SetPosition( transform.GetPosition().XZ() );
+
+	rigidbody->TakeCollider( polygonCollider );
+	rigidbody->SetVelocity( Vec2( velocity.x, velocity.z ) );
+
+	m_wallTransforms.push_back( transform );
+
+	MovingObstacle* obstacle = new MovingObstacle( moveDuration, velocity );
+	obstacle->SetRigidbody( rigidbody );
+	obstacle->SetMaterial( m_wallMaterial );
+	obstacle->SetMesh( m_cubeMesh );
+	obstacle->SetTransform( transform );
+	obstacle->EnableTransformUpdate();
+
+	m_gameObjects.push_back( obstacle );
 }
 
 

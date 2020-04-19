@@ -61,6 +61,9 @@
     <ClCompile Include="InteractableSwitch.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="MovingObstacle.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -109,6 +112,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="InteractableSwitch.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingObstacle.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

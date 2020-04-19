@@ -206,6 +206,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapDefinition.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MovingObstacle.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="World.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="MapDefinition.hpp" />
     <ClInclude Include="Material.hpp" />
+    <ClInclude Include="MovingObstacle.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="World.hpp" />
