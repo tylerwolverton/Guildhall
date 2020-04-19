@@ -5,12 +5,13 @@
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Time/Timer.hpp"
 #include "Game/Material.hpp"
 
 #include <string>
 #include <vector>
 
-const int NUM_GAME_LIGHTS = 5;
+const int NUM_GAME_LIGHTS = 6;
 
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
@@ -157,4 +158,7 @@ private:
 	Material* m_floorMaterial = nullptr;
 	Material* m_ceilingMaterial = nullptr;
 	Material* m_whiteMaterial = nullptr;
+
+	Timer m_partyModeTimer;
+	int m_curPartyLightIdx = 1;
 };

@@ -118,6 +118,8 @@ void Game::Startup()
 	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
 	m_fresnelData.power = 32.f;
 
+	m_partyModeTimer.SetSeconds( .3f );
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -211,51 +213,51 @@ void Game::InitializeLights()
 
 	Light overheadLight0;
 	overheadLight0.position = Vec3( 5.f, 3.75f, 5.f );
-	//overheadLight0.color = Rgba8::GREEN.GetAsRGBVector();
-	overheadLight0.intensity = 1.f;
+	overheadLight0.color = Rgba8::GREEN.GetAsRGBVector();
+	overheadLight0.intensity = 0.f;
 	overheadLight0.attenuation = attentuation;
 
 	Light overheadLight1;
 	overheadLight1.position = Vec3( 5.f, 3.75f, -5.f );
-	//overheadLight1.color = Rgba8::BLUE.GetAsRGBVector();
-	overheadLight1.intensity = 1.f;
+	overheadLight1.color = Rgba8::BLUE.GetAsRGBVector();
+	overheadLight1.intensity = 0.f;
 	overheadLight1.attenuation = attentuation;
 	
 	Light overheadLight2;
 	overheadLight2.position = Vec3( -5.f, 3.75f, 5.f );
-	//overheadLight2.color = Rgba8::RED.GetAsRGBVector();
-	overheadLight2.intensity = 1.f;
+	overheadLight2.color = Rgba8::RED.GetAsRGBVector();
+	overheadLight2.intensity = 0.f;
 	overheadLight2.attenuation = attentuation;
 
 	Light overheadLight3;
 	overheadLight3.position = Vec3( -5.f, 3.75f, -5.f );
-	//overheadLight3.color = Rgba8::YELLOW.GetAsRGBVector();
-	overheadLight3.intensity = 1.f;
+	overheadLight3.color = Rgba8::ORANGE.GetAsRGBVector();
+	overheadLight3.intensity = 0.f;
 	overheadLight3.attenuation = attentuation;
 
 	Light overheadLight4;
-	overheadLight4.position = Vec3( -2.5f, 3.75f, 2.5f );
+	overheadLight4.position = Vec3( -0.f, 3.75f, 0.f );
 	overheadLight4.color = Rgba8::PURPLE.GetAsRGBVector();
-	overheadLight4.intensity = 1.f;
+	overheadLight4.intensity = 0.f;
 	overheadLight4.attenuation = attentuation;
 
 	Light overheadLight5;
 	overheadLight5.position = Vec3( 2.5f, 3.75f, -2.5f );
 	overheadLight5.color = Rgba8::ORANGE.GetAsRGBVector();
-	overheadLight5.intensity = 1.f;
+	overheadLight5.intensity = 0.f;
 	overheadLight5.attenuation = attentuation;
 
 	Light overheadLight6;
 	overheadLight6.position = Vec3( 0.f, 3.75f, 0.f );
 	overheadLight6.color = Rgba8::CYAN.GetAsRGBVector();
-	overheadLight6.intensity = 1.f;
+	overheadLight6.intensity = 0.f;
 	overheadLight6.attenuation = attentuation;
 
 	m_lights[1] = overheadLight0;
 	m_lights[2] = overheadLight1;
 	m_lights[3] = overheadLight2;
 	m_lights[4] = overheadLight3;
-	//m_lights[5] = overheadLight4;
+	m_lights[5] = overheadLight4;
 	//m_lights[6] = overheadLight5;
 	//m_lights[7] = overheadLight6;
 }
@@ -651,20 +653,32 @@ void Game::UpdateLights()
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	s_powerLevel -= .025f * deltaSeconds;
 
-	for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
-	{
-		if ( m_lights[lightIdx].intensity > 0.01f )
-		{
-			m_lights[lightIdx].intensity = s_powerLevel;
-		}
-	}
+	//for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
+	//{
+	//	if ( m_lights[lightIdx].intensity > 0.01f )
+	//	{
+	//		m_lights[lightIdx].intensity = s_powerLevel;
+	//	}
+	//}
 
 	if ( s_isPartyModeEnabled )
 	{
-		for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
+		if ( m_partyModeTimer.CheckAndReset() )
+		{
+			m_lights[m_curPartyLightIdx].intensity = 0.f;
+			m_curPartyLightIdx++;
+
+			if ( m_curPartyLightIdx == NUM_GAME_LIGHTS )
+			{
+				m_curPartyLightIdx = 1;
+			}
+
+			m_lights[m_curPartyLightIdx].intensity = 1.f;
+		}
+		/*for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
 		{
 			m_lights[lightIdx].intensity = 1.f;
-		}
+		}*/
 
 		m_activeSwitchLight.intensity = 0.f;
 	}
