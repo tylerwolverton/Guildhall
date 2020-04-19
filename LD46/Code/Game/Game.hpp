@@ -27,6 +27,14 @@ class World;
 
 
 //-----------------------------------------------------------------------------------------------
+struct FresnelConstants
+{
+	Vec3 color;
+	float power;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -83,6 +91,8 @@ private:
 	void SpawnEnvironmentBall( const Vec3& location, float radius, eSimulationMode simMode = SIMULATION_MODE_DYNAMIC );
 	void SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec3& dimensions );
 
+	static void EnableNextSwitch();
+
 private:
 	Clock* m_gameClock = nullptr;
 
@@ -118,20 +128,22 @@ private:
 	Rigidbody2D* m_cubeRigidbody = nullptr;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = .5f;
+	float m_ambientIntensity = 0.f;
 	float m_specularFactor = 0.f;
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;
 
 	Light m_lights[MAX_LIGHTS];
+	Light& m_activeSwitchLight = m_lights[0];
 	
+	FresnelConstants m_fresnelData;
+
 	float m_playerRadius = .25f;
 
 	std::vector<Transform> m_wallTransforms;
 	Transform m_floorTransform;
 
 	std::vector<GameObject*> m_gameObjects;
-	std::vector<InteractableSwitch*> m_lightSwitches;
 	GameObject* m_player = nullptr;
 
 	// Materials ( move to XML eventually )

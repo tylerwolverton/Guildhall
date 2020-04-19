@@ -16,6 +16,7 @@ class GameObject
 public:
 	virtual void Update();
 	void UpdateTransform();
+	void RenderWithMaterial() const;
 	void Render() const;
 
 	void SetRigidbody( Rigidbody2D* rigidbody );

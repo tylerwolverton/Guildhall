@@ -44,7 +44,9 @@
 static float s_mouseSensitivityMultiplier = 1.f;
 static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 
+static std::vector<InteractableSwitch*> s_lightSwitches;
 static float s_powerLevel = 1.f;
+static int s_curSwitchIdx = 0;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -107,7 +109,11 @@ void Game::Startup()
 	//m_world = new World();
 	//m_world->BuildNewMap( g_gameConfigBlackboard.GetValue( "startMap", "MutateDemo" ) );
 
-	m_lightSwitches[0]->Enable();
+	s_lightSwitches[0]->Enable();
+	m_activeSwitchLight.position = s_lightSwitches[0]->GetPosition();
+
+	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
+	m_fresnelData.power = 32.f;
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -217,6 +223,10 @@ void Game::InitializeMaterials()
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeLights()
 {
+	// Light 0 must be active switch light
+	m_activeSwitchLight.color = Rgba8::GREEN.GetAsRGBVector();
+	m_activeSwitchLight.intensity = .5f;
+
 	Light overheadLight0;
 	overheadLight0.position = Vec3( 5.f, 3.75f, 5.f );
 	overheadLight0.intensity = 1.f;
@@ -233,10 +243,10 @@ void Game::InitializeLights()
 	overheadLight3.position = Vec3( -5.f, 3.75f, -5.f );
 	overheadLight3.intensity = 1.f;
 
-	m_lights[0] = overheadLight0;
-	m_lights[1] = overheadLight1;
-	m_lights[2] = overheadLight2;
-	m_lights[3] = overheadLight3;
+	m_lights[1] = overheadLight0;
+	m_lights[2] = overheadLight1;
+	m_lights[3] = overheadLight2;
+	m_lights[4] = overheadLight3;
 }
 
 
@@ -330,6 +340,8 @@ void Game::Update()
 	}
 
 	m_worldCamera->SetPosition( m_player->GetPosition() );
+
+	m_activeSwitchLight.position = s_lightSwitches[s_curSwitchIdx]->GetPosition();
 	//m_worldCamera->SetPosition( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ) );
 
 	//WorldWireSphere( Vec3( m_playerRigidbody->GetPosition().x, 0.f, m_playerRigidbody->GetPosition().y ), m_playerRadius, Rgba8::GREEN );
@@ -543,8 +555,22 @@ void Game::SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec
 	gameSwitch->SetMesh( m_cubeMesh );
 	gameSwitch->SetTransform( switchTransform );
 
-	m_lightSwitches.push_back( gameSwitch );
+	s_lightSwitches.push_back( gameSwitch );
 	m_gameObjects.push_back( gameSwitch );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::EnableNextSwitch()
+{
+	s_curSwitchIdx++;
+
+	if ( s_curSwitchIdx == (int)s_lightSwitches.size() )
+	{
+		s_curSwitchIdx = 0;
+	}
+
+	s_lightSwitches[s_curSwitchIdx]->Enable();
 }
 
 
@@ -574,10 +600,9 @@ void Game::Render() const
 	{
 		if ( m_gameObjects[gameObjIdx] != nullptr )
 		{
-			m_gameObjects[gameObjIdx]->Render();
+			m_gameObjects[gameObjIdx]->RenderWithMaterial();
 		}
 	}
-	
 
 	//m_world->Render();
 
@@ -669,6 +694,7 @@ bool Game::SetAmbientLightColor( EventArgs* args )
 bool Game::SetPowerLevel( EventArgs* args )
 {
 	s_powerLevel = 1.f;
+	EnableNextSwitch();
 
 	return false;
 }
