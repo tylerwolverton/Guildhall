@@ -101,16 +101,13 @@ void Game::Startup()
 	InitializeLights();
 	InitializeObstacles();
 
-	SpawnSwitch( Vec3( 10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 90.f ), Vec3(.1f, .1f, .01f) );
-	SpawnSwitch( Vec3( 0.f, 0.f, 10.f ), Vec3( 0.f, 0.f, 0.f ), Vec3(.1f, .1f, .01f) );
-	SpawnSwitch( Vec3( -10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 270.f ), Vec3(.1f, .1f, .01f) );
-	SpawnSwitch( Vec3( 0.f, 0.f, -10.f ), Vec3( 0.f, 0.f, 180.f ), Vec3(.1f, .1f, .01f) );
+	BuildEnvironment();
+	SpawnLightSwitches();
 
 	//m_world = new World();
 	//m_world->BuildNewMap( g_gameConfigBlackboard.GetValue( "startMap", "MutateDemo" ) );
 
 	s_lightSwitches[0]->Enable();
-	m_activeSwitchLight.position = s_lightSwitches[0]->GetPosition();
 
 	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
 	m_fresnelData.power = 32.f;
@@ -149,31 +146,6 @@ void Game::InitializeMeshes()
 	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
 
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
-	
-	SpawnEnvironmentBox( Vec3( ( 10.f + WALL_THICKNESS *.5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
-	SpawnEnvironmentBox( Vec3( -( 10.f + WALL_THICKNESS * .5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
-	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
-	SpawnEnvironmentBox( Vec3( 0.f, 0.f, ( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
-
-	m_floorTransform.SetPosition( Vec3( 0.f, -.5f, 0.f ) );
-	m_floorTransform.SetScale( Vec3( 20.f, .1f, 20.f ) );
-
-	GameObject* floor = new GameObject();
-	floor->SetMaterial( m_floorMaterial );
-	floor->SetMesh( m_cubeMesh );
-	floor->SetTransform( m_floorTransform );
-
-	m_gameObjects.push_back( floor );
-	
-	Transform ceilingTransform = m_floorTransform;
-	ceilingTransform.Translate( Vec3( 0.f, 4.f, 0.f ) );
-
-	GameObject* ceiling = new GameObject();
-	ceiling->SetMaterial( m_ceilingMaterial );
-	ceiling->SetMesh( m_cubeMesh );
-	ceiling->SetTransform( ceilingTransform );
-
-	m_gameObjects.push_back( ceiling );
 
 	// Quad
 	vertices.clear();
@@ -253,26 +225,69 @@ void Game::InitializeLights()
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeObstacles()
 {
-	SpawnEnvironmentBall( Vec3( 0.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 0.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
-	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 0.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 0.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	//SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::BuildEnvironment()
+{
+	m_floorTransform.SetPosition( Vec3( 0.f, -.5f, 0.f ) );
+	m_floorTransform.SetScale( Vec3( 20.f, .1f, 20.f ) );
+
+	GameObject* floor = new GameObject();
+	floor->SetMaterial( m_floorMaterial );
+	floor->SetMesh( m_cubeMesh );
+	floor->SetTransform( m_floorTransform );
+
+	m_gameObjects.push_back( floor );
+
+	Transform ceilingTransform = m_floorTransform;
+	ceilingTransform.Translate( Vec3( 0.f, 4.f, 0.f ) );
+
+	GameObject* ceiling = new GameObject();
+	ceiling->SetMaterial( m_ceilingMaterial );
+	ceiling->SetMesh( m_cubeMesh );
+	ceiling->SetTransform( ceilingTransform );
+
+	m_gameObjects.push_back( ceiling );
+
+	SpawnEnvironmentBox( Vec3( ( 10.f + WALL_THICKNESS * .5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
+	SpawnEnvironmentBox( Vec3( -( 10.f + WALL_THICKNESS * .5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, ( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
+
+	
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SpawnLightSwitches()
+{
+
+	SpawnSwitch( Vec3( 10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 90.f ), Vec3( .1f, .1f, .01f ) );
+	SpawnSwitch( Vec3( 0.f, 0.f, 10.f ), Vec3( 0.f, 0.f, 0.f ), Vec3( .1f, .1f, .01f ) );
+	SpawnSwitch( Vec3( -10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 270.f ), Vec3( .1f, .1f, .01f ) );
+	SpawnSwitch( Vec3( 0.f, 0.f, -10.f ), Vec3( 0.f, 0.f, 180.f ), Vec3( .1f, .1f, .01f ) );
 }
 
 

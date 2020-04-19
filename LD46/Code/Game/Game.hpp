@@ -93,6 +93,9 @@ private:
 
 	static void EnableNextSwitch();
 
+	void BuildEnvironment();
+	void SpawnLightSwitches();
+
 private:
 	Clock* m_gameClock = nullptr;
 
