@@ -66,10 +66,12 @@ private:
 	void InitializeCameras();
 	void InitializeMeshes();
 	void InitializeMaterials();
+	void InitializeLights();
 
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
 	void UpdateDebugDrawCommands();
+	void UpdateLights();
 
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
@@ -112,10 +114,14 @@ private:
 	Rigidbody2D* m_cubeRigidbody = nullptr;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 0.5f;
+	float m_ambientIntensity = 0.f;
 	float m_specularFactor = 0.f;
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;
+
+	Light m_lights[MAX_LIGHTS];
+
+	float m_powerLevel = 1.f;
 
 	float m_playerRadius = .25f;
 

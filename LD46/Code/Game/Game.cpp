@@ -88,8 +88,12 @@ void Game::Startup()
 	InitializeCameras();
 	InitializeMaterials();
 	InitializeMeshes();
+	InitializeLights();
 
 	SpawnSwitch( Vec3( 9.5f, 0.f, 0.f ), Vec3( 0.f, 0.f, 90.f ), Vec3(.1f, .1f, .01f) );
+	SpawnSwitch( Vec3( 0.f, 0.f, 9.5f ), Vec3( 0.f, 0.f, 0.f ), Vec3(.1f, .1f, .01f) );
+	SpawnSwitch( Vec3( -9.5f, 0.f, 0.f ), Vec3( 0.f, 0.f, 270.f ), Vec3(.1f, .1f, .01f) );
+	SpawnSwitch( Vec3( 0.f, 0.f, -9.5f ), Vec3( 0.f, 0.f, 180.f ), Vec3(.1f, .1f, .01f) );
 
 	//m_world = new World();
 	//m_world->BuildNewMap( g_gameConfigBlackboard.GetValue( "startMap", "MutateDemo" ) );
@@ -220,6 +224,32 @@ void Game::InitializeMaterials()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::InitializeLights()
+{
+	Light overheadLight0;
+	overheadLight0.position = Vec3( 5.f, 3.75f, 5.f );
+	overheadLight0.intensity = 1.f;
+
+	Light overheadLight1;
+	overheadLight1.position = Vec3( 5.f, 3.75f, -5.f );
+	overheadLight1.intensity = 1.f;
+	
+	Light overheadLight2;
+	overheadLight2.position = Vec3( -5.f, 3.75f, 5.f );
+	overheadLight2.intensity = 1.f;
+
+	Light overheadLight3;
+	overheadLight3.position = Vec3( -5.f, 3.75f, -5.f );
+	overheadLight3.intensity = 1.f;
+
+	m_lights[0] = overheadLight0;
+	m_lights[1] = overheadLight1;
+	m_lights[2] = overheadLight2;
+	m_lights[3] = overheadLight3;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
@@ -261,7 +291,7 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-
+	UpdateLights();
 	//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	
 	for ( int gameObjIdx = 0; gameObjIdx < (int)m_gameObjects.size(); ++gameObjIdx )
@@ -361,6 +391,22 @@ void Game::UpdateDebugDrawCommands()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateLights()
+{
+	float deltaSeconds = m_gameClock->GetLastDeltaSeconds();
+	m_powerLevel -= .1f * deltaSeconds;
+
+	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	{
+		if ( m_lights[lightIdx].intensity > 0.01f )
+		{
+			m_lights[lightIdx].intensity = m_powerLevel;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
 	Rgba8 backgroundColor( 10, 10, 10, 255 );
@@ -446,23 +492,22 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
-	/*g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_d.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_n.png" ) );*/
 	g_renderer->SetSampler( eSampler::POINT_WRAP );
 	g_renderer->BindSampler( nullptr );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-
-	//g_renderer->BindShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
-
 	
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	g_renderer->SetGamma( m_gamma );
 	
-	// Render normal objects
-	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_cubeMesh );
+	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	{
+		//if ( m_lights[lightIdx].isEnabled )
+		//{
+			g_renderer->EnableLight( lightIdx, m_lights[lightIdx] );
+		//}
+	}
+	
 	
 	for ( int gameObjIdx = 0; gameObjIdx < (int)m_gameObjects.size(); ++gameObjIdx )
 	{
@@ -471,21 +516,6 @@ void Game::Render() const
 			m_gameObjects[gameObjIdx]->Render();
 		}
 	}
-
-	/*for ( int transformIdx = 0; transformIdx < (int)m_wallTransforms.size(); ++transformIdx )
-	{
-		model = m_wallTransforms[transformIdx].GetAsMatrix();
-		g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-		g_renderer->DrawMesh( m_cubeMesh );
-	}*/
-
-	// Draw floor
-	/*g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_n.png" ) );
-
-	model = m_floorTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_cubeMesh );*/
 	
 
 	//m_world->Render();
