@@ -52,7 +52,7 @@ void GameObject::Render() const
 void GameObject::SetRigidbody( Rigidbody2D* rigidbody )
 {
 	m_rigidbody = rigidbody;
-
+	
 	m_transform.SetPosition( Vec3( m_rigidbody->GetPosition().x, 0.f, m_rigidbody->GetPosition().y ) );
 }
 
@@ -66,6 +66,21 @@ void GameObject::Translate( const Vec3& translation )
 	{
 		m_rigidbody->Translate2D( Vec2( translation.x, translation.z ) );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::ApplyImpulseAt( const Vec3& impulse, const Vec3& position )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	Vec2 impulse2D( impulse.x, impulse.z );
+	Vec2 position2D( position.x, position.z );
+
+	m_rigidbody->ApplyImpulseAt( impulse2D, position2D );
 }
 
 

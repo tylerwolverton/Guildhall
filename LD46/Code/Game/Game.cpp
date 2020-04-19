@@ -44,6 +44,8 @@
 static float s_mouseSensitivityMultiplier = 1.f;
 static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 
+static float s_powerLevel = 1.f;
+
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
@@ -63,6 +65,8 @@ void Game::Startup()
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 
+	g_eventSystem->RegisterEvent( "light_switch_activated", "A light switch was flipped", eUsageLocation::EVERYWHERE, SetPowerLevel );
+
 	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
 		
 	m_rng = new RandomNumberGenerator();
@@ -76,9 +80,13 @@ void Game::Startup()
 	m_physics2D->Startup( m_gameClock );
 	m_physics2D->SetSceneGravity( 0.f );
 
-	m_playerRigidbody = m_physics2D->CreateRigidbody();
 	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2::ZERO, m_playerRadius );
+	discCollider->m_material.m_bounciness = 0.f;
+
+	m_playerRigidbody = m_physics2D->CreateRigidbody();
 	m_playerRigidbody->TakeCollider( discCollider );
+	m_playerRigidbody->ChangeMass( -9.f );
+	m_playerRigidbody->ChangeDrag( .08f );
 
 	m_player = new GameObject();
 	m_player->SetRigidbody( m_playerRigidbody );
@@ -89,14 +97,17 @@ void Game::Startup()
 	InitializeMaterials();
 	InitializeMeshes();
 	InitializeLights();
+	InitializeObstacles();
 
-	SpawnSwitch( Vec3( 9.5f, 0.f, 0.f ), Vec3( 0.f, 0.f, 90.f ), Vec3(.1f, .1f, .01f) );
-	SpawnSwitch( Vec3( 0.f, 0.f, 9.5f ), Vec3( 0.f, 0.f, 0.f ), Vec3(.1f, .1f, .01f) );
-	SpawnSwitch( Vec3( -9.5f, 0.f, 0.f ), Vec3( 0.f, 0.f, 270.f ), Vec3(.1f, .1f, .01f) );
-	SpawnSwitch( Vec3( 0.f, 0.f, -9.5f ), Vec3( 0.f, 0.f, 180.f ), Vec3(.1f, .1f, .01f) );
+	SpawnSwitch( Vec3( 10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 90.f ), Vec3(.1f, .1f, .01f) );
+	SpawnSwitch( Vec3( 0.f, 0.f, 10.f ), Vec3( 0.f, 0.f, 0.f ), Vec3(.1f, .1f, .01f) );
+	SpawnSwitch( Vec3( -10.f, 0.f, 0.f ), Vec3( 0.f, 0.f, 270.f ), Vec3(.1f, .1f, .01f) );
+	SpawnSwitch( Vec3( 0.f, 0.f, -10.f ), Vec3( 0.f, 0.f, 180.f ), Vec3(.1f, .1f, .01f) );
 
 	//m_world = new World();
 	//m_world->BuildNewMap( g_gameConfigBlackboard.GetValue( "startMap", "MutateDemo" ) );
+
+	m_lightSwitches[0]->Enable();
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -132,31 +143,11 @@ void Game::InitializeMeshes()
 	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
 
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	m_cubeMeshTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
-
-	m_cubeRigidbody = m_physics2D->CreateRigidbody();
-	m_cubeRigidbody->SetSimulationMode( SIMULATION_MODE_STATIC );
-	m_cubeRigidbody->SetPosition( m_cubeMeshTransform.GetPosition().XZ() );
-
-	Vec2 polygonPoints[4];
-	float minX = m_cubeMeshTransform.GetPosition().x - .5f;
-	float minY = -m_cubeMeshTransform.GetPosition().z - .5f;
-	float maxX = m_cubeMeshTransform.GetPosition().x + .5f;
-	float maxY = -m_cubeMeshTransform.GetPosition().z + .5f;
-
-	Polygon2 polygon;
-	AABB2 boundingBox( minX, minY, maxX, maxY );
-	boundingBox.GetCornerPositionsCCW( polygonPoints );
-	polygon.SetPoints( polygonPoints, 4 );
-	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
 	
-	m_cubeRigidbody->TakeCollider( polygonCollider );
-
-	SpawnEnvironmentBox( Vec3( 10.f, 0.f, 0.f ), Vec3( 1.f, 8.f, 20.f ) );
-	SpawnEnvironmentBox( Vec3( -10.f, 0.f, 0.f ), Vec3( 1.f, 8.f, 20.f ) );
-	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -10.f ), Vec3( 20.f, 8.f, 1.f ) );
-	SpawnEnvironmentBox( Vec3( 0.f, 0.f, 10.f ), Vec3( 20.f, 8.f, 1.f ) );
+	SpawnEnvironmentBox( Vec3( ( 10.f + WALL_THICKNESS *.5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
+	SpawnEnvironmentBox( Vec3( -( 10.f + WALL_THICKNESS * .5f ), 0.f, 0.f ), Vec3( WALL_THICKNESS, 8.f, 20.f + WALL_THICKNESS * 2.f ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, -( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
+	SpawnEnvironmentBox( Vec3( 0.f, 0.f, ( 10.f + WALL_THICKNESS * .5f ) ), Vec3( 20.f + WALL_THICKNESS * 2.f, 8.f, WALL_THICKNESS ) );
 
 	m_floorTransform.SetPosition( Vec3( 0.f, -.5f, 0.f ) );
 	m_floorTransform.SetScale( Vec3( 20.f, .1f, 20.f ) );
@@ -246,6 +237,32 @@ void Game::InitializeLights()
 	m_lights[1] = overheadLight1;
 	m_lights[2] = overheadLight2;
 	m_lights[3] = overheadLight3;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::InitializeObstacles()
+{
+	SpawnEnvironmentBall( Vec3( 0.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 0.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
+	SpawnEnvironmentBall( Vec3( 3.f, 0.f, -5.f ), .5f );
 }
 
 
@@ -363,7 +380,7 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
 	{
-		cameraTranslation *= 10.f;
+		//cameraTranslation *= 2.f;
 	}
 
 	// Rotation
@@ -380,6 +397,17 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
+
+
+	if ( g_inputSystem->IsKeyPressed( 'E' ) )
+	{
+		InteractableSwitch* lightSwitch = m_player->GetSelectedSwitch();
+		if ( lightSwitch != nullptr 
+			 && lightSwitch->IsEnabled() )
+		{
+			lightSwitch->Activate();
+		}
+	}
 }
 
 
@@ -394,13 +422,13 @@ void Game::UpdateDebugDrawCommands()
 void Game::UpdateLights()
 {
 	float deltaSeconds = m_gameClock->GetLastDeltaSeconds();
-	m_powerLevel -= .1f * deltaSeconds;
+	s_powerLevel -= .05f * deltaSeconds;
 
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
 		if ( m_lights[lightIdx].intensity > 0.01f )
 		{
-			m_lights[lightIdx].intensity = m_powerLevel;
+			m_lights[lightIdx].intensity = s_powerLevel;
 		}
 	}
 }
@@ -423,12 +451,14 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	// Lock player to moving on the ground only
 	absoluteTranslation.y = 0.f;
 
-	m_worldCamera->Translate( absoluteTranslation );
+	//m_worldCamera->Translate( absoluteTranslation );
 
 	Vec2 cameraPosition = m_worldCamera->GetTransform().GetPosition().XZ();
 	//m_playerRigidbody->SetPosition( cameraPosition );
 	//m_player->SetTransform( m_worldCamera->GetTransform() );
-	m_player->Translate( absoluteTranslation );
+	
+	//m_player->Translate( absoluteTranslation );
+	m_player->ApplyImpulseAt( absoluteTranslation * 50.f );
 	m_player->SetOrientation( m_worldCamera->GetTransform().m_orientation );
 }
 
@@ -451,6 +481,7 @@ void Game::SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eS
 	boundingBox.GetCornerPositionsCCW( polygonPoints );
 	polygon.SetPoints( polygonPoints, 4 );
 	PolygonCollider2D* polygonCollider = m_physics2D->CreatePolygon2Collider( polygon );
+	polygonCollider->m_material.m_bounciness = 1.f;
 
 	Rigidbody2D* wallRigidbody = m_physics2D->CreateRigidbody();
 	wallRigidbody->SetSimulationMode( simMode );
@@ -471,6 +502,35 @@ void Game::SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eS
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::SpawnEnvironmentBall( const Vec3& location, float radius, eSimulationMode simMode )
+{
+	Transform ballTransform;
+	ballTransform.SetPosition( location );
+	ballTransform.SetScale( Vec3( radius, radius, radius ) );
+
+	DiscCollider2D* discCollider = m_physics2D->CreateDiscCollider( Vec2( 0.f, 0.f ), radius );
+	discCollider->m_material.m_friction = 0.f;
+	discCollider->m_material.m_bounciness = 1.f;
+
+	Rigidbody2D* ballRigidbody = m_physics2D->CreateRigidbody();
+	ballRigidbody->SetSimulationMode( simMode );
+	ballRigidbody->SetPosition( ballTransform.GetPosition().XZ() );
+	ballRigidbody->ChangeMass( -5.f );
+
+	ballRigidbody->TakeCollider( discCollider );
+	ballRigidbody->SetVelocity( Vec2( 10.f, 1.f ) );
+
+	GameObject* gameObject = new GameObject();
+	gameObject->SetRigidbody( ballRigidbody );
+	gameObject->SetMaterial( m_whiteMaterial );
+	gameObject->SetMesh( m_sphereMesh );
+	gameObject->SetTransform( ballTransform );
+
+	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec3& dimensions )
 {
 	Transform switchTransform;
@@ -483,6 +543,7 @@ void Game::SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec
 	gameSwitch->SetMesh( m_cubeMesh );
 	gameSwitch->SetTransform( switchTransform );
 
+	m_lightSwitches.push_back( gameSwitch );
 	m_gameObjects.push_back( gameSwitch );
 }
 
@@ -599,6 +660,15 @@ bool Game::SetMouseSensitivity( EventArgs* args )
 bool Game::SetAmbientLightColor( EventArgs* args )
 {
 	s_ambientLightColor = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Game::SetPowerLevel( EventArgs* args )
+{
+	s_powerLevel = 1.f;
 
 	return false;
 }

@@ -59,3 +59,6 @@ constexpr float DEBUG_LINE_THICKNESS = 0.02f;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
+
+
+constexpr float WALL_THICKNESS = 10.f;

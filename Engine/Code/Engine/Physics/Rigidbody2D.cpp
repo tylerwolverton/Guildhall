@@ -225,8 +225,10 @@ void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& point )
 //-----------------------------------------------------------------------------------------------
 void Rigidbody2D::ApplyDragForce()
 {
-	Vec2 dragForce = -GetVerletVelocity() * m_drag;
-	AddForce( dragForce );
+	Vec2 dragForce = -GetVelocity() * m_drag;
+	// TODO: Check correct implementation of drag
+	//AddForce( dragForce );
+	m_velocity += dragForce;
 }
 
 

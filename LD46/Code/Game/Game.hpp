@@ -18,6 +18,7 @@ class Entity;
 class RandomNumberGenerator;
 class Camera;
 class GameObject;
+class InteractableSwitch;
 class GPUMesh;
 class Physics2D;
 class TextBox;
@@ -53,6 +54,7 @@ public:
 
 	static bool SetMouseSensitivity( EventArgs* args );
 	static bool SetAmbientLightColor( EventArgs* args );
+	static bool SetPowerLevel( EventArgs* args );
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -67,6 +69,7 @@ private:
 	void InitializeMeshes();
 	void InitializeMaterials();
 	void InitializeLights();
+	void InitializeObstacles();
 
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
@@ -77,6 +80,7 @@ private:
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
 	void SpawnEnvironmentBox( const Vec3& location, const Vec3& dimensions, eSimulationMode simMode = SIMULATION_MODE_STATIC );
+	void SpawnEnvironmentBall( const Vec3& location, float radius, eSimulationMode simMode = SIMULATION_MODE_DYNAMIC );
 	void SpawnSwitch( const Vec3& location, const Vec3& orientation, const Vec3& dimensions );
 
 private:
@@ -114,21 +118,20 @@ private:
 	Rigidbody2D* m_cubeRigidbody = nullptr;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 0.f;
+	float m_ambientIntensity = .5f;
 	float m_specularFactor = 0.f;
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;
 
 	Light m_lights[MAX_LIGHTS];
-
-	float m_powerLevel = 1.f;
-
+	
 	float m_playerRadius = .25f;
 
 	std::vector<Transform> m_wallTransforms;
 	Transform m_floorTransform;
 
 	std::vector<GameObject*> m_gameObjects;
+	std::vector<InteractableSwitch*> m_lightSwitches;
 	GameObject* m_player = nullptr;
 
 	// Materials ( move to XML eventually )
