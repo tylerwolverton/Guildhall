@@ -189,7 +189,7 @@ void Rigidbody2D::ChangeDrag( float deltaDrag )
 {
 	m_drag += deltaDrag;
 
-	m_drag = ClampZeroToOne( m_drag );
+	//m_drag = ClampZeroToOne( m_drag );
 }
 
 
@@ -226,9 +226,7 @@ void Rigidbody2D::ApplyImpulseAt( const Vec2& impulse, const Vec2& point )
 void Rigidbody2D::ApplyDragForce()
 {
 	Vec2 dragForce = -GetVelocity() * m_drag;
-	// TODO: Check correct implementation of drag
-	//AddForce( dragForce );
-	m_velocity += dragForce;
+	AddForce( dragForce );
 }
 
 

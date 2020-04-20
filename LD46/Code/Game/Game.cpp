@@ -90,7 +90,7 @@ void Game::Startup()
 	m_playerRigidbody = m_physics2D->CreateRigidbody();
 	m_playerRigidbody->TakeCollider( discCollider );
 	m_playerRigidbody->ChangeMass( -9.f );
-	m_playerRigidbody->ChangeDrag( .08f );
+	m_playerRigidbody->ChangeDrag( 30.f );
 	m_playerRigidbody->SetPosition( Vec2( -7.f, -5.f ) );
 
 	m_player = new GameObject();
@@ -652,15 +652,7 @@ void Game::UpdateLights()
 {
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	s_powerLevel -= .025f * deltaSeconds;
-
-	//for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
-	//{
-	//	if ( m_lights[lightIdx].intensity > 0.01f )
-	//	{
-	//		m_lights[lightIdx].intensity = s_powerLevel;
-	//	}
-	//}
-
+	
 	if ( s_isPartyModeEnabled )
 	{
 		if ( m_partyModeTimer.CheckAndReset() )
@@ -675,10 +667,6 @@ void Game::UpdateLights()
 
 			m_lights[m_curPartyLightIdx].intensity = 1.f;
 		}
-		/*for ( int lightIdx = 1; lightIdx < NUM_GAME_LIGHTS; ++lightIdx )
-		{
-			m_lights[lightIdx].intensity = 1.f;
-		}*/
 
 		m_activeSwitchLight.intensity = 0.f;
 	}
