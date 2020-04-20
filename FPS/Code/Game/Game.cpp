@@ -339,9 +339,9 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	pitch *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch,
+	m_worldCamera->SetPitchRollYawRotation( transform.m_orientation.x + pitch,
 											0.f,
-											transform.m_rotation.z + yaw );
+											transform.m_orientation.z + yaw );
 
 	// Update light direction
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
