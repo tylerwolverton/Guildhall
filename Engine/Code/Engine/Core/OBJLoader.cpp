@@ -3,13 +3,14 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 
 #include <iostream>
 #include <fstream>
 
 
 //-----------------------------------------------------------------------------------------------
-void OBJLoader::LoadFromFile( std::string filename )
+GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 {
 	std::string line;
 	std::ifstream objFile;
@@ -18,10 +19,11 @@ void OBJLoader::LoadFromFile( std::string filename )
 	if ( !objFile.is_open() )
 	{
 		// Load error model
-		return;
+		return nullptr;
 	}
 
 	std::vector<Vertex_PCUTBN> vertices;
+	std::vector<uint> indices;
 	while ( std::getline( objFile, line ) )
 	{
 		// TODO: Make SplitStringsOnWhiteSpace?
@@ -41,14 +43,28 @@ void OBJLoader::LoadFromFile( std::string filename )
 				continue;
 			}
 
+			Vec3 position( (float)atof( dataStrings[1].c_str() ), (float)atof( dataStrings[2].c_str() ), (float)atof( dataStrings[3].c_str() ) );
 
+			Vertex_PCUTBN vertex;
+			vertex.position = position;
+
+			vertices.push_back( vertex );
 		}
 		else if ( dataStrings[0] == "f" )
 		{
-
+			if ( numDataElements != 4 )
+			{
+				g_devConsole->PrintString( Stringf( "Unsupported number of faces: %d", numDataElements - 1 ), Rgba8::YELLOW );
+				continue;
+			}
+						
+			indices.push_back( (uint)atoi( dataStrings[1].c_str() ) - 1 );
+			indices.push_back( (uint)atoi( dataStrings[2].c_str() ) - 1 );
+			indices.push_back( (uint)atoi( dataStrings[3].c_str() ) - 1 );
 		}
 	}
 
 	objFile.close();
 
+	return new GPUMesh( context, vertices, indices );
 }

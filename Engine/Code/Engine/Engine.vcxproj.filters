@@ -259,6 +259,9 @@
     <ClCompile Include="Core\Vertex_PCUTBN.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\OBJLoader.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -501,5 +504,6 @@
     <ClInclude Include="Math\Plane2D.hpp" />
     <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
     <ClInclude Include="Core\Delegate.hpp" />
+    <ClInclude Include="Core\OBJLoader.hpp" />
   </ItemGroup>
 </Project>

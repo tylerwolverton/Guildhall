@@ -1,11 +1,14 @@
 #pragma once
 #include <string>
 
+class GPUMesh;
+class RenderContext;
+
 //-----------------------------------------------------------------------------------------------
 class OBJLoader
 {
 public:
-	void LoadFromFile( std::string filename );
+	GPUMesh* LoadFromFile( RenderContext* context, std::string filename );
 
 private:
 };

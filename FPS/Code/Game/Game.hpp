@@ -174,13 +174,16 @@ private:
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
 	
+	GPUMesh* m_teapotMesh = nullptr;
+	//Transform m_sphereMeshTransform;
+
 	// Shader demos
 	Transform m_sphereMeshFresnelTransform;
 	Transform m_sphereMeshTriplanarTransform;
 	Transform m_cubeMeshTransformDissolve;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 0.f;
+	float m_ambientIntensity = 1.f;
 	GameLight m_lights[MAX_LIGHTS];
 	int m_currentLightIdx = 0;
 	float m_specularFactor = 0.f;
