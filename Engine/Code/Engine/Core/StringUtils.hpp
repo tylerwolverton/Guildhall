@@ -13,3 +13,8 @@ bool atob( const char* value );
 bool atob( const std::string& value );
 
 std::vector<std::string> SplitStringOnDelimiter( const std::string& stringToSplit, char delimiter );
+std::vector<std::string> SplitStringOnDelimiterAndTrimOuterWhitespace( const std::string& stringToSplit, char delimiter );
+
+bool IsWhitespace( unsigned char c );
+std::string TrimOuterWhitespace( const std::string& stringToTrim );
+bool IsEmptyOrWhitespace( const std::string& stringToCheck );

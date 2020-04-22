@@ -1,6 +1,9 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+
 #include <stdarg.h>
+#include <cctype>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -95,4 +98,83 @@ std::vector<std::string> SplitStringOnDelimiter( const std::string& stringToSpli
 	}
 
 	return splitStrings;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<std::string> SplitStringOnDelimiterAndTrimOuterWhitespace( const std::string& stringToSplit, char delimiter )
+{
+	Strings rawStrings = SplitStringOnDelimiter( stringToSplit, delimiter );
+	
+	Strings trimmedStrings;
+	trimmedStrings.reserve( rawStrings.size() );
+
+	for ( uint stringIdx = 0; stringIdx < rawStrings.size(); ++stringIdx )
+	{
+		trimmedStrings[stringIdx] = TrimOuterWhitespace( rawStrings[stringIdx] );
+	}
+
+	return trimmedStrings;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool IsWhitespace( unsigned char c )
+{
+	return std::isspace( c ) != 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string TrimOuterWhitespace( const std::string& stringToTrim )
+{
+	if ( stringToTrim.size() == 0 )
+	{
+		return "";
+	}
+
+	size_t startPos = 0;
+	
+	while ( startPos < stringToTrim.size() - 1
+			&& IsWhitespace( stringToTrim[startPos] ) )
+	{
+		++startPos;
+	}  
+
+	size_t endPos = stringToTrim.size() - 1;
+
+	while ( endPos > startPos
+			&& IsWhitespace( stringToTrim[endPos] ) )
+	{
+		--endPos;
+	}
+
+	if ( startPos == endPos )
+	{
+		return "";
+	}
+
+	// Move endpos back to the first whitespace char
+	++endPos;
+	return stringToTrim.substr( startPos, endPos - startPos );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool IsEmptyOrWhitespace( const std::string& stringToCheck )
+{
+	if ( stringToCheck.size() == 0 )
+	{
+		return true;
+	}
+	
+	for ( uint i = 0; i < stringToCheck.size() - 1; ++i )
+	{
+		if ( !IsWhitespace( stringToCheck[i] ) )
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
