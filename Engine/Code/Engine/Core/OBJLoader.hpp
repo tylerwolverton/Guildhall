@@ -12,11 +12,19 @@ class RenderContext;
 
 
 //-----------------------------------------------------------------------------------------------
-struct Face
+struct ObjVertex
 {
 	int position = -1;
 	int normal = -1;
 	int uv = -1;
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct ObjFace
+{
+public:
+	ObjVertex vertices[3];
 };
 
 
@@ -28,5 +36,7 @@ public:
 
 private:
 	bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );
-	bool AppendFace( const Strings& dataStrings, std::vector<Face>& data, const Face& lastFace );
+	bool AppendFace( const Strings& dataStrings, std::vector<ObjFace>& data, ObjVertex& lastObjVertex );
+
+	ObjVertex CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex );
 };

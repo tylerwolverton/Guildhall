@@ -111,7 +111,11 @@ std::vector<std::string> SplitStringOnDelimiterAndTrimOuterWhitespace( const std
 
 	for ( uint stringIdx = 0; stringIdx < rawStrings.size(); ++stringIdx )
 	{
-		trimmedStrings[stringIdx] = TrimOuterWhitespace( rawStrings[stringIdx] );
+		std::string trimmedStr = TrimOuterWhitespace( rawStrings[stringIdx] );
+		if ( trimmedStr != "" )
+		{
+			trimmedStrings.push_back( trimmedStr );
+		}
 	}
 
 	return trimmedStrings;
@@ -148,12 +152,7 @@ std::string TrimOuterWhitespace( const std::string& stringToTrim )
 	{
 		--endPos;
 	}
-
-	if ( startPos == endPos )
-	{
-		return "";
-	}
-
+	
 	// Move endpos back to the first whitespace char
 	++endPos;
 	return stringToTrim.substr( startPos, endPos - startPos );
@@ -168,13 +167,57 @@ bool IsEmptyOrWhitespace( const std::string& stringToCheck )
 		return true;
 	}
 	
-	for ( uint i = 0; i < stringToCheck.size() - 1; ++i )
+	for ( uint stringIdx = 0; stringIdx < stringToCheck.size() - 1; ++stringIdx )
 	{
-		if ( !IsWhitespace( stringToCheck[i] ) )
+		if ( !IsWhitespace( stringToCheck[stringIdx] ) )
 		{
 			return false;
 		}
 	}
 
 	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int ConvertStringToInt( const std::string& string )
+{
+	return atoi( string.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Ints ConvertStringsToInts( const Strings& strings )
+{
+	Ints ints;
+	ints.reserve( strings.size() );
+
+	for ( uint stringIdx = 0; stringIdx < strings.size() - 1; ++stringIdx )
+	{
+		ints.push_back( ConvertStringToInt( strings[stringIdx].c_str() ) );
+	}
+
+	return ints;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float ConvertStringToFloat( const std::string& string )
+{
+	return (float)atof( string.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Floats ConvertStringsToFloats( const Strings& strings )
+{
+	Floats floats;
+	floats.reserve( strings.size() );
+
+	for ( uint stringIdx = 0; stringIdx < strings.size() - 1; ++stringIdx )
+	{
+		floats.push_back( ConvertStringToFloat( strings[stringIdx].c_str() ) );
+	}
+
+	return floats;
 }

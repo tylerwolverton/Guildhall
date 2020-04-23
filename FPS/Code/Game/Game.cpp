@@ -57,8 +57,8 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	std::string testStr( " " );
-	std::string trimmed = TrimOuterWhitespace( testStr );
+	std::string testStr( "1//1 " );
+	Strings trimmed = SplitStringOnDelimiter( testStr, '/' );
 
 
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
@@ -143,7 +143,7 @@ void Game::InitializeMeshes()
 
 	// Move to RenderContext::LoadMeshFromFile
 	OBJLoader loader;
-	m_teapotMesh = loader.LoadFromFile( g_renderer, "Data/Meshes/Teapot.obj" );
+	m_teapotMesh = loader.LoadFromFile( g_renderer, "Data/Meshes/mesh.obj" );
 }
 
 
@@ -817,20 +817,22 @@ void Game::Render() const
 	g_renderer->SetGamma( m_gamma );
 	
 	// Render normal objects
-	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_cubeMesh );
+	//Mat44 model = m_cubeMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_cubeMesh );
 
-	model = m_quadMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_quadMesh );
-	
-	model = m_sphereMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_sphereMesh );
+	//model = m_quadMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_quadMesh );
+	//
+	//model = m_sphereMeshTransform.GetAsMatrix();
+	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	//g_renderer->DrawMesh( m_sphereMesh );
 
-	model = Mat44();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+
+	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
+	Mat44 model = Mat44();
+	g_renderer->SetModelData( model, Rgba8::RED, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_teapotMesh );
 
 	//// Fresnel

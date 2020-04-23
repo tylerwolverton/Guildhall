@@ -1,5 +1,6 @@
 #pragma once
-//-----------------------------------------------------------------------------------------------
+#include "Engine/Core/EngineCommon.hpp"
+
 #include <string>
 #include <vector>
 
@@ -18,3 +19,8 @@ std::vector<std::string> SplitStringOnDelimiterAndTrimOuterWhitespace( const std
 bool IsWhitespace( unsigned char c );
 std::string TrimOuterWhitespace( const std::string& stringToTrim );
 bool IsEmptyOrWhitespace( const std::string& stringToCheck );
+
+int ConvertStringToInt( const std::string& string );
+Ints ConvertStringsToInts( const Strings& strings );
+float ConvertStringToFloat( const std::string& string );
+Floats ConvertStringsToFloats( const Strings& strings );

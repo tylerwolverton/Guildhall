@@ -23,13 +23,11 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 		return nullptr;
 	}
 
-	std::vector<Vertex_PCUTBN> vertices;
-	std::vector<uint> indices;
 	std::vector<Vec3> positions;
 	std::vector<Vec3> normals;
-	std::vector<Vec3> textureCoords;
-	std::vector<Face> faces;
-	Face lastFace;
+	std::vector<Vec3> uvTexCoords;
+	std::vector<ObjFace> faces;
+	ObjVertex lastObjVertex;
 	while ( std::getline( objFile, line ) )
 	{
 		line = TrimOuterWhitespace( line );
@@ -45,7 +43,7 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 
 		if ( dataStrings[0] == "mtllib" )
 		{
-
+			// TODO: Handle materials
 		}
 		else if( dataStrings[0] == "v" )
 		{
@@ -57,18 +55,34 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 		}
 		else if ( dataStrings[0] == "vt" )
 		{
-			AppendVertexData( dataStrings, textureCoords );
+			AppendVertexData( dataStrings, uvTexCoords );
 		}
 		else if ( dataStrings[0] == "f" )
 		{
-			if ( AppendFace( dataStrings, faces, lastFace ) )
-			{
-				lastFace = *faces.end();
-			}
+			AppendFace( dataStrings, faces, lastObjVertex );
 		}
 	}
 
 	objFile.close();
+
+	std::vector<Vertex_PCUTBN> vertices;
+	std::vector<uint> indices;
+	uint index = 0;
+	for( uint faceIdx = 0; faceIdx < faces.size(); ++faceIdx )
+	{
+		const ObjFace& face = faces[faceIdx];
+
+		for ( int faceVertIdx = 0; faceVertIdx < 3; ++faceVertIdx )
+		{
+			Vertex_PCUTBN vertex;
+			vertex.position = positions[face.vertices[faceVertIdx].position];
+			vertex.uvTexCoords = uvTexCoords[face.vertices[faceVertIdx].uv].XY();
+			vertex.normal = normals[face.vertices[faceVertIdx].normal];
+
+			vertices.push_back( vertex );
+			indices.push_back( index++ );
+		}
+	}
 
 	return new GPUMesh( context, vertices, indices );
 }
@@ -92,7 +106,7 @@ bool OBJLoader::AppendVertexData( const Strings& dataStrings, std::vector<Vec3>&
 
 
 //-----------------------------------------------------------------------------------------------
-bool OBJLoader::AppendFace( const Strings& dataStrings, std::vector<Face>& data, const Face& lastFace )
+bool OBJLoader::AppendFace( const Strings& dataStrings, std::vector<ObjFace>& data, ObjVertex& lastObjVertex )
 {
 	if ( dataStrings.size() < 4 
 		 || dataStrings.size() > 5 )
@@ -101,10 +115,52 @@ bool OBJLoader::AppendFace( const Strings& dataStrings, std::vector<Face>& data,
 		return false;
 	}
 
-	/*indices.push_back( (uint)atoi( dataStrings[1].c_str() ) - 1 );
-	indices.push_back( (uint)atoi( dataStrings[2].c_str() ) - 1 );
-	indices.push_back( (uint)atoi( dataStrings[3].c_str() ) - 1 );*/
+	ObjVertex vert0( CreateObjVertexFromString( dataStrings[1], lastObjVertex ) );
+	ObjVertex vert1( CreateObjVertexFromString( dataStrings[2], lastObjVertex ) );
+	ObjVertex vert2( CreateObjVertexFromString( dataStrings[3], lastObjVertex ) );
+
+	ObjFace face0;
+	face0.vertices[0] = vert0;
+	face0.vertices[1] = vert1;
+	face0.vertices[2] = vert2;
 	
+	data.push_back( face0 );
+
+	if( dataStrings.size() == 5 )
+	{
+		ObjVertex vert3( CreateObjVertexFromString( dataStrings[4], lastObjVertex ) );
+
+		ObjFace face1;
+		face1.vertices[0] = vert0;
+		face1.vertices[1] = vert2;
+		face1.vertices[2] = vert3;
+
+		data.push_back( face1 );
+	}
+
 	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ObjVertex OBJLoader::CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex )
+{
+	Strings indicesStr = SplitStringOnDelimiterAndTrimOuterWhitespace( indexStr, '/' );
+
+	// Subtract 1 to line up the indices with arrays
+	if( !indicesStr[0].empty() )
+	{
+		lastObjVertex.position = ConvertStringToInt( indicesStr[0] ) - 1;
+	}
+	if ( !indicesStr[1].empty() )
+	{
+		lastObjVertex.uv = ConvertStringToInt( indicesStr[1] ) - 1;
+	}
+	if ( !indicesStr[2].empty() )
+	{
+		lastObjVertex.normal = ConvertStringToInt( indicesStr[2] ) - 1;
+	}
+	
+	return lastObjVertex;
 }
 
