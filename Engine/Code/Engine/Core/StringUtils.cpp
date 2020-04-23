@@ -102,30 +102,29 @@ std::vector<std::string> SplitStringOnDelimiter( const std::string& stringToSpli
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<std::string> SplitStringOnDelimiterAndTrimOuterWhitespace( const std::string& stringToSplit, char delimiter )
+bool IsWhitespace( unsigned char c )
 {
-	Strings rawStrings = SplitStringOnDelimiter( stringToSplit, delimiter );
-	
-	Strings trimmedStrings;
-	trimmedStrings.reserve( rawStrings.size() );
-
-	for ( uint stringIdx = 0; stringIdx < rawStrings.size(); ++stringIdx )
-	{
-		std::string trimmedStr = TrimOuterWhitespace( rawStrings[stringIdx] );
-		if ( trimmedStr != "" )
-		{
-			trimmedStrings.push_back( trimmedStr );
-		}
-	}
-
-	return trimmedStrings;
+	return std::isspace( c ) != 0;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool IsWhitespace( unsigned char c )
+bool IsEmptyOrWhitespace( const std::string& stringToCheck )
 {
-	return std::isspace( c ) != 0;
+	if ( stringToCheck.size() == 0 )
+	{
+		return true;
+	}
+
+	for ( uint stringIdx = 0; stringIdx < stringToCheck.size() - 1; ++stringIdx )
+	{
+		if ( !IsWhitespace( stringToCheck[stringIdx] ) )
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
@@ -160,23 +159,24 @@ std::string TrimOuterWhitespace( const std::string& stringToTrim )
 
 
 //-----------------------------------------------------------------------------------------------
-bool IsEmptyOrWhitespace( const std::string& stringToCheck )
+Strings TrimOuterWhitespace( const Strings& stringsToTrim )
 {
-	if ( stringToCheck.size() == 0 )
+	Strings trimmedStrings;
+	trimmedStrings.reserve( stringsToTrim.size() );
+
+	for( uint stringIdx = 0; stringIdx < stringsToTrim.size(); ++stringIdx )
 	{
-		return true;
-	}
-	
-	for ( uint stringIdx = 0; stringIdx < stringToCheck.size() - 1; ++stringIdx )
-	{
-		if ( !IsWhitespace( stringToCheck[stringIdx] ) )
+		std::string trimmedStr = TrimOuterWhitespace( stringsToTrim[stringIdx] );
+		if ( trimmedStr != "" )
 		{
-			return false;
+			trimmedStrings.push_back( trimmedStr );
 		}
 	}
 
-	return true;
+	return trimmedStrings;
 }
+
+
 
 
 //-----------------------------------------------------------------------------------------------

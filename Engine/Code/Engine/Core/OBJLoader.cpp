@@ -39,8 +39,8 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 			continue;
 		}
 
-		Strings dataStrings = SplitStringOnDelimiterAndTrimOuterWhitespace( line, ' ' );
-		int numDataElements = dataStrings.size();
+		Strings dataStrings = SplitStringOnDelimiter( line, ' ' );
+		dataStrings = TrimOuterWhitespace( dataStrings );
 
 		if ( dataStrings[0] == "mtllib" )
 		{
