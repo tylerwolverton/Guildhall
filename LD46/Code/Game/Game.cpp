@@ -877,7 +877,7 @@ void Game::Render() const
 	{
 		if ( m_gameObjects[gameObjIdx] != nullptr )
 		{
-			m_gameObjects[gameObjIdx]->RenderWithMaterial();
+			m_gameObjects[gameObjIdx]->Render();
 		}
 	}
 

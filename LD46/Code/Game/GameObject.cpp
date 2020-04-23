@@ -24,7 +24,7 @@ void GameObject::UpdateTransform()
 
 
 //-----------------------------------------------------------------------------------------------
-void GameObject::RenderWithMaterial() const
+void GameObject::Render() const
 {
 	float specularFactor = 0.f;
 	float specularPower = 32.f;
@@ -38,21 +38,6 @@ void GameObject::RenderWithMaterial() const
 
 	if ( m_mesh != nullptr )
 	{
-		Mat44 model = m_transform.GetAsMatrix();
-		g_renderer->SetModelData( model, Rgba8::WHITE, specularFactor, specularPower );
-		g_renderer->DrawMesh( m_mesh );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameObject::Render() const
-{
-	if ( m_mesh != nullptr )
-	{
-		float specularFactor = 0.f;
-		float specularPower = 32.f;
-
 		Mat44 model = m_transform.GetAsMatrix();
 		g_renderer->SetModelData( model, Rgba8::WHITE, specularFactor, specularPower );
 		g_renderer->DrawMesh( m_mesh );
