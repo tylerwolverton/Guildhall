@@ -262,6 +262,9 @@
     <ClCompile Include="Core\OBJLoader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\ThirdParty\mikkt\mikktspace.c">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -505,5 +508,6 @@
     <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
     <ClInclude Include="Core\Delegate.hpp" />
     <ClInclude Include="Core\OBJLoader.hpp" />
+    <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h" />
   </ItemGroup>
 </Project>

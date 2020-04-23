@@ -306,6 +306,13 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 {
 	Vec3 cameraTranslation;
 
+	if( g_inputSystem->WasKeyJustPressed( 'O' ))
+	{
+		m_worldCamera->SetPosition( Vec3::ZERO );
+		m_worldCamera->SetPitchRollYawRotation( 0.f, 0.f, 0.f );
+		return;
+	}
+
 	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
 		cameraTranslation.x += 1.f;
@@ -831,8 +838,9 @@ void Game::Render() const
 
 
 	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/grass_d.png" ) );
+	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/mask_head_d.png" ) );
 	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
+	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	Mat44 model = Mat44();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );

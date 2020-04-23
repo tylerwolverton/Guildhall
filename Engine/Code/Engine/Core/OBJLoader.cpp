@@ -77,9 +77,19 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 		{
 			Vertex_PCUTBN vertex;
 			vertex.position = positions[face.vertices[faceVertIdx].position];
-			vertex.uvTexCoords = uvTexCoords[face.vertices[faceVertIdx].uv].XY();
-			vertex.normal = normals[face.vertices[faceVertIdx].normal].GetNormalized();
-			vertex.tangent = Vec3( 0.f, 1.f, 1.f );
+			int uvIdx = face.vertices[faceVertIdx].uv;
+			if( uvIdx != -1 )
+			{
+				vertex.uvTexCoords = uvTexCoords[uvIdx].XY();
+			}
+
+			int normalIdx = face.vertices[faceVertIdx].normal;
+			if ( normalIdx != -1 )
+			{
+				vertex.normal = normals[normalIdx].GetNormalized();
+			}
+
+			vertex.tangent = Vec3( 0.f, 1.f, 0.f );
 			vertex.bitangent = CrossProduct3D( vertex.normal, vertex.tangent );
 
 			vertices.push_back( vertex );
@@ -170,24 +180,42 @@ bool OBJLoader::AppendFace( const Strings& dataStrings, std::vector<ObjFace>& da
 
 
 //-----------------------------------------------------------------------------------------------
+// Face entries will always be in the form v/vt/vn with both vt and vn being optional
+//-----------------------------------------------------------------------------------------------
 ObjVertex OBJLoader::CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex )
 {
 	Strings indicesStr = SplitStringOnDelimiter( indexStr, '/' );
 
+	ObjVertex newVertex;
 	// Subtract 1 to line up the indices with arrays
 	if( !indicesStr[0].empty() )
 	{
-		lastObjVertex.position = ConvertStringToInt( indicesStr[0] ) - 1;
+		newVertex.position = ConvertStringToInt( indicesStr[0] ) - 1;
+		lastObjVertex.position = newVertex.position;
 	}
-	if ( !indicesStr[1].empty() )
+
+	// Check if we have texture coords
+	if( indicesStr.size() > 1 )
 	{
-		lastObjVertex.uv = ConvertStringToInt( indicesStr[1] ) - 1;
+		if ( !indicesStr[1].empty() )
+		{
+			lastObjVertex.uv = ConvertStringToInt( indicesStr[1] ) - 1;
+		}
+
+		newVertex.uv = lastObjVertex.uv;
 	}
-	if ( !indicesStr[2].empty() )
+
+	// Check if we have normals
+	if ( indicesStr.size() > 2 )
 	{
-		lastObjVertex.normal = ConvertStringToInt( indicesStr[2] ) - 1;
+		if ( !indicesStr[2].empty() )
+		{
+			lastObjVertex.normal = ConvertStringToInt( indicesStr[2] ) - 1;
+		}
+
+		newVertex.normal = lastObjVertex.normal;
 	}
-	
-	return lastObjVertex;
+		
+	return newVertex;
 }
 
