@@ -143,7 +143,7 @@ void Game::InitializeMeshes()
 
 	// Move to RenderContext::LoadMeshFromFile
 	OBJLoader loader;
-	m_teapotMesh = loader.LoadFromFile( g_renderer, "Data/Meshes/mesh.obj" );
+	m_teapotMesh = loader.LoadFromFile( g_renderer, "Data/Meshes/vespa_final.obj" );
 }
 
 
@@ -155,76 +155,76 @@ void Game::InitializeLights()
 	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
 	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 7.f );
-	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 15.f );
-	m_lights[0].type = eLightType::SPOT;
+	/*m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 7.f );
+	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 15.f );*/
+	m_lights[0].type = eLightType::POINT;
 	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
 
-	// Finite point
-	m_lights[1].light.intensity = .3f;
-	m_lights[1].light.color = Rgba8::RED.GetAsRGBVector();
-	m_lights[1].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[1].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[1].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, -.5f, .5f );
-	m_lights[1].type = eLightType::POINT;
-	m_lights[1].movementMode = eLightMovementMode::STATIONARY;
+	//// Finite point
+	//m_lights[1].light.intensity = .3f;
+	//m_lights[1].light.color = Rgba8::RED.GetAsRGBVector();
+	//m_lights[1].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[1].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[1].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, -.5f, .5f );
+	//m_lights[1].type = eLightType::POINT;
+	//m_lights[1].movementMode = eLightMovementMode::STATIONARY;
 
-	// Infinite point
-	m_lights[2].light.intensity = .4f;
-	m_lights[2].light.color = Rgba8::BLUE.GetAsRGBVector();
-	m_lights[2].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	m_lights[2].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	m_lights[2].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, -.5f, .5f );
-	m_lights[2].type = eLightType::POINT;
-	m_lights[2].movementMode = eLightMovementMode::STATIONARY;
-	
-	// Infinite Directional
-	m_lights[3].light.intensity = .5f;
-	m_lights[3].light.color = Rgba8::WHITE.GetAsRGBVector();
-	m_lights[3].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	m_lights[3].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	m_lights[3].light.position = Vec3( -5.f, 3.f, -10.f );
-	m_lights[3].light.direction = Vec3( 0.f, -1.f, 1.f ).GetNormalized();
-	m_lights[3].type = eLightType::DIRECTIONAL;
-	m_lights[3].movementMode = eLightMovementMode::STATIONARY;
+	//// Infinite point
+	//m_lights[2].light.intensity = .4f;
+	//m_lights[2].light.color = Rgba8::BLUE.GetAsRGBVector();
+	//m_lights[2].light.attenuation = Vec3( 1.f, 0.f, 0.f );
+	//m_lights[2].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
+	//m_lights[2].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, -.5f, .5f );
+	//m_lights[2].type = eLightType::POINT;
+	//m_lights[2].movementMode = eLightMovementMode::STATIONARY;
+	//
+	//// Infinite Directional
+	//m_lights[3].light.intensity = .5f;
+	//m_lights[3].light.color = Rgba8::WHITE.GetAsRGBVector();
+	//m_lights[3].light.attenuation = Vec3( 1.f, 0.f, 0.f );
+	//m_lights[3].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
+	//m_lights[3].light.position = Vec3( -5.f, 3.f, -10.f );
+	//m_lights[3].light.direction = Vec3( 0.f, -1.f, 1.f ).GetNormalized();
+	//m_lights[3].type = eLightType::DIRECTIONAL;
+	//m_lights[3].movementMode = eLightMovementMode::STATIONARY;
 
-	// Infinite spot
-	m_lights[4].light.intensity = .2f;
-	m_lights[4].light.color = Rgba8::PURPLE.GetAsRGBVector();
-	m_lights[4].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	m_lights[4].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	m_lights[4].light.position = m_sphereMeshTransform.GetPosition() + Vec3( 1.5f, -2.5f, 1.f );
-	m_lights[4].light.direction = Vec3( -.5f, 1.f, -1.f ).GetNormalized();
-	m_lights[4].light.halfCosOfInnerAngle = CosDegrees( 10.f );
-	m_lights[4].light.halfCosOfOuterAngle = CosDegrees( 15.f );
-	m_lights[4].type = eLightType::SPOT;
-	m_lights[4].movementMode = eLightMovementMode::STATIONARY;
-	
-	// Finite point
-	m_lights[5].light.intensity = .3f;
-	m_lights[5].light.color = Rgba8::GREEN.GetAsRGBVector();
-	m_lights[5].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[5].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[5].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, .5f, .5f );
-	m_lights[5].type = eLightType::POINT;
-	m_lights[5].movementMode = eLightMovementMode::STATIONARY;
+	//// Infinite spot
+	//m_lights[4].light.intensity = .2f;
+	//m_lights[4].light.color = Rgba8::PURPLE.GetAsRGBVector();
+	//m_lights[4].light.attenuation = Vec3( 1.f, 0.f, 0.f );
+	//m_lights[4].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
+	//m_lights[4].light.position = m_sphereMeshTransform.GetPosition() + Vec3( 1.5f, -2.5f, 1.f );
+	//m_lights[4].light.direction = Vec3( -.5f, 1.f, -1.f ).GetNormalized();
+	//m_lights[4].light.halfCosOfInnerAngle = CosDegrees( 10.f );
+	//m_lights[4].light.halfCosOfOuterAngle = CosDegrees( 15.f );
+	//m_lights[4].type = eLightType::SPOT;
+	//m_lights[4].movementMode = eLightMovementMode::STATIONARY;
+	//
+	//// Finite point
+	//m_lights[5].light.intensity = .3f;
+	//m_lights[5].light.color = Rgba8::GREEN.GetAsRGBVector();
+	//m_lights[5].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[5].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[5].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, .5f, .5f );
+	//m_lights[5].type = eLightType::POINT;
+	//m_lights[5].movementMode = eLightMovementMode::STATIONARY;
 
-	// Finite point
-	m_lights[6].light.intensity = .3f;
-	m_lights[6].light.color = Rgba8::YELLOW.GetAsRGBVector();
-	m_lights[6].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[6].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[6].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, .5f, .5f );
-	m_lights[6].type = eLightType::POINT;
-	m_lights[6].movementMode = eLightMovementMode::STATIONARY;
+	//// Finite point
+	//m_lights[6].light.intensity = .3f;
+	//m_lights[6].light.color = Rgba8::YELLOW.GetAsRGBVector();
+	//m_lights[6].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[6].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[6].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, .5f, .5f );
+	//m_lights[6].type = eLightType::POINT;
+	//m_lights[6].movementMode = eLightMovementMode::STATIONARY;
 
-	// Rotating point
-	m_lights[7].light.intensity = .3f;
-	m_lights[7].light.color = Rgba8::ORANGE.GetAsRGBVector();
-	m_lights[7].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[7].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[7].type = eLightType::POINT;
-	m_lights[7].movementMode = eLightMovementMode::LOOP;
+	//// Rotating point
+	//m_lights[7].light.intensity = .3f;
+	//m_lights[7].light.color = Rgba8::ORANGE.GetAsRGBVector();
+	//m_lights[7].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[7].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	//m_lights[7].type = eLightType::POINT;
+	//m_lights[7].movementMode = eLightMovementMode::LOOP;
 }
 
 
@@ -272,8 +272,8 @@ void Game::Update()
  
 	UpdateLights();
 
-	PrintHotkeys();
-	PrintDiageticHotkeys();
+	//PrintHotkeys();
+	//PrintDiageticHotkeys();
 }
 
 
@@ -800,7 +800,7 @@ void Game::Render() const
 
 	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
 	g_renderer->BindDiffuseTexture( nullptr );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
+	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/brick_normal.png" ) );
 
 	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
@@ -830,9 +830,12 @@ void Game::Render() const
 	//g_renderer->DrawMesh( m_sphereMesh );
 
 
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
+	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/grass_d.png" ) );
+	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
+	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
+	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	Mat44 model = Mat44();
-	g_renderer->SetModelData( model, Rgba8::RED, m_specularFactor, m_specularPower );
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_teapotMesh );
 
 	//// Fresnel

@@ -36,6 +36,7 @@ public:
 
 private:
 	bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );
+	bool AppendVertexUVs( const Strings& dataStrings, std::vector<Vec3>& data );
 	bool AppendFace( const Strings& dataStrings, std::vector<ObjFace>& data, ObjVertex& lastObjVertex );
 
 	ObjVertex CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex );

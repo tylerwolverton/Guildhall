@@ -3,6 +3,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 
@@ -55,7 +56,7 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 		}
 		else if ( dataStrings[0] == "vt" )
 		{
-			AppendVertexData( dataStrings, uvTexCoords );
+			AppendVertexUVs( dataStrings, uvTexCoords );
 		}
 		else if ( dataStrings[0] == "f" )
 		{
@@ -77,7 +78,9 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 			Vertex_PCUTBN vertex;
 			vertex.position = positions[face.vertices[faceVertIdx].position];
 			vertex.uvTexCoords = uvTexCoords[face.vertices[faceVertIdx].uv].XY();
-			vertex.normal = normals[face.vertices[faceVertIdx].normal];
+			vertex.normal = normals[face.vertices[faceVertIdx].normal].GetNormalized();
+			vertex.tangent = Vec3( 0.f, 1.f, 1.f );
+			vertex.bitangent = CrossProduct3D( vertex.normal, vertex.tangent );
 
 			vertices.push_back( vertex );
 			indices.push_back( index++ );
@@ -100,6 +103,30 @@ bool OBJLoader::AppendVertexData( const Strings& dataStrings, std::vector<Vec3>&
 	data.push_back( Vec3( (float)atof( dataStrings[1].c_str() ),
 						  (float)atof( dataStrings[2].c_str() ), 
 						  (float)atof( dataStrings[3].c_str() ) ) );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool OBJLoader::AppendVertexUVs( const Strings& dataStrings, std::vector<Vec3>& data )
+{
+	if ( dataStrings.size() < 3 
+		 || dataStrings.size() > 4 )
+	{
+		g_devConsole->PrintString( Stringf( "Unsupported number of vertices: %d", dataStrings.size() - 1 ), Rgba8::YELLOW );
+		return false;
+	}
+
+	float u = ConvertStringToFloat( dataStrings[1] );
+	float v = ConvertStringToFloat( dataStrings[2] );
+	float w = 0.f;
+	if( dataStrings.size() == 4 )
+	{
+		w = ConvertStringToFloat( dataStrings[3] );
+	}
+
+	data.push_back( Vec3( u, v, w ) );
 
 	return true;
 }
@@ -145,7 +172,7 @@ bool OBJLoader::AppendFace( const Strings& dataStrings, std::vector<ObjFace>& da
 //-----------------------------------------------------------------------------------------------
 ObjVertex OBJLoader::CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex )
 {
-	Strings indicesStr = SplitStringOnDelimiterAndTrimOuterWhitespace( indexStr, '/' );
+	Strings indicesStr = SplitStringOnDelimiter( indexStr, '/' );
 
 	// Subtract 1 to line up the indices with arrays
 	if( !indicesStr[0].empty() )
