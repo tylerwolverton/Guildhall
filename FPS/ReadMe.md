@@ -3,25 +3,25 @@ Project: FPS
 ------
 
 ## Tasks
-[ ] Be able to load `OBJ` Files
+[-] Be able to load `OBJ` Files
     [-] Load OBJ as a single vertex array
-    [ ] At end of each group (or at very end), apply post steps..
-        [ ] Invert-V
-        [-] Calculate Normals
+    [x] At end of each group (or at very end), apply post steps..
+        [x] Invert-V
+        [x] Calculate Normals
         [x] Calculate Tangents
     [ ] At end of import...
         [ ] Apply transform
         [ ] *Clean* (is an extra) 
-        [ ] Invert Winding
+        [x] Invert Winding
 [-] Post-Import Options supported
-    [-] Invert-V
+    [x] Invert-V
         - Some programs us UV with V at the top, and some bottom.  On import
           be able to swap it out to the correct version for your engine.
-    [ ] Invert Winding Order
+    [x] Invert Winding Order
         - Some programs use clockwise by default.  If you notice your mesh is 
           inside out (you can see it from the inside, but not outside), you will
           want to invert the winding order of faces.
-    [-] Generate Normals (Flat only required)
+    [x] Generate Normals (Flat only required)
         - Some OBJ files do not include normals.  If this import option is set, 
           you will want to generate normals if the file didn't include them.
           For **Flat Normals**, just calculate the normal for each face and assign it to
@@ -35,7 +35,7 @@ Project: FPS
         [ ] Transform Positions (full)
         [ ] Normals (just direction, not scaled or translated)
         [ ] Tangents & Bitangents (just direction, not scaled or translated)
-[ ] Have a lit model loaded in your scene to show it is working
+[x] Have a lit model loaded in your scene to show it is working
 [ ] Support a `Shader` or `ShaderState` class that is data driven
     [ ] Define a data format you like
     [ ] Define a class you like
