@@ -58,11 +58,11 @@ private:
 
 
 //-----------------------------------------------------------------------------------------------
-class Shader
+class ShaderProgram
 {
 public:
-	Shader( RenderContext* owner );
-	~Shader();
+	ShaderProgram( RenderContext* owner );
+	~ShaderProgram();
 
 	bool CreateFromFile( const std::string& fileName );
 	bool CreateFromSourceString( const std::string& shaderName, const char* source );

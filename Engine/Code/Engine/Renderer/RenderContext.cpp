@@ -15,7 +15,7 @@
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Sampler.hpp"
-#include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
@@ -325,7 +325,7 @@ IntVec2 RenderContext::GetDefaultBackBufferSize()
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindShader( Shader* shader )
+void RenderContext::BindShader( ShaderProgram* shader )
 {
 	GUARANTEE_OR_DIE( m_isDrawing, "Tried to call BindShader while not drawing" );
 
@@ -343,13 +343,13 @@ void RenderContext::BindShader( Shader* shader )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BindShader( const char* fileName )
 {
-	Shader* newShader = GetOrCreateShader( fileName );
+	ShaderProgram* newShader = GetOrCreateShader( fileName );
 	BindShader( newShader );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-Shader* RenderContext::GetOrCreateShader( const char* filename )
+ShaderProgram* RenderContext::GetOrCreateShader( const char* filename )
 {
 	// Check cache for shader
 	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
@@ -360,7 +360,7 @@ Shader* RenderContext::GetOrCreateShader( const char* filename )
 		}
 	}
 
-	Shader* newShader = new Shader( this );
+	ShaderProgram* newShader = new ShaderProgram( this );
 	newShader->CreateFromFile( filename );
 	m_loadedShaders.push_back( newShader );
 
@@ -369,7 +369,7 @@ Shader* RenderContext::GetOrCreateShader( const char* filename )
 
 
 //-----------------------------------------------------------------------------------------------
-Shader* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName, const char* source )
+ShaderProgram* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName, const char* source )
 {
 	// Check cache for shader
 	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
@@ -380,7 +380,7 @@ Shader* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName
 		}
 	}
 
-	Shader* newShader = new Shader( this );
+	ShaderProgram* newShader = new ShaderProgram( this );
 	newShader->CreateFromSourceString( shaderName, source );
 	m_loadedShaders.push_back( newShader );
 
@@ -393,7 +393,7 @@ void RenderContext::ReloadShaders()
 {
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
 	{
-		Shader*& shader = m_loadedShaders[shaderIdx];
+		ShaderProgram*& shader = m_loadedShaders[shaderIdx];
 		if ( shader != nullptr )
 		{
 			shader->ReloadFromDisc();
@@ -624,7 +624,7 @@ void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const
 //-----------------------------------------------------------------------------------------------
 void RenderContext::ResetRenderObjects()
 {
-	BindShader( ( Shader* )nullptr );
+	BindShader( ( ShaderProgram* )nullptr );
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
 	BindTexture( 8, nullptr );

@@ -1,4 +1,4 @@
-#include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -13,21 +13,21 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Shader::Shader( RenderContext* owner )
+ShaderProgram::ShaderProgram( RenderContext* owner )
 	: m_owner( owner )
 {
 }
 
 
 //-----------------------------------------------------------------------------------------------
-Shader::~Shader()
+ShaderProgram::~ShaderProgram()
 {
 	DX_SAFE_RELEASE( m_inputLayout );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool Shader::CreateFromFile( const std::string& fileName )
+bool ShaderProgram::CreateFromFile( const std::string& fileName )
 {
 	size_t fileSize = 0;
 	void* source = FileReadToNewBuffer( fileName, &fileSize );
@@ -46,7 +46,7 @@ bool Shader::CreateFromFile( const std::string& fileName )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Shader::CreateFromSourceString( const std::string& shaderName, const char* source )
+bool ShaderProgram::CreateFromSourceString( const std::string& shaderName, const char* source )
 {
 	bool isVertexShaderValid = m_vertexStage.Compile( m_owner, shaderName, source, strlen( source ), SHADER_TYPE_VERTEX );
 	bool isFragmentShaderValid = false;
@@ -69,7 +69,7 @@ bool Shader::CreateFromSourceString( const std::string& shaderName, const char* 
 
 
 //-----------------------------------------------------------------------------------------------
-bool Shader::ReloadFromDisc()
+bool ShaderProgram::ReloadFromDisc()
 {
 	DX_SAFE_RELEASE( m_inputLayout );
 
@@ -78,7 +78,7 @@ bool Shader::ReloadFromDisc()
 
 
 //-----------------------------------------------------------------------------------------------
-ID3D11InputLayout* Shader::GetOrCreateInputLayout( const BufferAttribute* attributes )
+ID3D11InputLayout* ShaderProgram::GetOrCreateInputLayout( const BufferAttribute* attributes )
 {
 	if ( m_inputLayout != nullptr 
 		 && attributes == m_lastLayout )
@@ -101,7 +101,7 @@ ID3D11InputLayout* Shader::GetOrCreateInputLayout( const BufferAttribute* attrib
 
 
 //-----------------------------------------------------------------------------------------------
-void Shader::PopulateVertexDescription( const BufferAttribute* attributes )
+void ShaderProgram::PopulateVertexDescription( const BufferAttribute* attributes )
 {
 	int vertexDescIdx = 0;
 	while ( attributes[vertexDescIdx].m_bufferFormatType != BUFFER_FORMAT_UNKNOWN )

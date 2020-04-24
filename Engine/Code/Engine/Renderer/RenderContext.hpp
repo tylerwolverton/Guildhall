@@ -35,7 +35,7 @@ class Camera;
 class Texture;
 class Sampler;
 class BitmapFont;
-class Shader;
+class ShaderProgram;
 class RenderBuffer;
 class SwapChain;
 class VertexBuffer;
@@ -179,7 +179,7 @@ public:
 	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
 
 	// Binding State
-	void BindShader( Shader* shader );
+	void BindShader( ShaderProgram* shader );
 	void BindShader( const char* fileName );
 	void BindDiffuseTexture( const Texture* constTexture );
 	void BindNormalTexture( const Texture* constTexture );
@@ -187,8 +187,8 @@ public:
 	void BindSampler( Sampler* sampler );
 
 	// Resource Creation
-	Shader* GetOrCreateShader( const char* filename );
-	Shader* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
+	ShaderProgram* GetOrCreateShader( const char* filename );
+	ShaderProgram* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
@@ -226,7 +226,7 @@ public:
 	// Accessors
 	Texture* GetBackBuffer();
 	IntVec2 GetDefaultBackBufferSize();
-	Shader* GetCurrentShader() const					{ return m_currentShader; }
+	ShaderProgram* GetCurrentShader() const					{ return m_currentShader; }
 	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
 	Clock* GetClock() const								{ return m_gameClock; }
 	eBlendMode GetBlendMode() const						{ return m_currentBlendMode; }
@@ -290,9 +290,9 @@ private:
 	VertexBuffer* m_lastBoundVBO					= nullptr;
 	ID3D11Buffer* m_lastIBOHandle					= nullptr;
 
-	Shader* m_defaultShader							= nullptr;
-	Shader* m_currentShader							= nullptr;
-	std::vector<Shader*> m_loadedShaders;
+	ShaderProgram* m_defaultShader							= nullptr;
+	ShaderProgram* m_currentShader							= nullptr;
+	std::vector<ShaderProgram*> m_loadedShaders;
 
 	Sampler* m_pointClampSampler					= nullptr;
 	Sampler* m_linearClampSampler					= nullptr;
