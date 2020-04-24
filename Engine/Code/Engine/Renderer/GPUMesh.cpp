@@ -50,5 +50,8 @@ void GPUMesh::UpdateIndices( uint indexCount, const uint* indices )
 //-----------------------------------------------------------------------------------------------
 void GPUMesh::UpdateIndices( const std::vector<uint>& indices )
 {
-	UpdateIndices( (uint)indices.size(), &indices[0] );
+	if ( indices.size() > 0 )
+	{
+		UpdateIndices( (uint)indices.size(), &indices[0] );
+	}
 }

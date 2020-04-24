@@ -7,6 +7,7 @@
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3;
+struct Vertex_PCUTBN;
 class GPUMesh;
 class RenderContext;
 
@@ -29,20 +30,23 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
-class OBJLoader
+class ObjLoader
 {
 public:
-	GPUMesh* LoadFromFile( RenderContext* context, 
-						   std::string filename,
-						   bool generateNormals = true,
-						   bool generateTangents = true,
-						   bool invertVs = false,
-						   bool invertWindingOrder = false );
+	static void LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
+							  std::string filename,
+							  bool& out_fileHadNormals );
+
+	static void InvertVertVs( std::vector<Vertex_PCUTBN>& vertices );
+	static void GenerateVertNormals( std::vector<Vertex_PCUTBN>& vertices );
+	static void InvertVertWindingOrder( std::vector<Vertex_PCUTBN>& vertices );
+	static void InvertIndexWindingOrder( std::vector<uint>& indices );
+	static void GenerateVertTangents( std::vector<Vertex_PCUTBN>& vertices );
 
 private:
-	bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );
-	bool AppendVertexUVs( const Strings& dataStrings, std::vector<Vec3>& data );
-	bool AppendFace( const Strings& dataStrings, std::vector<ObjFace>& data, ObjVertex& lastObjVertex );
+	static bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );
+	static bool AppendVertexUVs( const Strings& dataStrings, std::vector<Vec3>& data );
+	static bool AppendFace( const Strings& dataStrings, std::vector<ObjFace>& data, ObjVertex& lastObjVertex );
 
-	ObjVertex CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex );
+	static ObjVertex CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex );
 };

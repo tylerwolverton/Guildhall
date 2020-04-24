@@ -10,7 +10,6 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Image.hpp"
-#include "Engine/Core/OBJLoader.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/TextBox.hpp"
@@ -142,8 +141,14 @@ void Game::InitializeMeshes()
 	m_sphereMeshTriplanarTransform.SetPosition( Vec3( 5.f, 0.f, 6.f ) );
 
 	// Move to RenderContext::LoadMeshFromFile
-	OBJLoader loader;
-	m_teapotMesh = loader.LoadFromFile( g_renderer, "Data/Meshes/vespa_final.obj" );
+	vertices.clear();
+	indices.clear();
+	MeshImportOptions importOptions;
+	importOptions.generateNormals = true;
+	importOptions.generateTangents = true;
+	AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/Teapot.obj", importOptions );
+	//AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/vespa_final.obj", importOptions );
+	m_teapotMesh = new GPUMesh( g_renderer, vertices, indices );
 }
 
 

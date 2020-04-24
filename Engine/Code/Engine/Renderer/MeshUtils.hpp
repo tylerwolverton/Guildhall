@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 
 #include <vector>
@@ -34,6 +35,7 @@ void DrawPolygon2Outline( RenderContext* renderer, const Polygon2& polygon2, con
 void DrawPolygon2Outline( RenderContext* renderer, const std::vector<Vec2>& vertexPositions, const Rgba8& tint, float thickness );
 
 void DrawAABB2WithDepth( RenderContext* renderer, const AABB2& box, float zDepth, const Rgba8& tint );
+
 
 //-----------------------------------------------------------------------------------------------
 // Vertex_PCU append methods
@@ -89,3 +91,22 @@ void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, 
 void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, 
 							 const Vec3& center, float sideLength, 
 							 const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
+
+
+//-----------------------------------------------------------------------------------------------
+// Obj append methods
+//-----------------------------------------------------------------------------------------------
+struct MeshImportOptions
+{
+	Mat44 transform = Mat44();			// what space transform to apply to the object
+
+	bool invertVs = false;				// inverts V coordinate (v = 1.0f - v)
+	bool invertWindingOrder = false;    // Change the winding order of all faces
+	bool generateNormals = false;		// Generate normals for the surface if they weren't in the file
+	bool generateTangents = false;		// Generate tangents for the surface if they weren't in the file
+	//bool clean = false;					// Convert a vertex array to an index vertex array by removing duplicates
+};
+
+void AppendVertsForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices,
+									std::string objFileName,
+									const MeshImportOptions& options = MeshImportOptions() );

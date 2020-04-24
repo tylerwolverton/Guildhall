@@ -3,6 +3,7 @@
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/ObjLoader.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/MatrixUtils.hpp"
@@ -1050,4 +1051,43 @@ void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, 
 {
 	AppendVertsForCubeMesh( vertexArray, center, sideLength, tint, uvAtMins, uvAtMaxs );
 	AppendIndicesForCubeMesh( indices );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Obj loading
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices,
+									std::string objFileName,
+									const MeshImportOptions& options )
+{
+	if ( options.generateTangents )
+	{
+		GUARANTEE_OR_DIE( options.generateNormals, "During obj load tangents were requested but normals were not." );
+	}
+
+	bool fileHadNormals = false;
+	ObjLoader::LoadFromFile( vertices, objFileName, fileHadNormals );
+
+	if ( options.invertVs )
+	{
+		ObjLoader::InvertVertVs( vertices );
+	}
+
+	// Only generate normals if they are requested and weren't loaded from file
+	if ( options.generateNormals 
+		 && !fileHadNormals )
+	{
+		ObjLoader::GenerateVertNormals( vertices );
+	}
+
+	if ( options.generateTangents )
+	{
+		ObjLoader::GenerateVertTangents( vertices );
+	}
+
+	if ( options.invertWindingOrder )
+	{
+		ObjLoader::InvertVertWindingOrder( vertices );
+	}
 }

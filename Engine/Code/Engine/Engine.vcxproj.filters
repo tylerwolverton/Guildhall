@@ -259,10 +259,10 @@
     <ClCompile Include="Core\Vertex_PCUTBN.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\OBJLoader.cpp">
+    <ClCompile Include="..\ThirdParty\mikkt\mikktspace.c">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\ThirdParty\mikkt\mikktspace.c">
+    <ClCompile Include="Core\ObjLoader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -507,7 +507,7 @@
     <ClInclude Include="Math\Plane2D.hpp" />
     <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
     <ClInclude Include="Core\Delegate.hpp" />
-    <ClInclude Include="Core\OBJLoader.hpp" />
     <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h" />
+    <ClInclude Include="Core\ObjLoader.hpp" />
   </ItemGroup>
 </Project>
