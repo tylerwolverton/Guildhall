@@ -32,7 +32,12 @@ public:
 class OBJLoader
 {
 public:
-	GPUMesh* LoadFromFile( RenderContext* context, std::string filename );
+	GPUMesh* LoadFromFile( RenderContext* context, 
+						   std::string filename,
+						   bool generateNormals = true,
+						   bool generateTangents = true,
+						   bool invertVs = false,
+						   bool invertWindingOrder = false );
 
 private:
 	bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );

@@ -5,15 +5,144 @@
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec4.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "ThirdParty/mikkt/mikktspace.h"
 
 #include <iostream>
 #include <fstream>
 
 
 //-----------------------------------------------------------------------------------------------
-GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
+// Mikkelson Tangents
+//-----------------------------------------------------------------------------------------------
+static int GetNumFaces( SMikkTSpaceContext const* context )
 {
+	// if you had index buffer
+	std::vector<Vertex_PCUTBN>& vertices = *( std::vector<Vertex_PCUTBN>* )( context->m_pUserData );
+	return (int)vertices.size() / 3;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+static int GetNumberOfVerticesForFace( SMikkTSpaceContext const* context,
+									   const int iFace )
+{
+	UNUSED( context );
+	UNUSED( iFace );
+
+	return 3;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+static void GetPositionForFaceVert( const SMikkTSpaceContext* context,
+									float fvPosOut[],
+									const int iFace, const int iVert )
+{
+	std::vector<Vertex_PCUTBN>& vertices = *( std::vector<Vertex_PCUTBN>* )( context->m_pUserData );
+	int indexInVertexArray = iFace * 3 + iVert;
+
+	Vec3 outPos = vertices[indexInVertexArray].position;
+
+	fvPosOut[0] = outPos.x;
+	fvPosOut[1] = outPos.y;
+	fvPosOut[2] = outPos.z;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+static void GetNormalForFaceVert( const SMikkTSpaceContext* context,
+								  float fvNormOut[],
+								  const int iFace, const int iVert )
+{
+	std::vector<Vertex_PCUTBN>& vertices = *( std::vector<Vertex_PCUTBN>* )( context->m_pUserData );
+	int indexInVertexArray = iFace * 3 + iVert;
+
+	Vec3 outNormal = vertices[indexInVertexArray].normal;
+
+	fvNormOut[0] = outNormal.x;
+	fvNormOut[1] = outNormal.y;
+	fvNormOut[2] = outNormal.z;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+static void GetUVForFaceVert( const SMikkTSpaceContext* context,
+							  float fvTexcOut[],
+							  const int iFace, const int iVert )
+{
+	std::vector<Vertex_PCUTBN>& vertices = *( std::vector<Vertex_PCUTBN>* )( context->m_pUserData );
+	int indexInVertexArray = iFace * 3 + iVert;
+
+	Vec2 outNormal = vertices[indexInVertexArray].uvTexCoords;
+
+	fvTexcOut[0] = outNormal.x;
+	fvTexcOut[1] = outNormal.y;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+static void SetTangent( const SMikkTSpaceContext* context,
+						const float fvTangent[],
+						const float fSign,
+						const int iFace, const int iVert )
+{
+	std::vector<Vertex_PCUTBN>& vertices = *( std::vector<Vertex_PCUTBN>* )( context->m_pUserData );
+	int indexInVertexArray = iFace * 3 + iVert;
+
+
+	vertices[indexInVertexArray].tangent = Vec3( fvTangent[0], fvTangent[1], fvTangent[2] ).GetNormalized();
+
+	vertices[indexInVertexArray].bitangent = CrossProduct3D( vertices[indexInVertexArray].tangent,
+															 vertices[indexInVertexArray].normal ) * fSign;
+}
+
+
+//-----------------------------------------------------------------
+// Assume I'm using only vertex array - not indexed array
+static void GenerateTangentsForVertexArray( std::vector<Vertex_PCUTBN>& vertices )
+{
+	SMikkTSpaceInterface mikktInterface;
+
+	// How does MikkT get info
+	mikktInterface.m_getNumFaces = GetNumFaces;
+	mikktInterface.m_getNumVerticesOfFace = GetNumberOfVerticesForFace;
+
+	mikktInterface.m_getPosition = GetPositionForFaceVert;
+	mikktInterface.m_getNormal = GetNormalForFaceVert;
+	mikktInterface.m_getTexCoord = GetUVForFaceVert;
+
+	// MikkT telling US info
+	mikktInterface.m_setTSpaceBasic = SetTangent;
+	mikktInterface.m_setTSpace = nullptr;
+
+
+	// Next, the context!  
+	// Encapsulate ONE instance of running the algorithm
+	SMikkTSpaceContext context;
+	context.m_pInterface = &mikktInterface;
+	context.m_pUserData = &vertices;
+
+
+	// RUN THE ALGO
+	genTangSpaceDefault( &context );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, 
+								  std::string filename, 
+								  bool generateNormals,
+								  bool generateTangents,
+								  bool invertVs,
+								  bool invertWindingOrder )
+{
+	if ( generateTangents )
+	{
+		GUARANTEE_OR_DIE( generateNormals, "During obj load tangents were requested but normals were not." );
+	}
+
 	std::string line;
 	std::ifstream objFile;
 	objFile.open( filename, std::ios::in );
@@ -72,15 +201,20 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 	for( uint faceIdx = 0; faceIdx < faces.size(); ++faceIdx )
 	{
 		const ObjFace& face = faces[faceIdx];
-
+		Vertex_PCUTBN faceVertices[3];
 		for ( int faceVertIdx = 0; faceVertIdx < 3; ++faceVertIdx )
 		{
-			Vertex_PCUTBN vertex;
+			Vertex_PCUTBN& vertex = faceVertices[faceVertIdx];
 			vertex.position = positions[face.vertices[faceVertIdx].position];
 			int uvIdx = face.vertices[faceVertIdx].uv;
 			if( uvIdx != -1 )
 			{
 				vertex.uvTexCoords = uvTexCoords[uvIdx].XY();
+
+				if ( invertVs )
+				{
+					vertex.uvTexCoords.y = 1.f - vertex.uvTexCoords.y;
+				}
 			}
 
 			int normalIdx = face.vertices[faceVertIdx].normal;
@@ -95,6 +229,24 @@ GPUMesh* OBJLoader::LoadFromFile( RenderContext* context, std::string filename )
 			vertices.push_back( vertex );
 			indices.push_back( index++ );
 		}
+
+		// Need to generate our own flat normals
+		if ( normals.size() == 0
+			 && generateNormals )
+		{
+			Vec3 edge0 = faceVertices[1].position - faceVertices[0].position;
+			Vec3 edge1 = faceVertices[2].position - faceVertices[0].position;
+
+			Vec3 normal = CrossProduct3D( edge0, edge1 );
+			faceVertices[0].normal = normal;
+			faceVertices[1].normal = normal;
+			faceVertices[2].normal = normal;	
+		}		
+	}
+
+	if ( generateTangents )
+	{
+		GenerateTangentsForVertexArray( vertices );
 	}
 
 	return new GPUMesh( context, vertices, indices );
@@ -130,6 +282,7 @@ bool OBJLoader::AppendVertexUVs( const Strings& dataStrings, std::vector<Vec3>& 
 
 	float u = ConvertStringToFloat( dataStrings[1] );
 	float v = ConvertStringToFloat( dataStrings[2] );
+
 	float w = 0.f;
 	if( dataStrings.size() == 4 )
 	{
@@ -218,4 +371,3 @@ ObjVertex OBJLoader::CreateObjVertexFromString( const std::string& indexStr, Obj
 		
 	return newVertex;
 }
-
