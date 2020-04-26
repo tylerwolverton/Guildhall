@@ -88,7 +88,7 @@ void RenderContext::Shutdown()
 	
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
-	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
+	PTR_VECTOR_SAFE_DELETE( m_loadedShaderPrograms );
 
 	PTR_SAFE_DELETE( m_swapchain );
 
@@ -256,7 +256,7 @@ void RenderContext::FinalizeContext()
 	GUARANTEE_OR_DIE( m_lastBoundVBO != nullptr, "No vbo bound before draw call" );
 
 	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_lastBoundVBO->m_attributes );
+	ID3D11InputLayout* inputLayout = m_currentShaderProgram->GetOrCreateInputLayout( m_lastBoundVBO->m_attributes );
 	m_context->IASetInputLayout( inputLayout );
 
 	SetLightData();
@@ -325,64 +325,64 @@ IntVec2 RenderContext::GetDefaultBackBufferSize()
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindShader( ShaderProgram* shader )
+void RenderContext::BindShaderProgram( ShaderProgram* shader )
 {
 	GUARANTEE_OR_DIE( m_isDrawing, "Tried to call BindShader while not drawing" );
 
-	m_currentShader = shader;
-	if ( m_currentShader == nullptr )
+	m_currentShaderProgram = shader;
+	if ( m_currentShaderProgram == nullptr )
 	{
-		m_currentShader = m_defaultShader;
+		m_currentShaderProgram = m_defaultShaderProgram;
 	}
 
-	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
-	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
+	m_context->VSSetShader( m_currentShaderProgram->m_vertexStage.m_vertexShader, nullptr, 0 );
+	m_context->PSSetShader( m_currentShaderProgram->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindShader( const char* fileName )
+void RenderContext::BindShaderProgram( const char* fileName )
 {
-	ShaderProgram* newShader = GetOrCreateShader( fileName );
-	BindShader( newShader );
+	ShaderProgram* newShader = GetOrCreateShaderProgram( fileName );
+	BindShaderProgram( newShader );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-ShaderProgram* RenderContext::GetOrCreateShader( const char* filename )
+ShaderProgram* RenderContext::GetOrCreateShaderProgram( const char* filename )
 {
 	// Check cache for shader
-	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderIdx )
 	{
-		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), filename ) )
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderIdx]->GetFileName().c_str(), filename ) )
 		{
-			return m_loadedShaders[loadedShaderIdx];
+			return m_loadedShaderPrograms[loadedShaderIdx];
 		}
 	}
 
 	ShaderProgram* newShader = new ShaderProgram( this );
 	newShader->CreateFromFile( filename );
-	m_loadedShaders.push_back( newShader );
+	m_loadedShaderPrograms.push_back( newShader );
 
 	return newShader;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-ShaderProgram* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName, const char* source )
+ShaderProgram* RenderContext::GetOrCreateShaderProgramFromSourceString( const char* shaderName, const char* source )
 {
 	// Check cache for shader
-	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderIdx )
 	{
-		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), shaderName ) )
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderIdx]->GetFileName().c_str(), shaderName ) )
 		{
-			return m_loadedShaders[loadedShaderIdx];
+			return m_loadedShaderPrograms[loadedShaderIdx];
 		}
 	}
 
 	ShaderProgram* newShader = new ShaderProgram( this );
 	newShader->CreateFromSourceString( shaderName, source );
-	m_loadedShaders.push_back( newShader );
+	m_loadedShaderPrograms.push_back( newShader );
 
 	return newShader;
 }
@@ -391,9 +391,9 @@ ShaderProgram* RenderContext::GetOrCreateShaderFromSourceString( const char* sha
 //-----------------------------------------------------------------------------------------------
 void RenderContext::ReloadShaders()
 {
-	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
+	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaderPrograms.size(); ++shaderIdx )
 	{
-		ShaderProgram*& shader = m_loadedShaders[shaderIdx];
+		ShaderProgram*& shader = m_loadedShaderPrograms[shaderIdx];
 		if ( shader != nullptr )
 		{
 			shader->ReloadFromDisc();
@@ -521,7 +521,7 @@ void RenderContext::InitializeSwapChain( Window* window )
 void RenderContext::InitializeDefaultRenderObjects()
 {
 	// Create default shader
-	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
+	m_defaultShaderProgram = GetOrCreateShaderProgramFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	// Create default buffers
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
@@ -624,7 +624,7 @@ void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const
 //-----------------------------------------------------------------------------------------------
 void RenderContext::ResetRenderObjects()
 {
-	BindShader( ( ShaderProgram* )nullptr );
+	BindShaderProgram( ( ShaderProgram* )nullptr );
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
 	BindTexture( 8, nullptr );
@@ -863,6 +863,13 @@ void RenderContext::BindSampler( Sampler* sampler )
 
 	ID3D11SamplerState* samplerHandle = sampler->m_handle;
 	m_context->PSSetSamplers( 0, 1, &samplerHandle );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Shader* RenderContext::GetOrCreateShader( const char* filename )
+{
+	return nullptr;
 }
 
 

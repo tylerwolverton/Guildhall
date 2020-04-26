@@ -35,6 +35,7 @@ class Camera;
 class Texture;
 class Sampler;
 class BitmapFont;
+class Shader;
 class ShaderProgram;
 class RenderBuffer;
 class SwapChain;
@@ -179,16 +180,17 @@ public:
 	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
 
 	// Binding State
-	void BindShader( ShaderProgram* shader );
-	void BindShader( const char* fileName );
+	void BindShaderProgram( ShaderProgram* shader );
+	void BindShaderProgram( const char* fileName );
 	void BindDiffuseTexture( const Texture* constTexture );
 	void BindNormalTexture( const Texture* constTexture );
 	void BindTexture( uint slot, const Texture* constTexture );
 	void BindSampler( Sampler* sampler );
 
 	// Resource Creation
-	ShaderProgram* GetOrCreateShader( const char* filename );
-	ShaderProgram* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
+	Shader* GetOrCreateShader( const char* filename );
+	ShaderProgram* GetOrCreateShaderProgram( const char* filename );
+	ShaderProgram* GetOrCreateShaderProgramFromSourceString( const char* shaderName, const char* source );
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
@@ -226,7 +228,7 @@ public:
 	// Accessors
 	Texture* GetBackBuffer();
 	IntVec2 GetDefaultBackBufferSize();
-	ShaderProgram* GetCurrentShader() const					{ return m_currentShader; }
+	ShaderProgram* GetCurrentShader() const				{ return m_currentShaderProgram; }
 	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
 	Clock* GetClock() const								{ return m_gameClock; }
 	eBlendMode GetBlendMode() const						{ return m_currentBlendMode; }
@@ -249,7 +251,7 @@ private:
 
 	Texture* CreateTextureFromFile( const char* filePath );
 	Texture* RetrieveTextureFromCache( const char* filePath );
-
+	
 	void CreateBlendStates();
 
 	void SetRasterState( eFillMode fillMode, eCullMode cullMode, bool windCCW );
@@ -290,9 +292,9 @@ private:
 	VertexBuffer* m_lastBoundVBO					= nullptr;
 	ID3D11Buffer* m_lastIBOHandle					= nullptr;
 
-	ShaderProgram* m_defaultShader							= nullptr;
-	ShaderProgram* m_currentShader							= nullptr;
-	std::vector<ShaderProgram*> m_loadedShaders;
+	ShaderProgram* m_defaultShaderProgram			= nullptr;
+	ShaderProgram* m_currentShaderProgram			= nullptr;
+	std::vector<ShaderProgram*> m_loadedShaderPrograms;
 
 	Sampler* m_pointClampSampler					= nullptr;
 	Sampler* m_linearClampSampler					= nullptr;

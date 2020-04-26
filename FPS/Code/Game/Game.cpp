@@ -88,17 +88,17 @@ void Game::Startup()
 	m_fresnelData.power = 32.f;
 
 	// Init shaders
-	m_shaderPaths.push_back( "Data/Shaders/Lit.hlsl" );
+	m_shaderPaths.push_back( "Data/Shaders/src/Lit.hlsl" );
 	m_shaderNames.push_back( "Lit" );
-	m_shaderPaths.push_back( "Data/Shaders/Default.hlsl" );
+	m_shaderPaths.push_back( "Data/Shaders/src/Default.hlsl" );
 	m_shaderNames.push_back( "Default" );
-	m_shaderPaths.push_back( "Data/Shaders/Normals.hlsl" );
+	m_shaderPaths.push_back( "Data/Shaders/src/Normals.hlsl" );
 	m_shaderNames.push_back( "Normals" );
-	m_shaderPaths.push_back( "Data/Shaders/Tangents.hlsl" );
+	m_shaderPaths.push_back( "Data/Shaders/src/Tangents.hlsl" );
 	m_shaderNames.push_back( "Tangents" );
-	m_shaderPaths.push_back( "Data/Shaders/Bitangents.hlsl" );
+	m_shaderPaths.push_back( "Data/Shaders/src/Bitangents.hlsl" );
 	m_shaderNames.push_back( "Bitangents" );
-	m_shaderPaths.push_back( "Data/Shaders/SurfaceNormals.hlsl" );
+	m_shaderPaths.push_back( "Data/Shaders/src/SurfaceNormals.hlsl" );
 	m_shaderNames.push_back( "Surface Normals" );
 
 	InitializeMeshes();
@@ -814,7 +814,7 @@ void Game::Render() const
 	g_renderer->BindDiffuseTexture( nullptr );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/brick_normal.png" ) );
 
-	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
+	g_renderer->BindShaderProgram( m_shaderPaths[m_currentShaderIdx].c_str() );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	
 	g_renderer->DisableAllLights();
