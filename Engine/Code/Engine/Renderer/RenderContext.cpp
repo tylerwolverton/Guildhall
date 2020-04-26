@@ -5,6 +5,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -15,6 +16,7 @@
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Sampler.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
@@ -88,6 +90,7 @@ void RenderContext::Shutdown()
 	
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
+	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaderPrograms );
 
 	PTR_SAFE_DELETE( m_swapchain );
@@ -349,22 +352,52 @@ void RenderContext::BindShaderProgram( const char* fileName )
 
 
 //-----------------------------------------------------------------------------------------------
-ShaderProgram* RenderContext::GetOrCreateShaderProgram( const char* filename )
+Shader* RenderContext::GetOrCreateShader( const char* filename )
 {
 	// Check cache for shader
-	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderIdx )
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
 	{
-		if ( !strcmp( m_loadedShaderPrograms[loadedShaderIdx]->GetFileName().c_str(), filename ) )
+		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName(), filename ) )
 		{
-			return m_loadedShaderPrograms[loadedShaderIdx];
+			return m_loadedShaders[loadedShaderIdx];
 		}
 	}
 
-	ShaderProgram* newShader = new ShaderProgram( this );
-	newShader->CreateFromFile( filename );
-	m_loadedShaderPrograms.push_back( newShader );
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filename );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The shader xml file '%s' could not be opened.", filename ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+
+	GUARANTEE_OR_DIE( root != nullptr, Stringf( "Shader xml file '%s' doesn't have any elements", filename ) );
+
+	Shader* newShader = new Shader( this, filename, *root );
+	m_loadedShaders.push_back( newShader );
 
 	return newShader;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ShaderProgram* RenderContext::GetOrCreateShaderProgram( const char* filename )
+{
+	// Check cache for shader program
+	for ( int loadedShaderProgramIdx = 0; loadedShaderProgramIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderProgramIdx )
+	{
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderProgramIdx]->GetFileName().c_str(), filename ) )
+		{
+			return m_loadedShaderPrograms[loadedShaderProgramIdx];
+		}
+	}
+
+	ShaderProgram* newShaderProgram = new ShaderProgram( this );
+	newShaderProgram->CreateFromFile( filename );
+	m_loadedShaderPrograms.push_back( newShaderProgram );
+
+	return newShaderProgram;
 }
 
 
@@ -372,19 +405,19 @@ ShaderProgram* RenderContext::GetOrCreateShaderProgram( const char* filename )
 ShaderProgram* RenderContext::GetOrCreateShaderProgramFromSourceString( const char* shaderName, const char* source )
 {
 	// Check cache for shader
-	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderIdx )
+	for ( int loadedShaderProgramIdx = 0; loadedShaderProgramIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderProgramIdx )
 	{
-		if ( !strcmp( m_loadedShaderPrograms[loadedShaderIdx]->GetFileName().c_str(), shaderName ) )
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderProgramIdx]->GetFileName().c_str(), shaderName ) )
 		{
-			return m_loadedShaderPrograms[loadedShaderIdx];
+			return m_loadedShaderPrograms[loadedShaderProgramIdx];
 		}
 	}
 
-	ShaderProgram* newShader = new ShaderProgram( this );
-	newShader->CreateFromSourceString( shaderName, source );
-	m_loadedShaderPrograms.push_back( newShader );
+	ShaderProgram* newShaderProgram = new ShaderProgram( this );
+	newShaderProgram->CreateFromSourceString( shaderName, source );
+	m_loadedShaderPrograms.push_back( newShaderProgram );
 
-	return newShader;
+	return newShaderProgram;
 }
 
 
@@ -447,6 +480,51 @@ void RenderContext::BindUniformBuffer( uint slot, RenderBuffer* ubo )
 
 	m_context->VSSetConstantBuffers( slot, 1, &uboHandle );
 	m_context->PSSetConstantBuffers( slot, 1, &uboHandle );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShader( Shader* shader )
+{
+	BindShaderProgram( shader->GetShaderProgram() );
+	
+	ShaderState state = shader->GetShaderState();
+	SetCullMode( state.cullMode );
+	SetFillMode( state.fillMode );
+	SetFrontFaceWindOrder( state.isWindingCCW );
+
+	SetBlendMode( state.blendMode );
+
+	SetDepthTest( state.depthTestCompare, state.writeDpeth );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderByName( std::string shaderName )
+{
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( m_loadedShaders[loadedShaderIdx]->GetName() == shaderName )
+		{
+			BindShader( m_loadedShaders[loadedShaderIdx] );
+			return;
+		}
+	}
+
+	ERROR_AND_DIE( Stringf( "No shader named '%s' has been loaded.", shaderName.c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderByPath( const char* filePath )
+{
+	Shader* shader = GetOrCreateShader( filePath );
+	if ( shader == nullptr )
+	{
+		// Error shader
+	}
+
+	BindShader( shader );
 }
 
 
@@ -867,13 +945,6 @@ void RenderContext::BindSampler( Sampler* sampler )
 
 
 //-----------------------------------------------------------------------------------------------
-Shader* RenderContext::GetOrCreateShader( const char* filename )
-{
-	return nullptr;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
 {
 	// Since we have no xml, append .png for now
@@ -1127,36 +1198,6 @@ void RenderContext::DisableFog()
 	m_linearFog.nearFogDistance = 99999.f;
 	m_linearFog.farFogDistance = 99999.f;
 	m_linearFog.fogColor = Rgba8::BLACK.GetAsRGBAVector();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-eCullMode RenderContext::GetCullMode() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return FromDXCullMode( desc.CullMode );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-eFillMode RenderContext::GetFillMode() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return FromDXFillMode( desc.FillMode );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool RenderContext::GetFrontFaceWindOrderCCW() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return desc.FrontCounterClockwise;
 }
 
 

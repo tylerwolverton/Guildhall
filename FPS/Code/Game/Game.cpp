@@ -101,6 +101,8 @@ void Game::Startup()
 	m_shaderPaths.push_back( "Data/Shaders/src/SurfaceNormals.hlsl" );
 	m_shaderNames.push_back( "Surface Normals" );
 
+	g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" );
+
 	InitializeMeshes();
 
 	InitializeLights();
@@ -146,7 +148,7 @@ void Game::InitializeMeshes()
 	MeshImportOptions importOptions;
 	importOptions.generateNormals = true;
 	importOptions.generateTangents = true;
-	AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/Teapot.obj", importOptions );
+	AppendVertsForObjMeshFromFile ( vertices, "Data/Teapot.obj", importOptions );
 	//AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/vespa_final.obj", importOptions );
 	m_teapotMesh = new GPUMesh( g_renderer, vertices, indices );
 }
@@ -814,7 +816,8 @@ void Game::Render() const
 	g_renderer->BindDiffuseTexture( nullptr );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/brick_normal.png" ) );
 
-	g_renderer->BindShaderProgram( m_shaderPaths[m_currentShaderIdx].c_str() );
+	//g_renderer->BindShaderProgram( m_shaderPaths[m_currentShaderIdx].c_str() );
+	g_renderer->BindShaderByName( "Default" );
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	
 	g_renderer->DisableAllLights();
@@ -842,10 +845,10 @@ void Game::Render() const
 	//g_renderer->DrawMesh( m_sphereMesh );
 
 
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/grass_d.png" ) );
+	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
 	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/mask_head_d.png" ) );
-	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
+	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
+	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	Mat44 model = Mat44();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );

@@ -180,6 +180,9 @@ public:
 	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
 
 	// Binding State
+	void BindShader( Shader* shader );
+	void BindShaderByName( std::string shaderName );
+	void BindShaderByPath( const char* filePath );
 	void BindShaderProgram( ShaderProgram* shader );
 	void BindShaderProgram( const char* fileName );
 	void BindDiffuseTexture( const Texture* constTexture );
@@ -228,13 +231,8 @@ public:
 	// Accessors
 	Texture* GetBackBuffer();
 	IntVec2 GetDefaultBackBufferSize();
-	ShaderProgram* GetCurrentShader() const				{ return m_currentShaderProgram; }
 	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
 	Clock* GetClock() const								{ return m_gameClock; }
-	eBlendMode GetBlendMode() const						{ return m_currentBlendMode; }
-	eCullMode GetCullMode() const;
-	eFillMode GetFillMode() const;
-	bool GetFrontFaceWindOrderCCW() const;
 
 	// Debug methods
 	void CycleSampler();
@@ -295,6 +293,8 @@ private:
 	ShaderProgram* m_defaultShaderProgram			= nullptr;
 	ShaderProgram* m_currentShaderProgram			= nullptr;
 	std::vector<ShaderProgram*> m_loadedShaderPrograms;
+
+	std::vector<Shader*> m_loadedShaders;
 
 	Sampler* m_pointClampSampler					= nullptr;
 	Sampler* m_linearClampSampler					= nullptr;

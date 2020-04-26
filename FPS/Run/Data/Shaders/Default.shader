@@ -1,10 +1,10 @@
 <!-- 
-   Commoon Attributes
+   Common Attributes
    test: never, less, equal, less_equal, greater, greater_equal, not, always 
 -->
 
 
-<shader id="Default">
+<shader name="Default">
    <!-- 
       Pass is a single draw call for this shader
       'cull': none, back, front
@@ -23,7 +23,7 @@
       -->
 
       <blend enabled="false"
-             mode="opaque">
+             mode="opaque" />
 
       <!-- depth state 
          enabled: depth check happens (false is similar to having test="always" and write being "false")
