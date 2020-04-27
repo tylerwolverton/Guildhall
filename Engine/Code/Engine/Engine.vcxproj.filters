@@ -265,6 +265,9 @@
     <ClCompile Include="Core\ObjLoader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\NamedProperties.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -509,5 +512,6 @@
     <ClInclude Include="Core\Delegate.hpp" />
     <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h" />
     <ClInclude Include="Core\ObjLoader.hpp" />
+    <ClInclude Include="Core\NamedProperties.hpp" />
   </ItemGroup>
 </Project>
