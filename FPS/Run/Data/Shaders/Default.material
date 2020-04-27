@@ -1,0 +1,26 @@
+<material name="Default"
+   shader="Default">
+
+  <!-- textures with special meaning to the renderer -->
+  <diffuse    name="White" />
+  <normal     name="Flat" />
+
+  <!-- material specific textures -->
+  <!--<texture2d name="" slot="0" id="id/or/path/to/texture" />-->
+
+  <!-- sampler, set by name or slot.  
+      filter: nearest, linear
+      mode: clamp, wrap
+
+      If no slot or name is defined - will be the main 
+      sampler used by the diffuse/normal etc...
+
+      otherwise they use the material specific slots
+   -->
+  <sampler name="" slot="0"
+     filter="point"
+     mode="clamp" />
+
+  
+  
+</material>

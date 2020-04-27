@@ -36,17 +36,17 @@ Project: FPS
         [ ] Normals (just direction, not scaled or translated)
         [ ] Tangents & Bitangents (just direction, not scaled or translated)
 [x] Have a lit model loaded in your scene to show it is working
-[ ] Support a `Shader` or `ShaderState` class that is data driven
-    [ ] Define a data format you like
-    [ ] Define a class you like
-    [ ] Implement `RenderContext::BindShader` or `BindShaderState` that
+[-] Support a `Shader` or `ShaderState` class that is data driven
+    [x] Define a data format you like
+    [x] Define a class you like
+    [x] Implement `RenderContext::BindShader` or `BindShaderState` that
         binds the program and the additional state for you.
-    [ ] Add `RenderContext::GetOrCreateShader(...)` to support a database of shaders
-    [ ] Implement `RenderContext::BindShaderByName` or `RenderContext::BindShaderStateByName`
+    [x] Add `RenderContext::GetOrCreateShader(...)` to support a database of shaders
+    [-] Implement `RenderContext::BindShaderByName` or `RenderContext::BindShaderStateByName`
 [ ] Support a `Material` class to make managing material data easier.
     [ ] Should encapsulate a `ShaderState` and relevant data needed for the material
-    [ ] Define a data format you like.
-    [ ] Define a `Material` class you can use that works with our data
+    [-] Define a data format you like.
+    [-] Define a `Material` class you can use that works with our data
         [ ] Must be able to support owning at least one UBO for material specific data?
         [ ] Can set material specific textures
         [ ] Can set material specific samplers
