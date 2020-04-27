@@ -422,6 +422,22 @@ ShaderProgram* RenderContext::GetOrCreateShaderProgramFromSourceString( const ch
 
 
 //-----------------------------------------------------------------------------------------------
+Shader* RenderContext::GetShaderByName( std::string shaderName )
+{
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( m_loadedShaders[loadedShaderIdx]->GetName() == shaderName )
+		{
+			return m_loadedShaders[loadedShaderIdx];
+		}
+	}
+
+	//ERROR_AND_DIE( Stringf( "No shader named '%s' has been loaded.", shaderName.c_str() ) );
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::ReloadShaders()
 {
 	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaderPrograms.size(); ++shaderIdx )

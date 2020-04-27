@@ -233,6 +233,7 @@ public:
 	IntVec2 GetDefaultBackBufferSize();
 	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
 	Clock* GetClock() const								{ return m_gameClock; }
+	Shader* GetShaderByName( std::string shaderName );
 
 	// Debug methods
 	void CycleSampler();
