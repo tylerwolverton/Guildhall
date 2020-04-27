@@ -10,8 +10,8 @@ Material::Material( RenderContext* context, const char* filename, const XmlEleme
 	m_name = ParseXmlAttribute( materialElem, "name", m_name );
 	GUARANTEE_OR_DIE( m_name != "", "Material did not have a name attribute" );
 
-	std::string shaderName = ParseXmlAttribute( materialElem, "shader", shaderName );
-	m_shader = m_context->GetShaderByName( shaderName );
+	std::string shaderPath = ParseXmlAttribute( materialElem, "shader", shaderPath );
+	m_shader = m_context->GetOrCreateShader( shaderPath.c_str() );
 
 	const XmlElement* diffuseElem = materialElem.FirstChildElement( "diffuse" );
 	const XmlElement* normalElem = materialElem.FirstChildElement( "normal" );
