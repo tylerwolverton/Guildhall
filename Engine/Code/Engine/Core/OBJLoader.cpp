@@ -7,6 +7,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Time/Time.hpp"
 #include "ThirdParty/mikkt/mikktspace.h"
 
 #include <iostream>
@@ -18,6 +19,8 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 							  std::string filename,
 							  bool& out_fileHadNormals )
 {
+	double startTime = GetCurrentTime();
+
 	std::string line;
 	std::ifstream objFile;
 	objFile.open( filename, std::ios::in );
@@ -70,6 +73,9 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 
 	objFile.close();
 
+	g_devConsole->PrintString( Stringf( "Processing obj file took: '%f'", GetCurrentTime() - startTime ) );
+	startTime = GetCurrentTime();
+
 	for( uint faceIdx = 0; faceIdx < faces.size(); ++faceIdx )
 	{
 		const ObjFace& face = faces[faceIdx];
@@ -95,6 +101,8 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 
 		out_fileHadNormals = normals.size() != 0;
 	}
+
+	g_devConsole->PrintString( Stringf( "Appending verts took: '%f'", GetCurrentTime() - startTime ) );
 }
 
 
