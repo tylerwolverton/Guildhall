@@ -6,6 +6,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
+#include "Engine/Math/Mat44.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Time/Time.hpp"
 #include "ThirdParty/mikkt/mikktspace.h"
@@ -73,7 +74,7 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 
 	objFile.close();
 
-	g_devConsole->PrintString( Stringf( "Processing obj file took: '%f'", GetCurrentTimeSeconds() - startTime ) );
+	g_devConsole->PrintString( Stringf( "Processing obj file took: %f s", GetCurrentTimeSeconds() - startTime ) );
 	startTime = GetCurrentTimeSeconds();
 
 	for( uint faceIdx = 0; faceIdx < faces.size(); ++faceIdx )
@@ -102,7 +103,7 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 		out_fileHadNormals = normals.size() != 0;
 	}
 
-	g_devConsole->PrintString( Stringf( "Appending verts took: '%f'", GetCurrentTimeSeconds() - startTime ) );
+	g_devConsole->PrintString( Stringf( "Appending verts took: %f s", GetCurrentTimeSeconds() - startTime ) );
 }
 
 
@@ -240,7 +241,7 @@ void ObjLoader::InvertVertVs( std::vector<Vertex_PCUTBN>& vertices )
 //-----------------------------------------------------------------------------------------------
 void ObjLoader::GenerateVertNormals( std::vector<Vertex_PCUTBN>& vertices )
 {
-	for ( uint vertIdx = 0; vertIdx < vertices.size() - 3; vertIdx += 3 )
+	for ( size_t vertIdx = 0; vertIdx < vertices.size(); vertIdx += 3 )
 	{
 		Vertex_PCUTBN& vert0 = vertices[vertIdx];
 		Vertex_PCUTBN& vert1 = vertices[vertIdx + 1];
@@ -260,7 +261,7 @@ void ObjLoader::GenerateVertNormals( std::vector<Vertex_PCUTBN>& vertices )
 //-----------------------------------------------------------------------------------------------
 void ObjLoader::InvertVertWindingOrder( std::vector<Vertex_PCUTBN>& vertices )
 {
-	for ( uint vertIdx = 0; vertIdx < vertices.size() - 3; vertIdx += 3 )
+	for ( size_t vertIdx = 0; vertIdx < vertices.size(); vertIdx += 3 )
 	{
 		Vertex_PCUTBN temp = vertices[vertIdx];
 		vertices[vertIdx] = vertices[vertIdx + 2];
@@ -272,11 +273,28 @@ void ObjLoader::InvertVertWindingOrder( std::vector<Vertex_PCUTBN>& vertices )
 //-----------------------------------------------------------------------------------------------
 void ObjLoader::InvertIndexWindingOrder( std::vector<uint>& indices )
 {
-	for ( uint indexIdx = 0; indexIdx < indices.size() - 3; indexIdx += 3 )
+	for ( size_t indexIdx = 0; indexIdx < indices.size(); indexIdx += 3 )
 	{
 		uint temp = indices[indexIdx];
 		indices[indexIdx] = indices[indexIdx + 2];
 		indices[indexIdx + 2] = temp;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ObjLoader::TransformVerts( std::vector<Vertex_PCUTBN>& vertices, const Mat44& transform )
+{
+	for ( size_t vertIdx = 0; vertIdx < vertices.size(); ++vertIdx )
+	{
+		Vertex_PCUTBN& vertex = vertices[vertIdx];
+		
+		vertex.position = transform.TransformPosition3D( vertex.position );
+
+		Mat44 directionMatrix = transform.GetNormalizedDirectionMatrix3D();
+		vertex.normal = directionMatrix.TransformVector3D( vertex.normal );
+		vertex.tangent = directionMatrix.TransformVector3D( vertex.tangent );
+		vertex.bitangent = directionMatrix.TransformVector3D( vertex.bitangent );
 	}
 }
 

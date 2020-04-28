@@ -175,8 +175,8 @@ private:
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
 	
-	GPUMesh* m_teapotMesh = nullptr;
-	//Transform m_sphereMeshTransform;
+	GPUMesh* m_objMesh = nullptr;
+	Transform m_objMeshTransform;
 
 	// Shader demos
 	Transform m_sphereMeshFresnelTransform;
@@ -202,5 +202,5 @@ private:
 	std::vector<std::string> m_shaderNames;
 	int m_currentShaderIdx = 0;
 
-	Material* m_scifiFighterMaterial = nullptr;
+	Material* m_objMaterial = nullptr;
 };

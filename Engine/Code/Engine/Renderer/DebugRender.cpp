@@ -485,7 +485,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
-	s_debugRenderContext->BindShaderProgram( "Data/Shaders/DebugRender.hlsl" ); 
+	s_debugRenderContext->BindShaderProgram( "Data/Shaders/src/DebugRender.hlsl" ); 
 	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 
 	// Draw Depth
@@ -525,7 +525,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	// Draw XRay
 	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_GREATER, false );
-	s_debugRenderContext->BindShaderProgram( "Data/Shaders/DebugRenderXRay.hlsl" );
+	s_debugRenderContext->BindShaderProgram( "Data/Shaders/src/DebugRenderXRay.hlsl" );
 
 	s_debugRenderContext->BindDiffuseTexture( nullptr );
 	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
@@ -610,7 +610,7 @@ void DebugRenderScreenTo( Texture* output )
 
 	context->BeginCamera( *s_debugCamera );
 
-	context->BindShaderProgram( "Data/Shaders/Default.hlsl" );
+	context->BindShaderProgram( "Data/Shaders/src/Default.hlsl" );
 
 	context->SetCullMode( eCullMode::NONE );
 	context->SetBlendMode( eBlendMode::ALPHA );
@@ -621,7 +621,6 @@ void DebugRenderScreenTo( Texture* output )
 	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 	context->BindDiffuseTexture( font->GetTexture() );
 	RenderScreenObjects( context, s_debugRenderScreenTextObjects );
-	context->BindDiffuseTexture( nullptr );
 
 	context->EndCamera( *s_debugCamera );
 }

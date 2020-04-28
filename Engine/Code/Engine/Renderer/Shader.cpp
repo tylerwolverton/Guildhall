@@ -1,15 +1,27 @@
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Shader::Shader( RenderContext* context, const char* filename, const XmlElement& shaderElem )
+Shader::Shader( RenderContext* context, const char* filename )
 	: m_context( context ) 
 	, m_filename( filename )
 {
-	m_name = ParseXmlAttribute( shaderElem, "name", m_name );
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filename );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The shader xml file '%s' could not be opened.", filename ) );
+	}
+
+	XmlElement* shaderElem = doc.RootElement();
+
+	GUARANTEE_OR_DIE( shaderElem != nullptr, Stringf( "Shader xml file '%s' doesn't have any elements", filename ) );
+
+	m_name = ParseXmlAttribute( *shaderElem, "name", m_name );
 	GUARANTEE_OR_DIE( m_name != "", "Shader did not have a name attribute" );
 
-	const XmlElement* passElem = shaderElem.FirstChildElement( "pass" );
+	const XmlElement* passElem = shaderElem->FirstChildElement( "pass" );
 	while ( passElem )
 	{
 		std::string programPath = ParseXmlAttribute( *passElem, "program", "" );

@@ -26,7 +26,7 @@ struct ShaderState
 class Shader
 {
 public:
-	explicit Shader( RenderContext* context, const char* filename, const XmlElement& shaderElem );
+	explicit Shader( RenderContext* context, const char* filename );
 
 	std::string GetName()							{ return m_name; }
 	const char* GetFileName()						{ return m_filename; }

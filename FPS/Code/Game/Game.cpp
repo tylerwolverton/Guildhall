@@ -108,7 +108,6 @@ void Game::Startup()
 
 	InitializeLights();
 
-	m_scifiFighterMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/Default.material" );
 }
 
 
@@ -151,92 +150,28 @@ void Game::InitializeMeshes()
 	MeshImportOptions importOptions;
 	importOptions.generateNormals = true;
 	importOptions.generateTangents = true;
-	//importOptions.invertWindingOrder = true;
+	importOptions.transform = Mat44::CreateTranslation3D( Vec3( 2.f, 1.f, -3.f ) );
+	importOptions.transform.PushTransform( Mat44::CreateUniformScale3D( .5f ) );
 	//AppendVertsForObjMeshFromFile ( vertices, "Data/Teapot.obj", importOptions );
-	//AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/vespa_final.obj", importOptions );
+	//AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
 	AppendVertsForObjMeshFromFile ( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
-	m_teapotMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_objMesh = new GPUMesh( g_renderer, vertices, indices );
+
+	m_objMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
+	//m_objMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeLights()
 {
-	// Finite spot
 	m_lights[0].light.intensity = .5f;
 	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
 	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	/*m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 7.f );
-	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 15.f );*/
 	m_lights[0].type = eLightType::POINT;
 	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
 
-	//// Finite point
-	//m_lights[1].light.intensity = .3f;
-	//m_lights[1].light.color = Rgba8::RED.GetAsRGBVector();
-	//m_lights[1].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[1].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[1].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, -.5f, .5f );
-	//m_lights[1].type = eLightType::POINT;
-	//m_lights[1].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Infinite point
-	//m_lights[2].light.intensity = .4f;
-	//m_lights[2].light.color = Rgba8::BLUE.GetAsRGBVector();
-	//m_lights[2].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[2].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[2].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, -.5f, .5f );
-	//m_lights[2].type = eLightType::POINT;
-	//m_lights[2].movementMode = eLightMovementMode::STATIONARY;
-	//
-	//// Infinite Directional
-	//m_lights[3].light.intensity = .5f;
-	//m_lights[3].light.color = Rgba8::WHITE.GetAsRGBVector();
-	//m_lights[3].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[3].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[3].light.position = Vec3( -5.f, 3.f, -10.f );
-	//m_lights[3].light.direction = Vec3( 0.f, -1.f, 1.f ).GetNormalized();
-	//m_lights[3].type = eLightType::DIRECTIONAL;
-	//m_lights[3].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Infinite spot
-	//m_lights[4].light.intensity = .2f;
-	//m_lights[4].light.color = Rgba8::PURPLE.GetAsRGBVector();
-	//m_lights[4].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[4].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[4].light.position = m_sphereMeshTransform.GetPosition() + Vec3( 1.5f, -2.5f, 1.f );
-	//m_lights[4].light.direction = Vec3( -.5f, 1.f, -1.f ).GetNormalized();
-	//m_lights[4].light.halfCosOfInnerAngle = CosDegrees( 10.f );
-	//m_lights[4].light.halfCosOfOuterAngle = CosDegrees( 15.f );
-	//m_lights[4].type = eLightType::SPOT;
-	//m_lights[4].movementMode = eLightMovementMode::STATIONARY;
-	//
-	//// Finite point
-	//m_lights[5].light.intensity = .3f;
-	//m_lights[5].light.color = Rgba8::GREEN.GetAsRGBVector();
-	//m_lights[5].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[5].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[5].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, .5f, .5f );
-	//m_lights[5].type = eLightType::POINT;
-	//m_lights[5].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Finite point
-	//m_lights[6].light.intensity = .3f;
-	//m_lights[6].light.color = Rgba8::YELLOW.GetAsRGBVector();
-	//m_lights[6].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[6].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[6].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, .5f, .5f );
-	//m_lights[6].type = eLightType::POINT;
-	//m_lights[6].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Rotating point
-	//m_lights[7].light.intensity = .3f;
-	//m_lights[7].light.color = Rgba8::ORANGE.GetAsRGBVector();
-	//m_lights[7].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[7].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[7].type = eLightType::POINT;
-	//m_lights[7].movementMode = eLightMovementMode::LOOP;
 }
 
 
@@ -248,8 +183,8 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
-	PTR_SAFE_DELETE( m_scifiFighterMaterial );
-	PTR_SAFE_DELETE( m_teapotMesh );
+	PTR_SAFE_DELETE( m_objMaterial );
+	PTR_SAFE_DELETE( m_objMesh );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
@@ -285,7 +220,7 @@ void Game::Update()
  
 	UpdateLights();
 
-	//PrintHotkeys();
+	PrintHotkeys();
 	//PrintDiageticHotkeys();
 }
 
@@ -815,12 +750,6 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
-	//g_renderer->BindDiffuseTexture( nullptr );
-	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/brick_normal.png" ) );
-
-	//g_renderer->BindShaderProgram( m_shaderPaths[m_currentShaderIdx].c_str() );
-	//g_renderer->BindShaderByName( "Default" );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
@@ -833,122 +762,10 @@ void Game::Render() const
 	}
 	g_renderer->SetGamma( m_gamma );
 	
-	// Render normal objects
-	//Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-
-	//model = m_quadMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_quadMesh );
-	//
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/mask_head_d.png" ) );
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
-	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Models/scifi_fighter/diffuse.png" ) );
-	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Models/scifi_fighter/bump.png" ) );
-	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
-	Mat44 model = Mat44();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->BindMaterial( m_scifiFighterMaterial );
-	g_renderer->DrawMesh( m_teapotMesh );
-
-	//// Fresnel
-	//model = m_sphereMeshFresnelTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
-	//g_renderer->BindNormalTexture( nullptr );
-	//g_renderer->SetBlendMode( eBlendMode::ALPHA );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
-
-	//g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
-
-	//model = m_sphereMeshFresnelTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
- //  
-	//// Dissolve
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
-	//g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-
-	//DissolveConstants dissolveData;
-	//dissolveData.dissolveFactor = m_dissolveFactor;
-	//dissolveData.edgeWidth = m_dissolveEdge;
-	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	//g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
-
-	//model = m_cubeMeshTransformDissolve.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-	//
-	//// Triplanar
-	//g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_d.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 1, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_d.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 2, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_d.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 3, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_n.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 4, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 5, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
-
-	//model = m_sphereMeshTriplanarTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//// Projection
-	//g_renderer->BindShader( "Data/Shaders/Projection.hlsl" );
-	//g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
-
-	//ProjectionConstants projMaterial;
-	//projMaterial.position = m_lights[0].light.position;
-
-	//Mat44 view = m_projectionViewMatrix;
-	//Mat44 projection = MakePerspectiveProjectionMatrixD3D( 90.f, 1.f, -.1f, -100.f );
-
-	//projection.PushTransform( view );
-
-	//projMaterial.projectionMatrix = projection;
-	//projMaterial.power = 1.f;
-
-	//g_renderer->SetMaterialData( (void*)&projMaterial, sizeof( projMaterial ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
-
-	//// Redraw scene with projection
-	//model = m_cubeMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-
-	//model = m_quadMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_quadMesh );
-
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//model = m_cubeMeshTransformDissolve.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-
-	//model = m_sphereMeshFresnelTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//model = m_sphereMeshTriplanarTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
+	// Render obj with material
+	g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	g_renderer->BindMaterial( m_objMaterial );
+	g_renderer->DrawMesh( m_objMesh );
 
 	g_renderer->EndCamera( *m_worldCamera );
 

@@ -206,9 +206,9 @@ public:
 	void ReloadShaders();
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
+	void SetModelMatrix( const Mat44& modelMatrix );
 	void SetModelData( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE, float specularFactor = 0.f, float specularPower = 32.f );
 	void SetMaterialData( void* materialData, int dataSize );
-	//void SetDebugRenderMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
 	void SetLightData();
 
 	// Raster state setters
@@ -240,7 +240,6 @@ public:
 	Shader* GetShaderByName( std::string shaderName );
 	Texture* GetDefaultWhiteTexture()					{ return m_defaultWhiteTexture; }
 	Texture* GetDefaultFlatTexture()					{ return m_flatNormalMap; }
-
 
 	// Debug methods
 	void CycleBlendMode();
@@ -289,6 +288,7 @@ public:
 private:
 	Clock* m_gameClock								= nullptr;
 
+	// Textures
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
 	BitmapFont* m_systemFont						= nullptr;
@@ -297,6 +297,9 @@ private:
 	VertexBuffer* m_lastBoundVBO					= nullptr;
 	ID3D11Buffer* m_lastIBOHandle					= nullptr;
 
+	Mat44 m_modelMatrix								= Mat44::IDENTITY;
+
+	// Shaders
 	ShaderProgram* m_defaultShaderProgram			= nullptr;
 	ShaderProgram* m_currentShaderProgram			= nullptr;
 	std::vector<ShaderProgram*> m_loadedShaderPrograms;
@@ -306,18 +309,19 @@ private:
 
 	Sampler* m_defaultSampler						= nullptr;
 	
+	// Default textures
 	Texture* m_defaultWhiteTexture					= nullptr;
 	Texture* m_flatNormalMap						= nullptr;
 	Texture* m_defaultDepthBuffer					= nullptr;
 
+	// Lighting
 	Vec3 m_ambientLightColor						= Vec3::ONE;
 	float m_ambientLightIntensity					= 1.f;
 	Light m_lights[MAX_LIGHTS];
 	float m_gamma									= 2.2f;
 	Fog m_linearFog;
 
-	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
-
+	// ID3D states
 	ID3D11BlendState* m_alphaBlendState				= nullptr;
 	ID3D11BlendState* m_additiveBlendState			= nullptr;
 	ID3D11BlendState* m_disabledBlendState			= nullptr;
@@ -325,6 +329,8 @@ private:
 
 	ID3D11RasterizerState* m_currentRasterState		= nullptr;
 	ID3D11RasterizerState* m_defaultRasterState		= nullptr;
+	
+	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 
 	bool m_isDrawing								= false;
 };

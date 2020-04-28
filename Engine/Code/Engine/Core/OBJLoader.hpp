@@ -7,6 +7,7 @@
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3;
+struct Mat44;
 struct Vertex_PCUTBN;
 class GPUMesh;
 class RenderContext;
@@ -42,6 +43,7 @@ public:
 	static void InvertVertWindingOrder( std::vector<Vertex_PCUTBN>& vertices );
 	static void InvertIndexWindingOrder( std::vector<uint>& indices );
 	static void GenerateVertTangents( std::vector<Vertex_PCUTBN>& vertices );
+	static void TransformVerts( std::vector<Vertex_PCUTBN>& vertices, const Mat44& transform );
 
 private:
 	static bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );

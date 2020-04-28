@@ -4,16 +4,16 @@ Project: FPS
 
 ## Tasks
 [-] Be able to load `OBJ` Files
-    [-] Load OBJ as a single vertex array
+    [x] Load OBJ as a single vertex array
     [x] At end of each group (or at very end), apply post steps..
         [x] Invert-V
         [x] Calculate Normals
         [x] Calculate Tangents
-    [ ] At end of import...
-        [ ] Apply transform
+    [-] At end of import...
+        [x] Apply transform
         [ ] *Clean* (is an extra) 
         [x] Invert Winding
-[-] Post-Import Options supported
+[x] Post-Import Options supported
     [x] Invert-V
         - Some programs us UV with V at the top, and some bottom.  On import
           be able to swap it out to the correct version for your engine.
@@ -31,10 +31,10 @@ Project: FPS
           normals should also be true. 
           Use [./mikktspace.h](./mikktspace.h) and [./mikktspace.c](./mikktspace.c) to
           do this step.  
-    [ ] Post import transform from the authoring engines space to our space.
-        [ ] Transform Positions (full)
-        [ ] Normals (just direction, not scaled or translated)
-        [ ] Tangents & Bitangents (just direction, not scaled or translated)
+    [x] Post import transform from the authoring engines space to our space.
+        [x] Transform Positions (full)
+        [x] Normals (just direction, not scaled or translated)
+        [x] Tangents & Bitangents (just direction, not scaled or translated)
 [x] Have a lit model loaded in your scene to show it is working
 [-] Support a `Shader` or `ShaderState` class that is data driven
     [x] Define a data format you like
@@ -43,16 +43,16 @@ Project: FPS
         binds the program and the additional state for you.
     [x] Add `RenderContext::GetOrCreateShader(...)` to support a database of shaders
     [-] Implement `RenderContext::BindShaderByName` or `RenderContext::BindShaderStateByName`
-[ ] Support a `Material` class to make managing material data easier.
-    [ ] Should encapsulate a `ShaderState` and relevant data needed for the material
+[-] Support a `Material` class to make managing material data easier.
+    [x] Should encapsulate a `ShaderState` and relevant data needed for the material
     [-] Define a data format you like.
     [-] Define a `Material` class you can use that works with our data
-        [ ] Must be able to support owning at least one UBO for material specific data?
+        [x] Must be able to support owning at least one UBO for material specific data?
         [ ] Can set material specific textures
         [ ] Can set material specific samplers
-        [ ] Can set your engine specific constants (spec/tint)
-    [ ] Can make a material from file
-    [ ] Can call `RenderContext::BindMaterial` to bind the shader and all data assocated with the material
+        [x] Can set your engine specific constants (spec/tint)
+    [x] Can make a material from file
+    [x] Can call `RenderContext::BindMaterial` to bind the shader and all data assocated with the material
 
 -------
 

@@ -30,25 +30,39 @@ Material::Material( RenderContext* context, const char* filename )
 	m_shader = context->GetOrCreateShader( shaderPath.c_str() );
 
 	const XmlElement* diffuseElem = materialElem->FirstChildElement( "diffuse" );
-	std::string diffusePath = ParseXmlAttribute( *diffuseElem, "path", diffusePath );
-	if ( diffusePath == "White" )
+	if ( diffuseElem == nullptr )
 	{
 		m_diffuseTexture = context->GetDefaultWhiteTexture();
 	}
 	else
 	{
-		m_diffuseTexture = context->CreateOrGetTextureFromFile( diffusePath.c_str() );
+		std::string diffusePath = ParseXmlAttribute( *diffuseElem, "path", diffusePath );
+		if ( diffusePath == "White" )
+		{
+			m_diffuseTexture = context->GetDefaultWhiteTexture();
+		}
+		else
+		{
+			m_diffuseTexture = context->CreateOrGetTextureFromFile( diffusePath.c_str() );
+		}
 	}
 
 	const XmlElement* normalElem = materialElem->FirstChildElement( "normal" );
-	std::string normalPath = ParseXmlAttribute( *normalElem, "path", normalPath );
-	if ( normalPath == "White" )
+	if ( normalElem == nullptr )
 	{
 		m_normalTexture = context->GetDefaultFlatTexture();
 	}
 	else
 	{
-		m_normalTexture = context->CreateOrGetTextureFromFile( normalPath.c_str() );
+		std::string normalPath = ParseXmlAttribute( *normalElem, "path", normalPath );
+		if ( normalPath == "White" )
+		{
+			m_normalTexture = context->GetDefaultFlatTexture();
+		}
+		else
+		{
+			m_normalTexture = context->CreateOrGetTextureFromFile( normalPath.c_str() );
+		}
 	}
 
 	const XmlElement* textureElem = materialElem->FirstChildElement( "texture2d" );

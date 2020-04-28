@@ -186,7 +186,7 @@ void RenderContext::BeginCamera( Camera& camera )
 	ClearCamera( renderTargetView, camera );
 	ResetRenderObjects();
 
-	SetModelData( Mat44() );
+	SetModelData( Mat44::IDENTITY );
 	SetBlendMode( m_currentBlendMode );
 	SetAmbientLight( Rgba8::WHITE, 1.f );
 	// Dirty all state, booleans or a uint flags
@@ -346,18 +346,7 @@ Shader* RenderContext::GetOrCreateShader( const char* filename )
 		}
 	}
 
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filename );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The shader xml file '%s' could not be opened.", filename ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-
-	GUARANTEE_OR_DIE( root != nullptr, Stringf( "Shader xml file '%s' doesn't have any elements", filename ) );
-
-	Shader* newShader = new Shader( this, filename, *root );
+	Shader* newShader = new Shader( this, filename );
 	m_loadedShaders.push_back( newShader );
 
 	return newShader;
@@ -510,6 +499,8 @@ void RenderContext::BindMaterial( Material* material )
 
 	material->UpdateUBOIfDirty();
 	BindUniformBuffer( UBO_MATERIAL_SLOT, material->m_ubo );
+
+	SetModelData( m_modelMatrix, material->m_tint, material->m_specularFactor, material->m_specularPower );
 }
 
 
@@ -1079,6 +1070,13 @@ Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::SetModelMatrix( const Mat44& modelMatrix )
+{
+	m_modelMatrix = modelMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, float specularFactor, float specularPower )
 {
 	ModelData matrixData;
@@ -1089,6 +1087,8 @@ void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, f
 	matrixData.specularPower = specularPower;
 
 	m_modelMatrixUBO->Update( &matrixData, sizeof( matrixData ), sizeof( matrixData ) );
+
+	m_modelMatrix = modelMatrix;
 }
 
 
