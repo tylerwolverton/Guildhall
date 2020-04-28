@@ -19,7 +19,7 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 							  std::string filename,
 							  bool& out_fileHadNormals )
 {
-	double startTime = GetCurrentTime();
+	double startTime = GetCurrentTimeSeconds();
 
 	std::string line;
 	std::ifstream objFile;
@@ -73,8 +73,8 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 
 	objFile.close();
 
-	g_devConsole->PrintString( Stringf( "Processing obj file took: '%f'", GetCurrentTime() - startTime ) );
-	startTime = GetCurrentTime();
+	g_devConsole->PrintString( Stringf( "Processing obj file took: '%f'", GetCurrentTimeSeconds() - startTime ) );
+	startTime = GetCurrentTimeSeconds();
 
 	for( uint faceIdx = 0; faceIdx < faces.size(); ++faceIdx )
 	{
@@ -102,7 +102,7 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 		out_fileHadNormals = normals.size() != 0;
 	}
 
-	g_devConsole->PrintString( Stringf( "Appending verts took: '%f'", GetCurrentTime() - startTime ) );
+	g_devConsole->PrintString( Stringf( "Appending verts took: '%f'", GetCurrentTimeSeconds() - startTime ) );
 }
 
 

@@ -28,23 +28,26 @@ struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
 struct Vertex_PCU;
 struct Vertex_PCUTBN;
-class Window;
-class Clock;
-class Polygon2;
-class Camera;
-class Texture;
-class Sampler;
 class BitmapFont;
+class Camera;
+class Clock;
+class GPUMesh;
+class IndexBuffer;
+class Material;
+class Polygon2;
+class RenderBuffer;
+class Sampler;
 class Shader;
 class ShaderProgram;
-class RenderBuffer;
 class SwapChain;
+class Texture;
 class VertexBuffer;
-class IndexBuffer;
-class GPUMesh;
+class Window;
 enum class eCompareFunc : uint;
 enum class eFillMode : uint;
 enum class eCullMode : uint;
+enum eSamplerType : uint;
+enum eSamplerUVMode : uint;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -156,7 +159,6 @@ public:
 	void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
-	void SetSampler( eSampler sampler );
 	void SetDepthTest( eCompareFunc compare, bool writeDepthOnPass );
 
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
@@ -180,6 +182,7 @@ public:
 	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
 
 	// Binding State
+	void BindMaterial( Material* material );
 	void BindShader( Shader* shader );
 	void BindShaderByName( std::string shaderName );
 	void BindShaderByPath( const char* filePath );
@@ -188,7 +191,7 @@ public:
 	void BindDiffuseTexture( const Texture* constTexture );
 	void BindNormalTexture( const Texture* constTexture );
 	void BindTexture( uint slot, const Texture* constTexture );
-	void BindSampler( Sampler* sampler );
+	void BindSampler( uint slot, Sampler* sampler );
 
 	// Resource Creation
 	Shader* GetOrCreateShader( const char* filename );
@@ -198,6 +201,7 @@ public:
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
+	Sampler* GetOrCreateSampler( eSamplerType filter, eSamplerUVMode mode );
 
 	void ReloadShaders();
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
@@ -234,9 +238,11 @@ public:
 	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
 	Clock* GetClock() const								{ return m_gameClock; }
 	Shader* GetShaderByName( std::string shaderName );
+	Texture* GetDefaultWhiteTexture()					{ return m_defaultWhiteTexture; }
+	Texture* GetDefaultFlatTexture()					{ return m_flatNormalMap; }
+
 
 	// Debug methods
-	void CycleSampler();
 	void CycleBlendMode();
 
 private:
@@ -294,13 +300,11 @@ private:
 	ShaderProgram* m_defaultShaderProgram			= nullptr;
 	ShaderProgram* m_currentShaderProgram			= nullptr;
 	std::vector<ShaderProgram*> m_loadedShaderPrograms;
-
 	std::vector<Shader*> m_loadedShaders;
 
-	Sampler* m_pointClampSampler					= nullptr;
-	Sampler* m_linearClampSampler					= nullptr;
-	Sampler* m_pointWrapSampler						= nullptr;
-	Sampler* m_currentSampler						= nullptr;
+	std::vector<Sampler*> m_loadedSamplers;
+
+	Sampler* m_defaultSampler						= nullptr;
 	
 	Texture* m_defaultWhiteTexture					= nullptr;
 	Texture* m_flatNormalMap						= nullptr;

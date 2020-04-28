@@ -6,6 +6,8 @@
 //-----------------------------------------------------------------------------------------------
 Sampler::Sampler( RenderContext* context, eSamplerType type, eSamplerUVMode mode )
 	: m_owner( context )
+	, m_filter( type )
+	, m_mode( mode )
 {
 	ID3D11Device* device = context->m_device;
 

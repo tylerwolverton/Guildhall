@@ -19,6 +19,7 @@ class World;
 class TextBox;
 class Texture;
 class GPUMesh;
+class Material;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -200,4 +201,6 @@ private:
 	std::vector<std::string> m_shaderPaths;
 	std::vector<std::string> m_shaderNames;
 	int m_currentShaderIdx = 0;
+
+	Material* m_scifiFighterMaterial = nullptr;
 };

@@ -18,6 +18,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -101,11 +102,13 @@ void Game::Startup()
 	m_shaderPaths.push_back( "Data/Shaders/src/SurfaceNormals.hlsl" );
 	m_shaderNames.push_back( "Surface Normals" );
 
-	g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" );
+	//g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" );
 
 	InitializeMeshes();
 
 	InitializeLights();
+
+	m_scifiFighterMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/Default.material" );
 }
 
 
@@ -148,6 +151,7 @@ void Game::InitializeMeshes()
 	MeshImportOptions importOptions;
 	importOptions.generateNormals = true;
 	importOptions.generateTangents = true;
+	//importOptions.invertWindingOrder = true;
 	//AppendVertsForObjMeshFromFile ( vertices, "Data/Teapot.obj", importOptions );
 	//AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/vespa_final.obj", importOptions );
 	AppendVertsForObjMeshFromFile ( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
@@ -244,6 +248,7 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	PTR_SAFE_DELETE( m_scifiFighterMaterial );
 	PTR_SAFE_DELETE( m_teapotMesh );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
@@ -294,10 +299,6 @@ void Game::UpdateFromKeyboard()
 	UpdateDebugDrawCommands();
 	UpdateLightingCommands( deltaSeconds );
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
-	{
-		g_renderer->CycleSampler();
-	}
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
 	{
 		g_renderer->CycleBlendMode();
@@ -814,12 +815,12 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
-	g_renderer->BindDiffuseTexture( nullptr );
+	//g_renderer->BindDiffuseTexture( nullptr );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/brick_normal.png" ) );
 
 	//g_renderer->BindShaderProgram( m_shaderPaths[m_currentShaderIdx].c_str() );
-	g_renderer->BindShaderByName( "Default" );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+	//g_renderer->BindShaderByName( "Default" );
+	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
@@ -850,11 +851,12 @@ void Game::Render() const
 	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/mask_head_d.png" ) );
 	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
-	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Models/scifi_fighter/diffuse.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Models/scifi_fighter/bump.png" ) );
+	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Models/scifi_fighter/diffuse.png" ) );
+	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Models/scifi_fighter/bump.png" ) );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 	Mat44 model = Mat44();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->BindMaterial( m_scifiFighterMaterial );
 	g_renderer->DrawMesh( m_teapotMesh );
 
 	//// Fresnel

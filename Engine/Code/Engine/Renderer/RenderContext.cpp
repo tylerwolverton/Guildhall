@@ -13,6 +13,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Sampler.hpp"
@@ -83,15 +84,12 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_modelMatrixUBO );
 	PTR_SAFE_DELETE( m_materialUBO );
 	PTR_SAFE_DELETE( m_lightUBO );
-
-	PTR_SAFE_DELETE( m_pointClampSampler );
-	PTR_SAFE_DELETE( m_linearClampSampler );
-	PTR_SAFE_DELETE( m_pointWrapSampler );
-	
+		
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaderPrograms );
+	PTR_VECTOR_SAFE_DELETE( m_loadedSamplers );
 
 	PTR_SAFE_DELETE( m_swapchain );
 
@@ -120,20 +118,6 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ALPHA; return;
 		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ADDITIVE; return;
 		case eBlendMode::DISABLED: m_context->OMSetBlendState( m_disabledBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::DISABLED; return;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::SetSampler( eSampler sampler )
-{
-	float const zeroes[] = { 0,0,0,0 };
-
-	switch ( sampler )
-	{
-		case eSampler::POINT_CLAMP: m_currentSampler = m_pointClampSampler; return;
-		case eSampler::LINEAR_CLAMP: m_currentSampler = m_linearClampSampler; return;
-		case eSampler::POINT_WRAP: m_currentSampler = m_pointWrapSampler; return;
 	}
 }
 
@@ -265,7 +249,6 @@ void RenderContext::FinalizeContext()
 	SetLightData();
 
 	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
-	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
 
@@ -500,6 +483,37 @@ void RenderContext::BindUniformBuffer( uint slot, RenderBuffer* ubo )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::BindMaterial( Material* material )
+{
+	BindShader( material->m_shader );
+
+	BindDiffuseTexture( material->m_diffuseTexture );
+	BindNormalTexture( material->m_normalTexture );
+
+	for( uint textureIdx = 0; textureIdx < material->m_userTextures.size(); ++textureIdx )
+	{
+		Texture*& texture = material->m_userTextures[textureIdx];
+		if ( texture != nullptr )
+		{
+			BindTexture( USER_TEXTURE_SLOT_START + textureIdx, texture );
+		}
+	}
+
+	for ( uint samplerIdx = 0; samplerIdx < material->m_userTextures.size(); ++samplerIdx )
+	{
+		Sampler*& sampler = material->m_userSamplers[samplerIdx];
+		if ( sampler != nullptr )
+		{
+			BindSampler( USER_TEXTURE_SLOT_START + samplerIdx, sampler );
+		}
+	}
+
+	material->UpdateUBOIfDirty();
+	BindUniformBuffer( UBO_MATERIAL_SLOT, material->m_ubo );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::BindShader( Shader* shader )
 {
 	BindShaderProgram( shader->GetShaderProgram() );
@@ -625,11 +639,8 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
-	// Create default samplers
-	m_pointClampSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_CLAMP );
-	m_linearClampSampler = new Sampler( this, SAMPLER_BILINEAR, UV_MODE_CLAMP );
-	m_pointWrapSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_WRAP );
-	m_currentSampler = m_pointClampSampler;
+	// Create default sampler
+	m_defaultSampler = GetOrCreateSampler( SAMPLER_POINT, UV_MODE_CLAMP );
 
 	// Create a white texture to use when no texture is needed
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
@@ -722,7 +733,7 @@ void RenderContext::ResetRenderObjects()
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
 	BindTexture( 8, nullptr );
-	BindSampler( nullptr );
+	BindSampler( 0, nullptr );
 	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
 	m_lastIBOHandle = nullptr;
@@ -948,15 +959,15 @@ void RenderContext::BindTexture( uint slot, const Texture* constTexture )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindSampler( Sampler* sampler )
+void RenderContext::BindSampler( uint slot, Sampler* sampler )
 {
 	if ( sampler == nullptr )
 	{
-		sampler = m_currentSampler;
+		sampler = m_defaultSampler;
 	} 
 
 	ID3D11SamplerState* samplerHandle = sampler->m_handle;
-	m_context->PSSetSamplers( 0, 1, &samplerHandle );
+	m_context->PSSetSamplers( slot, 1, &samplerHandle );
 }
 
 
@@ -978,6 +989,25 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
 	}
 
 	return font;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Sampler* RenderContext::GetOrCreateSampler( eSamplerType filter, eSamplerUVMode mode )
+{
+	for ( int samplerIndex = 0; samplerIndex < (int)m_loadedSamplers.size(); ++samplerIndex )
+	{
+		if ( m_loadedSamplers[samplerIndex]->m_filter == filter
+			 && m_loadedSamplers[samplerIndex]->m_mode == mode )
+		{
+			return m_loadedSamplers[samplerIndex];
+		}
+	}
+
+	Sampler* newSampler = new Sampler( this, filter, mode );
+	m_loadedSamplers.push_back( newSampler );
+	
+	return newSampler;
 }
 
 
@@ -1214,20 +1244,6 @@ void RenderContext::DisableFog()
 	m_linearFog.nearFogDistance = 99999.f;
 	m_linearFog.farFogDistance = 99999.f;
 	m_linearFog.fogColor = Rgba8::BLACK.GetAsRGBAVector();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::CycleSampler()
-{
-	if ( m_currentSampler == m_pointClampSampler )
-	{
-		m_currentSampler = m_linearClampSampler;
-	}
-	else if ( m_currentSampler == m_linearClampSampler )
-	{
-		m_currentSampler = m_pointClampSampler;
-	}
 }
 
 

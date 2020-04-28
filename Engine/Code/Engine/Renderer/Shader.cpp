@@ -9,7 +9,7 @@ Shader::Shader( RenderContext* context, const char* filename, const XmlElement& 
 	m_name = ParseXmlAttribute( shaderElem, "name", m_name );
 	GUARANTEE_OR_DIE( m_name != "", "Shader did not have a name attribute" );
 
-	const XmlElement* passElem = shaderElem.FirstChildElement( "Pass" );
+	const XmlElement* passElem = shaderElem.FirstChildElement( "pass" );
 	while ( passElem )
 	{
 		std::string programPath = ParseXmlAttribute( *passElem, "program", "" );

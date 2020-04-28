@@ -8,7 +8,7 @@ class RenderContext;
 
 
 //-----------------------------------------------------------------------------------------------
-enum eSamplerType
+enum eSamplerType : uint
 {
 	SAMPLER_POINT,		// pixelated look (nearest)
 	SAMPLER_BILINEAR	// smoother look - no mips
@@ -16,7 +16,7 @@ enum eSamplerType
 
 
 //-----------------------------------------------------------------------------------------------
-enum eSamplerUVMode
+enum eSamplerUVMode : uint
 {
 	UV_MODE_CLAMP,		
 	UV_MODE_WRAP
@@ -35,4 +35,7 @@ public:
 public:
 	RenderContext* m_owner = nullptr;
 	ID3D11SamplerState* m_handle = nullptr;
+
+	eSamplerType m_filter = SAMPLER_POINT;
+	eSamplerUVMode m_mode = UV_MODE_CLAMP;
 };
