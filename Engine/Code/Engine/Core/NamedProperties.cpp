@@ -30,6 +30,35 @@ void NamedProperties::PopulateFromXMLAttributes( const XmlElement& element )
 
 
 //-----------------------------------------------------------------------------------------------
+void NamedProperties::SetValue( const std::string& keyname, const char* value )
+{
+	SetValue<std::string>( keyname, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string NamedProperties::GetValue( const std::string& keyName, const char* defaultValue ) const
+{
+	return GetValue<std::string>( keyName, defaultValue );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+TypedPropertyBase* NamedProperties::FindInMap( const std::string& key ) const
+{
+	auto iter = m_keyValuePairs.find( key );
+	if ( iter != m_keyValuePairs.end() )
+	{
+		return iter->second;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 //void NamedProperties::SetValue( const std::string& keyName, const std::string& value )
 //{
 //	m_keyValuePairs[keyName] = value;

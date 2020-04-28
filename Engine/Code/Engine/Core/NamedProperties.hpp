@@ -19,9 +19,8 @@ public:
 	template <typename T>
 	bool Is() const
 	{
-		return GetUniqueID() == TypedProperty<T>::UNIQUE_ID;
+		return GetUniqueID() == TypedProperty<T>::StaticUniqueId();
 	}
-
 };
 
 
@@ -31,15 +30,24 @@ class TypedProperty : public TypedPropertyBase
 {
 public:
 	virtual std::string GetAsString() const final { return ToString( m_value ); }
-	virtual void const* GetUniqueID() const final { return UNIQUE_ID; }
+	virtual void const* GetUniqueID() const final { return StaticUniqueId(); }
 
 public:
 	// std::string m_key;
 	VALUE_TYPE m_value;
 
 public:
-	static int s_whatever;
-	static void const* const UNIQUE_ID = &s_whatever;
+	static void const* const StaticUniqueId()
+	{
+		static int s_local = 0;
+		return &s_local;
+	}
+
+	template <typename VALUE_TYPE>
+	std::string ToString( VALUE_TYPE value ) const
+	{
+		return "";
+	}
 };
 
 
@@ -49,22 +57,17 @@ class NamedProperties
 public:
 	~NamedProperties();
 
-	//-----------------------------------------------------------------------------------------------
 	void PopulateFromXMLAttributes( const XmlElement& element );
 
-	//-----------------------------------------------------------------------------------------------
-	//void SetValue( const std::string& keyName, const std::string& valueName );
-
-	//-----------------------------------------------------------------------------------------------
-	// base string version
-	//std::string GetValue( const std::string& keyName, const std::string& defValue ) const;
+	void SetValue( const std::string& keyname, const char* value );
+	std::string GetValue( const std::string& keyName, const char* defaultValue ) const;
 
 	//-----------------------------------------------------------------------------------------------
 	// for everything else, there's templates!
 	template <typename T>
 	void SetValue( std::string const& keyName, T const& value )
 	{
-		TypedPropertyBase* base = m_keyValuePairs.find( keyName );
+		TypedPropertyBase* base = FindInMap( keyName );
 		if ( base == nullptr )
 		{
 			// doesn't exist, make a new one            
@@ -99,15 +102,12 @@ public:
 	template <typename T>
 	T GetValue( std::string const& keyName, T const& defValue ) const
 	{
-		TypedPropertyBase* base = nullptr;
-		auto iter = m_keyValuePairs.find( keyName );
-		if ( iter != m_keyValuePairs.end() )
+		TypedPropertyBase* base = FindInMap( keyName );
+		if ( base == nullptr )
 		{
-			base = iter->second;
-
 			// this works WITHOUT RTTI enabled
 			// but will not work if prop is inherited from T
-			if ( base->GetUniqueID() == TypedProperty<T>::UNIQUE_ID )
+			if ( base->Is<T>() )
 			{
 				// make sure this is safe!  how....?
 				TypedProperty<T>* prop = ( TypedProperty<T>* )base;
@@ -116,7 +116,7 @@ public:
 			else
 			{
 				std::string strValue = base->GetAsString();
-				return GetValueFromString( strValue, defValue );
+				return GetValue( strValue, defValue );
 			}
 		}
 		else
@@ -126,9 +126,7 @@ public:
 	}
 
 private:
-	// this is going to be different
-	// std::map<std::string, std::string> m_keyValuePairs;
-	// std::map<std::string, void*> m_keyValuePointers;
+	TypedPropertyBase* FindInMap( const std::string& key  ) const;
 
 	// We need to type type in a map
 	// But we can't store the template argument... or can we?
