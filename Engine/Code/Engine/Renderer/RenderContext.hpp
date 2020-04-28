@@ -161,6 +161,10 @@ public:
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
 	void ClearDepth( Texture* depthStencilTarget, float depth );
 
+	Texture* AcquireRenderTargetMatching( Texture* textureToMatch );
+	void ReleaseRenderTarget( Texture* texture );
+	void CopyTexture( Texture* destination, Texture* source );
+
 	void BeginCamera( Camera& camera );
 	void EndCamera	( const Camera& camera );
 
@@ -192,6 +196,7 @@ public:
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
+	Texture* CreateRenderTarget( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
 
 	void ReloadShaders();
@@ -285,6 +290,10 @@ private:
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
 	BitmapFont* m_systemFont						= nullptr;
+	
+	int m_totalRenderTargetsMade = 0;
+	std::vector<Texture*> m_renderTargetPool;
+
 
 	ID3D11Buffer* m_lastVBOHandle					= nullptr;
 	VertexBuffer* m_lastBoundVBO					= nullptr;

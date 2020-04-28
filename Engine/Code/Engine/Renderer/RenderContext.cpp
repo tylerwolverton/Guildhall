@@ -86,6 +86,9 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_linearClampSampler );
 	PTR_SAFE_DELETE( m_pointWrapSampler );
 	
+	GUARANTEE_OR_DIE( m_totalRenderTargetsMade == m_renderTargetPool.size(), "Total render targets made doesn't match object pool size" );
+
+	PTR_VECTOR_SAFE_DELETE( m_renderTargetPool );
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
@@ -172,6 +175,43 @@ void RenderContext::ClearDepth( Texture* depthStencilTarget, float depth )
 	m_context->ClearDepthStencilView( dsv, D3D11_CLEAR_DEPTH, depth, 0 );
 }
 
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::AcquireRenderTargetMatching( Texture* textureToMatch )
+{
+	IntVec2 size = textureToMatch->GetTexelSize();
+
+	for ( int i = 0; i < (int)m_renderTargetPool.size(); ++i )
+	{
+		Texture* renderTarget = m_renderTargetPool[i];
+		if ( renderTarget->GetTexelSize() == size )
+		{
+			// fast removal at index
+			m_renderTargetPool[i] = m_renderTargetPool[m_renderTargetPool.size() - 1];
+			m_renderTargetPool.pop_back();
+
+			return renderTarget;
+		}
+	}
+
+	Texture* texture = CreateRenderTarget( size );
+	++m_totalRenderTargetsMade;
+	return texture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ReleaseRenderTarget( Texture* texture )
+{
+	m_renderTargetPool.push_back( texture );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CopyTexture( Texture* destination, Texture* source )
+{
+	m_context->CopyResource( destination->m_handle, source->m_handle );
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -949,6 +989,33 @@ Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions
 	
 	Texture* newTexture = new Texture( this, texHandle );
 	m_loadedTextures.push_back( newTexture );
+
+	return newTexture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::CreateRenderTarget( const IntVec2& outputDimensions )
+{
+	// Describe the texture
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = outputDimensions.x;
+	desc.Height = outputDimensions.y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;						// MSAA
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	// DirectX creation
+	ID3D11Texture2D* texHandle = nullptr;
+	m_device->CreateTexture2D( &desc, nullptr, &texHandle );
+
+	Texture* newTexture = new Texture( this, texHandle );
 
 	return newTexture;
 }

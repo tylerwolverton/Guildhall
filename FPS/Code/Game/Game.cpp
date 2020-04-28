@@ -15,6 +15,7 @@
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -78,11 +79,8 @@ void Game::Startup()
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
 	EnableDebugRendering();
-
-	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
 	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
 	m_fresnelData.power = 32.f;
@@ -104,6 +102,8 @@ void Game::Startup()
 	InitializeMeshes();
 
 	InitializeLights();
+
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
 
@@ -277,7 +277,7 @@ void Game::Update()
  
 	UpdateLights();
 
-	//PrintHotkeys();
+	PrintHotkeys();
 	//PrintDiageticHotkeys();
 }
 
@@ -808,6 +808,10 @@ void Game::PrintDiageticHotkeys()
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
+	Texture* backbuffer = g_renderer->GetBackBuffer();
+	Texture* frameTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	m_worldCamera->SetColorTarget( frameTarget );
+
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
@@ -828,130 +832,33 @@ void Game::Render() const
 	}
 	g_renderer->SetGamma( m_gamma );
 	
-	// Render normal objects
-	//Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-
-	//model = m_quadMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_quadMesh );
-	//
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-
 	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/grass_d.png" ) );
 	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/mask_head_d.png" ) );
 	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
 	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
 	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
+
 	Mat44 model = Mat44();
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_teapotMesh );
 
-	//// Fresnel
-	//model = m_sphereMeshFresnelTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//g_renderer->BindShader( "Data/Shaders/Fresnel.hlsl" );
-	//g_renderer->BindNormalTexture( nullptr );
-	//g_renderer->SetBlendMode( eBlendMode::ALPHA );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
-
-	//g_renderer->SetMaterialData( (void*)&m_fresnelData, sizeof(m_fresnelData) );
-
-	//model = m_sphereMeshFresnelTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
- //  
-	//// Dissolve
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
-	//g_renderer->BindShader( "Data/Shaders/Dissolve.hlsl" );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-
-	//DissolveConstants dissolveData;
-	//dissolveData.dissolveFactor = m_dissolveFactor;
-	//dissolveData.edgeWidth = m_dissolveEdge;
-	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	//g_renderer->SetMaterialData( ( void* )&dissolveData, sizeof( dissolveData ) );
-
-	//model = m_cubeMeshTransformDissolve.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-	//
-	//// Triplanar
-	//g_renderer->BindShader( "Data/Shaders/Triplanar.hlsl" );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_d.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 1, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_d.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 2, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_d.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 3, g_renderer->CreateOrGetTextureFromFile( "Data/Images/grass_n.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 4, g_renderer->CreateOrGetTextureFromFile( "Data/Images/sand_n.png" ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START + 5, g_renderer->CreateOrGetTextureFromFile( "Data/Images/wall_n.png" ) );
-
-	//model = m_sphereMeshTriplanarTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//// Projection
-	//g_renderer->BindShader( "Data/Shaders/Projection.hlsl" );
-	//g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
-	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_EQUAL, false );
-
-	//ProjectionConstants projMaterial;
-	//projMaterial.position = m_lights[0].light.position;
-
-	//Mat44 view = m_projectionViewMatrix;
-	//Mat44 projection = MakePerspectiveProjectionMatrixD3D( 90.f, 1.f, -.1f, -100.f );
-
-	//projection.PushTransform( view );
-
-	//projMaterial.projectionMatrix = projection;
-	//projMaterial.power = 1.f;
-
-	//g_renderer->SetMaterialData( (void*)&projMaterial, sizeof( projMaterial ) );
-	//g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
-
-	//// Redraw scene with projection
-	//model = m_cubeMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-
-	//model = m_quadMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_quadMesh );
-
-	//model = m_sphereMeshTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//model = m_cubeMeshTransformDissolve.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_cubeMesh );
-
-	//model = m_sphereMeshFresnelTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
-	//model = m_sphereMeshTriplanarTransform.GetAsMatrix();
-	//g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	//g_renderer->DrawMesh( m_sphereMesh );
-
 	g_renderer->EndCamera( *m_worldCamera );
 
+	// Debug Rendering
 	DebugRenderWorldToCamera( m_worldCamera );
+
+	Texture* backBuffer = g_renderer->GetBackBuffer();
+	g_renderer->CopyTexture( backBuffer, frameTarget );
+	g_renderer->ReleaseRenderTarget( frameTarget );
+
+	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::DebugRender() const
 {
-	m_world->DebugRender();
+	
 }
 
 
