@@ -43,6 +43,9 @@ void RenderContext::Startup( Window* window )
 
 	m_systemFont = CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
 
+	m_effectCamera = new Camera();
+	m_effectCamera->SetClearMode( 0, Rgba8::WHITE );
+
 	GUARANTEE_OR_DIE( m_systemFont != nullptr, "Could not load default system font. Make sure it is in the Data/Fonts directory." );
 }
 
@@ -75,6 +78,8 @@ void RenderContext::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Shutdown()
 {
+	PTR_SAFE_DELETE( m_effectCamera );
+
 	PTR_SAFE_DELETE( m_immediateVBO );
 	PTR_SAFE_DELETE( m_immediateIBO );
 	PTR_SAFE_DELETE( m_frameUBO );
@@ -211,6 +216,24 @@ void RenderContext::ReleaseRenderTarget( Texture* texture )
 void RenderContext::CopyTexture( Texture* destination, Texture* source )
 {
 	m_context->CopyResource( destination->m_handle, source->m_handle );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::StartEffect( Texture* destination, Texture* source, Shader* shader )
+{
+	m_effectCamera->SetColorTarget( destination );
+	BeginCamera( *m_effectCamera );
+	BindShader( shader );
+	BindDiffuseTexture( source );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::EndEffect()
+{
+	m_context->Draw( 3, 0 );
+	EndCamera( *m_effectCamera );
 }
 
 

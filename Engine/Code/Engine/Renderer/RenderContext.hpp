@@ -164,6 +164,9 @@ public:
 	Texture* AcquireRenderTargetMatching( Texture* textureToMatch );
 	void ReleaseRenderTarget( Texture* texture );
 	void CopyTexture( Texture* destination, Texture* source );
+	//void ApplyEffect( Texture* destination, Texture* source, Material* material );
+	void StartEffect( Texture* destination, Texture* source, Shader* shader );
+	void EndEffect();
 
 	void BeginCamera( Camera& camera );
 	void EndCamera	( const Camera& camera );
@@ -293,8 +296,7 @@ private:
 	
 	int m_totalRenderTargetsMade = 0;
 	std::vector<Texture*> m_renderTargetPool;
-
-
+	
 	ID3D11Buffer* m_lastVBOHandle					= nullptr;
 	VertexBuffer* m_lastBoundVBO					= nullptr;
 	ID3D11Buffer* m_lastIBOHandle					= nullptr;
@@ -329,4 +331,6 @@ private:
 	ID3D11RasterizerState* m_defaultRasterState		= nullptr;
 
 	bool m_isDrawing								= false;
+
+	Camera* m_effectCamera = nullptr;
 };

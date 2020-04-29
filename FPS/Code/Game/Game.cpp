@@ -842,15 +842,30 @@ void Game::Render() const
 	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_teapotMesh );
 
+	model = Mat44::CreateTranslation3D( Vec3::ONE * 2.f );
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_teapotMesh );
+
+	model = Mat44::CreateTranslation3D( -Vec3::ONE * 3.f );
+	g_renderer->SetModelData( model, Rgba8::GREEN, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_teapotMesh );
+
 	g_renderer->EndCamera( *m_worldCamera );
+
+	Texture* backBuffer = g_renderer->GetBackBuffer();
+
+	Shader* shader = g_renderer->GetOrCreateShader( "Data/Shaders/ImageEffect.hlsl" );
+	g_renderer->StartEffect( backbuffer, frameTarget, shader );
+	g_renderer->EndEffect();
+
+	//g_renderer->CopyTexture( backBuffer, frameTarget );
+
+	m_worldCamera->SetColorTarget( backbuffer );
+
+	g_renderer->ReleaseRenderTarget( frameTarget );
 
 	// Debug Rendering
 	DebugRenderWorldToCamera( m_worldCamera );
-
-	Texture* backBuffer = g_renderer->GetBackBuffer();
-	g_renderer->CopyTexture( backBuffer, frameTarget );
-	g_renderer->ReleaseRenderTarget( frameTarget );
-
 	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
