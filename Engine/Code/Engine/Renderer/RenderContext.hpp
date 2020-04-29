@@ -334,4 +334,7 @@ private:
 	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 
 	bool m_isDrawing								= false;
+
+	bool m_materialSetFromFile = false;
+	RenderBuffer* m_materialFileUbo = nullptr;
 };

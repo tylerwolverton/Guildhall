@@ -211,15 +211,15 @@ void Game::Update()
 	UpdateCameras();
 
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-	/*
-	m_fresnelMaterial->SetData( m_fresnelData );*/
+	
+	//m_fresnelMaterial->SetData( m_fresnelData );
 
-	DissolveConstants* dissolveData = m_dissolveMaterial->GetDataAs<DissolveConstants>();
-	dissolveData->dissolveFactor = m_dissolveFactor;
-	dissolveData->edgeWidth = m_dissolveEdge;
-	dissolveData->startColor = Rgba8::RED.GetAsRGBVector();
-	dissolveData->endColor = Rgba8::BLUE.GetAsRGBVector();
-	//m_dissolveMaterial->SetData( dissolveData );
+	DissolveConstants dissolveData;// = m_dissolveMaterial->GetDataAs<DissolveConstants>();
+	dissolveData.dissolveFactor = m_dissolveFactor;
+	dissolveData.edgeWidth = m_dissolveEdge;
+	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	m_dissolveMaterial->SetData( dissolveData );
 
 	UpdateLights();
 
@@ -762,28 +762,55 @@ void Game::Render() const
 	g_renderer->SetGamma( m_gamma );
 	
 	// Render obj with material
-	g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	/*g_renderer->SetModelMatrix( Mat44::IDENTITY );
 	g_renderer->BindMaterial( m_objMaterial );
-	g_renderer->DrawMesh( m_objMesh );
+	g_renderer->DrawMesh( m_objMesh );*/
 
 	// Fresnel
 	/*g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_defaultMaterial );
 	g_renderer->DrawMesh( m_sphereMesh );*/
 	
-	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	/*g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_fresnelMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );
+	g_renderer->DrawMesh( m_sphereMesh );*/
 
 	// Dissolve
+	//DissolveConstants dissolveData;
+	//dissolveData.dissolveFactor = m_dissolveFactor;
+	//dissolveData.edgeWidth = m_dissolveEdge;
+	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	////g_renderer->SetMaterialData( (void*)& dissolveData, sizeof( dissolveData ) );
+
+	//m_dissolveMaterial->SetData( (void*)& dissolveData, sizeof( dissolveData ) );
+
 	g_renderer->SetModelMatrix( m_cubeMeshTransformDissolve.GetAsMatrix() );
 	g_renderer->BindMaterial( m_dissolveMaterial );
 	g_renderer->DrawMesh( m_cubeMesh );
 
+	// Dissolve
+	/*g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
+	g_renderer->BindShaderProgram( "Data/Shaders/src/Dissolve.hlsl" );
+	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+
+	DissolveConstants dissolveData;
+	dissolveData.dissolveFactor = m_dissolveFactor;
+	dissolveData.edgeWidth = m_dissolveEdge;
+	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	g_renderer->SetMaterialData( (void*)& dissolveData, sizeof( dissolveData ) );
+
+	Mat44 model = m_cubeMeshTransformDissolve.GetAsMatrix();
+	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+	g_renderer->DrawMesh( m_cubeMesh );
+
+	g_renderer->BindShaderProgram( "Data/Shaders/src/Default.hlsl" );*/
+
 	// Triplanar
-	g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
+	/*g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_triplanarMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );
+	g_renderer->DrawMesh( m_sphereMesh );*/
 
 	g_renderer->EndCamera( *m_worldCamera );
 

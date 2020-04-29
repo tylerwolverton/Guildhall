@@ -148,7 +148,7 @@ void Material::UpdateUBOIfDirty()
 {
 	if ( m_uboIsDirty )
 	{
-		m_ubo->Update( (void*)&m_uboCPUData, sizeof( m_uboCPUData ), sizeof( m_uboCPUData ) );
+		m_ubo->Update( (void*)&m_uboCPUData[0], sizeof( m_uboCPUData ), sizeof( m_uboCPUData ) );
 		
 		m_uboIsDirty = false;
 	}

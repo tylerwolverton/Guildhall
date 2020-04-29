@@ -1,10 +1,10 @@
 #pragma once
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/XmlUtils.hpp"
-
+#include "Engine/Renderer/RenderBuffer.hpp"
 
 //-----------------------------------------------------------------------------------------------
-class RenderBuffer;
+//class RenderBuffer;
 class RenderContext;
 class Sampler;
 class Shader;
