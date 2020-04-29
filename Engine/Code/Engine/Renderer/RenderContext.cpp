@@ -498,8 +498,6 @@ void RenderContext::BindMaterial( Material* material )
 	}
 	
 	material->UpdateUBOIfDirty();
-	//memcpy( &m_materialUBO, &material->m_ubo, sizeof( material->m_ubo ) );
-	//BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 	BindUniformBuffer( UBO_MATERIAL_SLOT, material->m_ubo );
 
 	SetModelData( m_modelMatrix, material->m_tint, material->m_specularFactor, material->m_specularPower );
@@ -1103,6 +1101,7 @@ void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, f
 void RenderContext::SetMaterialData( void* materialData, int dataSize )
 {
 	m_materialUBO->Update( materialData, dataSize, dataSize );
+
 	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
