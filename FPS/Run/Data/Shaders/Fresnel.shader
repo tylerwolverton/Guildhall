@@ -33,7 +33,7 @@
 
       <depth enabled="true"
              test="equal"
-             write="false" />
+             write="true" />
 
    </pass>
 </shader>

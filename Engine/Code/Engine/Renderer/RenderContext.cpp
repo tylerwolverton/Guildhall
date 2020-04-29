@@ -493,7 +493,7 @@ void RenderContext::BindMaterial( Material* material )
 		Sampler*& sampler = material->m_userSamplers[samplerIdx];
 		if ( sampler != nullptr )
 		{
-			BindSampler( USER_TEXTURE_SLOT_START + samplerIdx, sampler );
+			BindSampler( samplerIdx, sampler );
 		}
 	}
 	

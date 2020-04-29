@@ -179,13 +179,16 @@ private:
 	GPUMesh* m_objMesh = nullptr;
 	Transform m_objMeshTransform;
 
+	GPUMesh* m_teapotMesh = nullptr;
+	Transform m_teapotMeshTransform;
+
 	// Shader demos
 	Transform m_sphereMeshFresnelTransform;
 	Transform m_sphereMeshTriplanarTransform;
 	Transform m_cubeMeshTransformDissolve;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 1.f;
+	float m_ambientIntensity = .3f;
 	GameLight m_lights[MAX_LIGHTS];
 	int m_currentLightIdx = 0;
 	float m_specularFactor = 0.f;
@@ -205,6 +208,7 @@ private:
 	// Materials
 	Material* m_defaultMaterial = nullptr;
 	Material* m_objMaterial = nullptr;
+	Material* m_teapotMaterial = nullptr;
 	Material* m_fresnelMaterial = nullptr;
 	Material* m_dissolveMaterial = nullptr;
 	Material* m_triplanarMaterial = nullptr;

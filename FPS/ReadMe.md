@@ -43,13 +43,13 @@ Project: FPS
         binds the program and the additional state for you.
     [x] Add `RenderContext::GetOrCreateShader(...)` to support a database of shaders
     [-] Implement `RenderContext::BindShaderByName` or `RenderContext::BindShaderStateByName`
-[-] Support a `Material` class to make managing material data easier.
+[x] Support a `Material` class to make managing material data easier.
     [x] Should encapsulate a `ShaderState` and relevant data needed for the material
     [x] Define a data format you like.
-    [-] Define a `Material` class you can use that works with our data
+    [x] Define a `Material` class you can use that works with our data
         [x] Must be able to support owning at least one UBO for material specific data?
-        [-] Can set material specific textures
-        [-] Can set material specific samplers
+        [x] Can set material specific textures
+        [x] Can set material specific samplers
         [x] Can set your engine specific constants (spec/tint)
     [x] Can make a material from file
     [x] Can call `RenderContext::BindMaterial` to bind the shader and all data assocated with the material

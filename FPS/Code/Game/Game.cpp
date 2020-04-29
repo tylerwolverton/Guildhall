@@ -78,12 +78,7 @@ void Game::Startup()
 	g_renderer->Setup( m_gameClock );
 
 	EnableDebugRendering();
-
-	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
-
-	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
-	m_fresnelData.power = 32.f;
-
+	
 	// Init shaders
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.shader" ) );
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" ) );
@@ -92,11 +87,16 @@ void Game::Startup()
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Bitangents.shader" ) );
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/SurfaceNormals.shader" ) );
 
-	//g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" );
+	// For testing SetShaderByName
+	g_renderer->GetOrCreateShader( "Data/Shaders/Fresnel.shader" );
+	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
+	m_fresnelData.power = 32.f;
 
 	InitializeMeshes();
 
 	InitializeLights();
+
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
 
@@ -133,23 +133,33 @@ void Game::InitializeMeshes()
 	m_sphereMeshFresnelTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
 	m_sphereMeshTriplanarTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
 
-	// Move to RenderContext::LoadMeshFromFile
+	// Meshes
 	vertices.clear();
 	indices.clear();
 	MeshImportOptions importOptions;
 	importOptions.generateNormals = true;
 	importOptions.generateTangents = true;
-	importOptions.transform = Mat44::CreateTranslation3D( Vec3( 2.f, 1.f, -3.f ) );
-	importOptions.transform.PushTransform( Mat44::CreateUniformScale3D( .5f ) );
-	//AppendVertsForObjMeshFromFile ( vertices, "Data/Teapot.obj", importOptions );
+	importOptions.transform = Mat44::CreateTranslation3D( Vec3( -5.f, 0.f, -0.f ) );
+	importOptions.transform.PushTransform( Mat44::CreateUniformScale3D( .05f ) );
+	AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/teapot.obj", importOptions );
+	m_teapotMesh = new GPUMesh( g_renderer, vertices, indices );
+
+	vertices.clear();
+	indices.clear();
+	importOptions.transform = Mat44::CreateUniformScale3D( .5f );
 	//AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
 	AppendVertsForObjMeshFromFile ( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
 	m_objMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_objMeshTransform.SetPosition( Vec3( 0.f, 0.f, -2.f ) );
 
+	// Set materials
 	m_defaultMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
+	m_teapotMaterial = new Material( g_renderer, "Data/Materials/Teapot.material" );
 	m_objMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
 	//m_objMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
+
 	m_fresnelMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
+	m_fresnelMaterial->SetShader( g_renderer->GetShaderByName( "Fresnel" ) );
 	m_dissolveMaterial = new Material( g_renderer, "Data/Materials/Dissolve.material" );
 	m_triplanarMaterial = new Material( g_renderer, "Data/Materials/Triplanar.material" );
 }
@@ -158,7 +168,7 @@ void Game::InitializeMeshes()
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeLights()
 {
-	m_lights[0].light.intensity = .5f;
+	m_lights[0].light.intensity = .75f;
 	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
 	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
@@ -177,9 +187,11 @@ void Game::Shutdown()
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_defaultMaterial );
 	PTR_SAFE_DELETE( m_objMaterial );
+	PTR_SAFE_DELETE( m_teapotMaterial );
 	PTR_SAFE_DELETE( m_fresnelMaterial );
 	PTR_SAFE_DELETE( m_dissolveMaterial );
 	PTR_SAFE_DELETE( m_triplanarMaterial );
+	PTR_SAFE_DELETE( m_teapotMesh );
 	PTR_SAFE_DELETE( m_objMesh );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
@@ -209,10 +221,8 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-
-	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-	
-	//m_fresnelMaterial->SetData( m_fresnelData );
+		
+	m_fresnelMaterial->SetData( m_fresnelData );
 
 	DissolveConstants dissolveData;// = m_dissolveMaterial->GetDataAs<DissolveConstants>();
 	dissolveData.dissolveFactor = m_dissolveFactor;
@@ -761,60 +771,38 @@ void Game::Render() const
 	}
 	g_renderer->SetGamma( m_gamma );
 	
+	// Render test teapot
+	g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	g_renderer->BindMaterial( m_teapotMaterial );
+	g_renderer->DrawMesh( m_teapotMesh );
+
 	// Render obj with material
-	/*g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	g_renderer->SetModelMatrix( m_objMeshTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_objMaterial );
-	g_renderer->DrawMesh( m_objMesh );*/
+	g_renderer->DrawMesh( m_objMesh );
 
 	// Fresnel
-	/*g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_defaultMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );*/
+	g_renderer->DrawMesh( m_sphereMesh );
 	
-	/*g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_fresnelMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );*/
-
+	g_renderer->DrawMesh( m_sphereMesh );
+	   
 	// Dissolve
-	//DissolveConstants dissolveData;
-	//dissolveData.dissolveFactor = m_dissolveFactor;
-	//dissolveData.edgeWidth = m_dissolveEdge;
-	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	////g_renderer->SetMaterialData( (void*)& dissolveData, sizeof( dissolveData ) );
-
-	//m_dissolveMaterial->SetData( (void*)& dissolveData, sizeof( dissolveData ) );
-
 	g_renderer->SetModelMatrix( m_cubeMeshTransformDissolve.GetAsMatrix() );
 	g_renderer->BindMaterial( m_dissolveMaterial );
 	g_renderer->DrawMesh( m_cubeMesh );
 
-	// Dissolve
-	/*g_renderer->BindTexture( USER_TEXTURE_SLOT_START, g_renderer->CreateOrGetTextureFromFile( "Data/Images/noise.png" ) );
-	g_renderer->BindShaderProgram( "Data/Shaders/src/Dissolve.hlsl" );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-
-	DissolveConstants dissolveData;
-	dissolveData.dissolveFactor = m_dissolveFactor;
-	dissolveData.edgeWidth = m_dissolveEdge;
-	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	g_renderer->SetMaterialData( (void*)& dissolveData, sizeof( dissolveData ) );
-
-	Mat44 model = m_cubeMeshTransformDissolve.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_cubeMesh );
-
-	g_renderer->BindShaderProgram( "Data/Shaders/src/Default.hlsl" );*/
-
 	// Triplanar
-	/*g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
+	g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_triplanarMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );*/
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	g_renderer->EndCamera( *m_worldCamera );
 
-	DebugRenderWorldToCamera( m_worldCamera );
+	//DebugRenderWorldToCamera( m_worldCamera );
 }
 
 

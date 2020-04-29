@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderBuffer.hpp"
@@ -28,6 +29,8 @@ public:
 	//-----------------------------------------------------------------------------------------------
 	void SetData( void const* data, size_t dataSize )
 	{
+		GUARANTEE_OR_DIE( dataSize != 24, "Who tried to do this?" );
+		m_uboCPUData.clear();
 		m_uboCPUData.resize( dataSize );
 		memcpy( &m_uboCPUData[0], data, dataSize );
 		m_uboIsDirty = true;
