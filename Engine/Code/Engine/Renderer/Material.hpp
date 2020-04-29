@@ -20,7 +20,9 @@ public:
 	Material( RenderContext* context, const char* filename );
 	~Material();
 
-	void SetShader( Shader* shader );
+	void SetShader( Shader* shader )								{ m_shader = shader; }
+	void SetDiffuseTexture( Texture* diffuse )						{ m_diffuseTexture = diffuse; }
+	void SetNormalTexture( Texture* normal )						{ m_normalTexture = normal; }
 	void UpdateUBOIfDirty();
 	
 	//-----------------------------------------------------------------------------------------------

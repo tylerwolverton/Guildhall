@@ -19,6 +19,7 @@ class World;
 class TextBox;
 class Texture;
 class GPUMesh;
+class Shader;
 class Material;
 
 
@@ -198,9 +199,13 @@ private:
 	float m_dissolveEdge = .3f;
 	Mat44 m_projectionViewMatrix;
 
-	std::vector<std::string> m_shaderPaths;
-	std::vector<std::string> m_shaderNames;
+	std::vector<Shader*> m_shaders;
 	int m_currentShaderIdx = 0;
 
+	// Materials
+	Material* m_defaultMaterial = nullptr;
 	Material* m_objMaterial = nullptr;
+	Material* m_fresnelMaterial = nullptr;
+	Material* m_dissolveMaterial = nullptr;
+	Material* m_triplanarMaterial = nullptr;
 };

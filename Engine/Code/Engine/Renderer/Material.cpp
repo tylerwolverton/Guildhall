@@ -1,6 +1,7 @@
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Renderer/RenderBuffer.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -32,7 +33,7 @@ Material::Material( RenderContext* context, const char* filename )
 	const XmlElement* diffuseElem = materialElem->FirstChildElement( "diffuse" );
 	if ( diffuseElem == nullptr )
 	{
-		m_diffuseTexture = context->GetDefaultWhiteTexture();
+		m_diffuseTexture = nullptr;
 	}
 	else
 	{
@@ -50,12 +51,12 @@ Material::Material( RenderContext* context, const char* filename )
 	const XmlElement* normalElem = materialElem->FirstChildElement( "normal" );
 	if ( normalElem == nullptr )
 	{
-		m_normalTexture = context->GetDefaultFlatTexture();
+		m_normalTexture = nullptr;
 	}
 	else
 	{
 		std::string normalPath = ParseXmlAttribute( *normalElem, "path", normalPath );
-		if ( normalPath == "White" )
+		if ( normalPath == "Flat" )
 		{
 			m_normalTexture = context->GetDefaultFlatTexture();
 		}
@@ -66,12 +67,23 @@ Material::Material( RenderContext* context, const char* filename )
 	}
 
 	const XmlElement* textureElem = materialElem->FirstChildElement( "texture2d" );
-	m_userTextures.resize( 8 );
+	m_userTextures.resize( MAX_USER_TEXTURES );
 	int curTextureNum = 0;
 	while ( textureElem )
 	{
+		if ( curTextureNum >= MAX_USER_TEXTURES )
+		{
+			g_devConsole->PrintString( Stringf( "Engine only supports %d textures, ignoring the rest", MAX_USER_TEXTURES ), Rgba8::YELLOW );
+			break;
+		}
+
 		std::string texturePath = ParseXmlAttribute( *textureElem, "path", texturePath );
 		int slot = ParseXmlAttribute( *textureElem, "slot", curTextureNum );
+		if ( slot >= MAX_USER_TEXTURES )
+		{
+			g_devConsole->PrintString( Stringf( "Texture slot '%d' is outside range of %d - %d, skipping", slot, USER_TEXTURE_SLOT_START, USER_TEXTURE_SLOT_START + MAX_USER_TEXTURES - 1 ), Rgba8::YELLOW );
+			continue;
+		}
 		++curTextureNum;
 
 		Texture* userTexture = context->CreateOrGetTextureFromFile( texturePath .c_str() );
@@ -83,11 +95,22 @@ Material::Material( RenderContext* context, const char* filename )
 	}
 
 	const XmlElement* samplerElem = materialElem->FirstChildElement( "sampler" );
-	m_userSamplers.resize( 8 );
+	m_userSamplers.resize( MAX_USER_TEXTURES );
 	int curSamplerNum = 0;
 	while ( samplerElem )
 	{
+		if ( curTextureNum >= MAX_USER_TEXTURES )
+		{
+			g_devConsole->PrintString( Stringf( "Engine only supports %d samplers, ignoring the rest", MAX_USER_TEXTURES ), Rgba8::YELLOW );
+			break;
+		}
+
 		int slot = ParseXmlAttribute( *samplerElem, "slot", curSamplerNum );
+		if ( slot >= MAX_USER_TEXTURES )
+		{
+			g_devConsole->PrintString( Stringf( "Sampler slot '%d' is outside range of 0 - %d, skipping", slot, MAX_USER_TEXTURES - 1 ), Rgba8::YELLOW );
+			continue;
+		}
 		++curSamplerNum;
 
 		eSamplerType filter = SAMPLER_POINT;
@@ -121,19 +144,12 @@ Material::~Material()
 
 
 //-----------------------------------------------------------------------------------------------
-void Material::SetShader( Shader* shader )
-{
-	m_shader = shader;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Material::UpdateUBOIfDirty()
 {
 	if ( m_uboIsDirty )
 	{
-		m_uboIsDirty = false;
-
 		m_ubo->Update( (void*)&m_uboCPUData, sizeof( m_uboCPUData ), sizeof( m_uboCPUData ) );
+		
+		m_uboIsDirty = false;
 	}
 }

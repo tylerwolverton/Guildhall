@@ -66,6 +66,8 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
+	return float4 ( DISSOLVE_FACTOR, 0.f, 0.f, 1.f );
+	
 	// use the uv to sample the texture
 	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );

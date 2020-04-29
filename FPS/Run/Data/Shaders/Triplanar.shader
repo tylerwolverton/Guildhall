@@ -4,7 +4,7 @@
 -->
 
 
-<shader name="Default">
+<shader name="Triplanar">
    <!-- 
       Pass is a single draw call for this shader
       'cull': none, back, front
@@ -12,7 +12,7 @@
       'fill': solid, wire
    -->
 
-   <pass program="Data/Shaders/src/Default.hlsl"
+   <pass program="Data/Shaders/src/Triplanar.hlsl"
          front="ccw"
          cull="back"
          fill="solid">
@@ -22,7 +22,7 @@
          mode: blend mode. opaque, alpha, additive
       -->
 
-      <blend enabled="false"
+      <blend enabled="true"
              mode="opaque" />
 
       <!-- depth state 

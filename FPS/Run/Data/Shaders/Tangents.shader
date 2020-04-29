@@ -4,7 +4,7 @@
 -->
 
 
-<shader name="Default">
+<shader name="Tangents">
    <!-- 
       Pass is a single draw call for this shader
       'cull': none, back, front
@@ -12,7 +12,7 @@
       'fill': solid, wire
    -->
 
-   <pass program="Data/Shaders/src/Default.hlsl"
+   <pass program="Data/Shaders/src/Tangents.hlsl"
          front="ccw"
          cull="back"
          fill="solid">

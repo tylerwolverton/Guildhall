@@ -21,6 +21,7 @@
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Core/EventSystem.hpp"
@@ -57,10 +58,6 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	std::string testStr( "1//1 " );
-	Strings trimmed = SplitStringOnDelimiter( testStr, '/' );
-
-
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 	g_eventSystem->RegisterEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetPointLightColor );
@@ -79,7 +76,6 @@ void Game::Startup()
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
 	EnableDebugRendering();
 
@@ -89,25 +85,18 @@ void Game::Startup()
 	m_fresnelData.power = 32.f;
 
 	// Init shaders
-	m_shaderPaths.push_back( "Data/Shaders/src/Lit.hlsl" );
-	m_shaderNames.push_back( "Lit" );
-	m_shaderPaths.push_back( "Data/Shaders/src/Default.hlsl" );
-	m_shaderNames.push_back( "Default" );
-	m_shaderPaths.push_back( "Data/Shaders/src/Normals.hlsl" );
-	m_shaderNames.push_back( "Normals" );
-	m_shaderPaths.push_back( "Data/Shaders/src/Tangents.hlsl" );
-	m_shaderNames.push_back( "Tangents" );
-	m_shaderPaths.push_back( "Data/Shaders/src/Bitangents.hlsl" );
-	m_shaderNames.push_back( "Bitangents" );
-	m_shaderPaths.push_back( "Data/Shaders/src/SurfaceNormals.hlsl" );
-	m_shaderNames.push_back( "Surface Normals" );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Normals.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Tangents.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Bitangents.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/SurfaceNormals.shader" ) );
 
 	//g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" );
 
 	InitializeMeshes();
 
 	InitializeLights();
-
 }
 
 
@@ -122,7 +111,7 @@ void Game::InitializeMeshes()
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
 
 	m_cubeMeshTransform.SetPosition( Vec3( -5.f, 0.f, -6.f ) );
-	m_cubeMeshTransformDissolve.SetPosition( Vec3( -5.f, 0.f, 6.f ) );
+	m_cubeMeshTransformDissolve.SetPosition( Vec3( -5.f, 0.f, -6.f ) );
 
 	// Quad
 	vertices.clear();
@@ -141,8 +130,8 @@ void Game::InitializeMeshes()
 	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
 
 	m_sphereMeshTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
-	m_sphereMeshFresnelTransform.SetPosition( Vec3( 0.f, 0.f, 6.f ) );
-	m_sphereMeshTriplanarTransform.SetPosition( Vec3( 5.f, 0.f, 6.f ) );
+	m_sphereMeshFresnelTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
+	m_sphereMeshTriplanarTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
 
 	// Move to RenderContext::LoadMeshFromFile
 	vertices.clear();
@@ -157,8 +146,12 @@ void Game::InitializeMeshes()
 	AppendVertsForObjMeshFromFile ( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
 	m_objMesh = new GPUMesh( g_renderer, vertices, indices );
 
+	m_defaultMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
 	m_objMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
 	//m_objMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
+	m_fresnelMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
+	m_dissolveMaterial = new Material( g_renderer, "Data/Materials/Dissolve.material" );
+	m_triplanarMaterial = new Material( g_renderer, "Data/Materials/Triplanar.material" );
 }
 
 
@@ -171,7 +164,6 @@ void Game::InitializeLights()
 	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].type = eLightType::POINT;
 	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
-
 }
 
 
@@ -183,7 +175,11 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	PTR_SAFE_DELETE( m_defaultMaterial );
 	PTR_SAFE_DELETE( m_objMaterial );
+	PTR_SAFE_DELETE( m_fresnelMaterial );
+	PTR_SAFE_DELETE( m_dissolveMaterial );
+	PTR_SAFE_DELETE( m_triplanarMaterial );
 	PTR_SAFE_DELETE( m_objMesh );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
@@ -215,13 +211,20 @@ void Game::Update()
 	UpdateCameras();
 
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-	m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
-	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, -deltaSeconds * 20.f );
- 
+	/*
+	m_fresnelMaterial->SetData( m_fresnelData );*/
+
+	DissolveConstants* dissolveData = m_dissolveMaterial->GetDataAs<DissolveConstants>();
+	dissolveData->dissolveFactor = m_dissolveFactor;
+	dissolveData->edgeWidth = m_dissolveEdge;
+	dissolveData->startColor = Rgba8::RED.GetAsRGBVector();
+	dissolveData->endColor = Rgba8::BLUE.GetAsRGBVector();
+	//m_dissolveMaterial->SetData( dissolveData );
+
 	UpdateLights();
 
 	PrintHotkeys();
-	//PrintDiageticHotkeys();
+	PrintDiageticHotkeys();
 }
 
 
@@ -234,10 +237,6 @@ void Game::UpdateFromKeyboard()
 	UpdateDebugDrawCommands();
 	UpdateLightingCommands( deltaSeconds );
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
-	{
-		g_renderer->CycleBlendMode();
-	}
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
 	{
 		g_renderer->ReloadShaders();
@@ -279,12 +278,12 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'C' ) )
 	{
-		cameraTranslation.y += 1.f;
+		cameraTranslation.y -= 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_SPACEBAR ) )
 	{
-		cameraTranslation.y -= 1.f;
+		cameraTranslation.y += 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
@@ -502,7 +501,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		GetCurLight().intensity = ClampZeroToOne( GetCurLight().intensity );
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
+	/*if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
 	{
 		m_specularFactor -= .5f * deltaSeconds;
 		m_specularFactor = ClampZeroToOne( m_specularFactor );
@@ -524,7 +523,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 	{
 		m_specularPower += 5.f * deltaSeconds;
 		m_specularPower = ClampMin( m_specularPower, 1.f );
-	}
+	}*/
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
 	{
@@ -719,11 +718,11 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Light intensity : %.2f", GetCurLight().intensity );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "O,P - Adjust spot light angle" );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
+	//DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
+	//DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );
 }
 
 
@@ -767,6 +766,25 @@ void Game::Render() const
 	g_renderer->BindMaterial( m_objMaterial );
 	g_renderer->DrawMesh( m_objMesh );
 
+	// Fresnel
+	/*g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_defaultMaterial );
+	g_renderer->DrawMesh( m_sphereMesh );*/
+	
+	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_fresnelMaterial );
+	g_renderer->DrawMesh( m_sphereMesh );
+
+	// Dissolve
+	g_renderer->SetModelMatrix( m_cubeMeshTransformDissolve.GetAsMatrix() );
+	g_renderer->BindMaterial( m_dissolveMaterial );
+	g_renderer->DrawMesh( m_cubeMesh );
+
+	// Triplanar
+	g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_triplanarMaterial );
+	g_renderer->DrawMesh( m_sphereMesh );
+
 	g_renderer->EndCamera( *m_worldCamera );
 
 	DebugRenderWorldToCamera( m_worldCamera );
@@ -783,16 +801,17 @@ void Game::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Game::ChangeShader( int nextShaderIdx )
 {
-	if ( nextShaderIdx > (int)m_shaderPaths.size() - 1 )
+	if ( nextShaderIdx > (int)m_shaders.size() - 1 )
 	{
 		nextShaderIdx = 0;
 	}
 	else if ( nextShaderIdx < 0 )
 	{
-		nextShaderIdx = (int)m_shaderPaths.size() - 1;
+		nextShaderIdx = (int)m_shaders.size() - 1;
 	}
 
 	m_currentShaderIdx = nextShaderIdx;
+	m_objMaterial->SetShader( m_shaders[m_currentShaderIdx] );
 }
 
 

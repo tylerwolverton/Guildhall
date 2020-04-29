@@ -723,8 +723,13 @@ void RenderContext::ResetRenderObjects()
 	BindShaderProgram( ( ShaderProgram* )nullptr );
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
-	BindTexture( 8, nullptr );
-	BindSampler( 0, nullptr );
+
+	for ( int i = 0; i < MAX_USER_TEXTURES; ++i )
+	{
+		BindTexture( USER_TEXTURE_SLOT_START + i, nullptr );
+		BindSampler( i, nullptr );
+	}
+
 	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
 	m_lastIBOHandle = nullptr;

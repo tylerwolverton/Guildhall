@@ -18,11 +18,11 @@
          fill="solid">
 
 	  <!-- blend: control blend modes
-         enabled: to blend.  false is equivalent to "add(one,zero)"
+         enabled: to blend.  false is equivalent to "opaque"
          mode: blend mode. opaque, alpha, additive
       -->
 
-      <blend enabled="false"
+      <blend enabled="true"
              mode="opaque" />
 
       <!-- depth state 
