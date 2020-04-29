@@ -44,6 +44,7 @@ public:
 	static void InvertIndexWindingOrder( std::vector<uint>& indices );
 	static void GenerateVertTangents( std::vector<Vertex_PCUTBN>& vertices );
 	static void TransformVerts( std::vector<Vertex_PCUTBN>& vertices, const Mat44& transform );
+	static void CleanMesh( std::vector<Vertex_PCUTBN>& vertices, std::vector<uint>& indices );
 
 private:
 	static bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );

@@ -1095,4 +1095,17 @@ void AppendVertsForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices,
 	{
 		ObjLoader::TransformVerts( vertices, options.transform );
 	}
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices, std::vector<uint>& indices, std::string objFileName, const MeshImportOptions& options )
+{
+	AppendVertsForObjMeshFromFile( vertices, objFileName, options );
+
+	if ( options.clean )
+	{
+		ObjLoader::CleanMesh( vertices, indices );
+	}
 }

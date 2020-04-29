@@ -9,9 +9,9 @@ Project: FPS
         [x] Invert-V
         [x] Calculate Normals
         [x] Calculate Tangents
-    [-] At end of import...
+    [x] At end of import...
         [x] Apply transform
-        [ ] *Clean* (is an extra) 
+        [x] *Clean* (is an extra) 
         [x] Invert Winding
 [x] Post-Import Options supported
     [x] Invert-V

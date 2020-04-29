@@ -300,6 +300,50 @@ void ObjLoader::TransformVerts( std::vector<Vertex_PCUTBN>& vertices, const Mat4
 
 
 //-----------------------------------------------------------------------------------------------
+void ObjLoader::CleanMesh( std::vector<Vertex_PCUTBN>& vertices, std::vector<uint>& indices )
+{
+	int bytesBefore = vertices.size() * sizeof( Vertex_PCUTBN );
+
+	std::vector<Vertex_PCUTBN> uniqueVertices;
+	uniqueVertices.reserve( vertices.size() );
+
+	uint index = 0;
+	for ( size_t vertIdx = 0; vertIdx < vertices.size(); ++vertIdx )
+	{
+		bool foundVertex = false;
+		for ( size_t uniqueVertIdx = 0; uniqueVertIdx < uniqueVertices.size(); ++uniqueVertIdx )
+		{
+			// We found the vertex already, just add the index and move to next vert
+			if ( uniqueVertices[uniqueVertIdx] == vertices[vertIdx] )
+			{
+				indices.push_back( uniqueVertIdx );
+
+				foundVertex = true;
+				break;
+			}
+		}
+
+		if ( foundVertex )
+		{
+			continue;
+		}
+
+		uniqueVertices.push_back( vertices[vertIdx] );
+		indices.push_back( index );
+		++index;
+	}
+
+	vertices = uniqueVertices;
+
+	int bytesAfter = vertices.size() * sizeof( Vertex_PCUTBN ) + indices.size() * sizeof( uint );
+
+	float percentSavings = 100.f - ( 100.f * (float)bytesAfter / (float)bytesBefore );
+
+	g_devConsole->PrintString( Stringf( "Cleaned from '%d' bytes to '%d' bytes, saving %.2f", bytesBefore, bytesAfter, percentSavings ), Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Mikkelson Tangents
 //-----------------------------------------------------------------------------------------------
 static int GetNumFaces( SMikkTSpaceContext const* context )

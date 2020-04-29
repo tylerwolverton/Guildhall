@@ -147,8 +147,10 @@ void Game::InitializeMeshes()
 	vertices.clear();
 	indices.clear();
 	importOptions.transform = Mat44::CreateUniformScale3D( .5f );
+	importOptions.clean = true;
 	//AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
-	AppendVertsForObjMeshFromFile ( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
+	//AppendVertsForObjMeshFromFile( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
+	AppendVertsAndIndicesForObjMeshFromFile( vertices, indices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
 	m_objMesh = new GPUMesh( g_renderer, vertices, indices );
 	m_objMeshTransform.SetPosition( Vec3( 0.f, 0.f, -2.f ) );
 
