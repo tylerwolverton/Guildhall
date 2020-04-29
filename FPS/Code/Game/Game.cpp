@@ -802,7 +802,7 @@ void Game::Render() const
 
 	g_renderer->EndCamera( *m_worldCamera );
 
-	//DebugRenderWorldToCamera( m_worldCamera );
+	DebugRenderWorldToCamera( m_worldCamera );
 }
 
 

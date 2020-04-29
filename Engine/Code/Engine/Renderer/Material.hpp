@@ -61,7 +61,7 @@ public:
 	}
 
 private:
-	const char* m_filename;
+	std::string m_filename;
 	std::string m_name;
 
 	Shader* m_shader = nullptr;
