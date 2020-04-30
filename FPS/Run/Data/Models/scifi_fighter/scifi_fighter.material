@@ -19,5 +19,9 @@
   <sampler slot=""
      filter="bilinear"
      mode="clamp" />
+
+  <!-- specular, will default to factor 0 and power 32 -->
+  <specular factor=".25"
+            power="32" />
   
 </material>

@@ -55,15 +55,18 @@ Project: FPS
              - Composite output 
 
 -------
+Notes
 
+I print out the result of cleaning the scifi_fighter to the dev console on startup
+
+-------
 Controls
 
+-------
 Game
 F4 - Reload all shaders
 WASD ( Spacebar and C for up down ) - Move camera
 Shift - Move faster 
-
-Debug Commands
 
 ------
 Dev Console Commands

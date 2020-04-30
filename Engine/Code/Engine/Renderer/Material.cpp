@@ -132,6 +132,13 @@ Material::Material( RenderContext* context, const char* filename )
 		samplerElem = samplerElem->NextSiblingElement( "sampler" );
 	}
 
+	const XmlElement* specularElem = materialElem->FirstChildElement( "specular" );
+	if ( specularElem != nullptr )
+	{
+		m_specularFactor = ParseXmlAttribute( *specularElem, "factor", m_specularFactor );
+		m_specularPower = ParseXmlAttribute( *specularElem, "power", m_specularPower );
+	}
+
 	m_ubo = new RenderBuffer( context, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 }
 
