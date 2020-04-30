@@ -1,3 +1,7 @@
+#pragma warning(disable: 4204)
+#pragma warning(disable: 4456)
+#pragma warning(disable: 4201)
+
 /** \file mikktspace/mikktspace.c
  *  \ingroup mikktspace
  */

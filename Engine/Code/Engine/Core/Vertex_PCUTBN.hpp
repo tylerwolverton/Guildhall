@@ -24,5 +24,7 @@ public:
 	Vertex_PCUTBN() {} // Default constructor (do nothing, all member variables will default construct themselves)
 	explicit Vertex_PCUTBN( const Vec3& position, const Rgba8& tint, const Vec2& uvTexCoords, const Vec3& normal, const Vec3& tangent );
 
+	bool operator==( const Vertex_PCUTBN& other );
+
 	static const BufferAttribute LAYOUT[];
 };

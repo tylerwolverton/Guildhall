@@ -19,6 +19,8 @@ class World;
 class TextBox;
 class Texture;
 class GPUMesh;
+class Shader;
+class Material;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -174,8 +176,11 @@ private:
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
 	
+	GPUMesh* m_objMesh = nullptr;
+	Transform m_objMeshTransform;
+
 	GPUMesh* m_teapotMesh = nullptr;
-	//Transform m_sphereMeshTransform;
+	Transform m_teapotMeshTransform;
 
 	// Shader demos
 	Transform m_sphereMeshFresnelTransform;
@@ -183,7 +188,7 @@ private:
 	Transform m_cubeMeshTransformDissolve;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 1.f;
+	float m_ambientIntensity = 0.f;
 	GameLight m_lights[MAX_LIGHTS];
 	int m_currentLightIdx = 0;
 	float m_specularFactor = 0.f;
@@ -197,7 +202,14 @@ private:
 	float m_dissolveEdge = .3f;
 	Mat44 m_projectionViewMatrix;
 
-	std::vector<std::string> m_shaderPaths;
-	std::vector<std::string> m_shaderNames;
+	std::vector<Shader*> m_shaders;
 	int m_currentShaderIdx = 0;
+
+	// Materials
+	Material* m_defaultMaterial = nullptr;
+	Material* m_objMaterial = nullptr;
+	Material* m_teapotMaterial = nullptr;
+	Material* m_fresnelMaterial = nullptr;
+	Material* m_dissolveMaterial = nullptr;
+	Material* m_triplanarMaterial = nullptr;
 };

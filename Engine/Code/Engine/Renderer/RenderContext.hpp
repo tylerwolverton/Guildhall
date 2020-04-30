@@ -13,6 +13,7 @@
 
 //-----------------------------------------------------------------------------------------------
 constexpr int USER_TEXTURE_SLOT_START = 8;
+constexpr int MAX_USER_TEXTURES = 8;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -28,22 +29,26 @@ struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
 struct Vertex_PCU;
 struct Vertex_PCUTBN;
-class Window;
-class Clock;
-class Polygon2;
-class Camera;
-class Texture;
-class Sampler;
 class BitmapFont;
-class Shader;
-class RenderBuffer;
-class SwapChain;
-class VertexBuffer;
-class IndexBuffer;
+class Camera;
+class Clock;
 class GPUMesh;
+class IndexBuffer;
+class Material;
+class Polygon2;
+class RenderBuffer;
+class Sampler;
+class Shader;
+class ShaderProgram;
+class SwapChain;
+class Texture;
+class VertexBuffer;
+class Window;
 enum class eCompareFunc : uint;
 enum class eFillMode : uint;
 enum class eCullMode : uint;
+enum eSamplerType : uint;
+enum eSamplerUVMode : uint;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -155,7 +160,6 @@ public:
 	void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
-	void SetSampler( eSampler sampler );
 	void SetDepthTest( eCompareFunc compare, bool writeDepthOnPass );
 
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
@@ -165,7 +169,7 @@ public:
 	void ReleaseRenderTarget( Texture* texture );
 	void CopyTexture( Texture* destination, Texture* source );
 	//void ApplyEffect( Texture* destination, Texture* source, Material* material );
-	void StartEffect( Texture* destination, Texture* source, Shader* shader );
+	void StartEffect( Texture* destination, Texture* source, ShaderProgram* shader );
 	void EndEffect();
 
 	void BeginCamera( Camera& camera );
@@ -186,28 +190,34 @@ public:
 	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
 
 	// Binding State
+	void BindMaterial( Material* material );
 	void BindShader( Shader* shader );
-	void BindShader( const char* fileName );
+	void BindShaderByName( std::string shaderName );
+	void BindShaderByPath( const char* filePath );
+	void BindShaderProgram( ShaderProgram* shader );
+	void BindShaderProgram( const char* fileName );
 	void BindDiffuseTexture( const Texture* constTexture );
 	void BindNormalTexture( const Texture* constTexture );
 	void BindTexture( uint slot, const Texture* constTexture );
-	void BindSampler( Sampler* sampler );
+	void BindSampler( uint slot, Sampler* sampler );
 
 	// Resource Creation
 	Shader* GetOrCreateShader( const char* filename );
-	Shader* GetOrCreateShaderFromSourceString( const char* shaderName, const char* source );
+	ShaderProgram* GetOrCreateShaderProgram( const char* filename );
+	ShaderProgram* GetOrCreateShaderProgramFromSourceString( const char* shaderName, const char* source );
 	Texture* CreateOrGetTextureFromFile( const char* filePath );
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	Texture* CreateRenderTarget( const IntVec2& outputDimensions );
 	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
+	Sampler* GetOrCreateSampler( eSamplerType filter, eSamplerUVMode mode );
 
 	void ReloadShaders();
 	//Texture* CreateTextureFromImage( ... ); for cleaning up D3D calls
 
+	void SetModelMatrix( const Mat44& modelMatrix );
 	void SetModelData( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE, float specularFactor = 0.f, float specularPower = 32.f );
 	void SetMaterialData( void* materialData, int dataSize );
-	//void SetDebugRenderMaterialData( const Rgba8& startTint = Rgba8::WHITE, const Rgba8& endTint = Rgba8::WHITE, float tintRatio = 0.f );
 	void SetLightData();
 
 	// Raster state setters
@@ -234,16 +244,13 @@ public:
 	// Accessors
 	Texture* GetBackBuffer();
 	IntVec2 GetDefaultBackBufferSize();
-	Shader* GetCurrentShader() const					{ return m_currentShader; }
 	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
 	Clock* GetClock() const								{ return m_gameClock; }
-	eBlendMode GetBlendMode() const						{ return m_currentBlendMode; }
-	eCullMode GetCullMode() const;
-	eFillMode GetFillMode() const;
-	bool GetFrontFaceWindOrderCCW() const;
+	Shader* GetShaderByName( std::string shaderName );
+	Texture* GetDefaultWhiteTexture()					{ return m_defaultWhiteTexture; }
+	Texture* GetDefaultFlatTexture()					{ return m_flatNormalMap; }
 
 	// Debug methods
-	void CycleSampler();
 	void CycleBlendMode();
 
 private:
@@ -257,7 +264,7 @@ private:
 
 	Texture* CreateTextureFromFile( const char* filePath );
 	Texture* RetrieveTextureFromCache( const char* filePath );
-
+	
 	void CreateBlendStates();
 
 	void SetRasterState( eFillMode fillMode, eCullMode cullMode, bool windCCW );
@@ -290,6 +297,7 @@ public:
 private:
 	Clock* m_gameClock								= nullptr;
 
+	// Textures
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedBitmapFonts;
 	BitmapFont* m_systemFont						= nullptr;
@@ -301,27 +309,31 @@ private:
 	VertexBuffer* m_lastBoundVBO					= nullptr;
 	ID3D11Buffer* m_lastIBOHandle					= nullptr;
 
-	Shader* m_defaultShader							= nullptr;
-	Shader* m_currentShader							= nullptr;
+	Mat44 m_modelMatrix								= Mat44::IDENTITY;
+
+	// Shaders
+	ShaderProgram* m_defaultShaderProgram			= nullptr;
+	ShaderProgram* m_currentShaderProgram			= nullptr;
+	std::vector<ShaderProgram*> m_loadedShaderPrograms;
 	std::vector<Shader*> m_loadedShaders;
 
-	Sampler* m_pointClampSampler					= nullptr;
-	Sampler* m_linearClampSampler					= nullptr;
-	Sampler* m_pointWrapSampler						= nullptr;
-	Sampler* m_currentSampler						= nullptr;
+	std::vector<Sampler*> m_loadedSamplers;
+
+	Sampler* m_defaultSampler						= nullptr;
 	
+	// Default textures
 	Texture* m_defaultWhiteTexture					= nullptr;
 	Texture* m_flatNormalMap						= nullptr;
 	Texture* m_defaultDepthBuffer					= nullptr;
 
+	// Lighting
 	Vec3 m_ambientLightColor						= Vec3::ONE;
 	float m_ambientLightIntensity					= 1.f;
 	Light m_lights[MAX_LIGHTS];
 	float m_gamma									= 2.2f;
 	Fog m_linearFog;
 
-	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
-
+	// ID3D states
 	ID3D11BlendState* m_alphaBlendState				= nullptr;
 	ID3D11BlendState* m_additiveBlendState			= nullptr;
 	ID3D11BlendState* m_disabledBlendState			= nullptr;
@@ -329,6 +341,8 @@ private:
 
 	ID3D11RasterizerState* m_currentRasterState		= nullptr;
 	ID3D11RasterizerState* m_defaultRasterState		= nullptr;
+	
+	ID3D11DepthStencilState* m_currentDepthStencilState = nullptr;
 
 	bool m_isDrawing								= false;
 

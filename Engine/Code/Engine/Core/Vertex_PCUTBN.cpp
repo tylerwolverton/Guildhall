@@ -27,3 +27,41 @@ Vertex_PCUTBN::Vertex_PCUTBN( const Vec3& position, const Rgba8& tint, const Vec
 {
 	bitangent = CrossProduct3D( normal, tangent );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+bool Vertex_PCUTBN::operator==( const Vertex_PCUTBN& other )
+{
+	if ( !IsNearlyEqual( position, other.position ) )
+	{
+		return false;
+	}
+
+	if ( color != other.color )
+	{
+		return false;
+	}
+
+	if ( !IsNearlyEqual( uvTexCoords, other.uvTexCoords ) )
+	{
+		return false;
+	}
+
+	if ( !IsNearlyEqual( normal, other.normal ) )
+	{
+		return false;
+	}
+
+	if ( !IsNearlyEqual( tangent, other.tangent ) )
+	{
+		return false;
+	}
+
+	if ( !IsNearlyEqual( bitangent, other.bitangent ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+

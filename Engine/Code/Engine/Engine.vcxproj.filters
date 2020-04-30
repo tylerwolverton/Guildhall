@@ -196,9 +196,6 @@
     <ClCompile Include="Renderer\TextureView.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\Shader.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Core\FileUtils.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -266,6 +263,15 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Core\NamedProperties.cpp">
+	  <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ShaderProgram.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Shader.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Material.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -459,9 +465,6 @@
     <ClInclude Include="Renderer\D3D11Common.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\Shader.hpp">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Core\FileUtils.hpp">
       <Filter>Core</Filter>
     </ClInclude>
@@ -513,5 +516,10 @@
     <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h" />
     <ClInclude Include="Core\ObjLoader.hpp" />
     <ClInclude Include="Core\NamedProperties.hpp" />
+    <ClInclude Include="Renderer\ShaderProgram.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Shader.hpp" />
+    <ClInclude Include="Renderer\Material.hpp" />
   </ItemGroup>
 </Project>

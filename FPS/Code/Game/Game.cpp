@@ -19,8 +19,10 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Core/EventSystem.hpp"
@@ -57,10 +59,6 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	std::string testStr( "1//1 " );
-	Strings trimmed = SplitStringOnDelimiter( testStr, '/' );
-
-
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 	g_eventSystem->RegisterEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetPointLightColor );
@@ -81,23 +79,19 @@ void Game::Startup()
 	g_renderer->Setup( m_gameClock );
 
 	EnableDebugRendering();
+	
+	// Init shaders
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Normals.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Tangents.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Bitangents.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/SurfaceNormals.shader" ) );
 
+	// For testing SetShaderByName
+	g_renderer->GetOrCreateShader( "Data/Shaders/Fresnel.shader" );
 	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
 	m_fresnelData.power = 32.f;
-
-	// Init shaders
-	m_shaderPaths.push_back( "Data/Shaders/Lit.hlsl" );
-	m_shaderNames.push_back( "Lit" );
-	m_shaderPaths.push_back( "Data/Shaders/Default.hlsl" );
-	m_shaderNames.push_back( "Default" );
-	m_shaderPaths.push_back( "Data/Shaders/Normals.hlsl" );
-	m_shaderNames.push_back( "Normals" );
-	m_shaderPaths.push_back( "Data/Shaders/Tangents.hlsl" );
-	m_shaderNames.push_back( "Tangents" );
-	m_shaderPaths.push_back( "Data/Shaders/Bitangents.hlsl" );
-	m_shaderNames.push_back( "Bitangents" );
-	m_shaderPaths.push_back( "Data/Shaders/SurfaceNormals.hlsl" );
-	m_shaderNames.push_back( "Surface Normals" );
 
 	InitializeMeshes();
 
@@ -118,7 +112,7 @@ void Game::InitializeMeshes()
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
 
 	m_cubeMeshTransform.SetPosition( Vec3( -5.f, 0.f, -6.f ) );
-	m_cubeMeshTransformDissolve.SetPosition( Vec3( -5.f, 0.f, 6.f ) );
+	m_cubeMeshTransformDissolve.SetPosition( Vec3( -5.f, 0.f, -6.f ) );
 
 	// Quad
 	vertices.clear();
@@ -137,99 +131,52 @@ void Game::InitializeMeshes()
 	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
 
 	m_sphereMeshTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
-	m_sphereMeshFresnelTransform.SetPosition( Vec3( 0.f, 0.f, 6.f ) );
-	m_sphereMeshTriplanarTransform.SetPosition( Vec3( 5.f, 0.f, 6.f ) );
+	m_sphereMeshFresnelTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
+	m_sphereMeshTriplanarTransform.SetPosition( Vec3( 5.f, 0.f, -6.f ) );
 
-	// Move to RenderContext::LoadMeshFromFile
+	// Meshes
 	vertices.clear();
 	indices.clear();
 	MeshImportOptions importOptions;
 	importOptions.generateNormals = true;
 	importOptions.generateTangents = true;
-	AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/Teapot.obj", importOptions );
-	//AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/vespa_final.obj", importOptions );
+	importOptions.transform = Mat44::CreateTranslation3D( Vec3( -5.f, 0.f, -0.f ) );
+	importOptions.transform.PushTransform( Mat44::CreateUniformScale3D( .05f ) );
+	AppendVertsForObjMeshFromFile ( vertices, "Data/Meshes/teapot.obj", importOptions );
 	m_teapotMesh = new GPUMesh( g_renderer, vertices, indices );
+
+	vertices.clear();
+	indices.clear();
+	importOptions.transform = Mat44::CreateUniformScale3D( .5f );
+	importOptions.clean = true;
+	//AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
+	//AppendVertsForObjMeshFromFile( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
+	AppendVertsAndIndicesForObjMeshFromFile( vertices, indices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
+	m_objMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_objMeshTransform.SetPosition( Vec3( 0.f, 0.f, -2.f ) );
+
+	// Set materials
+	m_defaultMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
+	m_teapotMaterial = new Material( g_renderer, "Data/Materials/Teapot.material" );
+	m_objMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
+	//m_objMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
+
+	m_fresnelMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
+	m_fresnelMaterial->SetShader( g_renderer->GetShaderByName( "Fresnel" ) );
+	m_dissolveMaterial = new Material( g_renderer, "Data/Materials/Dissolve.material" );
+	m_triplanarMaterial = new Material( g_renderer, "Data/Materials/Triplanar.material" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeLights()
 {
-	// Finite spot
-	m_lights[0].light.intensity = .5f;
+	m_lights[0].light.intensity = .75f;
 	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
 	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	/*m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 7.f );
-	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 15.f );*/
 	m_lights[0].type = eLightType::POINT;
 	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
-
-	//// Finite point
-	//m_lights[1].light.intensity = .3f;
-	//m_lights[1].light.color = Rgba8::RED.GetAsRGBVector();
-	//m_lights[1].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[1].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[1].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, -.5f, .5f );
-	//m_lights[1].type = eLightType::POINT;
-	//m_lights[1].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Infinite point
-	//m_lights[2].light.intensity = .4f;
-	//m_lights[2].light.color = Rgba8::BLUE.GetAsRGBVector();
-	//m_lights[2].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[2].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[2].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, -.5f, .5f );
-	//m_lights[2].type = eLightType::POINT;
-	//m_lights[2].movementMode = eLightMovementMode::STATIONARY;
-	//
-	//// Infinite Directional
-	//m_lights[3].light.intensity = .5f;
-	//m_lights[3].light.color = Rgba8::WHITE.GetAsRGBVector();
-	//m_lights[3].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[3].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[3].light.position = Vec3( -5.f, 3.f, -10.f );
-	//m_lights[3].light.direction = Vec3( 0.f, -1.f, 1.f ).GetNormalized();
-	//m_lights[3].type = eLightType::DIRECTIONAL;
-	//m_lights[3].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Infinite spot
-	//m_lights[4].light.intensity = .2f;
-	//m_lights[4].light.color = Rgba8::PURPLE.GetAsRGBVector();
-	//m_lights[4].light.attenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[4].light.specularAttenuation = Vec3( 1.f, 0.f, 0.f );
-	//m_lights[4].light.position = m_sphereMeshTransform.GetPosition() + Vec3( 1.5f, -2.5f, 1.f );
-	//m_lights[4].light.direction = Vec3( -.5f, 1.f, -1.f ).GetNormalized();
-	//m_lights[4].light.halfCosOfInnerAngle = CosDegrees( 10.f );
-	//m_lights[4].light.halfCosOfOuterAngle = CosDegrees( 15.f );
-	//m_lights[4].type = eLightType::SPOT;
-	//m_lights[4].movementMode = eLightMovementMode::STATIONARY;
-	//
-	//// Finite point
-	//m_lights[5].light.intensity = .3f;
-	//m_lights[5].light.color = Rgba8::GREEN.GetAsRGBVector();
-	//m_lights[5].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[5].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[5].light.position = m_quadMeshTransform.GetPosition() + Vec3( -.5f, .5f, .5f );
-	//m_lights[5].type = eLightType::POINT;
-	//m_lights[5].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Finite point
-	//m_lights[6].light.intensity = .3f;
-	//m_lights[6].light.color = Rgba8::YELLOW.GetAsRGBVector();
-	//m_lights[6].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[6].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[6].light.position = m_quadMeshTransform.GetPosition() + Vec3( .5f, .5f, .5f );
-	//m_lights[6].type = eLightType::POINT;
-	//m_lights[6].movementMode = eLightMovementMode::STATIONARY;
-
-	//// Rotating point
-	//m_lights[7].light.intensity = .3f;
-	//m_lights[7].light.color = Rgba8::ORANGE.GetAsRGBVector();
-	//m_lights[7].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[7].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	//m_lights[7].type = eLightType::POINT;
-	//m_lights[7].movementMode = eLightMovementMode::LOOP;
 }
 
 
@@ -241,7 +188,14 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	PTR_SAFE_DELETE( m_defaultMaterial );
+	PTR_SAFE_DELETE( m_objMaterial );
+	PTR_SAFE_DELETE( m_teapotMaterial );
+	PTR_SAFE_DELETE( m_fresnelMaterial );
+	PTR_SAFE_DELETE( m_dissolveMaterial );
+	PTR_SAFE_DELETE( m_triplanarMaterial );
 	PTR_SAFE_DELETE( m_teapotMesh );
+	PTR_SAFE_DELETE( m_objMesh );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
@@ -270,15 +224,20 @@ void Game::Update()
 	}
 
 	UpdateCameras();
+		
+	m_fresnelMaterial->SetData( m_fresnelData );
 
-	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-	m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
-	m_sphereMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 35.f, 0.f, -deltaSeconds * 20.f );
- 
+	DissolveConstants dissolveData;// = m_dissolveMaterial->GetDataAs<DissolveConstants>();
+	dissolveData.dissolveFactor = m_dissolveFactor;
+	dissolveData.edgeWidth = m_dissolveEdge;
+	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	m_dissolveMaterial->SetData( dissolveData );
+
 	UpdateLights();
 
 	PrintHotkeys();
-	//PrintDiageticHotkeys();
+	PrintDiageticHotkeys();
 }
 
 
@@ -291,14 +250,6 @@ void Game::UpdateFromKeyboard()
 	UpdateDebugDrawCommands();
 	UpdateLightingCommands( deltaSeconds );
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
-	{
-		g_renderer->CycleSampler();
-	}
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
-	{
-		g_renderer->CycleBlendMode();
-	}
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
 	{
 		g_renderer->ReloadShaders();
@@ -340,12 +291,12 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'C' ) )
 	{
-		cameraTranslation.y += 1.f;
+		cameraTranslation.y -= 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_SPACEBAR ) )
 	{
-		cameraTranslation.y -= 1.f;
+		cameraTranslation.y += 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
@@ -563,7 +514,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		GetCurLight().intensity = ClampZeroToOne( GetCurLight().intensity );
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
+	/*if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
 	{
 		m_specularFactor -= .5f * deltaSeconds;
 		m_specularFactor = ClampZeroToOne( m_specularFactor );
@@ -585,7 +536,7 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 	{
 		m_specularPower += 5.f * deltaSeconds;
 		m_specularPower = ClampMin( m_specularPower, 1.f );
-	}
+	}*/
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
 	{
@@ -780,11 +731,11 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Light intensity : %.2f", GetCurLight().intensity );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "O,P - Adjust spot light angle" );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
+	//DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
+	//DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaderNames[m_currentShaderIdx].c_str() );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );
 }
 
 
@@ -815,11 +766,6 @@ void Game::Render() const
 	g_renderer->BeginCamera( *m_worldCamera );
 
 	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
-	g_renderer->BindDiffuseTexture( nullptr );
-	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/brick_normal.png" ) );
-
-	g_renderer->BindShader( m_shaderPaths[m_currentShaderIdx].c_str() );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
@@ -832,33 +778,41 @@ void Game::Render() const
 	}
 	g_renderer->SetGamma( m_gamma );
 	
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/grass_d.png" ) );
-	//g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/mask_head_d.png" ) );
-	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_d_4k.png" ) );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/vespa_n_4k.png" ) );
-	//g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
+	// Render test teapot
+	g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	g_renderer->BindMaterial( m_teapotMaterial );
 
-	Mat44 model = Mat44();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
 	g_renderer->DrawMesh( m_teapotMesh );
 
-	model = Mat44::CreateTranslation3D( Vec3::ONE * 2.f );
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_teapotMesh );
+	// Render obj with material
+	g_renderer->SetModelMatrix( m_objMeshTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_objMaterial );
+	g_renderer->DrawMesh( m_objMesh );
 
-	model = Mat44::CreateTranslation3D( -Vec3::ONE * 3.f );
-	g_renderer->SetModelData( model, Rgba8::GREEN, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_teapotMesh );
+	// Fresnel
+	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_defaultMaterial );
+	g_renderer->DrawMesh( m_sphereMesh );
+	
+	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_fresnelMaterial );
+	g_renderer->DrawMesh( m_sphereMesh );
+	   
+	// Dissolve
+	g_renderer->SetModelMatrix( m_cubeMeshTransformDissolve.GetAsMatrix() );
+	g_renderer->BindMaterial( m_dissolveMaterial );
+	g_renderer->DrawMesh( m_cubeMesh );
+
+	// Triplanar
+	g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_triplanarMaterial );
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	g_renderer->EndCamera( *m_worldCamera );
 
-	Texture* backBuffer = g_renderer->GetBackBuffer();
-
-	Shader* shader = g_renderer->GetOrCreateShader( "Data/Shaders/ImageEffect.hlsl" );
+	ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectInvertColors.hlsl" );
 	g_renderer->StartEffect( backbuffer, frameTarget, shader );
 	g_renderer->EndEffect();
-
-	//g_renderer->CopyTexture( backBuffer, frameTarget );
 
 	m_worldCamera->SetColorTarget( backbuffer );
 
@@ -880,16 +834,17 @@ void Game::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Game::ChangeShader( int nextShaderIdx )
 {
-	if ( nextShaderIdx > (int)m_shaderPaths.size() - 1 )
+	if ( nextShaderIdx > (int)m_shaders.size() - 1 )
 	{
 		nextShaderIdx = 0;
 	}
 	else if ( nextShaderIdx < 0 )
 	{
-		nextShaderIdx = (int)m_shaderPaths.size() - 1;
+		nextShaderIdx = (int)m_shaders.size() - 1;
 	}
 
 	m_currentShaderIdx = nextShaderIdx;
+	m_objMaterial->SetShader( m_shaders[m_currentShaderIdx] );
 }
 
 

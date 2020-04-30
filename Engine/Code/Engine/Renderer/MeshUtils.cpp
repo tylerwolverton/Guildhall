@@ -1090,4 +1090,22 @@ void AppendVertsForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices,
 	{
 		ObjLoader::InvertVertWindingOrder( vertices );
 	}
+
+	if ( !Mat44::AreMatrixElementsEqual( options.transform, Mat44::IDENTITY ) )
+	{
+		ObjLoader::TransformVerts( vertices, options.transform );
+	}
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsAndIndicesForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices, std::vector<uint>& indices, std::string objFileName, const MeshImportOptions& options )
+{
+	AppendVertsForObjMeshFromFile( vertices, objFileName, options );
+
+	if ( options.clean )
+	{
+		ObjLoader::CleanMesh( vertices, indices );
+	}
 }

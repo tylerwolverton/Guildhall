@@ -98,15 +98,20 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 //-----------------------------------------------------------------------------------------------
 struct MeshImportOptions
 {
-	Mat44 transform = Mat44();			// what space transform to apply to the object
+	Mat44 transform = Mat44::IDENTITY;			// what space transform to apply to the object
 
 	bool invertVs = false;				// inverts V coordinate (v = 1.0f - v)
 	bool invertWindingOrder = false;    // Change the winding order of all faces
 	bool generateNormals = false;		// Generate normals for the surface if they weren't in the file
 	bool generateTangents = false;		// Generate tangents for the surface if they weren't in the file
-	//bool clean = false;					// Convert a vertex array to an index vertex array by removing duplicates
+	bool clean = false;					// Convert a vertex array to an index vertex array by removing duplicates
 };
 
 void AppendVertsForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices,
 									std::string objFileName,
 									const MeshImportOptions& options = MeshImportOptions() );
+
+void AppendVertsAndIndicesForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices,
+											  std::vector<uint>& indices,
+											  std::string objFileName,
+											  const MeshImportOptions& options = MeshImportOptions() );

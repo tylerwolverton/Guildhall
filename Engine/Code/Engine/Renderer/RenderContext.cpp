@@ -5,6 +5,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -12,10 +13,12 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
@@ -86,17 +89,16 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_modelMatrixUBO );
 	PTR_SAFE_DELETE( m_materialUBO );
 	PTR_SAFE_DELETE( m_lightUBO );
-
-	PTR_SAFE_DELETE( m_pointClampSampler );
-	PTR_SAFE_DELETE( m_linearClampSampler );
-	PTR_SAFE_DELETE( m_pointWrapSampler );
 	
 	GUARANTEE_OR_DIE( m_totalRenderTargetsMade == m_renderTargetPool.size(), "Total render targets made doesn't match object pool size" );
 
 	PTR_VECTOR_SAFE_DELETE( m_renderTargetPool );
+		
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
+	PTR_VECTOR_SAFE_DELETE( m_loadedShaderPrograms );
+	PTR_VECTOR_SAFE_DELETE( m_loadedSamplers );
 
 	PTR_SAFE_DELETE( m_swapchain );
 
@@ -125,20 +127,6 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ALPHA; return;
 		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ADDITIVE; return;
 		case eBlendMode::DISABLED: m_context->OMSetBlendState( m_disabledBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::DISABLED; return;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::SetSampler( eSampler sampler )
-{
-	float const zeroes[] = { 0,0,0,0 };
-
-	switch ( sampler )
-	{
-		case eSampler::POINT_CLAMP: m_currentSampler = m_pointClampSampler; return;
-		case eSampler::LINEAR_CLAMP: m_currentSampler = m_linearClampSampler; return;
-		case eSampler::POINT_WRAP: m_currentSampler = m_pointWrapSampler; return;
 	}
 }
 
@@ -220,11 +208,11 @@ void RenderContext::CopyTexture( Texture* destination, Texture* source )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::StartEffect( Texture* destination, Texture* source, Shader* shader )
+void RenderContext::StartEffect( Texture* destination, Texture* source, ShaderProgram* shader )
 {
 	m_effectCamera->SetColorTarget( destination );
 	BeginCamera( *m_effectCamera );
-	BindShader( shader );
+	BindShaderProgram( shader );
 	BindDiffuseTexture( source );
 }
 
@@ -262,7 +250,7 @@ void RenderContext::BeginCamera( Camera& camera )
 	ClearCamera( renderTargetView, camera );
 	ResetRenderObjects();
 
-	SetModelData( Mat44() );
+	SetModelData( Mat44::IDENTITY );
 	SetBlendMode( m_currentBlendMode );
 	SetAmbientLight( Rgba8::WHITE, 1.f );
 	// Dirty all state, booleans or a uint flags
@@ -319,13 +307,12 @@ void RenderContext::FinalizeContext()
 	GUARANTEE_OR_DIE( m_lastBoundVBO != nullptr, "No vbo bound before draw call" );
 
 	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_lastBoundVBO->m_attributes );
+	ID3D11InputLayout* inputLayout = m_currentShaderProgram->GetOrCreateInputLayout( m_lastBoundVBO->m_attributes );
 	m_context->IASetInputLayout( inputLayout );
 
 	SetLightData();
 
 	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
-	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
 
@@ -388,26 +375,26 @@ IntVec2 RenderContext::GetDefaultBackBufferSize()
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindShader( Shader* shader )
+void RenderContext::BindShaderProgram( ShaderProgram* shader )
 {
 	GUARANTEE_OR_DIE( m_isDrawing, "Tried to call BindShader while not drawing" );
 
-	m_currentShader = shader;
-	if ( m_currentShader == nullptr )
+	m_currentShaderProgram = shader;
+	if ( m_currentShaderProgram == nullptr )
 	{
-		m_currentShader = m_defaultShader;
+		m_currentShaderProgram = m_defaultShaderProgram;
 	}
 
-	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
-	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
+	m_context->VSSetShader( m_currentShaderProgram->m_vertexStage.m_vertexShader, nullptr, 0 );
+	m_context->PSSetShader( m_currentShaderProgram->m_fragmentStage.m_fragmentShader, nullptr, 0 );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindShader( const char* fileName )
+void RenderContext::BindShaderProgram( const char* fileName )
 {
-	Shader* newShader = GetOrCreateShader( fileName );
-	BindShader( newShader );
+	ShaderProgram* newShader = GetOrCreateShaderProgram( fileName );
+	BindShaderProgram( newShader );
 }
 
 
@@ -417,14 +404,13 @@ Shader* RenderContext::GetOrCreateShader( const char* filename )
 	// Check cache for shader
 	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
 	{
-		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), filename ) )
+		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName(), filename ) )
 		{
 			return m_loadedShaders[loadedShaderIdx];
 		}
 	}
 
-	Shader* newShader = new Shader( this );
-	newShader->CreateFromFile( filename );
+	Shader* newShader = new Shader( this, filename );
 	m_loadedShaders.push_back( newShader );
 
 	return newShader;
@@ -432,31 +418,67 @@ Shader* RenderContext::GetOrCreateShader( const char* filename )
 
 
 //-----------------------------------------------------------------------------------------------
-Shader* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName, const char* source )
+ShaderProgram* RenderContext::GetOrCreateShaderProgram( const char* filename )
+{
+	// Check cache for shader program
+	for ( int loadedShaderProgramIdx = 0; loadedShaderProgramIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderProgramIdx )
+	{
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderProgramIdx]->GetFileName().c_str(), filename ) )
+		{
+			return m_loadedShaderPrograms[loadedShaderProgramIdx];
+		}
+	}
+
+	ShaderProgram* newShaderProgram = new ShaderProgram( this );
+	newShaderProgram->CreateFromFile( filename );
+	m_loadedShaderPrograms.push_back( newShaderProgram );
+
+	return newShaderProgram;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ShaderProgram* RenderContext::GetOrCreateShaderProgramFromSourceString( const char* shaderName, const char* source )
 {
 	// Check cache for shader
+	for ( int loadedShaderProgramIdx = 0; loadedShaderProgramIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderProgramIdx )
+	{
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderProgramIdx]->GetFileName().c_str(), shaderName ) )
+		{
+			return m_loadedShaderPrograms[loadedShaderProgramIdx];
+		}
+	}
+
+	ShaderProgram* newShaderProgram = new ShaderProgram( this );
+	newShaderProgram->CreateFromSourceString( shaderName, source );
+	m_loadedShaderPrograms.push_back( newShaderProgram );
+
+	return newShaderProgram;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Shader* RenderContext::GetShaderByName( std::string shaderName )
+{
 	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
 	{
-		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), shaderName ) )
+		if ( m_loadedShaders[loadedShaderIdx]->GetName() == shaderName )
 		{
 			return m_loadedShaders[loadedShaderIdx];
 		}
 	}
 
-	Shader* newShader = new Shader( this );
-	newShader->CreateFromSourceString( shaderName, source );
-	m_loadedShaders.push_back( newShader );
-
-	return newShader;
+	//ERROR_AND_DIE( Stringf( "No shader named '%s' has been loaded.", shaderName.c_str() ) );
+	return nullptr;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::ReloadShaders()
 {
-	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
+	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaderPrograms.size(); ++shaderIdx )
 	{
-		Shader*& shader = m_loadedShaders[shaderIdx];
+		ShaderProgram*& shader = m_loadedShaderPrograms[shaderIdx];
 		if ( shader != nullptr )
 		{
 			shader->ReloadFromDisc();
@@ -510,6 +532,100 @@ void RenderContext::BindUniformBuffer( uint slot, RenderBuffer* ubo )
 
 	m_context->VSSetConstantBuffers( slot, 1, &uboHandle );
 	m_context->PSSetConstantBuffers( slot, 1, &uboHandle );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindMaterial( Material* material )
+{
+	BindShader( material->m_shader );
+
+	BindDiffuseTexture( material->m_diffuseTexture );
+	BindNormalTexture( material->m_normalTexture );
+
+	for( uint textureIdx = 0; textureIdx < material->m_userTextures.size(); ++textureIdx )
+	{
+		Texture*& texture = material->m_userTextures[textureIdx];
+		if ( texture != nullptr )
+		{
+			BindTexture( USER_TEXTURE_SLOT_START + textureIdx, texture );
+		}
+	}
+
+	for ( uint samplerIdx = 0; samplerIdx < material->m_userTextures.size(); ++samplerIdx )
+	{
+		Sampler*& sampler = material->m_userSamplers[samplerIdx];
+		if ( sampler != nullptr )
+		{
+			BindSampler( samplerIdx, sampler );
+		}
+	}
+	
+	material->UpdateUBOIfDirty();
+	BindUniformBuffer( UBO_MATERIAL_SLOT, material->m_ubo );
+
+	SetModelData( m_modelMatrix, material->m_tint, material->m_specularFactor, material->m_specularPower );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShader( Shader* shader )
+{
+	// Set default shader ( set error instead? )
+	if ( shader == nullptr )
+	{
+		BindShaderProgram( m_defaultShaderProgram );
+
+		SetCullMode( eCullMode::BACK );
+		SetFillMode( eFillMode::SOLID );
+		SetFrontFaceWindOrder( true );
+
+		SetBlendMode( eBlendMode::DISABLED );
+
+		SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+
+		return;
+	}
+
+	BindShaderProgram( shader->GetShaderProgram() );
+	
+	ShaderState state = shader->GetShaderState();
+	SetCullMode( state.cullMode );
+	SetFillMode( state.fillMode );
+	SetFrontFaceWindOrder( state.isWindingCCW );
+
+	SetBlendMode( state.blendMode );
+
+	SetDepthTest( state.depthTestCompare, state.writeDpeth );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderByName( std::string shaderName )
+{
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( m_loadedShaders[loadedShaderIdx]->GetName() == shaderName )
+		{
+			BindShader( m_loadedShaders[loadedShaderIdx] );
+			return;
+		}
+	}
+
+	ERROR_AND_DIE( Stringf( "No shader named '%s' has been loaded.", shaderName.c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderByPath( const char* filePath )
+{
+	Shader* shader = nullptr;
+	if ( filePath != nullptr )
+	{
+		shader = GetOrCreateShader( filePath );
+	}
+
+	BindShader( shader );
 }
 
 
@@ -584,7 +700,7 @@ void RenderContext::InitializeSwapChain( Window* window )
 void RenderContext::InitializeDefaultRenderObjects()
 {
 	// Create default shader
-	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
+	m_defaultShaderProgram = GetOrCreateShaderProgramFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	// Create default buffers
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
@@ -594,11 +710,8 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
-	// Create default samplers
-	m_pointClampSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_CLAMP );
-	m_linearClampSampler = new Sampler( this, SAMPLER_BILINEAR, UV_MODE_CLAMP );
-	m_pointWrapSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_WRAP );
-	m_currentSampler = m_pointClampSampler;
+	// Create default sampler
+	m_defaultSampler = GetOrCreateSampler( SAMPLER_POINT, UV_MODE_CLAMP );
 
 	// Create a white texture to use when no texture is needed
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
@@ -687,11 +800,16 @@ void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const
 //-----------------------------------------------------------------------------------------------
 void RenderContext::ResetRenderObjects()
 {
-	BindShader( ( Shader* )nullptr );
+	BindShaderProgram( ( ShaderProgram* )nullptr );
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
-	BindTexture( 8, nullptr );
-	BindSampler( nullptr );
+
+	for ( int i = 0; i < MAX_USER_TEXTURES; ++i )
+	{
+		BindTexture( USER_TEXTURE_SLOT_START + i, nullptr );
+		BindSampler( i, nullptr );
+	}
+
 	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
 	m_lastIBOHandle = nullptr;
@@ -917,15 +1035,15 @@ void RenderContext::BindTexture( uint slot, const Texture* constTexture )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindSampler( Sampler* sampler )
+void RenderContext::BindSampler( uint slot, Sampler* sampler )
 {
 	if ( sampler == nullptr )
 	{
-		sampler = m_currentSampler;
+		sampler = m_defaultSampler;
 	} 
 
 	ID3D11SamplerState* samplerHandle = sampler->m_handle;
-	m_context->PSSetSamplers( 0, 1, &samplerHandle );
+	m_context->PSSetSamplers( slot, 1, &samplerHandle );
 }
 
 
@@ -947,6 +1065,25 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
 	}
 
 	return font;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Sampler* RenderContext::GetOrCreateSampler( eSamplerType filter, eSamplerUVMode mode )
+{
+	for ( int samplerIndex = 0; samplerIndex < (int)m_loadedSamplers.size(); ++samplerIndex )
+	{
+		if ( m_loadedSamplers[samplerIndex]->m_filter == filter
+			 && m_loadedSamplers[samplerIndex]->m_mode == mode )
+		{
+			return m_loadedSamplers[samplerIndex];
+		}
+	}
+
+	Sampler* newSampler = new Sampler( this, filter, mode );
+	m_loadedSamplers.push_back( newSampler );
+	
+	return newSampler;
 }
 
 
@@ -1045,6 +1182,13 @@ Texture* RenderContext::CreateRenderTarget( const IntVec2& outputDimensions )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::SetModelMatrix( const Mat44& modelMatrix )
+{
+	m_modelMatrix = modelMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, float specularFactor, float specularPower )
 {
 	ModelData matrixData;
@@ -1055,6 +1199,8 @@ void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, f
 	matrixData.specularPower = specularPower;
 
 	m_modelMatrixUBO->Update( &matrixData, sizeof( matrixData ), sizeof( matrixData ) );
+
+	m_modelMatrix = modelMatrix;
 }
 
 
@@ -1062,6 +1208,8 @@ void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, f
 void RenderContext::SetMaterialData( void* materialData, int dataSize )
 {
 	m_materialUBO->Update( materialData, dataSize, dataSize );
+
+	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
 
@@ -1210,50 +1358,6 @@ void RenderContext::DisableFog()
 	m_linearFog.nearFogDistance = 99999.f;
 	m_linearFog.farFogDistance = 99999.f;
 	m_linearFog.fogColor = Rgba8::BLACK.GetAsRGBAVector();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-eCullMode RenderContext::GetCullMode() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return FromDXCullMode( desc.CullMode );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-eFillMode RenderContext::GetFillMode() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return FromDXFillMode( desc.FillMode );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool RenderContext::GetFrontFaceWindOrderCCW() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return desc.FrontCounterClockwise;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::CycleSampler()
-{
-	if ( m_currentSampler == m_pointClampSampler )
-	{
-		m_currentSampler = m_linearClampSampler;
-	}
-	else if ( m_currentSampler == m_linearClampSampler )
-	{
-		m_currentSampler = m_pointClampSampler;
-	}
 }
 
 
