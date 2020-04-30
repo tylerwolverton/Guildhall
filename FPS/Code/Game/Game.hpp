@@ -188,7 +188,7 @@ private:
 	Transform m_cubeMeshTransformDissolve;
 
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = .3f;
+	float m_ambientIntensity = 0.f;
 	GameLight m_lights[MAX_LIGHTS];
 	int m_currentLightIdx = 0;
 	float m_specularFactor = 0.f;

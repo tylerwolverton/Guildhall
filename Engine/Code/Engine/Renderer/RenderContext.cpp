@@ -507,6 +507,22 @@ void RenderContext::BindMaterial( Material* material )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BindShader( Shader* shader )
 {
+	// Set default shader ( set error instead? )
+	if ( shader == nullptr )
+	{
+		BindShaderProgram( m_defaultShaderProgram );
+
+		SetCullMode( eCullMode::BACK );
+		SetFillMode( eFillMode::SOLID );
+		SetFrontFaceWindOrder( true );
+
+		SetBlendMode( eBlendMode::DISABLED );
+
+		SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+
+		return;
+	}
+
 	BindShaderProgram( shader->GetShaderProgram() );
 	
 	ShaderState state = shader->GetShaderState();
@@ -539,10 +555,10 @@ void RenderContext::BindShaderByName( std::string shaderName )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BindShaderByPath( const char* filePath )
 {
-	Shader* shader = GetOrCreateShader( filePath );
-	if ( shader == nullptr )
+	Shader* shader = nullptr;
+	if ( filePath != nullptr )
 	{
-		// Error shader
+		shader = GetOrCreateShader( filePath );
 	}
 
 	BindShader( shader );
