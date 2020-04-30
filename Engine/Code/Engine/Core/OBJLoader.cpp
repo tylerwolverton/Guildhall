@@ -74,7 +74,7 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 
 	objFile.close();
 
-	g_devConsole->PrintString( Stringf( "Processing obj file took: %f s", GetCurrentTimeSeconds() - startTime ) );
+	//g_devConsole->PrintString( Stringf( "Processing obj file took: %f s", GetCurrentTimeSeconds() - startTime ) );
 	startTime = GetCurrentTimeSeconds();
 
 	for( uint faceIdx = 0; faceIdx < faces.size(); ++faceIdx )
@@ -103,7 +103,7 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 		out_fileHadNormals = normals.size() != 0;
 	}
 
-	g_devConsole->PrintString( Stringf( "Appending verts took: %f s", GetCurrentTimeSeconds() - startTime ) );
+	//g_devConsole->PrintString( Stringf( "Appending verts took: %f s", GetCurrentTimeSeconds() - startTime ) );
 }
 
 
