@@ -34,7 +34,6 @@ Project: FPS
                 - [ ] Run once vertically
     - [ ] Take the result of the blur, and the normal color output, and combine them
           into the final image.
-    - [ ] 
     - [ ] Be able to toggle blur on-and-off to see it working or not
         - [ ] Disabling the blur just doesn't run the blur and composite steps;
 

@@ -47,6 +47,7 @@ float3 CalculateDot3Light( float3 world_position, float3 world_normal, float3 su
 	// for each light, we going to add the dot3 and specular factors
 	float3 diffuse = float3( 0.f, 0.f, 0.f );
 	float3 specular = float3( 0.f, 0.f, 0.f );
+	float3 emissive = float3( 0.f, 0.f, 0.f );
 
 	for ( int i = 0; i < MAX_NUM_LIGHTS; ++i )
 	{
@@ -79,17 +80,19 @@ float3 CalculateDot3Light( float3 world_position, float3 world_normal, float3 su
 		float3 half_dir = normalize( -incident_dir + view_dir );
 		float facing_factor = smoothstep( -.3f, 0.1f, dot_incident );
 
-		float spec = pow( max( dot( world_normal, half_dir ), 0.0f ), SPECULAR_POWER );
+		float specular_factor = SPECULAR_FACTOR * pow( max( dot( world_normal, half_dir ), 0.0f ), SPECULAR_POWER );
 
 		float specular_attenuation = CalculateAttenuation( LIGHTS[i].specular_attenuation, LIGHTS[i].intensity, dist );
 		specular_attenuation *= spotlight_attenuation;
 
-		specular += SPECULAR_FACTOR * spec * specular_attenuation * facing_factor * LIGHTS[i].color;
+		specular += specular_factor * specular_attenuation * facing_factor * LIGHTS[i].color;
 	}
 
-	diffuse = min( diffuse, float3( 1.f, 1.f, 1.f ) );
+	diffuse = saturate( diffuse );
 
-	return ( ambient + diffuse ) * surface_color + specular;
+	float3 bloom = max( float3( 0.f, 0.f, 0.f ), ( specular + emissive ) - float3( 1.f, 1.f, 1.f ) );
+
+	return ( ambient + diffuse ) * surface_color + specular + emissive;
 }
 
 
