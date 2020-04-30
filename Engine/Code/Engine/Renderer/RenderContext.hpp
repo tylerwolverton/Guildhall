@@ -27,6 +27,7 @@ struct ID3D11Buffer;
 struct ID3D11BlendState;
 struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
+struct ID3D11DepthStencilView;
 struct Vertex_PCU;
 struct Vertex_PCUTBN;
 class BitmapFont;
@@ -259,7 +260,9 @@ private:
 	void InitializeViewport( const IntVec2& outputSize );
 	void UpdateAndBindBuffers( Camera& camera );
 	void SetupRenderTargetViewWithDepth( ID3D11RenderTargetView* renderTargetView, const Camera& camera );
-	void ClearCamera( ID3D11RenderTargetView* renderTargetView, const Camera& camera );
+	ID3D11DepthStencilView* GetDepthStencilViewFromCamera( const Camera& camera );
+	std::vector<ID3D11RenderTargetView*> GetRTVsFromCamera( const Camera& camera );
+	void ClearCamera( std::vector<ID3D11RenderTargetView*> renderTargetViews, const Camera& camera );
 	void ResetRenderObjects();
 
 	Texture* CreateTextureFromFile( const char* filePath );

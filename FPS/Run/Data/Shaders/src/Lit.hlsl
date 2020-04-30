@@ -44,13 +44,21 @@ v2f_t VertexFunction( vs_input_t input )
 	return v2f;
 }
 
+struct fragment_output_t
+{
+	float4 color : SV_TARGET0;
+	float4 bloom : SV_TARGET1;
+	float4 normal : SV_TARGET2;
+	float4 albedo : SV_TARGET3;
+	float4 tangent : SV_TARGET4;
+};
 
 //--------------------------------------------------------------------------------------
 // Fragment Shader
 // 
 // SV_Target0 at the end means the float4 being returned
 // is being drawn to the first bound color target.
-float4 FragmentFunction( v2f_t input ) : SV_Target0
+fragment_output_t FragmentFunction( v2f_t input )
 {
 	// use the uv to sample the texture
 	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
@@ -71,5 +79,13 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
 
 	float4 final_color_with_fog = AddFogToColor( float4( final_color, surface_alpha ), input.world_position );
-	return final_color_with_fog;
+
+	fragment_output_t output;
+	output.color = final_color_with_fog;
+	output.bloom = float4( 0, 0, 0, 1 );
+	output.normal = float4( VectorToColor( world_normal ), 1.f);
+	output.albedo = diffuse_color;
+	output.tangent = float4( VectorToColor( input.world_tangent ), 1.f );
+
+	return output;
 }

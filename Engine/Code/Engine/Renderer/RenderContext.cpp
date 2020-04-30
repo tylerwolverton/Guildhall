@@ -234,26 +234,287 @@ void RenderContext::BeginCamera( Camera& camera )
 
 	m_isDrawing = true;
 
-	Texture* colorTarget = camera.GetColorTarget();
+	/*Texture* colorTarget = camera.GetColorTarget();
 	if ( colorTarget == nullptr )
 	{
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
 	
-	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
-	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
-
-	UpdateAndBindBuffers( camera );
-	SetupRenderTargetViewWithDepth( renderTargetView, camera );
-	InitializeViewport( colorTarget->GetTexelSize() );
+	TextureView* view = colorTarget->GetOrCreateRenderTargetView();*/
 	
-	ClearCamera( renderTargetView, camera );
+	std::vector<ID3D11RenderTargetView*> renderTargetViews;
+	int rtvCount = camera.GetColorTargetCount();
+	renderTargetViews.resize( rtvCount );
+	IntVec2 outputSize = m_swapchain->GetBackBuffer()->GetTexelSize();
+
+	for ( int i = 0; i < rtvCount; ++i )
+	{
+		renderTargetViews[i] = nullptr;
+
+		Texture* colorTarget = camera.GetColorTarget( i );
+		if ( colorTarget != nullptr )
+		{
+			TextureView* rtv = colorTarget->GetOrCreateRenderTargetView();
+			renderTargetViews[i] = (ID3D11RenderTargetView*)rtv->m_handle;
+
+			// Set output size to first size, should all be the same
+			if ( i == 0 )
+			{
+				outputSize = colorTarget->GetTexelSize();
+			}
+		}
+		else if ( i == 0 )
+		{
+			renderTargetViews[i] = (ID3D11RenderTargetView*)( GetBackBuffer()->GetOrCreateRenderTargetView() );
+		}
+	}
+
+	ID3D11DepthStencilView* depthStencilView = GetDepthStencilViewFromCamera( camera );
+
+	m_context->OMSetRenderTargets( rtvCount, &renderTargetViews[0], depthStencilView );
+
+	//SetupRenderTargetViewWithDepth( renderTargetView, camera );
+	ClearCamera( renderTargetViews, camera );
+
+	InitializeViewport( outputSize );
+	UpdateAndBindBuffers( camera );
 	ResetRenderObjects();
 
 	SetModelData( Mat44::IDENTITY );
 	SetBlendMode( m_currentBlendMode );
 	SetAmbientLight( Rgba8::WHITE, 1.f );
 	// Dirty all state, booleans or a uint flags
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::InitializeSwapChain( Window* window )
+{
+	IDXGISwapChain* swapchain = nullptr;
+
+	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+	#if defined(RENDER_DEBUG)
+	flags |= D3D11_CREATE_DEVICE_DEBUG;
+	CreateDebugModule();
+	#endif
+
+	DXGI_SWAP_CHAIN_DESC swapchainDesc;
+	memset( &swapchainDesc, 0, sizeof( swapchainDesc ) );
+
+	// how many back buffers in our chain - we'll double buffer (one we show, one we draw to)
+	swapchainDesc.BufferCount = 2;
+	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // on swap, the old buffer is discarded
+	swapchainDesc.Flags = 0; // additional flags - see docs.  Used in special cases like for video buffers
+
+	// how swap chain is to be used
+	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_BACK_BUFFER;
+	HWND hwnd = (HWND)window->m_hwnd;
+	swapchainDesc.OutputWindow = hwnd;		// HWND for the window to be used
+	swapchainDesc.SampleDesc.Count = 1;		// how many samples per pixel (1 so no MSAA)
+											// note, if we're doing MSAA, we'll do it on a secondary target
+
+	// describe the buffer
+	swapchainDesc.Windowed = TRUE;                                    // windowed/full-screen mode
+	swapchainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color RGBA8 color
+	swapchainDesc.BufferDesc.Width = window->GetClientWidth();
+	swapchainDesc.BufferDesc.Height = window->GetClientHeight();
+
+	HRESULT result = D3D11CreateDeviceAndSwapChain( nullptr,
+													D3D_DRIVER_TYPE_HARDWARE,
+													nullptr,
+													flags, // controls the type of device we make
+													nullptr,
+													0,
+													D3D11_SDK_VERSION,
+													&swapchainDesc,
+													&swapchain,
+													&m_device,
+													nullptr,
+													&m_context );
+
+	GUARANTEE_OR_DIE( SUCCEEDED( result ), "Failed to create rendering device." );
+
+	if ( swapchain != nullptr )
+	{
+		m_swapchain = new SwapChain( this, swapchain );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::InitializeDefaultRenderObjects()
+{
+	// Create default shader
+	m_defaultShaderProgram = GetOrCreateShaderProgramFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
+
+	// Create default buffers
+	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
+	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
+	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+
+	// Create default sampler
+	m_defaultSampler = GetOrCreateSampler( SAMPLER_POINT, UV_MODE_CLAMP );
+
+	// Create a white texture to use when no texture is needed
+	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
+	m_flatNormalMap = CreateTextureFromColor( Rgba8( 127, 127, 255, 255 ) );
+
+	// Create a depth buffer and initialize it to draw pixels using painter's algorithm
+	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
+	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
+
+	CreateDefaultRasterState();
+	SetRasterState( eFillMode::SOLID, eCullMode::BACK, true );
+
+	CreateBlendStates();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::InitializeViewport( const IntVec2& outputSize )
+{
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)outputSize.x;
+	viewport.Height = (float)outputSize.y;
+	viewport.MinDepth = 0.f;
+	viewport.MaxDepth = 1.f;
+
+	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+	m_context->RSSetViewports( 1, &viewport );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::UpdateAndBindBuffers( Camera& camera )
+{
+	if ( camera.m_cameraUBO == nullptr )
+	{
+		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	}
+	camera.UpdateCameraUBO();
+
+	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
+	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
+	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
+	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
+	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetupRenderTargetViewWithDepth( ID3D11RenderTargetView* renderTargetView, const Camera& camera )
+{
+	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
+	TextureView* depthView = nullptr;
+	if ( depthStencilTarget != nullptr )
+	{
+		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
+	}
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	if ( depthView != nullptr )
+	{
+		depthStencilView = depthView->m_depthStencilView;
+	}
+
+	m_context->OMSetRenderTargets( 1, &renderTargetView, depthStencilView );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ID3D11DepthStencilView* RenderContext::GetDepthStencilViewFromCamera( const Camera& camera )
+{
+	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
+	TextureView* depthView = nullptr;
+	if ( depthStencilTarget != nullptr )
+	{
+		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
+	}
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	if ( depthView != nullptr )
+	{
+		depthStencilView = depthView->m_depthStencilView;
+	}
+
+	return depthStencilView;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<ID3D11RenderTargetView*> RenderContext::GetRTVsFromCamera( const Camera& camera )
+{
+	std::vector<ID3D11RenderTargetView*> renderTargetViews;
+	int rtvCount = camera.GetColorTargetCount();
+	renderTargetViews.resize( rtvCount );
+	IntVec2 outputSize = m_swapchain->GetBackBuffer()->GetTexelSize();
+
+	for ( int i = 0; i < rtvCount; ++i )
+	{
+		renderTargetViews[i] = nullptr;
+
+		Texture* colorTarget = camera.GetColorTarget( i );
+		if ( colorTarget != nullptr )
+		{
+			TextureView* rtv = colorTarget->GetOrCreateRenderTargetView();
+			renderTargetViews[i] = (ID3D11RenderTargetView*)rtv->m_handle;
+
+			// Set output size to first size, should all be the same
+			if ( i == 0 )
+			{
+				outputSize = colorTarget->GetTexelSize();
+			}
+		}
+		else if ( i == 0 )
+		{
+			renderTargetViews[i] = (ID3D11RenderTargetView*)( GetBackBuffer()->GetOrCreateRenderTargetView() );
+		}
+	}
+
+	return renderTargetViews;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ClearCamera( std::vector<ID3D11RenderTargetView*> renderTargetViews, const Camera& camera )
+{
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
+	{
+		for ( int i = 0; i < (int)renderTargetViews.size(); ++i )
+		{
+			ClearScreen( renderTargetViews[i], camera.GetClearColor() );
+		}
+	}
+
+	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT
+		 && camera.GetDepthStencilTarget() != nullptr )
+	{
+		ClearDepth( camera.GetDepthStencilTarget(), camera.GetClearDepth() );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ResetRenderObjects()
+{
+	BindShaderProgram( ( ShaderProgram* )nullptr );
+	BindDiffuseTexture( nullptr );
+	BindNormalTexture( nullptr );
+
+	for ( int i = 0; i < MAX_USER_TEXTURES; ++i )
+	{
+		BindTexture( USER_TEXTURE_SLOT_START + i, nullptr );
+		BindSampler( i, nullptr );
+	}
+
+	m_context->RSSetState( m_defaultRasterState );
+	m_lastVBOHandle = nullptr;
+	m_lastIBOHandle = nullptr;
 }
 
 
@@ -639,180 +900,6 @@ Texture* RenderContext::CreateOrGetTextureFromFile( const char* filePath )
 	}
 
 	return texture;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::InitializeSwapChain( Window* window )
-{
-	IDXGISwapChain* swapchain = nullptr;
-
-	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
-	#if defined(RENDER_DEBUG)
-		flags |= D3D11_CREATE_DEVICE_DEBUG;
-		CreateDebugModule();
-	#endif
-
-	DXGI_SWAP_CHAIN_DESC swapchainDesc;
-	memset( &swapchainDesc, 0, sizeof( swapchainDesc ) );
-
-	// how many back buffers in our chain - we'll double buffer (one we show, one we draw to)
-	swapchainDesc.BufferCount = 2;
-	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // on swap, the old buffer is discarded
-	swapchainDesc.Flags = 0; // additional flags - see docs.  Used in special cases like for video buffers
-
-	// how swap chain is to be used
-	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_BACK_BUFFER;
-	HWND hwnd = (HWND)window->m_hwnd;
-	swapchainDesc.OutputWindow = hwnd;		// HWND for the window to be used
-	swapchainDesc.SampleDesc.Count = 1;		// how many samples per pixel (1 so no MSAA)
-											// note, if we're doing MSAA, we'll do it on a secondary target
-
-	// describe the buffer
-	swapchainDesc.Windowed = TRUE;                                    // windowed/full-screen mode
-	swapchainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color RGBA8 color
-	swapchainDesc.BufferDesc.Width = window->GetClientWidth();
-	swapchainDesc.BufferDesc.Height = window->GetClientHeight();
-
-	HRESULT result = D3D11CreateDeviceAndSwapChain( nullptr,
-													D3D_DRIVER_TYPE_HARDWARE,
-													nullptr,
-													flags, // controls the type of device we make
-													nullptr,
-													0,
-													D3D11_SDK_VERSION,
-													&swapchainDesc,
-													&swapchain,
-													&m_device,
-													nullptr,
-													&m_context );
-
-	GUARANTEE_OR_DIE( SUCCEEDED( result ), "Failed to create rendering device." );
-
-	if ( swapchain != nullptr )
-	{
-		m_swapchain = new SwapChain( this, swapchain );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::InitializeDefaultRenderObjects()
-{
-	// Create default shader
-	m_defaultShaderProgram = GetOrCreateShaderProgramFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
-
-	// Create default buffers
-	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
-	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
-	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-
-	// Create default sampler
-	m_defaultSampler = GetOrCreateSampler( SAMPLER_POINT, UV_MODE_CLAMP );
-
-	// Create a white texture to use when no texture is needed
-	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
-	m_flatNormalMap = CreateTextureFromColor( Rgba8( 127, 127, 255, 255 ) );
-
-	// Create a depth buffer and initialize it to draw pixels using painter's algorithm
-	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
-	SetDepthTest( eCompareFunc::COMPARISON_ALWAYS, false );
-
-	CreateDefaultRasterState();
-	SetRasterState( eFillMode::SOLID, eCullMode::BACK, true );
-
-	CreateBlendStates();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::InitializeViewport( const IntVec2& outputSize )
-{
-	D3D11_VIEWPORT viewport;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = (float)outputSize.x;
-	viewport.Height = (float)outputSize.y;
-	viewport.MinDepth = 0.f;
-	viewport.MaxDepth = 1.f;
-
-	m_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-	m_context->RSSetViewports( 1, &viewport );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::UpdateAndBindBuffers( Camera& camera )
-{
-	if ( camera.m_cameraUBO == nullptr )
-	{
-		camera.m_cameraUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	}
-	camera.UpdateCameraUBO();
-
-	BindUniformBuffer( UBO_FRAME_SLOT, m_frameUBO );
-	BindUniformBuffer( UBO_CAMERA_SLOT, camera.m_cameraUBO );
-	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
-	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
-	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::SetupRenderTargetViewWithDepth( ID3D11RenderTargetView* renderTargetView, const Camera& camera )
-{
-	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
-	TextureView* depthView = nullptr;
-	if ( depthStencilTarget != nullptr )
-	{
-		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
-	}
-
-	ID3D11DepthStencilView* depthStencilView = nullptr;
-	if ( depthView != nullptr )
-	{
-		depthStencilView = depthView->m_depthStencilView;
-	}
-
-	m_context->OMSetRenderTargets( 1, &renderTargetView, depthStencilView );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const Camera& camera )
-{
-	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
-	{
-		ClearScreen( renderTargetView, camera.GetClearColor() );
-	}
-
-	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT
-		 && camera.GetDepthStencilTarget() != nullptr )
-	{
-		ClearDepth( camera.GetDepthStencilTarget(), camera.GetClearDepth() );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::ResetRenderObjects()
-{
-	BindShaderProgram( ( ShaderProgram* )nullptr );
-	BindDiffuseTexture( nullptr );
-	BindNormalTexture( nullptr );
-
-	for ( int i = 0; i < MAX_USER_TEXTURES; ++i )
-	{
-		BindTexture( USER_TEXTURE_SLOT_START + i, nullptr );
-		BindSampler( i, nullptr );
-	}
-
-	m_context->RSSetState( m_defaultRasterState );
-	m_lastVBOHandle = nullptr;
-	m_lastIBOHandle = nullptr;
 }
 
 

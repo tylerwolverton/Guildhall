@@ -148,7 +148,7 @@ void Game::InitializeMeshes()
 	vertices.clear();
 	indices.clear();
 	importOptions.transform = Mat44::CreateUniformScale3D( .5f );
-	importOptions.clean = true;
+	//importOptions.clean = true;
 	//AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
 	//AppendVertsForObjMeshFromFile( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
 	AppendVertsAndIndicesForObjMeshFromFile( vertices, indices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
@@ -760,8 +760,17 @@ void Game::PrintDiageticHotkeys()
 void Game::Render() const
 {
 	Texture* backbuffer = g_renderer->GetBackBuffer();
-	Texture* frameTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	m_worldCamera->SetColorTarget( frameTarget );
+	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	Texture* bloomTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	Texture* normalTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	Texture* albedoTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	Texture* tangentTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+
+	m_worldCamera->SetColorTarget( 0, colorTarget );
+	m_worldCamera->SetColorTarget( 1, bloomTarget );
+	m_worldCamera->SetColorTarget( 2, normalTarget );
+	m_worldCamera->SetColorTarget( 3, albedoTarget );
+	m_worldCamera->SetColorTarget( 4, tangentTarget );
 
 	g_renderer->BeginCamera( *m_worldCamera );
 
@@ -810,13 +819,18 @@ void Game::Render() const
 
 	g_renderer->EndCamera( *m_worldCamera );
 
-	ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectInvertColors.hlsl" );
-	g_renderer->StartEffect( backbuffer, frameTarget, shader );
+	// Render full screen effect
+	ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffect.hlsl" );
+	g_renderer->StartEffect( backbuffer, colorTarget, shader );
 	g_renderer->EndEffect();
 
 	m_worldCamera->SetColorTarget( backbuffer );
 
-	g_renderer->ReleaseRenderTarget( frameTarget );
+	g_renderer->ReleaseRenderTarget( colorTarget );
+	g_renderer->ReleaseRenderTarget( bloomTarget );
+	g_renderer->ReleaseRenderTarget( normalTarget );
+	g_renderer->ReleaseRenderTarget( albedoTarget );
+	g_renderer->ReleaseRenderTarget( tangentTarget );
 
 	// Debug Rendering
 	DebugRenderWorldToCamera( m_worldCamera );

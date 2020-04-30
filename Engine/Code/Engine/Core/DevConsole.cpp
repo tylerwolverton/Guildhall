@@ -94,6 +94,7 @@ void DevConsole::Shutdown()
 void DevConsole::SetRenderer( RenderContext* renderer )
 {
 	m_renderer = renderer;
+	m_devConsoleCamera->SetColorTarget( renderer->GetBackBuffer() );
 }
 
 
