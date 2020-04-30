@@ -3,56 +3,56 @@ Project: FPS
 ------
 
 ## Tasks
-[x] Be able to load `OBJ` Files
-    [x] Load OBJ as a single vertex array
-    [x] At end of each group (or at very end), apply post steps..
-        [x] Invert-V
-        [x] Calculate Normals
-        [x] Calculate Tangents
-    [x] At end of import...
-        [x] Apply transform
-        [x] *Clean* (is an extra) 
-        [x] Invert Winding
-[x] Post-Import Options supported
-    [x] Invert-V
-        - Some programs us UV with V at the top, and some bottom.  On import
-          be able to swap it out to the correct version for your engine.
-    [x] Invert Winding Order
-        - Some programs use clockwise by default.  If you notice your mesh is 
-          inside out (you can see it from the inside, but not outside), you will
-          want to invert the winding order of faces.
-    [x] Generate Normals (Flat only required)
-        - Some OBJ files do not include normals.  If this import option is set, 
-          you will want to generate normals if the file didn't include them.
-          For **Flat Normals**, just calculate the normal for each face and assign it to
-          each version that defines the face. 
-    [x] Generate Tangents
-        - Use MikkT to generate tangents.  This requires the mesh have normals, so generate
-          normals should also be true. 
-          Use [./mikktspace.h](./mikktspace.h) and [./mikktspace.c](./mikktspace.c) to
-          do this step.  
-    [x] Post import transform from the authoring engines space to our space.
-        [x] Transform Positions (full)
-        [x] Normals (just direction, not scaled or translated)
-        [x] Tangents & Bitangents (just direction, not scaled or translated)
-[x] Have a lit model loaded in your scene to show it is working
-[x] Support a `Shader` or `ShaderState` class that is data driven
-    [x] Define a data format you like
-    [x] Define a class you like
-    [x] Implement `RenderContext::BindShader` or `BindShaderState` that
-        binds the program and the additional state for you.
-    [x] Add `RenderContext::GetOrCreateShader(...)` to support a database of shaders
-    [x] Implement `RenderContext::BindShaderByName` or `RenderContext::BindShaderStateByName`
-[x] Support a `Material` class to make managing material data easier.
-    [x] Should encapsulate a `ShaderState` and relevant data needed for the material
-    [x] Define a data format you like.
-    [x] Define a `Material` class you can use that works with our data
-        [x] Must be able to support owning at least one UBO for material specific data?
-        [x] Can set material specific textures
-        [x] Can set material specific samplers
-        [x] Can set your engine specific constants (spec/tint)
-    [x] Can make a material from file
-    [x] Can call `RenderContext::BindMaterial` to bind the shader and all data assocated with the material
+- [ ] `NamedProperties`
+    - [ ] Switch named properties over to use `TypedProperty` instead of just strings
+    - [ ] Add ability to subscribe methods to your event system. 
+    - [ ] Add ability to unsubscribe an object from the event system (unsubscribes all methods on that object)
+
+- [ ] Color Transform (ex: Grayscale) Effect
+    - [ ] Create/Recycle a color target matching your swapchain's output.
+    - [ ] Render game as normal
+    - [ ] Create/Recycle another match target
+    - [ ] Apply an effect on the original image, outputting to this new texture
+        - [ ] Effect applies a per-pixel color transform using a matrix. 
+        - [ ] Make it so you can specify a "strength" for this transform, where 0 
+              has no effect, and 1 is the full effect so you can blend between them.
+        - [ ] Be able to specify a tint and tint power that pixels trend toward (useful for fades)
+              - `0` would have no effect
+              - `1` the resultant color would be the tint 
+        - [ ] **Optional Challenge: Have all the above be done with a single mat44.**
+    - [ ] Copy this final image to the swapchain before present
+   
+- [ ] Bloom Effect
+    - [ ] Set your normal color target, and a secondary "bloom" target
+        - [ ] Camera can set set tertiary render targets
+        - [ ] Shader has a secondary output specified
+    - [ ] When done, be able to blur the bloom target
+        - [ ] Create/Recycle a matching color/render target
+        - [ ] Run a guassian blur pass N times, each pass consisting of one horizontal and one vertical pass
+            - [ ] Each step in a pass will swap out the src/dst target and render a full screen blur shader
+                - [ ] Run once horizontally
+                - [ ] Run once vertically
+    - [ ] Take the result of the blur, and the normal color output, and combine them
+          into the final image.
+    - [ ] 
+    - [ ] Be able to toggle blur on-and-off to see it working or not
+        - [ ] Disabling the blur just doesn't run the blur and composite steps;
+
+- [ ] Texture Pool
+    - [x] Be able to ask your `RenderContext` for a temporary render target of a given resolution and size.
+        - [x] Search for an existing free texture first, and return it if you find one.
+        - [x] If there are none available, create and return a new one.
+    - [x] Be able to relinquish back these temporary textures back to the `RenderContext` when you're done with them.
+        - This will allow them to be reused.
+    - [ ] Add a `RenderContext::GetTotalTexturePoolCount()` to tell you how many textures have been created this way.
+    - [ ] Add a `RenderContext::GetTexturePoolFreeCount()` to tell you how many are currently in the pool to be recycled
+    - [ ] Debug render these counts to the screen to you can make sure you're properly recycling during this assignment.
+        - At any given time you likely will not have more than 3 textures in use at once, meaning your pool should never exceed that count.  This can really depend on your scene though.  For eaxmple, in this assignment for bloom... 
+          1. Camera color output
+          2. Camera bloom target
+          3. Temporaries
+             - Blurring secondary output
+             - Composite output 
 
 -------
 
