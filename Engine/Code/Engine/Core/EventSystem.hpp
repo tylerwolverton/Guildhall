@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 
 #include <string>

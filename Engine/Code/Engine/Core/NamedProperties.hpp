@@ -1,4 +1,5 @@
 #pragma once
+#include "StringUtils.hpp"
 #include "XmlUtils.hpp"
 
 #include <string>
@@ -43,11 +44,11 @@ public:
 		return &s_local;
 	}
 
-	template <typename VALUE_TYPE>
+	/*template <typename VALUE_TYPE>
 	std::string ToString( VALUE_TYPE value ) const
 	{
 		return "";
-	}
+	}*/
 };
 
 
@@ -103,7 +104,7 @@ public:
 	T GetValue( std::string const& keyName, T const& defValue ) const
 	{
 		TypedPropertyBase* base = FindInMap( keyName );
-		if ( base == nullptr )
+		if ( base != nullptr )
 		{
 			// this works WITHOUT RTTI enabled
 			// but will not work if prop is inherited from T
@@ -116,11 +117,12 @@ public:
 			else
 			{
 				std::string strValue = base->GetAsString();
-				return GetValue( strValue, defValue );
+				return FromString( strValue, defValue );
 			}
 		}
 		else
-		{ // failed to find
+		{
+			// failed to find
 			return defValue;
 		}
 	}

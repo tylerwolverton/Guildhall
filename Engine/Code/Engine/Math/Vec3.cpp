@@ -55,6 +55,20 @@ void Vec3::SetFromText( const char* asText )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string Vec3::GetAsString() const
+{
+	return ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Vec3::ToString() const
+{
+	return std::string( Stringf( "( %f, %f, %f )", x, y, z ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec3 Vec3::operator+( const Vec3& vecToAdd ) const
 {
 	return Vec3( x + vecToAdd.x, y + vecToAdd.y, z + vecToAdd.z );

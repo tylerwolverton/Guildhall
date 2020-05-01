@@ -1,6 +1,10 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Rgba8.hpp"
+#include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 
 #include <stdarg.h>
 #include <cctype>
@@ -220,4 +224,149 @@ Floats ConvertStringsToFloats( const Strings& strings )
 	}
 
 	return floats;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( bool value )
+{
+	return value ? "true" : "false";
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( int value )
+{
+	return std::string( Stringf( "%d", value ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( float value )
+{
+	return std::string( Stringf( "%f", value ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( const std::string& value )
+{
+	return value;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( const Rgba8& value )
+{
+	return value.ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( const Vec2& value )
+{
+	return value.ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( const Vec3& value )
+{
+	return value.ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( const IntVec2& value )
+{
+	return value.ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool FromString( const std::string& value, bool defaultValue )
+{
+	UNUSED( defaultValue );
+
+	return atob( value.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int FromString( const std::string& value, int defaultValue )
+{
+	UNUSED( defaultValue );
+
+	return atoi( value.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float FromString( const std::string& value, float defaultValue )
+{
+	UNUSED( defaultValue );
+
+	return (float)atof( value.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string FromString( const std::string& value, std::string defaultValue )
+{
+	UNUSED( defaultValue );
+
+	return value;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string FromString( const std::string& value, const char* defaultValue )
+{
+	UNUSED( defaultValue );
+
+	return value.c_str();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Rgba8 FromString( const std::string& value, const Rgba8& defaultValue )
+{
+	UNUSED( defaultValue );
+
+	Rgba8 convertedValue;
+	convertedValue.SetFromText( value.c_str() );
+	return convertedValue;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 FromString( const std::string& value, const Vec2& defaultValue )
+{
+	UNUSED( defaultValue );
+
+	Vec2 convertedValue;
+	convertedValue.SetFromText( value.c_str() );
+	return convertedValue;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+IntVec2 FromString( const std::string& value, const IntVec2& defaultValue )
+{
+	UNUSED( defaultValue );
+
+	IntVec2 convertedValue;
+	convertedValue.SetFromText( value.c_str() );
+	return convertedValue;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 FromString( const std::string& value, const Vec3& defaultValue )
+{
+	UNUSED( defaultValue );
+
+	Vec3 convertedValue;
+	convertedValue.SetFromText( value.c_str() );
+	return convertedValue;
 }

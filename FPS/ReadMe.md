@@ -37,15 +37,15 @@ Project: FPS
     - [ ] Be able to toggle blur on-and-off to see it working or not
         - [ ] Disabling the blur just doesn't run the blur and composite steps;
 
-- [ ] Texture Pool
+- [-] Texture Pool
     - [x] Be able to ask your `RenderContext` for a temporary render target of a given resolution and size.
         - [x] Search for an existing free texture first, and return it if you find one.
         - [x] If there are none available, create and return a new one.
     - [x] Be able to relinquish back these temporary textures back to the `RenderContext` when you're done with them.
         - This will allow them to be reused.
-    - [ ] Add a `RenderContext::GetTotalTexturePoolCount()` to tell you how many textures have been created this way.
-    - [ ] Add a `RenderContext::GetTexturePoolFreeCount()` to tell you how many are currently in the pool to be recycled
-    - [ ] Debug render these counts to the screen to you can make sure you're properly recycling during this assignment.
+    - [x] Add a `RenderContext::GetTotalTexturePoolCount()` to tell you how many textures have been created this way.
+    - [x] Add a `RenderContext::GetTexturePoolFreeCount()` to tell you how many are currently in the pool to be recycled
+    - [-] Debug render these counts to the screen to you can make sure you're properly recycling during this assignment.
         - At any given time you likely will not have more than 3 textures in use at once, meaning your pool should never exceed that count.  This can really depend on your scene though.  For eaxmple, in this assignment for bloom... 
           1. Camera color output
           2. Camera bloom target

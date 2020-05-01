@@ -166,6 +166,8 @@ public:
 	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
 	void ClearDepth( Texture* depthStencilTarget, float depth );
 
+	int GetTotalTexturePoolCount()															{ return m_totalRenderTargetsMade; }
+	int GetTexturePoolFreeCount()															{ return m_totalRenderTargetsMade - m_curActiveRenderTargets; }
 	Texture* AcquireRenderTargetMatching( Texture* textureToMatch );
 	void ReleaseRenderTarget( Texture* texture );
 	void CopyTexture( Texture* destination, Texture* source );
@@ -306,6 +308,7 @@ private:
 	BitmapFont* m_systemFont						= nullptr;
 	
 	int m_totalRenderTargetsMade = 0;
+	int m_curActiveRenderTargets = 0;
 	std::vector<Texture*> m_renderTargetPool;
 	
 	ID3D11Buffer* m_lastVBOHandle					= nullptr;

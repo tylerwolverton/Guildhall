@@ -63,6 +63,20 @@ void Vec4::SetFromText( const char* asText )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string Vec4::GetAsString() const
+{
+	return ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Vec4::ToString() const
+{
+	return std::string( Stringf( "( %f, %f, %f, %f )", x, y, z, w ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec4 Vec4::operator+( const Vec4& vecToAdd ) const
 {
 	return Vec4( x + vecToAdd.x, y + vecToAdd.y, z + vecToAdd.z, w + vecToAdd.w );

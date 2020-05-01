@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 
+#include <string>
+
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3;
@@ -48,6 +50,8 @@ public:
 	void GetAsFloatArray( float* out_floats ) const;
 	Vec3 GetAsRGBVector() const;
 	Vec4 GetAsRGBAVector() const;
+	std::string GetAsString() const;
+	std::string ToString() const;
 
 	bool		operator==( const Rgba8& compare ) const;		// Rgba8 == Rgba8
 	bool		operator!=( const Rgba8& compare ) const;		// Rgba8 != Rgba8

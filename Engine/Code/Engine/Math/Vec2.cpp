@@ -50,6 +50,20 @@ void Vec2::SetFromText( const char* asText )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string Vec2::GetAsString() const
+{
+	return ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Vec2::ToString() const
+{
+	return std::string( Stringf( "( %f, %f )", x, y ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const Vec2 Vec2::operator+( const Vec2& vecToAdd ) const
 {
 	return Vec2( x + vecToAdd.x, y + vecToAdd.y );

@@ -1,7 +1,6 @@
 #pragma once
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Math/Vec2.hpp"
-#include "Engine/Core/ErrorWarningAssert.hpp"
 
 #include <string>
 #include <vector>
@@ -11,6 +10,7 @@
 //-----------------------------------------------------------------------------------------------
 class EventSystem;
 class DevConsole;
+class NamedProperties;
 class NamedStrings;
 
 
@@ -24,7 +24,7 @@ extern NamedStrings g_gameConfigBlackboard;
 typedef std::vector<std::string> Strings;
 typedef std::vector<int> Ints;
 typedef std::vector<float> Floats;
-typedef NamedStrings EventArgs;
+typedef NamedProperties EventArgs;
 
 typedef unsigned int uint;
 typedef unsigned char byte;

@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+
 //-----------------------------------------------------------------------------------------------
 struct Vec2;
 struct Vec3;
@@ -21,6 +24,8 @@ public:
 	explicit Vec4( const Vec3& copyFrom, float initialW );	
 	explicit Vec4( const Vec2& copyFromXY, const Vec2& copyFromZW );	
 	void SetFromText( const char* asText );
+	std::string GetAsString() const;
+	std::string ToString() const;
 
 	// Operators (const)
 	bool		operator==( const Vec4& compare ) const;		// vec4 == vec4

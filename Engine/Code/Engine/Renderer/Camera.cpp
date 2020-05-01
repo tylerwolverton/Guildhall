@@ -169,7 +169,7 @@ Texture* Camera::GetColorTarget( int index ) const
 uint Camera::GetColorTargetCount() const
 {
 	// Backwards compatibility with SD1
-	uint count = m_colorTargets.size();
+	uint count = (uint)m_colorTargets.size();
 	if ( count == 0 )
 	{
 		count = 1;

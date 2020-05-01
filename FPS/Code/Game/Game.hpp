@@ -132,6 +132,7 @@ private:
 
 	void PrintHotkeys();
 	void PrintDiageticHotkeys();
+	void PrintInfo();
 	void ChangeShader( int nextShaderIdx );
 
 	GameLight& GetCurGameLight()											{ return m_lights[m_currentLightIdx]; }

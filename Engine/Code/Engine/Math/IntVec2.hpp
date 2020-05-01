@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 
 //-----------------------------------------------------------------------------------------------
 struct IntVec2
@@ -17,7 +19,9 @@ public:
 	IntVec2( const IntVec2& copyFrom );							// copy constructor (from another intvec2)
 	explicit IntVec2( int initialX, int initialY );				// explicit constructor (from x, y)
 	void SetFromText( const char* asText );
-		
+	std::string GetAsString() const;
+	std::string ToString() const;
+
 	// Operators (const)
 	bool			operator==( const IntVec2& compare ) const;			// intvec2 == intvec2
 	bool			operator!=( const IntVec2& compare ) const;			// intvec2 != intvec2

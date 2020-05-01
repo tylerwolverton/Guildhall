@@ -109,6 +109,20 @@ Vec4 Rgba8::GetAsRGBAVector() const
 
 
 //-----------------------------------------------------------------------------------------------
+std::string Rgba8::GetAsString() const
+{
+	return ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Rgba8::ToString() const
+{
+	return std::string( Stringf( "( %u, %u, %u, %u )", r, g, b, a ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Rgba8::operator==( const Rgba8& compare ) const
 {
 	return r == compare.r 

@@ -173,6 +173,7 @@ void RenderContext::ClearDepth( Texture* depthStencilTarget, float depth )
 Texture* RenderContext::AcquireRenderTargetMatching( Texture* textureToMatch )
 {
 	IntVec2 size = textureToMatch->GetTexelSize();
+	++m_curActiveRenderTargets;
 
 	for ( int i = 0; i < (int)m_renderTargetPool.size(); ++i )
 	{
@@ -197,6 +198,9 @@ Texture* RenderContext::AcquireRenderTargetMatching( Texture* textureToMatch )
 void RenderContext::ReleaseRenderTarget( Texture* texture )
 {
 	m_renderTargetPool.push_back( texture );
+	--m_curActiveRenderTargets;
+
+	GUARANTEE_OR_DIE( m_curActiveRenderTargets >= 0, "Released more render targets than were made." );
 }
 
 

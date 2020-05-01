@@ -238,6 +238,7 @@ void Game::Update()
 
 	PrintHotkeys();
 	PrintDiageticHotkeys();
+	PrintInfo();
 }
 
 
@@ -753,6 +754,15 @@ void Game::PrintDiageticHotkeys()
 	
 	// Triplanar
 	DebugAddWorldBillboardTextf( m_sphereMeshTriplanarTransform.m_position + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Triplanar Shader" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::PrintInfo()
+{
+	float y = .06f;
+	DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Total Texture Pool Count: %d", g_renderer->GetTotalTexturePoolCount() );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Free Texture Pool Count: %d", g_renderer->GetTexturePoolFreeCount() );
 }
 
 
