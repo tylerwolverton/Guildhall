@@ -7,6 +7,7 @@
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/Delegate.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Image.hpp"
@@ -44,6 +45,15 @@ static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 static Vec3 s_currentLightColor = Vec3( 1.f, 1.f, 1.f);
 
 
+class TestClass
+{
+public:
+	void Print( EventArgs value )
+	{
+		
+	}
+};
+
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
@@ -59,6 +69,28 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	NamedProperties testProps;
+	testProps.SetValue( "SmallFloat", 1.0f / (float)( 2 ^ 23 ) );
+
+	float value = testProps.GetValue( "SmallFloat", 0.0f );
+
+	TestClass testClassInstance;
+	Delegate<EventArgs*> intDel;
+	//intDel.SubscribeMethod( &testClassInstance, &TestClass::Print );
+
+	EventArgs args;
+	intDel.Invoke( &args );
+
+	Delegate<float> lightningEvent;
+	lightningEvent.SubscribeMethod( g_renderer, &RenderContext::SetAmbientIntensity );
+	lightningEvent.SubscribeMethod( this, &Game::AddScreenShakeIntensity );
+
+	lightningEvent.Invoke( .5f );
+
+	//g_eventSystem->RegisterEvent( "testEvent", "", EVERYWHERE, intDel );
+
+	g_eventSystem->RegisterMethodEvent( "test", "", EVERYWHERE, g_renderer, &RenderContext::SetAmbientIntensity );
+
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 	g_eventSystem->RegisterEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetPointLightColor );

@@ -3,10 +3,10 @@ Project: FPS
 ------
 
 ## Tasks
-- [ ] `NamedProperties`
-    - [ ] Switch named properties over to use `TypedProperty` instead of just strings
-    - [ ] Add ability to subscribe methods to your event system. 
-    - [ ] Add ability to unsubscribe an object from the event system (unsubscribes all methods on that object)
+- [-] `NamedProperties`
+    - [x] Switch named properties over to use `TypedProperty` instead of just strings
+    - [x] Add ability to subscribe methods to your event system. 
+    - [-] Add ability to unsubscribe an object from the event system (unsubscribes all methods on that object)
 
 - [ ] Color Transform (ex: Grayscale) Effect
     - [ ] Create/Recycle a color target matching your swapchain's output.

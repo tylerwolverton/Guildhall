@@ -231,6 +231,7 @@ public:
 	// Light setters
 	void SetAmbientColor( const Rgba8& color );
 	void SetAmbientColor( const Vec3& color );
+	void SetAmbientIntensity( EventArgs* args );
 	void SetAmbientIntensity( float intensity );
 	void SetAmbientLight( const Rgba8& color, float intensity );
 	void SetAmbientLight( const Vec3& color, float intensity );

@@ -26,10 +26,13 @@ public:
 	void Unsubscribe( const c_callback_t& callback );
 
 	template <typename OBJ_TYPE>
-	void SubscribeMethod( OBJ_TYPE* obj, void ( OBJ_TYPE::* callbackMethod )( ARGS... ) );
+	void SubscribeMethod( OBJ_TYPE* obj, void ( OBJ_TYPE::*callbackMethod )( ARGS... ) );
 
 	template <typename OBJ_TYPE>
-	void UnsubscribeMethod( OBJ_TYPE* obj, void ( OBJ_TYPE::* callbackMethod )( ARGS... ) );
+	void UnsubscribeMethod( OBJ_TYPE* obj, void ( OBJ_TYPE::*callbackMethod )( ARGS... ) );
+
+	template <typename OBJ_TYPE>
+	void UnsubscribeAllMethodsFromObject( OBJ_TYPE* obj );
 
 	void Invoke( const ARGS& ...args );
 
@@ -42,6 +45,27 @@ private:
 private:
 	std::vector<Subscription> m_subscriptions;
 };
+
+
+//-----------------------------------------------------------------------------------------------
+template <typename ...ARGS>
+template <typename OBJ_TYPE>
+void Delegate<ARGS...>::UnsubscribeAllMethodsFromObject( OBJ_TYPE* obj )
+{
+	std::vector<uint> subIdxsToDelete;
+	for ( uint subIdx = 0; subIdx < m_subscriptions.size(); ++subIdx )
+	{
+		if ( m_subscriptions[subIdx].objectId == obj )
+		{
+			subIdxsToDelete.push_back( subIdx );
+		}
+	}
+
+	for ( uint deletedSubIdx = subIdxsToDelete.size() - 1; deletedSubIdx >= 0; --deletedSubIdx )
+	{
+		m_subscriptions.erase( m_subscriptions.begin() + deletedSubIdx );
+	}
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -118,12 +142,11 @@ void Delegate<ARGS...>::Subscribe( const Subscription& sub )
 template <typename ...ARGS>
 void Delegate<ARGS...>::Unsubscribe( const Subscription& sub )
 {
-
-	for ( uint i = 0; i < m_subscriptions.size(); ++i )
+	for ( uint subIdx = 0; subIdx < m_subscriptions.size(); ++subIdx )
 	{
-		if ( m_subscriptions[i] == sub )
+		if ( m_subscriptions[subIdx] == sub )
 		{
-			m_subscriptions.erase( m_subscriptions.begin() + i );
+			m_subscriptions.erase( m_subscriptions.begin() + subIdx );
 			return;
 		}
 	}

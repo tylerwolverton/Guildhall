@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
@@ -1384,6 +1385,16 @@ void RenderContext::SetAmbientColor( const Vec3& color )
 void RenderContext::SetAmbientIntensity( float intensity )
 {
 	m_ambientLightIntensity = intensity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientIntensity( EventArgs* args )
+{
+	Rgba8 color = args->GetValue( "color", Rgba8::WHITE );
+	float intensity = args->GetValue( "intensity", 1.0f );
+
+	SetAmbientLight( color, intensity );
 }
 
 
