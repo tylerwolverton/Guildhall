@@ -1391,10 +1391,9 @@ void RenderContext::SetAmbientIntensity( float intensity )
 //-----------------------------------------------------------------------------------------------
 void RenderContext::SetAmbientIntensity( EventArgs* args )
 {
-	Rgba8 color = args->GetValue( "color", Rgba8::WHITE );
 	float intensity = args->GetValue( "intensity", 1.0f );
 
-	SetAmbientLight( color, intensity );
+	SetAmbientIntensity( intensity );
 }
 
 
@@ -1411,6 +1410,16 @@ void RenderContext::SetAmbientLight( const Vec3& color, float intensity )
 {
 	SetAmbientColor( color );
 	SetAmbientIntensity( intensity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientLight( EventArgs* args )
+{
+	Rgba8 color = args->GetValue( "color", Rgba8::WHITE );
+	float intensity = args->GetValue( "intensity", 1.0f );
+
+	SetAmbientLight( color, intensity );
 }
 
 
