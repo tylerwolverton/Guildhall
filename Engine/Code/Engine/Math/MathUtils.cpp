@@ -122,20 +122,6 @@ bool IsNearlyEqual( const Vec3& value, const Vec3& target, float variance /*= .0
 
 
 //-----------------------------------------------------------------------------------------------
-float Min( float a, float b )
-{
-	return a < b ? a : b;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-float Max( float a, float b )
-{
-	return a > b ? a : b;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 const Vec2 TransformPosition2D( const Vec2& initialPos, float uniformScale, float rotationDeg, const Vec2& translation )
 {
 	Vec2 transformedPos( initialPos );

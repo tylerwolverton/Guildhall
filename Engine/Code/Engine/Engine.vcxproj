@@ -199,9 +199,7 @@
     <ClCompile Include="Math\Vec3.cpp" />
     <ClCompile Include="Math\Vec4.cpp" />
     <ClCompile Include="Physics\Collider2D.cpp" />
-    <ClCompile Include="Physics\Collision2D.cpp" />
     <ClCompile Include="Physics\DiscCollider2D.cpp" />
-    <ClCompile Include="Physics\Manifold2.cpp" />
     <ClCompile Include="Physics\Physics2D.cpp" />
     <ClCompile Include="Physics\PolygonCollider2D.cpp" />
     <ClCompile Include="Physics\Rigidbody2D.cpp" />

@@ -181,12 +181,6 @@
     <ClCompile Include="Physics\Collider2D.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Physics\Manifold2.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\Collision2D.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
     <ClCompile Include="OS\Window.cpp">
       <Filter>OS</Filter>
     </ClCompile>
@@ -263,7 +257,7 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Core\NamedProperties.cpp">
-	  <Filter>Core</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\ShaderProgram.cpp">
       <Filter>Renderer</Filter>

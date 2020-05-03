@@ -48,6 +48,7 @@ private:
 	void ApplyEffectors(); 	
 	void MoveRigidbodies( float deltaSeconds );
 	void DetectCollisions(); 	
+	void ClearOldCollisions(); 	
 	void ResolveCollisions(); 	
 	void ResolveCollision( const Collision2D& collision ); 	
 	// TODO: Rename to my and theirs or something else that's clear
@@ -58,13 +59,16 @@ private:
 	   
 	float GetRotationalThingOverMomentOfInertia( Rigidbody2D* rigidbody, const Manifold2& collisionManifold );
 
+	void AddOrUpdateCollision( const Collision2D& collision );
+
 	void CleanupDestroyedObjects();  	
 
 private:
 	Clock* m_gameClock = nullptr;
 	Clock* m_physicsClock = nullptr;
 	Timer* m_stepTimer = nullptr;
-	
+	uint m_frameNum = 0;
+
 	std::vector<Rigidbody2D*> m_rigidbodies;
 	std::vector<int> m_garbageRigidbodyIndexes;
 	std::vector<Collider2D*> m_colliders;

@@ -32,6 +32,7 @@ class Collider2D
 	friend class Physics2D;
 
 public: // Interface 
+	int GetId()																	{ return m_id; }
 	// cache off the world shape representation of this object
 	// taking into account the owning rigidbody (if no owner, local is world)
 	virtual void UpdateWorldShape() = 0;
@@ -70,6 +71,7 @@ public:
 
 protected:
 	Physics2D* m_system			= nullptr;			
+	int m_id = -1;
 
 	AABB2 m_worldBounds;
 

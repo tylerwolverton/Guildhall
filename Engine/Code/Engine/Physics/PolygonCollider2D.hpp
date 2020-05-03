@@ -14,8 +14,8 @@ struct AABB2;
 class PolygonCollider2D : public Collider2D
 {
 public:
-	PolygonCollider2D( const std::vector<Vec2>& points );
-	PolygonCollider2D( const Polygon2& polygon );
+	PolygonCollider2D( int id, const std::vector<Vec2>& points );
+	PolygonCollider2D( int id, const Polygon2& polygon );
 
 	virtual void UpdateWorldShape() override;
 
