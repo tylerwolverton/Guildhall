@@ -144,9 +144,28 @@ Material::Material( RenderContext* context, const char* filename )
 
 
 //-----------------------------------------------------------------------------------------------
+Material::Material( RenderContext* context )
+{
+	m_userTextures.resize( MAX_USER_TEXTURES );
+	m_userSamplers.resize( MAX_USER_TEXTURES );
+
+	m_ubo = new RenderBuffer( context, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Material::~Material()
 {
 	PTR_SAFE_DELETE( m_ubo );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Material::SetUserTexture( uint slot, Texture* texture )
+{
+	GUARANTEE_OR_DIE( slot < MAX_USER_TEXTURES, Stringf( "Must specify a user texture less than max num user textures: %d", MAX_USER_TEXTURES ) );
+	
+	m_userTextures[slot] = texture;
 }
 
 

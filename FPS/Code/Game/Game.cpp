@@ -110,7 +110,7 @@ void Game::Startup()
 	colorTransform.SetBasisVectors3D( iBasis, jBasis, kBasis );
 
 	m_colorTransformConstants.colorTransform = colorTransform;
-	m_colorTransformConstants.transformPower = 1.f;
+	m_colorTransformConstants.transformPower = 0.f;
 	m_colorTransformConstants.tint = Rgba8::BLACK.GetAsRGBVector();
 	m_colorTransformConstants.tintPower = 0.f;
 	
@@ -657,8 +657,8 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
-	Rgba8 backgroundColor( 10, 10, 10, 255 );
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
+	//Rgba8 backgroundColor( 10, 10, 10, 255 );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, Rgba8::BLACK );
 }
 
 
@@ -789,14 +789,14 @@ void Game::Render() const
 	Texture* backbuffer = g_renderer->GetBackBuffer();
 	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 	Texture* bloomTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	Texture* normalTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 	Texture* albedoTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	Texture* normalTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 	Texture* tangentTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 
 	m_worldCamera->SetColorTarget( 0, colorTarget );
 	m_worldCamera->SetColorTarget( 1, bloomTarget );
-	m_worldCamera->SetColorTarget( 2, normalTarget );
-	m_worldCamera->SetColorTarget( 3, albedoTarget );
+	m_worldCamera->SetColorTarget( 2, albedoTarget );
+	m_worldCamera->SetColorTarget( 3, normalTarget );
 	m_worldCamera->SetColorTarget( 4, tangentTarget );
 
 	g_renderer->BeginCamera( *m_worldCamera );
@@ -840,27 +840,48 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_cubeMesh );
 
 	// Triplanar
-	g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
+	/*g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_triplanarMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );
+	g_renderer->DrawMesh( m_sphereMesh );*/
 
 	g_renderer->EndCamera( *m_worldCamera );
 
 	// Render full screen effect
 	//ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectInvertColors.hlsl" );
-	ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
+	/*ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
 	g_renderer->SetMaterialData( (void*)&m_colorTransformConstants, sizeof( m_colorTransformConstants ) );
 
+	Texture* colorTransformTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+
 	g_renderer->StartEffect( backbuffer, colorTarget, shader );
+	g_renderer->EndEffect();*/
+
+	Texture* colorTransformTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	g_renderer->CopyTexture( colorTransformTarget, colorTarget );
+
+	ShaderProgram* shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectBloom.hlsl" );
+	g_renderer->BindTexture( USER_TEXTURE_SLOT_START, colorTransformTarget );
+
+	Material mat( g_renderer );
+	Shader shader;
+	shader.SetShaderProgram( shaderProg );
+
+	mat.SetShader( &shader );
+	mat.SetUserTexture( 0, colorTransformTarget );
+
+	g_renderer->StartEffect( backbuffer, bloomTarget, &mat );
+	//g_renderer->StartEffect( colorTransformTarget, bloomTarget, shader );
 	g_renderer->EndEffect();
 
+	//g_renderer->CopyTexture( backbuffer, colorTransformTarget );
 	m_worldCamera->SetColorTarget( backbuffer );
 
 	g_renderer->ReleaseRenderTarget( colorTarget );
 	g_renderer->ReleaseRenderTarget( bloomTarget );
-	g_renderer->ReleaseRenderTarget( normalTarget );
 	g_renderer->ReleaseRenderTarget( albedoTarget );
+	g_renderer->ReleaseRenderTarget( normalTarget );
 	g_renderer->ReleaseRenderTarget( tangentTarget );
+	g_renderer->ReleaseRenderTarget( colorTransformTarget );
 
 	// Debug Rendering
 	DebugRenderWorldToCamera( m_worldCamera );

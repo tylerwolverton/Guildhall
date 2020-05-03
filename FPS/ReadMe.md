@@ -22,12 +22,12 @@ Project: FPS
         - [ ] **Optional Challenge: Have all the above be done with a single mat44.**
     - [x] Copy this final image to the swapchain before present
    
-- [ ] Bloom Effect
-    - [ ] Set your normal color target, and a secondary "bloom" target
-        - [ ] Camera can set set tertiary render targets
-        - [ ] Shader has a secondary output specified
+- [-] Bloom Effect
+    - [x] Set your normal color target, and a secondary "bloom" target
+        - [x] Camera can set set tertiary render targets
+        - [x] Shader has a secondary output specified
     - [ ] When done, be able to blur the bloom target
-        - [ ] Create/Recycle a matching color/render target
+        - [x] Create/Recycle a matching color/render target
         - [ ] Run a guassian blur pass N times, each pass consisting of one horizontal and one vertical pass
             - [ ] Each step in a pass will swap out the src/dst target and render a full screen blur shader
                 - [ ] Run once horizontally

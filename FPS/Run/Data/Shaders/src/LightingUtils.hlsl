@@ -18,6 +18,17 @@ struct light_t
 };
 
 
+//--------------------------------------------------------------------------------------
+struct lit_color_t
+{
+	float3 color;
+	float padding0;
+	
+	float3 bloom;  
+};
+
+
+//--------------------------------------------------------------------------------------
 cbuffer light_constants : register( b3 )
 {
 	float4 AMBIENT;
@@ -41,7 +52,7 @@ float CalculateAttenuation( float3 attenuation_factors, float light_intensity, f
 
 
 //--------------------------------------------------------------------------------------
-float3 CalculateDot3Light( float3 world_position, float3 world_normal, float3 surface_color )
+lit_color_t CalculateDot3Light( float3 world_position, float3 world_normal, float3 surface_color )
 {
 	float3 ambient = AMBIENT.xyz * AMBIENT.w;
 	// for each light, we going to add the dot3 and specular factors
@@ -91,8 +102,12 @@ float3 CalculateDot3Light( float3 world_position, float3 world_normal, float3 su
 	diffuse = saturate( diffuse );
 
 	float3 bloom = max( float3( 0.f, 0.f, 0.f ), ( specular + emissive ) - float3( 1.f, 1.f, 1.f ) );
+	float3 color = ( ambient + diffuse ) * surface_color + specular + emissive;
 
-	return ( ambient + diffuse ) * surface_color + specular + emissive;
+	lit_color_t lit_color;
+	lit_color.color = color; 
+	lit_color.bloom = bloom;
+	return lit_color;
 }
 
 

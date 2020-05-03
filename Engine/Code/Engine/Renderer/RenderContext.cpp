@@ -223,6 +223,16 @@ void RenderContext::StartEffect( Texture* destination, Texture* source, ShaderPr
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::StartEffect( Texture* destination, Texture* source, Material* material )
+{
+	m_effectCamera->SetColorTarget( destination );
+	BeginCamera( *m_effectCamera );
+	BindMaterial( material );
+	BindDiffuseTexture( source );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::EndEffect()
 {
 	//FinalizeContext();

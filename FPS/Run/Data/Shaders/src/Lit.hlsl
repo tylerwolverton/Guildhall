@@ -44,12 +44,13 @@ v2f_t VertexFunction( vs_input_t input )
 	return v2f;
 }
 
+//--------------------------------------------------------------------------------------
 struct fragment_output_t
 {
 	float4 color : SV_TARGET0;
 	float4 bloom : SV_TARGET1;
-	float4 normal : SV_TARGET2;
-	float4 albedo : SV_TARGET3;
+	float4 albedo : SV_TARGET2;
+	float4 normal : SV_TARGET3;
 	float4 tangent : SV_TARGET4;
 };
 
@@ -74,17 +75,18 @@ fragment_output_t FragmentFunction( v2f_t input )
 	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
 	float3 world_normal = mul( surface_normal, tbn );
 
-	float3 final_color = CalculateDot3Light( input.world_position, world_normal, surface_color );
+	lit_color_t final_color = CalculateDot3Light( input.world_position, world_normal, surface_color );
 	
-	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
+	final_color.color = pow( max( final_color.color, 0.f ), 1.f / GAMMA );
+	//final_color.bloom = pow( max( final_color.bloom, 0.f ), 1.f / GAMMA );
 
-	float4 final_color_with_fog = AddFogToColor( float4( final_color, surface_alpha ), input.world_position );
+	float4 final_color_with_fog = AddFogToColor( float4( final_color.color, surface_alpha ), input.world_position );
 
 	fragment_output_t output;
 	output.color = final_color_with_fog;
-	output.bloom = float4( 0, 0, 0, 1 );
-	output.normal = float4( VectorToColor( world_normal ), 1.f);
+	output.bloom = float4( final_color.bloom, 1.f );
 	output.albedo = diffuse_color;
+	output.normal = float4( VectorToColor( world_normal ), 1.f);
 	output.tangent = float4( VectorToColor( input.world_tangent ), 1.f );
 
 	return output;

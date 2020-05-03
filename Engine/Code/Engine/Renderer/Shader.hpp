@@ -26,12 +26,15 @@ struct ShaderState
 class Shader
 {
 public:
+	Shader() = default;
 	explicit Shader( RenderContext* context, const char* filename );
 
-	std::string GetName()							{ return m_name; }
-	const char* GetFileName()						{ return m_filename.c_str(); }
-	ShaderProgram* GetShaderProgram()				{ return m_program; }
-	ShaderState GetShaderState()					{ return m_state; }
+	std::string GetName()								{ return m_name; }
+	const char* GetFileName()							{ return m_filename.c_str(); }
+	ShaderProgram* GetShaderProgram()					{ return m_program; }
+	ShaderState GetShaderState()						{ return m_state; }
+
+	void SetShaderProgram( ShaderProgram* program )		{ m_program = program; }
 
 private:
 	RenderContext* m_context = nullptr;

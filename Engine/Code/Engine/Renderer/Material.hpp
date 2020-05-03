@@ -18,12 +18,14 @@ class Material
 	friend class RenderContext;
 
 public:
+	Material( RenderContext* context );
 	Material( RenderContext* context, const char* filename );
 	~Material();
 
 	void SetShader( Shader* shader )								{ m_shader = shader; }
 	void SetDiffuseTexture( Texture* diffuse )						{ m_diffuseTexture = diffuse; }
 	void SetNormalTexture( Texture* normal )						{ m_normalTexture = normal; }
+	void SetUserTexture( uint slot, Texture* texture );
 	void UpdateUBOIfDirty();
 	
 	//-----------------------------------------------------------------------------------------------

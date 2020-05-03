@@ -21,7 +21,7 @@
      mode="clamp" />
 
   <!-- specular, will default to factor 0 and power 32 -->
-  <specular factor=".25"
+  <specular factor="1.0"
             power="32" />
   
 </material>

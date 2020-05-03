@@ -173,6 +173,7 @@ public:
 	void CopyTexture( Texture* destination, Texture* source );
 	//void ApplyEffect( Texture* destination, Texture* source, Material* material );
 	void StartEffect( Texture* destination, Texture* source, ShaderProgram* shader );
+	void StartEffect( Texture* destination, Texture* source, Material* material );
 	void EndEffect();
 
 	void BeginCamera( Camera& camera );
