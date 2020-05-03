@@ -110,6 +110,74 @@ void Physics2D::MoveRigidbodies( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
+bool Physics2D::DoesCollisionInvolveATrigger( const Collision2D& collision ) const
+{
+	return collision.myCollider->m_isTrigger
+		|| collision.theirCollider->m_isTrigger;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::InvokeCollisionEvents( const Collision2D& collision, eCollisionEventType collisionType ) const
+{
+	// Inverse collision from perspective of their collider
+	Collision2D theirCollision = collision;
+	theirCollision.myCollider = collision.theirCollider;
+	theirCollision.theirCollider = collision.myCollider;
+
+	// Fire correct enter events
+	if ( !DoesCollisionInvolveATrigger( collision ) )
+	{
+		switch ( collisionType )
+		{
+			case eCollisionEventType::ENTER:
+			{
+				collision.myCollider->m_onOverlapEnterDelegate.Invoke( collision );
+				collision.theirCollider->m_onOverlapEnterDelegate.Invoke( theirCollision );
+			} 
+			break;
+
+			case eCollisionEventType::STAY:
+			{
+				collision.myCollider->m_onOverlapStayDelegate.Invoke( collision );
+				collision.theirCollider->m_onOverlapStayDelegate.Invoke( theirCollision );
+			} 
+			break;
+
+			case eCollisionEventType::LEAVE:
+			{
+				collision.myCollider->m_onOverlapLeaveDelegate.Invoke( collision );
+				collision.theirCollider->m_onOverlapLeaveDelegate.Invoke( theirCollision );
+			} 
+			break;
+		}
+	}
+	else
+	{
+		if ( collision.myCollider->m_isTrigger )
+		{
+			switch ( collisionType )
+			{
+				case eCollisionEventType::ENTER: collision.myCollider->m_onTriggerEnterDelegate.Invoke( collision ); break;
+				case eCollisionEventType::STAY:	 collision.myCollider->m_onTriggerStayDelegate.Invoke( collision ); break;
+				case eCollisionEventType::LEAVE: collision.myCollider->m_onTriggerLeaveDelegate.Invoke( collision ); break;
+			}
+		}
+
+		if ( collision.theirCollider->m_isTrigger )
+		{
+			switch ( collisionType )
+			{
+				case eCollisionEventType::ENTER: collision.theirCollider->m_onTriggerEnterDelegate.Invoke( theirCollision ); break;
+				case eCollisionEventType::STAY:  collision.theirCollider->m_onTriggerStayDelegate.Invoke( theirCollision ); break;
+				case eCollisionEventType::LEAVE: collision.theirCollider->m_onTriggerLeaveDelegate.Invoke( theirCollision ); break;
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Physics2D::DetectCollisions()
 {
 	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
@@ -132,7 +200,11 @@ void Physics2D::DetectCollisions()
 				collision.frameNum = m_frameNum;
 				collision.myCollider = collider;
 				collision.theirCollider = otherCollider;
-				collision.collisionManifold = collider->GetCollisionManifold( otherCollider );
+				// Only calculate manifold if not triggers
+				if ( !DoesCollisionInvolveATrigger( collision ) )
+				{
+					collision.collisionManifold = collider->GetCollisionManifold( otherCollider );
+				}
 
 				AddOrUpdateCollision( collision );
 			}
@@ -152,12 +224,7 @@ void Physics2D::ClearOldCollisions()
 		// Check if collision is old
 		if ( collision.frameNum != m_frameNum )
 		{
-			// Call Leave
-			collision.myCollider->m_onOverlapLeaveDelegate.Invoke( collision );
-			Collision2D theirCollision = collision;
-			theirCollision.myCollider = collision.theirCollider;
-			theirCollision.theirCollider = collision.myCollider;
-			collision.theirCollider->m_onOverlapLeaveDelegate.Invoke( theirCollision );
+			InvokeCollisionEvents( collision, eCollisionEventType::LEAVE );
 			oldCollisionIds.push_back( colIdx );
 		}
 	}
@@ -178,23 +245,13 @@ void Physics2D::AddOrUpdateCollision( const Collision2D& collision )
 		// Check if collision is already in progress
 		if ( m_collisions[colIdx].id == collision.id )
 		{
+			InvokeCollisionEvents( collision, eCollisionEventType::STAY );
 			m_collisions[colIdx] = collision;
-			// Call Stay
-			collision.myCollider->m_onOverlapStayDelegate.Invoke( collision );
-			Collision2D theirCollision = collision;
-			theirCollision.myCollider = collision.theirCollider;
-			theirCollision.theirCollider = collision.myCollider;
-			collision.theirCollider->m_onOverlapStayDelegate.Invoke( theirCollision );
 			return;
 		}
 	}
 
-	// New collision
-	collision.myCollider->m_onOverlapEnterDelegate.Invoke( collision );
-	Collision2D theirCollision = collision;
-	theirCollision.myCollider = collision.theirCollider;
-	theirCollision.theirCollider = collision.myCollider;
-	collision.theirCollider->m_onOverlapEnterDelegate.Invoke( theirCollision );
+	InvokeCollisionEvents( collision, eCollisionEventType::ENTER );
 	m_collisions.push_back( collision );
 }
 
@@ -204,7 +261,11 @@ void Physics2D::ResolveCollisions()
 {
 	for ( int collisionIdx = 0; collisionIdx < (int)m_collisions.size(); ++collisionIdx )
 	{
-		ResolveCollision( m_collisions[collisionIdx] );
+		Collision2D& collision = m_collisions[collisionIdx];
+		if ( !DoesCollisionInvolveATrigger( collision ) )
+		{
+			ResolveCollision( collision );
+		}
 	}
 }
 
@@ -465,12 +526,32 @@ DiscCollider2D* Physics2D::CreateDiscCollider( const Vec2& localPosition, float 
 
 
 //-----------------------------------------------------------------------------------------------
+DiscCollider2D* Physics2D::CreateDiscTrigger( const Vec2& localPosition, float radius )
+{
+	DiscCollider2D* discTrigger = CreateDiscCollider( localPosition, radius );
+	discTrigger->m_isTrigger = true;
+
+	return discTrigger;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 PolygonCollider2D* Physics2D::CreatePolygon2Collider( const Polygon2& polygon )
 {
 	PolygonCollider2D* newCollider2D = new PolygonCollider2D( (int)m_colliders.size(), polygon );
 	m_colliders.push_back( newCollider2D );
 
 	return newCollider2D;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+PolygonCollider2D* Physics2D::CreatePolygon2Trigger( const Polygon2& polygon )
+{
+	PolygonCollider2D* polygonTrigger = CreatePolygon2Collider( polygon );
+	polygonTrigger->m_isTrigger = true;
+
+	return polygonTrigger;
 }
 
 

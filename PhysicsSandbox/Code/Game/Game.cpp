@@ -380,6 +380,11 @@ void Game::UpdateFromKeyboard()
 						m_dragTarget->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 					}
 				}
+				else
+				{
+					float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
+					SpawnTriggerDisc( m_mouseWorldPosition, radius );
+				}
 			}
 
 			if ( g_inputSystem->IsKeyPressed( KEY_PLUS ) )
@@ -868,6 +873,32 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::SpawnTriggerDisc( const Vec2& center, float radius )
+{
+	GameObject* gameObject = new GameObject();
+	gameObject->SetRigidbody( m_physics2D->CreateRigidbody() );
+	gameObject->SetPosition( center );
+	gameObject->SetSimulationMode( SIMULATION_MODE_STATIC );
+
+	DiscCollider2D* discCollider = m_physics2D->CreateDiscTrigger( Vec2::ZERO, radius );
+	gameObject->SetCollider( discCollider );
+	gameObject->ChangeBounciness( .5f );
+	gameObject->ChangeFriction( .5f );
+
+	gameObject->SetBorderColor( Rgba8::BLUE );
+	gameObject->SetFillColor( Rgba8::WHITE );
+
+	discCollider->m_rigidbody->m_userProperties.SetValue( "name", "DiscTrigger" );
+
+	discCollider->m_onTriggerEnterDelegate.SubscribeMethod( this, &Game::PrintEnterCollisionEvent );
+	discCollider->m_onTriggerStayDelegate.SubscribeMethod( this, &Game::PrintStayCollisionEvent );
+	discCollider->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Game::PrintLeaveCollisionEvent );
+
+	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::SpawnPolygon( const Polygon2& polygon )
 {
 	GameObject* gameObject = new GameObject();
@@ -1012,14 +1043,14 @@ void Game::PrintEnterCollisionEvent( Collision2D collision )
 {
 	std::string myName = collision.myCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
 	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
-	/*DebugAddScreenTextf( Vec4( .5f, .8f, 0.f, 0.f ),
+	DebugAddScreenTextf( Vec4( .5f, .8f, 0.f, 0.f ),
 						 Vec2( .5f, .5f ),
 						 20.f,
 						 Rgba8::BLUE,
 						 0.f,
 						 "%s%d entered a collision with %s%d!",
 							myName.c_str(), collision.myCollider->GetId(), 
-							theirName.c_str(), collision.theirCollider->GetId() );*/
+							theirName.c_str(), collision.theirCollider->GetId() );
 }
 
 
@@ -1028,14 +1059,14 @@ void Game::PrintStayCollisionEvent( Collision2D collision )
 {
 	std::string myName = collision.myCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
 	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
-	/*DebugAddScreenTextf( Vec4( .5f, .6f, 0.f, 0.f ),
+	DebugAddScreenTextf( Vec4( .5f, .6f, 0.f, 0.f ),
 						 Vec2( .5f, .5f ),
 						 20.f,
 						 Rgba8::GREEN,
 						 0.f,
 						 "%s%d is colliding with %s%d!",
 							myName.c_str(), collision.myCollider->GetId(),
-							theirName.c_str(), collision.theirCollider->GetId() );*/
+							theirName.c_str(), collision.theirCollider->GetId() );
 }
 
 
@@ -1044,12 +1075,12 @@ void Game::PrintLeaveCollisionEvent( Collision2D collision )
 {
 	std::string myName = collision.myCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
 	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
-	/*DebugAddScreenTextf( Vec4( .5f, .4f, 0.f, 0.f ),
+	DebugAddScreenTextf( Vec4( .5f, .4f, 0.f, 0.f ),
 						 Vec2( .5f, .5f ),
 						 20.f,
 						 Rgba8::RED,
 						 0.f,
 						 "%s%d stopped colliding with %s%d!",
 							myName.c_str(), collision.myCollider->GetId(), 
-							theirName.c_str(), collision.theirCollider->GetId() );*/
+							theirName.c_str(), collision.theirCollider->GetId() );
 }

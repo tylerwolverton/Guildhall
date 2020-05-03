@@ -81,6 +81,7 @@ private:
 	void HandleIntersection( GameObject* gameObject, GameObject* otherGameObject );
 
 	void SpawnDisc( const Vec2& center, float radius );
+	void SpawnTriggerDisc( const Vec2& center, float radius );
 	void SpawnPolygon( const std::vector<Vec2>& points );
 	void SpawnPolygon( const Polygon2& polygon );
 

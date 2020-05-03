@@ -69,13 +69,19 @@ public:
 	Vec2	m_localPosition; // my local offset from my parent
 	Vec2	m_worldPosition; // calculated from local position and owning rigidbody if present
 
+	// TODO: Privatize these?
 	Delegate<Collision2D> m_onOverlapEnterDelegate;
 	Delegate<Collision2D> m_onOverlapStayDelegate;
 	Delegate<Collision2D> m_onOverlapLeaveDelegate;
 
+	Delegate<Collision2D> m_onTriggerEnterDelegate;
+	Delegate<Collision2D> m_onTriggerStayDelegate;
+	Delegate<Collision2D> m_onTriggerLeaveDelegate;
+
 protected:
 	Physics2D* m_system			= nullptr;			
-	int m_id = -1;
+	int m_id					= -1;
+	bool m_isTrigger			= false;
 
 	AABB2 m_worldBounds;
 };

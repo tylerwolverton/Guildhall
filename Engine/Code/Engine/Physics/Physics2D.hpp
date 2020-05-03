@@ -17,6 +17,15 @@ class PolygonCollider2D;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eCollisionEventType
+{
+	ENTER,
+	STAY,
+	LEAVE
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Physics2D
 {
 public:
@@ -31,7 +40,9 @@ public:
 	void DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy );
 
 	DiscCollider2D* CreateDiscCollider( const Vec2& localPosition, float radius );
+	DiscCollider2D* CreateDiscTrigger( const Vec2& localPosition, float radius );
 	PolygonCollider2D* CreatePolygon2Collider( const Polygon2& polygon );
+	PolygonCollider2D* CreatePolygon2Trigger( const Polygon2& polygon );
 	void DestroyCollider( Collider2D* colliderToDestroy );
 
 	const Vec2 GetSceneGravity()															{ return m_forceOfGravity; }
@@ -51,6 +62,8 @@ private:
 	void ClearOldCollisions(); 	
 	void ResolveCollisions(); 	
 	void ResolveCollision( const Collision2D& collision ); 	
+	bool DoesCollisionInvolveATrigger( const Collision2D& collision ) const;
+	void InvokeCollisionEvents( const Collision2D& collision, eCollisionEventType collisionType ) const;
 	// TODO: Rename to my and theirs or something else that's clear
 	void CorrectCollidingRigidbodies( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
 	void ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* rigidbody2, const Manifold2& collisionManifold );
