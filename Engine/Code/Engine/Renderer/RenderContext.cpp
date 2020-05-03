@@ -225,6 +225,8 @@ void RenderContext::StartEffect( Texture* destination, Texture* source, ShaderPr
 //-----------------------------------------------------------------------------------------------
 void RenderContext::EndEffect()
 {
+	//FinalizeContext();
+
 	m_context->Draw( 3, 0 );
 	EndCamera( *m_effectCamera );
 }

@@ -82,6 +82,22 @@ struct ProjectionConstants
 
 
 //-----------------------------------------------------------------------------------------------
+struct ColorTransformConstants
+{
+	Mat44 colorTransform;
+
+	Vec3 tint;
+	float tintPower;
+
+	float transformPower;
+
+	float padding0;
+	float padding1;
+	float padding2;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -201,7 +217,10 @@ private:
 	FresnelConstants m_fresnelData;
 	float m_dissolveFactor = 0.f;
 	float m_dissolveEdge = .3f;
+	
 	Mat44 m_projectionViewMatrix;
+
+	ColorTransformConstants m_colorTransformConstants;
 
 	std::vector<Shader*> m_shaders;
 	int m_currentShaderIdx = 0;

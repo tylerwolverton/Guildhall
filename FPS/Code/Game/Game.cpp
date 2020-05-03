@@ -102,6 +102,11 @@ void Game::Startup()
 
 	InitializeLights();
 
+	m_colorTransformConstants.colorTransform = Mat44::CreateNonUniformScale3D( Vec3( .3f, .59f, .11f ) );
+	m_colorTransformConstants.transformPower = 1.f;
+	m_colorTransformConstants.tint = Rgba8::GREY.GetAsRGBVector();
+	m_colorTransformConstants.tintPower = 0.f;
+	
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -835,7 +840,10 @@ void Game::Render() const
 	g_renderer->EndCamera( *m_worldCamera );
 
 	// Render full screen effect
-	ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffect.hlsl" );
+	//ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectInvertColors.hlsl" );
+	ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
+	g_renderer->SetMaterialData( (void*)&m_colorTransformConstants, sizeof( m_colorTransformConstants ) );
+
 	g_renderer->StartEffect( backbuffer, colorTarget, shader );
 	g_renderer->EndEffect();
 
