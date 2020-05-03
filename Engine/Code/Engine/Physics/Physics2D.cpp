@@ -32,6 +32,12 @@ void Physics2D::Startup( Clock* gameClock )
 	m_stepTimer->SetSeconds( s_fixedDeltaSeconds );
 
 	g_eventSystem->RegisterEvent( "set_physics_update", "Usage: set_physics_update hz=NUMBER .Set rate of physics update in hz.", eUsageLocation::DEV_CONSOLE, SetPhysicsUpdateRate );
+
+	// Initialize layers
+	for ( int layerIdx = 0; layerIdx < 32; ++layerIdx )
+	{
+		m_layerInteractions[layerIdx] = ~0U;
+	}
 }
 
 
@@ -192,6 +198,18 @@ void Physics2D::DetectCollisions()
 		for ( int otherColliderIdx = colliderIdx + 1; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
 		{
 			Collider2D* otherCollider = m_colliders[otherColliderIdx];
+			if ( otherCollider == nullptr )
+			{
+				continue;
+			}
+
+			// Skip if colliders on on non-interacting layers
+			if ( !DoLayersInteract( collider->m_rigidbody->GetLayer(), 
+									otherCollider->m_rigidbody->GetLayer() ) )
+			{
+				continue;
+			}
+
 			// TODO: Remove Intersects check
 			if ( collider->Intersects( otherCollider ) )
 			{
@@ -580,6 +598,29 @@ void Physics2D::SetSceneGravity( const Vec2& forceOfGravity )
 void Physics2D::SetSceneGravity( float forceOfGravityY )
 {
 	m_forceOfGravity = Vec2( 0.f, forceOfGravityY );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Physics2D::DoLayersInteract( uint layer0, uint layer1 ) const
+{
+	return ( m_layerInteractions[layer0] & ( 1 << layer1 ) ) != 0 ;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::EnableLayerInteraction( uint layer0, uint layer1 )
+{
+	m_layerInteractions[layer0] |= ( 1 << layer1 );
+	m_layerInteractions[layer1] |= ( 1 << layer0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::DisableLayerInteraction( uint layer0, uint layer1 )
+{
+	m_layerInteractions[layer0] &= ~( 1 << layer1 );
+	m_layerInteractions[layer1] &= ~( 1 << layer0 );
 }
 
 

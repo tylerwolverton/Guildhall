@@ -34,6 +34,9 @@ public:
 	Collider2D* GetCollider()														{ return m_collider; }
 	void TakeCollider( Collider2D* collider ); // takes ownership of a collider (destroying my current one if present)
 
+	uint GetLayer() const															{ return m_layer; }
+	void SetLayer( uint layer )														{ m_layer = layer; }
+
 	Vec2 GetVelocity()																{ return m_velocity; }
 	void SetVelocity( const Vec2& velocity );
 	
@@ -100,6 +103,8 @@ private:
 
 	bool m_isEnabled = true;
 	eSimulationMode m_simulationMode = SIMULATION_MODE_DYNAMIC;
+
+	uint m_layer = 0;
 
 private:
 	~Rigidbody2D(); // destroys the collider

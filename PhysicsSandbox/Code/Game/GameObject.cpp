@@ -168,6 +168,30 @@ void GameObject::SetSimulationMode( eSimulationMode mode )
 
 
 //-----------------------------------------------------------------------------------------------
+uint GameObject::GetLayer() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0;
+	}
+
+	return m_rigidbody->GetLayer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::SetLayer( uint layer )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody->SetLayer( layer );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool GameObject::Contains( const Vec2& point ) const
 {
 	if ( m_rigidbody == nullptr )

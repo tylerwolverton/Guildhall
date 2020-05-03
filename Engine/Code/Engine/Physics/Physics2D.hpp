@@ -49,6 +49,10 @@ public:
 	void SetSceneGravity( const Vec2& forceOfGravity );
 	void SetSceneGravity( float forceOfGravityY );
 
+	bool DoLayersInteract( uint layer0, uint layer1 ) const;
+	void EnableLayerInteraction( uint layer0, uint layer1 );
+	void DisableLayerInteraction( uint layer0, uint layer1 );
+
 	float GetFixedDeltaSeconds() const;
 	void SetFixedDeltaSeconds( float newDeltaSeconds );
 
@@ -90,4 +94,6 @@ private:
 	std::vector<Collision2D> m_collisions;
 
 	Vec2 m_forceOfGravity = Vec2( 0.f, -9.8f );
+
+	uint m_layerInteractions[32];
 };

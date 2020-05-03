@@ -57,6 +57,8 @@ void Game::Startup()
 
 	m_physics2D = new Physics2D();
 	m_physics2D->Startup( m_gameClock );
+	m_physics2D->DisableLayerInteraction( 0, 1 );
+	//m_physics2D->EnableLayerInteraction( 1, 0 );
 
 	m_mouseHistoryPoints[0].position = Vec2::ZERO;
 	m_mouseHistoryPoints[0].deltaSeconds = 0.f;
@@ -69,8 +71,6 @@ void Game::Startup()
 	m_mouseHistoryPoints[4].position = Vec2::ZERO;
 	m_mouseHistoryPoints[4].deltaSeconds = 0.f;
 
-	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
-
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
 
 	Vec2 bottomLeft( -WINDOW_WIDTH * .5f, -WINDOW_HEIGHT * .5f );
@@ -78,6 +78,9 @@ void Game::Startup()
 	std::vector<Vec2> points {bottomLeft, Vec2(topRight.x, bottomLeft.y), topRight, Vec2( bottomLeft.x, topRight.y ) };
 	SpawnPolygon( Polygon2( points ) );
 	m_gameObjects[0]->ChangeBounciness( 1.f );
+
+
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
 
@@ -525,6 +528,44 @@ void Game::UpdateFromKeyboard()
 				}
 			}
 
+			if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						uint curLayer = m_dragTarget->GetLayer();
+						if ( curLayer == 31 )
+						{
+							m_dragTarget->SetLayer( 0 );
+						}
+						else
+						{
+							m_dragTarget->SetLayer( curLayer + 1U );
+						}
+					}
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						uint curLayer = m_dragTarget->GetLayer();
+						if ( curLayer == 0 )
+						{
+							m_dragTarget->SetLayer( 31 );
+						}
+						else
+						{
+							m_dragTarget->SetLayer( curLayer - 1U );
+						}
+					}
+				}
+			}
+
 		} break;
 
 		case eGameState::CREATE_POLYGON:
@@ -736,16 +777,17 @@ void Game::UpdateToolTipBox()
 		case eSimulationMode::SIMULATION_MODE_STATIC: simulationModeStr = "Static"; break;
 	}
 
-	m_tooltipBox->SetText(       Stringf( "[1, 2, 3]      | Simulation Mode: %s", simulationModeStr.c_str() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[ [ ] ]        | Mass: %.2f", selectedObject->GetMass() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "               | Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
-	m_tooltipBox->AddLineOFText( Stringf( "               | Verlet Velocity: ( %.2f, %.2f )", selectedObject->GetVerletVelocity().x, selectedObject->GetVerletVelocity().y ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[- +]          | Bounciness: %.2f", selectedObject->GetBounciness() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[< >]          | Friction: %.2f", selectedObject->GetFriction() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[; ']          | Drag: %.2f", selectedObject->GetDrag() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "               | Moment of Inertia: %.2f", selectedObject->GetMomentOfInertia() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[Q E]          | Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[R T, Y-reset] | Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
+	m_tooltipBox->SetText(       Stringf( "[1, 2, 3]            | Simulation Mode: %s", simulationModeStr.c_str() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[ Up, Down arrows ]  | Layer: %u", selectedObject->GetLayer() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[ [ ] ]              | Mass: %.2f", selectedObject->GetMass() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "                     | Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "                     | Verlet Velocity: ( %.2f, %.2f )", selectedObject->GetVerletVelocity().x, selectedObject->GetVerletVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[- +]                | Bounciness: %.2f", selectedObject->GetBounciness() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[< >]                | Friction: %.2f", selectedObject->GetFriction() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[; ']                | Drag: %.2f", selectedObject->GetDrag() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "                     | Moment of Inertia: %.2f", selectedObject->GetMomentOfInertia() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[Q E]                | Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[R T, Y-reset]       | Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
 }
 
 

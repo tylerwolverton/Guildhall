@@ -40,6 +40,9 @@ public:
 	eSimulationMode GetSimulationMode();
 	void SetSimulationMode( eSimulationMode mode );
 
+	uint GetLayer() const;
+	void SetLayer( uint layer );
+
 	bool Contains( const Vec2& point ) const;
 	bool Intersects( const GameObject* otherGameObject ) const;
 
