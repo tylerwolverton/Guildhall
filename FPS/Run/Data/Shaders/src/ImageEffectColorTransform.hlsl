@@ -70,13 +70,9 @@ float4 FragmentFunction( VertexToFragment_t input ) : SV_Target0 // semeantic of
     float4 color = tDiffuse.Sample( sSampler, input.uv );
 
 	float4 transformed_color = mul( COLOR_TRANSFORM, color );
-	float scale = transformed_color.x + transformed_color.y + transformed_color.z;
-	transformed_color = color * scale;
-
 	color = lerp( color, transformed_color, COLOR_TRANSFORM_POWER );
 
-	float4 tinted_color = mul( float4( TINT_COLOR, 1.f ), color );
-	color = lerp( color, tinted_color, TINT_POWER );
+	color = lerp( color, float4( TINT_COLOR, 1.f ), TINT_POWER );
 
-   return color;
+    return color;
 }

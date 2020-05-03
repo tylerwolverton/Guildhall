@@ -8,19 +8,19 @@ Project: FPS
     - [x] Add ability to subscribe methods to your event system. 
     - [x] Add ability to unsubscribe an object from the event system (unsubscribes all methods on that object)
 
-- [ ] Color Transform (ex: Grayscale) Effect
-    - [ ] Create/Recycle a color target matching your swapchain's output.
-    - [ ] Render game as normal
-    - [ ] Create/Recycle another match target
-    - [ ] Apply an effect on the original image, outputting to this new texture
-        - [ ] Effect applies a per-pixel color transform using a matrix. 
-        - [ ] Make it so you can specify a "strength" for this transform, where 0 
+- [x] Color Transform (ex: Grayscale) Effect
+    - [x] Create/Recycle a color target matching your swapchain's output.
+    - [x] Render game as normal
+    - [x] Create/Recycle another match target
+    - [x] Apply an effect on the original image, outputting to this new texture
+        - [x] Effect applies a per-pixel color transform using a matrix. 
+        - [x] Make it so you can specify a "strength" for this transform, where 0 
               has no effect, and 1 is the full effect so you can blend between them.
-        - [ ] Be able to specify a tint and tint power that pixels trend toward (useful for fades)
+        - [x] Be able to specify a tint and tint power that pixels trend toward (useful for fades)
               - `0` would have no effect
               - `1` the resultant color would be the tint 
         - [ ] **Optional Challenge: Have all the above be done with a single mat44.**
-    - [ ] Copy this final image to the swapchain before present
+    - [x] Copy this final image to the swapchain before present
    
 - [ ] Bloom Effect
     - [ ] Set your normal color target, and a secondary "bloom" target

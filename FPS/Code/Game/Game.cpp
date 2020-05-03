@@ -102,9 +102,16 @@ void Game::Startup()
 
 	InitializeLights();
 
-	m_colorTransformConstants.colorTransform = Mat44::CreateNonUniformScale3D( Vec3( .3f, .59f, .11f ) );
+	Vec3 greyscale = Vec3( .2126f, .7152f, .0722f );
+	Vec3 iBasis = greyscale.XXX();
+	Vec3 jBasis = greyscale.YYY();
+	Vec3 kBasis = greyscale.ZZZ();
+	Mat44 colorTransform;
+	colorTransform.SetBasisVectors3D( iBasis, jBasis, kBasis );
+
+	m_colorTransformConstants.colorTransform = colorTransform;
 	m_colorTransformConstants.transformPower = 1.f;
-	m_colorTransformConstants.tint = Rgba8::GREY.GetAsRGBVector();
+	m_colorTransformConstants.tint = Rgba8::BLACK.GetAsRGBVector();
 	m_colorTransformConstants.tintPower = 0.f;
 	
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
@@ -525,29 +532,29 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		GetCurLight().intensity = ClampZeroToOne( GetCurLight().intensity );
 	}
 
-	/*if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
+	if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
 	{
-		m_specularFactor -= .5f * deltaSeconds;
-		m_specularFactor = ClampZeroToOne( m_specularFactor );
+		m_colorTransformConstants.transformPower -= 1.f * deltaSeconds;
+		m_colorTransformConstants.transformPower = ClampZeroToOne( m_colorTransformConstants.transformPower );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_RIGHT_BRACKET ) )
 	{
-		m_specularFactor += .5f * deltaSeconds;
-		m_specularFactor = ClampZeroToOne( m_specularFactor );
+		m_colorTransformConstants.transformPower += 1.f * deltaSeconds;
+		m_colorTransformConstants.transformPower = ClampZeroToOne( m_colorTransformConstants.transformPower );
 	}
-
+	
 	if ( g_inputSystem->IsKeyPressed( KEY_SEMICOLON ) )
 	{
-		m_specularPower -= 5.f * deltaSeconds;
-		m_specularPower = ClampMin( m_specularPower, 1.f );
+		m_colorTransformConstants.tintPower -= 1.f * deltaSeconds;
+		m_colorTransformConstants.tintPower = ClampZeroToOne( m_colorTransformConstants.tintPower );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_QUOTE ) )
 	{
-		m_specularPower += 5.f * deltaSeconds;
-		m_specularPower = ClampMin( m_specularPower, 1.f );
-	}*/
+		m_colorTransformConstants.tintPower += 1.f * deltaSeconds;
+		m_colorTransformConstants.tintPower = ClampZeroToOne( m_colorTransformConstants.tintPower );
+	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
 	{
@@ -742,8 +749,8 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Light intensity : %.2f", GetCurLight().intensity );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "O,P - Adjust spot light angle" );
-	//DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Specular factor : %.2f", m_specularFactor );
-	//DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Specular power : %.2f", m_specularPower );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Greyscale power : %.2f", m_colorTransformConstants.transformPower );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Tint power : %.2f", m_colorTransformConstants.tintPower );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );
