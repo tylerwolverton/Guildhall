@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/Delegate.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Physics/PhysicsMaterial.hpp"
 
@@ -9,7 +10,7 @@ struct Rgba8;
 struct Manifold2;
 class Physics2D;
 class Rigidbody2D;
-class Collider2D;
+class Collision2D;
 class RenderContext;
 
 
@@ -56,13 +57,8 @@ public: // Interface
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const = 0;
 
-
 protected:
-	// 
 	virtual ~Collider2D() {}; // private - make sure this is virtual so correct deconstructor gets called
-
-public: // any helpers you want to add
-   // ...
 
 public:
 	eCollider2DType m_type		= COLLIDER2D_NONE;  // keep track of the type - will help with collision later
@@ -76,4 +72,8 @@ protected:
 	Physics2D* m_system			= nullptr;			
 
 	AABB2 m_worldBounds;
+
+	Delegate<Collision2D> m_onOverlapEnterDelegate;
+	Delegate<Collision2D> m_onOverlapStayDelegate;
+	Delegate<Collision2D> m_onOverlapLeaveDelegate;
 };

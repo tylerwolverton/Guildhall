@@ -39,14 +39,12 @@ void Game::Startup()
 {
 	m_worldCamera = new Camera();
 	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
-	m_worldCamera->SetColorTarget( nullptr );
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 	m_worldCamera->SetPosition( m_focalPoint );
 	
 	m_uiCamera = new Camera();
 	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
-	m_uiCamera->SetColorTarget( nullptr );
 	
 	EnableDebugRendering();
 

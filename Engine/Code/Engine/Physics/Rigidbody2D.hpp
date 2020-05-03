@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Math/Vec2.hpp"
 
 
@@ -96,6 +97,8 @@ private:
 
 	bool m_isEnabled = true;
 	eSimulationMode m_simulationMode = SIMULATION_MODE_DYNAMIC;
+
+	NamedProperties m_userProperties;
 
 private:
 	~Rigidbody2D(); // destroys the collider

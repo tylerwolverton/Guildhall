@@ -1,23 +1,28 @@
 Project - PhysicsSandbox
 
-------
+## Checklist 
 
-- [x] Remove screen wrap and bottom of screen bounce.
-    - [x] Add some static world geometry (at least a floor) to catch falling objects.
-    - [x] Destroy objects that fall out of world bounds
-        - [ ] Option A: Define a world bounds and draw it so users can see where objects should destroy at.
-        - [x] Option B: Destroy objects that leave screen either left/right/bottom, but NOT top. 
-- [x] Polygon-v-Polygon Intersection Check (using GJK)
-- [x] Polygon-v-Polygon Manifold (normal/penetration) - object push out correctly
-- [x] Polygon-v-Polygon Contacts - Objects generate one or two contact points.  
-    - [x] Manifold now returns a contact edge (two points) instead of just a single contact point.  For cases where only one contact exists, 
-          return an edge with the start and end point being the same. 
-- [x] Apply Impulse using contact points
-    - [x] Calculate impulse using the center of the contact edge.
-    - [x] When applying impulse, use the point on the edge closest to each body's center of mass.
-- [x] To make friction/bounce more stable - calculate normal impulse first, apply it, and then generate tangent impulse, and apply it. 
+- [x] Be able to attach user data to a rigidbody and/or collider to hook the physics system up to game code.
 
-------
+- [ ] Add collision/contact events
+    - [ ] `OnOverlapBegin`
+    - [ ] `OnOverlapStay`
+    - [ ] `OnOverlapLeave`
+
+- [ ] Add Trigger Volumes
+    - [ ] `OnTriggerEnter`
+    - [ ] `OnTriggerStay`
+    - [ ] `OnTriggerLeave`
+
+- [ ] Support Physics Layers
+    - [ ] Be able to specify which layer a rigid body and/or collider belongs to.
+    - [ ] Be able to enable or disable collision between two given layers.
+    - [ ] Only process collisions if the two objects are allowed to interact
+    - [ ] Only process triggers if the two objects are on the same layer
+
+- [ ] **Optional**: Support axis locks.
+    - [ ] Support `X` and `Y` axis locks, only allowing movement in those directions.
+    - [ ] Support `Rotation` lock preventing the object from rotating. 
 
 
 Controls

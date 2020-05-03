@@ -282,13 +282,14 @@ void RenderContext::BeginCamera( Camera& camera )
 		}
 		else if ( i == 0 )
 		{
-			renderTargetViews[i] = (ID3D11RenderTargetView*)( GetBackBuffer()->GetOrCreateRenderTargetView() );
+			TextureView* rtv = m_swapchain->GetBackBuffer()->GetOrCreateRenderTargetView();
+			renderTargetViews[i] = (ID3D11RenderTargetView*)rtv->m_handle;
 		}
 	}
 
 	ID3D11DepthStencilView* depthStencilView = GetDepthStencilViewFromCamera( camera );
 
-	m_context->OMSetRenderTargets( rtvCount, &renderTargetViews[0], depthStencilView );
+	m_context->OMSetRenderTargets( rtvCount, renderTargetViews.data(), depthStencilView );
 
 	//SetupRenderTargetViewWithDepth( renderTargetView, camera );
 	ClearCamera( renderTargetViews, camera );

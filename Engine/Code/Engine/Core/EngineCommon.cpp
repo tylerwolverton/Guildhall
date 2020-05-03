@@ -1,5 +1,6 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 
 

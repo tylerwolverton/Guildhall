@@ -39,7 +39,6 @@ void DevConsole::Startup()
 	m_cursorBlinkTimer->SetSeconds( .5f );
 
 	m_devConsoleCamera = new Camera();
-	m_devConsoleCamera->SetColorTarget( nullptr );
 	m_devConsoleCamera->SetOutputSize( Vec2( 1920.f, 1080.f ) );
 	m_devConsoleCamera->SetProjectionOrthographic( 1080.f );
 
@@ -94,7 +93,6 @@ void DevConsole::Shutdown()
 void DevConsole::SetRenderer( RenderContext* renderer )
 {
 	m_renderer = renderer;
-	m_devConsoleCamera->SetColorTarget( renderer->GetBackBuffer() );
 }
 
 
