@@ -4,10 +4,10 @@ Project - PhysicsSandbox
 
 - [x] Be able to attach user data to a rigidbody and/or collider to hook the physics system up to game code.
 
-- [ ] Add collision/contact events
-    - [ ] `OnOverlapBegin`
-    - [ ] `OnOverlapStay`
-    - [ ] `OnOverlapLeave`
+- [x] Add collision/contact events
+    - [x] `OnOverlapBegin`
+    - [x] `OnOverlapStay`
+    - [x] `OnOverlapLeave`
 
 - [ ] Add Trigger Volumes
     - [ ] `OnTriggerEnter`

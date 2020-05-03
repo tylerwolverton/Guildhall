@@ -76,6 +76,9 @@ public:
 	float GetOrientationRadians() const												{ return m_orientationRadians; }
 	float GetMomentOfInertia() const												{ return m_moment; }
 
+public:
+	NamedProperties m_userProperties;
+
 private:
 	Physics2D* m_system = nullptr;			// which scene created/owns this object
 	Vec2 m_worldPosition = Vec2::ZERO;		// where in the world is this rigidbody
@@ -97,8 +100,6 @@ private:
 
 	bool m_isEnabled = true;
 	eSimulationMode m_simulationMode = SIMULATION_MODE_DYNAMIC;
-
-	NamedProperties m_userProperties;
 
 private:
 	~Rigidbody2D(); // destroys the collider

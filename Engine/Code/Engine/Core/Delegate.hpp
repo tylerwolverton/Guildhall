@@ -51,27 +51,6 @@ private:
 
 //-----------------------------------------------------------------------------------------------
 template <typename ...ARGS>
-template <typename OBJ_TYPE>
-void Delegate<ARGS...>::UnsubscribeAllMethodsFromObject( OBJ_TYPE* obj )
-{
-	std::vector<uint> subIdxsToDelete;
-	for ( uint subIdx = 0; subIdx < (uint)m_subscriptions.size(); ++subIdx )
-	{
-		if ( m_subscriptions[subIdx].objectId == obj )
-		{
-			subIdxsToDelete.push_back( subIdx );
-		}
-	}
-	
-	for ( int deletedSubIdx = (int)subIdxsToDelete.size() - 1; deletedSubIdx >= 0; --deletedSubIdx )
-	{
-		m_subscriptions.erase( m_subscriptions.begin() + deletedSubIdx );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-template <typename ...ARGS>
 void Delegate<ARGS...>::Subscribe( const c_callback_t& callback )
 {
 	Subscription sub;
@@ -129,6 +108,27 @@ void Delegate<ARGS...>::UnsubscribeMethod( OBJ_TYPE* obj, void ( OBJ_TYPE::* cal
 	sub.functionId = *(const void**)& callbackMethod; // Need to get the address, not safe if I wanted to call this
 
 	Unsubscribe( sub );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+template <typename ...ARGS>
+template <typename OBJ_TYPE>
+void Delegate<ARGS...>::UnsubscribeAllMethodsFromObject( OBJ_TYPE* obj )
+{
+	std::vector<uint> subIdxsToDelete;
+	for ( uint subIdx = 0; subIdx < (uint)m_subscriptions.size(); ++subIdx )
+	{
+		if ( m_subscriptions[subIdx].objectId == obj )
+		{
+			subIdxsToDelete.push_back( subIdx );
+		}
+	}
+
+	for ( int deletedSubIdx = (int)subIdxsToDelete.size() - 1; deletedSubIdx >= 0; --deletedSubIdx )
+	{
+		m_subscriptions.erase( m_subscriptions.begin() + deletedSubIdx );
+	}
 }
 
 

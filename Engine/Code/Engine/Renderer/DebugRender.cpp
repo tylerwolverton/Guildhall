@@ -610,8 +610,6 @@ void DebugRenderScreenTo( Texture* output )
 
 	context->BeginCamera( *s_debugCamera );
 
-	context->BindShaderProgram( "Data/Shaders/src/Default.hlsl" );
-
 	context->SetCullMode( eCullMode::NONE );
 	context->SetBlendMode( eBlendMode::ALPHA );
 		

@@ -153,6 +153,11 @@ void Physics2D::ClearOldCollisions()
 		if ( collision.frameNum != m_frameNum )
 		{
 			// Call Leave
+			collision.myCollider->m_onOverlapLeaveDelegate.Invoke( collision );
+			Collision2D theirCollision = collision;
+			theirCollision.myCollider = collision.theirCollider;
+			theirCollision.theirCollider = collision.myCollider;
+			collision.theirCollider->m_onOverlapLeaveDelegate.Invoke( theirCollision );
 			oldCollisionIds.push_back( colIdx );
 		}
 	}
@@ -175,16 +180,23 @@ void Physics2D::AddOrUpdateCollision( const Collision2D& collision )
 		{
 			m_collisions[colIdx] = collision;
 			// Call Stay
+			collision.myCollider->m_onOverlapStayDelegate.Invoke( collision );
+			Collision2D theirCollision = collision;
+			theirCollision.myCollider = collision.theirCollider;
+			theirCollision.theirCollider = collision.myCollider;
+			collision.theirCollider->m_onOverlapStayDelegate.Invoke( theirCollision );
 			return;
 		}
 	}
 
 	// New collision
 	collision.myCollider->m_onOverlapEnterDelegate.Invoke( collision );
-	collision.theirCollider->m_onOverlapEnterDelegate.Invoke( collision );
+	Collision2D theirCollision = collision;
+	theirCollision.myCollider = collision.theirCollider;
+	theirCollision.theirCollider = collision.myCollider;
+	collision.theirCollider->m_onOverlapEnterDelegate.Invoke( theirCollision );
 	m_collisions.push_back( collision );
 }
-
 
 
 //-----------------------------------------------------------------------------------------------

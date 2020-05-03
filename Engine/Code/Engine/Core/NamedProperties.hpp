@@ -59,8 +59,9 @@ public:
 class NamedProperties
 {
 public:
+	NamedProperties() = default;
 	~NamedProperties();
-
+	
 	void PopulateFromXMLAttributes( const XmlElement& element );
 
 	void SetValue( const std::string& keyname, const char* value );
@@ -132,8 +133,11 @@ public:
 
 private:
 	TypedPropertyBase* FindInMap( const std::string& key  ) const;
-
+	
 	// We need to type type in a map
 	// But we can't store the template argument... or can we?
 	std::map<std::string, TypedPropertyBase*> m_keyValuePairs;
+
+	// Don't allow this class to be copied
+	NamedProperties( NamedProperties const& other ) = delete;
 };

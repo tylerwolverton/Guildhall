@@ -14,6 +14,7 @@
 //-----------------------------------------------------------------------------------------------
 struct Rgba8;
 class Clock;
+class Collision2D;
 class Entity;
 class RandomNumberGenerator;
 class Camera;
@@ -89,6 +90,10 @@ private:
 
 	void PerformGarbageCollection();
 	MouseMovementHistoryPoint GetCummulativeMouseHistory();
+
+	void PrintEnterCollisionEvent( Collision2D collision );
+	void PrintStayCollisionEvent( Collision2D collision );
+	void PrintLeaveCollisionEvent( Collision2D collision );
 
 private:
 	Clock*						m_gameClock						= nullptr;
