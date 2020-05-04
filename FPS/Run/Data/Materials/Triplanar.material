@@ -23,7 +23,7 @@
      mode="wrap" />
 
   <!-- specular, will default to factor 0 and power 32 -->
-  <specular factor="1.0"
-            power="32" />
+  <specular factor="1"
+            power="64" />
   
 </material>

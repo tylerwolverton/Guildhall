@@ -78,7 +78,7 @@ fragment_output_t FragmentFunction( v2f_t input )
 	lit_color_t final_color = CalculateDot3Light( input.world_position, world_normal, surface_color );
 	
 	final_color.color = pow( max( final_color.color, 0.f ), 1.f / GAMMA );
-	//final_color.bloom = pow( max( final_color.bloom, 0.f ), 1.f / GAMMA );
+	final_color.bloom = pow( max( final_color.bloom, 0.f ), 1.f / GAMMA );
 
 	float4 final_color_with_fog = AddFogToColor( float4( final_color.color, surface_alpha ), input.world_position );
 

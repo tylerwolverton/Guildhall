@@ -24,7 +24,8 @@ struct lit_color_t
 	float3 color;
 	float padding0;
 	
-	float3 bloom;  
+	float3 bloom;
+	float padding1;
 };
 
 
@@ -43,7 +44,7 @@ float CalculateAttenuation( float3 attenuation_factors, float light_intensity, f
 	float linear_att_factor = attenuation_factors.y;
 	float quadratic_att_factor = attenuation_factors.z;
 
-	float attentuation = light_intensity / ( constant_att_factor
+	float attentuation = 1.f / ( constant_att_factor
 							   + ( linear_att_factor * dist )
 							   + ( quadratic_att_factor * dist * dist ) );
 
@@ -84,19 +85,19 @@ lit_color_t CalculateDot3Light( float3 world_position, float3 world_normal, floa
 		float attenuation = CalculateAttenuation( LIGHTS[i].attenuation, LIGHTS[i].intensity, dist );
 		attenuation *= spotlight_attenuation;
 
-		diffuse += dot3 * attenuation * LIGHTS[i].color;
+		diffuse += dot3 * attenuation * LIGHTS[i].intensity * LIGHTS[i].color;
 
 		// specular
 		float3 view_dir = normalize( CAMERA_WORLD_POSITION - world_position );
 		float3 half_dir = normalize( -incident_dir + view_dir );
-		float facing_factor = smoothstep( -.3f, 0.1f, dot_incident );
+		float facing_factor = max( smoothstep( -.3f, 0.1f, dot_incident ), 0.f );
 
 		float specular_factor = SPECULAR_FACTOR * pow( max( dot( world_normal, half_dir ), 0.0f ), SPECULAR_POWER );
 
 		float specular_attenuation = CalculateAttenuation( LIGHTS[i].specular_attenuation, LIGHTS[i].intensity, dist );
 		specular_attenuation *= spotlight_attenuation;
 
-		specular += specular_factor * specular_attenuation * facing_factor * LIGHTS[i].color;
+		specular += specular_factor * specular_attenuation * facing_factor * LIGHTS[i].intensity * LIGHTS[i].color;
 	}
 
 	diffuse = saturate( diffuse );

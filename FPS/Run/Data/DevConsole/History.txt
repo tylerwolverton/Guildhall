@@ -52,3 +52,5 @@ test color=255,0,0 intensity=.5
 light_set_color color=0,0,1
 test color=255,0,0 intensity=.5
 test1 color=255,0,0 intensity=.5
+light_set_color 0,0,1
+light_set_color color=0,0,1

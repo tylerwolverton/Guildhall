@@ -71,12 +71,27 @@ float4 FragmentFunction( VertexToFragment_t input ) : SV_Target0 // semeantic of
     float4 bloom = tDiffuse.Sample( sSampler, input.uv );
 	float4 color = tColorDiffuse.Sample( sSampler, input.uv );
 
-	float4 bloomTop = tDiffuse.Sample( sSampler, float2( input.u, input.v + 1 );
-	float4 bloomLeft = tDiffuse.Sample( sSampler, float2( input.u - 1, input.v );
-	float4 bloomRight = tDiffuse.Sample( sSampler, float2( input.u + 1, input.v );
-	float4 bloomBottom = tDiffuse.Sample( sSampler, float2( input.u, input.v - 1 );
-
+	const float blur_size = .05f;
+	const int num_iterations = 24;
+	const float step_size = blur_size / num_iterations;
 	
+	const float minU = input.uv.x - blur_size * .5f;
+	const float minV = input.uv.y - blur_size * .5f;
+	
+	float4 blurColor = float4( 0.f, 0.f, 0.f, 0.f );
+	for( int uIdx = 0; uIdx < num_iterations; ++uIdx )
+	{
+		for( int vIdx = 0; vIdx < num_iterations; ++vIdx )
+		{
+			float2 uv = float2( minU + step_size * uIdx, minV + step_size * vIdx );
+			blurColor += tDiffuse.Sample( sSampler, uv );
+		}
+	}
 
-    return float4( color.rgb + bloom.rgb, 1.f );
+	int numSamples = num_iterations * num_iterations;
+	blurColor = blurColor / numSamples;
+
+     return color + blurColor;
+    //return color;
+    //return bloom;
 }

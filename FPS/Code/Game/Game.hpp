@@ -232,4 +232,6 @@ private:
 	Material* m_fresnelMaterial = nullptr;
 	Material* m_dissolveMaterial = nullptr;
 	Material* m_triplanarMaterial = nullptr;
+
+	bool m_bloomEnabled = true;
 };

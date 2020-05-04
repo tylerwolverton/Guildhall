@@ -166,17 +166,17 @@ void Game::InitializeMeshes()
 	indices.clear();
 	importOptions.transform = Mat44::CreateUniformScale3D( .5f );
 	//importOptions.clean = true;
-	//AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
+	AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
 	//AppendVertsForObjMeshFromFile( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
-	AppendVertsAndIndicesForObjMeshFromFile( vertices, indices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
+	//AppendVertsAndIndicesForObjMeshFromFile( vertices, indices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
 	m_objMesh = new GPUMesh( g_renderer, vertices, indices );
 	m_objMeshTransform.SetPosition( Vec3( 0.f, 0.f, -2.f ) );
 
 	// Set materials
 	m_defaultMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
 	m_teapotMaterial = new Material( g_renderer, "Data/Materials/Teapot.material" );
-	m_objMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
-	//m_objMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
+	//m_objMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
+	m_objMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
 
 	m_fresnelMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
 	m_fresnelMaterial->SetShader( g_renderer->GetShaderByName( "Fresnel" ) );
@@ -380,11 +380,6 @@ void Game::UpdateDebugDrawCommands()
 	{
 		DebugAddWorldWireSphere( m_worldCamera->GetTransform().GetPosition(), 2.f, Rgba8::WHITE, Rgba8::BLUE, 10.f, DEBUG_RENDER_ALWAYS );
 	}
-	if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
-	{
-		DebugAddWorldBillboardText( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ONE, Rgba8::GREEN, Rgba8::RED, 35.f, eDebugRenderMode::DEBUG_RENDER_XRAY, "Mid!" );
-		DebugAddWorldBillboardTextf( m_worldCamera->GetTransform().GetPosition() - m_worldCamera->GetTransform().GetAsMatrix().GetKBasis3D() * 5.f, Vec2::ZERO, Rgba8::GREEN, 35.f, eDebugRenderMode::DEBUG_RENDER_XRAY, "%d!", 15 );
-	}
 	if ( g_inputSystem->WasKeyJustPressed( 'U' ) )
 	{
 		Vec3 p0 = m_worldCamera->GetTransform().GetPosition();
@@ -523,13 +518,13 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 	if ( g_inputSystem->IsKeyPressed( KEY_MINUS ) )
 	{
 		GetCurLight().intensity -= .5f * deltaSeconds;
-		GetCurLight().intensity = ClampZeroToOne( GetCurLight().intensity );
+		GetCurLight().intensity = ClampMin( GetCurLight().intensity, 0.f );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_PLUS ) )
 	{
 		GetCurLight().intensity += .5f * deltaSeconds;
-		GetCurLight().intensity = ClampZeroToOne( GetCurLight().intensity );
+		GetCurLight().intensity = ClampMin( GetCurLight().intensity, 0.f );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
@@ -651,6 +646,11 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		m_farFogDist = ClampMinMax( m_farFogDist, 10.f, 100.f );
 		m_nearFogDist = ClampMinMax( m_nearFogDist, 0.f, m_farFogDist - 10.f );
 	}
+
+	if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
+	{
+		m_bloomEnabled = !m_bloomEnabled;
+	}
 }
 
 
@@ -751,6 +751,7 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "O,P - Adjust spot light angle" );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Greyscale power : %.2f", m_colorTransformConstants.transformPower );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Tint power : %.2f", m_colorTransformConstants.tintPower );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "B' -  Bloom : %s", m_bloomEnabled ? "enabled" : "disabled" );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
 	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );
@@ -840,40 +841,41 @@ void Game::Render() const
 	g_renderer->DrawMesh( m_cubeMesh );
 
 	// Triplanar
-	/*g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
+	g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
 	g_renderer->BindMaterial( m_triplanarMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );*/
+	g_renderer->DrawMesh( m_sphereMesh );
 
 	g_renderer->EndCamera( *m_worldCamera );
 
 	// Render full screen effect
 	//ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectInvertColors.hlsl" );
-	/*ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
+	ShaderProgram* shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
 	g_renderer->SetMaterialData( (void*)&m_colorTransformConstants, sizeof( m_colorTransformConstants ) );
 
 	Texture* colorTransformTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 
-	g_renderer->StartEffect( backbuffer, colorTarget, shader );
-	g_renderer->EndEffect();*/
-
-	Texture* colorTransformTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	g_renderer->CopyTexture( colorTransformTarget, colorTarget );
-
-	ShaderProgram* shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectBloom.hlsl" );
-	g_renderer->BindTexture( USER_TEXTURE_SLOT_START, colorTransformTarget );
-
-	Material mat( g_renderer );
-	Shader shader;
-	shader.SetShaderProgram( shaderProg );
-
-	mat.SetShader( &shader );
-	mat.SetUserTexture( 0, colorTransformTarget );
-
-	g_renderer->StartEffect( backbuffer, bloomTarget, &mat );
-	//g_renderer->StartEffect( colorTransformTarget, bloomTarget, shader );
+	g_renderer->StartEffect( colorTransformTarget, colorTarget, shaderProg );
 	g_renderer->EndEffect();
 
-	//g_renderer->CopyTexture( backbuffer, colorTransformTarget );
+	if ( m_bloomEnabled )
+	{
+		shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectBloom.hlsl" );
+
+		Material mat( g_renderer );
+		Shader shader;
+		shader.SetShaderProgram( shaderProg );
+
+		mat.SetShader( &shader );
+		mat.SetUserTexture( 0, colorTransformTarget );
+
+		g_renderer->StartEffect( backbuffer, bloomTarget, &mat );
+		g_renderer->EndEffect();
+	}
+	else
+	{
+		g_renderer->CopyTexture( backbuffer, colorTransformTarget );
+	}
+
 	m_worldCamera->SetColorTarget( backbuffer );
 
 	g_renderer->ReleaseRenderTarget( colorTarget );
