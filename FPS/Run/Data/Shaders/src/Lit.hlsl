@@ -49,9 +49,9 @@ struct fragment_output_t
 {
 	float4 color : SV_TARGET0;
 	float4 bloom : SV_TARGET1;
-	float4 albedo : SV_TARGET2;
+	/*float4 albedo : SV_TARGET2;
 	float4 normal : SV_TARGET3;
-	float4 tangent : SV_TARGET4;
+	float4 tangent : SV_TARGET4;*/
 };
 
 //--------------------------------------------------------------------------------------
@@ -85,9 +85,9 @@ fragment_output_t FragmentFunction( v2f_t input )
 	fragment_output_t output;
 	output.color = final_color_with_fog;
 	output.bloom = float4( final_color.bloom, 1.f );
-	output.albedo = diffuse_color;
+	/*output.albedo = diffuse_color;
 	output.normal = float4( VectorToColor( world_normal ), 1.f);
-	output.tangent = float4( VectorToColor( input.world_tangent ), 1.f );
+	output.tangent = float4( VectorToColor( input.world_tangent ), 1.f );*/
 
 	return output;
 }

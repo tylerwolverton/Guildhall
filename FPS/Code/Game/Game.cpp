@@ -790,15 +790,9 @@ void Game::Render() const
 	Texture* backbuffer = g_renderer->GetBackBuffer();
 	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 	Texture* bloomTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	Texture* albedoTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	Texture* normalTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	Texture* tangentTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 
 	m_worldCamera->SetColorTarget( 0, colorTarget );
 	m_worldCamera->SetColorTarget( 1, bloomTarget );
-	m_worldCamera->SetColorTarget( 2, albedoTarget );
-	m_worldCamera->SetColorTarget( 3, normalTarget );
-	m_worldCamera->SetColorTarget( 4, tangentTarget );
 
 	g_renderer->BeginCamera( *m_worldCamera );
 
@@ -848,7 +842,6 @@ void Game::Render() const
 	g_renderer->EndCamera( *m_worldCamera );
 
 	// Render full screen effect
-	//ShaderProgram* shader = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectInvertColors.hlsl" );
 	ShaderProgram* shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
 	g_renderer->SetMaterialData( (void*)&m_colorTransformConstants, sizeof( m_colorTransformConstants ) );
 
@@ -880,9 +873,6 @@ void Game::Render() const
 
 	g_renderer->ReleaseRenderTarget( colorTarget );
 	g_renderer->ReleaseRenderTarget( bloomTarget );
-	g_renderer->ReleaseRenderTarget( albedoTarget );
-	g_renderer->ReleaseRenderTarget( normalTarget );
-	g_renderer->ReleaseRenderTarget( tangentTarget );
 	g_renderer->ReleaseRenderTarget( colorTransformTarget );
 
 	// Debug Rendering

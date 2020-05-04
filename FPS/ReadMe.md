@@ -26,18 +26,19 @@ Project: FPS
     - [x] Set your normal color target, and a secondary "bloom" target
         - [x] Camera can set set tertiary render targets
         - [x] Shader has a secondary output specified
-    - [ ] When done, be able to blur the bloom target
+    - [-] When done, be able to blur the bloom target
         - [x] Create/Recycle a matching color/render target
         - [ ] Run a guassian blur pass N times, each pass consisting of one horizontal and one vertical pass
+            Note: Currently using a box blur instead
             - [ ] Each step in a pass will swap out the src/dst target and render a full screen blur shader
                 - [ ] Run once horizontally
                 - [ ] Run once vertically
-    - [ ] Take the result of the blur, and the normal color output, and combine them
+    - [x] Take the result of the blur, and the normal color output, and combine them
           into the final image.
-    - [ ] Be able to toggle blur on-and-off to see it working or not
-        - [ ] Disabling the blur just doesn't run the blur and composite steps;
+    - [x] Be able to toggle blur on-and-off to see it working or not
+        - [x] Disabling the blur just doesn't run the blur and composite steps;
 
-- [-] Texture Pool
+- [x] Texture Pool
     - [x] Be able to ask your `RenderContext` for a temporary render target of a given resolution and size.
         - [x] Search for an existing free texture first, and return it if you find one.
         - [x] If there are none available, create and return a new one.
@@ -45,7 +46,7 @@ Project: FPS
         - This will allow them to be reused.
     - [x] Add a `RenderContext::GetTotalTexturePoolCount()` to tell you how many textures have been created this way.
     - [x] Add a `RenderContext::GetTexturePoolFreeCount()` to tell you how many are currently in the pool to be recycled
-    - [-] Debug render these counts to the screen to you can make sure you're properly recycling during this assignment.
+    - [x] Debug render these counts to the screen to you can make sure you're properly recycling during this assignment.
         - At any given time you likely will not have more than 3 textures in use at once, meaning your pool should never exceed that count.  This can really depend on your scene though.  For eaxmple, in this assignment for bloom... 
           1. Camera color output
           2. Camera bloom target
