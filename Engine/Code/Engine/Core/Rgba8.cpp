@@ -71,6 +71,16 @@ void Rgba8::SetFromText( const char* asText )
 
 
 //-----------------------------------------------------------------------------------------------
+void Rgba8::SetFromNormalizedVector( const Vec4& colorVector )
+{
+	r = (unsigned int)( colorVector.x * 255.f );
+	g = (unsigned int)( colorVector.y * 255.f );
+	b = (unsigned int)( colorVector.z * 255.f );
+	a = (unsigned int)( colorVector.w * 255.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Rgba8::IsRGBEqual( const Rgba8& otherColor )
 {
 	return r == otherColor.r

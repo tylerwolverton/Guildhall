@@ -103,8 +103,9 @@ void DebugAddWorldBasis( const Mat44& basis, float duration = 0.0f, eDebugRender
 
 // text
 // non-billboarded will be oriented in the world based on the passed in basis matrix 
+void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, float textHeight, eDebugRenderMode mode, char const* text );
 void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text );
-void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, float duration, eDebugRenderMode mode, char const* format, ... );
+void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, float duration, float textHeight, eDebugRenderMode mode, char const* format, ... );
 void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, char const* format, ... ); // assume DEBUG_RENDER_USE_DEPTH
 
 // this text will always orient itself to the current camera

@@ -44,6 +44,7 @@ public:
 	Rgba8() {}  // Do nothing
 	explicit Rgba8( unsigned char initialR, unsigned char initialG, unsigned char initialB, unsigned char initialA = 255 );
 	void SetFromText( const char* asText );
+	void SetFromNormalizedVector( const Vec4& colorVector );
 
 	bool IsRGBEqual( const Rgba8& otherColor );
 

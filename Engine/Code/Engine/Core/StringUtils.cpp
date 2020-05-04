@@ -311,6 +311,15 @@ float FromString( const std::string& value, float defaultValue )
 
 
 //-----------------------------------------------------------------------------------------------
+double FromString( const std::string& value, double defaultValue )
+{
+	UNUSED( defaultValue );
+
+	return atof( value.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::string FromString( const std::string& value, std::string defaultValue )
 {
 	UNUSED( defaultValue );
@@ -369,4 +378,15 @@ Vec3 FromString( const std::string& value, const Vec3& defaultValue )
 	Vec3 convertedValue;
 	convertedValue.SetFromText( value.c_str() );
 	return convertedValue;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void* FromString( const std::string& value, void* defaultValue )
+{
+	UNUSED( defaultValue );
+
+	ERROR_AND_DIE( "Saving pointers as dtring values in NamedProperties is not supported." );
+
+	//return nullptr;
 }
