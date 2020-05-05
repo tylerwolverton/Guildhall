@@ -152,8 +152,14 @@ void Physics2D::InvokeCollisionEvents( const Collision2D& collision, eCollisionE
 
 			case eCollisionEventType::LEAVE:
 			{
-				collision.myCollider->m_onOverlapLeaveDelegate.Invoke( collision );
-				collision.theirCollider->m_onOverlapLeaveDelegate.Invoke( theirCollision );
+				if ( collision.myCollider != nullptr )
+				{
+					collision.myCollider->m_onOverlapLeaveDelegate.Invoke( collision );
+				}
+				if ( collision.theirCollider != nullptr )
+				{
+					collision.theirCollider->m_onOverlapLeaveDelegate.Invoke( theirCollision );
+				}
 			} 
 			break;
 		}
@@ -583,6 +589,26 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 			m_garbageColliderIndexes.push_back( colliderIdx );
 			break;
 		}
+	}
+
+	// Fire leave event for each collision this collider is involved with
+	std::vector<int> oldCollisionIds;
+	for ( int collisionIdx = 0; collisionIdx < (int)m_collisions.size(); ++collisionIdx )
+	{
+		Collision2D& collision = m_collisions[collisionIdx];
+		
+		if ( collision.id.x == colliderToDestroy->m_id 
+			 || collision.id.y == colliderToDestroy ->m_id )
+		{
+			InvokeCollisionEvents( collision, eCollisionEventType::LEAVE );
+			oldCollisionIds.push_back( collisionIdx );
+		}
+	}
+	
+	for ( int oldColIdx = (int)oldCollisionIds.size() - 1; oldColIdx >= 0; --oldColIdx )
+	{
+		int idxToRemove = oldCollisionIds[oldColIdx];
+		m_collisions.erase( m_collisions.begin() + idxToRemove );
 	}
 }
 

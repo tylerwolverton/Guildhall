@@ -67,8 +67,12 @@ public:
 	float GetRotationDegrees() const;
 	float GetAngularVelocity() const;
 
+	void SetIsGarbage( bool isGarbage )											{ m_isGarbage = isGarbage; }
+	bool IsGarbage() const														{ return m_isGarbage; }
+
 private:
 	Rigidbody2D* m_rigidbody = nullptr;
+	bool m_isGarbage = false;
 	Rgba8 m_borderColor = Rgba8::MAGENTA;
 	Rgba8 m_fillColor = Rgba8::MAGENTA;
 };

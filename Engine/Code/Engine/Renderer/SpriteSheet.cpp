@@ -40,6 +40,11 @@ const SpriteDefinition& SpriteSheet::GetSpriteDefinition( int spriteIndex ) cons
 //-----------------------------------------------------------------------------------------------
 void SpriteSheet::GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, int spriteIndex ) const
 {
+	if ( spriteIndex < 0 )
+	{
+		return;
+	}
+
 	SpriteDefinition spriteDef = m_spriteDefs[spriteIndex];
 
 	spriteDef.GetUVs( out_uvAtMins, out_uvAtMaxs );

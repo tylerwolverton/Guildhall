@@ -13,6 +13,8 @@ GameObject::~GameObject()
 {
 	m_rigidbody->Destroy();
 	m_rigidbody = nullptr;
+
+	m_isGarbage = true;
 }
 
 

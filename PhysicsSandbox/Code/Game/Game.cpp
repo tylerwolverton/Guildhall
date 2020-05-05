@@ -433,8 +433,8 @@ void Game::UpdateFromKeyboard()
 					GUARANTEE_OR_DIE( index != -1, "Dragged object isn't in game object list" );
 
 					m_garbageGameObjectIndexes.push_back( index );
-
 					m_isMouseDragging = false;
+					m_dragTarget->SetIsGarbage( true );
 					m_dragTarget = nullptr;
 				}
 			}
@@ -765,7 +765,8 @@ void Game::UpdateToolTipBox()
 		selectedObject = GetTopGameObjectAtMousePosition();
 	}
 
-	if ( selectedObject == nullptr )
+	if ( selectedObject == nullptr
+		 || selectedObject->IsGarbage() )
 	{
 		return;
 	}
@@ -1165,19 +1166,32 @@ void Game::PrintStayCollisionEvent( Collision2D collision )
 //-----------------------------------------------------------------------------------------------
 void Game::PrintLeaveCollisionEvent( Collision2D collision )
 {
-	std::string myName = collision.myCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
-	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
-
-	GameObject* myObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
-	GameObject* theirObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
-
-	if ( myObject != nullptr )
+	Collider2D* myCollider = collision.myCollider;
+	if ( myCollider != nullptr )
 	{
-		myObject->SetFillColor( Rgba8::WHITE );
+		Rigidbody2D* myRigidbody = myCollider->m_rigidbody;
+		if ( myRigidbody != nullptr )
+		{
+			GameObject* myObject = (GameObject*)myRigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
+			if ( myObject != nullptr )
+			{
+				myObject->SetFillColor( Rgba8::WHITE );
+			}
+		}
 	}
-	if ( theirObject != nullptr )
+
+	Collider2D* theirCollider = collision.theirCollider;
+	if ( theirCollider != nullptr )
 	{
-		theirObject->SetFillColor( Rgba8::WHITE );
+		Rigidbody2D* theirRigidbody = theirCollider->m_rigidbody;
+		if ( theirRigidbody != nullptr )
+		{
+			GameObject* theirObject = (GameObject*)theirRigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
+			if ( theirObject != nullptr )
+			{
+				theirObject->SetFillColor( Rgba8::WHITE );
+			}
+		}
 	}
 	/*DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition ),
 						Vec2( .5f, .5f ),
