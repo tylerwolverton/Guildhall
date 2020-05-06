@@ -41,8 +41,6 @@
 
 
 static float s_mouseSensitivityMultiplier = 1.f;
-static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
-static Vec3 s_currentLightColor = Vec3( 1.f, 1.f, 1.f);
 
 
 //-----------------------------------------------------------------------------------------------
@@ -60,13 +58,10 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	g_eventSystem->RegisterMethodEvent( "test", "", EVERYWHERE, g_renderer, &RenderContext::SetAmbientIntensity );
-	g_eventSystem->RegisterMethodEvent( "test1", "", EVERYWHERE, g_renderer, &RenderContext::SetAmbientLight );
-	g_eventSystem->DeRegisterObject( g_renderer );
-
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
-	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
-	g_eventSystem->RegisterEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetPointLightColor );
+	g_eventSystem->RegisterMethodEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetAmbientLightColor );
+	g_eventSystem->RegisterMethodEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetPointLightColor );
+	//g_eventSystem->DeRegisterObject( this );
 
 	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
 
@@ -423,8 +418,6 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		{
 			m_currentLightIdx = 0;
 		}
-		
-		s_currentLightColor = GetCurLight().color;
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
@@ -434,8 +427,6 @@ void Game::UpdateLightingCommands( float deltaSeconds )
 		{
 			m_currentLightIdx = MAX_LIGHTS - 1;
 		}
-		
-		s_currentLightColor = GetCurLight().color;
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
@@ -727,10 +718,7 @@ void Game::UpdateLights()
 				}
 			}
 		}
-	}
-	
-	GetCurLight().color = s_currentLightColor;
-	
+	}	
 }
 
 
@@ -799,7 +787,7 @@ void Game::Render() const
 	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
 	
 	g_renderer->DisableAllLights();
-	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
+	g_renderer->SetAmbientLight( m_ambientColor.GetAsRGBVector(), m_ambientIntensity );
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
 		if ( m_lights[lightIdx].isEnabled )
@@ -1012,18 +1000,16 @@ bool Game::SetMouseSensitivity( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Game::SetAmbientLightColor( EventArgs* args )
+void Game::SetAmbientLightColor( EventArgs* args )
 {
-	s_ambientLightColor = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
+	Vec3 color = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
 
-	return false;
+	m_ambientColor.SetFromNormalizedVector( Vec4( color, 1.f ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool Game::SetPointLightColor( EventArgs* args )
+void Game::SetPointLightColor( EventArgs* args )
 {
-	s_currentLightColor = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
-
-	return false;
+	GetCurLight().color = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
 }

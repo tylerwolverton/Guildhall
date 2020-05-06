@@ -387,7 +387,7 @@ void* FromString( const std::string& value, void* defaultValue )
 	UNUSED( value );
 	UNUSED( defaultValue );
 
-	ERROR_AND_DIE( "Saving pointers as dtring values in NamedProperties is not supported." );
+	ERROR_AND_DIE( "Saving pointers as string values in NamedProperties is not supported." );
 
 	//return nullptr;
 }

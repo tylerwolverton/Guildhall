@@ -54,3 +54,9 @@ test color=255,0,0 intensity=.5
 test1 color=255,0,0 intensity=.5
 light_set_color 0,0,1
 light_set_color color=0,0,1
+light_set_ambient_color color=1,0,0
+light_set_color color=0,1,0
+light_set_color color=0,1,1
+light_set_color color=0,0,1
+light_set_ambient_color color=1,0,0
+set_mouse_sensitivity multiplier=5
