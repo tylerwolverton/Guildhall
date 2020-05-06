@@ -193,8 +193,11 @@ private:
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
 	
-	GPUMesh* m_objMesh = nullptr;
-	Transform m_objMeshTransform;
+	GPUMesh* m_vespaMesh = nullptr;
+	Transform m_vespaMeshTransform;
+
+	GPUMesh* m_scifiMesh = nullptr;
+	Transform m_scifiMeshTransform;
 
 	GPUMesh* m_teapotMesh = nullptr;
 	Transform m_teapotMeshTransform;
@@ -227,7 +230,8 @@ private:
 
 	// Materials
 	Material* m_defaultMaterial = nullptr;
-	Material* m_objMaterial = nullptr;
+	Material* m_vespaMaterial = nullptr;
+	Material* m_scifiMaterial = nullptr;
 	Material* m_teapotMaterial = nullptr;
 	Material* m_fresnelMaterial = nullptr;
 	Material* m_dissolveMaterial = nullptr;

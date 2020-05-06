@@ -159,19 +159,25 @@ void Game::InitializeMeshes()
 
 	vertices.clear();
 	indices.clear();
-	importOptions.transform = Mat44::CreateUniformScale3D( .5f );
-	//importOptions.clean = true;
-	AppendVertsForObjMeshFromFile ( vertices, "Data/Models/Vespa/Vespa.obj", importOptions );
-	//AppendVertsForObjMeshFromFile( vertices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
-	//AppendVertsAndIndicesForObjMeshFromFile( vertices, indices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
-	m_objMesh = new GPUMesh( g_renderer, vertices, indices );
-	m_objMeshTransform.SetPosition( Vec3( 0.f, 0.f, -2.f ) );
+	importOptions.transform = Mat44::CreateUniformScale3D( .9f );
+	importOptions.clean = true;
+	AppendVertsAndIndicesForObjMeshFromFile ( vertices, indices, "Data/Models/Vespa/Vespa.obj", importOptions );
+	m_vespaMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_vespaMeshTransform.SetPosition( Vec3( 0.f, 0.f, -2.f ) );
+
+	vertices.clear();
+	indices.clear();
+	importOptions.transform = Mat44::CreateUniformScale3D( .3f );
+	importOptions.clean = true;
+	AppendVertsAndIndicesForObjMeshFromFile( vertices, indices, "Data/Models/scifi_fighter/mesh.obj", importOptions );
+	m_scifiMesh = new GPUMesh( g_renderer, vertices, indices );
+	m_scifiMeshTransform.SetPosition( Vec3( 5.f, 0.f, -2.f ) );
 
 	// Set materials
 	m_defaultMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
 	m_teapotMaterial = new Material( g_renderer, "Data/Materials/Teapot.material" );
-	//m_objMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
-	m_objMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
+	m_vespaMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
+	m_scifiMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
 
 	m_fresnelMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
 	m_fresnelMaterial->SetShader( g_renderer->GetShaderByName( "Fresnel" ) );
@@ -201,13 +207,15 @@ void Game::Shutdown()
 	
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_defaultMaterial );
-	PTR_SAFE_DELETE( m_objMaterial );
+	PTR_SAFE_DELETE( m_vespaMaterial );
+	PTR_SAFE_DELETE( m_scifiMaterial );
 	PTR_SAFE_DELETE( m_teapotMaterial );
 	PTR_SAFE_DELETE( m_fresnelMaterial );
 	PTR_SAFE_DELETE( m_dissolveMaterial );
 	PTR_SAFE_DELETE( m_triplanarMaterial );
 	PTR_SAFE_DELETE( m_teapotMesh );
-	PTR_SAFE_DELETE( m_objMesh );
+	PTR_SAFE_DELETE( m_vespaMesh );
+	PTR_SAFE_DELETE( m_scifiMesh );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
@@ -803,10 +811,15 @@ void Game::Render() const
 
 	g_renderer->DrawMesh( m_teapotMesh );
 
-	// Render obj with material
-	g_renderer->SetModelMatrix( m_objMeshTransform.GetAsMatrix() );
-	g_renderer->BindMaterial( m_objMaterial );
-	g_renderer->DrawMesh( m_objMesh );
+	// Render vespa with material
+	g_renderer->SetModelMatrix( m_vespaMeshTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_vespaMaterial );
+	g_renderer->DrawMesh( m_vespaMesh );
+
+	// Render scifi fighter with material
+	g_renderer->SetModelMatrix( m_scifiMeshTransform.GetAsMatrix() );
+	g_renderer->BindMaterial( m_scifiMaterial );
+	g_renderer->DrawMesh( m_scifiMesh );
 
 	// Fresnel
 	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
@@ -889,7 +902,7 @@ void Game::ChangeShader( int nextShaderIdx )
 	}
 
 	m_currentShaderIdx = nextShaderIdx;
-	m_objMaterial->SetShader( m_shaders[m_currentShaderIdx] );
+	m_vespaMaterial->SetShader( m_shaders[m_currentShaderIdx] );
 }
 
 
