@@ -74,5 +74,6 @@ Dev Console Commands
 set_mouse_sensitivity multiplier=NUMBER - change multiplier for mouse sensitivity
 light_set_ambient_color color=rgb - passed in as 0-1,0-1,0-1
 light_set_color color=rgb - passed in as 0-1,0-1,0-1
+unsubscribe_game - unsubscribe the light_set effects (can't be re-enabled)
 
 Note: my dev console can't handle spaces in strings or parentheses around vec values for now

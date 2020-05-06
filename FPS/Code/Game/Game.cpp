@@ -61,6 +61,7 @@ void Game::Startup()
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterMethodEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetAmbientLightColor );
 	g_eventSystem->RegisterMethodEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetPointLightColor );
+	g_eventSystem->RegisterMethodEvent( "unsubscribe_game", "Usage: Unsubscribe game methods from event system for demo", eUsageLocation::DEV_CONSOLE, this, &Game::UnSubscribeGameMethods );
 	//g_eventSystem->DeRegisterObject( this );
 
 	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
@@ -1009,6 +1010,15 @@ bool Game::SetMouseSensitivity( EventArgs* args )
 	s_mouseSensitivityMultiplier = args->GetValue( "multiplier", 1.f );
 
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UnSubscribeGameMethods( EventArgs* args )
+{
+	UNUSED( args );
+
+	g_eventSystem->DeRegisterObject( this );
 }
 
 

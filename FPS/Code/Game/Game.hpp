@@ -122,6 +122,7 @@ public:
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
 	static bool SetMouseSensitivity( EventArgs* args );
+	void UnSubscribeGameMethods( EventArgs* args );
 	void SetAmbientLightColor( EventArgs* args );
 	void SetPointLightColor( EventArgs* args );
 	
