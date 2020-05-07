@@ -908,9 +908,9 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 	discCollider->m_rigidbody->m_userProperties.SetValue( "name", "DiscCollider" );
 	discCollider->m_rigidbody->m_userProperties.SetValue( "gameObject", (void*)gameObject );
 
-	discCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Game::PrintEnterCollisionEvent );
-	discCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Game::PrintStayCollisionEvent );
-	discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Game::PrintLeaveCollisionEvent );
+	discCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Game::EnterCollisionEvent );
+	discCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Game::StayCollisionEvent );
+	discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Game::LeaveCollisionEvent );
 
 	m_gameObjects.push_back( gameObject );
 }
@@ -935,9 +935,9 @@ void Game::SpawnTriggerDisc( const Vec2& center, float radius )
 	discCollider->m_rigidbody->m_userProperties.SetValue( "name", "DiscTrigger" );
 	discCollider->m_rigidbody->m_userProperties.SetValue( "gameObject", (void*)gameObject );
 
-	discCollider->m_onTriggerEnterDelegate.SubscribeMethod( this, &Game::PrintEnterCollisionEvent );
-	discCollider->m_onTriggerStayDelegate.SubscribeMethod( this, &Game::PrintStayCollisionEvent );
-	discCollider->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Game::PrintLeaveCollisionEvent );
+	discCollider->m_onTriggerEnterDelegate.SubscribeMethod( this, &Game::EnterTriggerEvent );
+	discCollider->m_onTriggerStayDelegate.SubscribeMethod( this, &Game::StayTriggerEvent );
+	discCollider->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Game::LeaveTriggerEvent );
 
 	m_gameObjects.push_back( gameObject );
 }
@@ -962,9 +962,9 @@ void Game::SpawnPolygon( const Polygon2& polygon )
 	polygonCollider->m_rigidbody->m_userProperties.SetValue( "name", "PolygonCollider" );
 	polygonCollider->m_rigidbody->m_userProperties.SetValue( "gameObject", (void*)gameObject );
 
-	polygonCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Game::PrintEnterCollisionEvent );
-	polygonCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Game::PrintStayCollisionEvent );
-	polygonCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Game::PrintLeaveCollisionEvent );
+	polygonCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Game::EnterCollisionEvent );
+	polygonCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Game::StayCollisionEvent );
+	polygonCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Game::LeaveCollisionEvent );
 
 	m_gameObjects.push_back( gameObject );
 }
@@ -1085,11 +1085,8 @@ MouseMovementHistoryPoint Game::GetCummulativeMouseHistory()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::PrintEnterCollisionEvent( Collision2D collision )
+void Game::EnterCollisionEvent( Collision2D collision )
 {
-	std::string myName = collision.myCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
-	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
-
 	GameObject* myObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", (void*)nullptr );
 	GameObject* theirObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", (void*)nullptr );
 
@@ -1105,66 +1102,27 @@ void Game::PrintEnterCollisionEvent( Collision2D collision )
 		fillColor.a = 0;
 		theirObject->SetFillColor( fillColor );
 	}
-	/*DebugAddScreenTextf( Vec4( .5f, .8f, 0.f, 0.f ),
-						 Vec2( .5f, .5f ),
-						 20.f,
-						 Rgba8::BLUE,
-						 0.f,
-						 "%s%d entered a collision with %s%d!",
-							myName.c_str(), collision.myCollider->GetId(), 
-							theirName.c_str(), collision.theirCollider->GetId() );*/
-	/*DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition ), 
-						Vec2( .5f, .5f ), 
-						Rgba8::BLUE, 
-						.5f, 
-						.1f,
-						DEBUG_RENDER_ALWAYS, 
-						"entered a collision with %s%d!",
-							theirName.c_str(), collision.theirCollider->GetId() );*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::PrintStayCollisionEvent( Collision2D collision )
+void Game::StayCollisionEvent( Collision2D collision )
 {
-	std::string myName = collision.myCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
 	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
 
-	GameObject* myObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
-	GameObject* theirObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
-
-	if ( myObject != nullptr )
-	{
-		Rgba8 fillColor = myObject->GetFillColor();
-		Vec4 fillColorVec = fillColor.GetAsRGBAVector();
-		fillColorVec.w = SinDegrees( (float)GetCurrentTimeSeconds() ) * .05f;
-		/*if ( fillColorVec.w > 1.f )
-		{
-			fillColorVec.w = 1.f;
-		}*/
-		
-		fillColor.SetFromNormalizedVector( fillColorVec );
-
-		myObject->SetFillColor( fillColor );
-	}
-	if ( theirObject != nullptr )
-	{
-		theirObject->SetFillColor( Rgba8::RED );
-	}
-
-	//DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition ),
-	//					Vec2( .5f, .5f ),
-	//					Rgba8::GREEN,
-	//					.01f,
-	//					.1f,
-	//					DEBUG_RENDER_ALWAYS,
-	//					"colliding with %s%d!",
-	//						theirName.c_str(), collision.theirCollider->GetId() );
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition ),
+						Vec2( .5f, .5f ),
+						Rgba8::GREEN,
+						0.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"colliding with %s%d!",
+							theirName.c_str(), collision.theirCollider->GetId() );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::PrintLeaveCollisionEvent( Collision2D collision )
+void Game::LeaveCollisionEvent( Collision2D collision )
 {
 	Collider2D* myCollider = collision.myCollider;
 	if ( myCollider != nullptr )
@@ -1193,12 +1151,52 @@ void Game::PrintLeaveCollisionEvent( Collision2D collision )
 			}
 		}
 	}
-	/*DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition ),
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::EnterTriggerEvent( Collision2D collision )
+{
+	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition + Vec2( 0.f, .3f ) ),
 						Vec2( .5f, .5f ),
-						Rgba8::RED,
-						.5f,
+						Rgba8::GREEN,
+						2.f,
 						.1f,
 						DEBUG_RENDER_ALWAYS,
-						"left a collision with %s%d!",
-							theirName.c_str(), collision.theirCollider->GetId() );*/
+						"triggered by %s%d!",
+						theirName.c_str(), collision.theirCollider->GetId() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::StayTriggerEvent( Collision2D collision )
+{
+	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition + Vec2( 0.f, 0.f ) ),
+						Vec2( .5f, .5f ),
+						Rgba8::BLUE,
+						0.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"triggering %s%d!",
+							theirName.c_str(), collision.theirCollider->GetId() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LeaveTriggerEvent( Collision2D collision )
+{
+	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition + Vec2( 0.f, -.3f ) ),
+						Vec2( .5f, .5f ),
+						Rgba8::RED,
+						2.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"left trigger with %s%d!",
+							theirName.c_str(), collision.theirCollider->GetId() );
 }

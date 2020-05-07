@@ -92,9 +92,13 @@ private:
 	void PerformGarbageCollection();
 	MouseMovementHistoryPoint GetCummulativeMouseHistory();
 
-	void PrintEnterCollisionEvent( Collision2D collision );
-	void PrintStayCollisionEvent( Collision2D collision );
-	void PrintLeaveCollisionEvent( Collision2D collision );
+	void EnterCollisionEvent( Collision2D collision );
+	void StayCollisionEvent( Collision2D collision );
+	void LeaveCollisionEvent( Collision2D collision );
+
+	void EnterTriggerEvent( Collision2D collision );
+	void StayTriggerEvent( Collision2D collision );
+	void LeaveTriggerEvent( Collision2D collision );
 
 private:
 	Clock*						m_gameClock						= nullptr;
