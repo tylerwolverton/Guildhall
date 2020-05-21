@@ -55,9 +55,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="InteractableSwitch.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -106,9 +103,6 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="InteractableSwitch.hpp">

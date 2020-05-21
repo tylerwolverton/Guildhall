@@ -1,9 +1,9 @@
 #include "Game/GameObject.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/GameCommon.hpp"
-#include "Game/Material.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -26,20 +26,16 @@ void GameObject::UpdateTransform()
 //-----------------------------------------------------------------------------------------------
 void GameObject::Render() const
 {
-	float specularFactor = 0.f;
-	float specularPower = 32.f;
+	Mat44 model = m_transform.GetAsMatrix();
+	g_renderer->SetModelMatrix( model );
+
 	if ( m_material != nullptr )
 	{
-		specularFactor = m_material->GetSpecularFactor();
-		specularPower = m_material->GetSpecularPower();
-
-		m_material->Bind();
+		g_renderer->BindMaterial( m_material );
 	}
 
 	if ( m_mesh != nullptr )
 	{
-		Mat44 model = m_transform.GetAsMatrix();
-		g_renderer->SetModelData( model, Rgba8::WHITE, specularFactor, specularPower );
 		g_renderer->DrawMesh( m_mesh );
 	}
 }

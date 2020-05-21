@@ -4,23 +4,9 @@
 #include "PCUTBN_Common.hlsl"
 
 
-//-----------------------------------------------------------------------------------------------
-cbuffer material_dissolve_constants : register( b5 )
-{
-	float3 START_COLOR;
-	float DISSOLVE_FACTOR;
-
-	float3 END_COLOR;
-	float EDGE_WIDTH;
-};
-
-
-Texture2D <float4> tPattern   : register( t8 );
-
 //--------------------------------------------------------------------------------------
 // Programmable Shader Stages
 //--------------------------------------------------------------------------------------
-
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
@@ -37,7 +23,7 @@ v2f_t VertexFunction( vs_input_t input )
 	// tangent
 	float4 localTangent = float4( input.tangent, 0.0f );
 	float4 worldTangent = mul( MODEL, localTangent );
-
+	
 	// bitangent
 	float4 localBitangent = float4( input.bitangent, 0.0f );
 	float4 worldBitangent = mul( MODEL, localBitangent );
@@ -58,46 +44,53 @@ v2f_t VertexFunction( vs_input_t input )
 	return v2f;
 }
 
+//--------------------------------------------------------------------------------------
+struct fragment_output_t
+{
+	float4 color : SV_TARGET0;
+	float4 bloom : SV_TARGET1;
+	/*float4 albedo : SV_TARGET2;
+	float4 normal : SV_TARGET3;
+	float4 tangent : SV_TARGET4;*/
+};
 
 //--------------------------------------------------------------------------------------
 // Fragment Shader
 // 
 // SV_Target0 at the end means the float4 being returned
 // is being drawn to the first bound color target.
-float4 FragmentFunction( v2f_t input ) : SV_Target0
+fragment_output_t FragmentFunction( v2f_t input )
 {
-	// use the uv to sample the texture
-	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
-	float4 normal_color = tNormals.Sample( sSampler, input.uv );
+	float2 uv = input.uv;
+	uv.x *= length( input.world_tangent );
+	uv.y *= length( input.world_bitangent );
 
-	float dissolve_height = tPattern.Sample( sSampler, input.uv ).x;
-	float range = EDGE_WIDTH + 1.f;
-	float min_edge = -EDGE_WIDTH + range * DISSOLVE_FACTOR;
-	float max_edge = min_edge + EDGE_WIDTH;
-
-	clip( dissolve_height - min_edge );
-
-	float t = ( dissolve_height - min_edge ) / ( max_edge - min_edge );
-	t = clamp( t, 0.f, 1.f );
-
-	float3 burn_color = lerp( START_COLOR, END_COLOR, t );
+	float4 diffuse_color = tDiffuse.Sample( sSampler, uv );
+	float4 normal_color = tNormals.Sample( sSampler, uv );
 
 	float3 surface_color = input.color.xyz * pow( max( diffuse_color.xyz, 0.f ), GAMMA ); // multiply our tint with our texture color to get our final color; 
 	float surface_alpha = input.color.a * diffuse_color.a;
 
-	float3x3 tbn = float3x3( normalize( input.world_tangent ),
-							 normalize( input.world_bitangent ),
+	float3x3 tbn = float3x3( normalize( input.world_tangent ), 
+							 normalize( input.world_bitangent ), 
 							 normalize( input.world_normal ) );
 
 	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
 	float3 world_normal = mul( surface_normal, tbn );
 
-	float3 final_color = CalculateDot3Light( input.world_position, world_normal, surface_color );
+	lit_color_t final_color = CalculateDot3Light( input.world_position, world_normal, surface_color );
+	
+	final_color.color = pow( max( final_color.color, 0.f ), 1.f / GAMMA );
+	final_color.bloom = pow( max( final_color.bloom, 0.f ), 1.f / GAMMA );
 
-	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
+	float4 final_color_with_fog = AddFogToColor( float4( final_color.color, surface_alpha ), input.world_position );
 
-	final_color = lerp( final_color, burn_color, 1 - t );
+	fragment_output_t output;
+	output.color = final_color_with_fog;
+	output.bloom = float4( final_color.bloom, 1.f );
+	/*output.albedo = diffuse_color;
+	output.normal = float4( VectorToColor( world_normal ), 1.f);
+	output.tangent = float4( VectorToColor( input.world_tangent ), 1.f );*/
 
-	float4 final_color_with_fog = AddFogToColor( float4( final_color, surface_alpha ), input.world_position );
-	return final_color_with_fog;
+	return output;
 }

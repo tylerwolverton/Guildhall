@@ -6,7 +6,6 @@
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Time/Timer.hpp"
-#include "Game/Material.hpp"
 
 #include <string>
 #include <vector>
@@ -158,7 +157,7 @@ private:
 	Material* m_floorMaterial = nullptr;
 	Material* m_ceilingMaterial = nullptr;
 	Material* m_whiteMaterial = nullptr;
-
+	
 	Timer m_partyModeTimer;
 	int m_curPartyLightIdx = 1;
 };

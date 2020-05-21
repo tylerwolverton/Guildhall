@@ -21,8 +21,10 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Core/EventSystem.hpp"
@@ -177,28 +179,16 @@ void Game::InitializeMeshes()
 void Game::InitializeMaterials()
 {
 	// Wall
-	m_wallMaterial = new Material();
-	m_wallMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
-	m_wallMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_d.png" ) );
-	m_wallMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/factory_wall_n.png" ) );
+	m_wallMaterial = new Material( g_renderer, "Data/Materials/Wall.material" );
 
 	// Floor
-	m_floorMaterial = new Material();
-	m_floorMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
-	m_floorMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_d.png" ) );
-	m_floorMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/floor_tiles_n.png" ) );
+	m_floorMaterial = new Material( g_renderer, "Data/Materials/Floor.material" );
 
 	// Ceiling
-	m_ceilingMaterial = new Material();
-	m_ceilingMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
-	m_ceilingMaterial->SetDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/yellow_plaster_d.png" ) );
-	m_ceilingMaterial->SetNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/Textures/yellow_plaster_n.png" ) );
+	m_ceilingMaterial = new Material( g_renderer, "Data/Materials/Ceiling.material" );
 
 	// No texture
-	m_whiteMaterial = new Material();
-	m_whiteMaterial->SetShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
-	m_whiteMaterial->SetDiffuseTexture( nullptr );
-	m_whiteMaterial->SetNormalTexture( nullptr );
+	m_whiteMaterial = new Material( g_renderer, "Data/Materials/Lit.material" );
 }
 
 
@@ -207,9 +197,9 @@ void Game::InitializeLights()
 {
 	// Light 0 must be active switch light
 	m_activeSwitchLight.color = Rgba8::GREEN.GetAsRGBVector();
-	m_activeSwitchLight.intensity = .5f;
+	m_activeSwitchLight.intensity = .15f;
 
-	Vec3 attentuation = Vec3( 1.f, 0.f, 0.f );
+	Vec3 attentuation = Vec3( 0.f, 1.f, 0.f );
 
 	Light overheadLight0;
 	overheadLight0.position = Vec3( 5.f, 3.75f, 5.f );
@@ -856,10 +846,6 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
-	g_renderer->SetSampler( eSampler::POINT_WRAP );
-	g_renderer->BindSampler( nullptr );
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-	
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	g_renderer->SetGamma( m_gamma );

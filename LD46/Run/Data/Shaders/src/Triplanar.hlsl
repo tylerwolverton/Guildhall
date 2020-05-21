@@ -114,10 +114,11 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	
 	final_color = pow( max( final_color, 0.f ), GAMMA.xxxx );
 
-	float3 surface_color = CalculateDot3Light( input.world_position, final_normal, final_color.xyz );
+	lit_color_t surface_color = CalculateDot3Light( input.world_position, final_normal, final_color.xyz );
 
-	surface_color = pow( max( surface_color, 0.f ), ( 1 / GAMMA ).xxx );
+	surface_color.color = pow( max( surface_color.color, 0.f ), 1.f / GAMMA );
+	surface_color.bloom = pow( max( surface_color.bloom, 0.f ), 1.f / GAMMA );
 
-	float4 final_color_with_fog = AddFogToColor( float4( surface_color, 1.f ), input.world_position );
+	float4 final_color_with_fog = AddFogToColor( float4( surface_color.color, 1.f ), input.world_position );
 	return final_color_with_fog;
 }
