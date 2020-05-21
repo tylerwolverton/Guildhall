@@ -11,6 +11,15 @@
     <Filter Include="Data\Gameplay">
       <UniqueIdentifier>{c91a7c1f-0c87-4c6d-bfea-b9b881719014}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{f0de08a0-8e4c-4924-9900-04dc625cd6dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\lua">
+      <UniqueIdentifier>{7ac70e80-3609-4648-aaa6-7e848bf785c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{a6490b6f-0e35-4ed2-8b0b-a0b967e0a157}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -61,6 +70,108 @@
     <ClCompile Include="MovingObstacle.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lapi.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lauxlib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lbaselib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lbitlib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lcode.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lcorolib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lctype.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldblib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldebug.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldo.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldump.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lfunc.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lgc.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\linit.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\liolib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\llex.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lmathlib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lmem.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\loadlib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lobject.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lopcodes.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\loslib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lparser.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lstate.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lstring.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lstrlib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ltable.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ltablib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ltm.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lua.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lundump.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lutf8lib.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lvm.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lzio.c">
+      <Filter>ThirdParty\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -110,6 +221,84 @@
     </ClInclude>
     <ClInclude Include="MovingObstacle.hpp">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lapi.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lauxlib.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lcode.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lctype.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ldebug.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ldo.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lfunc.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lgc.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\llex.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\llimits.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lmem.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lobject.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lopcodes.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lparser.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lprefix.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lstate.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lstring.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ltable.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ltm.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lua.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lua.hpp">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\luaconf.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lualib.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lundump.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lvm.h">
+      <Filter>ThirdParty\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lzio.h">
+      <Filter>ThirdParty\lua</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

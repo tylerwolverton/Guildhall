@@ -38,6 +38,9 @@
     <Filter Include="Time">
       <UniqueIdentifier>{2b06d991-dda8-4c55-9904-e3ed47542039}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty\mikkt">
+      <UniqueIdentifier>{143fb63f-77d1-4f90-9255-d71cc2debaa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -498,22 +501,44 @@
     <ClInclude Include="Time\Time.hpp">
       <Filter>Time</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\MeshUtils.hpp" />
     <ClInclude Include="Renderer\DebugRender.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Math\AABB3.hpp" />
-    <ClInclude Include="Math\OBB3.hpp" />
-    <ClInclude Include="Math\Plane2D.hpp" />
-    <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
-    <ClInclude Include="Core\Delegate.hpp" />
-    <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h" />
-    <ClInclude Include="Core\ObjLoader.hpp" />
-    <ClInclude Include="Core\NamedProperties.hpp" />
     <ClInclude Include="Renderer\ShaderProgram.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\Shader.hpp" />
-    <ClInclude Include="Renderer\Material.hpp" />
+    <ClInclude Include="Math\AABB3.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Delegate.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NamedProperties.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjLoader.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\OBB3.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Plane2D.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Material.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\MeshUtils.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Shader.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Vertex_PCUTBN.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h">
+      <Filter>ThirdParty\mikkt</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

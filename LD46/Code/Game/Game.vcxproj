@@ -193,6 +193,40 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lapi.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lauxlib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lbaselib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lbitlib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lcode.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lcorolib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lctype.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldblib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldebug.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldo.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ldump.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lfunc.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lgc.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\linit.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\liolib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\llex.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lmathlib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lmem.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\loadlib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lobject.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lopcodes.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\loslib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lparser.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lstate.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lstring.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lstrlib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ltable.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ltablib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\ltm.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lua.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lundump.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lutf8lib.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lvm.c" />
+    <ClCompile Include="..\ThirdParty\lua-5.3.5\src\lzio.c" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="ActorDefinition.cpp" />
     <ClCompile Include="App.cpp" />
@@ -211,6 +245,32 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lapi.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lauxlib.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lcode.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lctype.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ldebug.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ldo.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lfunc.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lgc.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\llex.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\llimits.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lmem.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lobject.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lopcodes.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lparser.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lprefix.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lstate.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lstring.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ltable.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\ltm.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lua.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lua.hpp" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\luaconf.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lualib.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lundump.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lvm.h" />
+    <ClInclude Include="..\ThirdParty\lua-5.3.5\src\lzio.h" />
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="ActorDefinition.hpp" />
     <ClInclude Include="App.hpp" />
