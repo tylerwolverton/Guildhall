@@ -19,6 +19,8 @@ class World;
 class TextBox;
 class Texture;
 class GPUMesh;
+class Shader;
+class Material;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -80,6 +82,22 @@ struct ProjectionConstants
 
 
 //-----------------------------------------------------------------------------------------------
+struct ColorTransformConstants
+{
+	Mat44 colorTransform;
+
+	Vec3 tint;
+	float tintPower;
+
+	float transformPower;
+
+	float padding0;
+	float padding1;
+	float padding2;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -104,8 +122,9 @@ public:
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
 	static bool SetMouseSensitivity( EventArgs* args );
-	static bool SetAmbientLightColor( EventArgs* args );
-	static bool SetPointLightColor( EventArgs* args );
+	void UnSubscribeGameMethods( EventArgs* args );
+	void SetAmbientLightColor( EventArgs* args );
+	void SetPointLightColor( EventArgs* args );
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -130,6 +149,7 @@ private:
 
 	void PrintHotkeys();
 	void PrintDiageticHotkeys();
+	void PrintInfo();
 	void ChangeShader( int nextShaderIdx );
 
 	GameLight& GetCurGameLight()											{ return m_lights[m_currentLightIdx]; }
@@ -174,6 +194,15 @@ private:
 	GPUMesh* m_sphereMesh = nullptr;
 	Transform m_sphereMeshTransform;
 	
+	GPUMesh* m_vespaMesh = nullptr;
+	Transform m_vespaMeshTransform;
+
+	GPUMesh* m_scifiMesh = nullptr;
+	Transform m_scifiMeshTransform;
+
+	GPUMesh* m_teapotMesh = nullptr;
+	Transform m_teapotMeshTransform;
+
 	// Shader demos
 	Transform m_sphereMeshFresnelTransform;
 	Transform m_sphereMeshTriplanarTransform;
@@ -192,9 +221,22 @@ private:
 	FresnelConstants m_fresnelData;
 	float m_dissolveFactor = 0.f;
 	float m_dissolveEdge = .3f;
+	
 	Mat44 m_projectionViewMatrix;
 
-	std::vector<std::string> m_shaderPaths;
-	std::vector<std::string> m_shaderNames;
+	ColorTransformConstants m_colorTransformConstants;
+
+	std::vector<Shader*> m_shaders;
 	int m_currentShaderIdx = 0;
+
+	// Materials
+	Material* m_defaultMaterial = nullptr;
+	Material* m_vespaMaterial = nullptr;
+	Material* m_scifiMaterial = nullptr;
+	Material* m_teapotMaterial = nullptr;
+	Material* m_fresnelMaterial = nullptr;
+	Material* m_dissolveMaterial = nullptr;
+	Material* m_triplanarMaterial = nullptr;
+
+	bool m_bloomEnabled = true;
 };

@@ -71,6 +71,16 @@ void Rgba8::SetFromText( const char* asText )
 
 
 //-----------------------------------------------------------------------------------------------
+void Rgba8::SetFromNormalizedVector( const Vec4& colorVector )
+{
+	r = (unsigned char)( colorVector.x * 255.f );
+	g = (unsigned char)( colorVector.y * 255.f );
+	b = (unsigned char)( colorVector.z * 255.f );
+	a = (unsigned char)( colorVector.w * 255.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Rgba8::IsRGBEqual( const Rgba8& otherColor )
 {
 	return r == otherColor.r
@@ -105,6 +115,20 @@ Vec4 Rgba8::GetAsRGBAVector() const
 				 (float)g / 255.f, 
 				 (float)b / 255.f,
 				 (float)a / 255.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Rgba8::GetAsString() const
+{
+	return ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Rgba8::ToString() const
+{
+	return std::string( Stringf( "( %u, %u, %u, %u )", r, g, b, a ) );
 }
 
 

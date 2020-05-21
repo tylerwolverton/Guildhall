@@ -17,6 +17,7 @@
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/PolygonCollider2D.hpp"
 #include "Engine/Time/Clock.hpp"
+#include "Engine/Time/Time.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/GameObject.hpp"
@@ -39,14 +40,12 @@ void Game::Startup()
 {
 	m_worldCamera = new Camera();
 	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
-	m_worldCamera->SetColorTarget( nullptr );
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 	m_worldCamera->SetPosition( m_focalPoint );
 	
 	m_uiCamera = new Camera();
 	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
-	m_uiCamera->SetColorTarget( nullptr );
 	
 	EnableDebugRendering();
 
@@ -59,6 +58,8 @@ void Game::Startup()
 
 	m_physics2D = new Physics2D();
 	m_physics2D->Startup( m_gameClock );
+	m_physics2D->DisableLayerInteraction( 0, 1 );
+	//m_physics2D->EnableLayerInteraction( 1, 0 );
 
 	m_mouseHistoryPoints[0].position = Vec2::ZERO;
 	m_mouseHistoryPoints[0].deltaSeconds = 0.f;
@@ -71,8 +72,6 @@ void Game::Startup()
 	m_mouseHistoryPoints[4].position = Vec2::ZERO;
 	m_mouseHistoryPoints[4].deltaSeconds = 0.f;
 
-	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
-
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
 
 	Vec2 bottomLeft( -WINDOW_WIDTH * .5f, -WINDOW_HEIGHT * .5f );
@@ -80,6 +79,9 @@ void Game::Startup()
 	std::vector<Vec2> points {bottomLeft, Vec2(topRight.x, bottomLeft.y), topRight, Vec2( bottomLeft.x, topRight.y ) };
 	SpawnPolygon( Polygon2( points ) );
 	m_gameObjects[0]->ChangeBounciness( 1.f );
+
+
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
 
@@ -382,6 +384,11 @@ void Game::UpdateFromKeyboard()
 						m_dragTarget->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 					}
 				}
+				else
+				{
+					float radius = m_rng->RollRandomFloatInRange( .25f, 1.f );
+					SpawnTriggerDisc( m_mouseWorldPosition, radius );
+				}
 			}
 
 			if ( g_inputSystem->IsKeyPressed( KEY_PLUS ) )
@@ -426,8 +433,8 @@ void Game::UpdateFromKeyboard()
 					GUARANTEE_OR_DIE( index != -1, "Dragged object isn't in game object list" );
 
 					m_garbageGameObjectIndexes.push_back( index );
-
 					m_isMouseDragging = false;
+					m_dragTarget->SetIsGarbage( true );
 					m_dragTarget = nullptr;
 				}
 			}
@@ -519,6 +526,44 @@ void Game::UpdateFromKeyboard()
 					m_isPhysicsPaused = true;
 					m_currentFixedDeltaSeconds = m_physics2D->GetFixedDeltaSeconds();
 					m_physics2D->SetFixedDeltaSeconds( 0.f );
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						uint curLayer = m_dragTarget->GetLayer();
+						if ( curLayer == 31 )
+						{
+							m_dragTarget->SetLayer( 0 );
+						}
+						else
+						{
+							m_dragTarget->SetLayer( curLayer + 1U );
+						}
+					}
+				}
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+			{
+				if ( m_isMouseDragging )
+				{
+					if ( m_dragTarget != nullptr )
+					{
+						uint curLayer = m_dragTarget->GetLayer();
+						if ( curLayer == 0 )
+						{
+							m_dragTarget->SetLayer( 31 );
+						}
+						else
+						{
+							m_dragTarget->SetLayer( curLayer - 1U );
+						}
+					}
 				}
 			}
 
@@ -720,7 +765,8 @@ void Game::UpdateToolTipBox()
 		selectedObject = GetTopGameObjectAtMousePosition();
 	}
 
-	if ( selectedObject == nullptr )
+	if ( selectedObject == nullptr
+		 || selectedObject->IsGarbage() )
 	{
 		return;
 	}
@@ -733,16 +779,17 @@ void Game::UpdateToolTipBox()
 		case eSimulationMode::SIMULATION_MODE_STATIC: simulationModeStr = "Static"; break;
 	}
 
-	m_tooltipBox->SetText(       Stringf( "[1, 2, 3]      | Simulation Mode: %s", simulationModeStr.c_str() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[ [ ] ]        | Mass: %.2f", selectedObject->GetMass() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "               | Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
-	m_tooltipBox->AddLineOFText( Stringf( "               | Verlet Velocity: ( %.2f, %.2f )", selectedObject->GetVerletVelocity().x, selectedObject->GetVerletVelocity().y ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[- +]          | Bounciness: %.2f", selectedObject->GetBounciness() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[< >]          | Friction: %.2f", selectedObject->GetFriction() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[; ']          | Drag: %.2f", selectedObject->GetDrag() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "               | Moment of Inertia: %.2f", selectedObject->GetMomentOfInertia() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[Q E]          | Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
-	m_tooltipBox->AddLineOFText( Stringf( "[R T, Y-reset] | Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
+	m_tooltipBox->SetText(       Stringf( "[1, 2, 3]            | Simulation Mode: %s", simulationModeStr.c_str() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[ Up, Down arrows ]  | Layer: %u", selectedObject->GetLayer() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[ [ ] ]              | Mass: %.2f", selectedObject->GetMass() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "                     | Velocity: ( %.2f, %.2f )", selectedObject->GetVelocity().x, selectedObject->GetVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "                     | Verlet Velocity: ( %.2f, %.2f )", selectedObject->GetVerletVelocity().x, selectedObject->GetVerletVelocity().y ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[- +]                | Bounciness: %.2f", selectedObject->GetBounciness() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[< >]                | Friction: %.2f", selectedObject->GetFriction() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[; ']                | Drag: %.2f", selectedObject->GetDrag() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "                     | Moment of Inertia: %.2f", selectedObject->GetMomentOfInertia() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[Q E]                | Rotation: %.2f", selectedObject->GetRotationDegrees() ) );
+	m_tooltipBox->AddLineOFText( Stringf( "[R T, Y-reset]       | Angular Velocity: %.2f", selectedObject->GetAngularVelocity() ) );
 }
 
 
@@ -758,8 +805,7 @@ void Game::ResetGameObjectColors()
 			continue;
 		}
 
-		// Default fill color to white
-		Rgba8 fillColor = Rgba8::WHITE;
+		Rgba8 fillColor = gameObject->GetFillColor();
 		float mappedAlpha = RangeMapFloat( 0.f, 1.f, 100.f, 254.f, gameObject->GetBounciness() );
 		fillColor.a = (unsigned char)mappedAlpha;
 		gameObject->SetFillColor( fillColor );
@@ -859,6 +905,40 @@ void Game::SpawnDisc( const Vec2& center, float radius )
 	gameObject->SetBorderColor( Rgba8::BLUE );
 	gameObject->SetFillColor( Rgba8::WHITE );
 
+	discCollider->m_rigidbody->m_userProperties.SetValue( "name", "DiscCollider" );
+	discCollider->m_rigidbody->m_userProperties.SetValue( "gameObject", (void*)gameObject );
+
+	discCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Game::EnterCollisionEvent );
+	discCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Game::StayCollisionEvent );
+	discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Game::LeaveCollisionEvent );
+
+	m_gameObjects.push_back( gameObject );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SpawnTriggerDisc( const Vec2& center, float radius )
+{
+	GameObject* gameObject = new GameObject();
+	gameObject->SetRigidbody( m_physics2D->CreateRigidbody() );
+	gameObject->SetPosition( center );
+	gameObject->SetSimulationMode( SIMULATION_MODE_STATIC );
+
+	DiscCollider2D* discCollider = m_physics2D->CreateDiscTrigger( Vec2::ZERO, radius );
+	gameObject->SetCollider( discCollider );
+	gameObject->ChangeBounciness( .5f );
+	gameObject->ChangeFriction( .5f );
+
+	gameObject->SetBorderColor( Rgba8::BLUE );
+	gameObject->SetFillColor( Rgba8::WHITE );
+
+	discCollider->m_rigidbody->m_userProperties.SetValue( "name", "DiscTrigger" );
+	discCollider->m_rigidbody->m_userProperties.SetValue( "gameObject", (void*)gameObject );
+
+	discCollider->m_onTriggerEnterDelegate.SubscribeMethod( this, &Game::EnterTriggerEvent );
+	discCollider->m_onTriggerStayDelegate.SubscribeMethod( this, &Game::StayTriggerEvent );
+	discCollider->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Game::LeaveTriggerEvent );
+
 	m_gameObjects.push_back( gameObject );
 }
 
@@ -878,6 +958,13 @@ void Game::SpawnPolygon( const Polygon2& polygon )
 
 	gameObject->SetBorderColor( Rgba8::BLUE );
 	gameObject->SetFillColor( Rgba8::WHITE );
+
+	polygonCollider->m_rigidbody->m_userProperties.SetValue( "name", "PolygonCollider" );
+	polygonCollider->m_rigidbody->m_userProperties.SetValue( "gameObject", (void*)gameObject );
+
+	polygonCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Game::EnterCollisionEvent );
+	polygonCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Game::StayCollisionEvent );
+	polygonCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Game::LeaveCollisionEvent );
 
 	m_gameObjects.push_back( gameObject );
 }
@@ -994,4 +1081,122 @@ MouseMovementHistoryPoint Game::GetCummulativeMouseHistory()
 	}
 
 	return history;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::EnterCollisionEvent( Collision2D collision )
+{
+	GameObject* myObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", (void*)nullptr );
+	GameObject* theirObject = (GameObject*)collision.myCollider->m_rigidbody->m_userProperties.GetValue( "gameObject", (void*)nullptr );
+
+	if ( myObject != nullptr )
+	{
+		Rgba8 fillColor = Rgba8::BLACK;
+		fillColor.a = 0;
+		myObject->SetFillColor( fillColor );
+	}
+	if ( theirObject != nullptr )
+	{
+		Rgba8 fillColor = Rgba8::BLACK;
+		fillColor.a = 0;
+		theirObject->SetFillColor( fillColor );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::StayCollisionEvent( Collision2D collision )
+{
+	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition ),
+						Vec2( .5f, .5f ),
+						Rgba8::GREEN,
+						0.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"colliding with %s%d!",
+							theirName.c_str(), collision.theirCollider->GetId() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LeaveCollisionEvent( Collision2D collision )
+{
+	Collider2D* myCollider = collision.myCollider;
+	if ( myCollider != nullptr )
+	{
+		Rigidbody2D* myRigidbody = myCollider->m_rigidbody;
+		if ( myRigidbody != nullptr )
+		{
+			GameObject* myObject = (GameObject*)myRigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
+			if ( myObject != nullptr )
+			{
+				myObject->SetFillColor( Rgba8::WHITE );
+			}
+		}
+	}
+
+	Collider2D* theirCollider = collision.theirCollider;
+	if ( theirCollider != nullptr )
+	{
+		Rigidbody2D* theirRigidbody = theirCollider->m_rigidbody;
+		if ( theirRigidbody != nullptr )
+		{
+			GameObject* theirObject = (GameObject*)theirRigidbody->m_userProperties.GetValue( "gameObject", ( void* )nullptr );
+			if ( theirObject != nullptr )
+			{
+				theirObject->SetFillColor( Rgba8::WHITE );
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::EnterTriggerEvent( Collision2D collision )
+{
+	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition + Vec2( 0.f, .3f ) ),
+						Vec2( .5f, .5f ),
+						Rgba8::GREEN,
+						2.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"triggered by %s%d!",
+						theirName.c_str(), collision.theirCollider->GetId() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::StayTriggerEvent( Collision2D collision )
+{
+	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition + Vec2( 0.f, 0.f ) ),
+						Vec2( .5f, .5f ),
+						Rgba8::BLUE,
+						0.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"triggering %s%d!",
+							theirName.c_str(), collision.theirCollider->GetId() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LeaveTriggerEvent( Collision2D collision )
+{
+	std::string theirName = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "name", "ERROR" );
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( collision.myCollider->m_worldPosition + Vec2( 0.f, -.3f ) ),
+						Vec2( .5f, .5f ),
+						Rgba8::RED,
+						2.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"left trigger with %s%d!",
+							theirName.c_str(), collision.theirCollider->GetId() );
 }

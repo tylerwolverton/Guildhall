@@ -14,6 +14,7 @@
 //-----------------------------------------------------------------------------------------------
 struct Rgba8;
 class Clock;
+class Collision2D;
 class Entity;
 class RandomNumberGenerator;
 class Camera;
@@ -80,6 +81,7 @@ private:
 	void HandleIntersection( GameObject* gameObject, GameObject* otherGameObject );
 
 	void SpawnDisc( const Vec2& center, float radius );
+	void SpawnTriggerDisc( const Vec2& center, float radius );
 	void SpawnPolygon( const std::vector<Vec2>& points );
 	void SpawnPolygon( const Polygon2& polygon );
 
@@ -89,6 +91,14 @@ private:
 
 	void PerformGarbageCollection();
 	MouseMovementHistoryPoint GetCummulativeMouseHistory();
+
+	void EnterCollisionEvent( Collision2D collision );
+	void StayCollisionEvent( Collision2D collision );
+	void LeaveCollisionEvent( Collision2D collision );
+
+	void EnterTriggerEvent( Collision2D collision );
+	void StayTriggerEvent( Collision2D collision );
+	void LeaveTriggerEvent( Collision2D collision );
 
 private:
 	Clock*						m_gameClock						= nullptr;

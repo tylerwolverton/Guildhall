@@ -20,7 +20,7 @@ const Texture* BitmapFont::GetTexture() const
 
 
 //-----------------------------------------------------------------------------------------------
-void BitmapFont::AppendVertsForText2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& textMins, float cellHeight, const std::string& text, const Rgba8& tint /*= Rgba8::WHITE*/, float cellAspect /*= 1.f */ )
+void BitmapFont::AppendVertsForText2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& textMins, float cellHeight, const std::string& text, const Rgba8& tint, float cellAspect )
 {
 	float cellWidth = cellHeight * cellAspect;
 

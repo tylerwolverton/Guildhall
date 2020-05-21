@@ -1,59 +1,24 @@
 #pragma once
-#include <string>
-#include <vector>
+#include "Engine/Core/XmlUtils.hpp"
+#include "Engine/Renderer/D3D11Common.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-struct ID3D11Resource;
-struct ID3D11VertexShader;
-struct ID3D11PixelShader;
-struct ID3D11InputLayout;
-struct ID3D10Blob;
-struct ID3D11RasterizerState;
-struct D3D11_INPUT_ELEMENT_DESC;
-struct BufferAttribute;
-class RenderContext;
-class VertexBuffer;
+class ShaderProgram;
 
 
 //-----------------------------------------------------------------------------------------------
-enum eShaderType
+struct ShaderState
 {
-	SHADER_TYPE_VERTEX,
-	SHADER_TYPE_FRAGMENT,
-};
+	bool isWindingCCW = true;
+	eCullMode cullMode = eCullMode::NONE;
+	eFillMode fillMode = eFillMode::SOLID;
 
+	eBlendMode blendMode = eBlendMode::DISABLED;
 
-//-----------------------------------------------------------------------------------------------
-class ShaderStage
-{
-public:
-	ShaderStage();
-	~ShaderStage();
-
-	bool Compile( RenderContext* renderContext,
-							   const std::string& filename,
-							   const void* source,
-							   const size_t sourceByteLength,
-							   eShaderType stage );
-
-	inline bool IsValid() const { return m_handle != nullptr; }
-
-	const void* GetBytecode() const;
-	size_t GetBytecodeLength() const;
-
-public:
-	eShaderType m_type = eShaderType::SHADER_TYPE_VERTEX;
-
-	union
-	{
-		ID3D11Resource* m_handle = nullptr;
-		ID3D11VertexShader* m_vertexShader;
-		ID3D11PixelShader* m_fragmentShader;
-	};
-
-private:
-	ID3D10Blob* m_bytecode = nullptr;
+	eCompareFunc depthTestCompare = eCompareFunc::COMPARISON_ALWAYS;
+	bool writeDpeth = false;
 };
 
 
@@ -61,33 +26,21 @@ private:
 class Shader
 {
 public:
-	Shader( RenderContext* owner );
-	~Shader();
+	Shader() = default;
+	explicit Shader( RenderContext* context, const char* filename );
 
-	bool CreateFromFile( const std::string& fileName );
-	bool CreateFromSourceString( const std::string& shaderName, const char* source );
+	std::string GetName()								{ return m_name; }
+	const char* GetFileName()							{ return m_filename.c_str(); }
+	ShaderProgram* GetShaderProgram()					{ return m_program; }
+	ShaderState GetShaderState()						{ return m_state; }
 
-	bool ReloadFromDisc();
-
-	// for hooking IA (input assembler) to the VS (vertex shader), 
-	// needs the vertex shader and vertex format to make the binding
-	ID3D11InputLayout* GetOrCreateInputLayout( const BufferAttribute* attributes );           
-
-	std::string GetFileName()															{ return m_fileName; }
+	void SetShaderProgram( ShaderProgram* program )		{ m_program = program; }
 
 private:
-	void PopulateVertexDescription( const BufferAttribute* attributes );            
-
-public:
-	RenderContext*			m_owner = nullptr;
-	ShaderStage				m_vertexStage;
-	ShaderStage				m_fragmentStage;
-
-	ID3D11InputLayout*		m_inputLayout = nullptr;
-
-private:
-	const BufferAttribute*					m_lastLayout = nullptr;
-	std::vector<D3D11_INPUT_ELEMENT_DESC>	m_vertexDesc;
-
-	std::string								m_fileName;
+	RenderContext* m_context = nullptr;
+	std::string m_filename;
+	std::string m_name;
+	
+	ShaderProgram* m_program = nullptr;
+	ShaderState m_state;
 };

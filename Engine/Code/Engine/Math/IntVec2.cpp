@@ -41,6 +41,20 @@ void IntVec2::SetFromText( const char* asText )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string IntVec2::GetAsString() const
+{
+	return ToString();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string IntVec2::ToString() const
+{
+	return std::string( Stringf( "( %d, %d )", x, y ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 const IntVec2 IntVec2::operator+( const IntVec2& vecToAdd ) const
 {
 	return IntVec2( x + vecToAdd.x, y + vecToAdd.y );

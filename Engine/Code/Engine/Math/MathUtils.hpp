@@ -29,9 +29,6 @@ float			SignFloat( float value );
 bool			IsNearlyEqual( float value, float target, float variance = .0001f );
 bool			IsNearlyEqual( const Vec2& value, const Vec2& target, float variance = .0001f );
 bool			IsNearlyEqual( const Vec3& value, const Vec3& target, float variance = .0001f );
-float			Min( float a, float b );
-float			Max( float a, float b );
-
 
 // Transforms
 const Vec2		TransformPosition2D( const Vec2& initialPos, float scaleUniform, float rotationDeg, const Vec2& translation );
@@ -132,3 +129,16 @@ float			SmoothStop3( float t);				// [0,1] cubic ease-out
 float			SmoothStop4( float t);				// [0,1] quartic ease-out
 float			SmoothStop5( float t);				// [0,1] quintic ease-out
 float			SmoothStep3( float t);				// [0,1] cubic ease-in-out
+
+// Templated utils
+template < typename T>
+T Min( T a, T b )
+{
+	return a < b ? a : b;
+}
+
+template < typename T>
+T Max( T a, T b )
+{
+	return a > b ? a : b;
+}

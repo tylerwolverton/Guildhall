@@ -29,6 +29,8 @@ public:
 	float Tz = 0.f;
 	float Tw = 1.f;
 
+	static const Mat44 IDENTITY;
+
 public:
 	// Construction / Destruction
 	Mat44() = default;
@@ -63,6 +65,9 @@ public:
 	const Vec4			GetKBasis4D() const;
 	const Vec4			GetTranslation4D() const;
 
+	// Conversion accessors
+	const Mat44			GetNormalizedDirectionMatrix3D() const;
+
 	// Basic mutators
 	void				SetTranslation2D( const Vec2& translation2D );
 	void				SetTranslation3D( const Vec3& translation3D );
@@ -82,7 +87,7 @@ public:
 	void				ScaleNonUniform2D( const Vec2& scaleFactorsXY );
 	void				ScaleUniform3D( float uniformScaleXYZ );
 	void				ScaleNonUniform3D( const Vec3& scaleFactorsXYZ );
-	void				PushTransform( const Mat44& transformationToConcatenate ); // PushMatrix
+	void				PushTransform( const Mat44& transformationToConcatenate );
 	void				Transpose();
 
 	// Static creation methods

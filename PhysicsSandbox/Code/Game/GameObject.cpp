@@ -13,6 +13,8 @@ GameObject::~GameObject()
 {
 	m_rigidbody->Destroy();
 	m_rigidbody = nullptr;
+
+	m_isGarbage = true;
 }
 
 
@@ -164,6 +166,30 @@ void GameObject::SetSimulationMode( eSimulationMode mode )
 	}
 
 	m_rigidbody->SetSimulationMode( mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+uint GameObject::GetLayer() const
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return 0;
+	}
+
+	return m_rigidbody->GetLayer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameObject::SetLayer( uint layer )
+{
+	if ( m_rigidbody == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody->SetLayer( layer );
 }
 
 

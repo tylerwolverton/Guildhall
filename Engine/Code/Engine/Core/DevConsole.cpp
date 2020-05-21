@@ -39,7 +39,6 @@ void DevConsole::Startup()
 	m_cursorBlinkTimer->SetSeconds( .5f );
 
 	m_devConsoleCamera = new Camera();
-	m_devConsoleCamera->SetColorTarget( nullptr );
 	m_devConsoleCamera->SetOutputSize( Vec2( 1920.f, 1080.f ) );
 	m_devConsoleCamera->SetProjectionOrthographic( 1080.f );
 
@@ -314,8 +313,8 @@ void DevConsole::AppendVertsForString( std::vector<Vertex_PCU>& vertices, std::s
 void DevConsole::AutoCompleteCommand( bool isReversed )
 {
 	// Get all commands available to dev console
-	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
-	int numSupportedCommands = (int)supportedCommands.size();
+	std::vector<std::string> supportedCommandNames = g_eventSystem->GetAllExposedEventNamesForLocation( eUsageLocation::DEV_CONSOLE );
+	int numSupportedCommands = (int)supportedCommandNames.size();
 
 	if ( numSupportedCommands == 0 )
 	{
@@ -330,12 +329,12 @@ void DevConsole::AutoCompleteCommand( bool isReversed )
 		subStrToMatch = m_currentCommandStr.substr( 0, m_latestInputStringPosition );
 	}
 
-	for ( int commandIdx = 0; commandIdx < (int)supportedCommands.size(); ++commandIdx )
+	for ( int commandIdx = 0; commandIdx < (int)supportedCommandNames.size(); ++commandIdx )
 	{
-		EventSubscription*& sub = supportedCommands[commandIdx];
-		if ( !_strnicmp( m_currentCommandStr.c_str(), sub->m_eventName.c_str(), m_latestInputStringPosition ) )
+		std::string& eventName = supportedCommandNames[commandIdx];
+		if ( !_strnicmp( m_currentCommandStr.c_str(), eventName.c_str(), m_latestInputStringPosition ) )
 		{
-			potentialMatches.push_back( sub->m_eventName );
+			potentialMatches.push_back( eventName );
 		}
 	}
 
@@ -664,13 +663,12 @@ void DevConsole::ExecuteCommand()
 	std::vector<std::string> args = SplitStringOnDelimiter( m_currentCommandStr, ' ' );
 
 	// Check for a match in supported commands with case insensitivity
-	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
+	std::vector<std::string> supportedCommandNames = g_eventSystem->GetAllExposedEventNamesForLocation( eUsageLocation::DEV_CONSOLE );
 
-	for ( int cmdIdx = 0; cmdIdx < (int)supportedCommands.size(); ++cmdIdx )
+	for ( int cmdIdx = 0; cmdIdx < (int)supportedCommandNames.size(); ++cmdIdx )
 	{
-		EventSubscription*& cmd = supportedCommands[cmdIdx];
-		if ( cmd != nullptr 
-			 && !_strcmpi( args[0].c_str(), cmd->m_eventName.c_str() ) )
+		std::string& eventName = supportedCommandNames[cmdIdx];
+		if ( !_strcmpi( args[0].c_str(), eventName.c_str() ) )
 		{
 			EventArgs eventArgs;
 
@@ -724,15 +722,15 @@ bool DevConsole::ShowHelp( EventArgs* args )
 {
 	UNUSED( args );
 
-	std::vector<EventSubscription*> supportedCommands = g_eventSystem->GetAllExposedEventsForLocation( eUsageLocation::DEV_CONSOLE );
+	std::vector<std::string> eventNames = g_eventSystem->GetAllExposedEventNamesForLocation( eUsageLocation::DEV_CONSOLE );
+	std::vector<std::string> eventHelpTexts = g_eventSystem->GetAllExposedEventHelpTextForLocation( eUsageLocation::DEV_CONSOLE );
 
-	for ( int cmdIdx = 0; cmdIdx < (int)supportedCommands.size(); ++cmdIdx )
+	for ( int cmdIdx = 0; cmdIdx < (int)eventNames.size(); ++cmdIdx )
 	{
-		EventSubscription*& cmd = supportedCommands[cmdIdx];
-		if ( cmd != nullptr )
-		{
-			g_devConsole->PrintString( cmd->m_eventName + " - " + cmd->m_eventHelpText, Rgba8::WHITE );
-		}
+		std::string& eventName = eventNames[cmdIdx];
+		std::string& eventHelpText = eventHelpTexts[cmdIdx];
+		
+		g_devConsole->PrintString( eventName + " - " + eventHelpText, Rgba8::WHITE );
 	}
 
 	return 0;

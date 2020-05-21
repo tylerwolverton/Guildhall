@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+
 //-----------------------------------------------------------------------------------------------
 struct Vec2;
 
@@ -22,6 +25,8 @@ public:
 	Vec3( const Vec2& copyFrom , float initialZ );						// copy constructor (from a Vec2)
 	explicit Vec3( float initialX, float initialY, float initialZ );	// explicit constructor (from x, y, z)
 	void SetFromText( const char* asText );
+	std::string GetAsString() const;
+	std::string ToString() const;
 
 	// Operators (const)
 	bool		operator==( const Vec3& compare ) const;		// vec3 == vec3
@@ -61,6 +66,9 @@ public:
 	// Accessors
 	Vec2		XY() const;
 	Vec2		XZ() const;
+	Vec3		XXX() const;
+	Vec3		YYY() const;
+	Vec3		ZZZ() const;
 
 	// Standalone "friend" functions that are conceptually, but not actually, part of Vec3::
 	friend const Vec3 operator*( float uniformScale, const Vec3& vecToScale );	// float * vec3

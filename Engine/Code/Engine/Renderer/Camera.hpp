@@ -56,9 +56,11 @@ public:
 	void SetClearMode( unsigned int clearFlags, Rgba8 color = Rgba8::BLACK, float depth = 1.f, unsigned int stencil = 0 );
 	
 	void SetColorTarget( Texture* texture );
+	void SetColorTarget( int index, Texture* texture );
 	void SetDepthStencilTarget( Texture* texture );
 	void SetViewMatrix( const Mat44& view )						{ m_viewMatrix = view; }
 	void SetProjectionMatrix( const Mat44& proj )				{ m_projectionMatrix = proj; }
+	void SetTransform( const Transform& transform )				{ m_transform = transform; }
 
 	Vec3 ClientToWorldPosition( const Vec2& clientPos, float ndcZ = 0.f ) const;
 
@@ -66,19 +68,19 @@ public:
 	void UpdateCameraUBO();
 
 	// Accessors
-	void			SetTransform( const Transform& transform )			{ m_transform = transform; }
-
 	const Transform GetTransform()								const	{ return m_transform; }
 	Vec2 GetOrthoMin() const;
 	Vec2 GetOrthoMax() const;
-	Rgba8 GetClearColor()				const	{ return m_clearColor; }
-	unsigned int GetClearMode()			const	{ return m_clearMode; }
-	Texture* GetColorTarget()			const;
-	Texture* GetDepthStencilTarget()	const	{ return m_depthStencilTarget; }
-	float GetClearDepth()				const	{ return m_clearDepth; }
+	Rgba8 GetClearColor()					const	{ return m_clearColor; }
+	unsigned int GetClearMode()				const	{ return m_clearMode; }
+	Texture* GetColorTarget()				const;
+	Texture* GetColorTarget( int index )	const;
+	uint GetColorTargetCount()				const;
+	Texture* GetDepthStencilTarget()		const	{ return m_depthStencilTarget; }
+	float GetClearDepth()					const	{ return m_clearDepth; }
 
-	const Mat44 GetViewMatrix()			const	{ return m_viewMatrix; }
-	const Mat44 GetProjectionMatrix()	const	{ return m_projectionMatrix; }
+	const Mat44 GetViewMatrix()				const	{ return m_viewMatrix; }
+	const Mat44 GetProjectionMatrix()		const	{ return m_projectionMatrix; }
 
 	// Helpers
 	// can use this to determine aspect ratio
@@ -98,7 +100,7 @@ private:
 	Rgba8			m_clearColor = Rgba8::BLACK;
 	float			m_clearDepth = 1.f;
 
-	Texture*		m_colorTarget = nullptr;
+	std::vector<Texture*> m_colorTargets;
 	Texture*		m_depthStencilTarget = nullptr;
 
 	Mat44			m_projectionMatrix;

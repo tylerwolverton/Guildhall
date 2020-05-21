@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/Delegate.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Physics/PhysicsMaterial.hpp"
 
@@ -9,7 +10,7 @@ struct Rgba8;
 struct Manifold2;
 class Physics2D;
 class Rigidbody2D;
-class Collider2D;
+class Collision2D;
 class RenderContext;
 
 
@@ -31,6 +32,7 @@ class Collider2D
 	friend class Physics2D;
 
 public: // Interface 
+	int GetId()																	{ return m_id; }
 	// cache off the world shape representation of this object
 	// taking into account the owning rigidbody (if no owner, local is world)
 	virtual void UpdateWorldShape() = 0;
@@ -56,13 +58,8 @@ public: // Interface
 	// debug helpers
 	virtual void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const = 0;
 
-
 protected:
-	// 
 	virtual ~Collider2D() {}; // private - make sure this is virtual so correct deconstructor gets called
-
-public: // any helpers you want to add
-   // ...
 
 public:
 	eCollider2DType m_type		= COLLIDER2D_NONE;  // keep track of the type - will help with collision later
@@ -72,8 +69,19 @@ public:
 	Vec2	m_localPosition; // my local offset from my parent
 	Vec2	m_worldPosition; // calculated from local position and owning rigidbody if present
 
+	// TODO: Privatize these?
+	Delegate<Collision2D> m_onOverlapEnterDelegate;
+	Delegate<Collision2D> m_onOverlapStayDelegate;
+	Delegate<Collision2D> m_onOverlapLeaveDelegate;
+
+	Delegate<Collision2D> m_onTriggerEnterDelegate;
+	Delegate<Collision2D> m_onTriggerStayDelegate;
+	Delegate<Collision2D> m_onTriggerLeaveDelegate;
+
 protected:
 	Physics2D* m_system			= nullptr;			
+	int m_id					= -1;
+	bool m_isTrigger			= false;
 
 	AABB2 m_worldBounds;
 };

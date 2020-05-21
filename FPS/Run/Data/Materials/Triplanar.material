@@ -1,0 +1,29 @@
+<material name="Triplanar"
+   shader_path="Data/Shaders/Triplanar.shader">
+
+  <!-- material specific textures -->
+  <texture2d path="Data/Images/Textures/grass_d.png" slot="0" />
+  <texture2d path="Data/Images/Textures/sand_d.png" slot="1" />
+  <texture2d path="Data/Images/Textures/wall_d.png" slot="2" />
+  <texture2d path="Data/Images/Textures/grass_n.png" slot="3" />
+  <texture2d path="Data/Images/Textures/sand_n.png" slot="4" />
+  <texture2d path="Data/Images/Textures/wall_n.png" slot="5" />
+
+  <!-- sampler, set by or slot.  
+      filter: nearest, bilinear
+      mode: clamp, wrap
+
+      If no slot is defined - will be the main 
+      sampler used by the diffuse/normal etc...
+
+      otherwise they use the material specific slots
+   -->
+  <sampler slot=""
+     filter="bilinear"
+     mode="wrap" />
+
+  <!-- specular, will default to factor 0 and power 32 -->
+  <specular factor="1"
+            power="64" />
+  
+</material>

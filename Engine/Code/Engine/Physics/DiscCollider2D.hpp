@@ -7,7 +7,7 @@
 class DiscCollider2D : public Collider2D
 {
 public:
-	DiscCollider2D( const Vec2& localPosition, float radius );
+	DiscCollider2D( int id, const Vec2& localPosition, float radius );
 
 	virtual void UpdateWorldShape() override;
 

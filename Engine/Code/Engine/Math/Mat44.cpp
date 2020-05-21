@@ -6,6 +6,11 @@
 
 
 //-----------------------------------------------------------------------------------------------
+// Static member definitions
+const Mat44 Mat44::IDENTITY( Mat44::Mat44() );
+
+
+//-----------------------------------------------------------------------------------------------
 Mat44::Mat44( float* sixteenValuesBasisMajor )
 {
 	Ix = sixteenValuesBasisMajor[0];
@@ -243,6 +248,19 @@ const Vec4 Mat44::GetKBasis4D() const
 const Vec4 Mat44::GetTranslation4D() const
 {
 	return Vec4( Tx, Ty, Tz, Tw );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Mat44::GetNormalizedDirectionMatrix3D() const
+{
+	Mat44 normalizedMatrix;
+
+	normalizedMatrix.SetBasisVectors3D( GetIBasis3D().GetNormalized(),
+										GetJBasis3D().GetNormalized(),
+										GetKBasis3D().GetNormalized() );
+
+	return normalizedMatrix;
 }
 
 

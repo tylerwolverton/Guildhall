@@ -485,7 +485,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	s_debugRenderContext->BeginCamera( *s_debugCamera );
 
-	s_debugRenderContext->BindShader( "Data/Shaders/DebugRender.hlsl" ); 
+	s_debugRenderContext->BindShaderProgram( "Data/Shaders/src/DebugRender.hlsl" ); 
 	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 
 	// Draw Depth
@@ -525,7 +525,7 @@ void DebugRenderWorldToCamera( Camera* camera )
 
 	// Draw XRay
 	s_debugRenderContext->SetDepthTest( eCompareFunc::COMPARISON_GREATER, false );
-	s_debugRenderContext->BindShader( "Data/Shaders/DebugRenderXRay.hlsl" );
+	s_debugRenderContext->BindShaderProgram( "Data/Shaders/src/DebugRenderXRay.hlsl" );
 
 	s_debugRenderContext->BindDiffuseTexture( nullptr );
 	RenderWorldObjects( s_debugRenderWorldObjectsXRay );
@@ -610,8 +610,6 @@ void DebugRenderScreenTo( Texture* output )
 
 	context->BeginCamera( *s_debugCamera );
 
-	context->BindShader( "Data/Shaders/Default.hlsl" );
-
 	context->SetCullMode( eCullMode::NONE );
 	context->SetBlendMode( eBlendMode::ALPHA );
 		
@@ -621,7 +619,6 @@ void DebugRenderScreenTo( Texture* output )
 	BitmapFont* font = s_debugRenderContext->GetSystemFont();
 	context->BindDiffuseTexture( font->GetTexture() );
 	RenderScreenObjects( context, s_debugRenderScreenTextObjects );
-	context->BindDiffuseTexture( nullptr );
 
 	context->EndCamera( *s_debugCamera );
 }
@@ -912,7 +909,7 @@ void DebugAddWorldBasis( const Mat44& basis, float duration, eDebugRenderMode mo
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
+void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, float textHeight, eDebugRenderMode mode, char const* text )
 {
 	if ( text == nullptr
 		 || strlen( text ) == 0 )
@@ -921,14 +918,14 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 	}
 
 	BitmapFont* font = s_debugRenderContext->GetSystemFont();
-	
+
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 
-	Vec2 textDimensions = font->GetDimensionsForText2D( .5f, text );
+	Vec2 textDimensions = font->GetDimensionsForText2D( textHeight, text );
 	Vec2 textMins = -pivot * textDimensions;
 
-	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, .5f, text, Rgba8::WHITE );
+	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, textHeight, text, Rgba8::WHITE );
 
 	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )
 	{
@@ -947,6 +944,13 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 
 
 //-----------------------------------------------------------------------------------------------
+void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode, char const* text )
+{
+	DebugAddWorldText( basis, pivot, start_color, end_color, duration, .5f, mode, text );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, float duration, eDebugRenderMode mode, char const* format, ... )
 {
 	va_list args;
@@ -954,6 +958,17 @@ void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& col
 	std::string text = Stringv( format, args );
 
 	DebugAddWorldText( basis, pivot, color, color, duration, mode, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldTextf( const Mat44& basis, const Vec2& pivot, const Rgba8& color, float duration, float textHeight, eDebugRenderMode mode, char const* format, ... )
+{
+	va_list args;
+	va_start( args, format );
+	std::string text = Stringv( format, args );
+
+	DebugAddWorldText( basis, pivot, color, color, duration, textHeight, mode, text.c_str() );
 }
 
 

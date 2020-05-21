@@ -2,81 +2,78 @@ Project: FPS
 
 ------
 
-### Goal [80/80]
-- [x] Be able to support up to at least 8 concurrent lights
-- [x] Be able to support different light types...
-    - [x] Point Light...
-        - [x] Local 
-        - [x] Infinite
-    - [x] Infinite Directional Light...
-    - [x] Spot Light
-       - [x] Local
-       - [x] Infinite
-    - *Have all these visible in the scene concurrently*
-    - *Note: Local and Infinite are just attenuation values...*
-- [x] Shader should be branchless using a unified lighting structure 
-- [x] Support linear fog...
-      - [x] `RenderContext::EnableFog( float nearFog, float farFog, rgba nearFogColor, rgba farFogColor );`
-        - Note: I only use 1 color for fog 
-      - [x] `RenderContext::DisableFog()` (shader is just 'always' going to do fog, so what do you set this to to make it not have an effect?)
-- [x] Dissolve Shader Effect
-    - [x] Support a `Material Block` uniform buffer with your `RenderContext`
-        - Suggest a `RenderContext::SetMaterialBuffer( RenderBuffer* buf )`  
-    - [x] When binding a dissolve pattern to use, be sure to use a free slot.   
-        - Suggest having a slot titled `USER_SLOT_START`, defined to likely 8.  That way when binding a texture 
-          a user can just say `USER_SLOT_START + idx` for the slot they want.  
-          You can also move your common textures (diffuse, normal, et.al.) to a later slot if you like users starting at 0. 
-    - [x] Have your dissolve shader expose the following controls...
-        - [x] A dissolve "depth" or value set to 0 to 1 to control how dissolved something is.
-        - [x] A dissolve "range" to give a *burned edge* to the dissolve effect.  This is the range near the edge at which is interpolates between burn_start_color and burn_end_color.  
-        - [x] A burn start color.
-        - [x] A burn end color
-        - *Note, the full range you will be moving through with this effect is not 0 to 1, but `(1 + 2 * dissolve_range)` (why?).  You can think of it kinda like a scroll bar.  Meaning - how does the `dissolve_value` or depth that is 0 to 1 actually affect our dissolve range we're using in the shader?*
+## Tasks
+- [x] `NamedProperties`
+    - [x] Switch named properties over to use `TypedProperty` instead of just strings
+    - [x] Add ability to subscribe methods to your event system. 
+    - [x] Add ability to unsubscribe an object from the event system (unsubscribes all methods on that object)
 
-### Extras
-- [x] *X07.10: 05%*: Triplanar Shader
-- [x] *X07.11: 05%*: Projected Texture Effect
-    - Note: Bound to light 0 position, can be placed with F6 or F7 like other lights
-- [ ] *X07.12: 05%*: Interior Mapping Shader
-- [x] *X07.13: 03%*: Fresnel or Highlight Shader
-- [ ] *X07.20: 05%*: Parallax Mapping Shader
-    - [ ] *X07.21 05%*: Self Occluding Parallax Shader, aka Deep/Steep Parallax Shader
-- [ ] *X07.30: 05%*: Support a Cube Map
-    - [ ] *X07.31: 05%*: Support skybox clearing mode for a camera
-    - [ ] *X07.32: 03%*: Support reflections into a skybox (can use specular factor to determine how shiny something is)
- - [x] X02.10 : 02pts: Shader Reloading. On key press (F4), reload all shaders in your shader database
+- [x] Color Transform (ex: Grayscale) Effect
+    - [x] Create/Recycle a color target matching your swapchain's output.
+    - [x] Render game as normal
+    - [x] Create/Recycle another match target
+    - [x] Apply an effect on the original image, outputting to this new texture
+        - [x] Effect applies a per-pixel color transform using a matrix. 
+        - [x] Make it so you can specify a "strength" for this transform, where 0 
+              has no effect, and 1 is the full effect so you can blend between them.
+        - [x] Be able to specify a tint and tint power that pixels trend toward (useful for fades)
+              - `0` would have no effect
+              - `1` the resultant color would be the tint 
+        - [ ] **Optional Challenge: Have all the above be done with a single mat44.**
+    - [x] Copy this final image to the swapchain before present
+   
+- [-] Bloom Effect
+    - [x] Set your normal color target, and a secondary "bloom" target
+        - [x] Camera can set set tertiary render targets
+        - [x] Shader has a secondary output specified
+    - [-] When done, be able to blur the bloom target
+        - [x] Create/Recycle a matching color/render target
+        - [ ] Run a guassian blur pass N times, each pass consisting of one horizontal and one vertical pass
+            Note: Currently using a box blur instead
+            - [ ] Each step in a pass will swap out the src/dst target and render a full screen blur shader
+                - [ ] Run once horizontally
+                - [ ] Run once vertically
+    - [x] Take the result of the blur, and the normal color output, and combine them
+          into the final image.
+    - [x] Be able to toggle blur on-and-off to see it working or not
+        - [x] Disabling the blur just doesn't run the blur and composite steps;
 
-------
-I set up 8 lights in my scene that are on by default, cycle with arrow keys and hit enter to turn off
-Default Lights
-0 - Finite Spot light following camera
-1 - Finite point (red)
-2 - Infinite point (blue)
-3 - Infinite Directional (green arrow) (white light)
-4 - Infinite spot (red arrow) (purple light)
-5 - Finite point (green)
-6 - Finite point (yellow)
-7 - Looping finite point (orange)
+- [x] Texture Pool
+    - [x] Be able to ask your `RenderContext` for a temporary render target of a given resolution and size.
+        - [x] Search for an existing free texture first, and return it if you find one.
+        - [x] If there are none available, create and return a new one.
+    - [x] Be able to relinquish back these temporary textures back to the `RenderContext` when you're done with them.
+        - This will allow them to be reused.
+    - [x] Add a `RenderContext::GetTotalTexturePoolCount()` to tell you how many textures have been created this way.
+    - [x] Add a `RenderContext::GetTexturePoolFreeCount()` to tell you how many are currently in the pool to be recycled
+    - [x] Debug render these counts to the screen to you can make sure you're properly recycling during this assignment.
+        - At any given time you likely will not have more than 3 textures in use at once, meaning your pool should never exceed that count.  This can really depend on your scene though.  For eaxmple, in this assignment for bloom... 
+          1. Camera color output
+          2. Camera bloom target
+          3. Temporaries
+             - Blurring secondary output
+             - Composite output 
 
-Also, I have the projector for projection shader bound to light 0, so it can be positioned with F6, F7 just like the other lights
+-------
+Notes
 
-------
+-I print out the result of cleaning the scifi_fighter to the dev console on startup
+-Running in debug takes a really long time to load since I added in a second obj for the demo. I'm guessing my obj loading needs to be optimized, but release should work fine.
 
+-------
 Controls
 
+-------
 Game
-F2 - Cycle Sampler (between point and bilinear)
-F3 - Cycle Blend Mode (Affects the debug image in the top middle)
 F4 - Reload all shaders
-WASD ( C and Spacebar for up down ) - Move camera
+WASD ( Spacebar and C for up down ) - Move camera
 Shift - Move faster 
-
-Debug Commands
 
 ------
 Dev Console Commands
 set_mouse_sensitivity multiplier=NUMBER - change multiplier for mouse sensitivity
 light_set_ambient_color color=rgb - passed in as 0-1,0-1,0-1
 light_set_color color=rgb - passed in as 0-1,0-1,0-1
+unsubscribe_game - unsubscribe the light_set effects (can't be re-enabled)
 
 Note: my dev console can't handle spaces in strings or parentheses around vec values for now

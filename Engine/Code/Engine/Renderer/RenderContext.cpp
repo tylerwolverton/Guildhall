@@ -2,9 +2,11 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -12,10 +14,12 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SwapChain.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
@@ -42,6 +46,9 @@ void RenderContext::Startup( Window* window )
 	InitializeDefaultRenderObjects();
 
 	m_systemFont = CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
+
+	m_effectCamera = new Camera();
+	m_effectCamera->SetClearMode( 0, Rgba8::WHITE );
 
 	GUARANTEE_OR_DIE( m_systemFont != nullptr, "Could not load default system font. Make sure it is in the Data/Fonts directory." );
 }
@@ -75,20 +82,24 @@ void RenderContext::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void RenderContext::Shutdown()
 {
+	PTR_SAFE_DELETE( m_effectCamera );
+
 	PTR_SAFE_DELETE( m_immediateVBO );
 	PTR_SAFE_DELETE( m_immediateIBO );
 	PTR_SAFE_DELETE( m_frameUBO );
 	PTR_SAFE_DELETE( m_modelMatrixUBO );
 	PTR_SAFE_DELETE( m_materialUBO );
 	PTR_SAFE_DELETE( m_lightUBO );
-
-	PTR_SAFE_DELETE( m_pointClampSampler );
-	PTR_SAFE_DELETE( m_linearClampSampler );
-	PTR_SAFE_DELETE( m_pointWrapSampler );
 	
+	GUARANTEE_OR_DIE( m_totalRenderTargetsMade == m_renderTargetPool.size(), "Total render targets made doesn't match object pool size" );
+
+	PTR_VECTOR_SAFE_DELETE( m_renderTargetPool );
+		
 	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
+	PTR_VECTOR_SAFE_DELETE( m_loadedShaderPrograms );
+	PTR_VECTOR_SAFE_DELETE( m_loadedSamplers );
 
 	PTR_SAFE_DELETE( m_swapchain );
 
@@ -117,20 +128,6 @@ void RenderContext::SetBlendMode( eBlendMode blendMode )
 		case eBlendMode::ALPHA: m_context->OMSetBlendState( m_alphaBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ALPHA; return;
 		case eBlendMode::ADDITIVE: m_context->OMSetBlendState( m_additiveBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::ADDITIVE; return;
 		case eBlendMode::DISABLED: m_context->OMSetBlendState( m_disabledBlendState, zeroes, ~0U ); m_currentBlendMode = eBlendMode::DISABLED; return;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::SetSampler( eSampler sampler )
-{
-	float const zeroes[] = { 0,0,0,0 };
-
-	switch ( sampler )
-	{
-		case eSampler::POINT_CLAMP: m_currentSampler = m_pointClampSampler; return;
-		case eSampler::LINEAR_CLAMP: m_currentSampler = m_linearClampSampler; return;
-		case eSampler::POINT_WRAP: m_currentSampler = m_pointWrapSampler; return;
 	}
 }
 
@@ -173,6 +170,77 @@ void RenderContext::ClearDepth( Texture* depthStencilTarget, float depth )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::AcquireRenderTargetMatching( Texture* textureToMatch )
+{
+	IntVec2 size = textureToMatch->GetTexelSize();
+	++m_curActiveRenderTargets;
+
+	for ( int i = 0; i < (int)m_renderTargetPool.size(); ++i )
+	{
+		Texture* renderTarget = m_renderTargetPool[i];
+		if ( renderTarget->GetTexelSize() == size )
+		{
+			// fast removal at index
+			m_renderTargetPool[i] = m_renderTargetPool[m_renderTargetPool.size() - 1];
+			m_renderTargetPool.pop_back();
+
+			return renderTarget;
+		}
+	}
+
+	Texture* texture = CreateRenderTarget( size );
+	++m_totalRenderTargetsMade;
+	return texture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ReleaseRenderTarget( Texture* texture )
+{
+	m_renderTargetPool.push_back( texture );
+	--m_curActiveRenderTargets;
+
+	GUARANTEE_OR_DIE( m_curActiveRenderTargets >= 0, "Released more render targets than were made." );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::CopyTexture( Texture* destination, Texture* source )
+{
+	m_context->CopyResource( destination->m_handle, source->m_handle );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::StartEffect( Texture* destination, Texture* source, ShaderProgram* shader )
+{
+	m_effectCamera->SetColorTarget( destination );
+	BeginCamera( *m_effectCamera );
+	BindShaderProgram( shader );
+	BindDiffuseTexture( source );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::StartEffect( Texture* destination, Texture* source, Material* material )
+{
+	m_effectCamera->SetColorTarget( destination );
+	BeginCamera( *m_effectCamera );
+	BindMaterial( material );
+	BindDiffuseTexture( source );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::EndEffect()
+{
+	//FinalizeContext();
+
+	m_context->Draw( 3, 0 );
+	EndCamera( *m_effectCamera );
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( Camera& camera )
@@ -183,283 +251,57 @@ void RenderContext::BeginCamera( Camera& camera )
 
 	m_isDrawing = true;
 
-	Texture* colorTarget = camera.GetColorTarget();
+	/*Texture* colorTarget = camera.GetColorTarget();
 	if ( colorTarget == nullptr )
 	{
 		colorTarget = m_swapchain->GetBackBuffer();
 	}
 	
-	TextureView* view = colorTarget->GetOrCreateRenderTargetView();
-	ID3D11RenderTargetView* renderTargetView = view->m_renderTargetView;
-
-	UpdateAndBindBuffers( camera );
-	SetupRenderTargetViewWithDepth( renderTargetView, camera );
-	InitializeViewport( colorTarget->GetTexelSize() );
+	TextureView* view = colorTarget->GetOrCreateRenderTargetView();*/
 	
-	ClearCamera( renderTargetView, camera );
+	std::vector<ID3D11RenderTargetView*> renderTargetViews;
+	int rtvCount = camera.GetColorTargetCount();
+	renderTargetViews.resize( rtvCount );
+	IntVec2 outputSize = m_swapchain->GetBackBuffer()->GetTexelSize();
+
+	for ( int i = 0; i < rtvCount; ++i )
+	{
+		renderTargetViews[i] = nullptr;
+
+		Texture* colorTarget = camera.GetColorTarget( i );
+		if ( colorTarget != nullptr )
+		{
+			TextureView* rtv = colorTarget->GetOrCreateRenderTargetView();
+			renderTargetViews[i] = (ID3D11RenderTargetView*)rtv->m_handle;
+
+			// Set output size to first size, should all be the same
+			if ( i == 0 )
+			{
+				outputSize = colorTarget->GetTexelSize();
+			}
+		}
+		else if ( i == 0 )
+		{
+			TextureView* rtv = m_swapchain->GetBackBuffer()->GetOrCreateRenderTargetView();
+			renderTargetViews[i] = (ID3D11RenderTargetView*)rtv->m_handle;
+		}
+	}
+
+	ID3D11DepthStencilView* depthStencilView = GetDepthStencilViewFromCamera( camera );
+
+	m_context->OMSetRenderTargets( rtvCount, renderTargetViews.data(), depthStencilView );
+
+	//SetupRenderTargetViewWithDepth( renderTargetView, camera );
+	ClearCamera( renderTargetViews, camera );
+
+	InitializeViewport( outputSize );
+	UpdateAndBindBuffers( camera );
 	ResetRenderObjects();
 
-	SetModelData( Mat44() );
+	SetModelData( Mat44::IDENTITY );
 	SetBlendMode( m_currentBlendMode );
 	SetAmbientLight( Rgba8::WHITE, 1.f );
 	// Dirty all state, booleans or a uint flags
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::EndCamera( const Camera& camera )
-{
-	UNUSED( camera );
-	DX_SAFE_RELEASE( m_currentDepthStencilState );
-	m_isDrawing = false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::UpdateFrameData()
-{
-	FrameData frameData;
-	frameData.systemTimeSeconds = (float)Clock::GetMaster()->GetTotalElapsedSeconds();
-	frameData.systemDeltaTimeSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-
-	frameData.nearFogDistance = m_linearFog.nearFogDistance;
-	frameData.farFogDistance = m_linearFog.farFogDistance;
-	frameData.fogColor = m_linearFog.fogColor;
-
-	frameData.gamma = m_gamma;
-
-	m_frameUBO->Update( &frameData, sizeof( frameData ), sizeof( frameData ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::Draw( int numVertices, int vertexOffset )
-{
-	FinalizeContext();
-
-	m_context->Draw( numVertices, vertexOffset );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawIndexed( int indexCount, int indexOffset, int vertexOffset )
-{
-	FinalizeContext();
-
-	m_context->DrawIndexed( indexCount, indexOffset, vertexOffset );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::FinalizeContext()
-{
-	GUARANTEE_OR_DIE( m_lastBoundVBO != nullptr, "No vbo bound before draw call" );
-
-	// Describe Vertex Format to Shader
-	ID3D11InputLayout* inputLayout = m_currentShader->GetOrCreateInputLayout( m_lastBoundVBO->m_attributes );
-	m_context->IASetInputLayout( inputLayout );
-
-	SetLightData();
-
-	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
-	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices )
-{
-	// Update a vertex buffer
-	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
-	size_t elementSize = sizeof( Vertex_PCU );
-	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
-
-	// Bind
-	BindVertexBuffer( m_immediateVBO );
-	
-	// Draw
-	Draw( numVertices, 0 );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
-{
-	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
-	DrawVertexArray( (int)vertices.size(), &vertices[0] );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawMesh( GPUMesh* mesh )
-{	
-	// Bind
-	BindVertexBuffer( mesh->m_vertices );
-	//BindVertexBuffer( mesh->m_vertices, mesh->GetVertexLayout() );
-	
-	// Draw
-	if ( mesh->GetIndexCount() > 0 )
-	{
-		BindIndexBuffer( mesh->m_indices );
-		DrawIndexed( mesh->GetIndexCount() );
-	}
-	else
-	{
-		Draw( mesh->GetVertexCount() );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Texture* RenderContext::GetBackBuffer()
-{
-	return m_swapchain->GetBackBuffer();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-IntVec2 RenderContext::GetDefaultBackBufferSize()
-{
-	return m_swapchain->GetBackBuffer()->GetTexelSize();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::BindShader( Shader* shader )
-{
-	GUARANTEE_OR_DIE( m_isDrawing, "Tried to call BindShader while not drawing" );
-
-	m_currentShader = shader;
-	if ( m_currentShader == nullptr )
-	{
-		m_currentShader = m_defaultShader;
-	}
-
-	m_context->VSSetShader( m_currentShader->m_vertexStage.m_vertexShader, nullptr, 0 );
-	m_context->PSSetShader( m_currentShader->m_fragmentStage.m_fragmentShader, nullptr, 0 );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::BindShader( const char* fileName )
-{
-	Shader* newShader = GetOrCreateShader( fileName );
-	BindShader( newShader );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Shader* RenderContext::GetOrCreateShader( const char* filename )
-{
-	// Check cache for shader
-	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
-	{
-		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), filename ) )
-		{
-			return m_loadedShaders[loadedShaderIdx];
-		}
-	}
-
-	Shader* newShader = new Shader( this );
-	newShader->CreateFromFile( filename );
-	m_loadedShaders.push_back( newShader );
-
-	return newShader;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Shader* RenderContext::GetOrCreateShaderFromSourceString( const char* shaderName, const char* source )
-{
-	// Check cache for shader
-	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
-	{
-		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName().c_str(), shaderName ) )
-		{
-			return m_loadedShaders[loadedShaderIdx];
-		}
-	}
-
-	Shader* newShader = new Shader( this );
-	newShader->CreateFromSourceString( shaderName, source );
-	m_loadedShaders.push_back( newShader );
-
-	return newShader;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::ReloadShaders()
-{
-	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaders.size(); ++shaderIdx )
-	{
-		Shader*& shader = m_loadedShaders[shaderIdx];
-		if ( shader != nullptr )
-		{
-			shader->ReloadFromDisc();
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
-{
-	ID3D11Buffer* vboHandle = vbo->m_handle;
-	m_lastBoundVBO = vbo;
-	if ( vboHandle == m_lastVBOHandle )
-	{
-		return;
-	}
-	m_lastVBOHandle = vboHandle;
-
-	// Finalize state can check this bool || if shader has changed before setting input layout
-	// if(m_lastBoundLayout != vb0->GetLayout)
-	// m_layoutHasChanged=  true
-
-
-
-	uint stride = (uint)vbo->m_stride;
-	uint offset = 0;
-
-	m_context->IASetVertexBuffers( 0, 1, &vboHandle, &stride, &offset );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::BindIndexBuffer( IndexBuffer* ibo )
-{
-	ID3D11Buffer* iboHandle = ibo->m_handle;
-	if ( iboHandle == m_lastIBOHandle )
-	{
-		return;
-	}
-	m_lastIBOHandle = iboHandle;
-
-	m_context->IASetIndexBuffer( iboHandle, DXGI_FORMAT_R32_UINT, 0 );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::BindUniformBuffer( uint slot, RenderBuffer* ubo )
-{
-	ID3D11Buffer* uboHandle =  ubo->m_handle;
-
-	m_context->VSSetConstantBuffers( slot, 1, &uboHandle );
-	m_context->PSSetConstantBuffers( slot, 1, &uboHandle );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Texture* RenderContext::CreateOrGetTextureFromFile( const char* filePath )
-{
-	Texture* texture = RetrieveTextureFromCache( filePath );
-	if ( texture == nullptr )
-	{
-		texture = CreateTextureFromFile( filePath );
-	}
-
-	return texture;
 }
 
 
@@ -470,8 +312,8 @@ void RenderContext::InitializeSwapChain( Window* window )
 
 	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
 	#if defined(RENDER_DEBUG)
-		flags |= D3D11_CREATE_DEVICE_DEBUG;
-		CreateDebugModule();
+	flags |= D3D11_CREATE_DEVICE_DEBUG;
+	CreateDebugModule();
 	#endif
 
 	DXGI_SWAP_CHAIN_DESC swapchainDesc;
@@ -521,7 +363,7 @@ void RenderContext::InitializeSwapChain( Window* window )
 void RenderContext::InitializeDefaultRenderObjects()
 {
 	// Create default shader
-	m_defaultShader = GetOrCreateShaderFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
+	m_defaultShaderProgram = GetOrCreateShaderProgramFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	// Create default buffers
 	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
@@ -531,11 +373,8 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
-	// Create default samplers
-	m_pointClampSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_CLAMP );
-	m_linearClampSampler = new Sampler( this, SAMPLER_BILINEAR, UV_MODE_CLAMP );
-	m_pointWrapSampler = new Sampler( this, SAMPLER_POINT, UV_MODE_WRAP );
-	m_currentSampler = m_pointClampSampler;
+	// Create default sampler
+	m_defaultSampler = GetOrCreateSampler( SAMPLER_POINT, UV_MODE_CLAMP );
 
 	// Create a white texture to use when no texture is needed
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
@@ -606,11 +445,68 @@ void RenderContext::SetupRenderTargetViewWithDepth( ID3D11RenderTargetView* rend
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const Camera& camera )
+ID3D11DepthStencilView* RenderContext::GetDepthStencilViewFromCamera( const Camera& camera )
+{
+	Texture* depthStencilTarget = camera.GetDepthStencilTarget();
+	TextureView* depthView = nullptr;
+	if ( depthStencilTarget != nullptr )
+	{
+		depthView = depthStencilTarget->GetOrCreateDepthStencilView();
+	}
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	if ( depthView != nullptr )
+	{
+		depthStencilView = depthView->m_depthStencilView;
+	}
+
+	return depthStencilView;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<ID3D11RenderTargetView*> RenderContext::GetRTVsFromCamera( const Camera& camera )
+{
+	std::vector<ID3D11RenderTargetView*> renderTargetViews;
+	int rtvCount = camera.GetColorTargetCount();
+	renderTargetViews.resize( rtvCount );
+	IntVec2 outputSize = m_swapchain->GetBackBuffer()->GetTexelSize();
+
+	for ( int i = 0; i < rtvCount; ++i )
+	{
+		renderTargetViews[i] = nullptr;
+
+		Texture* colorTarget = camera.GetColorTarget( i );
+		if ( colorTarget != nullptr )
+		{
+			TextureView* rtv = colorTarget->GetOrCreateRenderTargetView();
+			renderTargetViews[i] = (ID3D11RenderTargetView*)rtv->m_handle;
+
+			// Set output size to first size, should all be the same
+			if ( i == 0 )
+			{
+				outputSize = colorTarget->GetTexelSize();
+			}
+		}
+		else if ( i == 0 )
+		{
+			renderTargetViews[i] = (ID3D11RenderTargetView*)( GetBackBuffer()->GetOrCreateRenderTargetView() );
+		}
+	}
+
+	return renderTargetViews;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ClearCamera( std::vector<ID3D11RenderTargetView*> renderTargetViews, const Camera& camera )
 {
 	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_COLOR_BIT )
 	{
-		ClearScreen( renderTargetView, camera.GetClearColor() );
+		for ( int i = 0; i < (int)renderTargetViews.size(); ++i )
+		{
+			ClearScreen( renderTargetViews[i], camera.GetClearColor() );
+		}
 	}
 
 	if ( camera.GetClearMode() & eCameraClearBitFlag::CLEAR_DEPTH_BIT
@@ -624,14 +520,404 @@ void RenderContext::ClearCamera( ID3D11RenderTargetView* renderTargetView, const
 //-----------------------------------------------------------------------------------------------
 void RenderContext::ResetRenderObjects()
 {
-	BindShader( ( Shader* )nullptr );
+	BindShaderProgram( ( ShaderProgram* )nullptr );
 	BindDiffuseTexture( nullptr );
 	BindNormalTexture( nullptr );
-	BindTexture( 8, nullptr );
-	BindSampler( nullptr );
+
+	for ( int i = 0; i < MAX_USER_TEXTURES; ++i )
+	{
+		BindTexture( USER_TEXTURE_SLOT_START + i, nullptr );
+		BindSampler( i, nullptr );
+	}
+
 	m_context->RSSetState( m_defaultRasterState );
 	m_lastVBOHandle = nullptr;
 	m_lastIBOHandle = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::EndCamera( const Camera& camera )
+{
+	UNUSED( camera );
+	DX_SAFE_RELEASE( m_currentDepthStencilState );
+	m_isDrawing = false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::UpdateFrameData()
+{
+	FrameData frameData;
+	frameData.systemTimeSeconds = (float)Clock::GetMaster()->GetTotalElapsedSeconds();
+	frameData.systemDeltaTimeSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+
+	frameData.nearFogDistance = m_linearFog.nearFogDistance;
+	frameData.farFogDistance = m_linearFog.farFogDistance;
+	frameData.fogColor = m_linearFog.fogColor;
+
+	frameData.gamma = m_gamma;
+
+	m_frameUBO->Update( &frameData, sizeof( frameData ), sizeof( frameData ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::Draw( int numVertices, int vertexOffset )
+{
+	FinalizeContext();
+
+	m_context->Draw( numVertices, vertexOffset );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawIndexed( int indexCount, int indexOffset, int vertexOffset )
+{
+	FinalizeContext();
+
+	m_context->DrawIndexed( indexCount, indexOffset, vertexOffset );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::FinalizeContext()
+{
+	GUARANTEE_OR_DIE( m_lastBoundVBO != nullptr, "No vbo bound before draw call" );
+
+	// Describe Vertex Format to Shader
+	ID3D11InputLayout* inputLayout = m_currentShaderProgram->GetOrCreateInputLayout( m_lastBoundVBO->m_attributes );
+	m_context->IASetInputLayout( inputLayout );
+
+	SetLightData();
+
+	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices )
+{
+	// Update a vertex buffer
+	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
+	size_t elementSize = sizeof( Vertex_PCU );
+	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
+
+	// Bind
+	BindVertexBuffer( m_immediateVBO );
+	
+	// Draw
+	Draw( numVertices, 0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
+{
+	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
+	DrawVertexArray( (int)vertices.size(), &vertices[0] );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::DrawMesh( GPUMesh* mesh )
+{	
+	// Bind
+	BindVertexBuffer( mesh->m_vertices );
+	//BindVertexBuffer( mesh->m_vertices, mesh->GetVertexLayout() );
+	
+	// Draw
+	if ( mesh->GetIndexCount() > 0 )
+	{
+		BindIndexBuffer( mesh->m_indices );
+		DrawIndexed( mesh->GetIndexCount() );
+	}
+	else
+	{
+		Draw( mesh->GetVertexCount() );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::GetBackBuffer()
+{
+	return m_swapchain->GetBackBuffer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+IntVec2 RenderContext::GetDefaultBackBufferSize()
+{
+	return m_swapchain->GetBackBuffer()->GetTexelSize();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderProgram( ShaderProgram* shader )
+{
+	GUARANTEE_OR_DIE( m_isDrawing, "Tried to call BindShader while not drawing" );
+
+	m_currentShaderProgram = shader;
+	if ( m_currentShaderProgram == nullptr )
+	{
+		m_currentShaderProgram = m_defaultShaderProgram;
+	}
+
+	m_context->VSSetShader( m_currentShaderProgram->m_vertexStage.m_vertexShader, nullptr, 0 );
+	m_context->PSSetShader( m_currentShaderProgram->m_fragmentStage.m_fragmentShader, nullptr, 0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderProgram( const char* fileName )
+{
+	ShaderProgram* newShader = GetOrCreateShaderProgram( fileName );
+	BindShaderProgram( newShader );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Shader* RenderContext::GetOrCreateShader( const char* filename )
+{
+	// Check cache for shader
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( !strcmp( m_loadedShaders[loadedShaderIdx]->GetFileName(), filename ) )
+		{
+			return m_loadedShaders[loadedShaderIdx];
+		}
+	}
+
+	Shader* newShader = new Shader( this, filename );
+	m_loadedShaders.push_back( newShader );
+
+	return newShader;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ShaderProgram* RenderContext::GetOrCreateShaderProgram( const char* filename )
+{
+	// Check cache for shader program
+	for ( int loadedShaderProgramIdx = 0; loadedShaderProgramIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderProgramIdx )
+	{
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderProgramIdx]->GetFileName().c_str(), filename ) )
+		{
+			return m_loadedShaderPrograms[loadedShaderProgramIdx];
+		}
+	}
+
+	ShaderProgram* newShaderProgram = new ShaderProgram( this );
+	newShaderProgram->CreateFromFile( filename );
+	m_loadedShaderPrograms.push_back( newShaderProgram );
+
+	return newShaderProgram;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ShaderProgram* RenderContext::GetOrCreateShaderProgramFromSourceString( const char* shaderName, const char* source )
+{
+	// Check cache for shader
+	for ( int loadedShaderProgramIdx = 0; loadedShaderProgramIdx < (int)m_loadedShaderPrograms.size(); ++loadedShaderProgramIdx )
+	{
+		if ( !strcmp( m_loadedShaderPrograms[loadedShaderProgramIdx]->GetFileName().c_str(), shaderName ) )
+		{
+			return m_loadedShaderPrograms[loadedShaderProgramIdx];
+		}
+	}
+
+	ShaderProgram* newShaderProgram = new ShaderProgram( this );
+	newShaderProgram->CreateFromSourceString( shaderName, source );
+	m_loadedShaderPrograms.push_back( newShaderProgram );
+
+	return newShaderProgram;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Shader* RenderContext::GetShaderByName( std::string shaderName )
+{
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( m_loadedShaders[loadedShaderIdx]->GetName() == shaderName )
+		{
+			return m_loadedShaders[loadedShaderIdx];
+		}
+	}
+
+	//ERROR_AND_DIE( Stringf( "No shader named '%s' has been loaded.", shaderName.c_str() ) );
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::ReloadShaders()
+{
+	for ( int shaderIdx = 0; shaderIdx < (int)m_loadedShaderPrograms.size(); ++shaderIdx )
+	{
+		ShaderProgram*& shader = m_loadedShaderPrograms[shaderIdx];
+		if ( shader != nullptr )
+		{
+			shader->ReloadFromDisc();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindVertexBuffer( VertexBuffer* vbo )
+{
+	ID3D11Buffer* vboHandle = vbo->m_handle;
+	m_lastBoundVBO = vbo;
+	if ( vboHandle == m_lastVBOHandle )
+	{
+		return;
+	}
+	m_lastVBOHandle = vboHandle;
+
+	// Finalize state can check this bool || if shader has changed before setting input layout
+	// if(m_lastBoundLayout != vb0->GetLayout)
+	// m_layoutHasChanged=  true
+
+
+
+	uint stride = (uint)vbo->m_stride;
+	uint offset = 0;
+
+	m_context->IASetVertexBuffers( 0, 1, &vboHandle, &stride, &offset );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindIndexBuffer( IndexBuffer* ibo )
+{
+	ID3D11Buffer* iboHandle = ibo->m_handle;
+	if ( iboHandle == m_lastIBOHandle )
+	{
+		return;
+	}
+	m_lastIBOHandle = iboHandle;
+
+	m_context->IASetIndexBuffer( iboHandle, DXGI_FORMAT_R32_UINT, 0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindUniformBuffer( uint slot, RenderBuffer* ubo )
+{
+	ID3D11Buffer* uboHandle =  ubo->m_handle;
+
+	m_context->VSSetConstantBuffers( slot, 1, &uboHandle );
+	m_context->PSSetConstantBuffers( slot, 1, &uboHandle );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindMaterial( Material* material )
+{
+	BindShader( material->m_shader );
+
+	BindDiffuseTexture( material->m_diffuseTexture );
+	BindNormalTexture( material->m_normalTexture );
+
+	for( uint textureIdx = 0; textureIdx < material->m_userTextures.size(); ++textureIdx )
+	{
+		Texture*& texture = material->m_userTextures[textureIdx];
+		if ( texture != nullptr )
+		{
+			BindTexture( USER_TEXTURE_SLOT_START + textureIdx, texture );
+		}
+	}
+
+	for ( uint samplerIdx = 0; samplerIdx < material->m_userTextures.size(); ++samplerIdx )
+	{
+		Sampler*& sampler = material->m_userSamplers[samplerIdx];
+		if ( sampler != nullptr )
+		{
+			BindSampler( samplerIdx, sampler );
+		}
+	}
+	
+	material->UpdateUBOIfDirty();
+	BindUniformBuffer( UBO_MATERIAL_SLOT, material->m_ubo );
+
+	SetModelData( m_modelMatrix, material->m_tint, material->m_specularFactor, material->m_specularPower );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShader( Shader* shader )
+{
+	// Set default shader ( set error instead? )
+	if ( shader == nullptr )
+	{
+		BindShaderProgram( m_defaultShaderProgram );
+
+		SetCullMode( eCullMode::BACK );
+		SetFillMode( eFillMode::SOLID );
+		SetFrontFaceWindOrder( true );
+
+		SetBlendMode( eBlendMode::DISABLED );
+
+		SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+
+		return;
+	}
+
+	BindShaderProgram( shader->GetShaderProgram() );
+	
+	ShaderState state = shader->GetShaderState();
+	SetCullMode( state.cullMode );
+	SetFillMode( state.fillMode );
+	SetFrontFaceWindOrder( state.isWindingCCW );
+
+	SetBlendMode( state.blendMode );
+
+	SetDepthTest( state.depthTestCompare, state.writeDpeth );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderByName( std::string shaderName )
+{
+	for ( int loadedShaderIdx = 0; loadedShaderIdx < (int)m_loadedShaders.size(); ++loadedShaderIdx )
+	{
+		if ( m_loadedShaders[loadedShaderIdx]->GetName() == shaderName )
+		{
+			BindShader( m_loadedShaders[loadedShaderIdx] );
+			return;
+		}
+	}
+
+	ERROR_AND_DIE( Stringf( "No shader named '%s' has been loaded.", shaderName.c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::BindShaderByPath( const char* filePath )
+{
+	Shader* shader = nullptr;
+	if ( filePath != nullptr )
+	{
+		shader = GetOrCreateShader( filePath );
+	}
+
+	BindShader( shader );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* RenderContext::CreateOrGetTextureFromFile( const char* filePath )
+{
+	Texture* texture = RetrieveTextureFromCache( filePath );
+	if ( texture == nullptr )
+	{
+		texture = CreateTextureFromFile( filePath );
+	}
+
+	return texture;
 }
 
 
@@ -854,15 +1140,15 @@ void RenderContext::BindTexture( uint slot, const Texture* constTexture )
 
 
 //-----------------------------------------------------------------------------------------------
-void RenderContext::BindSampler( Sampler* sampler )
+void RenderContext::BindSampler( uint slot, Sampler* sampler )
 {
 	if ( sampler == nullptr )
 	{
-		sampler = m_currentSampler;
+		sampler = m_defaultSampler;
 	} 
 
 	ID3D11SamplerState* samplerHandle = sampler->m_handle;
-	m_context->PSSetSamplers( 0, 1, &samplerHandle );
+	m_context->PSSetSamplers( slot, 1, &samplerHandle );
 }
 
 
@@ -884,6 +1170,25 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
 	}
 
 	return font;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Sampler* RenderContext::GetOrCreateSampler( eSamplerType filter, eSamplerUVMode mode )
+{
+	for ( int samplerIndex = 0; samplerIndex < (int)m_loadedSamplers.size(); ++samplerIndex )
+	{
+		if ( m_loadedSamplers[samplerIndex]->m_filter == filter
+			 && m_loadedSamplers[samplerIndex]->m_mode == mode )
+		{
+			return m_loadedSamplers[samplerIndex];
+		}
+	}
+
+	Sampler* newSampler = new Sampler( this, filter, mode );
+	m_loadedSamplers.push_back( newSampler );
+	
+	return newSampler;
 }
 
 
@@ -955,6 +1260,40 @@ Texture* RenderContext::GetOrCreateDepthStencil( const IntVec2& outputDimensions
 
 
 //-----------------------------------------------------------------------------------------------
+Texture* RenderContext::CreateRenderTarget( const IntVec2& outputDimensions )
+{
+	// Describe the texture
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = outputDimensions.x;
+	desc.Height = outputDimensions.y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;						// MSAA
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	// DirectX creation
+	ID3D11Texture2D* texHandle = nullptr;
+	m_device->CreateTexture2D( &desc, nullptr, &texHandle );
+
+	Texture* newTexture = new Texture( this, texHandle );
+
+	return newTexture;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetModelMatrix( const Mat44& modelMatrix )
+{
+	m_modelMatrix = modelMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, float specularFactor, float specularPower )
 {
 	ModelData matrixData;
@@ -965,6 +1304,8 @@ void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, f
 	matrixData.specularPower = specularPower;
 
 	m_modelMatrixUBO->Update( &matrixData, sizeof( matrixData ), sizeof( matrixData ) );
+
+	m_modelMatrix = modelMatrix;
 }
 
 
@@ -972,6 +1313,8 @@ void RenderContext::SetModelData( const Mat44& modelMatrix, const Rgba8& tint, f
 void RenderContext::SetMaterialData( void* materialData, int dataSize )
 {
 	m_materialUBO->Update( materialData, dataSize, dataSize );
+
+	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
 }
 
 
@@ -1059,6 +1402,15 @@ void RenderContext::SetAmbientIntensity( float intensity )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientIntensity( EventArgs* args )
+{
+	float intensity = args->GetValue( "intensity", 1.0f );
+
+	SetAmbientIntensity( intensity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::SetAmbientLight( const Rgba8& color, float intensity )
 {
 	SetAmbientColor( color );
@@ -1071,6 +1423,16 @@ void RenderContext::SetAmbientLight( const Vec3& color, float intensity )
 {
 	SetAmbientColor( color );
 	SetAmbientIntensity( intensity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetAmbientLight( EventArgs* args )
+{
+	Rgba8 color = args->GetValue( "color", Rgba8::WHITE );
+	float intensity = args->GetValue( "intensity", 1.0f );
+
+	SetAmbientLight( color, intensity );
 }
 
 
@@ -1120,50 +1482,6 @@ void RenderContext::DisableFog()
 	m_linearFog.nearFogDistance = 99999.f;
 	m_linearFog.farFogDistance = 99999.f;
 	m_linearFog.fogColor = Rgba8::BLACK.GetAsRGBAVector();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-eCullMode RenderContext::GetCullMode() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return FromDXCullMode( desc.CullMode );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-eFillMode RenderContext::GetFillMode() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return FromDXFillMode( desc.FillMode );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool RenderContext::GetFrontFaceWindOrderCCW() const
-{
-	D3D11_RASTERIZER_DESC desc;
-	m_currentRasterState->GetDesc( &desc );
-
-	return desc.FrontCounterClockwise;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::CycleSampler()
-{
-	if ( m_currentSampler == m_pointClampSampler )
-	{
-		m_currentSampler = m_linearClampSampler;
-	}
-	else if ( m_currentSampler == m_linearClampSampler )
-	{
-		m_currentSampler = m_pointClampSampler;
-	}
 }
 
 

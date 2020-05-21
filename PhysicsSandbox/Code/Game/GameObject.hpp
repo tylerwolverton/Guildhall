@@ -40,6 +40,9 @@ public:
 	eSimulationMode GetSimulationMode();
 	void SetSimulationMode( eSimulationMode mode );
 
+	uint GetLayer() const;
+	void SetLayer( uint layer );
+
 	bool Contains( const Vec2& point ) const;
 	bool Intersects( const GameObject* otherGameObject ) const;
 
@@ -64,8 +67,12 @@ public:
 	float GetRotationDegrees() const;
 	float GetAngularVelocity() const;
 
+	void SetIsGarbage( bool isGarbage )											{ m_isGarbage = isGarbage; }
+	bool IsGarbage() const														{ return m_isGarbage; }
+
 private:
 	Rigidbody2D* m_rigidbody = nullptr;
+	bool m_isGarbage = false;
 	Rgba8 m_borderColor = Rgba8::MAGENTA;
 	Rgba8 m_fillColor = Rgba8::MAGENTA;
 };

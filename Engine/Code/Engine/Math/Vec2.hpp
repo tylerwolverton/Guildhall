@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+
 //-----------------------------------------------------------------------------------------------
 struct IntVec2;
 
@@ -21,6 +24,8 @@ public:
 	explicit Vec2( float initialX, float initialY );		// explicit constructor (from x, y)
 	explicit Vec2( const IntVec2& intVec2 );				// explicit constructor (from intvec2)
 	void SetFromText( const char* asText );
+	std::string GetAsString() const;
+	std::string ToString() const;
 
 	// Operators (const)
 	bool		operator==( const Vec2& compare ) const;		// vec2 == vec2

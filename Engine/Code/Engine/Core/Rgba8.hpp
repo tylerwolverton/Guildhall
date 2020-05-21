@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 
+#include <string>
+
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3;
@@ -42,12 +44,15 @@ public:
 	Rgba8() {}  // Do nothing
 	explicit Rgba8( unsigned char initialR, unsigned char initialG, unsigned char initialB, unsigned char initialA = 255 );
 	void SetFromText( const char* asText );
+	void SetFromNormalizedVector( const Vec4& colorVector );
 
 	bool IsRGBEqual( const Rgba8& otherColor );
 
 	void GetAsFloatArray( float* out_floats ) const;
 	Vec3 GetAsRGBVector() const;
 	Vec4 GetAsRGBAVector() const;
+	std::string GetAsString() const;
+	std::string ToString() const;
 
 	bool		operator==( const Rgba8& compare ) const;		// Rgba8 == Rgba8
 	bool		operator!=( const Rgba8& compare ) const;		// Rgba8 != Rgba8

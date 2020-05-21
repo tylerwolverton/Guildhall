@@ -4,6 +4,7 @@
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"

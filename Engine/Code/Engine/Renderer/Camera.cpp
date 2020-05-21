@@ -118,7 +118,19 @@ void Camera::SetClearMode( unsigned int clearFlags, Rgba8 color, float depth, un
 //-----------------------------------------------------------------------------------------------
 void Camera::SetColorTarget( Texture* texture )
 {
-	m_colorTarget = texture;
+	SetColorTarget( 0, texture );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetColorTarget( int index, Texture* texture )
+{
+	if ( index >= (int)m_colorTargets.size() )
+	{
+		m_colorTargets.resize( index + 1 );
+	}
+
+	m_colorTargets[index] = texture;
 }
 
 
@@ -132,7 +144,38 @@ void Camera::SetDepthStencilTarget( Texture* texture )
 //-----------------------------------------------------------------------------------------------
 Texture* Camera::GetColorTarget() const
 {
-	return m_colorTarget;
+	if ( m_colorTargets.size() == 0 )
+	{
+		return nullptr;
+	}
+
+	return m_colorTargets[0];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Texture* Camera::GetColorTarget( int index ) const
+{
+	if ( index < (int)m_colorTargets.size() )
+	{
+		return m_colorTargets[index];
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+uint Camera::GetColorTargetCount() const
+{
+	// Backwards compatibility with SD1
+	uint count = (uint)m_colorTargets.size();
+	if ( count == 0 )
+	{
+		count = 1;
+	}
+
+	return count;
 }
 
 

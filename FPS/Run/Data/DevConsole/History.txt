@@ -47,3 +47,35 @@ light_set_color color=0,0,1
 light_set_color color=1,0,0
 light_set_color color=1,1,0
 light_set_color color=1,0,1
+light_set_color color=0,0,1
+test color=255,0,0 intensity=.5
+light_set_color color=0,0,1
+test color=255,0,0 intensity=.5
+test1 color=255,0,0 intensity=.5
+light_set_color 0,0,1
+light_set_color color=0,0,1
+light_set_ambient_color color=1,0,0
+light_set_color color=0,1,0
+light_set_color color=0,1,1
+light_set_color color=0,0,1
+light_set_ambient_color color=1,0,0
+set_mouse_sensitivity multiplier=5
+light_set_color color=0,0,1
+light_set_color color=0,1,1
+light_set_color color=1,1,1
+light_set_color color=0,1,1
+unsubscribe_game
+light_set_color color=1,1,1
+light_set_color color=0,1,1
+subscribe_game enable=false
+light_set_color color=1,1,1
+subscribe_game enable=true
+light_set_color color=1,1,1
+light_set_color color=0,1,1
+unsubscribe_game
+light_set_color color=0,0,0
+help
+light_set_color color=0,1,1
+unsubscribe_game
+light_set_color color=0,0,0
+set_mouse_sensitivity multiplier=5

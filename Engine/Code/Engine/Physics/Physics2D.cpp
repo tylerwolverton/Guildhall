@@ -32,6 +32,12 @@ void Physics2D::Startup( Clock* gameClock )
 	m_stepTimer->SetSeconds( s_fixedDeltaSeconds );
 
 	g_eventSystem->RegisterEvent( "set_physics_update", "Usage: set_physics_update hz=NUMBER .Set rate of physics update in hz.", eUsageLocation::DEV_CONSOLE, SetPhysicsUpdateRate );
+
+	// Initialize layers
+	for ( int layerIdx = 0; layerIdx < 32; ++layerIdx )
+	{
+		m_layerInteractions[layerIdx] = ~0U;
+	}
 }
 
 
@@ -58,8 +64,11 @@ void Physics2D::AdvanceSimulation( float deltaSeconds )
 	ApplyEffectors(); 					// apply gravity to all dynamic objects
 	MoveRigidbodies( deltaSeconds ); 	// apply an euler step to all rigidbodies, and reset per-frame data
 	DetectCollisions();					// determine all pairs of intersecting colliders
+	ClearOldCollisions();
 	ResolveCollisions(); 				// resolve all collisions, firing appropraite events
 	CleanupDestroyedObjects();  		// destroy objects 
+
+	++m_frameNum;
 }
 
 
@@ -107,6 +116,80 @@ void Physics2D::MoveRigidbodies( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
+bool Physics2D::DoesCollisionInvolveATrigger( const Collision2D& collision ) const
+{
+	return collision.myCollider->m_isTrigger
+		|| collision.theirCollider->m_isTrigger;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::InvokeCollisionEvents( const Collision2D& collision, eCollisionEventType collisionType ) const
+{
+	// Inverse collision from perspective of their collider
+	Collision2D theirCollision = collision;
+	theirCollision.myCollider = collision.theirCollider;
+	theirCollision.theirCollider = collision.myCollider;
+
+	// Fire correct enter events
+	if ( !DoesCollisionInvolveATrigger( collision ) )
+	{
+		switch ( collisionType )
+		{
+			case eCollisionEventType::ENTER:
+			{
+				collision.myCollider->m_onOverlapEnterDelegate.Invoke( collision );
+				collision.theirCollider->m_onOverlapEnterDelegate.Invoke( theirCollision );
+			} 
+			break;
+
+			case eCollisionEventType::STAY:
+			{
+				collision.myCollider->m_onOverlapStayDelegate.Invoke( collision );
+				collision.theirCollider->m_onOverlapStayDelegate.Invoke( theirCollision );
+			} 
+			break;
+
+			case eCollisionEventType::LEAVE:
+			{
+				if ( collision.myCollider != nullptr )
+				{
+					collision.myCollider->m_onOverlapLeaveDelegate.Invoke( collision );
+				}
+				if ( collision.theirCollider != nullptr )
+				{
+					collision.theirCollider->m_onOverlapLeaveDelegate.Invoke( theirCollision );
+				}
+			} 
+			break;
+		}
+	}
+	else
+	{
+		if ( collision.myCollider->m_isTrigger )
+		{
+			switch ( collisionType )
+			{
+				case eCollisionEventType::ENTER: collision.myCollider->m_onTriggerEnterDelegate.Invoke( collision ); break;
+				case eCollisionEventType::STAY:	 collision.myCollider->m_onTriggerStayDelegate.Invoke( collision ); break;
+				case eCollisionEventType::LEAVE: collision.myCollider->m_onTriggerLeaveDelegate.Invoke( collision ); break;
+			}
+		}
+
+		if ( collision.theirCollider->m_isTrigger )
+		{
+			switch ( collisionType )
+			{
+				case eCollisionEventType::ENTER: collision.theirCollider->m_onTriggerEnterDelegate.Invoke( theirCollision ); break;
+				case eCollisionEventType::STAY:  collision.theirCollider->m_onTriggerStayDelegate.Invoke( theirCollision ); break;
+				case eCollisionEventType::LEAVE: collision.theirCollider->m_onTriggerLeaveDelegate.Invoke( theirCollision ); break;
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Physics2D::DetectCollisions()
 {
 	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
@@ -121,18 +204,79 @@ void Physics2D::DetectCollisions()
 		for ( int otherColliderIdx = colliderIdx + 1; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
 		{
 			Collider2D* otherCollider = m_colliders[otherColliderIdx];
+			if ( otherCollider == nullptr )
+			{
+				continue;
+			}
+
+			// Skip if colliders on on non-interacting layers
+			if ( !DoLayersInteract( collider->m_rigidbody->GetLayer(), 
+									otherCollider->m_rigidbody->GetLayer() ) )
+			{
+				continue;
+			}
+
 			// TODO: Remove Intersects check
 			if ( collider->Intersects( otherCollider ) )
 			{
 				Collision2D collision;
-				collision.m_myCollider = collider;
-				collision.m_theirCollider = otherCollider;
-				collision.m_collisionManifold = collider->GetCollisionManifold( otherCollider );
+				collision.id = IntVec2( Min( collider->GetId(), otherCollider->GetId() ), Max( collider->GetId(), otherCollider->GetId() ) );
+				collision.frameNum = m_frameNum;
+				collision.myCollider = collider;
+				collision.theirCollider = otherCollider;
+				// Only calculate manifold if not triggers
+				if ( !DoesCollisionInvolveATrigger( collision ) )
+				{
+					collision.collisionManifold = collider->GetCollisionManifold( otherCollider );
+				}
 
-				m_collisions.push_back( collision );
+				AddOrUpdateCollision( collision );
 			}
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::ClearOldCollisions()
+{
+	std::vector<int> oldCollisionIds;
+
+	for ( int colIdx = 0; colIdx < (int)m_collisions.size(); ++colIdx )
+	{
+		Collision2D& collision = m_collisions[colIdx];
+		// Check if collision is old
+		if ( collision.frameNum != m_frameNum )
+		{
+			InvokeCollisionEvents( collision, eCollisionEventType::LEAVE );
+			oldCollisionIds.push_back( colIdx );
+		}
+	}
+
+	for ( int oldColIdx = (int)oldCollisionIds.size() - 1; oldColIdx >= 0; --oldColIdx )
+	{
+		int idxToRemove = oldCollisionIds[oldColIdx];
+		m_collisions.erase( m_collisions.begin() + idxToRemove );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::AddOrUpdateCollision( const Collision2D& collision )
+{
+	for ( int colIdx = 0; colIdx < (int)m_collisions.size(); ++colIdx )
+	{
+		// Check if collision is already in progress
+		if ( m_collisions[colIdx].id == collision.id )
+		{
+			InvokeCollisionEvents( collision, eCollisionEventType::STAY );
+			m_collisions[colIdx] = collision;
+			return;
+		}
+	}
+
+	InvokeCollisionEvents( collision, eCollisionEventType::ENTER );
+	m_collisions.push_back( collision );
 }
 
 
@@ -141,18 +285,20 @@ void Physics2D::ResolveCollisions()
 {
 	for ( int collisionIdx = 0; collisionIdx < (int)m_collisions.size(); ++collisionIdx )
 	{
-		ResolveCollision( m_collisions[collisionIdx] );
+		Collision2D& collision = m_collisions[collisionIdx];
+		if ( !DoesCollisionInvolveATrigger( collision ) )
+		{
+			ResolveCollision( collision );
+		}
 	}
-
-	m_collisions.clear();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Physics2D::ResolveCollision( const Collision2D& collision )
 {
-	Rigidbody2D* myRigidbody = collision.m_myCollider->m_rigidbody;
-	Rigidbody2D* theirRigidbody = collision.m_theirCollider->m_rigidbody;
+	Rigidbody2D* myRigidbody = collision.myCollider->m_rigidbody;
+	Rigidbody2D* theirRigidbody = collision.theirCollider->m_rigidbody;
 
 	GUARANTEE_OR_DIE( myRigidbody != nullptr, "My Collider doesn't have a rigidbody" );
 	GUARANTEE_OR_DIE( theirRigidbody != nullptr, "Their Collider doesn't have a rigidbody" );
@@ -164,8 +310,8 @@ void Physics2D::ResolveCollision( const Collision2D& collision )
 		return;
 	}
 
-	CorrectCollidingRigidbodies( myRigidbody, theirRigidbody, collision.m_collisionManifold );
-	ApplyCollisionImpulses( myRigidbody, theirRigidbody, collision.m_collisionManifold );
+	CorrectCollidingRigidbodies( myRigidbody, theirRigidbody, collision.collisionManifold );
+	ApplyCollisionImpulses( myRigidbody, theirRigidbody, collision.collisionManifold );
 }
 
 
@@ -396,7 +542,7 @@ void Physics2D::DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy )
 //-----------------------------------------------------------------------------------------------
 DiscCollider2D* Physics2D::CreateDiscCollider( const Vec2& localPosition, float radius )
 {
-	DiscCollider2D* newCollider2D = new DiscCollider2D( localPosition, radius );
+	DiscCollider2D* newCollider2D = new DiscCollider2D( (int)m_colliders.size(), localPosition, radius );
 	m_colliders.push_back( newCollider2D );
 
 	return newCollider2D;
@@ -404,12 +550,32 @@ DiscCollider2D* Physics2D::CreateDiscCollider( const Vec2& localPosition, float 
 
 
 //-----------------------------------------------------------------------------------------------
+DiscCollider2D* Physics2D::CreateDiscTrigger( const Vec2& localPosition, float radius )
+{
+	DiscCollider2D* discTrigger = CreateDiscCollider( localPosition, radius );
+	discTrigger->m_isTrigger = true;
+
+	return discTrigger;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 PolygonCollider2D* Physics2D::CreatePolygon2Collider( const Polygon2& polygon )
 {
-	PolygonCollider2D* newCollider2D = new PolygonCollider2D( polygon );
+	PolygonCollider2D* newCollider2D = new PolygonCollider2D( (int)m_colliders.size(), polygon );
 	m_colliders.push_back( newCollider2D );
 
 	return newCollider2D;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+PolygonCollider2D* Physics2D::CreatePolygon2Trigger( const Polygon2& polygon )
+{
+	PolygonCollider2D* polygonTrigger = CreatePolygon2Collider( polygon );
+	polygonTrigger->m_isTrigger = true;
+
+	return polygonTrigger;
 }
 
 
@@ -423,6 +589,26 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 			m_garbageColliderIndexes.push_back( colliderIdx );
 			break;
 		}
+	}
+
+	// Fire leave event for each collision this collider is involved with
+	std::vector<int> oldCollisionIds;
+	for ( int collisionIdx = 0; collisionIdx < (int)m_collisions.size(); ++collisionIdx )
+	{
+		Collision2D& collision = m_collisions[collisionIdx];
+		
+		if ( collision.id.x == colliderToDestroy->m_id 
+			 || collision.id.y == colliderToDestroy ->m_id )
+		{
+			InvokeCollisionEvents( collision, eCollisionEventType::LEAVE );
+			oldCollisionIds.push_back( collisionIdx );
+		}
+	}
+	
+	for ( int oldColIdx = (int)oldCollisionIds.size() - 1; oldColIdx >= 0; --oldColIdx )
+	{
+		int idxToRemove = oldCollisionIds[oldColIdx];
+		m_collisions.erase( m_collisions.begin() + idxToRemove );
 	}
 }
 
@@ -438,6 +624,29 @@ void Physics2D::SetSceneGravity( const Vec2& forceOfGravity )
 void Physics2D::SetSceneGravity( float forceOfGravityY )
 {
 	m_forceOfGravity = Vec2( 0.f, forceOfGravityY );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Physics2D::DoLayersInteract( uint layer0, uint layer1 ) const
+{
+	return ( m_layerInteractions[layer0] & ( 1 << layer1 ) ) != 0 ;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::EnableLayerInteraction( uint layer0, uint layer1 )
+{
+	m_layerInteractions[layer0] |= ( 1 << layer1 );
+	m_layerInteractions[layer1] |= ( 1 << layer0 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::DisableLayerInteraction( uint layer0, uint layer1 )
+{
+	m_layerInteractions[layer0] &= ~( 1 << layer1 );
+	m_layerInteractions[layer1] &= ~( 1 << layer0 );
 }
 
 
