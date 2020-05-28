@@ -19,20 +19,20 @@ void Transform::Translate( const Vec3& translation )
 
 
 //-----------------------------------------------------------------------------------------------
-void Transform::SetOrientationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
+void Transform::SetOrientationFromPitchRollYawDegrees( float pitchDegrees, float rollDegrees, float yawDegrees )
 {
-	pitch = GetRotationInRangeDegrees( pitch, -180.f, 180.f );
-	roll = GetRotationInRangeDegrees( roll, -180.f, 180.f );
-	yaw = GetRotationInRangeDegrees( yaw, -180.f, 180.f );
-
-	m_orientation = Vec3( pitch, roll, yaw );
+	m_pitchDegrees = GetRotationInRangeDegrees( pitchDegrees, -180.f, 180.f );
+	m_rollDegrees = GetRotationInRangeDegrees( rollDegrees, -180.f, 180.f );
+	m_yawDegrees = GetRotationInRangeDegrees( yawDegrees, -180.f, 180.f );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Transform::RotatePitchRollYawDegrees( float pitch, float roll, float yaw )
+void Transform::RotatePitchRollYawDegrees( float pitchDegrees, float rollDegrees, float yawDegrees )
 {
-	SetOrientationFromPitchRollYawDegrees( m_orientation.x + pitch, m_orientation.y + roll, m_orientation.z + yaw );
+	SetOrientationFromPitchRollYawDegrees( m_pitchDegrees + pitchDegrees, 
+										   m_rollDegrees + rollDegrees, 
+										   m_yawDegrees + yawDegrees );
 }
 
 
@@ -44,24 +44,17 @@ void Transform::SetScale( const Vec3& scale )
 
 
 //-----------------------------------------------------------------------------------------------
-void Transform::SetOrientation( const Vec3& rotation )
-{
-	m_orientation = rotation;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetAsMatrix() const
 {
-	Mat44 translation = Mat44::CreateTranslation3D( m_position );
-	Mat44 rotation = Mat44::CreateXYZRotationDegrees( m_orientation );
-	Mat44 scale = Mat44::CreateNonUniformScale3D( m_scale );
+	Mat44 translationMatrix = Mat44::CreateTranslation3D( m_position );
+	Mat44 rotationMatrix = GetOrientationAsMatrix();
+	Mat44 scaleMatrix = Mat44::CreateNonUniformScale3D( m_scale );
 
-	Mat44 model = translation;
-	model.PushTransform( rotation );
-	model.PushTransform( scale );
+	Mat44 modelMatrix = translationMatrix;
+	modelMatrix.PushTransform( rotationMatrix );
+	modelMatrix.PushTransform( scaleMatrix );
 
-	return model;
+	return modelMatrix;
 }
 
 
@@ -72,3 +65,16 @@ Vec3 Transform::GetForwardVector() const
 
 	return forwardVec;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Transform::GetOrientationAsMatrix() const
+{
+	Mat44 rotationMatrix;
+	rotationMatrix.PushTransform( Mat44::CreateYRotationDegrees( m_yawDegrees ) );
+	rotationMatrix.PushTransform( Mat44::CreateXRotationDegrees( m_pitchDegrees ) );
+	rotationMatrix.PushTransform( Mat44::CreateZRotationDegrees( m_rollDegrees ) );
+
+	return rotationMatrix;
+}
+

@@ -69,11 +69,11 @@ Vec2 Camera::GetOrthoMax() const
 	return ClientToWorldPosition( Vec2::ONE, 0 ).XY();
 }
 
-
+//TODO: Fix
 //-----------------------------------------------------------------------------------------------
-void Camera::SetPitchRollYawRotation( float pitch, float roll, float yaw )
+void Camera::SetPitchRollYawOrientationDegrees( float pitch, float roll, float yaw )
 {
-	pitch = ClampMinMax( pitch, -85.f, 85.f );
+	pitch = ClampMinMax( pitch, -89.9f, 89.9f );
 
 	m_transform.SetOrientationFromPitchRollYawDegrees( pitch, roll, yaw );
 }

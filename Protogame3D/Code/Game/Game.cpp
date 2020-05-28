@@ -219,9 +219,9 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	pitch *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( transform.m_rotation.x + pitch,
+	m_worldCamera->SetPitchRollYawOrientationDegrees( transform.m_pitchDegrees + pitch,
 											0.f,
-											transform.m_rotation.z + yaw );
+											transform.m_yawDegrees + yaw );
 
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
@@ -261,7 +261,7 @@ void Game::Render() const
 	g_renderer->BindDiffuseTexture( nullptr );
 	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
 
-	g_renderer->BindShader( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" ) );
+	g_renderer->BindShaderProgram( "Data/Shaders/src/Lit.hlsl" );
 
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	

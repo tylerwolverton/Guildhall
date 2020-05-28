@@ -543,25 +543,6 @@ const Mat44 Mat44::CreateZRotationDegrees( float degreesAboutZ )
 
 
 //-----------------------------------------------------------------------------------------------
-const Mat44 Mat44::CreateRotationFromPitchRollYawDegrees( float pitch, float roll, float yaw )
-{
-	Mat44 rotationMatrix;
-	rotationMatrix.PushTransform( CreateYRotationDegrees( yaw ) );
-	rotationMatrix.PushTransform( CreateZRotationDegrees( roll ) );
-	rotationMatrix.PushTransform( CreateXRotationDegrees( pitch ) );
-
-	return rotationMatrix;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-const Mat44 Mat44::CreateXYZRotationDegrees( const Vec3& rotation )
-{
-	return CreateRotationFromPitchRollYawDegrees( rotation.x, rotation.y, rotation.z );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 const Mat44 Mat44::CreateTranslation2D( const Vec2& translationXY )
 {
 	Mat44 newMatrix;

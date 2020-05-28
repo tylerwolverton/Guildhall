@@ -47,7 +47,7 @@ public:
 	// Transform
 	void SetPosition( const Vec3& position );
 	void Translate( const Vec3& translation );
-	void SetPitchRollYawRotation( float pitch, float roll, float yaw );
+	void SetPitchRollYawOrientationDegrees( float pitch, float roll, float yaw );
 
 	void SetProjectionOrthographic( float height, float nearZ = 1.f, float farZ = -1.f );
 	void SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip );
