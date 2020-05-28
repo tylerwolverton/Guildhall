@@ -10,7 +10,7 @@ struct Mat44;
 enum class eAxisYawPitchRollOrder
 {
 	YXZ,
-	ZXY
+	ZYX
 };
 
 

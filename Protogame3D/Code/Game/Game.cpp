@@ -56,7 +56,8 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::YXZ;
+	Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::ZYX;
+
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateXRotationDegrees( 90.f ) );
 
@@ -236,7 +237,7 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	// Rotation
 	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
 	float yaw = -mousePosition.x * s_mouseSensitivityMultiplier;
-	float pitch = -mousePosition.y * s_mouseSensitivityMultiplier;
+	float pitch = mousePosition.y * s_mouseSensitivityMultiplier;
 	yaw *= .009f;
 	pitch *= .009f;
 
