@@ -95,7 +95,7 @@ private:
 	GPUMesh* m_quadMesh = nullptr;
 	GPUMesh* m_sphereMesh = nullptr;
 
-	Transform m_cubeMeshTransform;
+	std::vector<Transform> m_cubeMeshTransforms;
 		
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 0.5f;

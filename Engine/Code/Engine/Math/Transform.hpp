@@ -15,13 +15,24 @@ enum class eAxisYawPitchRollOrder
 
 
 //-----------------------------------------------------------------------------------------------
-struct CoordinateData
+class AxisOrientation
 {
-	eAxisYawPitchRollOrder axisYawPitchRollOrder = eAxisYawPitchRollOrder::YXZ;
+public:
+	void InvertXAxis() { m_xAxisDirectionFactor *= -1.f; }
+	void InvertYAxis() { m_yAxisDirectionFactor *= -1.f; }
+	void InvertZAxis() { m_zAxisDirectionFactor *= -1.f; }
 
-	bool invertX = false;
-	bool invertY = false;
-	bool invertZ = false;
+	float GetXAxisDirectionFactor() const { return m_xAxisDirectionFactor; }
+	float GetYAxisDirectionFactor() const { return m_yAxisDirectionFactor; }
+	float GetZAxisDirectionFactor() const { return m_zAxisDirectionFactor; }
+
+public:
+	eAxisYawPitchRollOrder m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::YXZ;
+
+private:
+	float m_xAxisDirectionFactor = 1.f;
+	float m_yAxisDirectionFactor = 1.f;
+	float m_zAxisDirectionFactor = 1.f;
 };
 
 
@@ -29,6 +40,9 @@ struct CoordinateData
 class Transform
 {
 public:
+	static AxisOrientation s_axisOrientation;
+	static Mat44 s_identityOrientation;
+
 	void SetPosition( const Vec3& position );
 	void SetScale( const Vec3& scale );
 

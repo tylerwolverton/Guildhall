@@ -36,6 +36,7 @@
 #include "Game/ActorDefinition.hpp"
 
 
+//-----------------------------------------------------------------------------------------------
 static float s_mouseSensitivityMultiplier = 1.f;
 static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 
@@ -55,6 +56,10 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::YXZ;
+	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
+	Transform::s_identityOrientation.PushTransform( Mat44::CreateXRotationDegrees( 90.f ) );
+
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 
@@ -86,18 +91,27 @@ void Game::InitializeCameras()
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 }
 
+
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeMeshes()
 {
 	// Cube
 	std::vector<Vertex_PCUTBN> vertices;
 	std::vector<uint> indices;
-	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 2.f, Rgba8::WHITE );
+	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
 
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
 
-	m_cubeMeshTransform.SetPosition( Vec3( 0.f, 0.f, -6.f ) );
+	Transform cubeTransform;
+	cubeTransform.SetPosition( Vec3( 2.5f, 0.f, 0.f ) );
+	m_cubeMeshTransforms.push_back( cubeTransform );
 
+	cubeTransform.SetPosition( Vec3( 2.5f, 2.5f, 0.f ) );
+	m_cubeMeshTransforms.push_back( cubeTransform );
+
+	cubeTransform.SetPosition( Vec3( 0.f, 2.5f, 0.f ) );
+	m_cubeMeshTransforms.push_back( cubeTransform );
+	
 	// Quad
 	vertices.clear();
 	indices.clear();
@@ -151,8 +165,16 @@ void Game::Update()
 
 	UpdateCameras();
 
-	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-	m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
+	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
+
+	DebugAddScreenPoint( Vec2( 100.f, 100.f ), 1.f, Rgba8::WHITE, 0.f );
+
+	DebugAddScreenTextf( Vec4( .85f, .85f, 0.f, 0.f ), Vec2( .5f, .5f ), .1f, Rgba8::GREEN, 0.f, "Camera - Yaw: %.2f, Pitch: %.2f, Roll: %.2f", m_worldCamera->GetTransform().m_yawDegrees, 
+																																	m_worldCamera->GetTransform().m_pitchDegrees, 
+																																	m_worldCamera->GetTransform().m_rollDegrees );
+
+	//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	//m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
 }
 
 
@@ -198,12 +220,12 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'C' ) )
 	{
-		cameraTranslation.y += 1.f;
+		cameraTranslation.z += 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_SPACEBAR ) )
 	{
-		cameraTranslation.y -= 1.f;
+		cameraTranslation.z -= 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
@@ -220,8 +242,8 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	Transform transform = m_worldCamera->GetTransform();
 	m_worldCamera->SetPitchRollYawOrientationDegrees( transform.m_pitchDegrees + pitch,
-											0.f,
-											transform.m_yawDegrees + yaw );
+													  0.f,
+													  transform.m_yawDegrees + yaw );
 
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
@@ -270,9 +292,12 @@ void Game::Render() const
 	g_renderer->SetGamma( m_gamma );
 	
 	// Render normal objects
-	Mat44 model = m_cubeMeshTransform.GetAsMatrix();
-	g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
-	g_renderer->DrawMesh( m_cubeMesh );
+	for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
+	{
+		Mat44 model = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
+		g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+		g_renderer->DrawMesh( m_cubeMesh );
+	}
 	
 	g_renderer->EndCamera( *m_worldCamera );
 

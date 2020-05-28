@@ -69,7 +69,7 @@ Vec2 Camera::GetOrthoMax() const
 	return ClientToWorldPosition( Vec2::ONE, 0 ).XY();
 }
 
-//TODO: Fix
+
 //-----------------------------------------------------------------------------------------------
 void Camera::SetPitchRollYawOrientationDegrees( float pitch, float roll, float yaw )
 {

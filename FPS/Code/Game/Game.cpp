@@ -287,7 +287,7 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	if( g_inputSystem->WasKeyJustPressed( 'O' ))
 	{
 		m_worldCamera->SetPosition( Vec3::ZERO );
-		m_worldCamera->SetPitchRollYawRotation( 0.f, 0.f, 0.f );
+		//m_worldCamera->SetPitchRollYawRotation( 0.f, 0.f, 0.f );
 		return;
 	}
 
@@ -334,9 +334,9 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	pitch *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( transform.m_orientation.x + pitch,
-											0.f,
-											transform.m_orientation.z + yaw );
+	m_worldCamera->SetPitchRollYawOrientationDegrees(	transform.m_pitchDegrees + pitch,
+														0.f,
+														transform.m_yawDegrees + yaw );
 
 	// Update light direction
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )

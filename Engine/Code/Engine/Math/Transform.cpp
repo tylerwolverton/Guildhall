@@ -5,6 +5,11 @@
 
 
 //-----------------------------------------------------------------------------------------------
+// Static member definitions
+AxisOrientation Transform::s_axisOrientation;
+Mat44 Transform::s_identityOrientation;
+
+//-----------------------------------------------------------------------------------------------
 void Transform::SetPosition( const Vec3& position )
 {
 	m_position = position;
@@ -61,7 +66,22 @@ const Mat44 Transform::GetAsMatrix() const
 //-----------------------------------------------------------------------------------------------
 Vec3 Transform::GetForwardVector() const
 {
-	Vec3 forwardVec = GetAsMatrix().TransformVector3D( Vec3( 0.f, 0.f, -1.f ) ).GetNormalized();
+	Vec3 forwardVec;
+
+	switch ( s_axisOrientation.m_axisYawPitchRollOrder )
+	{
+		case eAxisYawPitchRollOrder::YXZ:
+		{
+			forwardVec = GetAsMatrix().TransformVector3D( Vec3( 0.f, 0.f, s_axisOrientation.GetZAxisDirectionFactor() ) ).GetNormalized();
+		} 
+		break;
+
+		case eAxisYawPitchRollOrder::ZXY:
+		{
+			forwardVec = GetAsMatrix().TransformVector3D( Vec3( s_axisOrientation.GetXAxisDirectionFactor(), 0.f, 0.f ) ).GetNormalized();
+		} 
+		break;
+	}
 
 	return forwardVec;
 }
@@ -70,11 +90,29 @@ Vec3 Transform::GetForwardVector() const
 //-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetOrientationAsMatrix() const
 {
-	Mat44 rotationMatrix;
-	rotationMatrix.PushTransform( Mat44::CreateYRotationDegrees( m_yawDegrees ) );
-	rotationMatrix.PushTransform( Mat44::CreateXRotationDegrees( m_pitchDegrees ) );
-	rotationMatrix.PushTransform( Mat44::CreateZRotationDegrees( m_rollDegrees ) );
+	Mat44 rotationMatrix = s_identityOrientation;
+	//Mat44 rotationMatrix;
 
+	switch ( s_axisOrientation.m_axisYawPitchRollOrder )
+	{
+		case eAxisYawPitchRollOrder::YXZ:
+		{
+			rotationMatrix.PushTransform( Mat44::CreateYRotationDegrees( m_yawDegrees   * s_axisOrientation.GetYAxisDirectionFactor() ) );
+			rotationMatrix.PushTransform( Mat44::CreateXRotationDegrees( m_pitchDegrees * s_axisOrientation.GetXAxisDirectionFactor() ) );
+			rotationMatrix.PushTransform( Mat44::CreateZRotationDegrees( m_rollDegrees  * s_axisOrientation.GetZAxisDirectionFactor() ) );
+		} 
+		break;
+
+		case eAxisYawPitchRollOrder::ZXY:
+		{
+			rotationMatrix.PushTransform( Mat44::CreateZRotationDegrees( m_yawDegrees   * s_axisOrientation.GetZAxisDirectionFactor() ) );
+			rotationMatrix.PushTransform( Mat44::CreateXRotationDegrees( m_pitchDegrees * s_axisOrientation.GetXAxisDirectionFactor() ) );
+			rotationMatrix.PushTransform( Mat44::CreateYRotationDegrees( m_rollDegrees  * s_axisOrientation.GetYAxisDirectionFactor() ) );
+		} 
+		break;
+	}
+
+	//rotationMatrix.PushTransform( s_identityOrientation );
 	return rotationMatrix;
 }
 
