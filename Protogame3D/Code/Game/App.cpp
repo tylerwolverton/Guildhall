@@ -215,7 +215,7 @@ void App::UpdateFromKeyboard()
 void App::Render() const
 {
 	g_game->Render();
-	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
+	//DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 	g_devConsole->Render();
 }
 

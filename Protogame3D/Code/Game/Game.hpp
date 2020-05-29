@@ -15,10 +15,11 @@ class Clock;
 class Entity;
 class RandomNumberGenerator;
 class Camera;
-class World;
+class GPUMesh;
+class Material;
 class TextBox;
 class Texture;
-class GPUMesh;
+class World;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -96,6 +97,9 @@ private:
 	GPUMesh* m_sphereMesh = nullptr;
 
 	std::vector<Transform> m_cubeMeshTransforms;
+
+	// Materials
+	Material* m_testMaterial = nullptr;
 		
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 0.5f;

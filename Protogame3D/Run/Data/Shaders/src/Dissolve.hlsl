@@ -66,6 +66,8 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
+	//return float4 ( DISSOLVE_FACTOR, 1.f, 1.f, 1.f );
+	
 	// use the uv to sample the texture
 	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );
@@ -92,12 +94,14 @@ float4 FragmentFunction( v2f_t input ) : SV_Target0
 	float3 surface_normal = ColorToVector( normal_color.xyz ); // (0 to 1) space to (-1, -1, 0),(1, 1, 1) space
 	float3 world_normal = mul( surface_normal, tbn );
 
-	float3 final_color = CalculateDot3Light( input.world_position, world_normal, surface_color );
+	lit_color_t final_color = CalculateDot3Light( input.world_position, world_normal, surface_color );
 
-	final_color = pow( max( final_color, 0.f ), 1.f / GAMMA );
+	final_color.color = pow( max( final_color.color, 0.f ), 1.f / GAMMA );
+	final_color.bloom = pow( max( final_color.bloom, 0.f ), 1.f / GAMMA );
 
-	final_color = lerp( final_color, burn_color, 1 - t );
 
-	float4 final_color_with_fog = AddFogToColor( float4( final_color, surface_alpha ), input.world_position );
+	final_color.color = lerp( final_color.color, burn_color, 1 - t );
+
+	float4 final_color_with_fog = AddFogToColor( float4( final_color.color, surface_alpha ), input.world_position );
 	return final_color_with_fog;
 }

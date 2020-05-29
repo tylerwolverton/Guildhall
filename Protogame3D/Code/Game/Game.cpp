@@ -18,6 +18,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -126,6 +127,9 @@ void Game::InitializeMeshes()
 	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 64, Rgba8::WHITE );
 
 	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
+
+	// Initialize materials
+	m_testMaterial = new Material( g_renderer, "Data/Materials/Test.material" );
 }
 
 
@@ -137,6 +141,7 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	PTR_SAFE_DELETE( m_testMaterial );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
@@ -279,13 +284,13 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
+	Texture* backbuffer = g_renderer->GetBackBuffer();
+	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	
+	m_worldCamera->SetColorTarget( 0, colorTarget );
+
 	g_renderer->BeginCamera( *m_worldCamera );
-
-	g_renderer->BindDiffuseTexture( nullptr );
-	g_renderer->BindNormalTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" ) );
-
-	g_renderer->BindShaderProgram( "Data/Shaders/src/Lit.hlsl" );
-
+	
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 	
 	g_renderer->DisableAllLights();
@@ -295,14 +300,23 @@ void Game::Render() const
 	// Render normal objects
 	for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
 	{
-		Mat44 model = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
-		g_renderer->SetModelData( model, Rgba8::WHITE, m_specularFactor, m_specularPower );
+		Mat44 modelMatrix = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
+		g_renderer->SetModelMatrix( modelMatrix );
+		g_renderer->BindMaterial( m_testMaterial );
 		g_renderer->DrawMesh( m_cubeMesh );
 	}
 	
 	g_renderer->EndCamera( *m_worldCamera );
 
+	// Copy rendered data to backbuffer and set on camera
+	g_renderer->CopyTexture( backbuffer, colorTarget );
+	m_worldCamera->SetColorTarget( backbuffer );
+
+	g_renderer->ReleaseRenderTarget( colorTarget );
+	
+	// Debug rendering
 	DebugRenderWorldToCamera( m_worldCamera );
+	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
 
