@@ -91,7 +91,7 @@ void Game::InitializeCameras()
 
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
-	m_worldCamera->Translate( Vec3( 0.f, 0.f, 1.f ) );
+	m_worldCamera->Translate( Vec3( 0.f, 0.f, .5f ) );
 }
 
 

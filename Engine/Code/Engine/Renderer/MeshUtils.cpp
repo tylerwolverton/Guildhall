@@ -952,10 +952,10 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 	maxs.z -= sideLength * .5f;
 
 	// Front 4 points
-	Vec3 vert0( mins );
-	Vec3 vert1( maxs.x, mins.y, mins.z );
-	Vec3 vert2( mins.x, maxs.y, mins.z );
-	Vec3 vert3( maxs.x, maxs.y, mins.z );
+	Vec3 vert4( mins );
+	Vec3 vert0( maxs.x, mins.y, mins.z );
+	Vec3 vert6( mins.x, maxs.y, mins.z );
+	Vec3 vert2( maxs.x, maxs.y, mins.z );
 
 	Vec3 backMins( mins );
 	backMins.z = center.z - sideLength * .5f;
@@ -964,10 +964,10 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 	backMaxs.z = center.z + sideLength * .5f;
 
 	// Back 4 points ( from front perspective for directions )	
-	Vec3 vert4( backMins );
-	Vec3 vert5( backMaxs.x, backMins.y, backMins.z );
-	Vec3 vert6( backMins.x, backMaxs.y, backMins.z );
-	Vec3 vert7( backMaxs.x, backMaxs.y, backMins.z );
+	Vec3 vert5( backMins );
+	Vec3 vert1( backMaxs.x, backMins.y, backMins.z );
+	Vec3 vert7( backMins.x, backMaxs.y, backMins.z );
+	Vec3 vert3( backMaxs.x, backMaxs.y, backMins.z );
 
 	vertexArray.reserve( 24 );
 	// Front
@@ -1037,10 +1037,10 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 	normal = CrossProduct3D( right, up ).GetNormalized();
 	tangent = right.GetNormalized();
 
-	vertexArray.push_back( Vertex_PCUTBN( vert0, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
-	vertexArray.push_back( Vertex_PCUTBN( vert1, tint, uvAtMins, normal, tangent ) );
-	vertexArray.push_back( Vertex_PCUTBN( vert4, tint, uvAtMaxs, normal, tangent ) );
-	vertexArray.push_back( Vertex_PCUTBN( vert5, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert5, tint, Vec2( uvAtMaxs.x, uvAtMins.y ), normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert4, tint, uvAtMins, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert1, tint, uvAtMaxs, normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( vert0, tint, Vec2( uvAtMins.x, uvAtMaxs.y ), normal, tangent ) );
 }
 
 
