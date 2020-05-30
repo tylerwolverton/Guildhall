@@ -28,7 +28,7 @@ void Transform::SetOrientationFromPitchRollYawDegrees( float pitchDegrees, float
 {
 	m_pitchDegrees = GetRotationInRangeDegrees( pitchDegrees, -180.f, 180.f );
 	m_rollDegrees = GetRotationInRangeDegrees( rollDegrees, -180.f, 180.f );
-	m_yawDegrees = GetRotationInRangeDegrees( yawDegrees, -180.f, 180.f );
+	m_yawDegrees = GetRotationInRangeDegrees( yawDegrees, 0.f, 360.f );
 }
 
 
@@ -50,6 +50,22 @@ void Transform::SetScale( const Vec3& scale )
 
 //-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetAsMatrix() const
+{
+	Mat44 translationMatrix = Mat44::CreateTranslation3D( m_position );
+	Mat44 rotationMatrix = GetOrientationAsMatrix();
+	rotationMatrix.PushTransform( s_identityOrientation );
+	Mat44 scaleMatrix = Mat44::CreateNonUniformScale3D( m_scale );
+
+	Mat44 modelMatrix = translationMatrix;
+	modelMatrix.PushTransform( rotationMatrix );
+	modelMatrix.PushTransform( scaleMatrix );
+
+	return modelMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Transform::GetAsAbsoluteMatrix() const
 {
 	Mat44 translationMatrix = Mat44::CreateTranslation3D( m_position );
 	Mat44 rotationMatrix = GetOrientationAsMatrix();
@@ -112,7 +128,6 @@ const Mat44 Transform::GetOrientationAsMatrix() const
 		break;
 	}
 
-	rotationMatrix.PushTransform( s_identityOrientation );
 	return rotationMatrix;
 }
 

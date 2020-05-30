@@ -14,6 +14,14 @@ class RenderBuffer;
 
 
 //-----------------------------------------------------------------------------------------------
+enum eCameraType
+{
+	WORLD,
+	UI
+};
+
+
+//-----------------------------------------------------------------------------------------------
 enum eCameraClearBitFlag : uint
 {
 	CLEAR_NONE = 0,
@@ -48,6 +56,8 @@ public:
 	void SetPosition( const Vec3& position );
 	void Translate( const Vec3& translation );
 	void SetPitchRollYawOrientationDegrees( float pitch, float roll, float yaw );
+	void SetYawPitchRollOrientationDegrees( float yawDegrees, float pitchDegrees, float rollDegrees );
+	void RotateYawPitchRoll( float yawDegrees, float pitchDegrees, float rollDegrees );
 
 	void SetProjectionOrthographic( float height, float nearZ = 1.f, float farZ = -1.f );
 	void SetProjectionPerspective( float fovDegrees, float nearZClip, float farZClip );
@@ -55,6 +65,7 @@ public:
 	// Rendering
 	void SetClearMode( unsigned int clearFlags, Rgba8 color = Rgba8::BLACK, float depth = 1.f, unsigned int stencil = 0 );
 	
+	void SetType( const eCameraType& cameraType )				{ m_cameraType = cameraType; }
 	void SetColorTarget( Texture* texture );
 	void SetColorTarget( int index, Texture* texture );
 	void SetDepthStencilTarget( Texture* texture );
@@ -68,7 +79,8 @@ public:
 	void UpdateCameraUBO();
 
 	// Accessors
-	const Transform GetTransform()								const	{ return m_transform; }
+	eCameraType GetType()					const   { return m_cameraType; }
+	const Transform GetTransform()			const	{ return m_transform; }
 	Vec2 GetOrthoMin() const;
 	Vec2 GetOrthoMax() const;
 	Rgba8 GetClearColor()					const	{ return m_clearColor; }
@@ -92,6 +104,7 @@ public:
 	RenderBuffer* m_cameraUBO = nullptr;
 
 private:
+	eCameraType     m_cameraType = eCameraType::WORLD;
 	Vec2			m_outputSize;
 	
 	Transform		m_transform;

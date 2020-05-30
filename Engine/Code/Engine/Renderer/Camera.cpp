@@ -80,6 +80,22 @@ void Camera::SetPitchRollYawOrientationDegrees( float pitch, float roll, float y
 
 
 //-----------------------------------------------------------------------------------------------
+void Camera::SetYawPitchRollOrientationDegrees( float yawDegrees, float pitchDegrees, float rollDegrees )
+{
+	SetPitchRollYawOrientationDegrees( pitchDegrees, rollDegrees, yawDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Camera::RotateYawPitchRoll( float yawDegrees, float pitchDegrees, float rollDegrees )
+{
+	SetPitchRollYawOrientationDegrees( m_transform.GetPitchDegrees() + pitchDegrees,
+									   m_transform.GetRollDegrees() + rollDegrees, 
+									   m_transform.GetYawDegrees() + yawDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Camera::SetProjectionOrthographic( float height, float nearZ, float farZ )
 {
 	float aspect = GetAspectRatio();
@@ -204,11 +220,18 @@ void Camera::UpdateCameraUBO()
 	CameraData cameraData;
 	cameraData.projection = m_projectionMatrix;
 
-	Mat44 model = m_transform.GetAsMatrix();
-	InvertMatrix( model );
+	Mat44 viewMatrix;
 
-	cameraData.view = model;
-	m_viewMatrix = model;
+	switch ( m_cameraType )
+	{
+		case eCameraType::WORLD: viewMatrix = m_transform.GetAsMatrix(); break;
+		case eCameraType::UI: viewMatrix = m_transform.GetAsAbsoluteMatrix(); break;
+	}
+
+	InvertMatrix( viewMatrix );
+
+	cameraData.view = viewMatrix;
+	m_viewMatrix = viewMatrix;
 
 	cameraData.worldPosition = m_transform.GetPosition();
 

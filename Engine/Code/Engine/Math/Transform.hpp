@@ -51,14 +51,20 @@ public:
 	void RotatePitchRollYawDegrees( float pitch, float roll, float yaw );
 
 	const Mat44 GetAsMatrix() const;
+	const Mat44 GetAsAbsoluteMatrix() const;
 
-	Vec3 GetPosition() const { return m_position; }
+	Vec3 GetPosition() const						{ return m_position; }
+	Vec3 GetScale() const							{ return m_scale; }
 	Vec3 GetForwardVector() const;
+
+	float GetYawDegrees() const						{ return m_yawDegrees; }
+	float GetPitchDegrees() const					{ return m_pitchDegrees; }
+	float GetRollDegrees() const					{ return m_rollDegrees; }
 
 private:
 	const Mat44 GetOrientationAsMatrix() const;
 
-public:
+private:
 	Vec3 m_position = Vec3::ZERO; 
 	float m_pitchDegrees = 0.f;
 	float m_rollDegrees = 0.f;

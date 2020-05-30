@@ -594,8 +594,10 @@ void DebugRenderScreenTo( Texture* output )
 	}
 
 	RenderContext* context = output->m_owner;
+	eCameraType oldType = s_debugCamera->GetType();
 
 	s_debugCamera->SetColorTarget( output );
+	s_debugCamera->SetType( eCameraType::UI );
 	
 	float aspect = output->GetAspectRatio();
 	s_screenWidth = s_screenHeight * aspect;
@@ -621,6 +623,8 @@ void DebugRenderScreenTo( Texture* output )
 	RenderScreenObjects( context, s_debugRenderScreenTextObjects );
 
 	context->EndCamera( *s_debugCamera );
+
+	s_debugCamera->SetType( oldType );
 }
 
 

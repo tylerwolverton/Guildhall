@@ -59,6 +59,7 @@ void Game::Startup()
 {
 	Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::ZYX;
 
+	//Transform::s_identityOrientation = MakeLookAtMatrix(Vec3::ZERO, Vec3(1.f, 0.f, 0.f), Vec3(0.f, 0.f, 1.f));
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateXRotationDegrees( 90.f ) );
 
@@ -85,12 +86,12 @@ void Game::Startup()
 void Game::InitializeCameras()
 {
 	m_worldCamera = new Camera();
-	m_worldCamera->SetColorTarget( nullptr );
 	Texture* depthTexture = g_renderer->GetOrCreateDepthStencil( g_renderer->GetDefaultBackBufferSize() );
 	m_worldCamera->SetDepthStencilTarget( depthTexture );
 
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
+	m_worldCamera->Translate( Vec3( 0.f, 0.f, 1.f ) );
 }
 
 
@@ -105,13 +106,13 @@ void Game::InitializeMeshes()
 	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
 
 	Transform cubeTransform;
-	cubeTransform.SetPosition( Vec3( 2.5f, 0.f, 0.f ) );
+	cubeTransform.SetPosition( Vec3( 2.5f, 0.5f, 0.5f ) );
 	m_cubeMeshTransforms.push_back( cubeTransform );
 
-	cubeTransform.SetPosition( Vec3( 2.5f, 2.5f, 0.f ) );
+	cubeTransform.SetPosition( Vec3( 2.5f, 2.5f, 0.5f ) );
 	m_cubeMeshTransforms.push_back( cubeTransform );
 
-	cubeTransform.SetPosition( Vec3( 0.f, 2.5f, 0.f ) );
+	cubeTransform.SetPosition( Vec3( 0.5f, 2.5f, 0.5f ) );
 	m_cubeMeshTransforms.push_back( cubeTransform );
 	
 	// Quad
@@ -175,9 +176,9 @@ void Game::Update()
 
 	DebugAddScreenPoint( Vec2( 100.f, 100.f ), 1.f, Rgba8::WHITE, 0.f );
 
-	DebugAddScreenTextf( Vec4( .85f, .85f, 0.f, 0.f ), Vec2( .5f, .5f ), .1f, Rgba8::GREEN, 0.f, "Camera - Yaw: %.2f, Pitch: %.2f, Roll: %.2f", m_worldCamera->GetTransform().m_yawDegrees, 
-																																	m_worldCamera->GetTransform().m_pitchDegrees, 
-																																	m_worldCamera->GetTransform().m_rollDegrees );
+	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, 0.f, "Camera - Yaw: %.2f, Pitch: %.2f, Roll: %.2f", m_worldCamera->GetTransform().GetYawDegrees(), 
+																																	m_worldCamera->GetTransform().GetPitchDegrees(), 
+																																	m_worldCamera->GetTransform().GetRollDegrees() );
 
 	//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	//m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
@@ -241,15 +242,13 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	// Rotation
 	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-	float yaw = -mousePosition.x * s_mouseSensitivityMultiplier;
-	float pitch = mousePosition.y * s_mouseSensitivityMultiplier;
-	yaw *= .009f;
-	pitch *= .009f;
+	float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
+	float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
+	yawDegrees *= .009f;
+	pitchDegrees *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawOrientationDegrees( transform.m_pitchDegrees + pitch,
-													  0.f,
-													  transform.m_yawDegrees + yaw );
+	m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
 
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
