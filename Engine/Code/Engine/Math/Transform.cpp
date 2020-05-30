@@ -80,6 +80,22 @@ const Mat44 Transform::GetAsAbsoluteMatrix() const
 
 
 //-----------------------------------------------------------------------------------------------
+const Mat44 Transform::GetAsXYRotationWorldMatrix() const
+{
+	Mat44 translationMatrix = Mat44::CreateTranslation3D( m_position );
+	Mat44 rotationMatrix = GetOrientationAsMatrix();
+	rotationMatrix.PushTransform( s_identityOrientation );
+	Mat44 scaleMatrix = Mat44::CreateNonUniformScale3D( m_scale );
+
+	Mat44 modelMatrix = translationMatrix;
+	modelMatrix.PushTransform( rotationMatrix );
+	modelMatrix.PushTransform( scaleMatrix );
+
+	return modelMatrix;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Vec3 Transform::GetForwardVector() const
 {
 	Vec3 forwardVec;
@@ -106,7 +122,6 @@ Vec3 Transform::GetForwardVector() const
 //-----------------------------------------------------------------------------------------------
 const Mat44 Transform::GetOrientationAsMatrix() const
 {
-	//Mat44 rotationMatrix = s_identityOrientation;
 	Mat44 rotationMatrix;
 
 	switch ( s_axisOrientation.m_axisYawPitchRollOrder )

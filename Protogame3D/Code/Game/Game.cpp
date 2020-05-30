@@ -270,8 +270,13 @@ void Game::UpdateCameras()
 //-----------------------------------------------------------------------------------------------
 void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 {
-	Mat44 modelMatrix = m_worldCamera->GetTransform().GetAsMatrix();
-	Vec3 absoluteTranslation( modelMatrix.TransformVector2D( relativeTranslation.XY() ), relativeTranslation.z );
+	Vec2 forwardVec = Vec2::MakeFromPolarDegrees( m_worldCamera->GetTransform().GetYawDegrees() );
+	Vec2 rightVec = forwardVec.GetRotatedMinus90Degrees();
+
+	Vec2 translationXY( relativeTranslation.x * forwardVec  
+						+ relativeTranslation.y * rightVec );
+	
+	Vec3 absoluteTranslation( translationXY, relativeTranslation.z );
 
 	m_worldCamera->Translate( absoluteTranslation );
 }

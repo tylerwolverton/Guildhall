@@ -52,6 +52,7 @@ public:
 
 	const Mat44 GetAsMatrix() const;
 	const Mat44 GetAsAbsoluteMatrix() const;
+	const Mat44 GetAsXYRotationWorldMatrix() const;
 
 	Vec3 GetPosition() const						{ return m_position; }
 	Vec3 GetScale() const							{ return m_scale; }

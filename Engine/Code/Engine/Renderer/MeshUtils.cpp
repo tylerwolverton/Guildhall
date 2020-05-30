@@ -941,26 +941,26 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 							 const Vec3& center, float sideLength, 
 							 const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	Vec3 mins( center );
-	mins.x -= sideLength * .5f;
-	mins.y -= sideLength * .5f;
-	mins.z += sideLength * .5f;
+	Vec3 frontMins( center );
+	frontMins.x -= sideLength * .5f;
+	frontMins.y -= sideLength * .5f;
+	frontMins.z += sideLength * .5f;
 
-	Vec3 maxs( center );
-	maxs.x += sideLength * .5f;
-	maxs.y += sideLength * .5f;
-	maxs.z -= sideLength * .5f;
+	Vec3 frontMaxs( center );
+	frontMaxs.x += sideLength * .5f;
+	frontMaxs.y += sideLength * .5f;
+	frontMaxs.z -= sideLength * .5f;
 
 	// Front 4 points
-	Vec3 vert4( mins );
-	Vec3 vert0( maxs.x, mins.y, mins.z );
-	Vec3 vert6( mins.x, maxs.y, mins.z );
-	Vec3 vert2( maxs.x, maxs.y, mins.z );
+	Vec3 vert4( frontMins );
+	Vec3 vert0( frontMaxs.x, frontMins.y, frontMins.z );
+	Vec3 vert6( frontMins.x, frontMaxs.y, frontMins.z );
+	Vec3 vert2( frontMaxs.x, frontMaxs.y, frontMins.z );
 
-	Vec3 backMins( mins );
+	Vec3 backMins( frontMins );
 	backMins.z = center.z - sideLength * .5f;
 
-	Vec3 backMaxs( maxs );
+	Vec3 backMaxs( frontMaxs );
 	backMaxs.z = center.z + sideLength * .5f;
 
 	// Back 4 points ( from front perspective for directions )	
