@@ -173,12 +173,9 @@ void Game::Update()
 	UpdateCameras();
 
 	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
-
-	DebugAddScreenPoint( Vec2( 100.f, 100.f ), 1.f, Rgba8::WHITE, 0.f );
-
 	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, 0.f, "Camera - Yaw: %.2f, Pitch: %.2f, Roll: %.2f", m_worldCamera->GetTransform().GetYawDegrees(), 
-																																	m_worldCamera->GetTransform().GetPitchDegrees(), 
-																																	m_worldCamera->GetTransform().GetRollDegrees() );
+																																	      m_worldCamera->GetTransform().GetPitchDegrees(), 
+																																	      m_worldCamera->GetTransform().GetRollDegrees() );
 
 	//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 	//m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
@@ -207,30 +204,30 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
-		cameraTranslation.x += 1.f;
+		cameraTranslation.y += 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'A' ) )
 	{
-		cameraTranslation.x -= 1.f;
+		cameraTranslation.y -= 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		cameraTranslation.z -= 1.f;
+		cameraTranslation.x += 1.f;
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		cameraTranslation.z += 1.f;
+		cameraTranslation.x -= 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'C' ) )
+	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
 		cameraTranslation.z += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_SPACEBAR ) )
+	if ( g_inputSystem->IsKeyPressed( 'E' ) )
 	{
 		cameraTranslation.z -= 1.f;
 	}
@@ -273,8 +270,8 @@ void Game::UpdateCameras()
 //-----------------------------------------------------------------------------------------------
 void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 {
-	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
-	Vec3 absoluteTranslation = model.TransformVector3D( relativeTranslation );
+	Mat44 modelMatrix = m_worldCamera->GetTransform().GetAsMatrix();
+	Vec3 absoluteTranslation( modelMatrix.TransformVector2D( relativeTranslation.XY() ), relativeTranslation.z );
 
 	m_worldCamera->Translate( absoluteTranslation );
 }
