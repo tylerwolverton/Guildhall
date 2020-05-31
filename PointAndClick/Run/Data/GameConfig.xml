@@ -1,0 +1,6 @@
+<GameConfig
+	startMap="MutateDemo"
+	windowAspect="1.777"
+  windowTitle="PointAndClick"
+	windowMode="windowed"
+/>
