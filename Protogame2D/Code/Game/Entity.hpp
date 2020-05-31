@@ -29,17 +29,17 @@ public:
 
 	const Vec2	 GetForwardVector() const;
 	const Vec2	 GetPosition() const							{ return m_position; };
-	const float  GetPhysicsRadius() const					{ return m_entityDef->m_physicsRadius; };
+	const float  GetPhysicsRadius() const						{ return m_entityDef->m_physicsRadius; };
 	std::string  GetName() const								{ return m_entityDef->m_name; };
 				 
-	bool		 IsDead() const								{ return m_isDead; }
-	bool		 IsGarbage() const							{ return m_isGarbage; }
+	bool		 IsDead() const									{ return m_isDead; }
+	bool		 IsGarbage() const								{ return m_isGarbage; }
 				 
 	void		 TakeDamage( int damage );
 	void		 ApplyFriction();
 				 
 	bool		 CanWalk() const								{ return m_entityDef->CanWalk(); }
-	bool		 CanFly() const								{ return m_entityDef->CanFly(); }
+	bool		 CanFly() const									{ return m_entityDef->CanFly(); }
 	bool		 CanSwim() const								{ return m_entityDef->CanSwim(); }
 
 protected:
@@ -59,10 +59,6 @@ protected:
 	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
 	float					m_angularVelocity = 0.f;						// the Entity’s signed angular velocity( spin rate ), in degrees per second
 	
-	/*bool					m_canWalk = false;
-	bool					m_canFly = false;
-	bool					m_canSwim = false;*/
-
 	// Visual
 	std::vector<Vertex_PCU> m_vertexes;
 	Texture*				m_texture = nullptr;

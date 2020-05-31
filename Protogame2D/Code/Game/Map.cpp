@@ -7,6 +7,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -111,7 +112,7 @@ void Map::UpdateCameras()
 		AABB2 cameraBounds( Vec2( 0.f, 0.f ), aspectDimensions );
 		cameraBounds.StretchToIncludePointMaintainAspect( Vec2( (float)m_width, (float)m_height ), aspectDimensions );
 		
-		g_game->SetWorldCameraOrthographicView( cameraBounds );
+		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 	}
 	else
 	{
@@ -131,7 +132,7 @@ void Map::CenterCameraOnPlayer() const
 		AABB2 windowBox( Vec2( 0.f, 0.f ), Vec2( (float)m_width, (float)m_height ) );
 		cameraBounds.FitWithinBounds( windowBox );
 
-		g_game->SetWorldCameraOrthographicView( cameraBounds );
+		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 	}
 }
 
@@ -178,10 +179,10 @@ void Map::RenderTiles() const
 	{
 		const Tile& tile = m_tiles[tileIndex];
 
-		g_renderer->AppendVertsForAABB2D( vertexes, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
+		AppendVertsForAABB2D( vertexes, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
 	}
 
-	g_renderer->BindTexture( &(g_tileSpriteSheet->GetTexture()) );
+	g_renderer->BindTexture( 0, &(g_tileSpriteSheet->GetTexture()) );
 	g_renderer->DrawVertexArray( vertexes );
 }
 

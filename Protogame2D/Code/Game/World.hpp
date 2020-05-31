@@ -3,17 +3,17 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Clock;
 class Map;
-
 
 //-----------------------------------------------------------------------------------------------
 class World
 {
 public:
-	World();
+	World( Clock* gameClock );
 	~World();
 
-	void Update( float deltaSeconds );
+	void Update();
 	void Render() const;
 	void DebugRender() const;
 
@@ -21,4 +21,5 @@ public:
 
 private:
 	Map* m_curMap = nullptr;
+	Clock* m_worldClock = nullptr;
 };

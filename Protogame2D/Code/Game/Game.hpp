@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 
 #include <string>
 #include <vector>
@@ -10,9 +11,22 @@ struct AABB2;
 struct Rgba8;
 class Entity;
 class RandomNumberGenerator;
+class Clock;
 class Camera;
 class World;
 class TextBox;
+
+
+//-----------------------------------------------------------------------------------------------
+enum class eGameState
+{
+	GAME_STATE_LOADING,
+	GAME_STATE_ATTRACT,
+	GAME_STATE_PLAYING,
+	GAME_STATE_GAME_OVER,
+	GAME_STATE_VICTORY,
+	GAME_STATE_PAUSED
+};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -22,23 +36,26 @@ public:
 	Game();
 	~Game();
 
-	void		Startup();
-	void		Update( float deltaSeconds );
-	void		Render() const;
-	void		DebugRender() const;
-	void		Shutdown();
+	void Startup();
+	void BeginFrame();
+	void Update();
+	void Render() const;
+	void DebugRender() const;
+	void EndFrame();
+	void Shutdown();
 
-	void		RestartGame();
+	void RestartGame();
 	
 	void		LogMapDebugCommands();
-	void		SetWorldCameraOrthographicView( const AABB2& cameraBounds );
-	void		SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight );
+	//void		SetWorldCameraOrthographicView( const AABB2& cameraBounds );
+	//void		SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight );
 
 	bool		IsNoClipEnabled()														{ return m_isNoClipEnabled; }
 	bool		IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
 
 	const Vec2	GetMouseWorldPosition()													{ return m_mouseWorldPosition; }
 
+	void		SetWorldCameraPosition( const Vec3& position );
 	void		AddScreenShakeIntensity( float additionalIntensityFraction );
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
@@ -52,14 +69,15 @@ private:
 	void LoadMapsFromXml();
 	void LoadActorsFromXml();
 
-	void UpdateFromKeyboard( float deltaSeconds );
+	void UpdateFromKeyboard();
 	void LoadNewMap( const std::string& mapName );
-	void UpdateMousePositions( float deltaSeconds );
-	void UpdateMouseWorldPosition( float deltaSeconds );
-	void UpdateMouseUIPosition( float deltaSeconds );
-	void UpdateCameras( float deltaSeconds );
+	void UpdateMousePositions();
+	void UpdateMouseWorldPosition();
+	void UpdateMouseUIPosition();
+	void UpdateCameras();
 
 private:
+	Clock* m_gameClock = nullptr;
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;
 	bool m_isFastMo = false;
@@ -76,6 +94,9 @@ private:
 
 	Camera* m_worldCamera = nullptr;
 	Camera* m_uiCamera = nullptr;
+	Vec3 m_focalPoint = Vec3::ZERO;
+
+	eGameState m_gameState = eGameState::GAME_STATE_LOADING;
 
 	World* m_world = nullptr;
 	std::string m_curMap;

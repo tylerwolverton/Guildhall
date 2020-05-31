@@ -1,4 +1,6 @@
-#include "Game.hpp"
+#include "Game/Game.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
@@ -12,10 +14,11 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
-#include "Engine/Input/InputSystem.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Time/Clock.hpp"
+#include "Engine/Time/Time.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -47,21 +50,42 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+	m_worldCamera->SetPosition( m_focalPoint );
+
 	m_uiCamera = new Camera();
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+
+	EnableDebugRendering();
 
 	m_debugInfoTextBox = new TextBox( *g_renderer, AABB2( Vec2::ZERO, Vec2( 200.f, 80.f ) ) );
 
 	m_rng = new RandomNumberGenerator();
 
+	m_gameClock = new Clock();
+	g_renderer->Setup( m_gameClock );
+
+	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
+
 	LoadAssets();
 
-	m_world = new World();
+	m_world = new World( m_gameClock );
 
 	m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
-	g_devConsole->PrintString( Rgba8::WHITE, Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
+	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
 	m_world->BuildNewMap( m_curMap );
 
-	LogMapDebugCommands();
+	//LogMapDebugCommands();
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::BeginFrame()
+{
+	
 }
 
 
@@ -71,30 +95,16 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 
 	// Clean up global sprite sheets
-	delete g_tileSpriteSheet;
-	g_tileSpriteSheet = nullptr;
-
-	delete g_characterSpriteSheet;
-	g_characterSpriteSheet = nullptr;
-
-	delete g_portraitSpriteSheet;
-	g_portraitSpriteSheet = nullptr;
-
+	PTR_SAFE_DELETE( g_tileSpriteSheet );
+	PTR_SAFE_DELETE( g_characterSpriteSheet );
+	PTR_SAFE_DELETE( g_portraitSpriteSheet );
+	
 	// Clean up member variables
-	delete m_world;
-	m_world = nullptr;
-
-	delete m_rng;
-	m_rng = nullptr;
-	
-	delete m_debugInfoTextBox;
-	m_debugInfoTextBox = nullptr;
-	
-	delete m_uiCamera;
-	m_uiCamera = nullptr;
-
-	delete m_worldCamera;
-	m_worldCamera = nullptr;
+	PTR_SAFE_DELETE( m_world );
+	PTR_SAFE_DELETE( m_rng );
+	PTR_SAFE_DELETE( m_debugInfoTextBox );
+	PTR_SAFE_DELETE( m_uiCamera );
+	PTR_SAFE_DELETE( m_worldCamera );
 }
 
 
@@ -109,86 +119,71 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::LogMapDebugCommands()
 {
-	g_devConsole->PrintString(Rgba8::WHITE, "Map Generation Debug Commands" );
-	g_devConsole->PrintString(Rgba8::WHITE, "F4 - View entire map" );
-	g_devConsole->PrintString(Rgba8::WHITE, "F5 - Reload current map" );
+	g_devConsole->PrintString( "Map Generation Debug Commands" );
+	g_devConsole->PrintString( "F4 - View entire map" );
+	g_devConsole->PrintString( "F5 - Reload current map" );
 }
 
 
-//-----------------------------------------------------------------------------------------------
-void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
-{
-	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
-}
+////-----------------------------------------------------------------------------------------------
+//void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
+//{
+//	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight )
+//{
+//	SetWorldCameraOrthographicView( AABB2( bottomLeft, topRight ) );
+//}
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight )
+void Game::Update()
 {
-	SetWorldCameraOrthographicView( AABB2( bottomLeft, topRight ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::Update( float deltaSeconds )
-{
-	UpdateFromKeyboard( deltaSeconds );
-
-	// Modify deltaSeconds based on game state
-	if ( m_isPaused )
-	{
-		deltaSeconds = 0.f;
-	}
-	if ( m_isSlowMo )
-	{
-		deltaSeconds *= .1f;
-	}
-	if ( m_isFastMo )
-	{
-		deltaSeconds *= 4.f;
-	}
+	UpdateFromKeyboard();
 	
-	m_world->Update( deltaSeconds );
-	UpdateCameras( deltaSeconds );
-	UpdateMousePositions( deltaSeconds );
+	m_world->Update();
+	UpdateCameras();
+	UpdateMousePositions();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen(Rgba8(0, 0, 0));
-
-	g_renderer->BeginCamera(*m_worldCamera );
+	g_renderer->BeginCamera( *m_worldCamera );
 
 	m_world->Render();
 	if ( m_isDebugRendering )
 	{
 		m_world->DebugRender();
 	}
-	
+
 	g_renderer->EndCamera( *m_worldCamera );
 
-	// Render UI with a new camera
 	g_renderer->BeginCamera( *m_uiCamera );
 
-	g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
+	//RenderUI();
 
-	if ( m_isDebugRendering )
-	{
-		m_debugInfoTextBox->Render( m_mouseUIPosition );
-	}
-	
 	g_renderer->EndCamera( *m_uiCamera );
+
+	DebugRenderWorldToCamera( m_worldCamera );
+	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::EndFrame()
+{
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadAssets()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Assets..." );
+	g_devConsole->PrintString( "Loading Assets..." );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 
 	// TODO: Check for nullptrs when loading textures
@@ -200,14 +195,14 @@ void Game::LoadAssets()
 	LoadMapsFromXml();
 	LoadActorsFromXml();
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Assets Loaded" );
+	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadTilesFromXml()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Tiles..." );
+	g_devConsole->PrintString( "Loading Tiles..." );
 
 	const char* filePath = "Data/Gameplay/TileDefs.xml";
 
@@ -228,14 +223,14 @@ void Game::LoadTilesFromXml()
 		element = element->NextSiblingElement();
 	}
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Tiles Loaded" );
+	g_devConsole->PrintString( "Tiles Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadMapsFromXml()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Maps..." );
+	g_devConsole->PrintString( "Loading Maps..." );
 
 	const char* filePath = "Data/Gameplay/MapDefs.xml";
 
@@ -256,14 +251,14 @@ void Game::LoadMapsFromXml()
 		element = element->NextSiblingElement();
 	}
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Maps Loaded" );
+	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadActorsFromXml()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Actors..." );
+	g_devConsole->PrintString( "Loading Actors..." );
 
 	const char* filePath = "Data/Gameplay/ActorDefs.xml";
 
@@ -284,15 +279,13 @@ void Game::LoadActorsFromXml()
 		element = element->NextSiblingElement();
 	}
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Actors Loaded" );
+	g_devConsole->PrintString( "Actors Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateFromKeyboard( float deltaSeconds )
+void Game::UpdateFromKeyboard()
 {
-	UNUSED( deltaSeconds );
-
 	m_isSlowMo = g_inputSystem->IsKeyPressed('T');
 	m_isFastMo = g_inputSystem->IsKeyPressed('Y');
 
@@ -333,56 +326,53 @@ void Game::LoadNewMap( const std::string& mapName )
 {
 	delete m_world;
 	m_world = nullptr;
-	m_world = new World();
+	m_world = new World( m_gameClock );
 	m_world->BuildNewMap( mapName );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMousePositions( float deltaSeconds )
+void Game::UpdateMousePositions()
 {
-	UpdateMouseWorldPosition( deltaSeconds );
-	UpdateMouseUIPosition( deltaSeconds );
+	UpdateMouseWorldPosition();
+	UpdateMouseUIPosition();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMouseWorldPosition( float deltaSeconds )
+void Game::UpdateMouseWorldPosition()
 {
-	UNUSED( deltaSeconds );
-
-	Vec2 worldWindowDimensions = m_worldCamera->GetOrthoTopRight() - m_worldCamera->GetOrthoBottomLeft();
-	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos() * worldWindowDimensions;
-	m_mouseWorldPosition += m_worldCamera->GetOrthoBottomLeft();
+	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos() * m_worldCamera->GetOutputSize();
+	m_mouseWorldPosition += m_worldCamera->GetOrthoMin();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMouseUIPosition( float deltaSeconds )
+void Game::UpdateMouseUIPosition()
 {
-	UNUSED( deltaSeconds );
-
-	Vec2 uiWindowDimensions = m_uiCamera->GetOrthoTopRight() - m_uiCamera->GetOrthoBottomLeft();
-	m_mouseUIPosition = g_inputSystem->GetNormalizedMouseClientPos() * uiWindowDimensions;
+	m_mouseUIPosition = g_inputSystem->GetNormalizedMouseClientPos() * m_uiCamera->GetOutputSize();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateCameras( float deltaSeconds )
+void Game::UpdateCameras()
 {
 	// World camera
-	m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
-	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.0);
+	m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * (float)m_gameClock->GetLastDeltaSeconds();
+	m_screenShakeIntensity = ClampZeroToOne( m_screenShakeIntensity );
 
 	float maxScreenShake = m_screenShakeIntensity * MAX_CAMERA_SHAKE_DIST;
-	float cameraShakeX = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
-	float cameraShakeY = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
-	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
+	float cameraShakeX = m_rng->RollRandomFloatInRange( -maxScreenShake, maxScreenShake );
+	float cameraShakeY = m_rng->RollRandomFloatInRange( -maxScreenShake, maxScreenShake );
+	Vec2 cameraShakeOffset = Vec2( cameraShakeX, cameraShakeY );
 
-	m_worldCamera->Translate2D(cameraShakeOffset);
+	//m_worldCamera->Translate2D( cameraShakeOffset );
+	m_worldCamera->SetPosition( m_focalPoint + Vec3( cameraShakeOffset, 0.f ) );
+	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
 
 	// UI Camera
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 }
 
 
@@ -390,6 +380,13 @@ void Game::UpdateCameras( float deltaSeconds )
 void Game::DebugRender() const
 {
 	m_world->DebugRender();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetWorldCameraPosition( const Vec3& position )
+{
+	m_focalPoint = position;
 }
 
 
@@ -408,10 +405,10 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 		return;
 	}
 
-	m_debugInfoTextBox->SetText( color, textLines[0] );
+	m_debugInfoTextBox->SetText( textLines[0], color );
 
 	for ( int textLineIndex = 1; textLineIndex < (int)textLines.size(); ++textLineIndex )
 	{
-		m_debugInfoTextBox->AddLineOFText( color, textLines[ textLineIndex ] );
+		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
 	}
 }

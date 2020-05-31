@@ -1,29 +1,31 @@
 #include "Game/World.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Time/Clock.hpp"
 #include "Game/Map.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/MapDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-World::World()
+World::World( Clock* gameClock )
 {
+	m_worldClock = new Clock( gameClock );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 World::~World()
 {
-	delete m_curMap;
-	m_curMap = nullptr;
+	PTR_SAFE_DELETE( m_worldClock );
+	PTR_SAFE_DELETE( m_curMap );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void World::Update( float deltaSeconds )
+void World::Update()
 {
-	m_curMap->Update( deltaSeconds );
+	m_curMap->Update( (float)m_worldClock->GetLastDeltaSeconds() );
 }
 
 

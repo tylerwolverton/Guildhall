@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
@@ -59,13 +60,11 @@ void Actor::Render() const
 	spriteDef.GetUVs( mins, maxs );
 
 	std::vector<Vertex_PCU> vertexes;
-	g_renderer->AppendVertsForAABB2D( vertexes, m_actorDef->m_localDrawBounds, Rgba8::WHITE,
-									  mins,
-									  maxs );
+	AppendVertsForAABB2D( vertexes, m_actorDef->m_localDrawBounds, Rgba8::WHITE, mins, maxs );
 
 	Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
 
-	g_renderer->BindTexture( &( spriteDef.GetTexture() ) );
+	g_renderer->BindTexture( 0, &( spriteDef.GetTexture() ) );
 	g_renderer->DrawVertexArray( vertexes );
 }
 
