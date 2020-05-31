@@ -98,6 +98,8 @@ public:
 	bool IsKeyPressed( unsigned char keyCode ) const;
 	bool WasKeyJustPressed( unsigned char keyCode ) const;
 	bool WasKeyJustReleased( unsigned char keyCode ) const;
+
+	bool WasAnyKeyJustPressed() const;
 	
 	bool ConsumeKeyPress( unsigned char keyCode );
 	int ConsumeAllKeyPresses( unsigned char keyCode );

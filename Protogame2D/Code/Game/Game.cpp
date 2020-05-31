@@ -1,5 +1,4 @@
 #include "Game/Game.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -13,6 +12,7 @@
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Texture.hpp"
@@ -68,14 +68,12 @@ void Game::Startup()
 	g_renderer->Setup( m_gameClock );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
-
-	LoadAssets();
-
+	
 	m_world = new World( m_gameClock );
 
-	m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
+	/*m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
 	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
-	m_world->BuildNewMap( m_curMap );
+	m_world->BuildNewMap( m_curMap );*/
 
 	//LogMapDebugCommands();
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
@@ -142,9 +140,47 @@ void Game::LogMapDebugCommands()
 //-----------------------------------------------------------------------------------------------
 void Game::Update()
 {
-	UpdateFromKeyboard();
-	
-	m_world->Update();
+	switch ( m_gameState )
+	{
+		case eGameState::LOADING:
+		{
+			switch ( m_loadingFrameNum )
+			{
+				case 0:
+				{
+					++m_loadingFrameNum;
+
+					SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
+					g_audioSystem->PlaySound( anticipation );
+				}
+				break;
+
+				case 1:
+				{
+					LoadAssets();
+					ChangeGameState( eGameState::ATTRACT );
+					Update();
+				}
+				break;
+			}
+		}
+		break;
+
+		case eGameState::ATTRACT:
+		{
+			UpdateFromKeyboard();
+		}
+		break;
+
+		case eGameState::PLAYING:
+		{
+			UpdateFromKeyboard();
+
+			m_world->Update();
+		}
+		break;
+	}
+
 	UpdateCameras();
 	UpdateMousePositions();
 }
@@ -155,17 +191,53 @@ void Game::Render() const
 {
 	g_renderer->BeginCamera( *m_worldCamera );
 
-	m_world->Render();
-	if ( m_isDebugRendering )
+	switch ( m_gameState )
 	{
-		m_world->DebugRender();
+		case eGameState::PLAYING:
+		case eGameState::PAUSED:
+		{
+			m_world->Render();
+			if ( m_isDebugRendering )
+			{
+				m_world->DebugRender();
+			}
+		}
+		break;
 	}
 
 	g_renderer->EndCamera( *m_worldCamera );
 
 	g_renderer->BeginCamera( *m_uiCamera );
 
-	//RenderUI();
+	switch ( m_gameState )
+	{
+		case eGameState::LOADING:
+		{
+			std::vector<Vertex_PCU> vertexes;
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Loading..." );
+
+			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
+			g_renderer->DrawVertexArray( vertexes );
+		}
+		break;
+
+		case eGameState::ATTRACT:
+		{
+			std::vector<Vertex_PCU> vertexes;
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Protogame2D" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Start" );
+
+			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
+			g_renderer->DrawVertexArray( vertexes );
+		}
+		break;
+
+		case eGameState::PLAYING:
+		{
+			//m_world->RenderHUD();
+		}
+		break;
+	}
 
 	g_renderer->EndCamera( *m_uiCamera );
 
@@ -185,6 +257,12 @@ void Game::LoadAssets()
 {
 	g_devConsole->PrintString( "Loading Assets..." );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
+
+	// Music
+	g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
+	g_audioSystem->CreateOrGetSound( "Data/Audio/GameOver.mp3" );
+	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
+	g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
 
 	// TODO: Check for nullptrs when loading textures
 	g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
@@ -286,37 +364,54 @@ void Game::LoadActorsFromXml()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard()
 {
-	m_isSlowMo = g_inputSystem->IsKeyPressed('T');
-	m_isFastMo = g_inputSystem->IsKeyPressed('Y');
-
-	if ( g_inputSystem->WasKeyJustPressed('P') )
+	switch ( m_gameState )
 	{
-		m_isPaused = !m_isPaused;
-	}
+		case eGameState::ATTRACT:
+		{
+			if ( g_inputSystem->WasAnyKeyJustPressed() )
+			{
+				ChangeGameState( eGameState::PLAYING );
+			}
+		}
+		break;
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
-	{
-		m_isDebugRendering = !m_isDebugRendering;
-	}
+		case eGameState::PLAYING:
+		{
+			m_isSlowMo = g_inputSystem->IsKeyPressed( 'T' );
+			m_isFastMo = g_inputSystem->IsKeyPressed( 'Y' );
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
-	{
-		m_isNoClipEnabled = !m_isNoClipEnabled;
-	}
+			if ( g_inputSystem->WasKeyJustPressed( 'P' ) )
+			{
+				m_isPaused = !m_isPaused;
+			}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
-	{
-		m_isDebugCameraEnabled = !m_isDebugCameraEnabled;
-	}
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+			{
+				m_isDebugRendering = !m_isDebugRendering;
+			}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
-	{
-		LoadNewMap( m_curMap );
-	}
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
+			{
+				m_isNoClipEnabled = !m_isNoClipEnabled;
+			}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
-	{
-		g_devConsole->ToggleOpenFull();
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
+			{
+				m_isDebugCameraEnabled = !m_isDebugCameraEnabled;
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
+			{
+				LoadNewMap( m_curMap );
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
+			{
+				g_devConsole->ToggleOpenFull();
+			}
+		}
+		break;
+
 	}
 }
 
@@ -411,4 +506,95 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 	{
 		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ChangeGameState( const eGameState& newGameState )
+{
+	switch ( newGameState )
+	{
+		case eGameState::LOADING:
+		{
+			ERROR_AND_DIE( "Tried to go back to the loading state during the game. Don't do that." );
+		}
+		break;
+
+		case eGameState::ATTRACT:
+		{
+			// Check which state we are changing from
+			switch ( m_gameState )
+			{
+				case eGameState::PAUSED:
+				case eGameState::PLAYING:
+				{
+					g_audioSystem->StopSound( m_gameplayMusicID );
+				}
+				break;
+
+				case eGameState::VICTORY:
+				{
+					g_audioSystem->StopSound( m_victoryMusicID );
+				}
+				break;
+			}
+
+			SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
+			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true );
+		}
+		break;
+
+		case eGameState::PLAYING:
+		{
+			// Check which state we are changing from
+			switch ( m_gameState )
+			{
+				case eGameState::PAUSED:
+				{
+					SoundID unpause = g_audioSystem->CreateOrGetSound( "Data/Audio/Unpause.mp3" );
+					g_audioSystem->PlaySound( unpause );
+
+					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, 1.f );
+				}
+				break;
+
+				case eGameState::ATTRACT:
+				{
+					g_audioSystem->StopSound( m_attractMusicID );
+
+					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
+					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true );
+					
+					m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
+					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
+					m_world->BuildNewMap( m_curMap );
+				}
+				break;
+			}
+		}
+		break;
+
+		case eGameState::PAUSED:
+		{
+			g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .5f );
+
+			SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
+			g_audioSystem->PlaySound( pause );
+
+		}
+		break;
+
+		case eGameState::VICTORY:
+		{
+			//m_curVictoryScreenSeconds = 0.f;
+
+			g_audioSystem->StopSound( m_gameplayMusicID );
+
+			SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
+			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic );
+		}
+		break;
+	}
+
+	m_gameState = newGameState;
 }

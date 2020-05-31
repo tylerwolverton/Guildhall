@@ -409,6 +409,21 @@ bool InputSystem::WasKeyJustReleased( unsigned char keyCode ) const
 
 
 //-----------------------------------------------------------------------------------------------
+bool InputSystem::WasAnyKeyJustPressed() const
+{
+	for ( int keyIdx = 0; keyIdx < MAX_KEY_CODES; ++keyIdx )
+	{
+		if ( m_keyStates[keyIdx].IsPressed() )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool InputSystem::ConsumeKeyPress( unsigned char keyCode )
 {
 	return m_keyStates[keyCode].ConsumeKeyPress();
