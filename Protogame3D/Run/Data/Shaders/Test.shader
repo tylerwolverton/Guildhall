@@ -12,7 +12,7 @@
       'fill': solid, wire
    -->
 
-   <pass program="Data/Shaders/src/Default.hlsl"
+   <pass program="Data/Shaders/src/WorldOpaque.hlsl"
          front="ccw"
          cull="back"
          fill="solid">
