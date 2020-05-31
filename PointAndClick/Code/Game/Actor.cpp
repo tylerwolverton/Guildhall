@@ -54,6 +54,11 @@ void Actor::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
+	if ( m_curAnimDef == nullptr )
+	{
+		return;
+	}
+
 	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
 		
 	Vec2 mins, maxs;

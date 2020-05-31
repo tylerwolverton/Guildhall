@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
 
@@ -20,12 +21,12 @@ class TextBox;
 //-----------------------------------------------------------------------------------------------
 enum class eGameState
 {
-	GAME_STATE_LOADING,
-	GAME_STATE_ATTRACT,
-	GAME_STATE_PLAYING,
-	GAME_STATE_GAME_OVER,
-	GAME_STATE_VICTORY,
-	GAME_STATE_PAUSED
+	LOADING,
+	ATTRACT,
+	PLAYING,
+	GAME_OVER,
+	VICTORY,
+	PAUSED
 };
 
 
@@ -46,9 +47,8 @@ public:
 
 	void RestartGame();
 	
-	void		LogMapDebugCommands();
-	//void		SetWorldCameraOrthographicView( const AABB2& cameraBounds );
-	//void		SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight );
+	void		LogMapDebugCommands(); 
+	void		ChangeGameState( const eGameState& newGameState );
 
 	bool		IsNoClipEnabled()														{ return m_isNoClipEnabled; }
 	bool		IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
@@ -92,11 +92,18 @@ private:
 
 	float m_screenShakeIntensity = 0.f;
 
+	int m_loadingFrameNum = 0;
+
 	Camera* m_worldCamera = nullptr;
 	Camera* m_uiCamera = nullptr;
 	Vec3 m_focalPoint = Vec3::ZERO;
 
-	eGameState m_gameState = eGameState::GAME_STATE_LOADING;
+	// Audio
+	SoundPlaybackID m_attractMusicID = (SoundPlaybackID)-1;
+	SoundPlaybackID m_gameplayMusicID = (SoundPlaybackID)-1;
+	SoundPlaybackID m_victoryMusicID = (SoundPlaybackID)-1;
+
+	eGameState m_gameState = eGameState::LOADING;
 
 	World* m_world = nullptr;
 	std::string m_curMap;
