@@ -176,6 +176,9 @@ void Game::Update()
 	UpdateUI();
 
 	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
+
+	Mat44 compassMatrix = Mat44::CreateTranslation3D( m_worldCamera->GetTransform().GetPosition() + .11f * m_worldCamera->GetTransform().GetForwardVector() );
+	DebugAddWorldBasis( compassMatrix, .01f, 0.f, Rgba8::WHITE, Rgba8::WHITE, DEBUG_RENDER_ALWAYS );
 }
 
 

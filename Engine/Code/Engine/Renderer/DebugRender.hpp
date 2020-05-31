@@ -98,6 +98,7 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& start_
 void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
 // basis
+void DebugAddWorldBasis( const Mat44& basis, float arrowLength, float duration = 0.0f, const Rgba8 & start_tint = Rgba8::WHITE, const Rgba8& end_tint = Rgba8::WHITE, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldBasis( const Mat44& basis, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 

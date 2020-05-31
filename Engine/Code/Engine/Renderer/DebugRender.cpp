@@ -766,12 +766,13 @@ void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_
 
 	Vec3 endOfLine = p0 + lookAt.GetKBasis3D() * cylinderLength;
 
-	AppendVertsAndIndicesForCylinderMesh( vertices, indices, p0, endOfLine, .03f, .03f, p0_color, p1_color );
+	float arrowRadius = cylinderLength * .01f;
+	AppendVertsAndIndicesForCylinderMesh( vertices, indices, p0, endOfLine, arrowRadius, arrowRadius, p0_color, p1_color );
 	DebugRenderObject* cylinderObj = new DebugRenderObject( vertices, indices, start_tint, end_tint, duration );
 
 	vertices.clear();
 	indices.clear();
-	AppendVertsAndIndicesForConeMesh( vertices, indices, endOfLine, p1, .15f, p1_color );
+	AppendVertsAndIndicesForConeMesh( vertices, indices, endOfLine, p1, arrowRadius * 2.f, p1_color );
 	DebugRenderObject* coneObj = new DebugRenderObject( vertices, indices, start_tint, end_tint, duration );
 	
 
@@ -899,9 +900,7 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color,
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode )
 {
-	DebugAddWorldArrow( basis.GetTranslation3D(), Rgba8::RED, Rgba8::RED, basis.GetTranslation3D() + basis.GetIBasis3D().GetNormalized(), start_tint, end_tint, duration, mode );
-	DebugAddWorldArrow( basis.GetTranslation3D(), Rgba8::GREEN, Rgba8::GREEN, basis.GetTranslation3D() + basis.GetJBasis3D().GetNormalized(), start_tint, end_tint, duration, mode );
-	DebugAddWorldArrow( basis.GetTranslation3D(), Rgba8::BLUE, Rgba8::BLUE, basis.GetTranslation3D() + basis.GetKBasis3D().GetNormalized(), start_tint, end_tint, duration, mode );
+	DebugAddWorldBasis( basis, 1.f, duration, start_tint, end_tint, mode );
 }
 
 
@@ -909,6 +908,15 @@ void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba
 void DebugAddWorldBasis( const Mat44& basis, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldBasis( basis, Rgba8::WHITE, Rgba8::WHITE, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldBasis( const Mat44& basis, float arrowLength, float duration, const Rgba8& start_tint, const Rgba8& end_tint, eDebugRenderMode mode )
+{
+	DebugAddWorldArrow( basis.GetTranslation3D(), Rgba8::RED,	Rgba8::RED,		basis.GetTranslation3D() + ( basis.GetIBasis3D().GetNormalized() * arrowLength ), start_tint, end_tint, duration, mode );
+	DebugAddWorldArrow( basis.GetTranslation3D(), Rgba8::GREEN, Rgba8::GREEN,	basis.GetTranslation3D() + ( basis.GetJBasis3D().GetNormalized() * arrowLength ), start_tint, end_tint, duration, mode );
+	DebugAddWorldArrow( basis.GetTranslation3D(), Rgba8::BLUE,	Rgba8::BLUE,	basis.GetTranslation3D() + ( basis.GetKBasis3D().GetNormalized() * arrowLength ), start_tint, end_tint, duration, mode );
 }
 
 

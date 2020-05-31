@@ -93,7 +93,9 @@ Vec3 Transform::GetForwardVector() const
 
 		case eAxisYawPitchRollOrder::ZYX:
 		{
-			forwardVec = GetAsMatrix().TransformVector3D( Vec3( s_axisOrientation.GetXAxisDirectionFactor(), 0.f, 0.f ) ).GetNormalized();
+			//forwardVec = GetAsMatrix().TransformVector3D( Vec3( s_axisOrientation.GetXAxisDirectionFactor(), 0.f, 0.f ) ).GetNormalized();
+			Mat44 orientation = GetOrientationAsMatrix();
+			forwardVec = orientation.TransformVector3D( -s_identityOrientation.GetKBasis3D() );
 		} 
 		break;
 	}
