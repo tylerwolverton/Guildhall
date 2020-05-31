@@ -52,8 +52,7 @@ void Transform::SetScale( const Vec3& scale )
 const Mat44 Transform::GetAsMatrix() const
 {
 	Mat44 translationMatrix = Mat44::CreateTranslation3D( m_position );
-	Mat44 rotationMatrix = GetOrientationAsMatrix();
-	rotationMatrix.PushTransform( s_identityOrientation );
+	Mat44 rotationMatrix = GetWorldOrientationAsMatrix();
 	Mat44 scaleMatrix = Mat44::CreateNonUniformScale3D( m_scale );
 
 	Mat44 modelMatrix = translationMatrix;
@@ -69,22 +68,6 @@ const Mat44 Transform::GetAsAbsoluteMatrix() const
 {
 	Mat44 translationMatrix = Mat44::CreateTranslation3D( m_position );
 	Mat44 rotationMatrix = GetOrientationAsMatrix();
-	Mat44 scaleMatrix = Mat44::CreateNonUniformScale3D( m_scale );
-
-	Mat44 modelMatrix = translationMatrix;
-	modelMatrix.PushTransform( rotationMatrix );
-	modelMatrix.PushTransform( scaleMatrix );
-
-	return modelMatrix;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-const Mat44 Transform::GetAsXYRotationWorldMatrix() const
-{
-	Mat44 translationMatrix = Mat44::CreateTranslation3D( m_position );
-	Mat44 rotationMatrix = GetOrientationAsMatrix();
-	rotationMatrix.PushTransform( s_identityOrientation );
 	Mat44 scaleMatrix = Mat44::CreateNonUniformScale3D( m_scale );
 
 	Mat44 modelMatrix = translationMatrix;
@@ -146,3 +129,11 @@ const Mat44 Transform::GetOrientationAsMatrix() const
 	return rotationMatrix;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+const Mat44 Transform::GetWorldOrientationAsMatrix() const
+{
+	Mat44 rotationMatrix = GetOrientationAsMatrix();
+	rotationMatrix.PushTransform( s_identityOrientation );
+	return rotationMatrix;
+}

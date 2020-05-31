@@ -171,14 +171,9 @@ void Game::Update()
 	}
 
 	UpdateCameras();
+	UpdateUI();
 
 	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
-	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, 0.f, "Camera - Yaw: %.2f, Pitch: %.2f, Roll: %.2f", m_worldCamera->GetTransform().GetYawDegrees(), 
-																																	      m_worldCamera->GetTransform().GetPitchDegrees(), 
-																																	      m_worldCamera->GetTransform().GetRollDegrees() );
-
-	//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-	//m_cubeMeshTransform.RotatePitchRollYawDegrees( deltaSeconds * 15.f, 0.f, deltaSeconds * 35.f );
 }
 
 
@@ -188,7 +183,7 @@ void Game::UpdateFromKeyboard()
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
 	UpdateCameraTransform( deltaSeconds );
-	UpdateDebugDrawCommands();
+	UpdateUI();
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
 	{
@@ -222,12 +217,12 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 		cameraTranslation.x -= 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
+	if ( g_inputSystem->IsKeyPressed( 'E' ) )
 	{
 		cameraTranslation.z += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'E' ) )
+	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
 	{
 		cameraTranslation.z -= 1.f;
 	}
@@ -253,9 +248,45 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateDebugDrawCommands()
+void Game::UpdateUI()
 {
+	// Camera position and orientation
+	Transform cameraTransform = m_worldCamera->GetTransform();
+
+	std::string cameraOrientationStr = Stringf( "Yaw: %.2f, Pitch: %.2f, Roll: %.2f",
+											 cameraTransform.GetYawDegrees(),
+											 cameraTransform.GetPitchDegrees(),
+											 cameraTransform.GetRollDegrees() );
+
+	std::string cameraPositionStr = Stringf("xyz=( %.2f, %.2f, %.2f )",
+											 cameraTransform.GetPosition().x,
+											 cameraTransform.GetPosition().y, 
+											 cameraTransform.GetPosition().z );
+
+	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::YELLOW, 0.f, 
+						 "Camera - %s     %s", 
+								cameraOrientationStr.c_str(),
+								cameraPositionStr.c_str() );
 	
+	// Basis text
+	Mat44 cameraOrientationMatrix = cameraTransform.GetOrientationAsMatrix();
+	DebugAddScreenTextf( Vec4( 0.f, .91f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::RED, 0.f, 
+						 "iBasis ( forward +x world east when identity  )  ( %.2f, %.2f, %.2f )", 
+								cameraOrientationMatrix.GetIBasis3D().x,
+								cameraOrientationMatrix.GetIBasis3D().y,
+								cameraOrientationMatrix.GetIBasis3D().z );
+
+	DebugAddScreenTextf( Vec4( 0.f, .88f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, 0.f, 
+						 "jBasis ( left    +y world north when identity )  ( %.2f, %.2f, %.2f )", 
+								cameraOrientationMatrix.GetJBasis3D().x,
+								cameraOrientationMatrix.GetJBasis3D().y,
+								cameraOrientationMatrix.GetJBasis3D().z );
+
+	DebugAddScreenTextf( Vec4( 0.f, .85f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::BLUE, 0.f, 
+						 "kBasis ( up      +z world up when identity    )  ( %.2f, %.2f, %.2f )", 
+								cameraOrientationMatrix.GetKBasis3D().x,
+								cameraOrientationMatrix.GetKBasis3D().y,
+								cameraOrientationMatrix.GetKBasis3D().z );
 }
 
 
