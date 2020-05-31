@@ -3,6 +3,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include <string>
@@ -101,6 +102,9 @@ private:
 	// Materials
 	Material* m_testMaterial = nullptr;
 		
+	// Sounds
+	SoundID m_testSound;
+
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 0.5f;
 	float m_specularFactor = 0.f;

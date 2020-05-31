@@ -78,6 +78,8 @@ void Game::Startup()
 	InitializeCameras();
 	InitializeMeshes();
 
+	LoadAssets();
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -184,6 +186,15 @@ void Game::UpdateFromKeyboard()
 
 	UpdateCameraTransform( deltaSeconds );
 	UpdateUI();
+	
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+	{
+		float volume = m_rng->RollRandomFloatInRange( .5f, 1.f );
+		float balance = m_rng->RollRandomFloatInRange( -1.f, 1.f );
+		float speed = m_rng->RollRandomFloatInRange( .5f, 2.f );
+		
+		g_audioSystem->PlaySound( m_testSound, false, volume, balance, speed );
+	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
 	{
@@ -364,8 +375,7 @@ void Game::LoadAssets()
 {
 	g_devConsole->PrintString( "Loading Assets...", Rgba8::WHITE );
 
-	g_renderer->GetOrCreateShader( "Data/Shaders/Lit.hlsl" );
-	g_renderer->CreateOrGetTextureFromFile( "Data/Images/brick_normal.png" );
+	m_testSound = g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
