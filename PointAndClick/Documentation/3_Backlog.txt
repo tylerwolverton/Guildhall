@@ -1,0 +1,119 @@
+-------------------------------------------------------------------------------
+Fields
+-------------------------------------------------------------------------------
+Task Id 	Unique id for sorting, searching, and grouping tasks
+Status 		Current status of this task, see legend
+Estimate 	Estimated time to complete this task, in hours
+Actual 		How much time was actually spent on this task, in hours
+Feature Id 	The feature corresponding to this task
+Description	Sufficient text to fully explain the work to be done
+-------------------------------------------------------------------------------
+Status Codes
+-------------------------------------------------------------------------------
+O Not Started
+/ In Progress
+X Complete
+< Sent to backlog
+> Carried to next sprint
+- Deleted
+-------------------------------------------------------------------------------
+Status Tags
+-------------------------------------------------------------------------------
+* Not originally planned
+! Highest priority
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+Split into sections by deliverables to keep those organized
+
+===============================================================================
+BACKLOG
+===============================================================================
+
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+0           [O]         0.5                     N/A         Create new project
+
+1           [O]         1                       8           Research UI Framework design ( third party, Unity, etc. )
+1.1         [O]         1                       8           Design my UI framework with mock up
+1.2         [O]         1.5                     8           Implement panel division hierarchy
+1.3         [O]         1.5                     8           Implement UI button with OnHover and OnClicked events
+1.4         [O]         1                       8           Implement texture backgrounds and font foregrounds for buttons
+2           [O]         1.5                     8           Build HUD layout
+2.1         [O]         0.5                     8           Add buttons for supported verbs
+3           [O]         1.5                     8.1         Represent inventory items as buttons
+4           [O]         0.5                     3           Implement state machine in Game for game states 
+5           [O]         1                       3           Make win game trigger check that player has item 
+6           [O]         2                       5           Create map and place inside top panel
+6.1         [O]         0.5                     5           Attach level sprite to first map
+7           [O]         1                       6           Implement follow camera
+8           [O]         0.5                     3           Add trigger/button to win game and transition to win state 
+9           [O]         1.5                     10          Add OnHover events to items in level and inventory that shows tooltip
+10          [O]         0.5                     11          Give player speed and walk to location clicked by cursor
+11          [O]         1                       1           Create item game object and place in level
+12          [O]         1                       1.1         Create inventory for player and enable adding and removing items
+13          [O]         1.5                     1.1         Implement click to collect item
+14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
+15          [O]         1                       21          Add Victory map/UI panel                                       
+
+23.5 hrs
+
+--------------------------------------------------------------------------------
+
+16          [O]         3                        4          Create a data-driven game object with event interface for each of the verbs 
+17          [O]         3                        12         Create state machine to handle actions 
+18          [O]         1                        12.2       Implement incorrect action message 
+19          [O]         1                        12.1       Implement "Pick Up" verb 
+20          [O]         1.5                      12.1       Implement "Open/Close" verb with door 
+21          [O]         1.5                      12.1       Implement "Give to" verb with NPC that can be given item
+22          [O]         1.5                      11         Implement "Walk to" action and make it the default action when clicked
+23          [O]         1.5                      13         Add current action section to HUD
+
+24          [O]         1                        2, 14      Implement NPC that can be talked to 
+24.1        [O]         1                        14.1, 14.2 Implement dialogue "cutscene" game state ( no input, hide cursor )
+
+25          [O]         1.5                      9.1        Implement UI panel hiding for HUD
+25.1        [O]         1.5                      9          Create clickable dialogue options in HUD 
+26          [O]         2                        9          Implement dialogue tree state machine for conversations
+
+
+21 hrs
+
+--------------------------------------------------------------------------------
+
+27          [O]         1                       7           Add trigger/button to switch to new map
+28          [O]         0.5                     5           Attach level sprite to second map
+29          [O]         1                       18          Add background music to each map
+30          [O]         1                       20          Add main menu map 
+30.1        [O]         1                       20          Add start and exit buttons to main menu 
+30.2        [O]         0.5                     20          Implement behavior for start and exit buttons
+30.3        [O]         0.5                     20.1        Add main menu background sprite 
+30.4        [O]         0.5                     20.2        Add main menu background music 
+30.5        [O]         1                       20.1        Add main menu title sprite 
+31          [O]         1.5                     3           Add a character/object that can be interacted with while holding all 3 items to win the game
+32          [O]         0.5                     3.3         Add one item hidden in the forest
+33          [O]         0.5                     3.2         Add one item hidden in the town
+34          [O]         1.5                     3.3         Add NPC who gives item when town item is given to them
+34.1        [O]         0.25                    3.3         Write dialogue for NPC item giver
+35          [O]         2                       3.1         Add NPC with dialogue tree that gives item in one branch
+35.1        [O]         0.75                    3.1         Write dialogue for NPC dialogue tree
+36          [O]         2                       16          Add walking animation for player using XML 
+37          [O]         1                       17          Add idle animation for NPCs using XML 
+38          [O]         1                       19          Add pause menu UI panel
+38.1        [O]         0.5                     19          Add resume and quit to main menu buttons to pause menu
+39          [O]         0.5                     8           Implement verb color change when hovering
+40          [O]         1                       21          Add go back to main menu button on victory screen    
+
+20 hrs
+
+--------------------------------------------------------------------------------
+
+41          [O]         10                                   Polish and bugfix
+
+Stretch Goals
+--------------------------------------------------------------------------------
+42          [O]         2                                    Add opening dialogue sequence
+43          [O]         3                                    Context Sensitive verb selection
+
+Total       79.5 hrs
