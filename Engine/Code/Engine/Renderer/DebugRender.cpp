@@ -772,7 +772,7 @@ void DebugAddWorldArrow( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_
 
 	vertices.clear();
 	indices.clear();
-	AppendVertsAndIndicesForConeMesh( vertices, indices, endOfLine, p1, arrowRadius * 2.f, p1_color );
+	AppendVertsAndIndicesForConeMesh( vertices, indices, endOfLine, p1, arrowRadius * 4.f, p1_color );
 	DebugRenderObject* coneObj = new DebugRenderObject( vertices, indices, start_tint, end_tint, duration );
 	
 

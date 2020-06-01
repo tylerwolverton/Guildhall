@@ -173,7 +173,7 @@ void Game::Update()
 	}
 
 	UpdateCameras();
-	UpdateUI();
+	UpdateDebugUI();
 
 	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
 
@@ -188,7 +188,7 @@ void Game::UpdateFromKeyboard()
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
 	UpdateCameraTransform( deltaSeconds );
-	UpdateUI();
+	//UpdateUI();
 	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{
@@ -262,7 +262,7 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateUI()
+void Game::UpdateDebugUI()
 {
 	// Camera position and orientation
 	Transform cameraTransform = m_worldCamera->GetTransform();
@@ -284,19 +284,19 @@ void Game::UpdateUI()
 	
 	// Basis text
 	Mat44 cameraOrientationMatrix = cameraTransform.GetOrientationAsMatrix();
-	DebugAddScreenTextf( Vec4( 0.f, .91f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::RED, 0.f, 
+	DebugAddScreenTextf( Vec4( 0.f, .94f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::RED, 0.f, 
 						 "iBasis ( forward +x world east when identity  )  ( %.2f, %.2f, %.2f )", 
 								cameraOrientationMatrix.GetIBasis3D().x,
 								cameraOrientationMatrix.GetIBasis3D().y,
 								cameraOrientationMatrix.GetIBasis3D().z );
 
-	DebugAddScreenTextf( Vec4( 0.f, .88f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, 0.f, 
+	DebugAddScreenTextf( Vec4( 0.f, .91f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, 0.f, 
 						 "jBasis ( left    +y world north when identity )  ( %.2f, %.2f, %.2f )", 
 								cameraOrientationMatrix.GetJBasis3D().x,
 								cameraOrientationMatrix.GetJBasis3D().y,
 								cameraOrientationMatrix.GetJBasis3D().z );
 
-	DebugAddScreenTextf( Vec4( 0.f, .85f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::BLUE, 0.f, 
+	DebugAddScreenTextf( Vec4( 0.f, .88f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::BLUE, 0.f, 
 						 "kBasis ( up      +z world up when identity    )  ( %.2f, %.2f, %.2f )", 
 								cameraOrientationMatrix.GetKBasis3D().x,
 								cameraOrientationMatrix.GetKBasis3D().y,

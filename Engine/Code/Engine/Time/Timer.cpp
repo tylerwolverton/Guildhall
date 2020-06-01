@@ -82,7 +82,7 @@ float Timer::GetRatioOfCompletion() const
 bool Timer::HasElapsed() const
 {
 	double currentTime = m_clock->GetTotalElapsedSeconds();
-	return ( currentTime > ( m_startSeconds + m_durationSeconds ) );
+	return ( currentTime >= ( m_startSeconds + m_durationSeconds ) );
 }
 
 

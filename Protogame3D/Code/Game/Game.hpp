@@ -64,7 +64,7 @@ private:
 
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
-	void UpdateUI();
+	void UpdateDebugUI();
 
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
