@@ -92,7 +92,7 @@ void Game::InitializeCameras()
 	m_worldCamera->SetDepthStencilTarget( depthTexture );
 
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
-	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
+	m_worldCamera->SetProjectionPerspective( 60.f, -.05f, -100.f );
 	m_worldCamera->Translate( Vec3( 0.f, 0.f, .5f ) );
 }
 
@@ -177,7 +177,7 @@ void Game::Update()
 
 	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
 
-	Mat44 compassMatrix = Mat44::CreateTranslation3D( m_worldCamera->GetTransform().GetPosition() + .11f * m_worldCamera->GetTransform().GetForwardVector() );
+	Mat44 compassMatrix = Mat44::CreateTranslation3D( m_worldCamera->GetTransform().GetPosition() + .1f * m_worldCamera->GetTransform().GetForwardVector() );
 	DebugAddWorldBasis( compassMatrix, .01f, 0.f, Rgba8::WHITE, Rgba8::WHITE, DEBUG_RENDER_ALWAYS );
 }
 
