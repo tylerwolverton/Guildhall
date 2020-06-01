@@ -94,6 +94,9 @@ void Game::InitializeCameras()
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.05f, -100.f );
 	m_worldCamera->Translate( Vec3( 0.f, 0.f, .5f ) );
+
+	Rgba8 backgroundColor( 10, 10, 10, 255 );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
 }
 
 
@@ -172,7 +175,6 @@ void Game::Update()
 		UpdateFromKeyboard();
 	}
 
-	UpdateCameras();
 	UpdateDebugUI();
 
 	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
@@ -188,7 +190,6 @@ void Game::UpdateFromKeyboard()
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
 	UpdateCameraTransform( deltaSeconds );
-	//UpdateUI();
 	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{
@@ -307,8 +308,7 @@ void Game::UpdateDebugUI()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
-	Rgba8 backgroundColor( 10, 10, 10, 255 );
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
+
 }
 
 
