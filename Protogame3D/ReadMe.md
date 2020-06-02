@@ -4,8 +4,12 @@ A starting project for 3D games
 Controls
 
 Game
+Esc - Quit
+~ - Open dev console
+F1 - Play test sound
 F4 - Reload all shaders
-WASD ( C and Spacebar for up down ) - Move camera
+WASD - Move camera forward/back/sideways
+QE - Move camera Up/Down
 Shift - Move faster 
 
 Debug Commands
