@@ -35,13 +35,17 @@ JOURNAL
 -------------------------------------------------------------------------------
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-
+0.1			[0]			0.5			0.25		N/A			Download and organize sprites and music for project
+1           [O]         1           0.75        8           Research UI Framework design ( third party, Unity, etc. )
+1.1         [O]         1           0.75        8           Design my UI framework with mock up
 
 
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
-
+I like how Unity approaches UI, so I'm going to try a similar implementation minus the component 
+based approach and UI editor support for making a game UI. I'm also only implementing panels, buttons, 
+and text for now since that's all I need for this project.
 
 
 ===============================================================================

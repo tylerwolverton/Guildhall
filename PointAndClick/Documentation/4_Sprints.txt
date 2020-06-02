@@ -37,6 +37,7 @@ CURRENT SPRINT
 ===============================================================================
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
+0.1			[0]			0.5						N/A			Download and organize sprites and music for project
 1           [O]         1                       8           Research UI Framework design ( third party, Unity, etc. )
 1.1         [O]         1                       8           Design my UI framework with mock up
 1.2         [O]         1.5                     8           Implement panel division hierarchy
@@ -47,7 +48,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 3           [O]         1.5                     8.1         Represent inventory items as buttons 
 6           [O]         2                       5           Create map and place inside top panel
 
-Total                   11.5 
+Total                   12
 
 ===============================================================================
 PAST SPRINTS

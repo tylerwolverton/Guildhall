@@ -16,6 +16,7 @@ class Clock;
 class Camera;
 class World;
 class TextBox;
+class UIPanel;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -78,6 +79,8 @@ private:
 
 private:
 	Clock* m_gameClock = nullptr;
+	UIPanel* m_rootPanel = nullptr;
+
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;
 	bool m_isFastMo = false;

@@ -34,6 +34,7 @@ BACKLOG
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 0           [O]         0.5                     N/A         Create new project
+0.1			[0]			0.5						N/A			Download and organize sprites and music for project
 
 1           [O]         1                       8           Research UI Framework design ( third party, Unity, etc. )
 1.1         [O]         1                       8           Design my UI framework with mock up
@@ -57,7 +58,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
 15          [O]         1                       21          Add Victory map/UI panel                                       
 
-23.5 hrs
+24 hrs
 
 --------------------------------------------------------------------------------
 
@@ -116,4 +117,4 @@ Stretch Goals
 42          [O]         2                                    Add opening dialogue sequence
 43          [O]         3                                    Context Sensitive verb selection
 
-Total       79.5 hrs
+Total       80 hrs

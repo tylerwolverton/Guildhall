@@ -268,6 +268,9 @@
     <ClCompile Include="Renderer\Material.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UIPanel.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -515,5 +518,6 @@
     </ClInclude>
     <ClInclude Include="Renderer\Shader.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
+    <ClInclude Include="UI\UIPanel.hpp" />
   </ItemGroup>
 </Project>

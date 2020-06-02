@@ -19,6 +19,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
+#include "Engine/UI/UIPanel.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -67,6 +68,12 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 
+	m_rootPanel = new UIPanel( AABB2(Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
+	Texture* rootBackground = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
+	Texture* childBackground = g_renderer->GetDefaultWhiteTexture();
+	//m_rootPanel->SetBackgroundTexture( rootBackground );
+	m_rootPanel->CreateAndAddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .33f ), childBackground );
+	m_rootPanel->Hide();
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
 	
 	m_world = new World( m_gameClock );
@@ -101,6 +108,7 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
+	PTR_SAFE_DELETE( m_rootPanel );
 	PTR_SAFE_DELETE( m_uiCamera );
 	PTR_SAFE_DELETE( m_worldCamera );
 }
@@ -183,6 +191,8 @@ void Game::Update()
 
 	UpdateCameras();
 	UpdateMousePositions();
+
+	m_rootPanel->Update();
 }
 
 
@@ -238,6 +248,8 @@ void Game::Render() const
 		}
 		break;
 	}
+
+	m_rootPanel->Render( g_renderer );
 
 	g_renderer->EndCamera( *m_uiCamera );
 
@@ -403,11 +415,6 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
 				LoadNewMap( m_curMap );
-			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
-			{
-				g_devConsole->ToggleOpenFull();
 			}
 		}
 		break;

@@ -57,8 +57,8 @@ public:
 	float		GetOuterRadius() const;
 	float		GetInnerRadius() const;
 	void		GetCornerPositions( Vec2* out_fourPoints ) const;								// fill float[4] with corners
-	void		GetCornerPositionsCCW( Vec2* out_fourPoints ) const;								// fill float[4] with corners
-	void		GetPositionOnEachEdge( float wallFraction, Vec2* out_fourPoints ) const; // fill float[4] with points on edges
+	void		GetCornerPositionsCCW( Vec2* out_fourPoints ) const;							// fill float[4] with corners
+	void		GetPositionOnEachEdge( float wallFraction, Vec2* out_fourPoints ) const;		// fill float[4] with points on edges
 
 	// Chop Box
 	void		ChopOffLeft( float fractionOfWidth, float additionalWidth );
