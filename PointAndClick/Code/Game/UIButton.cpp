@@ -5,6 +5,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/GameCommon.hpp"
+#include "Game/UIPanel.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -17,11 +18,18 @@ UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTextur
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const Vec2& dimensions, const Vec2& position, Texture* backgroundTexture )
-	: m_boundingBox( AABB2( position, position + dimensions ) )
-	, m_backgroundTexture( backgroundTexture )
+UIButton::UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture )
+	: m_backgroundTexture( backgroundTexture )
 {
+	AABB2 boundingBox = parentPanel.GetBoundingBox();
+	float width = boundingBox.GetWidth();
+	float height = boundingBox.GetHeight();
 
+	m_boundingBox.mins = Vec2( boundingBox.mins.x + relativeFractionMinPosition.x * width,
+							   boundingBox.mins.y + relativeFractionMinPosition.y * height );
+
+	m_boundingBox.maxs = Vec2( m_boundingBox.mins.x + relativeFractionOfDimensions.x * width,
+							   m_boundingBox.mins.y + relativeFractionOfDimensions.y * height );
 }
 
 
@@ -72,7 +80,7 @@ void UIButton::Render( RenderContext* renderer ) const
 	if ( m_backgroundTexture != nullptr )
 	{
 		std::vector<Vertex_PCU> vertices;
-		AppendVertsForAABB2D( vertices, m_boundingBox, Rgba8::WHITE );
+		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint );
 
 		renderer->BindTexture( 0, m_backgroundTexture );
 		renderer->DrawVertexArray( vertices );
@@ -105,4 +113,11 @@ void UIButton::Hide()
 void UIButton::Show()
 {
 	m_isVisible = true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 UIButton::GetPosition()
+{
+	return m_boundingBox.GetCenter();
 }

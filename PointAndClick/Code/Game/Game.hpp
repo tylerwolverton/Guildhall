@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -78,10 +79,27 @@ private:
 	void UpdateMouseUIPosition();
 	void UpdateCameras();
 
+	void BuildHUD();
+	void CleanupHUD();
+	void BuildVerbPanel();
+	void OnTestButtonClicked( EventArgs* args );
+
 private:
 	Clock* m_gameClock = nullptr;
+
+	// HUD
 	UIPanel* m_rootPanel = nullptr;
-	UIButton* m_testButton = nullptr;
+	UIPanel* m_hudPanel = nullptr;
+	UIPanel* m_verbPanel = nullptr;
+	UIPanel* m_inventoryPanel = nullptr;
+
+
+	UIPanel* m_dialoguePanel = nullptr;
+	UIButton* m_giveVerbButton = nullptr;
+	UIButton* m_openVerbButton = nullptr;
+	UIButton* m_closeVerbButton = nullptr;
+	UIButton* m_pickUpVerbButton = nullptr;
+	UIButton* m_talkToVerbButton = nullptr;
 
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;

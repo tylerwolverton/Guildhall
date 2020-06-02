@@ -69,16 +69,9 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 
-	m_rootPanel = new UIPanel( AABB2(Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
-	Texture* rootBackground = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
-	Texture* childBackground = g_renderer->GetDefaultWhiteTexture();
-	//m_rootPanel->SetBackgroundTexture( rootBackground );
-	m_rootPanel->CreateAndAddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .33f ), childBackground );
-	//m_rootPanel->Hide();
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
-	
-	m_rootPanel->CreateAndAddButton( Vec2( 100.f, 50.f ), Vec2( 500.f, 500.f ), rootBackground );
-	//m_testButton = new UIButton( Vec2( .5f, .5f ), Vec2( 100.f, 50.f ), rootBackground );
+
+	BuildHUD();
 
 	m_world = new World( m_gameClock );
 
@@ -103,6 +96,8 @@ void Game::Shutdown()
 {
 	TileDefinition::s_definitions.clear();
 
+	CleanupHUD();
+
 	// Clean up global sprite sheets
 	PTR_SAFE_DELETE( g_tileSpriteSheet );
 	PTR_SAFE_DELETE( g_characterSpriteSheet );
@@ -112,8 +107,6 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
-	PTR_SAFE_DELETE( m_testButton );
-	PTR_SAFE_DELETE( m_rootPanel );
 	PTR_SAFE_DELETE( m_uiCamera );
 	PTR_SAFE_DELETE( m_worldCamera );
 }
@@ -164,7 +157,7 @@ void Game::Update()
 					++m_loadingFrameNum;
 
 					SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
-					g_audioSystem->PlaySound( anticipation );
+					g_audioSystem->PlaySound( anticipation, false, .25f );
 				}
 				break;
 
@@ -279,12 +272,15 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/GameOver.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
+	g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheScummBar.mp3" );
 
 	// TODO: Check for nullptrs when loading textures
 	g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
 	g_characterSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" )), IntVec2( 12, 53 ) );
 	g_portraitSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaPortraits_8x8.png" )), IntVec2( 8, 8 ) );
+
+	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" );
+	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/DebugRender.hlsl" );
 
 	LoadTilesFromXml();
 	LoadMapsFromXml();
@@ -552,7 +548,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			}
 
 			SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
-			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true );
+			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .25f );
 		}
 		break;
 
@@ -574,8 +570,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				{
 					g_audioSystem->StopSound( m_attractMusicID );
 
-					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
-					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true );
+					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheScummBar.mp3" );
+					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true, .25f );
 					
 					m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
@@ -609,4 +605,96 @@ void Game::ChangeGameState( const eGameState& newGameState )
 	}
 
 	m_gameState = newGameState;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::BuildHUD()
+{
+	//Texture* rootBackground = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
+	Texture* childBackground = g_renderer->GetDefaultWhiteTexture();
+
+	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
+
+	m_hudPanel = new UIPanel( m_rootPanel, Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground );
+	m_hudPanel->SetTint( Rgba8::RED );
+
+	BuildVerbPanel();
+		
+	m_rootPanel->AddChildPanel( *m_hudPanel );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::CleanupHUD()
+{
+	PTR_SAFE_DELETE( m_giveVerbButton );
+	PTR_SAFE_DELETE( m_openVerbButton );
+	PTR_SAFE_DELETE( m_closeVerbButton );
+	PTR_SAFE_DELETE( m_pickUpVerbButton );
+	PTR_SAFE_DELETE( m_talkToVerbButton );
+
+	PTR_SAFE_DELETE( m_verbPanel );
+	PTR_SAFE_DELETE( m_inventoryPanel );
+	PTR_SAFE_DELETE( m_hudPanel );
+	PTR_SAFE_DELETE( m_dialoguePanel );
+	PTR_SAFE_DELETE( m_rootPanel );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::BuildVerbPanel()
+{
+	Texture* background = g_renderer->GetDefaultWhiteTexture();
+
+	m_verbPanel = new UIPanel( m_hudPanel, Vec2( 0.f, .5f ), Vec2( 0.f, 1.f ), background );
+	m_verbPanel->SetTint( Rgba8::BLACK );
+
+	m_giveVerbButton = new UIButton( *m_verbPanel, Vec2( 0.f, 0.5f ), Vec2( 0.33f, .5f ), background );
+	m_giveVerbButton->SetTint( Rgba8::RED );
+	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_verbPanel->AddButton( *m_giveVerbButton );
+
+	m_openVerbButton = new UIButton( *m_verbPanel, Vec2( .33f, 0.5f ), Vec2( 0.33f, .5f ), background );
+	m_openVerbButton->SetTint( Rgba8::ORANGE );
+	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_verbPanel->AddButton( *m_openVerbButton );
+
+	m_closeVerbButton = new UIButton( *m_verbPanel, Vec2( .66f, 0.5f ), Vec2( 0.34f, .5f ), background );
+	m_closeVerbButton->SetTint( Rgba8::YELLOW );
+	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_verbPanel->AddButton( *m_closeVerbButton );
+
+	m_pickUpVerbButton = new UIButton( *m_verbPanel, Vec2( 0.f, 0.f ), Vec2( 0.5f, .5f ), background );
+	m_pickUpVerbButton->SetTint( Rgba8::GREEN );
+	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_verbPanel->AddButton( *m_pickUpVerbButton );
+
+	m_talkToVerbButton = new UIButton( *m_verbPanel, Vec2( .5f, 0.f ), Vec2( 0.5f, .5f ), background );
+	m_talkToVerbButton->SetTint( Rgba8::BLUE );
+	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_verbPanel->AddButton( *m_talkToVerbButton );
+
+	m_hudPanel->AddChildPanel( *m_verbPanel );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Button events
+//-----------------------------------------------------------------------------------------------
+void Game::OnTestButtonClicked( EventArgs* args )
+{
+	UNUSED( args );
+
+	SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
+	g_audioSystem->PlaySound( anticipation, false, .25f );
+
+	//Mat44::CreateTranslation2D( m_testButton->GetPosition() + Vec2( 0.f, 1.f );
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( Vec2( 5.f, 5.f ) ),
+						Vec2( .5f, .5f ),
+						Rgba8::GREEN,
+						4.f,
+						.1f,
+						DEBUG_RENDER_ALWAYS,
+						"Button clicked!");
 }
