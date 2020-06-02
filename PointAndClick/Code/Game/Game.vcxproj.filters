@@ -70,6 +70,12 @@
     <ClCompile Include="MapGenStep_RoomsAndPaths.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="UIButton.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPanel.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -129,6 +135,8 @@
     <ClInclude Include="MapGenStep_RoomsAndPaths.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="UIButton.hpp" />
+    <ClInclude Include="UIPanel.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">

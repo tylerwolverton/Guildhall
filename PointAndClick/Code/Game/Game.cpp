@@ -19,7 +19,6 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
-#include "Engine/UI/UIPanel.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -27,6 +26,8 @@
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
+#include "Game/UIButton.hpp"
+#include "Game/UIPanel.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -73,9 +74,12 @@ void Game::Startup()
 	Texture* childBackground = g_renderer->GetDefaultWhiteTexture();
 	//m_rootPanel->SetBackgroundTexture( rootBackground );
 	m_rootPanel->CreateAndAddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .33f ), childBackground );
-	m_rootPanel->Hide();
+	//m_rootPanel->Hide();
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
 	
+	m_rootPanel->CreateAndAddButton( Vec2( 100.f, 50.f ), Vec2( 500.f, 500.f ), rootBackground );
+	//m_testButton = new UIButton( Vec2( .5f, .5f ), Vec2( 100.f, 50.f ), rootBackground );
+
 	m_world = new World( m_gameClock );
 
 	/*m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
@@ -108,6 +112,7 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
+	PTR_SAFE_DELETE( m_testButton );
 	PTR_SAFE_DELETE( m_rootPanel );
 	PTR_SAFE_DELETE( m_uiCamera );
 	PTR_SAFE_DELETE( m_worldCamera );

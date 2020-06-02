@@ -1,36 +1,68 @@
-#include "Engine/UI/UIPanel.hpp"
+#include "Game/UIButton.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
+#include "Game/GameCommon.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture )
+UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTexture )
 	: m_boundingBox( absoluteScreenBounds )
 	, m_backgroundTexture( backgroundTexture )
 {
+
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::~UIPanel()
+UIButton::UIButton( const Vec2& dimensions, const Vec2& position, Texture* backgroundTexture )
+	: m_boundingBox( AABB2( position, position + dimensions ) )
+	, m_backgroundTexture( backgroundTexture )
 {
 
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::Update()
+UIButton::~UIButton()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void UIButton::Update()
 {
 	if ( !m_isActive )
 	{
 		return;
 	}
+
+	if ( m_boundingBox.IsPointInside( g_inputSystem->GetNormalizedMouseClientPos() * Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) )
+	{
+		if ( !m_isMouseHovering )
+		{
+			m_isMouseHovering = true;
+			m_onHoverBeginEvent.Invoke( nullptr );
+		}
+
+		if ( g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON ) )
+		{
+			m_onClickEvent.Invoke( nullptr );
+		}
+	}
+	else if ( m_isMouseHovering )
+	{
+		m_isMouseHovering = false;
+		m_onHoverEndEvent.Invoke( nullptr );
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::Render( RenderContext* renderer ) const
+void UIButton::Render( RenderContext* renderer ) const
 {
 	if ( !m_isVisible )
 	{
@@ -45,55 +77,32 @@ void UIPanel::Render( RenderContext* renderer ) const
 		renderer->BindTexture( 0, m_backgroundTexture );
 		renderer->DrawVertexArray( vertices );
 	}
-
-	for ( int panelIdx = 0; panelIdx < (int)m_childPanels.size(); ++panelIdx )
-	{
-		m_childPanels[panelIdx].Render( renderer );
-	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::Activate()
+void UIButton::Activate()
 {
 	m_isActive = true;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::Deactivate()
+void UIButton::Deactivate()
 {
 	m_isActive = false;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::Hide()
+void UIButton::Hide()
 {
 	m_isVisible = false;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::Show()
+void UIButton::Show()
 {
 	m_isVisible = true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::CreateAndAddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture )
-{
-	AABB2 childBoundingBox( m_boundingBox );
-
-	childBoundingBox.ChopOffLeft( widthFractionRange.x, 0.f );
-	childBoundingBox.ChopOffRight( 1.f - widthFractionRange.y, 0.f );
-
-	childBoundingBox.ChopOffBottom( heightFractionRange.x, 0.f );
-	childBoundingBox.ChopOffTop( 1.f - heightFractionRange.y, 0.f );
-
-	UIPanel childPanel( childBoundingBox );
-	childPanel.SetBackgroundTexture( backgroundTexture );
-
-	m_childPanels.push_back( childPanel );
 }

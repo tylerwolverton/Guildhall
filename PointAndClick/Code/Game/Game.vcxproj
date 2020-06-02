@@ -211,6 +211,8 @@
     <ClCompile Include="MapGenStep_Worm.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
+    <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UIPanel.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +234,8 @@
     <ClInclude Include="MapGenStep_Worm.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
+    <ClInclude Include="UIButton.hpp" />
+    <ClInclude Include="UIPanel.hpp" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>
