@@ -1,29 +1,33 @@
 #include "Game/World.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Game/Map.hpp"
+#include "Engine/Time/Clock.hpp"
+
+#include "Game/TileMap.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/MapDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-World::World()
+World::World( Clock* gameClock )
 {
+	m_worldClock = new Clock( gameClock );
 }
+
 
 
 //-----------------------------------------------------------------------------------------------
 World::~World()
 {
-	delete m_curMap;
-	m_curMap = nullptr;
+	PTR_SAFE_DELETE( m_worldClock );
+	PTR_SAFE_DELETE( m_curMap );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void World::Update( float deltaSeconds )
+void World::Update()
 {
-	m_curMap->Update( deltaSeconds );
+	m_curMap->Update( (float)m_worldClock->GetLastDeltaSeconds() );
 }
 
 
@@ -44,11 +48,11 @@ void World::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void World::BuildNewMap( std::string name )
 {
-	MapDefinition* mapDef = MapDefinition::GetMapDefinition( name );
-	if ( mapDef == nullptr )
+	MapDefinition* mapDef = nullptr; // MapDefinition::GetMapDefinition( name );
+	/*if ( mapDef == nullptr )
 	{
 		ERROR_AND_DIE( Stringf( "Requested map '%s' is not defined!", name.c_str() ) );
-	}
+	}*/
 	
-	m_curMap = new Map( name, mapDef );
+	m_curMap = new TileMap( name, mapDef );
 }

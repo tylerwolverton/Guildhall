@@ -55,6 +55,12 @@
     <ClCompile Include="EntityDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="TileMap.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMeshUtils.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -94,6 +100,12 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMeshUtils.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

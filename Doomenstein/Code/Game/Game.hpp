@@ -91,7 +91,7 @@ private:
 	Camera* m_uiCamera = nullptr;
 
 	World* m_world = nullptr;
-	std::string m_curMap;
+	std::string m_curMapStr;
 
 	// Meshes
 	GPUMesh* m_cubeMesh = nullptr;

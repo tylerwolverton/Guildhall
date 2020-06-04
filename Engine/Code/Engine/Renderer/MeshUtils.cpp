@@ -413,35 +413,35 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCU>& vertexArray,
 							 const Vec3& center, float sideLength, 
 							 const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	Vec3 mins( center );
-	mins.x -= sideLength * .5f;
-	mins.y -= sideLength * .5f;
-	mins.z += sideLength * .5f;
+	Vec3 frontMins( center );
+	frontMins.x -= sideLength * .5f;
+	frontMins.y -= sideLength * .5f;
+	frontMins.z += sideLength * .5f;
 
-	Vec3 maxs( center );
-	maxs.x += sideLength * .5f;
-	maxs.y += sideLength * .5f;
-	maxs.z -= sideLength * .5f;
+	Vec3 frontMaxs( center );
+	frontMaxs.x += sideLength * .5f;
+	frontMaxs.y += sideLength * .5f;
+	frontMaxs.z -= sideLength * .5f;
 
 	// Front 4 points
-	Vec3 vert0( mins );
-	Vec3 vert1( maxs.x, mins.y, mins.z );
-	Vec3 vert2( mins.x, maxs.y, mins.z );
-	Vec3 vert3( maxs.x, maxs.y, mins.z );
+	Vec3 vert4( frontMins );
+	Vec3 vert0( frontMaxs.x, frontMins.y, frontMins.z );
+	Vec3 vert6( frontMins.x, frontMaxs.y, frontMins.z );
+	Vec3 vert2( frontMaxs.x, frontMaxs.y, frontMins.z );
 
-	Vec3 backMins( mins );
+	Vec3 backMins( frontMins );
 	backMins.z = center.z - sideLength * .5f;
 
-	Vec3 backMaxs( maxs );
+	Vec3 backMaxs( frontMaxs );
 	backMaxs.z = center.z + sideLength * .5f;
 
 	// Back 4 points ( from front perspective for directions )	
-	Vec3 vert4( backMins );
-	Vec3 vert5( backMaxs.x, backMins.y, backMins.z );
-	Vec3 vert6( backMins.x, backMaxs.y, backMins.z );
-	Vec3 vert7( backMaxs.x, backMaxs.y, backMins.z );
+	Vec3 vert5( backMins );
+	Vec3 vert1( backMaxs.x, backMins.y, backMins.z );
+	Vec3 vert7( backMins.x, backMaxs.y, backMins.z );
+	Vec3 vert3( backMaxs.x, backMaxs.y, backMins.z );
 
-	vertexArray.reserve( 24 );
+	vertexArray.reserve( vertexArray.size() + 24 );
 	// Front
 	vertexArray.push_back( Vertex_PCU( vert0, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( vert1, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
@@ -485,8 +485,10 @@ void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCU>& vertexArray, std
 									   const Vec3& center, float sideLength, 
 									   const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
+	uint startIdx = (uint)vertexArray.size();
+
 	AppendVertsForCubeMesh( vertexArray, center, sideLength, tint, uvAtMins, uvAtMaxs );
-	AppendIndicesForCubeMesh( indices );
+	AppendIndicesForCubeMesh( indices, startIdx );
 }
 
 
@@ -544,62 +546,63 @@ void AppendVertsFor3DBox( std::vector<Vertex_PCU>& vertexArray, int cornerCount,
 
 
 //-----------------------------------------------------------------------------------------------
-void AppendIndicesForCubeMesh( std::vector<uint>& indices )
+void AppendIndicesForCubeMesh( std::vector<uint>& indices, uint startIdx )
 {
-	indices.reserve( 36 );
-	// Front face
-	indices.push_back( 0 );
-	indices.push_back( 1 );
-	indices.push_back( 3 );
+	indices.reserve( indices.size() + 36 );
 
-	indices.push_back( 0 );
-	indices.push_back( 3 );
-	indices.push_back( 2 );
+	// Front face
+	indices.push_back( startIdx + 0 );
+	indices.push_back( startIdx + 1 );
+	indices.push_back( startIdx + 3 );
+
+	indices.push_back( startIdx + 0 );
+	indices.push_back( startIdx + 3 );
+	indices.push_back( startIdx + 2 );
 
 	// Right face
-	indices.push_back( 4 );
-	indices.push_back( 5 );
-	indices.push_back( 7 );
+	indices.push_back( startIdx +  4 );
+	indices.push_back( startIdx +  5 );
+	indices.push_back( startIdx +  7 );
 
-	indices.push_back( 4 );
-	indices.push_back( 7 );
-	indices.push_back( 6 );
+	indices.push_back( startIdx +  4 );
+	indices.push_back( startIdx +  7 );
+	indices.push_back( startIdx +  6 );
 
 	// Back face
-	indices.push_back( 9 );
-	indices.push_back( 8 );
-	indices.push_back( 10 );
+	indices.push_back( startIdx +  9 );
+	indices.push_back( startIdx +  8 );
+	indices.push_back( startIdx +  10 );
 
-	indices.push_back( 9 );
-	indices.push_back( 10 );
-	indices.push_back( 11 );
+	indices.push_back( startIdx +  9 );
+	indices.push_back( startIdx +  10 );
+	indices.push_back( startIdx +  11 );
 
 	// Left face
-	indices.push_back( 12 );
-	indices.push_back( 13 );
-	indices.push_back( 15 );
+	indices.push_back( startIdx +  12 );
+	indices.push_back( startIdx +  13 );
+	indices.push_back( startIdx +  15 );
 
-	indices.push_back( 12 );
-	indices.push_back( 15 );
-	indices.push_back( 14 );
+	indices.push_back( startIdx +  12 );
+	indices.push_back( startIdx +  15 );
+	indices.push_back( startIdx +  14 );
 
 	// Top face
-	indices.push_back( 16 );
-	indices.push_back( 17 );
-	indices.push_back( 19 );
+	indices.push_back( startIdx +  16 );
+	indices.push_back( startIdx +  17 );
+	indices.push_back( startIdx +  19 );
 
-	indices.push_back( 16 );
-	indices.push_back( 19 );
-	indices.push_back( 18 );
+	indices.push_back( startIdx +  16 );
+	indices.push_back( startIdx +  19 );
+	indices.push_back( startIdx +  18 );
 
 	// Bottom face
-	indices.push_back( 20 );
-	indices.push_back( 22 );
-	indices.push_back( 23 );
+	indices.push_back( startIdx +  20 );
+	indices.push_back( startIdx +  22 );
+	indices.push_back( startIdx +  23 );
 
-	indices.push_back( 20 );
-	indices.push_back( 23 );
-	indices.push_back( 21 );
+	indices.push_back( startIdx +  20 );
+	indices.push_back( startIdx +  23 );
+	indices.push_back( startIdx +  21 );
 }
 
 

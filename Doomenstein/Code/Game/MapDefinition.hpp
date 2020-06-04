@@ -14,6 +14,7 @@ class Map;
 class MapDefinition
 {
 	friend class Map;
+	friend class TileMap;
 
 public:
 	explicit MapDefinition( const XmlElement& mapDefElem );

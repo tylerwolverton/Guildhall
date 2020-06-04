@@ -81,6 +81,12 @@ void Game::Startup()
 
 	LoadAssets();
 
+	m_world = new World( m_gameClock );
+
+	m_curMapStr = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapStr );
+	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapStr.c_str() ) );
+	m_world->BuildNewMap( m_curMapStr );
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -175,6 +181,8 @@ void Game::Update()
 	{
 		UpdateFromKeyboard();
 	}
+
+	m_world->Update();
 }
 
 
@@ -285,26 +293,27 @@ void Game::Render() const
 {
 	Texture* backbuffer = g_renderer->GetBackBuffer();
 	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	
+
 	m_worldCamera->SetColorTarget( 0, colorTarget );
 
 	g_renderer->BeginCamera( *m_worldCamera );
-	
+
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
-	
+
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	g_renderer->SetGamma( m_gamma );
-	
-	// Render normal objects
-	for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
-	{
-		Mat44 modelMatrix = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
-		g_renderer->SetModelMatrix( modelMatrix );
-		g_renderer->BindMaterial( m_testMaterial );
-		g_renderer->DrawMesh( m_cubeMesh );
-	}
-	
+
+	m_world->Render();
+	//for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
+	//{
+	//	Mat44 modelMatrix = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
+	//	g_renderer->SetModelMatrix( modelMatrix );
+	//	//g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
+	//	g_renderer->BindMaterial( m_testMaterial );
+	//	g_renderer->DrawMesh( m_cubeMesh );
+	//}
+
 	g_renderer->EndCamera( *m_worldCamera );
 
 	// Copy rendered data to backbuffer and set on camera
@@ -312,7 +321,7 @@ void Game::Render() const
 	m_worldCamera->SetColorTarget( backbuffer );
 
 	g_renderer->ReleaseRenderTarget( colorTarget );
-	
+
 	// Debug rendering
 	if ( m_isDebugRendering )
 	{
@@ -386,7 +395,14 @@ void Game::LoadAssets()
 {
 	g_devConsole->PrintString( "Loading Assets...", Rgba8::WHITE );
 
+	// Audio
 	m_testSound = g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
+	g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" );
+
+	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8.png" );
+	g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" );
+	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
+	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
@@ -397,7 +413,7 @@ void Game::LoadNewMap( const std::string& mapName )
 {
 	PTR_SAFE_DELETE( m_world );
 
-	m_world = new World();
+	m_world = new World( m_gameClock );
 	m_world->BuildNewMap( mapName );
 }
 
