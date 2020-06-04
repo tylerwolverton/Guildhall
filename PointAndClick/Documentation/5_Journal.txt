@@ -34,6 +34,8 @@ JOURNAL
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 1.3         [X]         0.75        1           8           Implement UI button with OnHover and OnClicked events
+1.4         [/]         1           0.25        8           Implement texture backgrounds and font foregrounds for buttons
+2           [/]         1.5         0.5         8           Build HUD layout
 
 
 -------------------------------------------------------------------------------

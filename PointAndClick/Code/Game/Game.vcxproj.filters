@@ -76,6 +76,12 @@
     <ClCompile Include="UIPanel.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="UILabel.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="UIImage.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -137,6 +143,8 @@
     </ClInclude>
     <ClInclude Include="UIButton.hpp" />
     <ClInclude Include="UIPanel.hpp" />
+    <ClInclude Include="UILabel.hpp" />
+    <ClInclude Include="UIImage.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">

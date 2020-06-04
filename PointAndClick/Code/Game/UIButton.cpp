@@ -56,7 +56,7 @@ void UIButton::Update()
 			m_onHoverBeginEvent.Invoke( nullptr );
 		}
 
-		if ( g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON ) )
+		if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 		{
 			m_onClickEvent.Invoke( nullptr );
 		}

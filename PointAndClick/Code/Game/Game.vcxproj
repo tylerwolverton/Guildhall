@@ -212,6 +212,8 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UIImage.cpp" />
+    <ClCompile Include="UILabel.cpp" />
     <ClCompile Include="UIPanel.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
@@ -235,6 +237,8 @@
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="UIButton.hpp" />
+    <ClInclude Include="UIImage.hpp" />
+    <ClInclude Include="UILabel.hpp" />
     <ClInclude Include="UIPanel.hpp" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>

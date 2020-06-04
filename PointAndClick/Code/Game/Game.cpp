@@ -672,7 +672,7 @@ void Game::BuildVerbPanel()
 
 	m_talkToVerbButton = new UIButton( *m_verbPanel, Vec2( .5f, 0.f ), Vec2( 0.5f, .5f ), background );
 	m_talkToVerbButton->SetTint( Rgba8::BLUE );
-	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
 	m_verbPanel->AddButton( *m_talkToVerbButton );
 
 	m_hudPanel->AddChildPanel( *m_verbPanel );
@@ -686,14 +686,14 @@ void Game::OnTestButtonClicked( EventArgs* args )
 {
 	UNUSED( args );
 
-	SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
-	g_audioSystem->PlaySound( anticipation, false, .25f );
+	/*SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
+	g_audioSystem->PlaySound( anticipation, false, .25f );*/
 
 	//Mat44::CreateTranslation2D( m_testButton->GetPosition() + Vec2( 0.f, 1.f );
 	DebugAddWorldTextf( Mat44::CreateTranslation2D( Vec2( 5.f, 5.f ) ),
 						Vec2( .5f, .5f ),
 						Rgba8::GREEN,
-						4.f,
+						1.f,
 						.1f,
 						DEBUG_RENDER_ALWAYS,
 						"Button clicked!");

@@ -162,9 +162,9 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 		return;
 	}
 	
-	m_renderer->SetBlendMode( eBlendMode::ALPHA );
-
 	m_renderer->BeginCamera( *m_devConsoleCamera );
+
+	m_renderer->SetBlendMode( eBlendMode::ALPHA );
 	
 	AABB2 logMessageBounds = bounds.GetBoxAtTop( .95f );
 	AABB2 inputStringBounds = bounds.GetBoxAtBottom( .045f );
