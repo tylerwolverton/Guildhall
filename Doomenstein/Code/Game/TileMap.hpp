@@ -30,7 +30,7 @@ public:
 	TileMap( std::string name, MapDefinition* mapDef );
 	virtual ~TileMap();
 
-	virtual void Update( float deltaSeconds ) override;
+	virtual void UpdateMeshes() override;
 	virtual void Render() const override;
 	virtual void DebugRender() const override;
 
@@ -64,8 +64,11 @@ private:
 
 	Vec2				m_cardinalDirectionOffsets[9];
 
+	// For cube tests
 	GPUMesh* m_cubeMesh = nullptr;
 	Material* m_testMaterial = nullptr;
 
 	std::vector<Transform> m_cubeMeshTransforms;
+
+	std::vector<Vertex_PCU> m_mesh;
 };

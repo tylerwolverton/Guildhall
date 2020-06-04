@@ -27,7 +27,7 @@ World::~World()
 //-----------------------------------------------------------------------------------------------
 void World::Update()
 {
-	m_curMap->Update( (float)m_worldClock->GetLastDeltaSeconds() );
+	m_curMap->UpdateMeshes();
 }
 
 

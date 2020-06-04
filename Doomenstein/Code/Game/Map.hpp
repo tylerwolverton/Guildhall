@@ -17,7 +17,7 @@ public:
 	Map( std::string name, MapDefinition* mapDef );
 	virtual ~Map();
 
-	virtual void Update( float deltaSeconds ) = 0;
+	virtual void UpdateMeshes() = 0;
 	virtual void Render() const = 0;
 	virtual void DebugRender() const = 0;
 

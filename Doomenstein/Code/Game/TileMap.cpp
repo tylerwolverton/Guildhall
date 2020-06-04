@@ -27,16 +27,28 @@ TileMap::~TileMap()
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::Update( float deltaSeconds )
+void TileMap::UpdateMeshes()
 {
+	m_mesh.clear();
+
+	m_mesh.push_back( Vertex_PCU( Vec3::ZERO, Rgba8::WHITE, Vec2::ZERO ) );
+	m_mesh.push_back( Vertex_PCU( Vec3( 1.f, 0.f, 0.f ), Rgba8::WHITE, Vec2( 1.f, 0.f ) ) );
+	m_mesh.push_back( Vertex_PCU( Vec3( 1.f, 1.f, 0.f ), Rgba8::WHITE, Vec2::ONE ) );
+
+	m_mesh.push_back( Vertex_PCU( Vec3::ZERO, Rgba8::WHITE, Vec2::ZERO ) );
+	m_mesh.push_back( Vertex_PCU( Vec3( 1.f, 1.f, 0.f ), Rgba8::WHITE, Vec2::ONE ) );
+	m_mesh.push_back( Vertex_PCU( Vec3( 0.f, 1.f, 0.f ), Rgba8::WHITE, Vec2( 0.f, 1.f ) ) );
 }
 
 //-----------------------------------------------------------------------------------------------
 void TileMap::Render() const
 {
 	//RenderTiles();
-	RenderTestBoxes();
+	//RenderTestBoxes();
 
+	g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
+	g_renderer->DrawVertexArray( m_mesh );
 }
 
 
