@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{b4204586-61ca-42c8-b1ae-0f9f3c66982d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Definitions">
+      <UniqueIdentifier>{24b15595-5837-41df-9035-41d87b837e1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Maps">
+      <UniqueIdentifier>{a6607b7b-f911-4f28-9faf-3d6b6957bf6e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main_Windows.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCommon.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="TileDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="MapDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCommon.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="World.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineBuildPreferences.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="TileDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="MapDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Run\Data\GameConfig.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\MapRegionTypes.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\MapMaterialTypes.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\EntityTypes.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\SingleBlock.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\TestRoom.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\TwistyMaze.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\UVTest.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>
