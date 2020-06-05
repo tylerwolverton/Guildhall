@@ -42,10 +42,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 1.1         [X]         1                       8           Design my UI framework with mock up
 1.2         [X]         1.5                     8           Implement panel division hierarchy
 1.3         [/]         1.5                     8           Implement UI button with OnHover and OnClicked events
-1.4         [/]         1                       8           Implement texture backgrounds and font foregrounds for buttons
+1.4         [X]         1                       8           Implement texture backgrounds and font foregrounds for buttons
 2           [/]         1.5                     8           Build HUD layout
 2.1         [X]         0.5                     8           Add buttons for supported verbs
-*2.1.1      [/]         0.5                     8           Add button text for supported verbs
 3           [O]         1.5                     8.1         Represent inventory items as buttons 
 6           [O]         2                       5           Create map and place inside top panel
 

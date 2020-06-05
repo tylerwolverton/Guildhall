@@ -82,7 +82,15 @@ private:
 	void BuildHUD();
 	void CleanupHUD();
 	void BuildVerbPanel();
+	void BuildInventoryPanel();
+
+	// Button Events
 	void OnTestButtonClicked( EventArgs* args );
+	void OnGiveButtonClicked( EventArgs* args );
+	void OnOpenButtonClicked( EventArgs* args );
+	void OnCloseButtonClicked( EventArgs* args );
+	void OnPickUpButtonClicked( EventArgs* args );
+	void OnTalkToButtonClicked( EventArgs* args );
 
 private:
 	Clock* m_gameClock = nullptr;
@@ -92,14 +100,15 @@ private:
 	UIPanel* m_hudPanel = nullptr;
 	UIPanel* m_verbPanel = nullptr;
 	UIPanel* m_inventoryPanel = nullptr;
-
-
 	UIPanel* m_dialoguePanel = nullptr;
+
 	UIButton* m_giveVerbButton = nullptr;
 	UIButton* m_openVerbButton = nullptr;
 	UIButton* m_closeVerbButton = nullptr;
 	UIButton* m_pickUpVerbButton = nullptr;
 	UIButton* m_talkToVerbButton = nullptr;
+
+	std::vector<UIButton*> m_inventoryButtons;
 
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;

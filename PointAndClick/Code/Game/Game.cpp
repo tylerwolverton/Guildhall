@@ -619,6 +619,7 @@ void Game::BuildHUD()
 	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::RED );
 
 	BuildVerbPanel();
+	BuildInventoryPanel();
 }
 
 
@@ -659,6 +660,42 @@ void Game::BuildVerbPanel()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::BuildInventoryPanel()
+{
+	Texture* background = g_renderer->GetDefaultWhiteTexture();
+
+	m_inventoryPanel = m_hudPanel->AddChildPanel( Vec2( .5f, 1.f ), Vec2( 0.f, 1.f ), background, Rgba8::BLACK );
+
+	constexpr int NUM_IN_ROW = 4;
+	constexpr int NUM_ROWS = 2;
+	constexpr float rowHeightFraction = 1.f / (float)NUM_ROWS;
+	constexpr float rowWidthFraction = 1.f / (float)NUM_IN_ROW;
+	int i = 0;
+	for ( int buttonRowNum = 0; buttonRowNum < NUM_ROWS; ++buttonRowNum )
+	{
+		for ( int buttonColumnNum = 0; buttonColumnNum < NUM_IN_ROW; ++buttonColumnNum )
+		{
+			float widthStart = (float)buttonColumnNum * rowWidthFraction;
+			float heightStart = 1.f - ( (float)buttonRowNum + 1.f ) * rowHeightFraction;
+
+			widthStart = ClampZeroToOne( widthStart );
+			heightStart = ClampZeroToOne( heightStart ) + .02f;
+
+			Vec2 relativeMinPosition( widthStart, heightStart );
+			Vec2 relativeFractionOfDimensions( rowWidthFraction - .01f, rowHeightFraction - .02f );
+
+			UIButton* inventoryButton = m_inventoryPanel->AddButton( relativeMinPosition, relativeFractionOfDimensions, background, Rgba8::DARK_BLUE );
+			inventoryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+
+			std::string str = "Button";
+			str.append( ToString(i++) );
+			inventoryButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), str );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Button events
 //-----------------------------------------------------------------------------------------------
 void Game::OnTestButtonClicked( EventArgs* args )
@@ -676,4 +713,39 @@ void Game::OnTestButtonClicked( EventArgs* args )
 						.1f,
 						DEBUG_RENDER_ALWAYS,
 						"Button clicked!");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnGiveButtonClicked( EventArgs* args )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnOpenButtonClicked( EventArgs* args )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnCloseButtonClicked( EventArgs* args )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnPickUpButtonClicked( EventArgs* args )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnTalkToButtonClicked( EventArgs* args )
+{
+
 }

@@ -33,9 +33,8 @@ JOURNAL
 -------------------------------------------------------------------------------
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-1.4         [/]         0.75        0.75        8           Implement texture backgrounds and font foregrounds for buttons
+1.4         [X]         0.75        0.75        8           Implement texture backgrounds and font foregrounds for buttons
 2           [/]         1           0.5         8           Build HUD layout
-*2.1.1      [/]         0.5                     8           Add button text for supported verbs
 3           [O]         1.5                     8.1         Represent inventory items as buttons 
 6           [O]         2                       5           Create map and place inside top panel
 
