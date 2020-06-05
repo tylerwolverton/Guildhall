@@ -17,8 +17,8 @@ class UILabel;
 class UIButton
 {
 public:
-	UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTexture = nullptr );
-	UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture = nullptr );
+	UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	~UIButton();
 
 	void Update();

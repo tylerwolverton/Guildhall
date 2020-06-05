@@ -616,8 +616,7 @@ void Game::BuildHUD()
 
 	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 
-	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground );
-	m_hudPanel->SetTint( Rgba8::RED );
+	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::RED );
 
 	BuildVerbPanel();
 }
@@ -635,27 +634,21 @@ void Game::BuildVerbPanel()
 {
 	Texture* background = g_renderer->GetDefaultWhiteTexture();
 
-	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, 1.f ), background );
-	m_verbPanel->SetTint( Rgba8::BLACK );
+	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, 1.f ), background, Rgba8::BLACK );
 
-	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.5f ), Vec2( 0.33f, .5f ), background );
-	m_giveVerbButton->SetTint( Rgba8::RED );
+	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.5f ), Vec2( 0.33f, .5f ), background, Rgba8::RED );
 	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
 
-	m_openVerbButton = m_verbPanel->AddButton( Vec2( .33f, 0.5f ), Vec2( 0.33f, .5f ), background );
-	m_openVerbButton->SetTint( Rgba8::ORANGE );
+	m_openVerbButton = m_verbPanel->AddButton( Vec2( .33f, 0.5f ), Vec2( 0.33f, .5f ), background, Rgba8::ORANGE );
 	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
 
-	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .66f, 0.5f ), Vec2( 0.34f, .5f ), background );
-	m_closeVerbButton->SetTint( Rgba8::YELLOW );
+	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .66f, 0.5f ), Vec2( 0.34f, .5f ), background, Rgba8::YELLOW );
 	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
 
-	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.f ), Vec2( 0.5f, .5f ), background );
-	m_pickUpVerbButton->SetTint( Rgba8::GREEN );
+	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.f ), Vec2( 0.5f, .5f ), background, Rgba8::GREEN );
 	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
 
-	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .5f, 0.f ), Vec2( 0.5f, .5f ), background );
-	m_talkToVerbButton->SetTint( Rgba8::BLUE );
+	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .5f, 0.f ), Vec2( 0.5f, .5f ), background, Rgba8::BLUE );
 	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
 }
 

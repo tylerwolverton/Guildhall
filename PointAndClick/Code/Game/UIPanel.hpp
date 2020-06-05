@@ -4,8 +4,6 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec4.hpp"
 
-#include "Game/UIButton.hpp"
-
 #include <string>
 #include <vector>
 
@@ -13,14 +11,15 @@
 //-----------------------------------------------------------------------------------------------
 class RenderContext;
 class Texture;
+class UIButton;
 
 
 //-----------------------------------------------------------------------------------------------
 class UIPanel
 {
 public:
-	UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture = nullptr );
-	UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture = nullptr );
+	UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	~UIPanel();
 
 	void Update();
@@ -34,8 +33,10 @@ public:
 	void SetBackgroundTexture( Texture* backgroundTexture )							{ m_backgroundTexture = backgroundTexture; }
 	void SetTint( const Rgba8& tint )												{ m_tint = tint; }
 
-	UIPanel*	AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture = nullptr );
-	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture = nullptr );
+	UIPanel*	AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, 
+							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, 
+						   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 
 	AABB2 GetBoundingBox() const													{ return m_boundingBox; }
 

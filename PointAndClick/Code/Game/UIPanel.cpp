@@ -4,19 +4,22 @@
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/GameCommon.hpp"
+#include "Game/UIButton.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture )
+UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
 	: m_boundingBox( absoluteScreenBounds )
 	, m_backgroundTexture( backgroundTexture )
+	, m_tint( tint )
 {
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture )
+UIPanel::UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
 	: m_backgroundTexture( backgroundTexture )
+	, m_tint( tint )
 {
 	m_boundingBox = AABB2( 0.f, 0.f, WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS );
 
@@ -119,9 +122,9 @@ void UIPanel::Show()
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture )
+UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
 {
-	UIPanel* newPanel = new UIPanel( this, widthFractionRange, heightFractionRange, backgroundTexture );
+	UIPanel* newPanel = new UIPanel( this, widthFractionRange, heightFractionRange, backgroundTexture, tint );
 	m_childPanels.push_back( newPanel );
 
 	return newPanel;
@@ -129,9 +132,9 @@ UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& hei
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture )
+UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
 {
-	UIButton* newButton = new UIButton( *this, relativeFractionMinPosition, relativeFractionOfDimensions, backgroundTexture );
+	UIButton* newButton = new UIButton( *this, relativeFractionMinPosition, relativeFractionOfDimensions, backgroundTexture, tint );
 	m_buttons.push_back( newButton );
 
 	return newButton;

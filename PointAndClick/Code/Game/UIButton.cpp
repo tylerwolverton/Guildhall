@@ -10,17 +10,19 @@
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTexture )
+UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
 	: m_boundingBox( absoluteScreenBounds )
 	, m_backgroundTexture( backgroundTexture )
+	, m_tint( tint )
 {
 
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture )
+UIButton::UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
 	: m_backgroundTexture( backgroundTexture )
+	, m_tint( tint )
 {
 	AABB2 boundingBox = parentPanel.GetBoundingBox();
 	float width = boundingBox.GetWidth();
