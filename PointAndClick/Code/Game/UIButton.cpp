@@ -6,6 +6,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/UIPanel.hpp"
+#include "Game/UILabel.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

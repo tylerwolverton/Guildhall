@@ -34,10 +34,8 @@ public:
 	void SetBackgroundTexture( Texture* backgroundTexture )							{ m_backgroundTexture = backgroundTexture; }
 	void SetTint( const Rgba8& tint )												{ m_tint = tint; }
 
-	void AddChildPanel( const UIPanel& panel );
-	void AddButton( const UIButton& button );
-	void CreateAndAddChildPanel( const Vec2& widthRangeFractions, const Vec2& heightRangeFractions, Texture* backgroundTexture = nullptr );
-	void CreateAndAddButton( const Vec2& dimensions, const Vec2& position, Texture* backgroundTexture = nullptr );
+	UIPanel*	AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture = nullptr );
+	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture = nullptr );
 
 	AABB2 GetBoundingBox() const													{ return m_boundingBox; }
 
@@ -48,8 +46,9 @@ private:
 	AABB2 m_boundingBox;
 	Rgba8 m_tint = Rgba8::WHITE;
 
-	std::vector<UIPanel> m_childPanels;
-	std::vector<UIButton> m_buttons;
+	// UI panel owns its child panels and buttons
+	std::vector<UIPanel*> m_childPanels;
+	std::vector<UIButton*> m_buttons;
 
 	Texture* m_backgroundTexture = nullptr;
 };

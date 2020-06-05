@@ -616,28 +616,16 @@ void Game::BuildHUD()
 
 	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 
-	m_hudPanel = new UIPanel( m_rootPanel, Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground );
+	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground );
 	m_hudPanel->SetTint( Rgba8::RED );
 
 	BuildVerbPanel();
-		
-	m_rootPanel->AddChildPanel( *m_hudPanel );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::CleanupHUD()
 {
-	PTR_SAFE_DELETE( m_giveVerbButton );
-	PTR_SAFE_DELETE( m_openVerbButton );
-	PTR_SAFE_DELETE( m_closeVerbButton );
-	PTR_SAFE_DELETE( m_pickUpVerbButton );
-	PTR_SAFE_DELETE( m_talkToVerbButton );
-
-	PTR_SAFE_DELETE( m_verbPanel );
-	PTR_SAFE_DELETE( m_inventoryPanel );
-	PTR_SAFE_DELETE( m_hudPanel );
-	PTR_SAFE_DELETE( m_dialoguePanel );
 	PTR_SAFE_DELETE( m_rootPanel );
 }
 
@@ -647,35 +635,28 @@ void Game::BuildVerbPanel()
 {
 	Texture* background = g_renderer->GetDefaultWhiteTexture();
 
-	m_verbPanel = new UIPanel( m_hudPanel, Vec2( 0.f, .5f ), Vec2( 0.f, 1.f ), background );
+	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, 1.f ), background );
 	m_verbPanel->SetTint( Rgba8::BLACK );
 
-	m_giveVerbButton = new UIButton( *m_verbPanel, Vec2( 0.f, 0.5f ), Vec2( 0.33f, .5f ), background );
+	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.5f ), Vec2( 0.33f, .5f ), background );
 	m_giveVerbButton->SetTint( Rgba8::RED );
 	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
-	m_verbPanel->AddButton( *m_giveVerbButton );
 
-	m_openVerbButton = new UIButton( *m_verbPanel, Vec2( .33f, 0.5f ), Vec2( 0.33f, .5f ), background );
+	m_openVerbButton = m_verbPanel->AddButton( Vec2( .33f, 0.5f ), Vec2( 0.33f, .5f ), background );
 	m_openVerbButton->SetTint( Rgba8::ORANGE );
 	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
-	m_verbPanel->AddButton( *m_openVerbButton );
 
-	m_closeVerbButton = new UIButton( *m_verbPanel, Vec2( .66f, 0.5f ), Vec2( 0.34f, .5f ), background );
+	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .66f, 0.5f ), Vec2( 0.34f, .5f ), background );
 	m_closeVerbButton->SetTint( Rgba8::YELLOW );
 	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
-	m_verbPanel->AddButton( *m_closeVerbButton );
 
-	m_pickUpVerbButton = new UIButton( *m_verbPanel, Vec2( 0.f, 0.f ), Vec2( 0.5f, .5f ), background );
+	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.f ), Vec2( 0.5f, .5f ), background );
 	m_pickUpVerbButton->SetTint( Rgba8::GREEN );
 	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
-	m_verbPanel->AddButton( *m_pickUpVerbButton );
 
-	m_talkToVerbButton = new UIButton( *m_verbPanel, Vec2( .5f, 0.f ), Vec2( 0.5f, .5f ), background );
+	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .5f, 0.f ), Vec2( 0.5f, .5f ), background );
 	m_talkToVerbButton->SetTint( Rgba8::BLUE );
 	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
-	m_verbPanel->AddButton( *m_talkToVerbButton );
-
-	m_hudPanel->AddChildPanel( *m_verbPanel );
 }
 
 

@@ -36,7 +36,8 @@ UIPanel::UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Ve
 //-----------------------------------------------------------------------------------------------
 UIPanel::~UIPanel()
 {
-
+	PTR_VECTOR_SAFE_DELETE( m_buttons );
+	PTR_VECTOR_SAFE_DELETE( m_childPanels );
 }
 
 
@@ -50,12 +51,12 @@ void UIPanel::Update()
 
 	for ( int buttonIdx = 0; buttonIdx < (int)m_buttons.size(); ++buttonIdx )
 	{
-		m_buttons[buttonIdx].Update();
+		m_buttons[buttonIdx]->Update();
 	}
 
 	for ( int panelIdx = 0; panelIdx < (int)m_childPanels.size(); ++panelIdx )
 	{
-		m_childPanels[panelIdx].Update();
+		m_childPanels[panelIdx]->Update();
 	}
 }
 
@@ -79,12 +80,12 @@ void UIPanel::Render( RenderContext* renderer ) const
 
 	for ( int buttonIdx = 0; buttonIdx < (int)m_buttons.size(); ++buttonIdx )
 	{
-		m_buttons[buttonIdx].Render( renderer );
+		m_buttons[buttonIdx]->Render( renderer );
 	}
 
 	for ( int panelIdx = 0; panelIdx < (int)m_childPanels.size(); ++panelIdx )
 	{
-		m_childPanels[panelIdx].Render( renderer );
+		m_childPanels[panelIdx]->Render( renderer );
 	}
 }
 
@@ -118,40 +119,20 @@ void UIPanel::Show()
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::AddChildPanel( const UIPanel& panel )
+UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture )
 {
-	m_childPanels.push_back( panel );
+	UIPanel* newPanel = new UIPanel( this, widthFractionRange, heightFractionRange, backgroundTexture );
+	m_childPanels.push_back( newPanel );
+
+	return newPanel;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::AddButton( const UIButton& button )
+UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture )
 {
-	m_buttons.push_back( button );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::CreateAndAddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture )
-{
-	AABB2 childBoundingBox( m_boundingBox );
-
-	childBoundingBox.ChopOffLeft( widthFractionRange.x, 0.f );
-	childBoundingBox.ChopOffRight( 1.f - widthFractionRange.y, 0.f );
-
-	childBoundingBox.ChopOffBottom( heightFractionRange.x, 0.f );
-	childBoundingBox.ChopOffTop( 1.f - heightFractionRange.y, 0.f );
-
-	UIPanel childPanel( childBoundingBox );
-	childPanel.SetBackgroundTexture( backgroundTexture );
-
-	m_childPanels.push_back( childPanel );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::CreateAndAddButton( const Vec2& dimensions, const Vec2& position, Texture* backgroundTexture )
-{
-	UIButton newButton( *this, dimensions, position, backgroundTexture );
+	UIButton* newButton = new UIButton( *this, relativeFractionMinPosition, relativeFractionOfDimensions, backgroundTexture );
 	m_buttons.push_back( newButton );
+
+	return newButton;
 }

@@ -3,12 +3,14 @@
 #include "Engine/Core/Delegate.hpp"
 #include "Engine/Math/AABB2.hpp"
 
+#include <vector>
 
 //-----------------------------------------------------------------------------------------------
 class InputSystem;
 class RenderContext;
 class Texture;
 class UIPanel;
+class UILabel;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -47,4 +49,6 @@ private:
 	Rgba8 m_tint = Rgba8::WHITE;
 
 	Texture* m_backgroundTexture = nullptr;
+
+	std::vector<UILabel*> m_labels;
 };
