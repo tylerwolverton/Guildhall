@@ -32,6 +32,12 @@ public:
 	void SetTint( const Rgba8& tint )									{ m_tint = tint; }
 
 	Vec2 GetPosition();
+	AABB2 GetBoundingBox() const										{ return m_boundingBox; }
+
+	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+					   Texture* image = nullptr );
+	UILabel* AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+					  const std::string& text );
 
 public:
 	Delegate<EventArgs*> m_onClickEvent;

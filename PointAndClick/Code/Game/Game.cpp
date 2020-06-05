@@ -636,20 +636,25 @@ void Game::BuildVerbPanel()
 
 	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, 1.f ), background, Rgba8::BLACK );
 
-	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.5f ), Vec2( 0.33f, .5f ), background, Rgba8::RED );
+	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.01f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_giveVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Give" );
 
-	m_openVerbButton = m_verbPanel->AddButton( Vec2( .33f, 0.5f ), Vec2( 0.33f, .5f ), background, Rgba8::ORANGE );
+	m_openVerbButton = m_verbPanel->AddButton( Vec2( .34f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_openVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Open" );
 
-	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .66f, 0.5f ), Vec2( 0.34f, .5f ), background, Rgba8::YELLOW );
+	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .67f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_closeVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Close" );
 
-	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( 0.f, 0.f ), Vec2( 0.5f, .5f ), background, Rgba8::GREEN );
+	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( .01f, .02f ), Vec2( 0.49f, .48f ), background, Rgba8::DARK_BLUE );
 	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_pickUpVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Pick up" );
 
-	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .5f, 0.f ), Vec2( 0.5f, .5f ), background, Rgba8::BLUE );
+	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .51f, .02f ), Vec2( 0.48f, .48f ), background, Rgba8::DARK_BLUE );
 	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_talkToVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Talk to" );
 }
 
 

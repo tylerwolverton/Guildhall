@@ -86,7 +86,7 @@ void BitmapFont::AppendVertsAndIndicesForText2D( std::vector<Vertex_PCU>& vertex
 
 
 //-----------------------------------------------------------------------------------------------
-void BitmapFont::AppendVertsForTextInBox2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float cellHeight, const std::string& text, const Rgba8& tint /*= Rgba8::WHITE*/, float cellAspect /*= 1.f*/, const Vec2& alignment /*= ALIGN_CENTERED */ )
+void BitmapFont::AppendVertsForTextInBox2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float cellHeight, const std::string& text, const Rgba8& tint, float cellAspect, const Vec2& alignment )
 {
 	Vec2 textDimensions( GetDimensionsForText2D( cellHeight, text, cellAspect ) );
 	Vec2 boxDimensions( box.maxs - box.mins );

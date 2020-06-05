@@ -215,6 +215,7 @@
     <ClCompile Include="UIImage.cpp" />
     <ClCompile Include="UILabel.cpp" />
     <ClCompile Include="UIPanel.cpp" />
+    <ClCompile Include="UIText.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -240,6 +241,7 @@
     <ClInclude Include="UIImage.hpp" />
     <ClInclude Include="UILabel.hpp" />
     <ClInclude Include="UIPanel.hpp" />
+    <ClInclude Include="UIText.hpp" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>

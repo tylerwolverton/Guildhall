@@ -7,6 +7,8 @@
 #include "Game/GameCommon.hpp"
 #include "Game/UIPanel.hpp"
 #include "Game/UILabel.hpp"
+#include "Game/UIImage.hpp"
+#include "Game/UIText.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -39,7 +41,7 @@ UIButton::UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinP
 //-----------------------------------------------------------------------------------------------
 UIButton::~UIButton()
 {
-
+	PTR_VECTOR_SAFE_DELETE( m_labels );
 }
 
 
@@ -88,6 +90,11 @@ void UIButton::Render( RenderContext* renderer ) const
 		renderer->BindTexture( 0, m_backgroundTexture );
 		renderer->DrawVertexArray( vertices );
 	}
+
+	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
+	{
+		m_labels[labelIdx]->Render( renderer );
+	}
 }
 
 
@@ -124,3 +131,24 @@ Vec2 UIButton::GetPosition()
 {
 	return m_boundingBox.GetCenter();
 }
+
+
+//-----------------------------------------------------------------------------------------------
+UILabel* UIButton::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
+{
+	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
+	m_labels.push_back( newImage );
+
+	return newImage;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UILabel* UIButton::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text )
+{
+	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text );
+	m_labels.push_back( newText );
+
+	return newText;
+}
+
