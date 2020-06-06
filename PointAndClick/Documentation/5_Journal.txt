@@ -34,7 +34,7 @@ JOURNAL
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 0.1			[X]			0.25		0.5 		N/A			Download and organize sprites and music for project
-1.3         [/]         0.5                     8           Implement UI button with OnHover and OnClicked events
+1.3         [X]        *0.5         0.5         8           Implement UI button with OnHover and OnClicked events
 6           [X]         2           0.75        5           Create map and place inside top panel
 
 -------------------------------------------------------------------------------
