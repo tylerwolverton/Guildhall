@@ -86,6 +86,8 @@ private:
 
 	// Button Events
 	void OnTestButtonClicked( EventArgs* args );
+	void OnTestButtonHoverBegin( EventArgs* args );
+	void OnTestButtonHoverEnd( EventArgs* args );
 	void OnGiveButtonClicked( EventArgs* args );
 	void OnOpenButtonClicked( EventArgs* args );
 	void OnCloseButtonClicked( EventArgs* args );

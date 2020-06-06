@@ -34,6 +34,7 @@ protected:
 	float					m_cumulativeTime = 0.f;
 	
 	float					m_wanderDirectionChangeCooldown = 0.f;
+	Vec2					m_moveTargetLocation = Vec2::ZERO;
 	float					m_speed = 0.f;
 
 	SpriteAnimDefinition*	m_curAnimDef = nullptr;

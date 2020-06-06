@@ -40,7 +40,12 @@ public:
 
 	AABB2 GetBoundingBox() const													{ return m_boundingBox; }
 
+	// Static methods
+	static uint GetNextId();
+
 private:
+	static uint s_nextId;
+
 	bool m_isActive = true;
 	bool m_isVisible = true;
 

@@ -8,6 +8,12 @@
 
 
 //-----------------------------------------------------------------------------------------------
+// Static Definitions
+//-----------------------------------------------------------------------------------------------
+uint UIPanel::s_nextId = 0;
+
+
+//-----------------------------------------------------------------------------------------------
 UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
 	: m_boundingBox( absoluteScreenBounds )
 	, m_backgroundTexture( backgroundTexture )
@@ -138,4 +144,16 @@ UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec
 	m_buttons.push_back( newButton );
 
 	return newButton;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Static Methods
+//-----------------------------------------------------------------------------------------------
+uint UIPanel::GetNextId()
+{
+	uint nextId = s_nextId;
+	++s_nextId;
+
+	return nextId;
 }

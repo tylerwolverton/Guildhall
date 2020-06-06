@@ -1,4 +1,6 @@
 #include "Game/UIButton.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
@@ -17,7 +19,7 @@ UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTextur
 	, m_backgroundTexture( backgroundTexture )
 	, m_tint( tint )
 {
-
+	m_id = UIPanel::GetNextId();
 }
 
 
@@ -26,6 +28,8 @@ UIButton::UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinP
 	: m_backgroundTexture( backgroundTexture )
 	, m_tint( tint )
 {
+	m_id = UIPanel::GetNextId();
+
 	AABB2 boundingBox = parentPanel.GetBoundingBox();
 	float width = boundingBox.GetWidth();
 	float height = boundingBox.GetHeight();
@@ -58,18 +62,27 @@ void UIButton::Update()
 		if ( !m_isMouseHovering )
 		{
 			m_isMouseHovering = true;
-			m_onHoverBeginEvent.Invoke( nullptr );
+
+			EventArgs args;
+			args.SetValue( "id", m_id );
+			m_onHoverBeginEvent.Invoke( &args );
 		}
 
 		if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 		{
-			m_onClickEvent.Invoke( nullptr );
+			EventArgs args;
+			args.SetValue( "id", m_id );
+
+			m_onClickEvent.Invoke( &args );
 		}
 	}
 	else if ( m_isMouseHovering )
 	{
 		m_isMouseHovering = false;
-		m_onHoverEndEvent.Invoke( nullptr );
+
+		EventArgs args;
+		args.SetValue( "id", m_id );
+		m_onHoverEndEvent.Invoke( &args );
 	}
 }
 
@@ -127,7 +140,7 @@ void UIButton::Show()
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 UIButton::GetPosition()
+Vec2 UIButton::GetPosition() const
 {
 	return m_boundingBox.GetCenter();
 }

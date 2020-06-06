@@ -36,6 +36,7 @@ Floats ConvertStringsToFloats( const Strings& strings );
 //-----------------------------------------------------------------------------------------------
 std::string ToString( bool value );
 std::string ToString( int value );
+std::string ToString( uint value );
 std::string ToString( float value );
 std::string ToString( const std::string& value );
 std::string ToString( const Rgba8& value );
@@ -45,6 +46,7 @@ std::string ToString( const IntVec2& value );
 
 bool		FromString( const std::string& value, bool defaultValue );
 int			FromString( const std::string& value, int defaultValue );
+uint		FromString( const std::string& value, uint defaultValue );
 float		FromString( const std::string& value, float defaultValue );
 double		FromString( const std::string& value, double defaultValue );
 std::string	FromString( const std::string& value, std::string defaultValue );

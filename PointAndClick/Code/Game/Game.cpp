@@ -9,6 +9,7 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -639,22 +640,32 @@ void Game::BuildVerbPanel()
 
 	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.01f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_giveVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+	m_giveVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_giveVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Give" );
 
 	m_openVerbButton = m_verbPanel->AddButton( Vec2( .34f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_openVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+	m_openVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_openVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Open" );
 
 	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .67f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_closeVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+	m_closeVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_closeVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Close" );
 
 	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( .01f, .02f ), Vec2( 0.49f, .48f ), background, Rgba8::DARK_BLUE );
 	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_pickUpVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+	m_pickUpVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_pickUpVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Pick up" );
 
 	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .51f, .02f ), Vec2( 0.48f, .48f ), background, Rgba8::DARK_BLUE );
 	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_talkToVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+	m_talkToVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_talkToVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Talk to" );
 }
 
@@ -686,10 +697,14 @@ void Game::BuildInventoryPanel()
 
 			UIButton* inventoryButton = m_inventoryPanel->AddButton( relativeMinPosition, relativeFractionOfDimensions, background, Rgba8::DARK_BLUE );
 			inventoryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+			inventoryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+			inventoryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 
 			std::string str = "Button";
 			str.append( ToString(i++) );
 			inventoryButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), str );
+
+			m_inventoryButtons.push_back( inventoryButton );
 		}
 	}
 }
@@ -717,35 +732,88 @@ void Game::OnTestButtonClicked( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::OnTestButtonHoverBegin( EventArgs* args )
+{
+	uint id = args->GetValue( "id", (uint)0 );
+	
+	Rgba8 tint = Rgba8::DARK_BLUE;
+	tint.r += 10;
+	tint.g += 10;
+	tint.b += 10;
+
+	if ( id == m_giveVerbButton->GetId() )	 { m_giveVerbButton->SetTint( tint );	return; }
+	if ( id == m_openVerbButton->GetId() )	 { m_openVerbButton->SetTint( tint );	return; }
+	if ( id == m_closeVerbButton->GetId() )  { m_closeVerbButton->SetTint( tint );	return; }
+	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetTint( tint ); return; }
+	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetTint( tint ); return; }
+
+	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
+	{
+		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
+		if ( id == itemButton->GetId() )
+		{
+			itemButton->SetTint( tint );
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnTestButtonHoverEnd( EventArgs* args )
+{
+	uint id = args->GetValue( "id", (uint)0 );
+
+	Rgba8 tint = Rgba8::DARK_BLUE;
+
+	if ( id == m_giveVerbButton->GetId() ) { m_giveVerbButton->SetTint( tint );	return; }
+	if ( id == m_openVerbButton->GetId() ) { m_openVerbButton->SetTint( tint );	return; }
+	if ( id == m_closeVerbButton->GetId() ) { m_closeVerbButton->SetTint( tint );	return; }
+	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetTint( tint ); return; }
+	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetTint( tint ); return; }
+
+	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
+	{
+		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
+		if ( id == itemButton->GetId() )
+		{
+			itemButton->SetTint( tint );
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::OnGiveButtonClicked( EventArgs* args )
 {
-
+	UNUSED( args );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::OnOpenButtonClicked( EventArgs* args )
 {
-
+	UNUSED( args );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::OnCloseButtonClicked( EventArgs* args )
 {
-
+	UNUSED( args );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::OnPickUpButtonClicked( EventArgs* args )
 {
-
+	UNUSED( args );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::OnTalkToButtonClicked( EventArgs* args )
 {
-
+	UNUSED( args );
 }

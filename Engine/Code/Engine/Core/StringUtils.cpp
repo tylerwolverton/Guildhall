@@ -242,6 +242,13 @@ std::string ToString( int value )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string ToString( uint value )
+{
+	return std::string( Stringf( "%u", value ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::string ToString( float value )
 {
 	return std::string( Stringf( "%f", value ) );
@@ -298,6 +305,22 @@ int FromString( const std::string& value, int defaultValue )
 	UNUSED( defaultValue );
 
 	return atoi( value.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+uint FromString( const std::string& value, uint defaultValue )
+{
+	int intVal = atoi( value.c_str() );
+
+	if ( intVal < 0 )
+	{
+		return defaultValue;
+	}
+	else
+	{
+		return (uint)intVal;
+	}
 }
 
 

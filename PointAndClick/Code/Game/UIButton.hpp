@@ -31,7 +31,8 @@ public:
 
 	void SetTint( const Rgba8& tint )									{ m_tint = tint; }
 
-	Vec2 GetPosition();
+	uint GetId() const													{ return m_id; }
+	Vec2 GetPosition() const;
 	AABB2 GetBoundingBox() const										{ return m_boundingBox; }
 
 	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
@@ -45,7 +46,7 @@ public:
 	Delegate<EventArgs*> m_onHoverEndEvent;
 
 private:
-	// uint m_id;
+	uint m_id = 0;
 	bool m_isActive = true;
 	bool m_isVisible = true;
 	
