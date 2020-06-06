@@ -1,22 +1,14 @@
 #include "Game/MapDefinition.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
+
+#include "Game/GameCommon.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/Map.hpp"
-#include "Game/MapGenStep.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 std::map< std::string, MapDefinition* > MapDefinition::s_definitions;
-
-
-//-----------------------------------------------------------------------------------------------
-void MapDefinition::RunMapGenerationSteps( Map& map )
-{
-	for ( int mapGenStepIndex = 0; mapGenStepIndex < (int)m_mapGenerationSteps.size(); ++mapGenStepIndex )
-	{
-		m_mapGenerationSteps[mapGenStepIndex]->RunStep( map );
-	}
-}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -42,29 +34,15 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 	m_width = ParseXmlAttribute( mapDefElem, "width", m_width );
 	m_height = ParseXmlAttribute( mapDefElem, "height", m_height );
 
-	std::string fillTileName = ParseXmlAttribute( mapDefElem, "fillTile", "" );
-	if ( !fillTileName.empty() )
+	std::string backgroundTexturePath = ParseXmlAttribute( mapDefElem, "backgroundTexturePath", "" );
+
+	if ( backgroundTexturePath.empty() )
 	{
-		m_fillTile = TileDefinition::GetTileDefinition( fillTileName );
+		m_backgroundTexture = g_renderer->GetDefaultWhiteTexture();
 	}
-
-	std::string edgeTileName = ParseXmlAttribute( mapDefElem, "edgeTile", "" );
-	if ( !edgeTileName.empty() )
+	else
 	{
-		m_edgeTile = TileDefinition::GetTileDefinition( edgeTileName );
-	}
-
-	const XmlElement* mapGenStepsElem = mapDefElem.FirstChildElement( "MapGenSteps" );
-	if ( mapGenStepsElem != nullptr )
-	{
-		const XmlElement* mapGenStepElem = mapGenStepsElem->FirstChildElement();
-		while ( mapGenStepElem )
-		{
-			MapGenStep* mapGenStep = MapGenStep::CreateNewMapGenStep( *mapGenStepElem );
-			m_mapGenerationSteps.push_back( mapGenStep );
-
-			mapGenStepElem = mapGenStepElem->NextSiblingElement();
-		}
+		m_backgroundTexture = g_renderer->CreateOrGetTextureFromFile( backgroundTexturePath.c_str() );
 	}
 }
 
@@ -72,11 +50,4 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 //-----------------------------------------------------------------------------------------------
 MapDefinition::~MapDefinition()
 {
-	for ( int mapGenStepIndex = 0; mapGenStepIndex < (int)m_mapGenerationSteps.size(); ++mapGenStepIndex )
-	{
-		delete m_mapGenerationSteps[mapGenStepIndex];
-		m_mapGenerationSteps[mapGenStepIndex] = nullptr;
-	}
-
-	m_mapGenerationSteps.clear();
 }

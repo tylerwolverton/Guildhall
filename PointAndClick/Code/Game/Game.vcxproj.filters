@@ -11,6 +11,9 @@
     <Filter Include="Data\Gameplay">
       <UniqueIdentifier>{c91a7c1f-0c87-4c6d-bfea-b9b881719014}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{626d234c-5c6c-43bc-8d64-2408f689a6ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -49,41 +52,23 @@
     <ClCompile Include="ActorDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapGenStep.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_Mutate.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="EntityDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapGenStep_Worm.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_CellularAutomata.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_FromImage.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="UIButton.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="UIPanel.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="UILabel.cpp">
-      <Filter>Framework</Filter>
+      <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="UIImage.cpp">
-      <Filter>Framework</Filter>
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UILabel.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPanel.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="UIText.cpp">
-      <Filter>Framework</Filter>
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -123,32 +108,24 @@
     <ClInclude Include="ActorDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_Mutate.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_Worm.hpp">
-      <Filter>Framework</Filter>
+    <ClInclude Include="UIText.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_CellularAutomata.hpp">
-      <Filter>Framework</Filter>
+    <ClInclude Include="UIButton.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_FromImage.hpp">
-      <Filter>Framework</Filter>
+    <ClInclude Include="UIImage.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp">
-      <Filter>Framework</Filter>
+    <ClInclude Include="UILabel.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UIButton.hpp" />
-    <ClInclude Include="UIPanel.hpp" />
-    <ClInclude Include="UILabel.hpp" />
-    <ClInclude Include="UIImage.hpp" />
-    <ClInclude Include="UIText.hpp" />
+    <ClInclude Include="UIPanel.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">

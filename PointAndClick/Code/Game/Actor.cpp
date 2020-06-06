@@ -40,7 +40,7 @@ void Actor::Update( float deltaSeconds )
 	if ( m_isPlayer )
 	{
 		UpdateFromKeyboard( deltaSeconds );
-		UpdateFromGamepad( deltaSeconds );
+		//UpdateFromGamepad( deltaSeconds );
 	}
 	
 	UpdateAnimation();
@@ -85,30 +85,12 @@ void Actor::Die()
 void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
-
-	if ( g_inputSystem->IsKeyPressed( 'W' )
-		 || g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
+	
+	if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
 	{
-		m_velocity.y += m_actorDef->m_walkSpeed;
-	}
 
-	if ( g_inputSystem->IsKeyPressed( 'A' )
-		 || g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
-	{
-		m_velocity.x -= m_actorDef->m_walkSpeed;
+		m_velocity.x = m_actorDef->m_walkSpeed;
 
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'D' )
-		 || g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
-	{
-		m_velocity.x += m_actorDef->m_walkSpeed;
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'S' )
-		 || g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
-	{
-		m_velocity.y -= m_actorDef->m_walkSpeed;
 	}
 }
 

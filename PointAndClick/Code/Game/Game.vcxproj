@@ -203,12 +203,6 @@
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapDefinition.cpp" />
-    <ClCompile Include="MapGenStep.cpp" />
-    <ClCompile Include="MapGenStep_CellularAutomata.cpp" />
-    <ClCompile Include="MapGenStep_FromImage.cpp" />
-    <ClCompile Include="MapGenStep_Mutate.cpp" />
-    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp" />
-    <ClCompile Include="MapGenStep_Worm.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="UIButton.cpp" />
@@ -229,12 +223,6 @@
     <ClInclude Include="GameCommon.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="MapDefinition.hpp" />
-    <ClInclude Include="MapGenStep.hpp" />
-    <ClInclude Include="MapGenStep_CellularAutomata.hpp" />
-    <ClInclude Include="MapGenStep_FromImage.hpp" />
-    <ClInclude Include="MapGenStep_Mutate.hpp" />
-    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp" />
-    <ClInclude Include="MapGenStep_Worm.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="UIButton.hpp" />

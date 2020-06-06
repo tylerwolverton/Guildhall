@@ -282,7 +282,7 @@ void Game::LoadAssets()
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" );
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/DebugRender.hlsl" );
 
-	LoadTilesFromXml();
+	//LoadTilesFromXml();
 	LoadMapsFromXml();
 	LoadActorsFromXml();
 
