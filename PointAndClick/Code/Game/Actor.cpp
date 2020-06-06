@@ -86,10 +86,10 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 	
-	if ( g_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
+	if ( g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
 	{
 
-		m_velocity.x = m_actorDef->m_walkSpeed;
+		m_velocity.x += m_actorDef->m_walkSpeed;
 
 	}
 }

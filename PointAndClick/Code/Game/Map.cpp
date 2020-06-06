@@ -126,6 +126,12 @@ void Map::CenterCameraOnPlayer() const
 //-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
+	std::vector<Vertex_PCU> vertexes;
+	AppendVertsForAABB2D( vertexes, AABB2( Vec2::ZERO, Vec2( m_width, m_height ) ), Rgba8::WHITE );
+
+	g_renderer->BindTexture( 0, m_mapDef->m_backgroundTexture );
+	g_renderer->DrawVertexArray( vertexes );
+
 	RenderEntities();
 }
 

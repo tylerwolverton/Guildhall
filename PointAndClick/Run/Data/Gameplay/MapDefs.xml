@@ -1,6 +1,6 @@
 <MapDefinitions>
 
-  <MapDefinition name="Bar" width="640" height="144" backgroundTexturePath="Data/Images/SpriteSheets/SCUMMBarBackground.png">
+  <MapDefinition name="Bar" width="30" height="7" backgroundTexturePath="Data/Images/SpriteSheets/SCUMMBarBackground.png">
     
   </MapDefinition>
 
