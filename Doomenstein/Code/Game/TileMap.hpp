@@ -9,7 +9,7 @@ class GPUMesh;
 class Material;
 
 //-----------------------------------------------------------------------------------------------
-enum class eCardinalDirections
+enum class eCardinalDirection
 {
 	CENTER,
 	NORTH,
@@ -37,10 +37,14 @@ public:
 private:
 	void				PopulateTiles();
 	void				CreateInitialTiles();
+	void				SolidifySurroundingTiles();
+
+	void				AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topLeft, const Vec3& topRight );
 
 	void				SpawnPlayer();
 
 	// Tile helpers
+	bool				IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction );
 	int					GetTileIndexFromTileCoords( int xCoord, int yCoord );
 	int					GetTileIndexFromTileCoords( const IntVec2& coords );
 	int					GetTileIndexFromWorldCoords( const Vec2& coords );
@@ -55,7 +59,6 @@ private:
 	void				RenderTiles() const;
 
 	void				BuildCardinalDirectionsArray();
-
 	void				CreateTestBoxes();
 	void				RenderTestBoxes() const;
 

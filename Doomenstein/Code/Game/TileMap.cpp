@@ -17,8 +17,10 @@ TileMap::TileMap( std::string name, MapDefinition* mapDef )
 {
 	m_width = 8;
 	m_height = 12;
+
+	BuildCardinalDirectionsArray();
 	PopulateTiles();
-	//CreateTestBoxes();
+	CreateTestBoxes();
 }
 
 
@@ -39,23 +41,69 @@ void TileMap::UpdateMeshes()
 	{
 		Tile& tile = m_tiles[tileIdx];
 
-		Vec2 mins( tile.m_tileCoords.x, tile.m_tileCoords.y );
+		Vec2 mins( (float)tile.m_tileCoords.x, (float)tile.m_tileCoords.y );
 		Vec2 maxs( mins + Vec2( TILE_SIZE, TILE_SIZE ) );
-		
+
 		Vec3 vert0( mins, 0.f );
 		Vec3 vert1( maxs.x, mins.y, 0.f );
 		Vec3 vert2( mins.x, maxs.y, 0.f );
 		Vec3 vert3( maxs, 0.f );
 
-		m_mesh.push_back( Vertex_PCU( vert0, Rgba8::WHITE, Vec2::ZERO ) );
-		m_mesh.push_back( Vertex_PCU( vert1, Rgba8::WHITE, Vec2( 1.f, 0.f ) ) );
-		m_mesh.push_back( Vertex_PCU( vert3, Rgba8::WHITE, Vec2::ONE ) );
+		Vec3 vert4( mins, TILE_SIZE );
+		Vec3 vert5( maxs.x, mins.y, TILE_SIZE );
+		Vec3 vert6( mins.x, maxs.y, TILE_SIZE );
+		Vec3 vert7( maxs, TILE_SIZE );
 
-		m_mesh.push_back( Vertex_PCU( vert0, Rgba8::WHITE, Vec2::ZERO ) );
-		m_mesh.push_back( Vertex_PCU( vert3, Rgba8::WHITE, Vec2::ONE ) );
-		m_mesh.push_back( Vertex_PCU( vert2, Rgba8::WHITE, Vec2( 0.f, 1.f ) ) );
-	}	
+		if ( !tile.m_tempIsSolid )
+		{
+			// Bottom face
+			AddTileFace( vert0, vert1, vert2, vert3 );
+
+			// Top face
+			AddTileFace( vert5, vert4, vert7, vert6 );
+		}
+		else
+		{
+			// South face
+			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::SOUTH ) )
+			{
+				AddTileFace( vert0, vert1, vert4, vert5 );
+			}
+
+			// East face
+			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::EAST ) )
+			{
+				AddTileFace( vert1, vert3, vert5, vert7 );
+			}
+
+			// North face
+			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::NORTH ) )
+			{
+				AddTileFace( vert3, vert2, vert7, vert6 );
+			}
+
+			// West face
+			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::WEST ) )
+			{
+				AddTileFace( vert2, vert0, vert6, vert4 );
+			}
+		}
+	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topLeft, const Vec3& topRight )
+{
+	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, Vec2::ZERO ) );
+	m_mesh.push_back( Vertex_PCU( bottomRight, Rgba8::WHITE, Vec2( 1.f, 0.f ) ) );
+	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, Vec2::ONE ) );
+
+	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, Vec2::ZERO ) );
+	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, Vec2::ONE ) );
+	m_mesh.push_back( Vertex_PCU( topLeft, Rgba8::WHITE, Vec2( 0.f, 1.f ) ) );
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void TileMap::Render() const
@@ -79,6 +127,7 @@ void TileMap::DebugRender() const
 void TileMap::PopulateTiles()
 {
 	CreateInitialTiles();
+	SolidifySurroundingTiles();
 }
 
 
@@ -96,11 +145,41 @@ void TileMap::CreateInitialTiles()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+void TileMap::SolidifySurroundingTiles()
+{
+	for ( int y = 0; y < m_height; ++y )
+	{
+		for ( int x = 0; x < m_width; ++x )
+		{
+			if ( x == 0 || x == m_width - 1
+				|| y == 0 || y == m_height - 1 )
+			{
+				GetTileFromTileCoords( IntVec2( x, y ) )->m_tempIsSolid = true;
+			}
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void TileMap::SpawnPlayer()
 {
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool TileMap::IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction )
+{
+	Tile* adjacentTile = GetTileFromWorldCoords( Vec2( tile.m_tileCoords ) + m_cardinalDirectionOffsets[(int)direction] );
+
+	if ( adjacentTile == nullptr )
+	{
+		return true;
+	}
+
+	return adjacentTile->m_tempIsSolid;
 }
 
 
@@ -111,7 +190,7 @@ void TileMap::RenderTiles() const
 
 	for ( int tileIndex = 0; tileIndex < m_tiles.size(); ++tileIndex )
 	{
-		const Tile& tile = m_tiles[tileIndex];
+		//const Tile& tile = m_tiles[tileIndex];
 
 		//AppendVertsForAABB2D( vertices, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
 	}
@@ -127,15 +206,15 @@ void TileMap::BuildCardinalDirectionsArray()
 	// 5 1 6
 	// 4 * 2
 	// 8 3 7
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::CENTER] = Vec2::ZERO;
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::NORTH] = Vec2( 0.f, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::EAST] = Vec2( TILE_SIZE, 0.f );
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::SOUTH] = Vec2( 0.f, -TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::WEST] = Vec2( -TILE_SIZE, 0.f );
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::NORTHWEST] = Vec2( -TILE_SIZE, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::NORTHEAST] = Vec2( TILE_SIZE, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::SOUTHEAST] = Vec2( TILE_SIZE, -TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)eCardinalDirections::SOUTHWEST] = Vec2( -TILE_SIZE, -TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::CENTER] = Vec2::ZERO;
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::NORTH] = Vec2( 0.f, TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::EAST] = Vec2( TILE_SIZE, 0.f );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::SOUTH] = Vec2( 0.f, -TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::WEST] = Vec2( -TILE_SIZE, 0.f );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::NORTHWEST] = Vec2( -TILE_SIZE, TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::NORTHEAST] = Vec2( TILE_SIZE, TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::SOUTHEAST] = Vec2( TILE_SIZE, -TILE_SIZE );
+	m_cardinalDirectionOffsets[(int)eCardinalDirection::SOUTHWEST] = Vec2( -TILE_SIZE, -TILE_SIZE );
 }
 
 
