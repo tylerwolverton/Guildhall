@@ -57,6 +57,7 @@ public:
 
 private:
 	void LoadAssets();
+	void LoadXmlMaps();
 	void LoadNewMap( const std::string& mapName );
 
 	void InitializeCameras();

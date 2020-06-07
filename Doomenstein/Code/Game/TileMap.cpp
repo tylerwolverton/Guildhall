@@ -15,9 +15,6 @@
 TileMap::TileMap( std::string name, MapDefinition* mapDef )
 	: Map( name, mapDef )
 {
-	m_width = 8;
-	m_height = 12;
-
 	BuildCardinalDirectionsArray();
 	PopulateTiles();
 	CreateTestBoxes();
@@ -134,9 +131,9 @@ void TileMap::PopulateTiles()
 //-----------------------------------------------------------------------------------------------
 void TileMap::CreateInitialTiles()
 {
-	for ( int y = 0; y < m_height; ++y )
+	for ( int y = 0; y < m_dimensions.y; ++y )
 	{
-		for ( int x = 0; x < m_width; ++x )
+		for ( int x = 0; x < m_dimensions.x; ++x )
 		{
 			m_tiles.push_back( Tile( IntVec2( x, y ), g_game->m_rng->RollPercentChance( .1f ) ) );
 			//m_tiles.push_back( Tile( x, y, m_mapDef->m_fillTile ) );
@@ -148,12 +145,12 @@ void TileMap::CreateInitialTiles()
 //-----------------------------------------------------------------------------------------------
 void TileMap::SolidifySurroundingTiles()
 {
-	for ( int y = 0; y < m_height; ++y )
+	for ( int y = 0; y < m_dimensions.y; ++y )
 	{
-		for ( int x = 0; x < m_width; ++x )
+		for ( int x = 0; x < m_dimensions.x; ++x )
 		{
-			if ( x == 0 || x == m_width - 1
-				|| y == 0 || y == m_height - 1 )
+			if ( x == 0 || x == m_dimensions.x - 1
+				|| y == 0 || y == m_dimensions.y - 1 )
 			{
 				GetTileFromTileCoords( IntVec2( x, y ) )->m_tempIsSolid = true;
 			}
@@ -278,14 +275,14 @@ void TileMap::RenderTestBoxes() const
 int TileMap::GetTileIndexFromTileCoords( int xCoord, int yCoord )
 {
 	if ( xCoord < 0
-		 || xCoord > m_width - 1
+		 || xCoord > m_dimensions.x - 1
 		 || yCoord < 0
-		 || yCoord > m_height - 1 )
+		 || yCoord > m_dimensions.y - 1 )
 	{
 		return -1;
 	}
 
-	return xCoord + yCoord * m_width;
+	return xCoord + yCoord * m_dimensions.x;
 }
 
 //-----------------------------------------------------------------------------------------------

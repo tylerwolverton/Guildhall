@@ -25,6 +25,5 @@ protected:
 	std::string			m_name;
 	MapDefinition*      m_mapDef;
 
-	int					m_width = 0;
-	int					m_height = 0;
+	IntVec2				m_dimensions;
 };

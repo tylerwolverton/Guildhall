@@ -25,23 +25,17 @@ MapDefinition* MapDefinition::GetMapDefinition( std::string mapName )
 //-----------------------------------------------------------------------------------------------
 MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 {
-	m_name = ParseXmlAttribute( mapDefElem, "name", "" );
-	GUARANTEE_OR_DIE( m_name != "", "Map did not have a name attribute" );
+	m_dimensions = ParseXmlAttribute( mapDefElem, "dimensions", m_dimensions );
 
-	m_width = ParseXmlAttribute( mapDefElem, "width", m_width );
-	m_height = ParseXmlAttribute( mapDefElem, "height", m_height );
+	
+}
 
-	std::string fillTileName = ParseXmlAttribute( mapDefElem, "fillTile", "" );
-	if ( !fillTileName.empty() )
-	{
-		m_fillTile = TileDefinition::GetTileDefinition( fillTileName );
-	}
 
-	std::string edgeTileName = ParseXmlAttribute( mapDefElem, "edgeTile", "" );
-	if ( !edgeTileName.empty() )
-	{
-		m_edgeTile = TileDefinition::GetTileDefinition( edgeTileName );
-	}
+//-----------------------------------------------------------------------------------------------
+MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& name )
+	: m_name( name )
+{
+	m_dimensions = ParseXmlAttribute( mapDefElem, "dimensions", m_dimensions );
 }
 
 

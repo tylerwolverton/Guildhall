@@ -404,16 +404,46 @@ void Game::LoadAssets()
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 
+	LoadXmlMaps();
+
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadXmlMaps()
+{
+	g_devConsole->PrintString( "Loading Maps..." );
+
+	const char* filePath = "Data/Maps/TestRoom.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The maps xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	//XmlElement* element = root->FirstChildElement();
+	//while ( element )
+	//{
+		MapDefinition* mapDef = new MapDefinition( *root, "TestRoom" );
+		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
+
+		//element = element->NextSiblingElement();
+	//}
+
+	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadNewMap( const std::string& mapName )
 {
-	PTR_SAFE_DELETE( m_world );
+	//PTR_SAFE_DELETE( m_world );
 
-	m_world = new World( m_gameClock );
+	//m_world = new World( m_gameClock );
 	m_world->BuildNewMap( mapName );
 }
 

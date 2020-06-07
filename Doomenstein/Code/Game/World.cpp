@@ -48,7 +48,9 @@ void World::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void World::BuildNewMap( std::string name )
 {
-	MapDefinition* mapDef = nullptr; // MapDefinition::GetMapDefinition( name );
+	PTR_SAFE_DELETE( m_curMap );
+
+	MapDefinition* mapDef = MapDefinition::GetMapDefinition( name );
 	/*if ( mapDef == nullptr )
 	{
 		ERROR_AND_DIE( Stringf( "Requested map '%s' is not defined!", name.c_str() ) );

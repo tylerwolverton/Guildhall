@@ -26,11 +26,7 @@ Map::Map( std::string name, MapDefinition* mapDef )
 	: m_name( name )
 	, m_mapDef( mapDef )
 {
-	/*m_width = mapDef->m_width;
-	m_height = mapDef->m_height;*/
-
-	m_width = 8;
-	m_height = 8;
+	m_dimensions = mapDef->m_dimensions;
 }
 
 

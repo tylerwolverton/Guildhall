@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
+#include "Engine/Math/IntVec2.hpp"
 
 #include <string>
 #include <map>
@@ -18,6 +19,7 @@ class MapDefinition
 
 public:
 	explicit MapDefinition( const XmlElement& mapDefElem );
+	explicit MapDefinition( const XmlElement& mapDefElem, const std::string& name );
 	~MapDefinition();
 
 	std::string GetName()													{ return m_name; }
@@ -29,8 +31,5 @@ public:
 
 private:
 	std::string m_name;
-	int m_width = 0;
-	int m_height = 0;
-	TileDefinition* m_fillTile = nullptr;
-	TileDefinition* m_edgeTile = nullptr;
+	IntVec2 m_dimensions;
 };
