@@ -21,6 +21,14 @@ Tile::Tile( int x, int y, TileDefinition* tileDef )
 
 
 //-----------------------------------------------------------------------------------------------
+Tile::Tile( IntVec2 tileCoords, bool isSolid )
+	: m_tileCoords( tileCoords )
+	, m_tempIsSolid( isSolid )
+{
+
+}
+
+//-----------------------------------------------------------------------------------------------
 Tile::~Tile()
 {
 }

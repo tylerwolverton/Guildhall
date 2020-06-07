@@ -14,6 +14,7 @@ class Tile
 {
 public:
 	Tile( IntVec2 tileCoords, TileDefinition* tileDef );
+	Tile( IntVec2 tileCoords, bool isSolid = false );
 	Tile( int x, int y, TileDefinition* tileDef );
 	~Tile();
 
@@ -27,5 +28,6 @@ public:
 
 public:
 	IntVec2			m_tileCoords;
+	bool			m_tempIsSolid = false;
 	TileDefinition* m_tileDef = nullptr;
 };

@@ -1,11 +1,13 @@
 #include "Game/TileMap.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 
 #include "Game/GameCommon.hpp"
+#include "Game/Game.hpp"
 #include "Game/MapDefinition.hpp"
 
 
@@ -13,8 +15,10 @@
 TileMap::TileMap( std::string name, MapDefinition* mapDef )
 	: Map( name, mapDef )
 {
-	//PopulateTiles();
-	CreateTestBoxes();
+	m_width = 8;
+	m_height = 12;
+	PopulateTiles();
+	//CreateTestBoxes();
 }
 
 
@@ -31,13 +35,26 @@ void TileMap::UpdateMeshes()
 {
 	m_mesh.clear();
 
-	m_mesh.push_back( Vertex_PCU( Vec3::ZERO, Rgba8::WHITE, Vec2::ZERO ) );
-	m_mesh.push_back( Vertex_PCU( Vec3( 1.f, 0.f, 0.f ), Rgba8::WHITE, Vec2( 1.f, 0.f ) ) );
-	m_mesh.push_back( Vertex_PCU( Vec3( 1.f, 1.f, 0.f ), Rgba8::WHITE, Vec2::ONE ) );
+	for ( int tileIdx = 0; tileIdx < (int)m_tiles.size(); ++tileIdx )
+	{
+		Tile& tile = m_tiles[tileIdx];
 
-	m_mesh.push_back( Vertex_PCU( Vec3::ZERO, Rgba8::WHITE, Vec2::ZERO ) );
-	m_mesh.push_back( Vertex_PCU( Vec3( 1.f, 1.f, 0.f ), Rgba8::WHITE, Vec2::ONE ) );
-	m_mesh.push_back( Vertex_PCU( Vec3( 0.f, 1.f, 0.f ), Rgba8::WHITE, Vec2( 0.f, 1.f ) ) );
+		Vec2 mins( tile.m_tileCoords.x, tile.m_tileCoords.y );
+		Vec2 maxs( mins + Vec2( TILE_SIZE, TILE_SIZE ) );
+		
+		Vec3 vert0( mins, 0.f );
+		Vec3 vert1( maxs.x, mins.y, 0.f );
+		Vec3 vert2( mins.x, maxs.y, 0.f );
+		Vec3 vert3( maxs, 0.f );
+
+		m_mesh.push_back( Vertex_PCU( vert0, Rgba8::WHITE, Vec2::ZERO ) );
+		m_mesh.push_back( Vertex_PCU( vert1, Rgba8::WHITE, Vec2( 1.f, 0.f ) ) );
+		m_mesh.push_back( Vertex_PCU( vert3, Rgba8::WHITE, Vec2::ONE ) );
+
+		m_mesh.push_back( Vertex_PCU( vert0, Rgba8::WHITE, Vec2::ZERO ) );
+		m_mesh.push_back( Vertex_PCU( vert3, Rgba8::WHITE, Vec2::ONE ) );
+		m_mesh.push_back( Vertex_PCU( vert2, Rgba8::WHITE, Vec2( 0.f, 1.f ) ) );
+	}	
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -72,7 +89,8 @@ void TileMap::CreateInitialTiles()
 	{
 		for ( int x = 0; x < m_width; ++x )
 		{
-			m_tiles.push_back( Tile( x, y, m_mapDef->m_fillTile ) );
+			m_tiles.push_back( Tile( IntVec2( x, y ), g_game->m_rng->RollPercentChance( .1f ) ) );
+			//m_tiles.push_back( Tile( x, y, m_mapDef->m_fillTile ) );
 		}
 	}
 }
