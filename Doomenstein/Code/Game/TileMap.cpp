@@ -51,7 +51,7 @@ void TileMap::UpdateMeshes()
 		Vec3 vert6( mins.x, maxs.y, TILE_SIZE );
 		Vec3 vert7( maxs, TILE_SIZE );
 
-		if ( !tile.m_tempIsSolid )
+		if ( !tile.IsSolid() )
 		{
 			// Bottom face
 			AddTileFace( vert0, vert1, vert2, vert3 );
@@ -124,7 +124,7 @@ void TileMap::DebugRender() const
 void TileMap::PopulateTiles()
 {
 	CreateInitialTiles();
-	SolidifySurroundingTiles();
+	//SolidifySurroundingTiles();
 }
 
 
@@ -135,8 +135,8 @@ void TileMap::CreateInitialTiles()
 	{
 		for ( int x = 0; x < m_dimensions.x; ++x )
 		{
-			m_tiles.push_back( Tile( IntVec2( x, y ), g_game->m_rng->RollPercentChance( .1f ) ) );
-			//m_tiles.push_back( Tile( x, y, m_mapDef->m_fillTile ) );
+			m_tiles.push_back( Tile( IntVec2( x, y ), &m_mapDef->m_regionTypeDefs[( y * m_dimensions.x ) + x] ) );
+			//m_tiles.push_back( Tile( IntVec2( x, y ), g_game->m_rng->RollPercentChance( .1f ) ) );
 		}
 	}
 }
@@ -152,7 +152,7 @@ void TileMap::SolidifySurroundingTiles()
 			if ( x == 0 || x == m_dimensions.x - 1
 				|| y == 0 || y == m_dimensions.y - 1 )
 			{
-				GetTileFromTileCoords( IntVec2( x, y ) )->m_tempIsSolid = true;
+				//GetTileFromTileCoords( IntVec2( x, y ) )->m_isSolid = true;
 			}
 		}
 	}
@@ -176,7 +176,7 @@ bool TileMap::IsAdjacentTileSolid( const Tile& tile, eCardinalDirection directio
 		return true;
 	}
 
-	return adjacentTile->m_tempIsSolid;
+	return adjacentTile->IsSolid();
 }
 
 

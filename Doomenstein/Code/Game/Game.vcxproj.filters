@@ -108,6 +108,9 @@
     <ClInclude Include="GameMeshUtils.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="MapRegionTypeDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">

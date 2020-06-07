@@ -221,6 +221,7 @@
     <ClInclude Include="GameMeshUtils.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="MapDefinition.hpp" />
+    <ClInclude Include="MapRegionTypeDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="TileMap.hpp" />

@@ -415,7 +415,7 @@ void Game::LoadXmlMaps()
 {
 	g_devConsole->PrintString( "Loading Maps..." );
 
-	const char* filePath = "Data/Maps/TestRoom.xml";
+	const char* filePath = "Data/Maps/EmptyRoom.xml";
 
 	XmlDocument doc;
 	XmlError loadError = doc.LoadFile( filePath );
@@ -428,7 +428,7 @@ void Game::LoadXmlMaps()
 	//XmlElement* element = root->FirstChildElement();
 	//while ( element )
 	//{
-		MapDefinition* mapDef = new MapDefinition( *root, "TestRoom" );
+		MapDefinition* mapDef = new MapDefinition( *root, "EmptyRoom" );
 		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
 
 		//element = element->NextSiblingElement();

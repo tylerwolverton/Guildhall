@@ -1,5 +1,5 @@
 <GameConfig
-	startMap="TestRoom"
+	startMap="EmptyRoom"
   windowHeightRatio=".9f"
 	windowAspect="1.777"
   windowTitle="Doomenstein"

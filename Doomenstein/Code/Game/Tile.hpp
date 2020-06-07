@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/IntVec2.hpp"
 #include "Game/TileDefinition.hpp"
+#include "Game/MapRegionTypeDefinition.hpp"
 
 #include <string>
 
@@ -14,6 +15,7 @@ class Tile
 {
 public:
 	Tile( IntVec2 tileCoords, TileDefinition* tileDef );
+	Tile( IntVec2 tileCoords, MapRegionTypeDefinition* regionTypeDef );
 	Tile( IntVec2 tileCoords, bool isSolid = false );
 	Tile( int x, int y, TileDefinition* tileDef );
 	~Tile();
@@ -26,8 +28,10 @@ public:
 
 	void		SetTileDef( TileDefinition* tileDef )				{ m_tileDef = tileDef; }
 
+	bool		IsSolid() const										{ return m_regionTypeDef->m_isSolid; }
+
 public:
 	IntVec2			m_tileCoords;
-	bool			m_tempIsSolid = false;
 	TileDefinition* m_tileDef = nullptr;
+	MapRegionTypeDefinition* m_regionTypeDef = nullptr;
 };
