@@ -57,15 +57,14 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& n
 		tileElem = tileElem->NextSiblingElement();
 	}
 
-	const XmlElement* mapRowsElem = mapDefElem.FirstChildElement( "MapRows" );
-	const XmlElement* mapRowElem = mapRowsElem->FirstChildElement( "MapRow" );
-	int rowNum = m_dimensions.y - 1;
-
 	for ( int i = 0; i < (size_t)m_dimensions.x * (size_t)m_dimensions.y; ++i )
 	{
 		m_regionTypeDefs.push_back( MapRegionTypeDefinition() );
 	}
-	
+
+	const XmlElement* mapRowsElem = mapDefElem.FirstChildElement( "MapRows" );
+	const XmlElement* mapRowElem = mapRowsElem->FirstChildElement( "MapRow" );
+	int rowNum = m_dimensions.y - 1;
 	while ( mapRowElem )
 	{
 		std::string tilesStr = ParseXmlAttribute( *mapRowElem, "tiles", "" );
@@ -90,6 +89,19 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& n
 
 		mapRowElem = mapRowElem->NextSiblingElement();
 		--rowNum;
+	}
+
+	const XmlElement* entitiesElem = mapDefElem.FirstChildElement( "Entities" );
+	const XmlElement* entityElem = entitiesElem->FirstChildElement();
+	while ( entityElem )
+	{
+		if ( !strcmp( entityElem->Value(), "PlayerStart" ) )
+		{
+			m_playerStartPos = ParseXmlAttribute( *entityElem, "pos", m_playerStartPos );
+			m_playerStartYaw = ParseXmlAttribute( *entityElem, "yaw", m_playerStartYaw );
+		}
+
+		entityElem = entityElem->NextSiblingElement();
 	}
 }
 

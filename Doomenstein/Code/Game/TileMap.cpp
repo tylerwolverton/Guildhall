@@ -18,6 +18,8 @@ TileMap::TileMap( std::string name, MapDefinition* mapDef )
 	BuildCardinalDirectionsArray();
 	PopulateTiles();
 	CreateTestBoxes();
+
+	g_game->SetCameraPositionAndYaw( mapDef->GetPlayerStartPos(), mapDef->GetPlayerStartYaw() );
 }
 
 

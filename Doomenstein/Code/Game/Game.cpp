@@ -473,6 +473,17 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::SetCameraPositionAndYaw( const Vec2& pos, float yaw )
+{
+	Transform newTransform = m_worldCamera->GetTransform();
+	newTransform.SetPosition( Vec3( pos, 0.5f ) );
+	newTransform.SetOrientationFromPitchRollYawDegrees( 0.f, 0.f, yaw );
+
+	m_worldCamera->SetTransform( newTransform );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Game::SetMouseSensitivity( EventArgs* args )
 {
 	s_mouseSensitivityMultiplier = args->GetValue( "multiplier", 1.f );

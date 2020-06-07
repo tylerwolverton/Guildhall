@@ -26,6 +26,9 @@ public:
 
 	std::string GetName()													{ return m_name; }
 
+	Vec2 GetPlayerStartPos() const											{ return m_playerStartPos; }
+	float GetPlayerStartYaw() const											{ return m_playerStartYaw; }
+
 	static MapDefinition* GetMapDefinition( std::string mapName );
 
 public:
@@ -39,4 +42,8 @@ private:
 
 	std::map<char, std::string> m_legend;
 	std::vector<MapRegionTypeDefinition> m_regionTypeDefs;
+
+	// Multiplayer TODO: Make this into an array
+	Vec2 m_playerStartPos = Vec2::ZERO;
+	float m_playerStartYaw = 0.f;
 };
