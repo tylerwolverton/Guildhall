@@ -35,6 +35,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 7           [/]         1                       6           Implement follow camera
 10          [/]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
+11          [/]         1           1.25        1           Create item game object and place in level
 
 -------------------------------------------------------------------------------
 Notes

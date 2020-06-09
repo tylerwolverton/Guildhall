@@ -181,4 +181,6 @@ void Map::SpawnPlayer()
 {
 	// TODO: Load position from XML
 	m_player = SpawnNewActor( Vec2( 2.f, 1.f ), std::string( "Player" ) );
+
+	SpawnNewActor( Vec2( 4.f, 1.f ), std::string( "Key" ) );
 }

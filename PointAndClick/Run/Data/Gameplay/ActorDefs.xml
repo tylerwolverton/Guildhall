@@ -6,7 +6,7 @@
 			<Walk speed="2.0"/>
 		</Movement>
 		<Health max="100" start="100"/>
-    <SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteLayout="12,53" fps="10">
+    <SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteSheetName="Characters" spriteLayout="12,53" fps="10">
       <SpriteAnim name="MoveEast"		spriteIndexes="3,4,5,4"/>
 			<SpriteAnim name="MoveWest"		spriteIndexes="9,10,11,10"/>
 			<SpriteAnim name="MoveNorth"	spriteIndexes="0,1,2,1"/>
@@ -14,6 +14,14 @@
 			<SpriteAnim name="Idle"				spriteIndexes="6,7,8,7" fps="3"/>
 		</SpriteAnimSet>
 	</ActorDefinition>
+
+  <ActorDefinition name="Key" faction="neutral">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/>
+    <Health max="100" start="100"/>
+    <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="23"/>
+    </SpriteAnimSet>
+  </ActorDefinition>
 
 </ActorDefinitions>
 

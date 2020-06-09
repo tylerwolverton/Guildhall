@@ -1,5 +1,38 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+
+//-----------------------------------------------------------------------------------------------
+// Static definitions
+std::map< std::string, SpriteSheet* > SpriteSheet::s_definitions;
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteSheet* SpriteSheet::GetSpriteSheet( std::string spriteSheetName )
+{
+	std::map< std::string, SpriteSheet* >::const_iterator  mapIter = SpriteSheet::s_definitions.find( spriteSheetName );
+
+	if ( mapIter == s_definitions.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void SpriteSheet::DeleteSpriteSheets()
+{
+	std::map< std::string, SpriteSheet* >::iterator it;
+
+	for ( it = SpriteSheet::s_definitions.begin(); it != SpriteSheet::s_definitions.end(); it++ )
+	{
+		PTR_SAFE_DELETE( it->second );
+	}
+
+	SpriteSheet::s_definitions.clear();
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -27,6 +60,12 @@ SpriteSheet::SpriteSheet( const Texture& texture, const IntVec2& simpleGridLayou
 			--currentYSpritePos;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteSheet::~SpriteSheet()
+{
 }
 
 

@@ -68,7 +68,6 @@ public:
 
 private:
 	void LoadAssets();
-	void LoadTilesFromXml();
 	void LoadMapsFromXml();
 	void LoadActorsFromXml();
 

@@ -104,6 +104,10 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( g_characterSpriteSheet );
 	PTR_SAFE_DELETE( g_portraitSpriteSheet );
 	
+	//Clean up spritesheets
+	SpriteSheet::DeleteSpriteSheets();
+
+
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_rng );
@@ -276,46 +280,17 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheScummBar.mp3" );
 
 	// TODO: Check for nullptrs when loading textures
-	g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
-	g_characterSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" )), IntVec2( 12, 53 ) );
-	g_portraitSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaPortraits_8x8.png" )), IntVec2( 8, 8 ) );
+	//g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
+	//g_characterSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" )), IntVec2( 12, 53 ) );
+	//g_portraitSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaPortraits_8x8.png" )), IntVec2( 8, 8 ) );
 
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" );
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/DebugRender.hlsl" );
 
-	//LoadTilesFromXml();
 	LoadMapsFromXml();
 	LoadActorsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadTilesFromXml()
-{
-	g_devConsole->PrintString( "Loading Tiles..." );
-
-	const char* filePath = "Data/Gameplay/TileDefs.xml";
-
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The tiles xml file '%s' could not be opened.", filePath ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		TileDefinition* tileDef = new TileDefinition( *element );
-		TileDefinition::s_definitions[ tileDef->GetName() ] = tileDef;
-
-		element = element->NextSiblingElement();
-	}
-
-	g_devConsole->PrintString( "Tiles Loaded", Rgba8::GREEN );
 }
 
 
