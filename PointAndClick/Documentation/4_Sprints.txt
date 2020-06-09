@@ -36,18 +36,19 @@ CURRENT SPRINT
 ===============================================================================
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-7           [O]         1                       6           Implement follow camera
+7           [-]         1           0           6           Implement follow camera
 8           [O]         0.5                     3           Add trigger/button to win game and transition to win state 
 5           [O]         1                       3           Make win game trigger check that player has item 
 9           [O]         1.5                     10          Add OnHover events to items in level and inventory that shows tooltip
-10          [O]         0.5                     11          Give player speed and walk to location clicked by cursor
+10          [X]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
+10.1*       [O]         0.5                     11          Restrict click to walk to upper section of screen
 11          [O]         1                       1           Create item game object and place in level
 12          [O]         1                       1.1         Create inventory for player and enable adding and removing items
 13          [O]         1.5                     1.1         Implement click to collect item
 14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
 15          [O]         1                       21          Add Victory map/UI panel              
 
-Total                   10.5
+Total                   11
 
 
 ===============================================================================

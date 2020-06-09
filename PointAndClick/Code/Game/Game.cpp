@@ -23,10 +23,12 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
+#include "Game/Item.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
+#include "Game/ItemDefinition.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UIPanel.hpp"
 
@@ -289,6 +291,7 @@ void Game::LoadAssets()
 
 	LoadMapsFromXml();
 	LoadActorsFromXml();
+	LoadItemsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
@@ -347,6 +350,34 @@ void Game::LoadActorsFromXml()
 	}
 
 	g_devConsole->PrintString( "Actors Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadItemsFromXml()
+{
+	g_devConsole->PrintString( "Loading Items..." );
+
+	const char* filePath = "Data/Gameplay/ItemDefs.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The items xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	XmlElement* element = root->FirstChildElement();
+	while ( element )
+	{
+		ItemDefinition* itemDef = new ItemDefinition( *element );
+		ItemDefinition::s_definitions[itemDef->GetName()] = itemDef;
+
+		element = element->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "Items Loaded", Rgba8::GREEN );
 }
 
 

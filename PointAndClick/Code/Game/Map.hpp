@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------------------
 class Player;
 class Actor;
+class Item;
 class MapDefinition;
 
 
@@ -42,6 +43,7 @@ public:
 
 private:
 	Actor*				SpawnNewActor( const Vec2& position, std::string actorName );
+	Item*				SpawnNewItem( const Vec2& position, std::string itemName );
 	void				SpawnPlayer();
 
 	void				UpdateEntities( float deltaSeconds );

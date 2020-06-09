@@ -33,14 +33,33 @@ JOURNAL
 -------------------------------------------------------------------------------
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-7           [/]         1                       6           Implement follow camera
-10          [/]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
-11          [/]         1           1.25        1           Create item game object and place in level
+11          [/]         1           1.5         1           Create item game object and place in level
+11.1*       [X]         0.75        0.75        1           Create ItemDefinition and Item classes and hook up to LoadAssets
+12          [O]         1                       1.1         Create inventory for player and enable adding and removing items
+13          [O]         1.5                     1.1         Implement click to collect item
 
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
 
+
+===============================================================================
+06/08/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+7           [-]         1           0           6           Implement follow camera
+    - Note: Already implemented in Protogame, no changes needed
+10          [X]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
+11          [/]         1           1.25        1           Create item game object and place in level
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+INSIGHT: Using protogame brought up a problem where I didn't support multiple sprite sheets
+         so that slowed me down adding an item.
+NEW_TASK: Restrict click to walk to upper section of screen
 
 
 ===============================================================================

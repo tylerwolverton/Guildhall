@@ -16,9 +16,11 @@
 #include "Game/World.hpp"
 
 #include "Game/Actor.hpp"
+#include "Game/Item.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
+#include "Game/ItemDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -177,10 +179,21 @@ Actor* Map::SpawnNewActor(  const Vec2& position, std::string actorName )
 
 
 //-----------------------------------------------------------------------------------------------
+Item* Map::SpawnNewItem( const Vec2& position, std::string itemName )
+{
+	Item* newItem = new Item( position, ItemDefinition::GetItemDefinition( itemName ) );
+
+	m_entities.push_back( newItem );
+
+	return newItem;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::SpawnPlayer()
 {
 	// TODO: Load position from XML
 	m_player = SpawnNewActor( Vec2( 2.f, 1.f ), std::string( "Player" ) );
 
-	SpawnNewActor( Vec2( 4.f, 1.f ), std::string( "Key" ) );
+	SpawnNewItem( Vec2( 4.f, 1.f ), std::string( "Key" ) );
 }

@@ -16,6 +16,7 @@ class RenderContext;
 class SpriteAnimSetDefinition
 {
 	friend class ActorDefinition;
+	friend class ItemDefinition;
 
 public:
 	SpriteAnimSetDefinition( RenderContext& renderer, const XmlElement& spriteAnimSetDefElem );

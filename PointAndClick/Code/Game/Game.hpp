@@ -15,6 +15,7 @@ class Entity;
 class RandomNumberGenerator;
 class Clock;
 class Camera;
+class Item;
 class World;
 class TextBox;
 class UIButton;
@@ -70,6 +71,7 @@ private:
 	void LoadAssets();
 	void LoadMapsFromXml();
 	void LoadActorsFromXml();
+	void LoadItemsFromXml();
 
 	void UpdateFromKeyboard();
 	void LoadNewMap( const std::string& mapName );
@@ -110,6 +112,7 @@ private:
 	UIButton* m_talkToVerbButton = nullptr;
 
 	std::vector<UIButton*> m_inventoryButtons;
+	std::vector<Item*> m_inventory;
 
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;

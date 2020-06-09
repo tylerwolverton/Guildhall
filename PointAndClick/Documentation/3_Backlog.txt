@@ -51,6 +51,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 8           [O]         0.5                     3           Add trigger/button to win game and transition to win state 
 9           [O]         1.5                     10          Add OnHover events to items in level and inventory that shows tooltip
 10          [O]         0.5                     11          Give player speed and walk to location clicked by cursor
+10.1*       [O]         0.5                     11          Restrict click to walk to upper section of screen
+10.2*       [O]         0.5                     11          Click to walk correctly walks to items when clicked on
 11          [O]         1                       1           Create item game object and place in level
 12          [O]         1                       1.1         Create inventory for player and enable adding and removing items
 13          [O]         1.5                     1.1         Implement click to collect item
@@ -94,6 +96,6 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 41          [O]         10                                  Polish and bugfix
 42          [O]         2                                   Add opening dialogue sequence
 43          [O]         3                                   Context Sensitive verb selection
-44          [O]         0.25                                Create cursor image
+44*         [O]         0.25                                Create cursor image
 
-Total       80 hrs
+Total       81.25 hrs
