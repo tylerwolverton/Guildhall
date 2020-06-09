@@ -179,5 +179,6 @@ Actor* Map::SpawnNewActor(  const Vec2& position, std::string actorName )
 //-----------------------------------------------------------------------------------------------
 void Map::SpawnPlayer()
 {
-	m_player = SpawnNewActor( Vec2( 2.f, 2.f ), std::string( "Player" ) );
+	// TODO: Load position from XML
+	m_player = SpawnNewActor( Vec2( 2.f, 1.f ), std::string( "Player" ) );
 }

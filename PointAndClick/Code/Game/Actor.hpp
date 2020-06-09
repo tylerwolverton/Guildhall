@@ -27,6 +27,8 @@ private:
 	void UpdateFromGamepad( float deltaSeconds );
 	void UpdateAnimation();
 
+	void MoveToTargetLocation();
+
 protected:
 	ActorDefinition*		m_actorDef = nullptr;
 	int						m_controllerID = -1;

@@ -28,7 +28,22 @@ JOURNAL
 ===============================================================================
 
 ===============================================================================
-06/05/2020
+06/08/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+7           [/]         1                       6           Implement follow camera
+10          [/]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+
+===============================================================================
+06/06/2020
 ===============================================================================
 -------------------------------------------------------------------------------
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
@@ -36,11 +51,12 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 0.1			[X]			0.25		0.5 		N/A			Download and organize sprites and music for project
 1.3         [X]        *0.5         0.5         8           Implement UI button with OnHover and OnClicked events
 6           [X]         2           0.75        5           Create map and place inside top panel
+6.1         [X]         0.5         0.25        5           Attach level sprite to first map
 
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
-I couldn't find sprites for the cursor, so I'll need to make one of those myself
+NEW_TASK: I couldn't find sprites for the cursor, so I'll need to make one of those myself
 
 ===============================================================================
 06/05/2020
@@ -72,7 +88,13 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
-The time to actually build the UI framework was less than I expected, but the time it took to design a usable interface that could easily construct a UI from game code took longer than anticipated. The times ended up cancelling out and the overall task took as long as I had anticipated, so I kinda got lucky with that one. Going top down and writing the code I wish existed in game helped to clarify the interface I ended up using. I'll definitely keep using that approach going forward.
+INSIGHT: The time to actually build the UI framework was less than I expected, 
+         but the time it took to design a usable interface that could easily construct a 
+         UI from game code took longer than anticipated. The times ended up cancelling out 
+         and the overall task took as long as I had anticipated, so I kinda got lucky with that one. 
+         Going top down and writing the code I wish existed in game helped to clarify the 
+         interface I ended up using. I'll definitely keep using that approach going forward.
+
 
 ===============================================================================
 06/01/2020
@@ -91,13 +113,13 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
-I like how Unity approaches UI, so I'm going to try a similar implementation minus the component 
-based approach and UI editor support for making a game UI. I'm also only implementing panels, buttons, 
-and text for now since that's all I need for this project.
+DESIGN: I like how Unity approaches UI, so I'm going to try a similar implementation minus the component 
+        based approach and UI editor support for making a game UI. I'm also only implementing panels, buttons, 
+        and text for now since that's all I need for this project.
 
 The texture background for UI button ended up being necessary to test the events so that part of the task was implemented early.
 
-I also realized my UI objects need to be in Game for now since they aren't as universal as I thought.
+INSIGHT: I also realized my UI objects need to be in Game for now since they aren't as universal as I thought.
 
 
 ===============================================================================
@@ -114,4 +136,6 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
-Also spent a little time finding sprites
+NEW_TASK: I need a specific task to finish finding sprites and music. I did some 
+          preliminary searches while researching the game but they need to be downloaded 
+          and added to the project.

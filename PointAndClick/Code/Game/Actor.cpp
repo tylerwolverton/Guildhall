@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -23,6 +24,8 @@ Actor::Actor( const Vec2& position, ActorDefinition* actorDef )
 		m_controllerID = 0;
 		m_isPlayer = true;
 	}
+
+	m_moveTargetLocation = m_position;
 }
 
 
@@ -47,7 +50,7 @@ void Actor::Update( float deltaSeconds )
 
 	Entity::Update( deltaSeconds );
 
-	m_velocity.ClampLength( PLAYER_MAX_SPEED );
+	MoveToTargetLocation();
 }
 
 
@@ -86,10 +89,9 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 	
-	if ( g_inputSystem->IsKeyPressed( MOUSE_LBUTTON ) )
+	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 	{
-
-		m_velocity.x += m_actorDef->m_walkSpeed;
+		m_moveTargetLocation = g_game->GetMouseWorldPosition();
 
 	}
 }
@@ -150,5 +152,20 @@ void Actor::UpdateAnimation()
 	else
 	{
 		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "Idle" );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Actor::MoveToTargetLocation()
+{
+	float distanceToLocation =  m_moveTargetLocation.x - m_position.x;
+	//float distanceToLocation = GetDistance2D( m_position, m_moveTargetLocation );
+
+	if ( fabsf(distanceToLocation) > 0.1f )
+	{
+		m_velocity.x = distanceToLocation / fabsf( distanceToLocation ) * m_actorDef->m_walkSpeed;
+		//m_velocity = GetNormalizedDirectionFromAToB( m_position, m_moveTargetLocation ) * m_actorDef->m_walkSpeed;
+		m_velocity.y = 0.f;
 	}
 }
