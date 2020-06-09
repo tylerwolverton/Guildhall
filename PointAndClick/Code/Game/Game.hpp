@@ -63,6 +63,8 @@ public:
 	void		AddScreenShakeIntensity( float additionalIntensityFraction );
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
+	void		AddItemToInventory( Item* newItem );
+	void		RemoveItemFromInventory( Item* itemToRemove );
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -94,6 +96,8 @@ private:
 	void OnCloseButtonClicked( EventArgs* args );
 	void OnPickUpButtonClicked( EventArgs* args );
 	void OnTalkToButtonClicked( EventArgs* args );
+
+	void UpdateInventoryButtonImages();
 
 private:
 	Clock* m_gameClock = nullptr;

@@ -8,6 +8,7 @@
 //-----------------------------------------------------------------------------------------------
 class InputSystem;
 class RenderContext;
+class SpriteDefinition;
 class Texture;
 class UIPanel;
 class UILabel;
@@ -37,8 +38,12 @@ public:
 
 	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
 					   Texture* image = nullptr );
+	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+					   SpriteDefinition* spriteDef = nullptr );
 	UILabel* AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
 					  const std::string& text );
+
+	void	 ClearLabels();
 
 public:
 	Delegate<EventArgs*> m_onClickEvent;

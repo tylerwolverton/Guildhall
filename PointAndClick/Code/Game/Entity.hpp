@@ -31,6 +31,7 @@ public:
 	const Vec2	 GetPosition() const							{ return m_position; };
 	const float  GetPhysicsRadius() const						{ return m_entityDef->m_physicsRadius; };
 	std::string  GetName() const								{ return m_entityDef->m_name; };
+	Texture*	 GetTexture() const								{ return m_texture; };
 				 
 	bool		 IsDead() const									{ return m_isDead; }
 	bool		 IsGarbage() const								{ return m_isGarbage; }

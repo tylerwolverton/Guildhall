@@ -687,7 +687,6 @@ void Game::BuildInventoryPanel()
 	constexpr int NUM_ROWS = 2;
 	constexpr float rowHeightFraction = 1.f / (float)NUM_ROWS;
 	constexpr float rowWidthFraction = 1.f / (float)NUM_IN_ROW;
-	int i = 0;
 	for ( int buttonRowNum = 0; buttonRowNum < NUM_ROWS; ++buttonRowNum )
 	{
 		for ( int buttonColumnNum = 0; buttonColumnNum < NUM_IN_ROW; ++buttonColumnNum )
@@ -706,9 +705,9 @@ void Game::BuildInventoryPanel()
 			inventoryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 			inventoryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 
-			std::string str = "Button";
+			/*std::string str = "Button";
 			str.append( ToString(i++) );
-			inventoryButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), str );
+			inventoryButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), str );*/
 
 			m_inventoryButtons.push_back( inventoryButton );
 		}
@@ -822,4 +821,58 @@ void Game::OnPickUpButtonClicked( EventArgs* args )
 void Game::OnTalkToButtonClicked( EventArgs* args )
 {
 	UNUSED( args );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::AddItemToInventory( Item* newItem )
+{
+	m_inventory.push_back( newItem );
+	newItem->SetIsInPlayerInventory( true );
+
+	UpdateInventoryButtonImages();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RemoveItemFromInventory( Item* itemToRemove )
+{
+	int itemIdx = 0;
+	for ( ; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] == itemToRemove )
+		{
+			break;
+		}
+	}
+
+	if ( itemIdx < (int)m_inventory.size() )
+	{
+		m_inventory.erase( m_inventory.begin() + itemIdx );
+	
+		UpdateInventoryButtonImages();
+
+		itemToRemove->SetIsInPlayerInventory( false );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateInventoryButtonImages()
+{
+	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
+	{
+		if ( inventoryButtonIdx < (int)m_inventory.size() )
+		{
+			SpriteDefinition* spriteDef = m_inventory[inventoryButtonIdx]->GetSpriteDef();
+			m_inventoryButtons[inventoryButtonIdx]->AddImage( Vec2( .1f, .1f ), Vec2( .8f, .8f ), spriteDef );
+
+		}
+		// Clear Image
+		else
+		{
+			m_inventoryButtons[inventoryButtonIdx]->ClearLabels();
+		}
+	}
+
 }

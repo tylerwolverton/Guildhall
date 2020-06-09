@@ -195,5 +195,18 @@ void Map::SpawnPlayer()
 	// TODO: Load position from XML
 	m_player = SpawnNewActor( Vec2( 2.f, 1.f ), std::string( "Player" ) );
 
-	SpawnNewItem( Vec2( 4.f, 1.f ), std::string( "Key" ) );
+	Item* key = SpawnNewItem( Vec2( 2.f, 2.f ), std::string( "Key" ) );
+	g_game->AddItemToInventory( key );
+
+	Item* key1 = SpawnNewItem( Vec2( 4.f, 2.f ), std::string( "Key" ) );
+	g_game->AddItemToInventory( key1 );
+
+	Item* key2 = SpawnNewItem( Vec2( 2.f, 1.f ), std::string( "Key" ) );
+	g_game->AddItemToInventory( key2 );
+
+	g_game->RemoveItemFromInventory(key1);
+	
+	Item* key3 = SpawnNewItem( Vec2( 4.f, 1.f ), std::string( "Key" ) );
+	g_game->AddItemToInventory( key3 );
+
 }

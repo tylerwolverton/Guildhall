@@ -35,7 +35,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 11          [/]         1           1.5         1           Create item game object and place in level
 11.1*       [X]         0.75        0.75        1           Create ItemDefinition and Item classes and hook up to LoadAssets
-12          [O]         1                       1.1         Create inventory for player and enable adding and removing items
+12          [O]         1           1           1.1         Create inventory for player and enable adding and removing items
 13          [O]         1.5                     1.1         Implement click to collect item
 
 -------------------------------------------------------------------------------

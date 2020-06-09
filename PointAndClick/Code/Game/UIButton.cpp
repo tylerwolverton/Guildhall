@@ -157,6 +157,16 @@ UILabel* UIButton::AddImage( const Vec2& relativeFractionMinPosition, const Vec2
 
 
 //-----------------------------------------------------------------------------------------------
+UILabel* UIButton::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
+{
+	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
+	m_labels.push_back( newImage );
+
+	return newImage;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 UILabel* UIButton::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text )
 {
 	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text );
@@ -164,4 +174,12 @@ UILabel* UIButton::AddText( const Vec2& relativeFractionMinPosition, const Vec2&
 
 	return newText;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void UIButton::ClearLabels()
+{
+	PTR_VECTOR_SAFE_DELETE( m_labels );
+}
+
 

@@ -18,7 +18,7 @@ Item::Item( const Vec2& position, ItemDefinition* itemDef )
 	: Entity( position, (EntityDefinition*)itemDef )
 	, m_itemDef( itemDef )
 {
-
+	m_curAnimDef = m_itemDef->GetSpriteAnimDef( "Idle" );
 }
 
 
@@ -66,6 +66,13 @@ void Item::Render() const
 void Item::Die()
 {
 	Entity::Die();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteDefinition* Item::GetSpriteDef() const
+{
+	return const_cast<SpriteDefinition*>( &( m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime ) ) );
 }
 
 

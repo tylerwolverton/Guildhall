@@ -8,6 +8,7 @@
 //-----------------------------------------------------------------------------------------------
 class Texture;
 class ItemDefinition;
+class SpriteDefinition;
 class SpriteAnimDefinition;
 
 
@@ -21,6 +22,10 @@ public:
 	virtual void Update( float deltaSeconds );
 	virtual void Render() const;
 	virtual void Die();
+
+	void SetIsInPlayerInventory( bool isInPlayerInventory )										{ m_isInPlayerInventory = isInPlayerInventory; }
+
+	SpriteDefinition* GetSpriteDef() const;
 
 private:
 	void UpdateAnimation();
