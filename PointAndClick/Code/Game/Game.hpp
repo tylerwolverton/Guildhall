@@ -63,8 +63,11 @@ public:
 	void		AddScreenShakeIntensity( float additionalIntensityFraction );
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
+
 	void		AddItemToInventory( Item* newItem );
 	void		RemoveItemFromInventory( Item* itemToRemove );
+
+	void		PickupAtMousePosition();
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;

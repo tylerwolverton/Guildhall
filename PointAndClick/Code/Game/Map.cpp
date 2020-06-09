@@ -1,7 +1,9 @@
 #include "Game/Map.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
@@ -11,10 +13,10 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/World.hpp"
-
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
 #include "Game/TileDefinition.hpp"
@@ -28,6 +30,8 @@ Map::Map( std::string name, MapDefinition* mapDef )
 	: m_name( name )
 	, m_mapDef( mapDef )
 {
+	g_eventSystem->RegisterEvent( "VerbAction", "", GAME, &Map::OnVerbAction );
+
 	m_width = mapDef->m_width;
 	m_height = mapDef->m_height;
 
@@ -209,4 +213,16 @@ void Map::SpawnPlayer()
 	Item* key3 = SpawnNewItem( Vec2( 4.f, 1.f ), std::string( "Key" ) );
 	g_game->AddItemToInventory( key3 );
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Map::OnVerbAction( EventArgs* args )
+{
+	std::string str( "Event received at position: " );
+	Vec2 pos = args->GetValue( "Position", Vec2( -1.f, -1.f ) );
+	str += pos.ToString();
+	g_devConsole->PrintString( str );
+
+	return false;
 }

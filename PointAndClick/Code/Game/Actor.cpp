@@ -1,5 +1,7 @@
 #include "Game/Actor.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -93,6 +95,12 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 	{
 		m_moveTargetLocation = g_game->GetMouseWorldPosition();
 
+	}
+	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
+	{
+		EventArgs args;
+		args.SetValue( "Position", g_game->GetMouseWorldPosition() );
+		g_eventSystem->FireEvent( "VerbAction", &args );
 	}
 }
 

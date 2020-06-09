@@ -858,6 +858,13 @@ void Game::RemoveItemFromInventory( Item* itemToRemove )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::PickupAtMousePosition()
+{
+	Vec2 clickPosition = g_game->GetMouseWorldPosition();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateInventoryButtonImages()
 {
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )

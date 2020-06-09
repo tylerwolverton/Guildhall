@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/Tile.hpp"
 #include "Game/Entity.hpp"
 
@@ -53,6 +54,8 @@ private:
 	void				DebugRenderEntities() const;
 	void				CenterCameraOnPlayer() const;
 	
+	static bool OnVerbAction( EventArgs* args );
+
 private:
 	std::string			m_name;
 	MapDefinition*      m_mapDef;
