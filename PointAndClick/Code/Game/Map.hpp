@@ -54,7 +54,10 @@ private:
 	void				DebugRenderEntities() const;
 	void				CenterCameraOnPlayer() const;
 	
-	static bool OnVerbAction( EventArgs* args );
+	void				PickUpItem( const Vec2& worldPosition );
+
+	// Event handlers
+	void				 OnVerbAction( EventArgs* args );
 
 private:
 	std::string			m_name;

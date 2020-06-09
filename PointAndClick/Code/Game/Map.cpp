@@ -30,7 +30,8 @@ Map::Map( std::string name, MapDefinition* mapDef )
 	: m_name( name )
 	, m_mapDef( mapDef )
 {
-	g_eventSystem->RegisterEvent( "VerbAction", "", GAME, &Map::OnVerbAction );
+	//g_eventSystem->RegisterEvent( "VerbAction", "", GAME, &Map::OnVerbAction );
+	g_eventSystem->RegisterMethodEvent( "VerbAction", "", GAME, this, &Map::OnVerbAction );
 
 	m_width = mapDef->m_width;
 	m_height = mapDef->m_height;
@@ -130,6 +131,22 @@ void Map::CenterCameraOnPlayer() const
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::PickUpItem( const Vec2& worldPosition )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+
+		if ( IsPointInsideDisc( worldPosition, entity->GetPosition(), entity->GetPhysicsRadius() ) )
+		{
+			g_game->AddItemToInventory( (Item*)entity );
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
 	std::vector<Vertex_PCU> vertexes;
@@ -217,12 +234,15 @@ void Map::SpawnPlayer()
 
 
 //-----------------------------------------------------------------------------------------------
-bool Map::OnVerbAction( EventArgs* args )
+void Map::OnVerbAction( EventArgs* args )
 {
 	std::string str( "Event received at position: " );
 	Vec2 pos = args->GetValue( "Position", Vec2( -1.f, -1.f ) );
 	str += pos.ToString();
 	g_devConsole->PrintString( str );
 
-	return false;
+	if ( args->GetValue( "Type", std::string( "" ) ) == std::string( "PickUp" ) )
+	{
+		PickUpItem( pos );
+	}
 }
