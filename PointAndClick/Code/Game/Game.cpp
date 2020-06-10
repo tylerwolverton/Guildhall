@@ -75,6 +75,7 @@ void Game::Startup()
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
 
 	BuildHUD();
+	UpdateInventoryButtonImages();
 
 	m_world = new World( m_gameClock );
 
@@ -289,9 +290,9 @@ void Game::LoadAssets()
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" );
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/DebugRender.hlsl" );
 
-	LoadMapsFromXml();
 	LoadActorsFromXml();
 	LoadItemsFromXml();
+	LoadMapsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
@@ -537,6 +538,9 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::ATTRACT:
 		{
+			m_hudPanel->Deactivate();
+			m_hudPanel->Hide();
+
 			// Check which state we are changing from
 			switch ( m_gameState )
 			{
@@ -561,6 +565,9 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::PLAYING:
 		{
+			m_hudPanel->Activate();
+			m_hudPanel->Show();
+
 			// Check which state we are changing from
 			switch ( m_gameState )
 			{
@@ -602,6 +609,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 		case eGameState::VICTORY:
 		{
 			//m_curVictoryScreenSeconds = 0.f;
+			m_hudPanel->Deactivate();
+			m_hudPanel->Hide();
 
 			g_audioSystem->StopSound( m_gameplayMusicID );
 
@@ -612,6 +621,13 @@ void Game::ChangeGameState( const eGameState& newGameState )
 	}
 
 	m_gameState = newGameState;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ChangeMap( const std::string& mapName )
+{
+	m_world->BuildNewMap( mapName );
 }
 
 
@@ -627,6 +643,10 @@ void Game::BuildHUD()
 
 	BuildVerbPanel();
 	BuildInventoryPanel();
+
+	m_hudPanel->Deactivate();
+	m_hudPanel->Hide();
+
 }
 
 
@@ -858,6 +878,21 @@ void Game::RemoveItemFromInventory( Item* itemToRemove )
 
 
 //-----------------------------------------------------------------------------------------------
+bool Game::IsItemInInventory( Item* item )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] == item )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::PickupAtMousePosition()
 {
 	Vec2 clickPosition = g_game->GetMouseWorldPosition();
@@ -873,12 +908,13 @@ void Game::UpdateInventoryButtonImages()
 		{
 			SpriteDefinition* spriteDef = m_inventory[inventoryButtonIdx]->GetSpriteDef();
 			m_inventoryButtons[inventoryButtonIdx]->AddImage( Vec2( .1f, .1f ), Vec2( .8f, .8f ), spriteDef );
-
+			m_inventoryButtons[inventoryButtonIdx]->Activate();
 		}
 		// Clear Image
 		else
 		{
 			m_inventoryButtons[inventoryButtonIdx]->ClearLabels();
+			m_inventoryButtons[inventoryButtonIdx]->Deactivate();
 		}
 	}
 

@@ -16,7 +16,6 @@
 Entity::Entity( const Vec2& position, EntityDefinition* entityDef )
 	: m_position( position )
 	, m_entityDef( entityDef )
-//	, m_texture( entityDef->m_spriteSheet->GetTexture() )
 {
 	PopulateVertexes();
 }
@@ -101,10 +100,7 @@ void Entity::ApplyFriction()
 
 //-----------------------------------------------------------------------------------------------
 void Entity::PopulateVertexes()
-{
-	//m_texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" );
-	
-	
+{	
 	AppendVertsForAABB2D( m_vertexes, m_entityDef->m_localDrawBounds, Rgba8::WHITE,
 									  m_entityDef->m_uvCoords.mins,
 									  m_entityDef->m_uvCoords.maxs );

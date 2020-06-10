@@ -4,11 +4,32 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/TileDefinition.hpp"
+#include "Game/Actor.hpp"
+#include "Game/Item.hpp"
+#include "Game/ActorDefinition.hpp"
+#include "Game/ItemDefinition.hpp"
 #include "Game/Map.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 std::map< std::string, MapDefinition* > MapDefinition::s_definitions;
+
+
+//-----------------------------------------------------------------------------------------------
+EntityVector MapDefinition::GetEntitiesInLevel()
+{
+	EntityVector entitiesInLevel;
+	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
+	{
+		Entity* const& entity = m_entities[entityIndex];
+		if ( !entity->IsInPlayerInventory() )
+		{
+			entitiesInLevel.push_back( entity );
+		}
+	}
+
+	return entitiesInLevel;
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -43,6 +64,33 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 	else
 	{
 		m_backgroundTexture = g_renderer->CreateOrGetTextureFromFile( backgroundTexturePath.c_str() );
+	}
+
+	const XmlElement* entitiesElem = mapDefElem.FirstChildElement( "Entities" );
+	if ( entitiesElem != nullptr )
+	{
+		const XmlElement* entityElem = entitiesElem->FirstChildElement( "Entity" );
+		while ( entityElem != nullptr )
+		{
+			std::string name = ParseXmlAttribute( *entityElem, "name", "" );
+			Vec2 pos = ParseXmlAttribute( *entityElem, "startPos", Vec2::ZERO );
+			std::string type = ParseXmlAttribute( *entityElem, "type", "actor" );
+
+			if ( type == "actor" )
+			{
+				Actor* newActor = new Actor( pos, ActorDefinition::GetActorDefinition( name ) );
+
+				m_entities.push_back( newActor );
+			}
+			else if ( type == "item" )
+			{
+				Item* newItem = new Item( pos, ItemDefinition::GetItemDefinition( name ) );
+
+				m_entities.push_back( newItem );
+			}
+
+			entityElem = entityElem->NextSiblingElement();
+		}
 	}
 }
 

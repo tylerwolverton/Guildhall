@@ -19,6 +19,7 @@
 #include "Game/World.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
+#include "Game/TriggerRegion.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
@@ -59,6 +60,7 @@ void Map::Update( float deltaSeconds )
 	UpdateEntities( deltaSeconds );
 	UpdateCameras();
 	UpdateMouseDebugInspection();
+	CheckForTriggers();
 }
 
 
@@ -71,6 +73,20 @@ void Map::UpdateEntities( float deltaSeconds )
 		if ( entity != nullptr )
 		{
 			entity->Update( deltaSeconds );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::CheckForTriggers()
+{
+	for ( int triggerIndex = 0; triggerIndex < (int)m_triggerRegions.size(); ++triggerIndex )
+	{
+		TriggerRegion& triggerRegion = m_triggerRegions[triggerIndex];
+		if ( DoDiscsOverlap( m_player->GetPosition(), m_player->GetPhysicsRadius(), triggerRegion.GetPosition(), triggerRegion.GetPhysicsRadius() ) )
+		{
+			triggerRegion.OnTriggerEnter( (Actor*)m_player );
 		}
 	}
 }
@@ -137,7 +153,8 @@ void Map::PickUpItem( const Vec2& worldPosition )
 	{
 		Entity*& entity = m_entities[entityIdx];
 
-		if ( IsPointInsideDisc( worldPosition, entity->GetPosition(), entity->GetPhysicsRadius() ) )
+		if ( entity->GetName() == "Key"
+			 && IsPointInsideDisc( worldPosition, entity->GetPosition(), entity->GetPhysicsRadius() ) )
 		{
 			g_game->AddItemToInventory( (Item*)entity );
 			return;
@@ -214,22 +231,32 @@ Item* Map::SpawnNewItem( const Vec2& position, std::string itemName )
 void Map::SpawnPlayer()
 {
 	// TODO: Load position from XML
-	m_player = SpawnNewActor( Vec2( 2.f, 1.f ), std::string( "Player" ) );
 
-	Item* key = SpawnNewItem( Vec2( 2.f, 2.f ), std::string( "Key" ) );
-	g_game->AddItemToInventory( key );
+	m_entities = m_mapDef->GetEntitiesInLevel();
+	if ( m_entities.size() > 0 )
+	{
+		m_player = m_entities[0];//(Entity*)ActorDefinition::GetActorDefinition( "Player" );
+		//m_player = (Entity*)ActorDefinition::GetActorDefinition( "Player" );
+	}
+	//Item* key = SpawnNewItem( Vec2( 12.f, 2.f ), std::string( "Key" ) );
+	//g_game->AddItemToInventory( key );
 
-	Item* key1 = SpawnNewItem( Vec2( 4.f, 2.f ), std::string( "Key" ) );
-	g_game->AddItemToInventory( key1 );
+	//Item* key1 = SpawnNewItem( Vec2( 4.f, 2.f ), std::string( "Key" ) );
+	////g_game->AddItemToInventory( key1 );
 
-	Item* key2 = SpawnNewItem( Vec2( 2.f, 1.f ), std::string( "Key" ) );
-	g_game->AddItemToInventory( key2 );
+	//Item* key2 = SpawnNewItem( Vec2( 2.f, 1.f ), std::string( "Key" ) );
+	////g_game->AddItemToInventory( key2 );
 
-	g_game->RemoveItemFromInventory(key1);
-	
-	Item* key3 = SpawnNewItem( Vec2( 4.f, 1.f ), std::string( "Key" ) );
-	g_game->AddItemToInventory( key3 );
+	////g_game->RemoveItemFromInventory(key1);
+	//
+	//Item* key3 = SpawnNewItem( Vec2( 4.f, 1.f ), std::string( "Key" ) );
+	////g_game->AddItemToInventory( key3 );
 
+	if ( m_entities.size() > 1 )
+	{
+		m_triggerRegions.emplace_back( Vec2( 2.f, 0.f ), 1.f, "Victory" );
+		m_triggerRegions[0].AddRequiredItem( (Item*)m_entities[1] );
+	}
 }
 
 

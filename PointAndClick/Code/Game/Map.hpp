@@ -12,6 +12,7 @@ class Player;
 class Actor;
 class Item;
 class MapDefinition;
+class TriggerRegion;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -48,6 +49,7 @@ private:
 	void				SpawnPlayer();
 
 	void				UpdateEntities( float deltaSeconds );
+	void				CheckForTriggers();
 	void				UpdateMouseDebugInspection();
 
 	void				RenderEntities() const;
@@ -68,4 +70,6 @@ private:
 
 	EntityVector		m_entities;
 	Entity*				m_player;
+
+	std::vector<TriggerRegion> m_triggerRegions;
 };

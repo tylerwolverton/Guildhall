@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
+#include "Game/Entity.hpp"
 
 #include <string>
 #include <map>
@@ -20,6 +21,7 @@ public:
 	~MapDefinition();
 
 	std::string GetName()													{ return m_name; }
+	EntityVector GetEntitiesInLevel();
 
 	static MapDefinition* GetMapDefinition( std::string mapName );
 
@@ -27,9 +29,11 @@ public:
 	static std::map< std::string, MapDefinition* > s_definitions;
 
 private:
-	std::string m_name;
-	int m_width = 0;
-	int m_height = 0;
+	std::string		m_name;
+	int				m_width = 0;
+	int				m_height = 0;
 
-	Texture* m_backgroundTexture = nullptr;
+	EntityVector	m_entities;
+
+	Texture*		m_backgroundTexture = nullptr;
 };

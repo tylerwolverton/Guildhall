@@ -33,6 +33,10 @@ Item::~Item()
 void Item::Update( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
+	if ( m_isInPlayerInventory )
+	{
+		return;
+	}
 
 	UpdateAnimation();
 }

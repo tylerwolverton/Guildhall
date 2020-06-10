@@ -207,6 +207,7 @@
     <ClCompile Include="MapDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
+    <ClCompile Include="TriggerRegion.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIImage.cpp" />
     <ClCompile Include="UILabel.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="MapDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
+    <ClInclude Include="TriggerRegion.hpp" />
     <ClInclude Include="UIButton.hpp" />
     <ClInclude Include="UIImage.hpp" />
     <ClInclude Include="UILabel.hpp" />

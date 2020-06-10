@@ -1,9 +1,15 @@
 <MapDefinitions>
 
   <MapDefinition name="Bar" width="30" height="7" backgroundTexturePath="Data/Images/SpriteSheets/SCUMMBarBackground.png">
-    
+    <Entities>
+      <Entity name="Player" type="actor" startPos="2,1"/>
+      <Entity name="Key" type="item" startPos="12,2"/>
+    </Entities>
   </MapDefinition>
 
+  <MapDefinition name="Victory" width="10" height="5" backgroundTexturePath="Data/Images/TheTentacleOfMonkeyIsland-logo.png">
+
+  </MapDefinition>
   
 </MapDefinitions>
 

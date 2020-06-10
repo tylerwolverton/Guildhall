@@ -53,6 +53,7 @@ public:
 	
 	void		LogMapDebugCommands(); 
 	void		ChangeGameState( const eGameState& newGameState );
+	void		ChangeMap( const std::string& mapName );
 
 	bool		IsNoClipEnabled()														{ return m_isNoClipEnabled; }
 	bool		IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
@@ -66,6 +67,7 @@ public:
 
 	void		AddItemToInventory( Item* newItem );
 	void		RemoveItemFromInventory( Item* itemToRemove );
+	bool		IsItemInInventory( Item* item );
 
 	void		PickupAtMousePosition();
 

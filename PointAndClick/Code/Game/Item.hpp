@@ -23,8 +23,6 @@ public:
 	virtual void Render() const;
 	virtual void Die();
 
-	void SetIsInPlayerInventory( bool isInPlayerInventory )										{ m_isInPlayerInventory = isInPlayerInventory; }
-
 	SpriteDefinition* GetSpriteDef() const;
 
 private:
@@ -33,8 +31,6 @@ private:
 protected:
 	ItemDefinition*			m_itemDef = nullptr;
 	float					m_cumulativeTime = 0.f;
-
-	bool					m_isInPlayerInventory = false;
 
 	SpriteAnimDefinition*	m_curAnimDef = nullptr;
 };
