@@ -34,7 +34,10 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
-	float4 color = tDiffuse.Sample( sSampler, input.uv );
+	float4 color = tDiffuse.Sample( sSampler, input.uv ); 
+	
+	clip( color.a - .001f );
+	
 	color *= input.color;
 	
 	if ( color.r > .8f

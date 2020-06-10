@@ -111,6 +111,8 @@ void TileMap::Render() const
 	//RenderTestBoxes();
 
 	g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	g_renderer->SetBlendMode( eBlendMode::ALPHA );
+	g_renderer->BindShaderProgram( g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" ) );
 	g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
 	g_renderer->DrawVertexArray( m_mesh );
 }
