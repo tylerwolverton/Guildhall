@@ -37,10 +37,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 11.1*       [X]         0.75        0.75        1           Create ItemDefinition and Item classes and hook up to LoadAssets
 12          [X]         1           1           1.1         Create inventory for player and enable adding and removing items
 13          [X]         1.5         0.75        1.1         Implement click to collect item
-8           [O]         0.5         0.25        3           Add trigger/button to win game and transition to win state 
-5           [O]         1           0.75        3           Make win game trigger check that player has item   
-15          [O]         1                       21          Add Victory map/UI panel    
-15.1*       [O]         1           1           21          Define entities in MapDefs    
+8           [X]         0.5         0.25        3           Add trigger/button to win game and transition to win state 
+5           [/]         1           0.75        3           Make win game trigger check that player has item   
+15.1*       [/]         1           1.5         21          Define entities in MapDefs    
 
 -------------------------------------------------------------------------------
 Notes
