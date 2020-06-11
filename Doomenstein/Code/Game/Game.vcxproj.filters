@@ -64,6 +64,9 @@
     <ClCompile Include="MapRegionTypeDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="MapMaterialTypeDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -112,6 +115,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="MapRegionTypeDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMaterialTypeDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

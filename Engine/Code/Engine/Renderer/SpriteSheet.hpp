@@ -12,6 +12,7 @@ class SpriteSheet
 {
 public:
 	explicit SpriteSheet( const Texture& texture, const IntVec2& simpleGridLayout );
+	//explicit SpriteSheet( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
 	~SpriteSheet();
 
 	const Texture&			GetTexture() const																	{ return m_texture; }
@@ -20,6 +21,7 @@ public:
 	void					GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, int spriteIndex ) const;
 	void					GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, const IntVec2& spriteCoords ) const;
 
+	static void CreateAndAddToMap( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
 	static SpriteSheet* GetSpriteSheet( std::string spriteSheetName );
 	static void DeleteSpriteSheets();
 

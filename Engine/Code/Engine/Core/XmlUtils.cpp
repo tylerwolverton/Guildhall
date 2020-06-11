@@ -31,10 +31,14 @@ int ParseXmlAttribute( const XmlElement& element, const char* attributeName, int
 //-----------------------------------------------------------------------------------------------
 char ParseXmlAttribute( const XmlElement& element, const char* attributeName, char defaultValue )
 {
-	int defaultInt = (int)defaultValue;
-	element.QueryIntAttribute( attributeName, &defaultInt );
+	const char* attributeValueText = element.Attribute( attributeName );
+	char value = defaultValue;
+	if ( attributeValueText )
+	{
+		value = attributeValueText[0];
+	}
 
-	return (unsigned char)defaultInt;
+	return value;
 }
 
 

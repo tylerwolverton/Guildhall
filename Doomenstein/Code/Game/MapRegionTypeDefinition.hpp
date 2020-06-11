@@ -6,6 +6,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class MapMaterialTypeDefinition;
+
+
+//-----------------------------------------------------------------------------------------------
 class MapRegionTypeDefinition
 {
 	friend class MapDefinition;
@@ -26,4 +30,7 @@ public:
 private:
 	std::string m_name;
 	bool m_isSolid = true;
+	MapMaterialTypeDefinition* m_sideMaterial = nullptr;
+	MapMaterialTypeDefinition* m_floorMaterial = nullptr;
+	MapMaterialTypeDefinition* m_ceilingMaterial = nullptr;
 };

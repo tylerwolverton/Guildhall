@@ -2,6 +2,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 
+
 //-----------------------------------------------------------------------------------------------
 // Static definitions
 std::map< std::string, SpriteSheet* > SpriteSheet::s_definitions;
@@ -94,6 +95,13 @@ void SpriteSheet::GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, int spri
 void SpriteSheet::GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, const IntVec2& spriteCoords ) const
 {
 	GetSpriteUVs( out_uvAtMins, out_uvAtMaxs, GetSpriteIndexFromSpriteCoords( spriteCoords ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void SpriteSheet::CreateAndAddToMap( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout )
+{
+	SpriteSheet::s_definitions[name] = new SpriteSheet( texture, simpleGridLayout );
 }
 
 

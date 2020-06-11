@@ -1,4 +1,5 @@
 #include "Game/MapRegionTypeDefinition.hpp"
+#include "Game/MapMaterialTypeDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -32,11 +33,18 @@ MapRegionTypeDefinition::MapRegionTypeDefinition( const XmlElement& mapRegionTyp
 		// Parse side
 		const XmlElement* sideElem = mapRegionTypeDefElem.FirstChildElement( "Side" );
 		std::string sideMaterialStr = ParseXmlAttribute( *sideElem, "material", std::string("InvalidRegion") );
+
+		m_sideMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( sideMaterialStr );
 	}
 	else
 	{
 		const XmlElement* floorElem = mapRegionTypeDefElem.FirstChildElement( "Floor" );
+		std::string floorMaterialStr = ParseXmlAttribute( *floorElem, "material", std::string("InvalidRegion") );
+		m_floorMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( floorMaterialStr );
+
 		const XmlElement* ceilingElem = mapRegionTypeDefElem.FirstChildElement( "Ceiling" );
+		std::string ceilingMaterialStr = ParseXmlAttribute( *ceilingElem, "material", std::string( "InvalidRegion" ) );
+		m_ceilingMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( ceilingMaterialStr );
 	}
 	
 }

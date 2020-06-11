@@ -49,7 +49,8 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& n
 	// TODO: Check tile exists
 	while ( tileElem )
 	{
-		char glyph = ParseXmlAttribute( *tileElem, "glyph", "" )[0];
+		//char glyph = ParseXmlAttribute( *tileElem, "glyph", "" )[0];
+		char glyph = ParseXmlAttribute( *tileElem, "glyph", ' ' );
 		std::string regionTypeStr = ParseXmlAttribute( *tileElem, "regionType", "InvalidRegion" );
 		// TODO: Check no repeated glyphs, all regions exist
 

@@ -36,6 +36,7 @@
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
+#include "Game/MapMaterialTypeDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
 
 
@@ -406,10 +407,55 @@ void Game::LoadAssets()
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 
+	LoadXmlMapMaterials();
 	LoadXmlMapRegions();
 	LoadXmlMaps();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadXmlMapMaterials()
+{
+	g_devConsole->PrintString( "Loading Map Materials..." );
+
+	const char* filePath = "Data/Definitions/MapMaterialTypes.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The map material types xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	XmlElement* materialsSheetElement = root->FirstChildElement( "MaterialsSheet" );
+	while ( materialsSheetElement )
+	{
+		std::string name = ParseXmlAttribute( *materialsSheetElement, "name", "" );
+		// TODO: Check name exists
+		IntVec2 layout = ParseXmlAttribute( *materialsSheetElement, "layout", IntVec2::ZERO );
+		// TODO: Check sheet exists
+
+		XmlElement* diffuseElement = materialsSheetElement->FirstChildElement( "Diffuse" );
+		std::string imagePath = ParseXmlAttribute( *diffuseElement, "image", "" );
+
+		SpriteSheet::CreateAndAddToMap( name, *g_renderer->CreateOrGetTextureFromFile( imagePath.c_str() ), layout );
+
+		materialsSheetElement = materialsSheetElement->NextSiblingElement( "MaterialsSheet" );
+	}
+
+	XmlElement* element = root->FirstChildElement( "MaterialType" );
+	while ( element )
+	{
+		MapMaterialTypeDefinition* mapMaterialTypeDef = new MapMaterialTypeDefinition( *element );
+		MapMaterialTypeDefinition::s_definitions[mapMaterialTypeDef->GetName()] = mapMaterialTypeDef;
+
+		element = element->NextSiblingElement( "MaterialType" );
+	}
+
+	g_devConsole->PrintString( "Map Materials Loaded", Rgba8::GREEN );
 }
 
 
