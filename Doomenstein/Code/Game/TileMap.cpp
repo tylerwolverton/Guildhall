@@ -5,10 +5,13 @@
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/MapDefinition.hpp"
+#include "Game/MapRegionTypeDefinition.hpp"
+#include "Game/MapMaterialTypeDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -55,36 +58,46 @@ void TileMap::UpdateMeshes()
 
 		if ( !tile.IsSolid() )
 		{
+			Vec2 uvsAtMins, uvsAtMaxs;
+			MapMaterialTypeDefinition* materialTypeDef = tile.m_regionTypeDef->GetFloorMaterial();
+			materialTypeDef->GetSpriteSheet()->GetSpriteUVs( uvsAtMins, uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
+			//materialTypeDef->GetSpriteSheet()->GetSpriteUVs( &uvsAtMins, &uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
 			// Bottom face
-			AddTileFace( vert0, vert1, vert2, vert3 );
+			AddTileFace( vert0, vert1, vert2, vert3, uvsAtMins, uvsAtMaxs );
 
+			materialTypeDef = tile.m_regionTypeDef->GetCeilingMaterial();
+			materialTypeDef->GetSpriteSheet()->GetSpriteUVs( uvsAtMins, uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
 			// Top face
-			AddTileFace( vert5, vert4, vert7, vert6 );
+			AddTileFace( vert5, vert4, vert7, vert6, uvsAtMins, uvsAtMaxs );
 		}
 		else
 		{
+			Vec2 uvsAtMins, uvsAtMaxs;
+			MapMaterialTypeDefinition* materialTypeDef = tile.m_regionTypeDef->GetSideMaterial();
+			materialTypeDef->GetSpriteSheet()->GetSpriteUVs( uvsAtMins, uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
+
 			// South face
 			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::SOUTH ) )
 			{
-				AddTileFace( vert0, vert1, vert4, vert5 );
+				AddTileFace( vert0, vert1, vert4, vert5, uvsAtMins, uvsAtMaxs );
 			}
 
 			// East face
 			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::EAST ) )
 			{
-				AddTileFace( vert1, vert3, vert5, vert7 );
+				AddTileFace( vert1, vert3, vert5, vert7, uvsAtMins, uvsAtMaxs );
 			}
 
 			// North face
 			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::NORTH ) )
 			{
-				AddTileFace( vert3, vert2, vert7, vert6 );
+				AddTileFace( vert3, vert2, vert7, vert6, uvsAtMins, uvsAtMaxs );
 			}
 
 			// West face
 			if ( !IsAdjacentTileSolid( tile, eCardinalDirection::WEST ) )
 			{
-				AddTileFace( vert2, vert0, vert6, vert4 );
+				AddTileFace( vert2, vert0, vert6, vert4, uvsAtMins, uvsAtMaxs );
 			}
 		}
 	}
@@ -92,15 +105,15 @@ void TileMap::UpdateMeshes()
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topLeft, const Vec3& topRight )
+void TileMap::AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topLeft, const Vec3& topRight, const Vec2& uvMins, const Vec2& uvMaxs )
 {
-	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, Vec2::ZERO ) );
-	m_mesh.push_back( Vertex_PCU( bottomRight, Rgba8::WHITE, Vec2( 1.f, 0.f ) ) );
-	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, Vec2::ONE ) );
+	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, uvMins ) );
+	m_mesh.push_back( Vertex_PCU( bottomRight, Rgba8::WHITE, Vec2( uvMaxs.x, uvMins.y ) ) );
+	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, uvMaxs ) );
 
-	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, Vec2::ZERO ) );
-	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, Vec2::ONE ) );
-	m_mesh.push_back( Vertex_PCU( topLeft, Rgba8::WHITE, Vec2( 0.f, 1.f ) ) );
+	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, uvMins ) );
+	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, uvMaxs ) );
+	m_mesh.push_back( Vertex_PCU( topLeft, Rgba8::WHITE, Vec2( uvMins.x, uvMaxs.y ) ) );
 }
 
 
@@ -113,7 +126,8 @@ void TileMap::Render() const
 	g_renderer->SetModelMatrix( Mat44::IDENTITY );
 	g_renderer->SetBlendMode( eBlendMode::ALPHA );
 	g_renderer->BindShaderProgram( g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" ) );
-	g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
+	g_renderer->BindTexture( 0, &m_tiles[0].m_regionTypeDef->GetSideMaterial()->GetSpriteSheet()->GetTexture() );
+	//g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
 	g_renderer->DrawVertexArray( m_mesh );
 }
 

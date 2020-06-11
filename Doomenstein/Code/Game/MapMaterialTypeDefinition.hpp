@@ -18,6 +18,8 @@ public:
 	~MapMaterialTypeDefinition();
 
 	std::string GetName() const							{ return m_name; }
+	SpriteSheet* GetSpriteSheet() const					{ return m_sheet; }
+	IntVec2 GetSpriteCoords() const						{ return m_spriteCoords; }
 
 	static MapMaterialTypeDefinition* GetMapMaterialTypeDefinition( std::string mapMaterialTypeName );
 

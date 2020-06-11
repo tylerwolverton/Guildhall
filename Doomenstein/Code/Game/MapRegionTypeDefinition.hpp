@@ -19,8 +19,12 @@ public:
 	explicit MapRegionTypeDefinition( const XmlElement& mapRegionTypeDefElem );
 	~MapRegionTypeDefinition();
 
-	std::string GetName() const							{ return m_name; }
-	bool IsSolid() const								{ return m_isSolid; }
+	std::string GetName() const								{ return m_name; }
+	bool IsSolid() const									{ return m_isSolid; }
+
+	MapMaterialTypeDefinition* GetSideMaterial() const		{ return m_sideMaterial; }
+	MapMaterialTypeDefinition* GetFloorMaterial() const		{ return m_floorMaterial; }
+	MapMaterialTypeDefinition* GetCeilingMaterial() const	{ return m_ceilingMaterial; }
 
 	static MapRegionTypeDefinition* GetMapRegionTypeDefinition( std::string mapRegionTypeName );
 
