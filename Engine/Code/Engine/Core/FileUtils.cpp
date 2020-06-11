@@ -2,6 +2,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
+#include <io.h>
 #include <iostream>
 #include <fstream>
 
@@ -63,3 +64,48 @@ Strings SplitFileIntoLines( const std::string& filename )
 
 	return lines;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+Strings GetFileNamesInFolder( const std::string& relativeFolderPath, const char* filePattern )
+{
+	Strings fileNamesInFolder;
+
+	std::string fileNamePattern = filePattern ? filePattern : "*";
+	std::string filePath = relativeFolderPath + "/" + fileNamePattern;
+
+	_finddata_t fileInfo;
+	intptr_t searchHandle = _findfirst( filePath.c_str(), &fileInfo );
+	while ( searchHandle != -1 )
+	{
+		fileNamesInFolder.push_back( fileInfo.name );
+		int errorCode = _findnext( searchHandle, &fileInfo );
+		if ( errorCode !=0 )
+		{
+			break;
+		}
+	}
+
+	return fileNamesInFolder;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string GetFileNameWithoutExtension( const std::string& filePath )
+{
+	size_t extensionPos = filePath.find( "." );
+	size_t lastSlashPos = filePath.find_last_of( "/" );
+
+	if ( extensionPos == std::string::npos )
+	{
+		extensionPos = filePath.size() - 1;
+	}
+
+	if ( lastSlashPos == std::string::npos )
+	{
+		lastSlashPos = 0;
+	}
+
+	return filePath.substr( lastSlashPos, extensionPos );
+}
+

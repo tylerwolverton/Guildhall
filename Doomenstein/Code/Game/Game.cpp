@@ -10,6 +10,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Image.hpp"
+#include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/TextBox.hpp"
@@ -415,24 +416,30 @@ void Game::LoadXmlMaps()
 {
 	g_devConsole->PrintString( "Loading Maps..." );
 
-	const char* filePath = "Data/Maps/EmptyRoom.xml";
+	std::string folderPath( "Data/Maps" );
 
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
+	Strings mapFiles = GetFileNamesInFolder( folderPath, "*.xml" );
+	for ( int mapIdx = 0; mapIdx < (int)mapFiles.size(); ++mapIdx )
 	{
-		ERROR_AND_DIE( Stringf( "The maps xml file '%s' could not be opened.", filePath ) );
-	}
+		std::string& mapName = mapFiles[mapIdx];
 
-	XmlElement* root = doc.RootElement();
-	//XmlElement* element = root->FirstChildElement();
-	//while ( element )
-	//{
-		MapDefinition* mapDef = new MapDefinition( *root, "EmptyRoom" );
+		std::string mapFullPath( folderPath );
+		mapFullPath += "/";
+		mapFullPath += mapName;
+
+		XmlDocument doc;
+		XmlError loadError = doc.LoadFile( mapFullPath.c_str() );
+		if ( loadError != tinyxml2::XML_SUCCESS )
+		{
+			ERROR_AND_DIE( Stringf( "The maps xml file '%s' could not be opened.", mapFullPath.c_str() ) );
+		}
+
+		XmlElement* root = doc.RootElement();
+		
+		MapDefinition* mapDef = new MapDefinition( *root, GetFileNameWithoutExtension( mapName ) );
 		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
 
-		//element = element->NextSiblingElement();
-	//}
+	}
 
 	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
 }
