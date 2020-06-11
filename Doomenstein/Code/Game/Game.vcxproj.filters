@@ -61,6 +61,9 @@
     <ClCompile Include="GameMeshUtils.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="MapRegionTypeDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">

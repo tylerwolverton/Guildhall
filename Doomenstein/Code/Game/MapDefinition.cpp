@@ -1,6 +1,7 @@
 #include "Game/MapDefinition.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Game/TileDefinition.hpp"
+#include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/Map.hpp"
 
 
@@ -50,17 +51,14 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& n
 	{
 		char glyph = ParseXmlAttribute( *tileElem, "glyph", "" )[0];
 		std::string regionTypeStr = ParseXmlAttribute( *tileElem, "regionType", "InvalidRegion" );
-	// TODO: Check no repeated glyphs, all regions exist
+		// TODO: Check no repeated glyphs, all regions exist
 
 		m_legend[glyph] = regionTypeStr;
 
 		tileElem = tileElem->NextSiblingElement();
 	}
-
-	for ( int i = 0; i < (size_t)m_dimensions.x * (size_t)m_dimensions.y; ++i )
-	{
-		m_regionTypeDefs.push_back( MapRegionTypeDefinition() );
-	}
+	
+	m_regionTypeDefs.resize( (size_t)m_dimensions.x * (size_t)m_dimensions.y );
 
 	const XmlElement* mapRowsElem = mapDefElem.FirstChildElement( "MapRows" );
 	const XmlElement* mapRowElem = mapRowsElem->FirstChildElement( "MapRow" );
@@ -73,7 +71,9 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& n
 		{
 			std::string region = m_legend[tilesStr[regionDefNum]];
 
-			bool isSolid = false;
+			MapRegionTypeDefinition* regionDef = MapRegionTypeDefinition::GetMapRegionTypeDefinition( region );
+
+			/*bool isSolid = false;
 			if ( region == "CobblestoneWall" )
 			{
 				isSolid = true;
@@ -81,10 +81,11 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& n
 			else if ( region == "StoneFloor" )
 			{
 				isSolid = false;
-			}
+			}*/
 
 			int tileIdx = ( rowNum * m_dimensions.x ) + regionDefNum;
-			m_regionTypeDefs[tileIdx].m_isSolid = isSolid;
+			//m_regionTypeDefs[tileIdx].m_isSolid = isSolid;
+			m_regionTypeDefs[tileIdx] = regionDef;
 		}
 
 		mapRowElem = mapRowElem->NextSiblingElement();

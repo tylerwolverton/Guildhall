@@ -59,6 +59,7 @@ public:
 
 private:
 	void LoadAssets();
+	void LoadXmlMapRegions();
 	void LoadXmlMaps();
 	void LoadNewMap( const std::string& mapName );
 

@@ -10,6 +10,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class TileDefinition;
+class MapRegionTypeDefinition;
 class Map;
 
 
@@ -41,7 +42,7 @@ private:
 	IntVec2 m_dimensions;
 
 	std::map<char, std::string> m_legend;
-	std::vector<MapRegionTypeDefinition> m_regionTypeDefs;
+	std::vector<MapRegionTypeDefinition*> m_regionTypeDefs;
 
 	// Multiplayer TODO: Make this into an array
 	Vec2 m_playerStartPos = Vec2::ZERO;

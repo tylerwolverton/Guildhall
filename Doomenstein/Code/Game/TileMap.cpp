@@ -139,8 +139,7 @@ void TileMap::CreateInitialTiles()
 	{
 		for ( int x = 0; x < m_dimensions.x; ++x )
 		{
-			m_tiles.push_back( Tile( IntVec2( x, y ), &m_mapDef->m_regionTypeDefs[( y * m_dimensions.x ) + x] ) );
-			//m_tiles.push_back( Tile( IntVec2( x, y ), g_game->m_rng->RollPercentChance( .1f ) ) );
+			m_tiles.push_back( Tile( IntVec2( x, y ), m_mapDef->m_regionTypeDefs[( y * m_dimensions.x ) + x] ) );
 		}
 	}
 }

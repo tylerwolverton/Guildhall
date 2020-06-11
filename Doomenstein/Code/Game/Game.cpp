@@ -35,6 +35,7 @@
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
+#include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
 
 
@@ -405,9 +406,38 @@ void Game::LoadAssets()
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 
+	LoadXmlMapRegions();
 	LoadXmlMaps();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadXmlMapRegions()
+{
+	g_devConsole->PrintString( "Loading Map Regions..." );
+	
+	const char* filePath = "Data/Definitions/MapRegionTypes.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The map region types xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	XmlElement* element = root->FirstChildElement();
+	while ( element )
+	{
+		MapRegionTypeDefinition* mapRegionTypeDef = new MapRegionTypeDefinition( *element );
+		MapRegionTypeDefinition::s_definitions[mapRegionTypeDef->GetName()] = mapRegionTypeDef;
+
+		element = element->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "Map Regions Loaded", Rgba8::GREEN );
 }
 
 

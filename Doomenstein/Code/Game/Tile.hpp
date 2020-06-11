@@ -28,7 +28,7 @@ public:
 
 	void		SetTileDef( TileDefinition* tileDef )				{ m_tileDef = tileDef; }
 
-	bool		IsSolid() const										{ return m_regionTypeDef->m_isSolid; }
+	bool		IsSolid() const										{ return m_regionTypeDef->IsSolid(); }
 
 public:
 	IntVec2			m_tileCoords;
