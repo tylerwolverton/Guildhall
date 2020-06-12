@@ -37,19 +37,23 @@ CURRENT SPRINT
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 7           [-]         1           0           6           Implement follow camera
-8           [/]         0.5                     3           Add trigger/button to win game and transition to win state 
-5           [/]         1                       3           Make win game trigger check that player has item 
-9           [O]         1.5                     10          Add OnHover events to items in level and inventory that shows tooltip
+8           [X]         0.5         0.25        3           Add trigger/button to win game and transition to win state 
+5           [X]         1           0.75        3           Make win game trigger check that player has item 
+9           [X]         1.5         1           10          Add OnHover events to items in level and inventory that shows tooltip
 10          [X]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
-10.1*       [O]         0.5                     11          Restrict click to walk to upper section of screen
-11          [X]         1                       1           Create item game object and place in level
-12          [X]         1                       1.1         Create inventory for player and enable adding and removing items
-13          [X]         1.5                     1.1         Implement click to collect item
-14          [/]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
-15          [/]         1                       21          Add Victory map/UI panel              
+11          [X]         1           1.5         1           Create item game object and place in level
+12          [X]         1           1           1.1         Create inventory for player and enable adding and removing items
+13          [X]         1.5         0.75        1.1         Implement click to collect item
+14          [<]         1.5         0           1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
+15          [X]         1           0.25        21          Add Victory map/UI panel              
 
-Total                   11
+11.1*       [X]         0.75        0.75        1           Create ItemDefinition and Item classes and hook up to LoadAssets
+15.1*       [X]         1           1.5         21          Define entities in MapDefs    
 
+
+Initial Total           10.5
+Unexpected Task Total   1.75
+Total                   12.25       8.25
 
 ===============================================================================
 PAST SPRINTS

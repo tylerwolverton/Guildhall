@@ -94,6 +94,7 @@ private:
 
 	// Button Events
 	void OnTestButtonClicked( EventArgs* args );
+	void OnInventoryItemHoverStay( EventArgs* args );
 	void OnTestButtonHoverBegin( EventArgs* args );
 	void OnTestButtonHoverEnd( EventArgs* args );
 	void OnGiveButtonClicked( EventArgs* args );

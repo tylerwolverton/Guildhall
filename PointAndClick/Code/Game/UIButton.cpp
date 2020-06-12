@@ -67,6 +67,12 @@ void UIButton::Update()
 			args.SetValue( "id", m_id );
 			m_onHoverBeginEvent.Invoke( &args );
 		}
+		else
+		{
+			EventArgs args;
+			args.SetValue( "id", m_id );
+			m_onHoverStayEvent.Invoke( &args );
+		}
 
 		if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 		{

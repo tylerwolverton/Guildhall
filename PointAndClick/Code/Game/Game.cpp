@@ -240,7 +240,7 @@ void Game::Render() const
 		case eGameState::ATTRACT:
 		{
 			std::vector<Vertex_PCU> vertexes;
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Protogame2D" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 100.f, 500.f ), 60.f, "The Tentacle of Monkey Island" );
 			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Start" );
 
 			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
@@ -723,6 +723,7 @@ void Game::BuildInventoryPanel()
 			UIButton* inventoryButton = m_inventoryPanel->AddButton( relativeMinPosition, relativeFractionOfDimensions, background, Rgba8::DARK_BLUE );
 			inventoryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
 			inventoryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+			inventoryButton->m_onHoverStayEvent.SubscribeMethod( this, &Game::OnInventoryItemHoverStay );
 			inventoryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 
 			/*std::string str = "Button";
@@ -753,6 +754,31 @@ void Game::OnTestButtonClicked( EventArgs* args )
 						.1f,
 						DEBUG_RENDER_ALWAYS,
 						"Button clicked!");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnInventoryItemHoverStay( EventArgs* args )
+{
+	uint id = args->GetValue( "id", (uint)0 );
+
+	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
+	{
+		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
+		if ( id == itemButton->GetId() )
+		{
+			std::string itemName = m_inventory[inventoryButtonIdx]->GetName();
+
+			DebugAddScreenText( Vec4( g_inputSystem->GetNormalizedMouseClientPos(), Vec2::ZERO ),
+								Vec2( .5f, .5f ),
+								20.f,
+								Rgba8::WHITE,
+								Rgba8::WHITE,
+								0.f,
+								itemName.c_str() );
+			return;
+		}
+	}
 }
 
 

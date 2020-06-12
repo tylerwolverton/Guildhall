@@ -49,6 +49,7 @@ private:
 	void				SpawnPlayer();
 
 	void				UpdateEntities( float deltaSeconds );
+	void				UpdateMouseHover();
 	void				CheckForTriggers();
 	void				UpdateMouseDebugInspection();
 

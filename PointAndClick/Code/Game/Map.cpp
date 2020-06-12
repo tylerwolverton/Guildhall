@@ -13,6 +13,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
@@ -60,6 +61,7 @@ void Map::Update( float deltaSeconds )
 	UpdateEntities( deltaSeconds );
 	UpdateCameras();
 	UpdateMouseDebugInspection();
+	UpdateMouseHover();
 	CheckForTriggers();
 }
 
@@ -73,6 +75,38 @@ void Map::UpdateEntities( float deltaSeconds )
 		if ( entity != nullptr )
 		{
 			entity->Update( deltaSeconds );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::UpdateMouseHover()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		std::string entityName = entity->GetName();
+
+		if ( entityName != "Player"
+			 && IsPointInsideDisc( g_game->GetMouseWorldPosition(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
+		{
+			Vec2 hintPosition( entity->GetPosition() );
+			hintPosition.y += entity->GetPhysicsRadius();
+			
+			DebugAddWorldTextf( Mat44::CreateTranslation2D( hintPosition ),
+								Vec2( .5f, .5f ),
+								Rgba8::WHITE,
+								0.f,
+								0.1f,
+								DEBUG_RENDER_ALWAYS,
+								entityName.c_str() );
+			return;
 		}
 	}
 }
@@ -152,11 +186,16 @@ void Map::PickUpItem( const Vec2& worldPosition )
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
 
 		if ( entity->GetName() == "Key"
 			 && IsPointInsideDisc( worldPosition, entity->GetPosition(), entity->GetPhysicsRadius() ) )
 		{
 			g_game->AddItemToInventory( (Item*)entity );
+			m_entities[entityIdx] = nullptr;
 			return;
 		}
 	}
@@ -189,6 +228,11 @@ void Map::RenderEntities() const
 	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
 	{
 		Entity*const& entity = m_entities[entityIndex];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
 		entity->Render();
 	}
 }
@@ -200,6 +244,10 @@ void Map::DebugRenderEntities() const
 	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
 	{
 		Entity*const& entity = m_entities[entityIndex];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
 		entity->DebugRender();
 	}
 }

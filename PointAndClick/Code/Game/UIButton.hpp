@@ -48,6 +48,7 @@ public:
 public:
 	Delegate<EventArgs*> m_onClickEvent;
 	Delegate<EventArgs*> m_onHoverBeginEvent;
+	Delegate<EventArgs*> m_onHoverStayEvent;
 	Delegate<EventArgs*> m_onHoverEndEvent;
 
 private:

@@ -28,7 +28,22 @@ JOURNAL
 ===============================================================================
 
 ===============================================================================
-06/08/2020
+06/09/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+9           [X]         1.5         1           10          Add OnHover events to items in level and inventory that shows tooltip
+   
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+
+===============================================================================
+06/09/2020
 ===============================================================================
 -------------------------------------------------------------------------------
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
@@ -38,8 +53,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 12          [X]         1           1           1.1         Create inventory for player and enable adding and removing items
 13          [X]         1.5         0.75        1.1         Implement click to collect item
 8           [X]         0.5         0.25        3           Add trigger/button to win game and transition to win state 
-5           [/]         1           0.75        3           Make win game trigger check that player has item   
-15.1*       [/]         1           1.5         21          Define entities in MapDefs    
+5           [X]         1           0.75        3           Make win game trigger check that player has item   
+15          [X]         1           0.25        21          Add Victory map/UI panel    
+15.1*       [X]         1           1.5         21          Define entities in MapDefs    
 
 -------------------------------------------------------------------------------
 Notes
