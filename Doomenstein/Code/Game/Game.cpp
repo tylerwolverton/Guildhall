@@ -507,27 +507,66 @@ void Game::LoadXmlMapMaterials()
 	}
 
 	XmlElement* root = doc.RootElement();
+	m_defaultMaterialStr = ParseXmlAttribute( *root, "default", "" );
+	GUARANTEE_OR_DIE( m_defaultMaterialStr != "", "MapMaterialsType.xml: No default material attribute defined" );
+
 	XmlElement* materialsSheetElement = root->FirstChildElement( "MaterialsSheet" );
+	GUARANTEE_OR_DIE( materialsSheetElement != nullptr, "MapMaterialsType.xml: Must define at least one MaterialsSheet node." );
+
 	while ( materialsSheetElement )
 	{
+		bool materialsSheetHasError = false;
 		std::string name = ParseXmlAttribute( *materialsSheetElement, "name", "" );
-		// TODO: Check name exists
+		if ( name == "" )
+		{
+			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node is missing a name" ) );
+			materialsSheetHasError = true;
+		}
 		IntVec2 layout = ParseXmlAttribute( *materialsSheetElement, "layout", IntVec2::ZERO );
-		// TODO: Check sheet exists
+		if ( layout == IntVec2::ZERO )
+		{
+			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node '%s' is missing a layout", name.c_str() ) );
+			materialsSheetHasError = true;
+		}
+
+		if ( materialsSheetHasError )
+		{
+			materialsSheetElement = materialsSheetElement->NextSiblingElement( "MaterialsSheet" );
+			continue;
+		}
 
 		XmlElement* diffuseElement = materialsSheetElement->FirstChildElement( "Diffuse" );
-		std::string imagePath = ParseXmlAttribute( *diffuseElement, "image", "" );
+		if ( diffuseElement == nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node '%s' is missing a diffuse node", name.c_str() ) );
+			materialsSheetElement = materialsSheetElement->NextSiblingElement( "MaterialsSheet" );
+			continue;
+		}
 
-		SpriteSheet::CreateAndAddToMap( name, *g_renderer->CreateOrGetTextureFromFile( imagePath.c_str() ), layout );
+		std::string imagePath = ParseXmlAttribute( *diffuseElement, "image", "" );
+		if ( imagePath == "" )
+		{
+			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node '%s' is missing an image", name.c_str() ) );
+		}
+		else
+		{
+			SpriteSheet::CreateAndAddToMap( name, *g_renderer->CreateOrGetTextureFromFile( imagePath.c_str() ), layout );
+		}
 
 		materialsSheetElement = materialsSheetElement->NextSiblingElement( "MaterialsSheet" );
 	}
 
+	GUARANTEE_OR_DIE( !SpriteSheet::s_definitions.empty(), "MapMaterialsType.xml: Must define at least one valid MaterialsSheet node." );
+
+	// Parse MaterialType nodes
 	XmlElement* element = root->FirstChildElement( "MaterialType" );
 	while ( element )
 	{
 		MapMaterialTypeDefinition* mapMaterialTypeDef = new MapMaterialTypeDefinition( *element );
-		MapMaterialTypeDefinition::s_definitions[mapMaterialTypeDef->GetName()] = mapMaterialTypeDef;
+		if ( mapMaterialTypeDef->IsValid() )
+		{
+			MapMaterialTypeDefinition::s_definitions[mapMaterialTypeDef->GetName()] = mapMaterialTypeDef;
+		}
 
 		element = element->NextSiblingElement( "MaterialType" );
 	}

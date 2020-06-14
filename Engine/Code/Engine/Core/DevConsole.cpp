@@ -138,6 +138,14 @@ void DevConsole::PrintString( const std::string& message, const Rgba8& textColor
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::PrintError( const std::string& message )
+{
+	m_logMessages.push_back( DevConsoleLogMessage( message, Rgba8::RED ) );
+	m_isOpen = true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::Render( float lineHeight ) const
 {
 	AABB2 bounds( m_devConsoleCamera->GetOrthoMin(), m_devConsoleCamera->GetOrthoMax() );

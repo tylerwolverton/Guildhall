@@ -130,4 +130,7 @@ private:
 	float m_specularFactor = 0.f;
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;
+
+	// Default map data
+	std::string m_defaultMaterialStr;
 };

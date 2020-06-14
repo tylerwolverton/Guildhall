@@ -54,6 +54,7 @@ public:
 	void ProcessInput();
 
 	void PrintString( const std::string& message, const Rgba8& textColor = Rgba8::WHITE );
+	void PrintError( const std::string& message );
 
 	void Render( float lineHeight = 30.f ) const;
 	void Render( const Camera& camera, float lineHeight = 30.f ) const;

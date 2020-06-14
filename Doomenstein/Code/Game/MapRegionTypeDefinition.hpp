@@ -33,6 +33,7 @@ public:
 
 private:
 	std::string m_name;
+	std::string m_defaultRegionTypeStr;
 	bool m_isSolid = true;
 	MapMaterialTypeDefinition* m_sideMaterial = nullptr;
 	MapMaterialTypeDefinition* m_floorMaterial = nullptr;

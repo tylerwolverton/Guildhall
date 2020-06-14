@@ -21,7 +21,6 @@ class MapDefinition
 	friend class TileMap;
 
 public:
-	explicit MapDefinition( const XmlElement& mapDefElem );
 	explicit MapDefinition( const XmlElement& mapDefElem, const std::string& name );
 	~MapDefinition();
 
@@ -36,10 +35,16 @@ public:
 	static std::map< std::string, MapDefinition* > s_definitions;
 
 private:
+	bool ParseMapDefinitionNode( const XmlElement& mapDefElem );
+	bool ParseLegendNode( const XmlElement& mapDefElem );
+	bool ParseMapRowsNode( const XmlElement& mapDefElem );
+	bool ParseEntitiesNode( const XmlElement& mapDefElem );
+
+private:
 	std::string m_name;
 	std::string m_type = "InvalidType";
 	int m_version = -1;
-	IntVec2 m_dimensions;
+	IntVec2 m_dimensions = IntVec2::ZERO;
 
 	std::map<char, std::string> m_legend;
 	std::vector<MapRegionTypeDefinition*> m_regionTypeDefs;
