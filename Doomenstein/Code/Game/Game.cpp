@@ -37,6 +37,7 @@
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
+#include "Game/UI/UIPanel.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -61,7 +62,6 @@ void Game::Startup()
 {
 	Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::ZYX;
 
-	//Transform::s_identityOrientation = MakeLookAtMatrix(Vec3::ZERO, Vec3(1.f, 0.f, 0.f), Vec3(0.f, 0.f, 1.f));
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateXRotationDegrees( 90.f ) );
 
@@ -87,6 +87,8 @@ void Game::Startup()
 
 	LoadAssets();
 
+	BuildUIHud();
+
 	m_world = new World( m_gameClock );
 
 	m_curMapStr = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapStr );
@@ -110,6 +112,11 @@ void Game::InitializeCameras()
 
 	Rgba8 backgroundColor( 10, 10, 10, 255 );
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
+
+	m_uiCamera = new Camera();
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 }
 
 
@@ -153,6 +160,19 @@ void Game::InitializeMeshes()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::BuildUIHud()
+{
+	m_rootUIPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
+
+	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
+	//m_rootUIPanel->SetBackgroundTexture( hudBaseTexture );
+	m_rootUIPanel->SetTint( Rgba8::RED );
+	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), hudBaseTexture );
+	m_hudUIPanel->AddButton( Vec2::ZERO, Vec2( 0.f, 1.f ), hudBaseTexture );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
@@ -160,6 +180,7 @@ void Game::Shutdown()
 	TileDefinition::s_definitions.clear();
 	
 	// Clean up member variables
+	PTR_SAFE_DELETE( m_rootUIPanel );
 	PTR_SAFE_DELETE( m_testMaterial );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
@@ -169,6 +190,7 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
 	PTR_SAFE_DELETE( m_worldCamera );
+	PTR_SAFE_DELETE( m_uiCamera );
 }
 
 
@@ -189,6 +211,8 @@ void Game::Update()
 	{
 		UpdateFromKeyboard();
 	}
+
+	m_rootUIPanel->Update();
 
 	m_world->Update();
 }
@@ -339,15 +363,7 @@ void Game::Render() const
 	g_renderer->SetGamma( m_gamma );
 
 	m_world->Render();
-	//for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
-	//{
-	//	Mat44 modelMatrix = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
-	//	g_renderer->SetModelMatrix( modelMatrix );
-	//	//g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
-	//	g_renderer->BindMaterial( m_testMaterial );
-	//	g_renderer->DrawMesh( m_cubeMesh );
-	//}
-
+	
 	g_renderer->EndCamera( *m_worldCamera );
 
 	// Copy rendered data to backbuffer and set on camera
@@ -355,6 +371,14 @@ void Game::Render() const
 	m_worldCamera->SetColorTarget( backbuffer );
 
 	g_renderer->ReleaseRenderTarget( colorTarget );
+
+
+	m_uiCamera->SetColorTarget( 0, backbuffer );
+	g_renderer->BeginCamera( *m_uiCamera );
+
+	m_rootUIPanel->Render( g_renderer );
+
+	g_renderer->EndCamera( *m_uiCamera );
 
 	// Debug rendering
 	if ( m_isDebugRendering )

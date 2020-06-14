@@ -62,6 +62,7 @@ void Game::Startup()
 	m_uiCamera = new Camera();
 	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 
 	EnableDebugRendering();
 
@@ -480,10 +481,6 @@ void Game::UpdateCameras()
 	//m_worldCamera->Translate2D( cameraShakeOffset );
 	m_worldCamera->SetPosition( m_focalPoint + Vec3( cameraShakeOffset, 0.f ) );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
-
-	// UI Camera
-	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
-	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 }
 
 

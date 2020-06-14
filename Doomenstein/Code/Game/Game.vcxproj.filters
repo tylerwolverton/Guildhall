@@ -14,6 +14,9 @@
     <Filter Include="Data\Maps">
       <UniqueIdentifier>{a6607b7b-f911-4f28-9faf-3d6b6957bf6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\UI">
+      <UniqueIdentifier>{121bfd2c-27b0-4d4f-b060-212fbfd882fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -67,6 +70,21 @@
     <ClCompile Include="MapMaterialTypeDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UIButton.cpp">
+      <Filter>Framework\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIImage.cpp">
+      <Filter>Framework\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UILabel.cpp">
+      <Filter>Framework\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIPanel.cpp">
+      <Filter>Framework\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIText.cpp">
+      <Filter>Framework\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -119,6 +137,21 @@
     </ClInclude>
     <ClInclude Include="MapMaterialTypeDefinition.hpp">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIText.hpp">
+      <Filter>Framework\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIButton.hpp">
+      <Filter>Framework\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIImage.hpp">
+      <Filter>Framework\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UILabel.hpp">
+      <Filter>Framework\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIPanel.hpp">
+      <Filter>Framework\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

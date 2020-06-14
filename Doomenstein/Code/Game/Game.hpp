@@ -21,6 +21,7 @@ class GPUMesh;
 class Material;
 class TextBox;
 class Texture;
+class UIPanel;
 class World;
 
 
@@ -68,6 +69,8 @@ private:
 	void InitializeCameras();
 	void InitializeMeshes();
 
+	void BuildUIHud();
+
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
 	void UpdateFramesPerSecond();
@@ -90,6 +93,11 @@ private:
 	bool m_isDebugRendering = false;
 	bool m_isNoClipEnabled = false;
 	bool m_isDebugCameraEnabled = false;
+
+	// UI
+	UIPanel* m_rootUIPanel = nullptr;
+	UIPanel* m_hudUIPanel = nullptr;
+	UIPanel* m_worldUIPanel = nullptr;
 
 	TextBox* m_debugInfoTextBox = nullptr;
 
