@@ -30,7 +30,6 @@
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
 
-#include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
@@ -76,8 +75,12 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 
+	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
+	{
+		m_fpsHistory[frameNum] = 0.f;
+	}
+
 	EnableDebugRendering();
-	m_isDebugRendering = true;
 
 	InitializeCameras();
 	InitializeMeshes();
@@ -180,6 +183,8 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::Update()
 {
+	UpdateFramesPerSecond();
+
 	if ( !g_devConsole->IsOpen() ) 
 	{
 		UpdateFromKeyboard();
@@ -270,6 +275,18 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateFramesPerSecond()
+{
+	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
+	{
+		m_fpsHistory[frameNum] = m_fpsHistory[frameNum + 1];
+	}
+
+	m_fpsHistory[FRAME_HISTORY_COUNT - 1] = 1.f / (float)m_gameClock->GetLastDeltaSeconds();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras()
 {
 
@@ -292,8 +309,28 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 
 
 //-----------------------------------------------------------------------------------------------
+float Game::GetAverageFPS() const
+{
+	/*if ( FRAME_HISTORY_COUNT < 1 )
+	{
+		ERROR_AND_DIE( "FRAME_HISTORY_COUNT must be configured to be larger than 0" );
+	}*/
+
+	float cummulativeFPS = 0.f;
+	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT; ++frameNum )
+	{
+		cummulativeFPS += m_fpsHistory[frameNum];
+	}
+
+	return cummulativeFPS / (float)FRAME_HISTORY_COUNT;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
+	RenderFPSCounter();
+
 	Texture* backbuffer = g_renderer->GetBackBuffer();
 	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 
@@ -390,6 +427,28 @@ void Game::RenderDebugUI() const
 						 cameraOrientationMatrix.GetKBasis3D().x,
 						 cameraOrientationMatrix.GetKBasis3D().y,
 						 cameraOrientationMatrix.GetKBasis3D().z );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderFPSCounter() const
+{
+	float fps = GetAverageFPS();
+
+	Rgba8 fpsCountercolor = Rgba8::GREEN;
+
+	if ( fps < 30.f )
+	{
+		fpsCountercolor = Rgba8::RED;
+	}
+	if ( fps < 55.f )
+	{
+		fpsCountercolor = Rgba8::YELLOW;
+	}
+
+	DebugAddScreenTextf( Vec4( 0.85f, .97f, 0.f, 0.f ), Vec2::ZERO, 20.f, fpsCountercolor, 0.f,
+						 "FPS: %.2f",
+						 fps );
 }
 
 

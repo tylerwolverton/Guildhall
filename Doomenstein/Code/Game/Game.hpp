@@ -5,6 +5,7 @@
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Game/GameCommon.hpp"
 
 #include <string>
 #include <vector>
@@ -69,14 +70,19 @@ private:
 
 	void UpdateFromKeyboard();
 	void UpdateCameraTransform( float deltaSeconds );
+	void UpdateFramesPerSecond();
 
 	void RenderDebugUI() const;
+	void RenderFPSCounter() const;
 
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
+	float GetAverageFPS() const;
+
 private:
 	Clock* m_gameClock = nullptr;
+	float m_fpsHistory[FRAME_HISTORY_COUNT];
 
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;

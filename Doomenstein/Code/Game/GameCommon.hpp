@@ -33,6 +33,7 @@ extern SpriteSheet* g_portraitSpriteSheet;
 // Game Constants
 //
 constexpr float CLIENT_ASPECT = 16.f / 9.f;
+constexpr int FRAME_HISTORY_COUNT = 10;
 
 constexpr float WINDOW_WIDTH = 16.f;
 constexpr float WINDOW_HEIGHT = 9.f;
@@ -42,7 +43,6 @@ constexpr float WINDOW_HEIGHT_PIXELS = 1080.f;
 constexpr int NUM_SPHERES = 30;
 constexpr float SPHERE_RING_RADIUS = 20.f;
 constexpr float DEGREES_PER_SPHERE = 360.f / (float)NUM_SPHERES;
-
 
 constexpr float TILE_SIZE = 1.f;
 
