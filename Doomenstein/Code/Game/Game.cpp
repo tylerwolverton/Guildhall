@@ -77,7 +77,7 @@ void Game::Startup()
 
 	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
 	{
-		m_fpsHistory[frameNum] = 0.f;
+		m_fpsHistory[frameNum] = 60.f;
 	}
 
 	EnableDebugRendering();
@@ -203,12 +203,6 @@ void Game::UpdateFromKeyboard()
 	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{
-		/*float volume = m_rng->RollRandomFloatInRange( .5f, 1.f );
-		float balance = m_rng->RollRandomFloatInRange( -1.f, 1.f );
-		float speed = m_rng->RollRandomFloatInRange( .5f, 2.f );
-		
-		g_audioSystem->PlaySound( m_testSound, false, volume, balance, speed );*/
-
 		m_isDebugRendering = !m_isDebugRendering;
 	}
 
