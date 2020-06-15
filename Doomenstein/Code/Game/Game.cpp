@@ -114,6 +114,7 @@ void Game::InitializeCameras()
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
 
 	m_uiCamera = new Camera();
+	m_uiCamera->SetType( eCameraType::UI );
 	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
 	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
@@ -165,10 +166,8 @@ void Game::BuildUIHud()
 	m_rootUIPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 
 	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
-	//m_rootUIPanel->SetBackgroundTexture( hudBaseTexture );
-	m_rootUIPanel->SetTint( Rgba8::RED );
-	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), hudBaseTexture );
-	m_hudUIPanel->AddButton( Vec2::ZERO, Vec2( 0.f, 1.f ), hudBaseTexture );
+	
+	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .15f ), hudBaseTexture );
 }
 
 
