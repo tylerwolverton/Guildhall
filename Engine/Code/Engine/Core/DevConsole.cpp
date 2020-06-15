@@ -141,7 +141,7 @@ void DevConsole::PrintString( const std::string& message, const Rgba8& textColor
 void DevConsole::PrintError( const std::string& message )
 {
 	m_logMessages.push_back( DevConsoleLogMessage( message, Rgba8::RED ) );
-	m_isOpen = true;
+	Open();
 }
 
 
@@ -400,9 +400,7 @@ void DevConsole::ToggleOpenFull()
 	}
 	else
 	{
-		m_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
-		m_inputSystem->ResetAllKeys();
-		m_isOpen = true;
+		Open();
 	}
 }
 
@@ -415,6 +413,18 @@ void DevConsole::Close()
 	SetCursorPosition( 0 );
 	m_currentCommandHistoryPos = (int)m_commandHistory.size();
 	m_inputSystem->PopMouseOptions();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::Open()
+{
+	if ( !m_isOpen )
+	{
+		m_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+	}
+	m_inputSystem->ResetAllKeys();
+	m_isOpen = true;
 }
 
 

@@ -133,4 +133,5 @@ private:
 
 	// Default map data
 	std::string m_defaultMaterialStr;
+	std::string m_defaultMapRegionStr;
 };

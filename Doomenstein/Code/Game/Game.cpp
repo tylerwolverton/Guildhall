@@ -579,6 +579,9 @@ void Game::LoadXmlMapMaterials()
 		element = element->NextSiblingElement( "MaterialType" );
 	}
 
+	GUARANTEE_OR_DIE( MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( m_defaultMaterialStr ) != nullptr, 
+					  Stringf( "MapMaterialsType.xml: Default material '%s' was not defined as a MaterialType node.", m_defaultMaterialStr.c_str() ) );
+
 	g_devConsole->PrintString( "Map Materials Loaded", Rgba8::GREEN );
 }
 
@@ -598,14 +601,23 @@ void Game::LoadXmlMapRegions()
 	}
 
 	XmlElement* root = doc.RootElement();
+	m_defaultMapRegionStr = ParseXmlAttribute( *root, "default", "" );
+	GUARANTEE_OR_DIE( m_defaultMapRegionStr != "", "MapRegionTypes.xml: No default region attribute defined" );
+
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
-		MapRegionTypeDefinition* mapRegionTypeDef = new MapRegionTypeDefinition( *element );
-		MapRegionTypeDefinition::s_definitions[mapRegionTypeDef->GetName()] = mapRegionTypeDef;
+		MapRegionTypeDefinition* mapRegionTypeDef = new MapRegionTypeDefinition( *element, m_defaultMaterialStr );
+		if ( mapRegionTypeDef->IsValid() )
+		{
+			MapRegionTypeDefinition::s_definitions[mapRegionTypeDef->GetName()] = mapRegionTypeDef;
+		}
 
 		element = element->NextSiblingElement();
 	}
+
+	GUARANTEE_OR_DIE( MapRegionTypeDefinition::GetMapRegionTypeDefinition( m_defaultMapRegionStr ) != nullptr,
+					  Stringf( "MapRegionTypes.xml: Default region '%s' was not defined as a RegionType node.", m_defaultMapRegionStr.c_str() ) );
 
 	g_devConsole->PrintString( "Map Regions Loaded", Rgba8::GREEN );
 }
@@ -631,7 +643,7 @@ void Game::LoadXmlMaps()
 		XmlError loadError = doc.LoadFile( mapFullPath.c_str() );
 		if ( loadError != tinyxml2::XML_SUCCESS )
 		{
-			ERROR_AND_DIE( Stringf( "The maps xml file '%s' could not be opened.", mapFullPath.c_str() ) );
+			ERROR_AND_DIE( Stringf( "The map xml file '%s' could not be opened.", mapFullPath.c_str() ) );
 		}
 
 		XmlElement* root = doc.RootElement();

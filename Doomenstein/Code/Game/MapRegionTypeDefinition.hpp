@@ -16,9 +16,10 @@ class MapRegionTypeDefinition
 
 public:
 	MapRegionTypeDefinition();
-	explicit MapRegionTypeDefinition( const XmlElement& mapRegionTypeDefElem );
+	explicit MapRegionTypeDefinition( const XmlElement& mapRegionTypeDefElem, const std::string& defaultMaterialName );
 	~MapRegionTypeDefinition();
 
+	bool IsValid() const									{ return m_isValid; }
 	std::string GetName() const								{ return m_name; }
 	bool IsSolid() const									{ return m_isSolid; }
 
@@ -32,9 +33,10 @@ public:
 	static std::map< std::string, MapRegionTypeDefinition* > s_definitions;
 
 private:
+	bool m_isValid = false;
 	std::string m_name;
 	std::string m_defaultRegionTypeStr;
-	bool m_isSolid = true;
+	bool m_isSolid = false;
 	MapMaterialTypeDefinition* m_sideMaterial = nullptr;
 	MapMaterialTypeDefinition* m_floorMaterial = nullptr;
 	MapMaterialTypeDefinition* m_ceilingMaterial = nullptr;

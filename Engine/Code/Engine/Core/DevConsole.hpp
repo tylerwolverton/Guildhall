@@ -62,6 +62,7 @@ public:
 
 	void ToggleOpenFull();
 	void Close();
+	void Open();
 	bool IsOpen() const												{ return m_isOpen; }
 
 	void MoveCursorPosition( int deltaCursorPosition, bool updateInputIndex = true );
