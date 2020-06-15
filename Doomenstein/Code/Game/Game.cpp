@@ -168,6 +168,14 @@ void Game::BuildUIHud()
 	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 	
 	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .15f ), hudBaseTexture );
+
+	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheet( "ViewModels" );
+	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
+	Vec2 uvsAtMins, uvsAtMaxs;
+	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
+
+	m_worldUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.1f, .9f ), Vec2( .15f, 1.f ), 
+												   texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
 }
 
 
@@ -479,9 +487,10 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" );
 
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8.png" );
-	g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
+
+	SpriteSheet::CreateAndAddToMap( "ViewModels", *( g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" ) ), IntVec2( 8, 8 ) );
 
 	LoadXmlMapMaterials();
 	LoadXmlMapRegions();

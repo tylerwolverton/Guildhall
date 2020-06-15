@@ -23,9 +23,14 @@ UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture,
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel::UIPanel( UIPanel* parentPanel, 
+				  const Vec2& widthFractionRange, const Vec2& heightFractionRange, 
+				  Texture* backgroundTexture, const Rgba8& tint,
+				  const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 	: m_backgroundTexture( backgroundTexture )
 	, m_tint( tint )
+	, m_uvsAtMins( uvAtMins )
+	, m_uvsAtMaxs( uvAtMaxs )
 {
 	m_boundingBox = AABB2( 0.f, 0.f, WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS );
 
@@ -81,7 +86,7 @@ void UIPanel::Render( RenderContext* renderer ) const
 	if ( m_backgroundTexture != nullptr )
 	{
 		std::vector<Vertex_PCU> vertices;
-		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint );
+		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint, m_uvsAtMins, m_uvsAtMaxs );
 
 		renderer->BindTexture( 0, m_backgroundTexture );
 		renderer->DrawVertexArray( vertices );
@@ -128,9 +133,11 @@ void UIPanel::Show()
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, 
+								 Texture* backgroundTexture, const Rgba8& tint,
+								 const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	UIPanel* newPanel = new UIPanel( this, widthFractionRange, heightFractionRange, backgroundTexture, tint );
+	UIPanel* newPanel = new UIPanel( this, widthFractionRange, heightFractionRange, backgroundTexture, tint, uvAtMins, uvAtMaxs );
 	m_childPanels.push_back( newPanel );
 
 	return newPanel;

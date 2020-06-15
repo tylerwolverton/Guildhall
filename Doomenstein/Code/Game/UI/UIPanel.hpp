@@ -19,7 +19,10 @@ class UIPanel
 {
 public:
 	UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
-	UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIPanel( UIPanel* parentPanel, 
+			 const Vec2& widthFractionRange, const Vec2& heightFractionRange, 
+			 Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE,
+			 const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	~UIPanel();
 
 	void Update();
@@ -34,7 +37,8 @@ public:
 	void SetTint( const Rgba8& tint )												{ m_tint = tint; }
 
 	UIPanel*	AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, 
-							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE,
+							   const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, 
 						   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 
@@ -50,11 +54,13 @@ private:
 	bool m_isVisible = true;
 
 	AABB2 m_boundingBox;
-	Rgba8 m_tint = Rgba8::WHITE;
 
 	// UI panel owns its child panels and buttons
 	std::vector<UIPanel*> m_childPanels;
 	std::vector<UIButton*> m_buttons;
 
 	Texture* m_backgroundTexture = nullptr;
+	Rgba8 m_tint = Rgba8::WHITE;
+	Vec2 m_uvsAtMins = Vec2::ZERO;
+	Vec2 m_uvsAtMaxs = Vec2::ONE;
 };
