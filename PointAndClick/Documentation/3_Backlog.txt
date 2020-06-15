@@ -33,31 +33,35 @@ BACKLOG
 
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-0           [X]         0.5                     N/A         Create new project
-0.1			[X]			0.5						N/A			Download and organize sprites and music for project
-1           [X]         1                       8           Research UI Framework design ( third party, Unity, etc. )
-1.1         [X]         1                       8           Design my UI framework with mock up
-1.2         [X]         1.5                     8           Implement panel division hierarchy
-1.3         [X]         1.5                     8           Implement UI button with OnHover and OnClicked events
-1.4         [X]         1                       8           Implement texture backgrounds and font foregrounds for buttons
-2           [X]         1.5                     8           Build HUD layout
-2.1         [X]         0.5                     8           Add buttons for supported verbs
-3           [X]         1.5                     8.1         Represent inventory items as buttons
-4           [X]         0.5                     3           Implement state machine in Game for game states 
-5           [O]         1                       3           Make win game trigger check that player has item 
-6           [X]         2                       5           Create map and place inside top panel
-6.1         [X]         0.5                     5           Attach level sprite to first map
-7           [O]         1                       6           Implement follow camera
-8           [O]         0.5                     3           Add trigger/button to win game and transition to win state 
-9           [O]         1.5                     10          Add OnHover events to items in level and inventory that shows tooltip
-10          [O]         0.5                     11          Give player speed and walk to location clicked by cursor
+0           [X]         0.5         0.5         N/A         Create new project
+0.0*        [X]         N/A         2                       Fix up Protogame2D to use as a base for new project
+0.1			[X]			0.5			0.75    	N/A			Download and organize sprites and music for project
+1           [X]         1           0.75        8           Research UI Framework design ( third party, Unity, etc. )
+1.1         [X]         1           0.75        8           Design my UI framework with mock up
+1.2         [X]         1.5         1.5         8           Implement panel division hierarchy
+1.3         [X]         1.5         2.25        8           Implement UI button with OnHover and OnClicked events
+1.4         [X]         1           1.25        8           Implement texture backgrounds and font foregrounds for buttons
+2           [X]         1.5         1           8           Build HUD layout
+2.1         [X]         0.5         0           8           Add buttons for supported verbs
+    - 2.1 was completed and tracked along with task 2
+3           [X]         1.5         0.75        8.1         Represent inventory items as buttons 
+4			[X]			0.5			0.5			3			Implement state machine in Game for game states
+5           [X]         1           0.75        3           Make win game trigger check that player has item 
+6           [X]         2           0.75        5           Create map and place inside top panel
+6.1         [X]         0.5         0.25        5           Attach level sprite to first map
+7           [-]         1           0           6           Implement follow camera
+8           [X]         0.5         0.25        3           Add trigger/button to win game and transition to win state 
+9           [X]         1.5         1           10          Add OnHover events to items in level and inventory that shows tooltip
+10          [X]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
 10.1*       [O]         0.5                     11          Restrict click to walk to upper section of screen
 10.2*       [O]         0.5                     11          Click to walk correctly walks to items when clicked on
-11          [O]         1                       1           Create item game object and place in level
-12          [O]         1                       1.1         Create inventory for player and enable adding and removing items
-13          [O]         1.5                     1.1         Implement click to collect item
+11          [X]         1           1.5         1           Create item game object and place in level
+11.1*       [X]         0.75        0.75        1           Create ItemDefinition and Item classes and hook up to LoadAssets
+12          [X]         1           1           1.1         Create inventory for player and enable adding and removing items
+13          [X]         1.5         0.75        1.1         Implement click to collect item
 14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
-15          [O]         1                       21          Add Victory map/UI panel                                       
+15          [X]         1           0.75        21          Add Victory map/UI panel              
+15.1*       [X]         1           1.5         21          Define entities in MapDefs    
 16          [O]         3                       4           Create a data-driven game object with event interface for each of the verbs 
 17          [O]         3                       12          Create state machine to handle actions 
 18          [O]         1                       12.2        Implement incorrect action message 
@@ -98,4 +102,6 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 43          [O]         3                                   Context Sensitive verb selection
 44*         [O]         0.25                                Create cursor image
 
-Total       81.25 hrs
+Initial Total           80          17.50 
+Extra tasks              3           4.25
+Total                   83          21.75 

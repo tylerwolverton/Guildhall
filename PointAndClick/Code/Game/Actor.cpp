@@ -91,12 +91,12 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 	
-	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
 	{
 		m_moveTargetLocation = g_game->GetMouseWorldPosition();
 
 	}
-	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
+	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 	{
 		EventArgs args;
 		args.SetValue( "Type", "PickUp" );

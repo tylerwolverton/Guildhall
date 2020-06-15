@@ -11,7 +11,7 @@ class UIButton;
 class UIText : public UILabel
 {
 public:
-	UIText( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize = 1.f );
+	UIText( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize = 24.f );
 
 	virtual void Render( RenderContext* renderer ) override;
 

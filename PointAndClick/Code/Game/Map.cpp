@@ -283,22 +283,16 @@ void Map::SpawnPlayer()
 	m_entities = m_mapDef->GetEntitiesInLevel();
 	if ( m_entities.size() > 0 )
 	{
-		m_player = m_entities[0];//(Entity*)ActorDefinition::GetActorDefinition( "Player" );
-		//m_player = (Entity*)ActorDefinition::GetActorDefinition( "Player" );
+		m_player = m_entities[0];
+
+		DebugAddWorldTextf( Mat44::CreateTranslation2D( m_player->GetPosition() + Vec2( 2.f, 1.f ) ),
+							Vec2( .5f, .5f ),
+							Rgba8::WHITE,
+							2.f,
+							.15f,
+							DEBUG_RENDER_ALWAYS,
+							"Great, locked in again..." );
 	}
-	//Item* key = SpawnNewItem( Vec2( 12.f, 2.f ), std::string( "Key" ) );
-	//g_game->AddItemToInventory( key );
-
-	//Item* key1 = SpawnNewItem( Vec2( 4.f, 2.f ), std::string( "Key" ) );
-	////g_game->AddItemToInventory( key1 );
-
-	//Item* key2 = SpawnNewItem( Vec2( 2.f, 1.f ), std::string( "Key" ) );
-	////g_game->AddItemToInventory( key2 );
-
-	////g_game->RemoveItemFromInventory(key1);
-	//
-	//Item* key3 = SpawnNewItem( Vec2( 4.f, 1.f ), std::string( "Key" ) );
-	////g_game->AddItemToInventory( key3 );
 
 	if ( m_entities.size() > 1 )
 	{

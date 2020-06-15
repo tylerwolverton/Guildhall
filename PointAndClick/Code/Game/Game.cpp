@@ -79,12 +79,7 @@ void Game::Startup()
 	UpdateInventoryButtonImages();
 
 	m_world = new World( m_gameClock );
-
-	/*m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
-	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
-	m_world->BuildNewMap( m_curMap );*/
-
-	//LogMapDebugCommands();
+	  
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -586,7 +581,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					
 					m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
-					m_world->BuildNewMap( m_curMap );
+					ChangeMap( m_curMap );
+					//m_world->BuildNewMap( m_curMap );
 				}
 				break;
 			}
@@ -625,6 +621,16 @@ void Game::ChangeGameState( const eGameState& newGameState )
 void Game::ChangeMap( const std::string& mapName )
 {
 	m_world->BuildNewMap( mapName );
+
+	if ( mapName == "Victory" )
+	{
+		m_hudPanel->Deactivate();
+		m_hudPanel->Hide();
+
+		m_rootPanel->SetBackgroundTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
+
+		m_focalPoint = Vec3( WINDOW_WIDTH * .5f, WINDOW_HEIGHT * .5f, 0.f);
+	}
 }
 
 

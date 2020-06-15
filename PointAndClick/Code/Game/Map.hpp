@@ -60,7 +60,7 @@ private:
 	void				PickUpItem( const Vec2& worldPosition );
 
 	// Event handlers
-	void				 OnVerbAction( EventArgs* args );
+	void				OnVerbAction( EventArgs* args );
 
 private:
 	std::string			m_name;
