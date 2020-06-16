@@ -1,10 +1,12 @@
 #pragma once
 #include <string>
+#include <map>
 
 
 //-----------------------------------------------------------------------------------------------
 class Clock;
 class Map;
+class MapDefinition;
 
 //-----------------------------------------------------------------------------------------------
 class World
@@ -17,9 +19,15 @@ public:
 	void Render() const;
 	void DebugRender() const;
 
-	void BuildNewMap( std::string name );
+	void LoadMap( const std::string& mapName );
+	void ChangeMap( const std::string& mapName );
+
+private:
+	Map* GetLoadedMapByName( const std::string& mapName );
 
 private:
 	Map* m_curMap = nullptr;
 	Clock* m_worldClock = nullptr;
+
+	std::map<std::string, Map*> m_loadedMaps;
 };

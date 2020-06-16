@@ -30,6 +30,9 @@ public:
 	TileMap( std::string name, MapDefinition* mapDef );
 	virtual ~TileMap();
 
+	virtual void Load() override;
+	virtual void Unload() override;
+
 	virtual void UpdateMeshes() override;
 	virtual void Render() const override;
 	virtual void DebugRender() const override;

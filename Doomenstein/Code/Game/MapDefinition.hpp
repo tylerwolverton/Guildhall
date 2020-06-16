@@ -25,6 +25,7 @@ public:
 	~MapDefinition();
 
 	std::string GetName()													{ return m_name; }
+	std::string GetType()													{ return m_type; }
 
 	Vec2 GetPlayerStartPos() const											{ return m_playerStartPos; }
 	float GetPlayerStartYaw() const											{ return m_playerStartYaw; }

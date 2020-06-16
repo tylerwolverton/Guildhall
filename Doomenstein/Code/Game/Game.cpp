@@ -75,6 +75,8 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 
+	m_world = new World( m_gameClock );
+
 	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
 	{
 		m_fpsHistory[frameNum] = 60.f;
@@ -89,11 +91,9 @@ void Game::Startup()
 
 	BuildUIHud();
 
-	m_world = new World( m_gameClock );
-
 	m_curMapStr = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapStr );
 	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapStr.c_str() ) );
-	m_world->BuildNewMap( m_curMapStr );
+	m_world->ChangeMap( m_curMapStr );
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -167,14 +167,14 @@ void Game::BuildUIHud()
 
 	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 	
-	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .15f ), hudBaseTexture );
+	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .13f ), hudBaseTexture );
 
 	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheet( "ViewModels" );
 	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
 	Vec2 uvsAtMins, uvsAtMaxs;
 	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
 
-	m_worldUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.1f, .9f ), Vec2( .15f, 1.f ), 
+	m_worldUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.275f, .725f ), Vec2( .13f, 1.f ), 
 												   texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
 }
 
@@ -428,26 +428,26 @@ void Game::RenderDebugUI() const
 											 cameraTransform.GetPosition().y,
 											 cameraTransform.GetPosition().z );
 
-	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::YELLOW, 0.f,
+	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::YELLOW, 0.f,
 						 "Camera - %s     %s",
 						 cameraOrientationStr.c_str(),
 						 cameraPositionStr.c_str() );
 
 	// Basis text
 	Mat44 cameraOrientationMatrix = cameraTransform.GetOrientationAsMatrix();
-	DebugAddScreenTextf( Vec4( 0.f, .94f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::RED, 0.f,
+	DebugAddScreenTextf( Vec4( 0.f, .94f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::RED, 0.f,
 						 "iBasis ( forward +x world east when identity  )  ( %.2f, %.2f, %.2f )",
 						 cameraOrientationMatrix.GetIBasis3D().x,
 						 cameraOrientationMatrix.GetIBasis3D().y,
 						 cameraOrientationMatrix.GetIBasis3D().z );
 
-	DebugAddScreenTextf( Vec4( 0.f, .91f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, 0.f,
+	DebugAddScreenTextf( Vec4( 0.f, .91f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::GREEN, 0.f,
 						 "jBasis ( left    +y world north when identity )  ( %.2f, %.2f, %.2f )",
 						 cameraOrientationMatrix.GetJBasis3D().x,
 						 cameraOrientationMatrix.GetJBasis3D().y,
 						 cameraOrientationMatrix.GetJBasis3D().z );
 
-	DebugAddScreenTextf( Vec4( 0.f, .88f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::BLUE, 0.f,
+	DebugAddScreenTextf( Vec4( 0.f, .88f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::BLUE, 0.f,
 						 "kBasis ( up      +z world up when identity    )  ( %.2f, %.2f, %.2f )",
 						 cameraOrientationMatrix.GetKBasis3D().x,
 						 cameraOrientationMatrix.GetKBasis3D().y,
@@ -471,9 +471,11 @@ void Game::RenderFPSCounter() const
 		fpsCountercolor = Rgba8::YELLOW;
 	}
 
-	DebugAddScreenTextf( Vec4( 0.85f, .97f, 0.f, 0.f ), Vec2::ZERO, 20.f, fpsCountercolor, 0.f,
-						 "FPS: %.2f",
-						 fps );
+	float frameTime = (float)m_gameClock->GetLastDeltaSeconds() * 1000.f;
+
+	DebugAddScreenTextf( Vec4( 0.75f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, fpsCountercolor, 0.f,
+						 "FPS: %.2f ( %.2f ms/frame )",
+						 fps, frameTime );
 }
 
 
@@ -651,6 +653,8 @@ void Game::LoadXmlMaps()
 		MapDefinition* mapDef = new MapDefinition( *root, GetFileNameWithoutExtension( mapName ) );
 		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
 
+		m_world->LoadMap( mapDef->GetName() );
+
 	}
 
 	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
@@ -663,7 +667,7 @@ void Game::LoadNewMap( const std::string& mapName )
 	//PTR_SAFE_DELETE( m_world );
 
 	//m_world = new World( m_gameClock );
-	m_world->BuildNewMap( mapName );
+	m_world->ChangeMap( mapName );
 }
 
 

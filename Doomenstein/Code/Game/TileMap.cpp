@@ -21,14 +21,6 @@ TileMap::TileMap( std::string name, MapDefinition* mapDef )
 	BuildCardinalDirectionsArray();
 	PopulateTiles();
 	CreateTestBoxes();
-
-	g_game->SetCameraPositionAndYaw( mapDef->GetPlayerStartPos(), mapDef->GetPlayerStartYaw() );
-
-	float volume = g_game->m_rng->RollRandomFloatInRange( .5f, 1.f );
-	float balance = g_game->m_rng->RollRandomFloatInRange( -1.f, 1.f );
-	float speed = g_game->m_rng->RollRandomFloatInRange( .5f, 2.f );
-
-	g_audioSystem->PlaySound( g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" ), false, volume, balance, speed );
 }
 
 
@@ -37,6 +29,26 @@ TileMap::~TileMap()
 {
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_testMaterial );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::Load()
+{
+	float volume = g_game->m_rng->RollRandomFloatInRange( .5f, 1.f );
+	float balance = g_game->m_rng->RollRandomFloatInRange( -1.f, 1.f );
+	float speed = g_game->m_rng->RollRandomFloatInRange( .5f, 2.f );
+
+	g_audioSystem->PlaySound( g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" ), false, volume, balance, speed );
+
+	g_game->SetCameraPositionAndYaw( m_mapDef->GetPlayerStartPos(), m_mapDef->GetPlayerStartYaw() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::Unload()
+{
+
 }
 
 
