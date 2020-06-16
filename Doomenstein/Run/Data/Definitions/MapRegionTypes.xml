@@ -32,4 +32,9 @@
 		<Ceiling material="RoughStone"/>
 	</RegionType>
 
+  <RegionType name="GrassWood" isSolid="false">
+    <Floor material="Wood"/>
+    <Ceiling material="Grass"/>
+  </RegionType>
+  
 </MapRegionTypes>

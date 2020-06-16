@@ -35,7 +35,7 @@ MapMaterialTypeDefinition::MapMaterialTypeDefinition( const XmlElement& mapMater
 	std::string sheetStr = ParseXmlAttribute( mapMaterialTypeDefElem, "sheet", "" );
 	if ( sheetStr == "" )
 	{
-		g_devConsole->PrintError( Stringf( "Material type '%s'  is missing a sheet attribute", m_name.c_str() ) );
+		g_devConsole->PrintError( Stringf( "Material type '%s' is missing a sheet attribute", m_name.c_str() ) );
 		return;
 	}
 
@@ -50,6 +50,21 @@ MapMaterialTypeDefinition::MapMaterialTypeDefinition( const XmlElement& mapMater
 	if ( m_spriteCoords == IntVec2( -1, -1 ) )
 	{
 		g_devConsole->PrintError( Stringf( "Material type '%s' is missing a spriteCoords attribute", m_name.c_str() ) );
+		return;
+	}
+
+	IntVec2 spriteSheetDimensions = m_sheet->GetDimensions();
+	if ( m_spriteCoords.x < 0 
+		 || m_spriteCoords.x > spriteSheetDimensions.x )
+	{
+		g_devConsole->PrintError( Stringf( "Material type '%s' specifies an out of bounds x sprite coordinate '%d' ", m_name.c_str(), m_spriteCoords.x ) );
+		return;
+	}
+
+	if ( m_spriteCoords.y < 0
+		 || m_spriteCoords.y > spriteSheetDimensions.y )
+	{
+		g_devConsole->PrintError( Stringf( "Material type '%s' specifies an out of bounds y sprite coordinate '%d' ", m_name.c_str(), m_spriteCoords.y ) );
 		return;
 	}
 

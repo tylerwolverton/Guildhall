@@ -30,46 +30,11 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& n
 	: m_name( name )
 {
 	if ( !ParseMapDefinitionNode( mapDefElem ) ) { return; }
-	ParseLegendNode( mapDefElem );
-	//if ( !ParseLegendNode( mapDefElem ) )		 { return; }
-	
-	const XmlElement* mapRowsElem = mapDefElem.FirstChildElement( "MapRows" );
-	const XmlElement* mapRowElem = mapRowsElem->FirstChildElement( "MapRow" );
-	int rowNum = m_dimensions.y - 1;
-	while ( mapRowElem )
-	{
-		std::string tilesStr = ParseXmlAttribute( *mapRowElem, "tiles", "" );
-		// TODO: Check right length
-		for ( int regionDefNum = 0; regionDefNum < tilesStr.length(); ++regionDefNum )
-		{
-			std::string region = m_legend[tilesStr[regionDefNum]];
+	if ( !ParseLegendNode( mapDefElem ) ) { return; }
+	if ( !ParseMapRowsNode( mapDefElem ) ) { return; }
+	if ( !ParseEntitiesNode( mapDefElem ) ) { return; }
 
-			MapRegionTypeDefinition* regionDef = MapRegionTypeDefinition::GetMapRegionTypeDefinition( region );
-			if ( regionDef == nullptr )
-			{
-				regionDef = MapRegionTypeDefinition::GetMapRegionTypeDefinition( "InvalidRegion" );
-			}
-			
-			int tileIdx = ( rowNum * m_dimensions.x ) + regionDefNum;
-			m_regionTypeDefs[tileIdx] = regionDef;
-		}
-
-		mapRowElem = mapRowElem->NextSiblingElement();
-		--rowNum;
-	}
-
-	const XmlElement* entitiesElem = mapDefElem.FirstChildElement( "Entities" );
-	const XmlElement* entityElem = entitiesElem->FirstChildElement();
-	while ( entityElem )
-	{
-		if ( !strcmp( entityElem->Value(), "PlayerStart" ) )
-		{
-			m_playerStartPos = ParseXmlAttribute( *entityElem, "pos", m_playerStartPos );
-			m_playerStartYaw = ParseXmlAttribute( *entityElem, "yaw", m_playerStartYaw );
-		}
-
-		entityElem = entityElem->NextSiblingElement();
-	}
+	m_isValid = true;
 }
 
 
@@ -86,18 +51,21 @@ bool MapDefinition::ParseMapDefinitionNode( const XmlElement& mapDefElem )
 	if ( m_type == "InvalidType" )
 	{
 		g_devConsole->PrintError( Stringf( "Map file %s is missing a type attribute", m_name.c_str() ) );
+		return false;
 	}
 
 	m_version = ParseXmlAttribute( mapDefElem, "version", m_version );
 	if ( m_version == -1 )
 	{
 		g_devConsole->PrintError( Stringf( "Map file %s is missing a version attribute", m_name.c_str() ) );
+		return false;
 	}
 
 	m_dimensions = ParseXmlAttribute( mapDefElem, "dimensions", m_dimensions );
 	if ( m_dimensions == IntVec2::ZERO )
 	{
 		g_devConsole->PrintError( Stringf( "Map file %s is missing a dimensions attribute", m_name.c_str() ) );
+		return false;
 	}
 
 	return true;
@@ -141,6 +109,31 @@ bool MapDefinition::ParseLegendNode( const XmlElement& mapDefElem )
 //-----------------------------------------------------------------------------------------------
 bool MapDefinition::ParseMapRowsNode( const XmlElement& mapDefElem )
 {
+	const XmlElement* mapRowsElem = mapDefElem.FirstChildElement( "MapRows" );
+	const XmlElement* mapRowElem = mapRowsElem->FirstChildElement( "MapRow" );
+	int rowNum = m_dimensions.y - 1;
+	while ( mapRowElem )
+	{
+		std::string tilesStr = ParseXmlAttribute( *mapRowElem, "tiles", "" );
+		// TODO: Check right length
+		for ( int regionDefNum = 0; regionDefNum < tilesStr.length(); ++regionDefNum )
+		{
+			std::string region = m_legend[tilesStr[regionDefNum]];
+
+			MapRegionTypeDefinition* regionDef = MapRegionTypeDefinition::GetMapRegionTypeDefinition( region );
+			if ( regionDef == nullptr )
+			{
+				regionDef = MapRegionTypeDefinition::GetMapRegionTypeDefinition( "InvalidRegion" );
+			}
+
+			int tileIdx = ( rowNum * m_dimensions.x ) + regionDefNum;
+			m_regionTypeDefs[tileIdx] = regionDef;
+		}
+
+		mapRowElem = mapRowElem->NextSiblingElement();
+		--rowNum;
+	}
+
 	return true;
 }
 
@@ -148,5 +141,38 @@ bool MapDefinition::ParseMapRowsNode( const XmlElement& mapDefElem )
 //-----------------------------------------------------------------------------------------------
 bool MapDefinition::ParseEntitiesNode( const XmlElement& mapDefElem )
 {
+	const XmlElement* entitiesElem = mapDefElem.FirstChildElement( "Entities" );
+	if ( entitiesElem == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "Map file %s is missing an entities node", m_name.c_str() ) );
+		return false;
+	}
+
+	bool hasParsedPlayerStart = false;
+	const XmlElement* entityElem = entitiesElem->FirstChildElement();
+	while ( entityElem )
+	{
+		if ( !strcmp( entityElem->Value(), "PlayerStart" ) )
+		{
+			if ( hasParsedPlayerStart )
+			{
+				g_devConsole->PrintError( Stringf( "Map file %s defines multiple player start nodes in Entities, the last one will be used", m_name.c_str() ) );
+			}
+
+			m_playerStartPos = ParseXmlAttribute( *entityElem, "pos", m_playerStartPos );
+			m_playerStartYaw = ParseXmlAttribute( *entityElem, "yaw", m_playerStartYaw );
+
+			hasParsedPlayerStart = true;
+		}
+
+		entityElem = entityElem->NextSiblingElement();
+	}
+
+	if ( hasParsedPlayerStart == false )
+	{
+		g_devConsole->PrintError( Stringf( "Map file %s is missing a player start node in Entities", m_name.c_str() ) );
+		return false;
+	}
+
 	return true;
 }

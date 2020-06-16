@@ -24,8 +24,9 @@ public:
 	explicit MapDefinition( const XmlElement& mapDefElem, const std::string& name );
 	~MapDefinition();
 
-	std::string GetName()													{ return m_name; }
-	std::string GetType()													{ return m_type; }
+	bool IsValid() const													{ return m_isValid; }
+	std::string GetName() const												{ return m_name; }
+	std::string GetType() const												{ return m_type; }
 
 	Vec2 GetPlayerStartPos() const											{ return m_playerStartPos; }
 	float GetPlayerStartYaw() const											{ return m_playerStartYaw; }
@@ -42,6 +43,7 @@ private:
 	bool ParseEntitiesNode( const XmlElement& mapDefElem );
 
 private:
+	bool m_isValid = false;
 	std::string m_name;
 	std::string m_type = "InvalidType";
 	int m_version = -1;

@@ -51,6 +51,7 @@ void World::Render() const
 	{
 		return;
 	}
+
 	m_curMap->Render();
 }
 
@@ -62,6 +63,7 @@ void World::DebugRender() const
 	{
 		return;
 	}
+
 	m_curMap->DebugRender();
 }
 
@@ -93,6 +95,17 @@ void World::LoadMap( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+void World::LoadMap( const std::string& mapName, MapDefinition* mapDef )
+{
+	if ( mapDef->GetType() == "TileMap" )
+	{
+		TileMap* tileMap = new TileMap( mapName, mapDef );
+		m_loadedMaps[mapName] = tileMap;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void World::ChangeMap( const std::string& mapName )
 {
 	Map* newMap = GetLoadedMapByName( mapName );
@@ -108,7 +121,11 @@ void World::ChangeMap( const std::string& mapName )
 	}
 
 	m_curMap = newMap;
-	m_curMap->Load();
+	
+	if ( m_curMap != nullptr )
+	{
+		m_curMap->Load();
+	}
 }
 
 

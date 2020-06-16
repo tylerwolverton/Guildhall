@@ -16,7 +16,6 @@ class Tile
 public:
 	Tile( IntVec2 tileCoords, TileDefinition* tileDef );
 	Tile( IntVec2 tileCoords, MapRegionTypeDefinition* regionTypeDef );
-	Tile( IntVec2 tileCoords, bool isSolid = false );
 	Tile( int x, int y, TileDefinition* tileDef );
 	~Tile();
 

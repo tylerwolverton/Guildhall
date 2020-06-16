@@ -20,6 +20,7 @@ public:
 	void DebugRender() const;
 
 	void LoadMap( const std::string& mapName );
+	void LoadMap( const std::string& mapName, MapDefinition* mapDef );
 	void ChangeMap( const std::string& mapName );
 
 private:

@@ -1,4 +1,4 @@
-#include "Game.hpp"
+#include "Game/Game.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/MatrixUtils.hpp"
@@ -514,15 +514,30 @@ void Game::LoadXmlMapMaterials()
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		ERROR_AND_DIE( Stringf( "The map material types xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( "MapMaterialsTypes.xml could not be opened missing" );
+		return;
 	}
 
 	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "MapMaterialTypes" ) )
+	{
+		g_devConsole->PrintError( "MapMaterialsTypes.xml: Incorrect root node name, must be MapMaterialTypes" );
+		return;
+	}
+
 	m_defaultMaterialStr = ParseXmlAttribute( *root, "default", "" );
-	GUARANTEE_OR_DIE( m_defaultMaterialStr != "", "MapMaterialsType.xml: No default material attribute defined" );
+	if ( m_defaultMaterialStr == "" )
+	{
+		g_devConsole->PrintError( "MapMaterialsTypes.xml: No default material attribute defined" );
+		return;
+	}
 
 	XmlElement* materialsSheetElement = root->FirstChildElement( "MaterialsSheet" );
-	GUARANTEE_OR_DIE( materialsSheetElement != nullptr, "MapMaterialsType.xml: Must define at least one MaterialsSheet node." );
+	if ( materialsSheetElement == nullptr )
+	{
+		g_devConsole->PrintError( "MapMaterialsTypes.xml: Must define at least one MaterialsSheet node." );
+		return;
+	}
 
 	while ( materialsSheetElement )
 	{
@@ -530,13 +545,13 @@ void Game::LoadXmlMapMaterials()
 		std::string name = ParseXmlAttribute( *materialsSheetElement, "name", "" );
 		if ( name == "" )
 		{
-			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node is missing a name" ) );
+			g_devConsole->PrintError( Stringf( "MapMaterialsTypes.xml: MaterialsSheet node is missing a name" ) );
 			materialsSheetHasError = true;
 		}
 		IntVec2 layout = ParseXmlAttribute( *materialsSheetElement, "layout", IntVec2::ZERO );
 		if ( layout == IntVec2::ZERO )
 		{
-			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node '%s' is missing a layout", name.c_str() ) );
+			g_devConsole->PrintError( Stringf( "MapMaterialsTypes.xml: MaterialsSheet node '%s' is missing a layout", name.c_str() ) );
 			materialsSheetHasError = true;
 		}
 
@@ -549,7 +564,7 @@ void Game::LoadXmlMapMaterials()
 		XmlElement* diffuseElement = materialsSheetElement->FirstChildElement( "Diffuse" );
 		if ( diffuseElement == nullptr )
 		{
-			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node '%s' is missing a diffuse node", name.c_str() ) );
+			g_devConsole->PrintError( Stringf( "MapMaterialsTypes.xml: MaterialsSheet node '%s' is missing a diffuse node", name.c_str() ) );
 			materialsSheetElement = materialsSheetElement->NextSiblingElement( "MaterialsSheet" );
 			continue;
 		}
@@ -557,7 +572,7 @@ void Game::LoadXmlMapMaterials()
 		std::string imagePath = ParseXmlAttribute( *diffuseElement, "image", "" );
 		if ( imagePath == "" )
 		{
-			g_devConsole->PrintError( Stringf( "MapMaterialsType.xml: MaterialsSheet node '%s' is missing an image", name.c_str() ) );
+			g_devConsole->PrintError( Stringf( "MapMaterialsTypes.xml: MaterialsSheet node '%s' is missing an image", name.c_str() ) );
 		}
 		else
 		{
@@ -567,7 +582,11 @@ void Game::LoadXmlMapMaterials()
 		materialsSheetElement = materialsSheetElement->NextSiblingElement( "MaterialsSheet" );
 	}
 
-	GUARANTEE_OR_DIE( !SpriteSheet::s_definitions.empty(), "MapMaterialsType.xml: Must define at least one valid MaterialsSheet node." );
+	if ( SpriteSheet::s_definitions.empty() )
+	{
+		g_devConsole->PrintError( "MapMaterialsTypes.xml: Must define at least one valid MaterialsSheet node." );
+		return;
+	}
 
 	// Parse MaterialType nodes
 	XmlElement* element = root->FirstChildElement( "MaterialType" );
@@ -582,8 +601,11 @@ void Game::LoadXmlMapMaterials()
 		element = element->NextSiblingElement( "MaterialType" );
 	}
 
-	GUARANTEE_OR_DIE( MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( m_defaultMaterialStr ) != nullptr, 
-					  Stringf( "MapMaterialsType.xml: Default material '%s' was not defined as a MaterialType node.", m_defaultMaterialStr.c_str() ) );
+	if ( MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( m_defaultMaterialStr ) == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "MapMaterialsTypes.xml: Default material '%s' was not defined as a MaterialType node.", m_defaultMaterialStr.c_str() ) );
+		return;
+	}
 
 	g_devConsole->PrintString( "Map Materials Loaded", Rgba8::GREEN );
 }
@@ -600,12 +622,23 @@ void Game::LoadXmlMapRegions()
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		ERROR_AND_DIE( Stringf( "The map region types xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( "MapRegionTypes.xml could not be opened" );
+		return;
 	}
 
 	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "MapRegionTypes" ) )
+	{
+		g_devConsole->PrintError( "MapRegionTypes.xml: Incorrect root node name, must be MapRegionTypes" );
+		return;
+	}
+
 	m_defaultMapRegionStr = ParseXmlAttribute( *root, "default", "" );
-	GUARANTEE_OR_DIE( m_defaultMapRegionStr != "", "MapRegionTypes.xml: No default region attribute defined" );
+	if ( m_defaultMapRegionStr == "" )
+	{
+		g_devConsole->PrintError( "MapRegionTypes.xml: No default region attribute defined" );
+		return;
+	}
 
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
@@ -618,9 +651,12 @@ void Game::LoadXmlMapRegions()
 
 		element = element->NextSiblingElement();
 	}
-
-	GUARANTEE_OR_DIE( MapRegionTypeDefinition::GetMapRegionTypeDefinition( m_defaultMapRegionStr ) != nullptr,
-					  Stringf( "MapRegionTypes.xml: Default region '%s' was not defined as a RegionType node.", m_defaultMapRegionStr.c_str() ) );
+	
+	if ( MapRegionTypeDefinition::GetMapRegionTypeDefinition( m_defaultMapRegionStr ) == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "MapRegionTypes.xml: Default region '%s' was not defined as a RegionType node.", m_defaultMapRegionStr.c_str() ) );
+		return;
+	}
 
 	g_devConsole->PrintString( "Map Regions Loaded", Rgba8::GREEN );
 }
@@ -646,11 +682,17 @@ void Game::LoadXmlMaps()
 		XmlError loadError = doc.LoadFile( mapFullPath.c_str() );
 		if ( loadError != tinyxml2::XML_SUCCESS )
 		{
-			ERROR_AND_DIE( Stringf( "The map xml file '%s' could not be opened.", mapFullPath.c_str() ) );
+			g_devConsole->PrintError( Stringf( "'%s' could not be opened", mapFullPath.c_str() ) );
+			continue;
 		}
 
 		XmlElement* root = doc.RootElement();
-		
+		if ( strcmp( root->Name(), "MapDefinition" ) )
+		{
+			g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be MapDefinition", mapFullPath.c_str() ) );
+			return;
+		}
+
 		MapDefinition* mapDef = new MapDefinition( *root, GetFileNameWithoutExtension( mapName ) );
 		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
 

@@ -61,6 +61,11 @@ void TileMap::UpdateMeshes()
 	{
 		Tile& tile = m_tiles[tileIdx];
 
+		if ( tile.m_regionTypeDef == nullptr )
+		{
+			continue;
+		}
+
 		Vec2 mins( (float)tile.m_tileCoords.x, (float)tile.m_tileCoords.y );
 		Vec2 maxs( mins + Vec2( TILE_SIZE, TILE_SIZE ) );
 
@@ -76,22 +81,37 @@ void TileMap::UpdateMeshes()
 
 		if ( !tile.IsSolid() )
 		{
+			// Bottom face
 			Vec2 uvsAtMins, uvsAtMaxs;
 			MapMaterialTypeDefinition* materialTypeDef = tile.m_regionTypeDef->GetFloorMaterial();
 			materialTypeDef->GetSpriteSheet()->GetSpriteUVs( uvsAtMins, uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
-			//materialTypeDef->GetSpriteSheet()->GetSpriteUVs( &uvsAtMins, &uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
-			// Bottom face
+			if ( materialTypeDef == nullptr )
+			{
+				return;
+			}
+
 			AddTileFace( vert0, vert1, vert2, vert3, uvsAtMins, uvsAtMaxs );
 
+			// Top face
 			materialTypeDef = tile.m_regionTypeDef->GetCeilingMaterial();
 			materialTypeDef->GetSpriteSheet()->GetSpriteUVs( uvsAtMins, uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
-			// Top face
+			
+			if ( materialTypeDef == nullptr )
+			{
+				return;
+			}
+
 			AddTileFace( vert5, vert4, vert7, vert6, uvsAtMins, uvsAtMaxs );
 		}
 		else
 		{
 			Vec2 uvsAtMins, uvsAtMaxs;
 			MapMaterialTypeDefinition* materialTypeDef = tile.m_regionTypeDef->GetSideMaterial();
+			if ( materialTypeDef == nullptr )
+			{
+				return;
+			}
+
 			materialTypeDef->GetSpriteSheet()->GetSpriteUVs( uvsAtMins, uvsAtMaxs, materialTypeDef->GetSpriteCoords() );
 
 			// South face
@@ -138,14 +158,17 @@ void TileMap::AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, cons
 //-----------------------------------------------------------------------------------------------
 void TileMap::Render() const
 {
-	//RenderTiles();
-	//RenderTestBoxes();
+	if ( m_mesh.size() == 0 )
+	{
+		return;
+	}
 
 	g_renderer->SetModelMatrix( Mat44::IDENTITY );
 	g_renderer->SetBlendMode( eBlendMode::ALPHA );
 	g_renderer->BindShaderProgram( g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" ) );
-	g_renderer->BindTexture( 0, &m_tiles[0].m_regionTypeDef->GetSideMaterial()->GetSpriteSheet()->GetTexture() );
-	//g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
+
+	g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8.png" ) );
+
 	g_renderer->DrawVertexArray( m_mesh );
 }
 
@@ -206,7 +229,8 @@ bool TileMap::IsAdjacentTileSolid( const Tile& tile, eCardinalDirection directio
 {
 	Tile* adjacentTile = GetTileFromWorldCoords( Vec2( tile.m_tileCoords ) + m_cardinalDirectionOffsets[(int)direction] );
 
-	if ( adjacentTile == nullptr )
+	if ( adjacentTile == nullptr 
+		 || adjacentTile->m_regionTypeDef == nullptr )
 	{
 		return true;
 	}

@@ -39,6 +39,10 @@ MapRegionTypeDefinition::MapRegionTypeDefinition( const XmlElement& mapRegionTyp
 		return;
 	}
 
+	m_sideMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( defaultMaterialName );
+	m_floorMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( defaultMaterialName );
+	m_ceilingMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( defaultMaterialName );
+
 	m_isSolid = ParseXmlAttribute( mapRegionTypeDefElem, "isSolid", m_isSolid );
 
 	if ( m_isSolid )

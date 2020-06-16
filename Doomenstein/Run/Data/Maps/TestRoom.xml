@@ -3,7 +3,7 @@
 	<Legend>
 		<Tile glyph="C" regionType="CobblestoneWall"/>
 		<Tile glyph="W" regionType="WoodWall"/>
-		<Tile glyph="." regionType="StoneFloor"/>
+		<Tile glyph="." regionType="GrassWood"/>
 		<Tile glyph="," regionType="GrassFloor"/>
 	</Legend>
 	<MapRows>

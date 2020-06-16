@@ -9,6 +9,7 @@
 UIText::UIText( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize )
 	: UILabel( parentButton, relativeFractionMinPosition, relativeFractionOfDimensions )
 	, m_text( text )
+	, m_fontSize( fontSize )
 {
 
 }
