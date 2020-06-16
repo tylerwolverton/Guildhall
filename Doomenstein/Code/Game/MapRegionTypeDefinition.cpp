@@ -68,6 +68,18 @@ MapRegionTypeDefinition::MapRegionTypeDefinition( const XmlElement& mapRegionTyp
 			g_devConsole->PrintError( Stringf( "Region type '%s' referenced undefined material type '%s'", m_name.c_str(), sideMaterialStr.c_str() ) );
 			m_sideMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( defaultMaterialName );
 		}
+
+		const XmlElement* floorElem = mapRegionTypeDefElem.FirstChildElement( "Floor" );
+		if ( floorElem != nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "Region type '%s' is solid so it can't have a Floor node defined", m_name.c_str() ) );
+		}
+
+		const XmlElement* ceilingElem = mapRegionTypeDefElem.FirstChildElement( "Ceiling" );
+		if ( ceilingElem != nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "Region type '%s' is solid so it can't have a Ceiling node defined", m_name.c_str() ) );
+		}
 	}
 	else
 	{
@@ -113,6 +125,12 @@ MapRegionTypeDefinition::MapRegionTypeDefinition( const XmlElement& mapRegionTyp
 		{
 			g_devConsole->PrintError( Stringf( "Region type '%s' referenced undefined material type '%s'", m_name.c_str(), ceilingMaterialStr.c_str() ) );
 			m_ceilingMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( defaultMaterialName );
+		}
+
+		const XmlElement* sideElem = mapRegionTypeDefElem.FirstChildElement( "Side" );
+		if ( sideElem != nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "Region type '%s' is not solid so it can't have a Side node defined", m_name.c_str() ) );
 		}
 	}
 	

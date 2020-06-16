@@ -21,7 +21,7 @@ class MapDefinition
 	friend class TileMap;
 
 public:
-	explicit MapDefinition( const XmlElement& mapDefElem, const std::string& name );
+	explicit MapDefinition( const XmlElement& mapDefElem, const std::string& mapName, const std::string& defaultRegionName );
 	~MapDefinition();
 
 	bool IsValid() const													{ return m_isValid; }
@@ -38,18 +38,18 @@ public:
 
 private:
 	bool ParseMapDefinitionNode( const XmlElement& mapDefElem );
-	bool ParseLegendNode( const XmlElement& mapDefElem );
-	bool ParseMapRowsNode( const XmlElement& mapDefElem );
+	bool ParseLegendNode( const XmlElement& mapDefElem, std::map<char, MapRegionTypeDefinition*>& legend );
+	bool ParseMapRowsNode( const XmlElement& mapDefElem, const std::map<char, MapRegionTypeDefinition*>& legend );
 	bool ParseEntitiesNode( const XmlElement& mapDefElem );
 
 private:
 	bool m_isValid = false;
 	std::string m_name;
+	std::string m_defaultRegionTypeStr;
 	std::string m_type = "InvalidType";
 	int m_version = -1;
 	IntVec2 m_dimensions = IntVec2::ZERO;
 
-	std::map<char, std::string> m_legend;
 	std::vector<MapRegionTypeDefinition*> m_regionTypeDefs;
 
 	// Multiplayer TODO: Make this into an array

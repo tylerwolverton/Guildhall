@@ -693,7 +693,7 @@ void Game::LoadXmlMaps()
 			return;
 		}
 
-		MapDefinition* mapDef = new MapDefinition( *root, GetFileNameWithoutExtension( mapName ) );
+		MapDefinition* mapDef = new MapDefinition( *root, GetFileNameWithoutExtension( mapName ), m_defaultMapRegionStr );
 		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
 
 		m_world->LoadMap( mapDef->GetName() );

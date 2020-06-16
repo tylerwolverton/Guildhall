@@ -62,3 +62,5 @@ warp map=TestRoom pos=1,3 yaw=270
 warp
 warp=TwistyMaze
 warp map=TwistyMaze
+warp map=EmptyRoom
+warp map=TestRoom

@@ -35,7 +35,6 @@ public:
 private:
 	bool m_isValid = false;
 	std::string m_name;
-	std::string m_defaultRegionTypeStr;
 	bool m_isSolid = false;
 
 	MapMaterialTypeDefinition* m_sideMaterial = nullptr;
