@@ -65,3 +65,7 @@ warp map=TwistyMaze
 warp map=EmptyRoom
 warp map=TestRoom
 warp map=EmptyRoom
+warp map=TwistyMaze
+warp map=SpaceCastle
+warp
+warp map=UVTest

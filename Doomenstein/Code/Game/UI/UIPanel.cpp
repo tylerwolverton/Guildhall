@@ -39,11 +39,17 @@ UIPanel::UIPanel( UIPanel* parentPanel,
 		m_boundingBox = parentPanel->GetBoundingBox();
 	}
 
-	m_boundingBox.ChopOffLeft( widthFractionRange.x, 0.f );
-	m_boundingBox.ChopOffRight( 1.f - widthFractionRange.y, 0.f );
+	AABB2 leftBox = m_boundingBox.GetBoxAtLeft( widthFractionRange.x, 0.f );
+	AABB2 rightBox = m_boundingBox.GetBoxAtRight( 1.f - widthFractionRange.y, 0.f );
 
-	m_boundingBox.ChopOffBottom( heightFractionRange.x, 0.f );
-	m_boundingBox.ChopOffTop( 1.f - heightFractionRange.y, 0.f );
+	AABB2 bottomBox = m_boundingBox.GetBoxAtBottom( heightFractionRange.x, 0.f );
+	AABB2 topBox = m_boundingBox.GetBoxAtTop( 1.f - heightFractionRange.y, 0.f );
+
+	m_boundingBox.mins.x = leftBox.maxs.x;
+	m_boundingBox.maxs.x = rightBox.mins.x;
+
+	m_boundingBox.mins.y = bottomBox.maxs.y;
+	m_boundingBox.maxs.y = topBox.mins.y;
 }
 
 

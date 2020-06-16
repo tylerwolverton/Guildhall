@@ -16,6 +16,7 @@
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -165,19 +166,28 @@ void Game::InitializeMeshes()
 void Game::BuildUIHud()
 {
 	m_rootUIPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
-
 	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 	
-	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .13f ), hudBaseTexture );
+	float hudFractionY = .13f;
+
+	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, hudFractionY ), hudBaseTexture );
+	m_worldUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( hudFractionY, 1.f ) );
+
+	float worldUIHeightPixels = m_worldUIPanel->GetBoundingBox().GetHeight();
+	float fractionOfWidthCenter = worldUIHeightPixels / m_worldUIPanel->GetBoundingBox().GetWidth();
+	float fractionOnSides = ( 1.f - fractionOfWidthCenter ) / 2.f;
 
 	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheet( "ViewModels" );
 	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
 	Vec2 uvsAtMins, uvsAtMaxs;
 	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
 
-	m_worldUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.275f, .725f ), Vec2( .13f, 1.f ), 
-												   texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
+	// TODO: Add alignment options to UI
+	m_worldUIPanel->AddChildPanel( Vec2( fractionOnSides, 1.f - fractionOnSides ), Vec2( 0.f, 1.f ),
+									texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
+
 }
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -772,6 +782,8 @@ void Game::WarpMapCommand( EventArgs* args )
 
 		return;
 	}
+
+	g_devConsole->Close();
 
 	if ( mapStr != "")
 	{
