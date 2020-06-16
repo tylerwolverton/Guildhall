@@ -83,6 +83,9 @@ private:
 
 	float GetAverageFPS() const;
 
+	// Events
+	void WarpMapCommand( EventArgs* args );
+
 private:
 	Clock* m_gameClock = nullptr;
 	float m_fpsHistory[FRAME_HISTORY_COUNT];

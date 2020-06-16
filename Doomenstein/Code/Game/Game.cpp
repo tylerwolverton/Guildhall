@@ -67,6 +67,7 @@ void Game::Startup()
 
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
+	g_eventSystem->RegisterMethodEvent( "warp", "Usage: warp <map=string> <pos=float,float> <yaw=float>", eUsageLocation::DEV_CONSOLE, this, &Game::WarpMapCommand );
 
 	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
 		
@@ -654,7 +655,6 @@ void Game::LoadXmlMaps()
 		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
 
 		m_world->LoadMap( mapDef->GetName() );
-
 	}
 
 	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
@@ -703,6 +703,43 @@ void Game::SetCameraPositionAndYaw( const Vec2& pos, float yaw )
 	newTransform.SetOrientationFromPitchRollYawDegrees( 0.f, 0.f, yaw );
 
 	m_worldCamera->SetTransform( newTransform );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::WarpMapCommand( EventArgs* args )
+{
+	std::string mapStr = args->GetValue( "map", "" );
+	std::string posStr = args->GetValue( "pos", "" );
+	std::string yawStr = args->GetValue( "yaw", "" );
+	
+	// Print usage and list of maps with no arguments
+	if ( mapStr == ""
+		 && posStr == ""
+		 && yawStr == "" )
+	{
+		g_devConsole->PrintString( "Usage: warp <map=string> <pos=float,float> <yaw=float>" );
+
+		std::string folderPath( "Data/Maps" );
+		Strings mapFiles = GetFileNamesInFolder( folderPath, "*.xml" );
+
+		for ( int mapIdx = 0; mapIdx < (int)mapFiles.size(); ++mapIdx )
+		{
+			g_devConsole->PrintString( GetFileNameWithoutExtension( mapFiles[mapIdx] ) );
+		}
+
+		return;
+	}
+
+	if ( mapStr != "")
+	{
+		m_world->ChangeMap( mapStr );
+	}
+
+	Vec2 newPos = args->GetValue( "pos", m_worldCamera->GetTransform().GetPosition().XY() );
+	float newYawDegrees = args->GetValue( "yaw", m_worldCamera->GetTransform().GetYawDegrees() );
+
+	SetCameraPositionAndYaw( newPos, newYawDegrees );
 }
 
 
