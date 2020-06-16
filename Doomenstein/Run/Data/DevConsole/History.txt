@@ -64,3 +64,4 @@ warp=TwistyMaze
 warp map=TwistyMaze
 warp map=EmptyRoom
 warp map=TestRoom
+warp map=EmptyRoom

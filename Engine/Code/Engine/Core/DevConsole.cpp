@@ -6,6 +6,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -134,6 +135,7 @@ void DevConsole::ProcessInput()
 void DevConsole::PrintString( const std::string& message, const Rgba8& textColor )
 {
 	m_logMessages.push_back( DevConsoleLogMessage( message, textColor ) );
+	m_latestLogMessageToPrint = (int)m_logMessages.size() - 1;
 }
 
 
@@ -141,6 +143,7 @@ void DevConsole::PrintString( const std::string& message, const Rgba8& textColor
 void DevConsole::PrintError( const std::string& message )
 {
 	m_logMessages.push_back( DevConsoleLogMessage( message, Rgba8::RED ) );
+	m_latestLogMessageToPrint = (int)m_logMessages.size() - 1;
 	Open();
 }
 
@@ -245,15 +248,19 @@ void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& verti
 		return;
 	}
 
-	// Adjust lines to render if too many exist to fit on screen
+	// Adjust lines to render if number of log messages is less than max
 	int numLinesToRender = maxNumLinesToRender;
-	if ( (int)m_logMessages.size() < numLinesToRender )
+	if ( m_latestLogMessageToPrint < numLinesToRender )
+	{
+		numLinesToRender = m_latestLogMessageToPrint;
+	}/*if ( (int)m_logMessages.size() < numLinesToRender )
 	{
 		numLinesToRender = (int)m_logMessages.size();
-	}
+	}*/
 	
 	float curLineY = 1;
-	int latestMessageIndex = (int)m_logMessages.size() - 1;
+	//int latestMessageIndex = (int)m_logMessages.size() - 1;
+	int latestMessageIndex = m_latestLogMessageToPrint;
 
 	for ( int logMessageIndexFromEnd = 0; logMessageIndexFromEnd < numLinesToRender; ++logMessageIndexFromEnd )
 	{
@@ -425,6 +432,7 @@ void DevConsole::Open()
 	}
 	m_inputSystem->ResetAllKeys();
 	m_isOpen = true;
+	m_latestLogMessageToPrint = (int)m_logMessages.size() - 1;
 }
 
 
@@ -644,6 +652,19 @@ void DevConsole::UpdateFromKeyboard()
 		}*/
 
 		SetCursorPosition( (int)m_currentCommandStr.size() );
+	}
+
+	float mouseWheelScrollAmount = m_inputSystem->GetMouseWheelScrollAmountDelta();
+	if ( mouseWheelScrollAmount > .001f )
+	{
+		m_latestLogMessageToPrint -= 1;
+		m_latestLogMessageToPrint = ClampMinMaxInt( m_latestLogMessageToPrint, 0, (int)m_logMessages.size() - 1 );
+	}
+
+	if( mouseWheelScrollAmount < -.001f )
+	{
+		m_latestLogMessageToPrint += 1;
+		m_latestLogMessageToPrint = ClampMinMaxInt( m_latestLogMessageToPrint, 0, (int)m_logMessages.size() - 1 );
 	}
 
 	MoveThroughCommandHistory( -m_inputSystem->ConsumeAllKeyPresses( KEY_UPARROW ) );

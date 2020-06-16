@@ -337,7 +337,7 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 //-----------------------------------------------------------------------------------------------
 float Game::GetAverageFPS() const
 {
-	/*if ( FRAME_HISTORY_COUNT < 1 )
+	/*if constexpr ( FRAME_HISTORY_COUNT < 1 )
 	{
 		ERROR_AND_DIE( "FRAME_HISTORY_COUNT must be configured to be larger than 0" );
 	}*/

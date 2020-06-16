@@ -125,6 +125,7 @@ void World::ChangeMap( const std::string& mapName )
 	if ( m_curMap != nullptr )
 	{
 		m_curMap->Load();
+		g_devConsole->PrintString( Stringf( "Map '%s' loaded", mapName.c_str() ), Rgba8::GREEN );
 	}
 }
 
