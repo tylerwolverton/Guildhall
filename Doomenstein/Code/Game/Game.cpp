@@ -524,7 +524,7 @@ void Game::LoadXmlMapMaterials()
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		g_devConsole->PrintError( "MapMaterialsTypes.xml could not be opened missing" );
+		g_devConsole->PrintError( "MapMaterialsTypes.xml could not be opened" );
 		return;
 	}
 
