@@ -12,6 +12,7 @@
 struct AABB2;
 struct Rgba8;
 class Entity;
+class Actor;
 class RandomNumberGenerator;
 class Clock;
 class Camera;
@@ -71,6 +72,8 @@ public:
 
 	void		PickupAtMousePosition();
 
+	void		SetPlayer( Actor* player )												{ m_player = player; }
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
@@ -107,6 +110,8 @@ private:
 
 private:
 	Clock* m_gameClock = nullptr;
+
+	Actor* m_player = nullptr;
 
 	// HUD
 	UIPanel* m_rootPanel = nullptr;

@@ -5,6 +5,9 @@
     <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
       <SpriteAnim name="Idle"		spriteIndexes="23"/>
     </SpriteAnimSet>
+    <ActionEvents>
+      <ActionEvent type="PickUp" position="MouseWorld"/>
+    </ActionEvents>
   </ItemDefinition>
 
 </ItemDefinitions>

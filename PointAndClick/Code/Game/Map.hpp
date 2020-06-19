@@ -44,8 +44,6 @@ public:
 	void DebugRender() const;
 
 private:
-	Actor*				SpawnNewActor( const Vec2& position, std::string actorName );
-	Item*				SpawnNewItem( const Vec2& position, std::string itemName );
 	void				SpawnPlayer();
 
 	void				UpdateEntities( float deltaSeconds );
@@ -61,6 +59,7 @@ private:
 
 	// Event handlers
 	void				OnVerbAction( EventArgs* args );
+	void				OnPickUpItem( EventArgs* args );
 
 private:
 	std::string			m_name;
@@ -70,6 +69,7 @@ private:
 	int					m_height = 0;
 
 	EntityVector		m_entities;
+	std::vector<Item*>	m_items;
 	Entity*				m_player;
 
 	std::vector<TriggerRegion> m_triggerRegions;

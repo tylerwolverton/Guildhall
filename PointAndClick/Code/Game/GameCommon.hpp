@@ -30,6 +30,36 @@ extern SpriteSheet* g_portraitSpriteSheet;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eVerbState
+{
+	NONE,
+	PICKUP,
+	OPEN,
+	CLOSE,
+	TALK_TO,
+	GIVE_TO_SOURCE,
+	GIVE_TO_DESTINATION,
+};
+
+
+////-----------------------------------------------------------------------------------------------
+//std::string GetVerbStateAsString( eVerbState verbState )
+//{
+//	switch ( verbState )
+//	{
+//		case eVerbState::NONE: return "None";
+//		case eVerbState::PICKUP: return "PickUp";
+//		case eVerbState::OPEN: return "Open";
+//		case eVerbState::CLOSE: return "Close";
+//		case eVerbState::TALK_TO: return "Talk to";
+//		case eVerbState::GIVE_TO_SOURCE: return "Give to source";
+//		case eVerbState::GIVE_TO_DESTINATION: return "Give to destination";
+//		default: return "Unknown State";
+//	}
+//}
+
+
+//-----------------------------------------------------------------------------------------------
 // Game Constants
 //
 constexpr float CLIENT_ASPECT = 16.f / 9.f;

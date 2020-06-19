@@ -1,5 +1,7 @@
 #include "Game/Item.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -77,6 +79,35 @@ void Item::Die()
 SpriteDefinition* Item::GetSpriteDef() const
 {
 	return const_cast<SpriteDefinition*>( &( m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime ) ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Item::HandleVerbAction( eVerbState verbState )
+{
+	switch ( verbState )
+	{
+		case eVerbState::PICKUP:
+		{
+			std::string typeStr = m_itemDef->m_pickupEventArgs.GetValue( "type", "" );
+			if ( typeStr == "" )
+			{
+				g_devConsole->PrintString( "Hmm, that's not going to work", Rgba8::ORANGE );
+				return;
+			}
+
+			EventArgs args;
+			args.SetValue( "targetItem", (void*)this );
+			g_eventSystem->FireEvent( "OnPickUpItem", &args );
+		}
+		break;
+
+		default:
+		{
+			g_devConsole->PrintString( "Hmm, that's not going to work", Rgba8::ORANGE );
+		}
+		break;
+	}
 }
 
 

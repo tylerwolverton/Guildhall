@@ -1,6 +1,8 @@
 #pragma once
-#include "Engine/Core/XmlUtils.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Game/EntityDefinition.hpp"
 
@@ -32,4 +34,6 @@ public:
 
 private:
 	SpriteAnimSetDefinition* m_spriteAnimSetDef = nullptr;
+
+	EventArgs m_pickupEventArgs;
 };

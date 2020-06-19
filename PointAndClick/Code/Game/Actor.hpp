@@ -11,6 +11,7 @@ class ActorDefinition;
 class SpriteAnimDefinition;
 
 
+
 //-----------------------------------------------------------------------------------------------
 class Actor : public Entity
 {
@@ -23,6 +24,8 @@ public:
 	virtual void Die();
 
 	bool IsPlayer() const												{ return m_isPlayer; }
+
+//	std::string GetCurrentVerbState()
 
 private:
 	void UpdateFromKeyboard( float deltaSeconds );

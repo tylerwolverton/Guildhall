@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Game/Entity.hpp"
+#include "Game/GameCommon.hpp"
 
 #include <vector>
 
@@ -24,6 +25,8 @@ public:
 	virtual void Die();
 
 	SpriteDefinition* GetSpriteDef() const;
+
+	void HandleVerbAction( eVerbState verbState );
 
 private:
 	void UpdateAnimation();

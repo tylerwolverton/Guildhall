@@ -8,6 +8,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class Map;
+class Item;
 class Texture;
 
 
@@ -22,6 +23,7 @@ public:
 
 	std::string GetName()													{ return m_name; }
 	EntityVector GetEntitiesInLevel();
+	std::vector<Item*> GetItemsInLevel();
 
 	static MapDefinition* GetMapDefinition( std::string mapName );
 
@@ -34,6 +36,7 @@ private:
 	int				m_height = 0;
 
 	EntityVector	m_entities;
+	std::vector<Item*>	m_items;
 
 	Texture*		m_backgroundTexture = nullptr;
 };

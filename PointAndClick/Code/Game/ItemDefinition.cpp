@@ -1,5 +1,7 @@
 #include "Game/ItemDefinition.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
@@ -18,6 +20,42 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 	if ( spriteAnimSetElement != nullptr )
 	{
 		m_spriteAnimSetDef = new SpriteAnimSetDefinition( *g_renderer, *spriteAnimSetElement );
+	}
+
+	const XmlElement* actionEventsElem = itemDefElem.FirstChildElement( "ActionEvents" );
+	if(actionEventsElem == nullptr )
+	{
+		return;
+	}
+
+	const XmlElement* actionEventElem = actionEventsElem->FirstChildElement( "ActionEvent" );
+	while ( actionEventElem != nullptr )
+	{
+		std::string type = ParseXmlAttribute( *actionEventElem, "type", "" );
+		if ( type == "" )
+		{
+			g_devConsole->PrintError( Stringf( "Item '%s': Missing type attribute for ActionEvent node" ) );
+
+			actionEventElem = actionEventsElem->NextSiblingElement();
+			continue;
+		}
+
+		std::string positionType = ParseXmlAttribute( *actionEventElem, "position", "" );
+		if ( positionType == "" )
+		{
+			g_devConsole->PrintError( Stringf( "Item '%s': Missing position attribute for ActionEvent node" ) );
+
+			actionEventElem = actionEventsElem->NextSiblingElement();
+			continue;
+		}
+
+		if ( type == "PickUp" )
+		{
+			m_pickupEventArgs.SetValue( "type", type );
+			m_pickupEventArgs.SetValue( "position", positionType );
+		}
+
+		actionEventElem = actionEventsElem->NextSiblingElement();
 	}
 }
 

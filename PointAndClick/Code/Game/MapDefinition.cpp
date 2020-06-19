@@ -33,6 +33,23 @@ EntityVector MapDefinition::GetEntitiesInLevel()
 
 
 //-----------------------------------------------------------------------------------------------
+std::vector<Item*> MapDefinition::GetItemsInLevel()
+{
+	std::vector<Item*> itemsInLevel;
+	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
+	{
+		Item* const& item = m_items[itemIdx];
+		if ( !item->IsInPlayerInventory() )
+		{
+			itemsInLevel.push_back( item );
+		}
+	}
+
+	return itemsInLevel;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 MapDefinition* MapDefinition::GetMapDefinition( std::string mapName )
 {
 	std::map< std::string, MapDefinition* >::const_iterator  mapIter = MapDefinition::s_definitions.find( mapName );
@@ -87,6 +104,7 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 				Item* newItem = new Item( pos, ItemDefinition::GetItemDefinition( name ) );
 
 				m_entities.push_back( newItem );
+				m_items.push_back( newItem );
 			}
 
 			entityElem = entityElem->NextSiblingElement();

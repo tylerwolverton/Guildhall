@@ -34,6 +34,7 @@ Map::Map( std::string name, MapDefinition* mapDef )
 {
 	//g_eventSystem->RegisterEvent( "VerbAction", "", GAME, &Map::OnVerbAction );
 	g_eventSystem->RegisterMethodEvent( "VerbAction", "", GAME, this, &Map::OnVerbAction );
+	g_eventSystem->RegisterMethodEvent( "OnPickUpItem", "", GAME, this, &Map::OnPickUpItem );
 
 	m_width = mapDef->m_width;
 	m_height = mapDef->m_height;
@@ -254,36 +255,17 @@ void Map::DebugRenderEntities() const
 
 
 //-----------------------------------------------------------------------------------------------
-Actor* Map::SpawnNewActor(  const Vec2& position, std::string actorName )
-{
-	Actor* newActor = new Actor( position, ActorDefinition::GetActorDefinition( actorName ) );
-
-	m_entities.push_back( newActor );
-
-	return newActor;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Item* Map::SpawnNewItem( const Vec2& position, std::string itemName )
-{
-	Item* newItem = new Item( position, ItemDefinition::GetItemDefinition( itemName ) );
-
-	m_entities.push_back( newItem );
-
-	return newItem;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Map::SpawnPlayer()
 {
 	// TODO: Load position from XML
 
 	m_entities = m_mapDef->GetEntitiesInLevel();
+	m_items = m_mapDef->GetItemsInLevel();
+	
 	if ( m_entities.size() > 0 )
 	{
 		m_player = m_entities[0];
+		g_game->SetPlayer( (Actor*)m_player );
 
 		DebugAddWorldTextf( Mat44::CreateTranslation2D( m_player->GetPosition() + Vec2( 2.f, 1.f ) ),
 							Vec2( .5f, .5f ),
@@ -306,12 +288,70 @@ void Map::SpawnPlayer()
 void Map::OnVerbAction( EventArgs* args )
 {
 	std::string str( "Event received at position: " );
-	Vec2 pos = args->GetValue( "Position", Vec2( -1.f, -1.f ) );
-	str += pos.ToString();
+	Vec2 worldPosition = args->GetValue( "Position", Vec2( -1.f, -1.f ) );
+	str += worldPosition.ToString();
 	g_devConsole->PrintString( str );
 
-	if ( args->GetValue( "Type", std::string( "" ) ) == std::string( "PickUp" ) )
+	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
+	{
+		Item*& item = m_items[itemIdx];
+		if ( item == nullptr )
+		{
+			continue;
+		}
+
+		if ( IsPointInsideDisc( worldPosition, item->GetPosition(), item->GetPhysicsRadius() ) )
+		{
+			item->HandleVerbAction( eVerbState::PICKUP );
+		}
+	}
+
+	/*if ( args->GetValue( "Type", std::string( "" ) ) == std::string( "PickUp" ) )
 	{
 		PickUpItem( pos );
+	}*/
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::OnPickUpItem( EventArgs* args )
+{
+	Item* targetItem = (Item*)args->GetValue( "targetItem", (void*)nullptr );
+
+	if ( targetItem == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to pickup an item but targetItem was null" );
+		return;
+	}
+
+	g_game->AddItemToInventory( targetItem );
+
+	// Remove from map since game now owns the item
+	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
+	{
+		Item*& item = m_items[itemIdx];
+		if ( item == nullptr )
+		{
+			continue;
+		}
+
+		if ( item == targetItem )
+		{
+			m_items[itemIdx] = nullptr;
+		}
+	}
+
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		if ( entity == targetItem )
+		{
+			m_entities[entityIdx] = nullptr;
+		}
 	}
 }
