@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 class Window;
 class App;
 class InputSystem;
@@ -30,34 +32,22 @@ extern SpriteSheet* g_portraitSpriteSheet;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class eVerbState
+enum class eVerbState : int
 {
 	NONE,
+
 	PICKUP,
 	OPEN,
 	CLOSE,
 	TALK_TO,
 	GIVE_TO_SOURCE,
 	GIVE_TO_DESTINATION,
+
+	LAST_VAL = GIVE_TO_DESTINATION
 };
 
-
-////-----------------------------------------------------------------------------------------------
-//std::string GetVerbStateAsString( eVerbState verbState )
-//{
-//	switch ( verbState )
-//	{
-//		case eVerbState::NONE: return "None";
-//		case eVerbState::PICKUP: return "PickUp";
-//		case eVerbState::OPEN: return "Open";
-//		case eVerbState::CLOSE: return "Close";
-//		case eVerbState::TALK_TO: return "Talk to";
-//		case eVerbState::GIVE_TO_SOURCE: return "Give to source";
-//		case eVerbState::GIVE_TO_DESTINATION: return "Give to destination";
-//		default: return "Unknown State";
-//	}
-//}
-
+std::string GetVerbStateAsString( eVerbState verbState );
+eVerbState GetVerbStateFromString( const std::string& typeStr );
 
 //-----------------------------------------------------------------------------------------------
 // Game Constants
@@ -84,3 +74,13 @@ constexpr float DEBUG_LINE_THICKNESS = 0.02f;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
+
+
+//-----------------------------------------------------------------------------------------------
+// EventNames
+const std::string OnPickUpVerbEventName = "OnPickUpVerb";
+const std::string OnOpenVerbEventName = "OnOpenVerb";
+const std::string OnCloseVerbEventName = "OnCloseVerb";
+const std::string OnTalkToVerbEventName = "OnTalkToVerb";
+
+std::string GetEventNameForVerbState( eVerbState verbState );

@@ -59,7 +59,10 @@ private:
 
 	// Event handlers
 	void				OnVerbAction( EventArgs* args );
-	void				OnPickUpItem( EventArgs* args );
+	void				OnPickupVerb( EventArgs* args );
+	void				OnOpenVerb( EventArgs* args );
+	void				OnCloseVerb( EventArgs* args );
+	void				OnTalkToVerb( EventArgs* args );
 
 private:
 	std::string			m_name;

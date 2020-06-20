@@ -6,7 +6,10 @@
       <SpriteAnim name="Idle"		spriteIndexes="23"/>
     </SpriteAnimSet>
     <ActionEvents>
-      <ActionEvent type="PickUp" position="MouseWorld"/>
+      <ActionEvent type="PickUp"/>
+      <ActionEvent type="Open"/>
+      <ActionEvent type="Close"/>
+      <ActionEvent type="TalkTo"/>      
     </ActionEvents>
   </ItemDefinition>
 

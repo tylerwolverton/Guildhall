@@ -3,7 +3,7 @@
   <MapDefinition name="Bar" width="30" height="7" backgroundTexturePath="Data/Images/SpriteSheets/SCUMMBarBackground.png">
     <Entities>
       <Entity name="Player" type="actor" startPos="2,1"/>
-      <Entity name="Key" type="item" startPos="22,2"/>
+      <Entity name="Key" type="item" startPos="6,2"/>
     </Entities>
   </MapDefinition>
 

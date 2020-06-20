@@ -85,29 +85,26 @@ SpriteDefinition* Item::GetSpriteDef() const
 //-----------------------------------------------------------------------------------------------
 void Item::HandleVerbAction( eVerbState verbState )
 {
-	switch ( verbState )
+	NamedProperties* verbEventProperties = m_itemDef->GetVerbEventProperties( verbState );
+
+	if( verbEventProperties == nullptr )
 	{
-		case eVerbState::PICKUP:
-		{
-			std::string typeStr = m_itemDef->m_pickupEventArgs.GetValue( "type", "" );
-			if ( typeStr == "" )
-			{
-				g_devConsole->PrintString( "Hmm, that's not going to work", Rgba8::ORANGE );
-				return;
-			}
-
-			EventArgs args;
-			args.SetValue( "targetItem", (void*)this );
-			g_eventSystem->FireEvent( "OnPickUpItem", &args );
-		}
-		break;
-
-		default:
-		{
-			g_devConsole->PrintString( "Hmm, that's not going to work", Rgba8::ORANGE );
-		}
-		break;
+		g_devConsole->PrintString( "Hmm, that's not going to work", Rgba8::ORANGE );
+		return;
+	
 	}
+
+	EventArgs args;
+	args.SetValue( "target", (void*)this );
+
+	std::string verbEventName = verbEventProperties->GetValue( "EventName", "" );
+	if ( verbEventName == "" )
+	{
+		g_devConsole->PrintError( Stringf( "Invalid event name '%s' seen for verb state '%s'", verbEventName.c_str(), GetEventNameForVerbState( verbState ).c_str() ) );
+		return;
+	}
+
+	g_eventSystem->FireEvent( verbEventName, &args );
 }
 
 

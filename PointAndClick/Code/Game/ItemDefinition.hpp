@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------------------------
 class SpriteAnimDefinition;
 class SpriteAnimSetDefinition;
-
+enum class eVerbState : int;
 
 //-----------------------------------------------------------------------------------------------
 class ItemDefinition : public EntityDefinition
@@ -26,6 +26,7 @@ public:
 
 	std::string GetName() { return m_name; }
 	SpriteAnimDefinition* GetSpriteAnimDef( const std::string& animName );
+	NamedProperties* GetVerbEventProperties( eVerbState verbState );
 
 	static ItemDefinition* GetItemDefinition( const std::string& itemName );
 
@@ -35,5 +36,5 @@ public:
 private:
 	SpriteAnimSetDefinition* m_spriteAnimSetDef = nullptr;
 
-	EventArgs m_pickupEventArgs;
+	std::map<eVerbState, NamedProperties*> m_verbPropertiesMap;
 };

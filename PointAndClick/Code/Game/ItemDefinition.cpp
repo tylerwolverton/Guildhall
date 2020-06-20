@@ -40,22 +40,14 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 			continue;
 		}
 
-		std::string positionType = ParseXmlAttribute( *actionEventElem, "position", "" );
-		if ( positionType == "" )
-		{
-			g_devConsole->PrintError( Stringf( "Item '%s': Missing position attribute for ActionEvent node" ) );
+		NamedProperties* properties = new NamedProperties();
+	
+		eVerbState verbState = GetVerbStateFromString( type );
+		properties->SetValue( "EventName", GetEventNameForVerbState( verbState ) );
 
-			actionEventElem = actionEventsElem->NextSiblingElement();
-			continue;
-		}
+		m_verbPropertiesMap[verbState] = properties;
 
-		if ( type == "PickUp" )
-		{
-			m_pickupEventArgs.SetValue( "type", type );
-			m_pickupEventArgs.SetValue( "position", positionType );
-		}
-
-		actionEventElem = actionEventsElem->NextSiblingElement();
+		actionEventElem = actionEventElem->NextSiblingElement();
 	}
 }
 
@@ -63,8 +55,8 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 //-----------------------------------------------------------------------------------------------
 ItemDefinition::~ItemDefinition()
 {
-	delete m_spriteAnimSetDef;
-	m_spriteAnimSetDef = nullptr;
+	PTR_SAFE_DELETE( m_spriteAnimSetDef );
+	PTR_MAP_SAFE_DELETE( m_verbPropertiesMap );
 }
 
 
@@ -79,6 +71,19 @@ SpriteAnimDefinition* ItemDefinition::GetSpriteAnimDef( const std::string& animN
 	}
 
 	return mapIter->second;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+NamedProperties* ItemDefinition::GetVerbEventProperties( eVerbState verbState )
+{
+	auto iter = m_verbPropertiesMap.find( verbState );
+	if ( iter == m_verbPropertiesMap.end() )
+	{
+		return nullptr;
+	}
+
+	return iter->second;
 }
 
 

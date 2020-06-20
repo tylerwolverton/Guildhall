@@ -34,7 +34,10 @@ Map::Map( std::string name, MapDefinition* mapDef )
 {
 	//g_eventSystem->RegisterEvent( "VerbAction", "", GAME, &Map::OnVerbAction );
 	g_eventSystem->RegisterMethodEvent( "VerbAction", "", GAME, this, &Map::OnVerbAction );
-	g_eventSystem->RegisterMethodEvent( "OnPickUpItem", "", GAME, this, &Map::OnPickUpItem );
+	g_eventSystem->RegisterMethodEvent( OnPickUpVerbEventName, "", GAME, this, &Map::OnPickupVerb );
+	g_eventSystem->RegisterMethodEvent( OnOpenVerbEventName, "", GAME, this, &Map::OnOpenVerb );
+	g_eventSystem->RegisterMethodEvent( OnCloseVerbEventName, "", GAME, this, &Map::OnCloseVerb );
+	g_eventSystem->RegisterMethodEvent( OnTalkToVerbEventName, "", GAME, this, &Map::OnTalkToVerb );
 
 	m_width = mapDef->m_width;
 	m_height = mapDef->m_height;
@@ -302,7 +305,15 @@ void Map::OnVerbAction( EventArgs* args )
 
 		if ( IsPointInsideDisc( worldPosition, item->GetPosition(), item->GetPhysicsRadius() ) )
 		{
-			item->HandleVerbAction( eVerbState::PICKUP );
+			int verbStateInt = args->GetValue( "Type", (int)eVerbState::NONE );
+			if ( verbStateInt < (int)eVerbState::NONE
+				 || verbStateInt >( int )eVerbState::LAST_VAL )
+			{
+				g_devConsole->PrintError( Stringf( "Verb type '%d' is not defined", verbStateInt ) );
+				return;
+			}
+
+			item->HandleVerbAction( eVerbState( verbStateInt ) );
 		}
 	}
 
@@ -314,13 +325,13 @@ void Map::OnVerbAction( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::OnPickUpItem( EventArgs* args )
+void Map::OnPickupVerb( EventArgs* args )
 {
-	Item* targetItem = (Item*)args->GetValue( "targetItem", (void*)nullptr );
+	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
 
 	if ( targetItem == nullptr )
 	{
-		g_devConsole->PrintError( "Tried to pickup an item but targetItem was null" );
+		g_devConsole->PrintError( "Tried to pickup an item but target was null" );
 		return;
 	}
 
@@ -354,4 +365,49 @@ void Map::OnPickUpItem( EventArgs* args )
 			m_entities[entityIdx] = nullptr;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::OnOpenVerb( EventArgs* args )
+{
+	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+
+	if ( targetItem == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to open an item but target was null" );
+		return;
+	}
+
+	g_devConsole->PrintString( Stringf( "Opened: '%s'", targetItem->GetName().c_str() ), Rgba8::PURPLE );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::OnCloseVerb( EventArgs* args )
+{
+	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+
+	if ( targetItem == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to close an item but target was null" );
+		return;
+	}
+
+	g_devConsole->PrintString( Stringf( "Closed: '%s'", targetItem->GetName().c_str() ), Rgba8::PURPLE );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::OnTalkToVerb( EventArgs* args )
+{
+	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+
+	if ( targetItem == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to talk to someone but target was null" );
+		return;
+	}
+
+	g_devConsole->PrintString( Stringf( "Talked to: '%s'", targetItem->GetName().c_str() ), Rgba8::PURPLE );
 }

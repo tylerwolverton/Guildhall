@@ -99,7 +99,8 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 	{
 		EventArgs args;
-		//args.SetValue( "Type", "PickUp" );
+		args.SetValue( "Type", (int)eVerbState::PICKUP );
+		//args.SetValue( "Type", m_curVerbState );
 		args.SetValue( "Position", g_game->GetMouseWorldPosition() );
 		g_eventSystem->FireEvent( "VerbAction", &args );
 	}
