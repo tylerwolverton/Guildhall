@@ -21,6 +21,7 @@ class World;
 class TextBox;
 class UIButton;
 class UIPanel;
+class UIText;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -74,6 +75,9 @@ public:
 
 	void		SetPlayer( Actor* player )												{ m_player = player; }
 
+	void		ClearCurrentActionText();
+	void		SetNounText( const std::string& nounText )								{ m_nounText = nounText; }
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
@@ -120,6 +124,10 @@ private:
 	UIPanel* m_inventoryPanel = nullptr;
 	UIPanel* m_dialoguePanel = nullptr;
 	UIPanel* m_currentActionPanel = nullptr;
+
+	UIText* m_verbActionUIText = nullptr;
+	std::string m_verbText;
+	std::string m_nounText;
 
 	UIButton* m_giveVerbButton = nullptr;
 	UIButton* m_openVerbButton = nullptr;

@@ -48,6 +48,7 @@ enum class eVerbState : int
 
 std::string GetVerbStateAsString( eVerbState verbState );
 eVerbState GetVerbStateFromString( const std::string& typeStr );
+std::string GetDisplayNameForVerbState( eVerbState verbState );
 
 //-----------------------------------------------------------------------------------------------
 // Game Constants

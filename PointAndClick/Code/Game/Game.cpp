@@ -33,6 +33,7 @@
 #include "Game/ItemDefinition.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UIPanel.hpp"
+#include "Game/UIText.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -187,6 +188,8 @@ void Game::Update()
 		case eGameState::PLAYING:
 		{
 			UpdateFromKeyboard();
+
+			m_verbActionUIText->SetText( m_verbText + " " + m_nounText );
 
 			m_world->Update();
 		}
@@ -670,14 +673,15 @@ void Game::BuildHUD()
 
 	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
 
-	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .9f, 1.f ), childBackground, Rgba8::BLACK );
+	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .8f, 1.f ), childBackground, Rgba8::BLACK );
+	m_verbActionUIText = (UIText*)m_currentActionPanel->AddText( Vec2( .5f, .6f ), Vec2( 0.f, .25f ), "" );
+	//m_verbActionUIText = (UIText*)m_currentActionPanel->AddText( Vec2( .25f, .75f ), Vec2( 0.f, .25f ), "" );
 
 	BuildVerbPanel();
 	BuildInventoryPanel();
 
 	m_hudPanel->Deactivate();
 	m_hudPanel->Hide();
-
 }
 
 
@@ -782,7 +786,8 @@ void Game::OnTestButtonClicked( EventArgs* args )
 	else if ( id == m_talkToVerbButton->GetId() ) { verbState = eVerbState::TALK_TO; }
 
 	m_player->SetPlayerVerbState( verbState );
-	/*m_currentActionPanel->Add*/
+	m_verbText = GetDisplayNameForVerbState( verbState );
+	m_nounText = "";
 	/*for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
 		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
@@ -960,6 +965,14 @@ bool Game::IsItemInInventory( Item* item )
 void Game::PickupAtMousePosition()
 {
 	Vec2 clickPosition = g_game->GetMouseWorldPosition();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ClearCurrentActionText()
+{
+	m_verbText = "";
+	m_nounText = "";
 }
 
 

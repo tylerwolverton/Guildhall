@@ -100,7 +100,7 @@ void BitmapFont::AppendVertsForTextInBox2D( std::vector<Vertex_PCU>& vertexArray
 
 
 //-----------------------------------------------------------------------------------------------
-Vec2 BitmapFont::GetDimensionsForText2D( float cellHeight, const std::string& text, float cellAspect /*= 1.f */ )
+Vec2 BitmapFont::GetDimensionsForText2D( float cellHeight, const std::string& text, float cellAspect )
 {
 	float cellWidth = cellHeight * cellAspect;
 

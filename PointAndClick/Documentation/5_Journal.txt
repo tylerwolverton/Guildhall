@@ -36,7 +36,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 16          [/]         1.5         1.25        4           Create a data-driven game object with event interface for each of the verbs 
 17          [/]         3           0.5         12          Create state machine to handle actions 
 10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen
-23          [/]         1.5         0.25        13          Add current action section to HUD
+23          [/]         1.5         0.75        13          Add current action section to HUD
+23.1*       [X]         0.5         0.5         13          Refactor UIPanel and UIButton into common class to use labels with panel too
 
 -------------------------------------------------------------------------------
 Notes

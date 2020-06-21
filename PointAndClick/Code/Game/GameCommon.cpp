@@ -50,6 +50,23 @@ std::string GetVerbStateAsString( eVerbState verbState )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string GetDisplayNameForVerbState( eVerbState verbState )
+{
+	switch ( verbState )
+	{
+		case eVerbState::NONE: return "None";
+		case eVerbState::PICKUP: return "Pick Up";
+		case eVerbState::OPEN: return "Open";
+		case eVerbState::CLOSE: return "Close";
+		case eVerbState::TALK_TO: return "Talk To";
+		case eVerbState::GIVE_TO_SOURCE: return "Give";
+		case eVerbState::GIVE_TO_DESTINATION: return "to";
+		default: return "Unknown";
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 eVerbState GetVerbStateFromString( const std::string& typeStr )
 {
 	if ( typeStr == "PickUp" ) { return eVerbState::PICKUP; }

@@ -110,9 +110,14 @@ void Map::UpdateMouseHover()
 								0.1f,
 								DEBUG_RENDER_ALWAYS,
 								entityName.c_str() );
+
+			g_game->SetNounText( entityName );
+
 			return;
 		}
 	}
+
+	g_game->SetNounText( "" );
 }
 
 
@@ -180,28 +185,6 @@ void Map::CenterCameraOnPlayer() const
 		cameraBounds.FitWithinBounds( windowBox );
 
 		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::PickUpItem( const Vec2& worldPosition )
-{
-	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
-	{
-		Entity*& entity = m_entities[entityIdx];
-		if ( entity == nullptr )
-		{
-			continue;
-		}
-
-		if ( entity->GetName() == "Key"
-			 && IsPointInsideDisc( worldPosition, entity->GetPosition(), entity->GetPhysicsRadius() ) )
-		{
-			g_game->AddItemToInventory( (Item*)entity );
-			m_entities[entityIdx] = nullptr;
-			return;
-		}
 	}
 }
 

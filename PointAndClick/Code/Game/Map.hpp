@@ -55,8 +55,6 @@ private:
 	void				DebugRenderEntities() const;
 	void				CenterCameraOnPlayer() const;
 	
-	void				PickUpItem( const Vec2& worldPosition );
-
 	// Event handlers
 	void				OnVerbAction( EventArgs* args );
 	void				OnPickupVerb( EventArgs* args );
