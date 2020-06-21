@@ -17,9 +17,10 @@ class EntityDefinition
 public:
 	explicit EntityDefinition( const XmlElement& entityDefElem );
 
-	bool		IsValid()											{ return m_isValid; }
-	std::string GetName()											{ return m_name; }
-	float		GetWalkSpeed()										{ return m_walkSpeed; }
+	bool		IsValid() const											{ return m_isValid; }
+	std::string GetName() const											{ return m_name; }
+	std::string GetType() const											{ return m_type; }
+	float		GetWalkSpeed() const									{ return m_walkSpeed; }
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
@@ -29,6 +30,7 @@ public:
 protected:
 	bool			m_isValid = false;
 	std::string		m_name;
+	std::string		m_type;
 	float			m_physicsRadius = 0.f;
 	float			m_physicsHeight = 0.f;
 	float			m_mass = 1.f;

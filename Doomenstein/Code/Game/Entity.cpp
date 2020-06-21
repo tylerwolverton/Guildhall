@@ -11,7 +11,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Entity::Entity( EntityDefinition* entityDef )
+Entity::Entity( const EntityDefinition& entityDef )
 	: m_entityDef( entityDef )
 {
 }
@@ -55,7 +55,7 @@ void Entity::Die()
 void Entity::DebugRender() const
 {
 	g_renderer->BindDiffuseTexture( nullptr );
-	DrawRing2D( g_renderer, m_position, m_entityDef->m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
+	DrawRing2D( g_renderer, m_position, m_entityDef.m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
 }
 
 

@@ -67,6 +67,7 @@ private:
 
 private:
 	std::vector<Tile>	m_tiles;
+	IntVec2				m_dimensions;
 
 	Vec2				m_cardinalDirectionOffsets[9];
 

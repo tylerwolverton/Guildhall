@@ -19,7 +19,7 @@ class Entity
 	friend class Map;
 	
 public:
-	Entity( EntityDefinition* entityDef );
+	Entity( const EntityDefinition& entityDef );
 	virtual ~Entity() {}
 
 	virtual void Update( float deltaSeconds );
@@ -30,8 +30,8 @@ public:
 	const Vec2	 GetForwardVector() const;
 	const Vec2	 GetPosition() const							{ return m_position; };
 	void		 SetPosition( const Vec2& position )			{ m_position = position; };
-	const float  GetPhysicsRadius() const						{ return m_entityDef->m_physicsRadius; };
-	std::string  GetName() const								{ return m_entityDef->m_name; };
+	const float  GetPhysicsRadius() const						{ return m_entityDef.m_physicsRadius; };
+	std::string  GetName() const								{ return m_entityDef.m_name; };
 				 
 	bool		 IsDead() const									{ return m_isDead; }
 	bool		 IsGarbage() const								{ return m_isGarbage; }
@@ -41,7 +41,7 @@ public:
 
 protected:
 	// Game state
-	EntityDefinition*		m_entityDef = nullptr;
+	EntityDefinition		m_entityDef;
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()

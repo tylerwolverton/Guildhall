@@ -18,6 +18,8 @@
 TileMap::TileMap( std::string name, MapDefinition* mapDef )
 	: Map( name, mapDef )
 {
+	m_dimensions = mapDef->m_dimensions;
+
 	BuildCardinalDirectionsArray();
 	PopulateTiles();
 	CreateTestBoxes();

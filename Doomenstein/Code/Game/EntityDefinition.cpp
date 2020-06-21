@@ -28,13 +28,20 @@ EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName 
 //-----------------------------------------------------------------------------------------------
 EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 {
-	m_name = ParseXmlAttribute( entityDefElem, "name", m_name );
+	m_name = ParseXmlAttribute( entityDefElem, "name", "" );
 	if ( m_name == "" )
 	{
 		g_devConsole->PrintError( "EntityTypes.xml: EntityType is missing a name attribute" );
 		return;
 	}
 	
+	m_type = ParseXmlAttribute( entityDefElem, "type", "" );
+	if ( m_type == "" )
+	{
+		g_devConsole->PrintError( Stringf( "EntityTypes.xml: EntityType '%s' is missing a type attribute", m_name ) );
+		return;
+	}
+
 	const XmlElement* physicsElem = entityDefElem.FirstChildElement( "Physics" );
 	if( physicsElem != nullptr )
 	{

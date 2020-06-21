@@ -15,7 +15,7 @@ class SpriteAnimDefinition;
 class Actor : public Entity
 {
 public:
-	Actor( EntityDefinition* entityDef );
+	Actor( const EntityDefinition& entityDef );
 	~Actor();
 
 	virtual void Update( float deltaSeconds );
@@ -25,7 +25,6 @@ public:
 private:
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateFromGamepad( float deltaSeconds );
-	void UpdateAnimation();
 
 protected:
 	int						m_controllerID = -1;

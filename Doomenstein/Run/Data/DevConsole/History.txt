@@ -69,3 +69,4 @@ warp map=TwistyMaze
 warp map=SpaceCastle
 warp
 warp map=UVTest
+warp map=TwistyMaze

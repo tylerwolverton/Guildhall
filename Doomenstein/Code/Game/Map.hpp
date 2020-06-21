@@ -7,6 +7,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Entity;
 class MapDefinition;
 
 
@@ -24,9 +25,13 @@ public:
 	virtual void Render() const = 0;
 	virtual void DebugRender() const = 0;
 
+	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
+	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
+
+
 protected:
 	std::string			m_name;
 	MapDefinition*      m_mapDef;
 
-	IntVec2				m_dimensions;
+	std::vector<Entity*> m_entities;
 };

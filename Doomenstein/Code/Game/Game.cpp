@@ -240,7 +240,10 @@ void Game::UpdateFromKeyboard()
 {
 	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
-	UpdateCameraTransform( deltaSeconds );
+	if ( m_player == nullptr )
+	{
+		UpdateCameraTransform( deltaSeconds );
+	}
 	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{

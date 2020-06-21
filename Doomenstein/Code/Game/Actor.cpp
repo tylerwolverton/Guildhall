@@ -13,7 +13,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Actor::Actor( EntityDefinition* entityDef )
+Actor::Actor( const EntityDefinition& entityDef )
 	: Entity( entityDef )
 {
 	/*if( m_actorDef->GetName() == std::string( "Player" ) )
@@ -83,22 +83,22 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		m_velocity.y += m_entityDef->GetWalkSpeed();
+		m_velocity.y += m_entityDef.GetWalkSpeed();
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'A' ) )
 	{
-		m_velocity.x -= m_entityDef->GetWalkSpeed();
+		m_velocity.x -= m_entityDef.GetWalkSpeed();
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
-		m_velocity.x += m_entityDef->GetWalkSpeed();
+		m_velocity.x += m_entityDef.GetWalkSpeed();
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		m_velocity.y -= m_entityDef->GetWalkSpeed();
+		m_velocity.y -= m_entityDef.GetWalkSpeed();
 	}
 }
 
@@ -131,7 +131,7 @@ void Actor::UpdateFromGamepad( float deltaSeconds )
 	if ( leftStickMagnitude > 0.f )
 	{
 		m_orientationDegrees = leftStick.GetDegrees();
-		m_velocity += leftStickMagnitude * m_entityDef->GetWalkSpeed() * GetForwardVector();
+		m_velocity += leftStickMagnitude * m_entityDef.GetWalkSpeed() * GetForwardVector();
 	}
 }
 
