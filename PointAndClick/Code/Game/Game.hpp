@@ -78,6 +78,8 @@ public:
 	void		ClearCurrentActionText();
 	void		SetNounText( const std::string& nounText )								{ m_nounText = nounText; }
 
+	void		PrintTextOverPlayer( const std::string& text );
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
@@ -101,6 +103,7 @@ private:
 
 	// Button Events
 	void OnTestButtonClicked( EventArgs* args );
+	void OnVerbButtonClicked( EventArgs* args );
 	void OnInventoryItemHoverStay( EventArgs* args );
 	void OnTestButtonHoverBegin( EventArgs* args );
 	void OnTestButtonHoverEnd( EventArgs* args );

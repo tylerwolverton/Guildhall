@@ -119,6 +119,9 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 		args.SetValue( "Type", (int)m_curVerbState );
 		args.SetValue( "Position", g_game->GetMouseWorldPosition() );
 		g_eventSystem->FireEvent( "VerbAction", &args );
+
+		m_curVerbState = eVerbState::NONE;
+		g_game->ClearCurrentActionText();
 	}
 }
 

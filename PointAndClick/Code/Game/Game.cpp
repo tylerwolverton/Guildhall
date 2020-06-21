@@ -109,7 +109,6 @@ void Game::Shutdown()
 	//Clean up spritesheets
 	SpriteSheet::DeleteSpriteSheets();
 
-
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_rng );
@@ -189,7 +188,14 @@ void Game::Update()
 		{
 			UpdateFromKeyboard();
 
-			m_verbActionUIText->SetText( m_verbText + " " + m_nounText );
+			if ( m_verbText.empty() )
+			{
+				m_verbActionUIText->SetText( " " );
+			}
+			else
+			{
+				m_verbActionUIText->SetText( m_verbText + " " + m_nounText );
+			}
 
 			m_world->Update();
 		}
@@ -700,31 +706,31 @@ void Game::BuildVerbPanel()
 	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, .9f ), background, Rgba8::BLACK );
 
 	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.01f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
-	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_giveVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_giveVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_giveVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Give" );
 
 	m_openVerbButton = m_verbPanel->AddButton( Vec2( .34f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
-	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_openVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_openVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_openVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Open" );
 
 	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .67f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
-	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_closeVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_closeVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_closeVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Close" );
 
 	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( .01f, .02f ), Vec2( 0.49f, .48f ), background, Rgba8::DARK_BLUE );
-	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_pickUpVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_pickUpVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_pickUpVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Pick up" );
 
 	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .51f, .02f ), Vec2( 0.48f, .48f ), background, Rgba8::DARK_BLUE );
-	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_talkToVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_talkToVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_talkToVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Talk to" );
@@ -774,7 +780,7 @@ void Game::BuildInventoryPanel()
 //-----------------------------------------------------------------------------------------------
 // Button events
 //-----------------------------------------------------------------------------------------------
-void Game::OnTestButtonClicked( EventArgs* args )
+void Game::OnVerbButtonClicked( EventArgs* args )
 {
 	uint id = args->GetValue( "id", (uint)0 );
 	
@@ -788,15 +794,23 @@ void Game::OnTestButtonClicked( EventArgs* args )
 	m_player->SetPlayerVerbState( verbState );
 	m_verbText = GetDisplayNameForVerbState( verbState );
 	m_nounText = "";
-	/*for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnTestButtonClicked( EventArgs* args )
+{
+	uint id = args->GetValue( "id", (uint)0 );
+
+	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
 		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
 		if ( id == itemButton->GetId() )
 		{
-			
+
 			return;
 		}
-	}*/
+	}
 }
 
 
@@ -973,6 +987,22 @@ void Game::ClearCurrentActionText()
 {
 	m_verbText = "";
 	m_nounText = "";
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::PrintTextOverPlayer( const std::string& text )
+{
+	Vec2 textPosition( m_player->GetPosition() );
+	textPosition.y += 1.f;
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( textPosition ),
+						Vec2( .5f, .5f ),
+						Rgba8::WHITE,
+						1.f,
+						0.15f,
+						DEBUG_RENDER_ALWAYS,
+						text.c_str() );
 }
 
 

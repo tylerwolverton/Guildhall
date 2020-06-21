@@ -7,8 +7,6 @@
     </SpriteAnimSet>
     <ActionEvents>
       <ActionEvent type="PickUp"/>
-      <ActionEvent type="Open"/>
-      <ActionEvent type="TalkTo"/>      
     </ActionEvents>
   </ItemDefinition>
 

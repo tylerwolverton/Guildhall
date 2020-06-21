@@ -5,6 +5,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
@@ -89,7 +90,9 @@ void Item::HandleVerbAction( eVerbState verbState )
 
 	if( verbEventProperties == nullptr )
 	{
-		g_devConsole->PrintString( "Hmm, that's not going to work", Rgba8::ORANGE );
+		g_game->PrintTextOverPlayer( "Hmmm, that's not going to work" );
+		g_game->ClearCurrentActionText();
+
 		return;
 	
 	}
