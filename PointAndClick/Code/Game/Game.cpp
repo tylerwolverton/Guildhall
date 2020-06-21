@@ -5,6 +5,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
@@ -23,6 +24,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
+#include "Game/Actor.hpp"
 #include "Game/Item.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
@@ -394,9 +396,6 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::PLAYING:
 		{
-			m_isSlowMo = g_inputSystem->IsKeyPressed( 'T' );
-			m_isFastMo = g_inputSystem->IsKeyPressed( 'Y' );
-
 			if ( g_inputSystem->WasKeyJustPressed( 'P' ) )
 			{
 				m_isPaused = !m_isPaused;
@@ -421,6 +420,33 @@ void Game::UpdateFromKeyboard()
 			{
 				LoadNewMap( m_curMap );
 			}
+
+			//// Handle player click events
+			//if ( g_game->GetMouseWorldPosition().y < 0.f ) // Mouse in HUD
+			//{
+
+			//}
+			//else
+			//{
+			//	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
+			//	{
+			//		m_player->SetMoveTargetLocation( g_game->GetMouseWorldPosition() );
+			//	}
+			//	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+			//	{
+			//		if ( m_player->GetPlayerVerbState() == eVerbState::NONE )
+			//		{
+			//			m_player->SetMoveTargetLocation( g_game->GetMouseWorldPosition() );
+			//			return;
+			//		}
+
+			//		EventArgs args;
+			//		args.SetValue( "Type", (int)m_player->GetPlayerVerbState() );
+			//		args.SetValue( "Position", g_game->GetMouseWorldPosition() );
+			//		g_eventSystem->FireEvent( "VerbAction", &args );
+			//	}
+			//}
+			
 		}
 		break;
 
@@ -642,7 +668,9 @@ void Game::BuildHUD()
 
 	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 
-	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::RED );
+	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
+
+	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .9f, 1.f ), childBackground, Rgba8::BLACK );
 
 	BuildVerbPanel();
 	BuildInventoryPanel();
@@ -665,7 +693,7 @@ void Game::BuildVerbPanel()
 {
 	Texture* background = g_renderer->GetDefaultWhiteTexture();
 
-	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, 1.f ), background, Rgba8::BLACK );
+	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, .9f ), background, Rgba8::BLACK );
 
 	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.01f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
@@ -704,7 +732,7 @@ void Game::BuildInventoryPanel()
 {
 	Texture* background = g_renderer->GetDefaultWhiteTexture();
 
-	m_inventoryPanel = m_hudPanel->AddChildPanel( Vec2( .5f, 1.f ), Vec2( 0.f, 1.f ), background, Rgba8::BLACK );
+	m_inventoryPanel = m_hudPanel->AddChildPanel( Vec2( .5f, 1.f ), Vec2( 0.f, .9f ), background, Rgba8::BLACK );
 
 	constexpr int NUM_IN_ROW = 4;
 	constexpr int NUM_ROWS = 2;
@@ -744,19 +772,26 @@ void Game::BuildInventoryPanel()
 //-----------------------------------------------------------------------------------------------
 void Game::OnTestButtonClicked( EventArgs* args )
 {
-	UNUSED( args );
+	uint id = args->GetValue( "id", (uint)0 );
+	
+	eVerbState verbState = eVerbState::NONE;
+	//if ( id == m_giveVerbButton->GetId() ) { m_giveVerbButton->SetTint( tint );	return; }
+	if ( id == m_openVerbButton->GetId() ) { verbState = eVerbState::OPEN; }
+	else if ( id == m_closeVerbButton->GetId() ) { verbState = eVerbState::CLOSE; }
+	else if ( id == m_pickUpVerbButton->GetId() ) { verbState = eVerbState::PICKUP; }
+	else if ( id == m_talkToVerbButton->GetId() ) { verbState = eVerbState::TALK_TO; }
 
-	/*SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
-	g_audioSystem->PlaySound( anticipation, false, .25f );*/
-
-	//Mat44::CreateTranslation2D( m_testButton->GetPosition() + Vec2( 0.f, 1.f );
-	DebugAddWorldTextf( Mat44::CreateTranslation2D( Vec2( 5.f, 5.f ) ),
-						Vec2( .5f, .5f ),
-						Rgba8::GREEN,
-						1.f,
-						.1f,
-						DEBUG_RENDER_ALWAYS,
-						"Button clicked!");
+	m_player->SetPlayerVerbState( verbState );
+	/*m_currentActionPanel->Add*/
+	/*for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
+	{
+		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
+		if ( id == itemButton->GetId() )
+		{
+			
+			return;
+		}
+	}*/
 }
 
 

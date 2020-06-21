@@ -5,14 +5,14 @@
 
 //-----------------------------------------------------------------------------------------------
 class RenderContext;
-class UIButton;
+class UIElement;
 
 
 //-----------------------------------------------------------------------------------------------
 class UILabel
 {
 public:
-	UILabel( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions );
+	UILabel( const UIElement& parentelement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions );
 
 	virtual void Render( RenderContext* renderer ) = 0;
 

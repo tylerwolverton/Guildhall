@@ -8,7 +8,6 @@
     <ActionEvents>
       <ActionEvent type="PickUp"/>
       <ActionEvent type="Open"/>
-      <ActionEvent type="Close"/>
       <ActionEvent type="TalkTo"/>      
     </ActionEvents>
   </ItemDefinition>

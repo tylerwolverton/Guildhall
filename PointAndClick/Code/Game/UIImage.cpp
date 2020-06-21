@@ -6,8 +6,8 @@
 
 
 //-----------------------------------------------------------------------------------------------
-UIImage::UIImage( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
-	: UILabel( parentButton, relativeFractionMinPosition, relativeFractionOfDimensions )
+UIImage::UIImage( const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
+	: UILabel( parentElement, relativeFractionMinPosition, relativeFractionOfDimensions )
 	, m_image( image )
 {
 
@@ -15,8 +15,8 @@ UIImage::UIImage( const UIButton& parentButton, const Vec2& relativeFractionMinP
 
 
 //-----------------------------------------------------------------------------------------------
-UIImage::UIImage( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
-	: UILabel( parentButton, relativeFractionMinPosition, relativeFractionOfDimensions )
+UIImage::UIImage( const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
+	: UILabel( parentElement, relativeFractionMinPosition, relativeFractionOfDimensions )
 {
 	spriteDef->GetUVs( m_uvAtMins, m_uvAtMaxs );
 	m_image = const_cast<Texture*>(&(spriteDef->GetTexture()));

@@ -93,14 +93,30 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 	
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
 	{
-		m_moveTargetLocation = g_game->GetMouseWorldPosition();
+		// Check if click was in hud
+		if ( g_game->GetMouseWorldPosition().y < 0.f )
+		{
+			return;
+		}
 
+		m_moveTargetLocation = g_game->GetMouseWorldPosition();
 	}
 	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 	{
+		// Check if click was in hud
+		if ( g_game->GetMouseWorldPosition().y < 0.f )
+		{
+			return;
+		}
+
+		if ( m_curVerbState == eVerbState::NONE )
+		{
+			m_moveTargetLocation = g_game->GetMouseWorldPosition();
+			return;
+		}
+
 		EventArgs args;
-		args.SetValue( "Type", (int)eVerbState::PICKUP );
-		//args.SetValue( "Type", m_curVerbState );
+		args.SetValue( "Type", (int)m_curVerbState );
 		args.SetValue( "Position", g_game->GetMouseWorldPosition() );
 		g_eventSystem->FireEvent( "VerbAction", &args );
 	}

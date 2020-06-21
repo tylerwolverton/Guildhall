@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Game/Entity.hpp"
+#include "Game/GameCommon.hpp"
 
 #include <vector>
 
@@ -25,7 +26,10 @@ public:
 
 	bool IsPlayer() const												{ return m_isPlayer; }
 
-//	std::string GetCurrentVerbState()
+	// Only ever called by Game
+	void SetPlayerVerbState( eVerbState verbState )						{ m_curVerbState = verbState; }
+	eVerbState GetPlayerVerbState() const								{ return m_curVerbState; }
+	void SetMoveTargetLocation( const Vec2& moveTarget )				{ m_moveTargetLocation = moveTarget; }
 
 private:
 	void UpdateFromKeyboard( float deltaSeconds );
@@ -45,4 +49,6 @@ protected:
 	float					m_speed = 0.f;
 
 	SpriteAnimDefinition*	m_curAnimDef = nullptr;
+
+	eVerbState m_curVerbState = eVerbState::NONE;
 };

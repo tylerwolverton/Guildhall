@@ -15,20 +15,20 @@
 
 //-----------------------------------------------------------------------------------------------
 UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
-	: m_boundingBox( absoluteScreenBounds )
-	, m_backgroundTexture( backgroundTexture )
-	, m_tint( tint )
 {
-	m_id = UIPanel::GetNextId();
+	m_id = UIElement::GetNextId();
+	m_boundingBox = absoluteScreenBounds;
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 UIButton::UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
-	: m_backgroundTexture( backgroundTexture )
-	, m_tint( tint )
 {
-	m_id = UIPanel::GetNextId();
+	m_id = UIElement::GetNextId();
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
 
 	AABB2 boundingBox = parentPanel.GetBoundingBox();
 	float width = boundingBox.GetWidth();
@@ -114,34 +114,6 @@ void UIButton::Render( RenderContext* renderer ) const
 	{
 		m_labels[labelIdx]->Render( renderer );
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIButton::Activate()
-{
-	m_isActive = true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIButton::Deactivate()
-{
-	m_isActive = false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIButton::Hide()
-{
-	m_isVisible = false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIButton::Show()
-{
-	m_isVisible = true;
 }
 
 

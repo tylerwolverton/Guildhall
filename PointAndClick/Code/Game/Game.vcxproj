@@ -209,6 +209,7 @@
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="TriggerRegion.cpp" />
     <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIImage.cpp" />
     <ClCompile Include="UILabel.cpp" />
     <ClCompile Include="UIPanel.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="TriggerRegion.hpp" />
     <ClInclude Include="UIButton.hpp" />
+    <ClInclude Include="UIElement.hpp" />
     <ClInclude Include="UIImage.hpp" />
     <ClInclude Include="UILabel.hpp" />
     <ClInclude Include="UIPanel.hpp" />

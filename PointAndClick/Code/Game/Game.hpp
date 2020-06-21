@@ -119,6 +119,7 @@ private:
 	UIPanel* m_verbPanel = nullptr;
 	UIPanel* m_inventoryPanel = nullptr;
 	UIPanel* m_dialoguePanel = nullptr;
+	UIPanel* m_currentActionPanel = nullptr;
 
 	UIButton* m_giveVerbButton = nullptr;
 	UIButton* m_openVerbButton = nullptr;

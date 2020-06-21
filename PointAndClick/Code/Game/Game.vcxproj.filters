@@ -79,6 +79,9 @@
     <ClCompile Include="TriggerRegion.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="UIElement.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -143,6 +146,9 @@
     </ClInclude>
     <ClInclude Include="TriggerRegion.hpp">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="UIElement.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

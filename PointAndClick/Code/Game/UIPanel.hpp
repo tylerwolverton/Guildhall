@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec4.hpp"
+#include "Game/UIElement.hpp"
 
 #include <string>
 #include <vector>
@@ -10,51 +11,40 @@
 
 //-----------------------------------------------------------------------------------------------
 class RenderContext;
+class SpriteDefinition;
 class Texture;
 class UIButton;
+class UILabel;
 
 
 //-----------------------------------------------------------------------------------------------
-class UIPanel
+class UIPanel : public UIElement
 {
 public:
 	UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	~UIPanel();
 
-	void Update();
-	void Render( RenderContext* renderer ) const;
-
-	void Activate();
-	void Deactivate();
-	void Hide();
-	void Show();
-
-	void SetBackgroundTexture( Texture* backgroundTexture )							{ m_backgroundTexture = backgroundTexture; }
-	void SetTint( const Rgba8& tint )												{ m_tint = tint; }
-
+	virtual void Update() override;
+	virtual void Render( RenderContext* renderer ) const override;
+	
 	UIPanel*	AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, 
 							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, 
 						   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 
-	AABB2 GetBoundingBox() const													{ return m_boundingBox; }
-
-	// Static methods
-	static uint GetNextId();
+	UILabel*    AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+			    		  Texture* image = nullptr );
+	UILabel*    AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+			    		  SpriteDefinition* spriteDef = nullptr );
+	UILabel*    AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+			    		 const std::string& text );
+	
+	void		ClearLabels();
 
 private:
-	static uint s_nextId;
-
-	bool m_isActive = true;
-	bool m_isVisible = true;
-
-	AABB2 m_boundingBox;
-	Rgba8 m_tint = Rgba8::WHITE;
-
 	// UI panel owns its child panels and buttons
 	std::vector<UIPanel*> m_childPanels;
+	std::vector<UILabel*> m_labels;
 	std::vector<UIButton*> m_buttons;
-
-	Texture* m_backgroundTexture = nullptr;
 };

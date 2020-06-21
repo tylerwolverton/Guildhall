@@ -4,7 +4,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class UIButton;
+class UIElement;
 class SpriteDefinition;
 
 
@@ -12,8 +12,8 @@ class SpriteDefinition;
 class UIImage : public UILabel
 {
 public:
-	UIImage( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image = nullptr );
-	UIImage( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef );
+	UIImage( const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image = nullptr );
+	UIImage( const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef );
 	
 	virtual void Render( RenderContext* renderer ) override;
 

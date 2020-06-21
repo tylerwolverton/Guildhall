@@ -1,11 +1,11 @@
 #include "Game/UILabel.hpp"
-#include "Game/UIButton.hpp"
+#include "Game/UIElement.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-UILabel::UILabel( const UIButton& parentButton, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions )
+UILabel::UILabel( const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions )
 {
-	AABB2 boundingBox = parentButton.GetBoundingBox();
+	AABB2 boundingBox = parentElement.GetBoundingBox();
 	float width = boundingBox.GetWidth();
 	float height = boundingBox.GetHeight();
 

@@ -5,28 +5,25 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/UIButton.hpp"
-
-
-//-----------------------------------------------------------------------------------------------
-// Static Definitions
-//-----------------------------------------------------------------------------------------------
-uint UIPanel::s_nextId = 0;
+#include "Game/UIText.hpp"
+#include "Game/UIImage.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
-	: m_boundingBox( absoluteScreenBounds )
-	, m_backgroundTexture( backgroundTexture )
-	, m_tint( tint )
 {
+	m_boundingBox = absoluteScreenBounds;
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 UIPanel::UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
-	: m_backgroundTexture( backgroundTexture )
-	, m_tint( tint )
 {
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
+
 	m_boundingBox = AABB2( 0.f, 0.f, WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS );
 
 	if ( parentPanel != nullptr )
@@ -93,6 +90,11 @@ void UIPanel::Render( RenderContext* renderer ) const
 		renderer->DrawVertexArray( vertices );
 	}
 
+	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
+	{
+		m_labels[labelIdx]->Render( renderer );
+	}
+
 	for ( int buttonIdx = 0; buttonIdx < (int)m_buttons.size(); ++buttonIdx )
 	{
 		m_buttons[buttonIdx]->Render( renderer );
@@ -102,34 +104,6 @@ void UIPanel::Render( RenderContext* renderer ) const
 	{
 		m_childPanels[panelIdx]->Render( renderer );
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::Activate()
-{
-	m_isActive = true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::Deactivate()
-{
-	m_isActive = false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::Hide()
-{
-	m_isVisible = false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::Show()
-{
-	m_isVisible = true;
 }
 
 
@@ -154,12 +128,37 @@ UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec
 
 
 //-----------------------------------------------------------------------------------------------
-// Static Methods
-//-----------------------------------------------------------------------------------------------
-uint UIPanel::GetNextId()
+UILabel* UIPanel::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
 {
-	uint nextId = s_nextId;
-	++s_nextId;
+	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
+	m_labels.push_back( newImage );
 
-	return nextId;
+	return newImage;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UILabel* UIPanel::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
+{
+	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
+	m_labels.push_back( newImage );
+
+	return newImage;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UILabel* UIPanel::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text )
+{
+	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text );
+	m_labels.push_back( newText );
+
+	return newText;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void UIPanel::ClearLabels()
+{
+	PTR_VECTOR_SAFE_DELETE( m_labels );
 }
