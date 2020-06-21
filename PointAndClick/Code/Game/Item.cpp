@@ -48,24 +48,36 @@ void Item::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Item::Render() const
 {
-	if ( m_curAnimDef == nullptr
-		 || m_isInPlayerInventory )
+	if ( m_isInPlayerInventory )
 	{
 		return;
 	}
 
-	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+	if ( m_curAnimDef != nullptr )
+	{
+		const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
 
-	Vec2 mins, maxs;
-	spriteDef.GetUVs( mins, maxs );
+		Vec2 mins, maxs;
+		spriteDef.GetUVs( mins, maxs );
 
-	std::vector<Vertex_PCU> vertexes;
-	AppendVertsForAABB2D( vertexes, m_itemDef->m_localDrawBounds, Rgba8::WHITE, mins, maxs );
+		std::vector<Vertex_PCU> vertexes;
+		AppendVertsForAABB2D( vertexes, m_itemDef->m_localDrawBounds, Rgba8::WHITE, mins, maxs );
 
-	Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
+		Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
 
-	g_renderer->BindTexture( 0, &( spriteDef.GetTexture() ) );
-	g_renderer->DrawVertexArray( vertexes );
+		g_renderer->BindTexture( 0, &( spriteDef.GetTexture() ) );
+		g_renderer->DrawVertexArray( vertexes );
+	}
+	else if ( m_texture != nullptr )
+	{
+		std::vector<Vertex_PCU> vertexes;
+		AppendVertsForAABB2D( vertexes, m_itemDef->m_localDrawBounds, Rgba8::WHITE );
+
+		Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
+
+		g_renderer->BindTexture( 0, m_texture );
+		g_renderer->DrawVertexArray( vertexes );
+	}
 }
 
 
@@ -99,6 +111,7 @@ void Item::HandleVerbAction( eVerbState verbState )
 
 	EventArgs args;
 	args.SetValue( "target", (void*)this );
+	args.SetValue( "texture", verbEventProperties->GetValue( "Texture", (void*)nullptr ) );
 
 	std::string verbEventName = verbEventProperties->GetValue( "EventName", "" );
 	if ( verbEventName == "" )

@@ -3,8 +3,10 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
+#include "Engine/Renderer/Texture.hpp"
 #include "Game/GameCommon.hpp"
 
 
@@ -40,10 +42,18 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 			continue;
 		}
 
+		Texture* texture = nullptr;
+		std::string texturePathStr = ParseXmlAttribute( *actionEventElem, "texturePath", "" );
+		if ( texturePathStr != "" )
+		{
+			texture = g_renderer->CreateOrGetTextureFromFile( texturePathStr.c_str() );
+		}
+
 		NamedProperties* properties = new NamedProperties();
 	
 		eVerbState verbState = GetVerbStateFromString( type );
 		properties->SetValue( "EventName", GetEventNameForVerbState( verbState ) );
+		properties->SetValue( "Texture", (void*)texture );
 
 		m_verbPropertiesMap[verbState] = properties;
 
@@ -63,6 +73,11 @@ ItemDefinition::~ItemDefinition()
 //-----------------------------------------------------------------------------------------------
 SpriteAnimDefinition* ItemDefinition::GetSpriteAnimDef( const std::string& animName )
 {
+	if ( m_spriteAnimSetDef == nullptr )
+	{
+		return nullptr;
+	}
+
 	std::map< std::string, SpriteAnimDefinition* >::const_iterator  mapIter = m_spriteAnimSetDef->m_spriteAnimDefMapByName.find( animName );
 
 	if ( mapIter == m_spriteAnimSetDef->m_spriteAnimDefMapByName.cend() )

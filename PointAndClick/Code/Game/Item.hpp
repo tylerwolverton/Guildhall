@@ -26,6 +26,9 @@ public:
 
 	SpriteDefinition* GetSpriteDef() const;
 
+	void SetTexture( Texture* texture )									{ m_texture = texture; }
+
+	// Events
 	void HandleVerbAction( eVerbState verbState );
 
 private:
@@ -36,4 +39,5 @@ protected:
 	float					m_cumulativeTime = 0.f;
 
 	SpriteAnimDefinition*	m_curAnimDef = nullptr;
+	Texture*				m_texture = nullptr;
 };

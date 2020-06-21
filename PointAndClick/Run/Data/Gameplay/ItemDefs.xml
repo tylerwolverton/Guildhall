@@ -10,6 +10,17 @@
     </ActionEvents>
   </ItemDefinition>
 
+  <ItemDefinition name="BarDoor">
+    <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5"/>
+    <!--<SpriteAnimSet spriteSheet="OpenDoor.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>-->
+    <ActionEvents>
+      <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" />
+      <ActionEvent type="Close" texturePath="" />
+    </ActionEvents>
+  </ItemDefinition>
+
 </ItemDefinitions>
 
 

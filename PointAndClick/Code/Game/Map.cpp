@@ -362,7 +362,8 @@ void Map::OnOpenVerb( EventArgs* args )
 		return;
 	}
 
-	g_devConsole->PrintString( Stringf( "Opened: '%s'", targetItem->GetName().c_str() ), Rgba8::PURPLE );
+	Texture* openTexture = (Texture*)args->GetValue( "texture", ( void* )nullptr );
+	targetItem->SetTexture( openTexture );
 }
 
 
@@ -376,8 +377,9 @@ void Map::OnCloseVerb( EventArgs* args )
 		g_devConsole->PrintError( "Tried to close an item but target was null" );
 		return;
 	}
-
-	g_devConsole->PrintString( Stringf( "Closed: '%s'", targetItem->GetName().c_str() ), Rgba8::PURPLE );
+	
+	Texture* closedTexture = (Texture*)args->GetValue( "texture", ( void* )nullptr );
+	targetItem->SetTexture( closedTexture );
 }
 
 

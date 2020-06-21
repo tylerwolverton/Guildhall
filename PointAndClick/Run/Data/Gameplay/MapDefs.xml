@@ -4,6 +4,7 @@
     <Entities>
       <Entity name="Player" type="actor" startPos="2,1"/>
       <Entity name="Key" type="item" startPos="6,2"/>
+      <Entity name="BarDoor" type="item" startPos="2.5,2"/>
     </Entities>
   </MapDefinition>
 
