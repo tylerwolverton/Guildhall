@@ -1,42 +1,48 @@
 #include "Game/EntityDefinition.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
+std::map< std::string, EntityDefinition* > EntityDefinition::s_definitions;
+
+
+//-----------------------------------------------------------------------------------------------
+EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName )
+{
+	std::map< std::string, EntityDefinition* >::const_iterator  mapIter = EntityDefinition::s_definitions.find( entityName );
+
+	if ( mapIter == s_definitions.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 {
 	m_name = ParseXmlAttribute( entityDefElem, "name", m_name );
-	GUARANTEE_OR_DIE( m_name != "", "Entity did not have a name attribute" );
-
-	m_faction = ParseXmlAttribute( entityDefElem, "faction", m_faction );
-
-	const XmlElement* sizeElement = entityDefElem.FirstChildElement( "Size" );
-	if(sizeElement != nullptr)
+	if ( m_name == "" )
 	{
-		m_physicsRadius = ParseXmlAttribute( *sizeElement, "physicsRadius", m_physicsRadius );
-		m_localDrawBounds = ParseXmlAttribute( *sizeElement, "localDrawBounds", m_localDrawBounds );
+		g_devConsole->PrintError( "EntityTypes.xml: EntityType is missing a name attribute" );
+		return;
+	}
+	
+	const XmlElement* physicsElem = entityDefElem.FirstChildElement( "Physics" );
+	if( physicsElem != nullptr )
+	{
+		m_physicsRadius = ParseXmlAttribute( *physicsElem, "radius", m_physicsRadius );
+		m_physicsHeight = ParseXmlAttribute( *physicsElem, "height", m_physicsHeight );
+		m_mass = ParseXmlAttribute( *physicsElem, "mass", m_mass );
+		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
 	}
 
-	const XmlElement* healthElement = entityDefElem.FirstChildElement( "Health" );
-	if ( healthElement != nullptr )
-	{
-		m_maxHealth = ParseXmlAttribute( *healthElement, "max", m_maxHealth );
-		m_startHealth = ParseXmlAttribute( *healthElement, "start", m_startHealth );
-	}
-
-	const XmlElement* spriteAnimSetElement = entityDefElem.FirstChildElement( "SpriteAnimSet" );
-	if ( spriteAnimSetElement != nullptr )
-	{
-		IntVec2 spriteCoords;
-		std::string spriteCoordsStr = ParseXmlAttribute( *spriteAnimSetElement, "spriteCoords", "0,0" );
-		spriteCoords.SetFromText( spriteCoordsStr.c_str() );
-
-		/*Vec2 mins, maxs;
-		g_characterSpriteSheet->GetSpriteUVs( mins, maxs, spriteCoords );
-		m_uvCoords.mins = mins;
-		m_uvCoords.maxs = maxs;*/
-	}
+	m_isValid = true;
 }

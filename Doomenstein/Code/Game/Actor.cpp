@@ -10,19 +10,17 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/ActorDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Actor::Actor( const Vec2& position, ActorDefinition* actorDef )
-	: Entity( position, (EntityDefinition*)actorDef )
-	, m_actorDef( actorDef )
+Actor::Actor( EntityDefinition* entityDef )
+	: Entity( entityDef )
 {
-	if( m_actorDef->GetName() == std::string( "Player" ) )
+	/*if( m_actorDef->GetName() == std::string( "Player" ) )
 	{
 		m_controllerID = 0;
 		m_isPlayer = true;
-	}
+	}*/
 }
 
 
@@ -35,26 +33,26 @@ Actor::~Actor()
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( float deltaSeconds )
 {
-	m_cumulativeTime += deltaSeconds;
+	//m_cumulativeTime += deltaSeconds;
 
-	if ( m_isPlayer )
+	/*if ( m_isPlayer )
 	{
 		UpdateFromKeyboard( deltaSeconds );
 		UpdateFromGamepad( deltaSeconds );
-	}
+	}*/
 	
-	UpdateAnimation();
+	//UpdateAnimation();
 
 	Entity::Update( deltaSeconds );
 
-	m_velocity.ClampLength( PLAYER_MAX_SPEED );
+	//m_velocity.ClampLength( PLAYER_MAX_SPEED );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
-	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+	/*const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
 		
 	Vec2 mins, maxs;
 	spriteDef.GetUVs( mins, maxs );
@@ -67,7 +65,7 @@ void Actor::Render() const
 	Vertex_PCU::TransformVertexArray( vertices, 1.f, 0.f, m_position );
 
 	g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
-	g_renderer->DrawVertexArray( vertices );
+	g_renderer->DrawVertexArray( vertices );*/
 }
 
 
@@ -83,29 +81,24 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 
-	if ( g_inputSystem->IsKeyPressed( 'W' )
-		 || g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		m_velocity.y += m_actorDef->m_walkSpeed;
+		m_velocity.y += m_entityDef->GetWalkSpeed();
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'A' )
-		 || g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'A' ) )
 	{
-		m_velocity.x -= m_actorDef->m_walkSpeed;
-
+		m_velocity.x -= m_entityDef->GetWalkSpeed();
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'D' )
-		 || g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
-		m_velocity.x += m_actorDef->m_walkSpeed;
+		m_velocity.x += m_entityDef->GetWalkSpeed();
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'S' )
-		 || g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		m_velocity.y -= m_actorDef->m_walkSpeed;
+		m_velocity.y -= m_entityDef->GetWalkSpeed();
 	}
 }
 
@@ -138,32 +131,7 @@ void Actor::UpdateFromGamepad( float deltaSeconds )
 	if ( leftStickMagnitude > 0.f )
 	{
 		m_orientationDegrees = leftStick.GetDegrees();
-		m_velocity += leftStickMagnitude * m_actorDef->m_walkSpeed * GetForwardVector();
+		m_velocity += leftStickMagnitude * m_entityDef->GetWalkSpeed() * GetForwardVector();
 	}
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Actor::UpdateAnimation()
-{
-	if ( m_velocity.x > 0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveEast" );
-	}
-	else if ( m_velocity.x < -0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveWest" );
-	}
-	else if ( m_velocity.y > 0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveNorth" );
-	}
-	else if ( m_velocity.y < -0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveSouth" );
-	}
-	else
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "Idle" );
-	}
-}

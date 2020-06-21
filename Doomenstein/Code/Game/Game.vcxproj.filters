@@ -52,9 +52,6 @@
     <ClCompile Include="Actor.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="ActorDefinition.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="EntityDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -118,9 +115,6 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Actor.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">

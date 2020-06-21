@@ -19,7 +19,7 @@ class Entity
 	friend class Map;
 	
 public:
-	Entity( const Vec2& position, EntityDefinition* entityDef );
+	Entity( EntityDefinition* entityDef );
 	virtual ~Entity() {}
 
 	virtual void Update( float deltaSeconds );
@@ -29,21 +29,15 @@ public:
 
 	const Vec2	 GetForwardVector() const;
 	const Vec2	 GetPosition() const							{ return m_position; };
-	const float  GetPhysicsRadius() const					{ return m_entityDef->m_physicsRadius; };
+	void		 SetPosition( const Vec2& position )			{ m_position = position; };
+	const float  GetPhysicsRadius() const						{ return m_entityDef->m_physicsRadius; };
 	std::string  GetName() const								{ return m_entityDef->m_name; };
 				 
-	bool		 IsDead() const								{ return m_isDead; }
-	bool		 IsGarbage() const							{ return m_isGarbage; }
+	bool		 IsDead() const									{ return m_isDead; }
+	bool		 IsGarbage() const								{ return m_isGarbage; }
 				 
 	void		 TakeDamage( int damage );
 	void		 ApplyFriction();
-				 
-	bool		 CanWalk() const								{ return m_entityDef->CanWalk(); }
-	bool		 CanFly() const								{ return m_entityDef->CanFly(); }
-	bool		 CanSwim() const								{ return m_entityDef->CanSwim(); }
-
-protected:
-	void PopulateVertices();
 
 protected:
 	// Game state
@@ -59,10 +53,6 @@ protected:
 	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
 	float					m_angularVelocity = 0.f;						// the Entity’s signed angular velocity( spin rate ), in degrees per second
 	
-	/*bool					m_canWalk = false;
-	bool					m_canFly = false;
-	bool					m_canSwim = false;*/
-
 	// Visual
 	std::vector<Vertex_PCU> m_vertices;
 	Texture*				m_texture = nullptr;

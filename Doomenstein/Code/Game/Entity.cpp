@@ -11,11 +11,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Entity::Entity( const Vec2& position, EntityDefinition* entityDef )
-	: m_position( position )
-	, m_entityDef( entityDef )
+Entity::Entity( EntityDefinition* entityDef )
+	: m_entityDef( entityDef )
 {
-	PopulateVertices();
 }
 
 
@@ -58,7 +56,6 @@ void Entity::DebugRender() const
 {
 	g_renderer->BindDiffuseTexture( nullptr );
 	DrawRing2D( g_renderer, m_position, m_entityDef->m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
-	DrawAABB2Outline( g_renderer, m_position, m_entityDef->m_localDrawBounds, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
 }
 
 
@@ -93,15 +90,4 @@ void Entity::ApplyFriction()
 	{
 		m_velocity = Vec2( 0.f, 0.f );
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::PopulateVertices()
-{
-	m_texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" );
-	
-	AppendVertsForAABB2D( m_vertices, m_entityDef->m_localDrawBounds, Rgba8::WHITE,
-									  m_entityDef->m_uvCoords.mins,
-									  m_entityDef->m_uvCoords.maxs );
 }

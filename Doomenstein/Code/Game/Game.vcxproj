@@ -194,7 +194,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="ActorDefinition.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityDefinition.cpp" />
@@ -218,7 +217,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.hpp" />
-    <ClInclude Include="ActorDefinition.hpp" />
     <ClInclude Include="App.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />

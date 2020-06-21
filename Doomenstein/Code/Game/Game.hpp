@@ -61,6 +61,7 @@ public:
 
 private:
 	void LoadAssets();
+	void LoadXmlEntityTypes();
 	void LoadXmlMapMaterials();
 	void LoadXmlMapRegions();
 	void LoadXmlMaps();
@@ -89,6 +90,8 @@ private:
 private:
 	Clock* m_gameClock = nullptr;
 	float m_fpsHistory[FRAME_HISTORY_COUNT];
+
+	Entity* m_player = nullptr;
 
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;

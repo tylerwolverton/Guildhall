@@ -37,7 +37,6 @@
 #include "Game/MapDefinition.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
-#include "Game/ActorDefinition.hpp"
 #include "Game/UI/UIPanel.hpp"
 
 
@@ -504,12 +503,58 @@ void Game::LoadAssets()
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 
 	SpriteSheet::CreateAndAddToMap( "ViewModels", *( g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" ) ), IntVec2( 8, 8 ) );
-
+	
+	LoadXmlEntityTypes();
 	LoadXmlMapMaterials();
 	LoadXmlMapRegions();
 	LoadXmlMaps();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadXmlEntityTypes()
+{
+	g_devConsole->PrintString( "Loading Entity Types..." );
+
+	const char* filePath = "Data/Definitions/EntityTypes.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		g_devConsole->PrintError( "EntityTypes.xml could not be opened" );
+		return;
+	}
+
+	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "EntityTypes" ) )
+	{
+		g_devConsole->PrintError( "EntityTypes.xml: Incorrect root node name, must be EntityTypes" );
+		return;
+	}
+
+	XmlElement* element = root->FirstChildElement();
+	while ( element )
+	{
+		if ( !strcmp( element->Name(), "EntityType" ) )
+		{
+			EntityDefinition* entityTypeDef = new EntityDefinition( *element );
+			if ( entityTypeDef->IsValid() )
+			{
+				EntityDefinition::s_definitions[entityTypeDef->GetName()] = entityTypeDef;
+			}
+		}
+		else
+		{
+			g_devConsole->PrintError( Stringf( "EntityTypes.xml: Unsupported node '%s'", element->Name() ) );
+		}
+
+		element = element->NextSiblingElement();
+	}
+	
+	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }
 
 
