@@ -38,6 +38,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 18          [/]         0.5         0.25        12.2        Implement incorrect action message 
 24          [X]         1           0.25        2, 14       Implement NPC that can be talked to 
 24.1        [X]         1           0.5         14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
+25.1        [/]         1.5         0.75        9           Create clickable dialogue options in HUD 
+??*         [X]                     0.25        9           Fixed crashes on unused debug hotkeys 
+
 
 -------------------------------------------------------------------------------
 Notes

@@ -175,7 +175,7 @@ void App::UpdateFromKeyboard()
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F8 ) )
 	{
-		g_app->RestartGame();
+		//g_app->RestartGame();
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )

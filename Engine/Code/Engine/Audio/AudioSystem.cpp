@@ -139,7 +139,7 @@ void AudioSystem::StopSound( SoundPlaybackID soundPlaybackID )
 		ERROR_RECOVERABLE( "WARNING: attempt to stop sound on missing sound playback ID!" );
 		return;
 	}
-
+	
 	FMOD::Channel* channelAssignedToSound = (FMOD::Channel*) soundPlaybackID;
 	channelAssignedToSound->stop();
 }

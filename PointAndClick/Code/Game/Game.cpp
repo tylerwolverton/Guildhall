@@ -83,6 +83,8 @@ void Game::Startup()
 
 	m_world = new World( m_gameClock );
 	  
+	AddDialogueOptionsToHUD( std::vector<std::string> {"Choice 1", "Another Choice", "One pretty long choice"}, 24 );
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -97,7 +99,11 @@ void Game::BeginFrame()
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
+	StopAllSounds();
+
 	TileDefinition::s_definitions.clear();
+
+	g_audioSystem->Shutdown();
 
 	CleanupHUD();
 
@@ -278,6 +284,24 @@ void Game::EndFrame()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::StopAllSounds()
+{
+	if ( m_attractMusicID != -1 )
+	{
+		g_audioSystem->StopSound( m_attractMusicID );
+	}
+	if ( m_gameplayMusicID != -1 )
+	{
+		g_audioSystem->StopSound( m_gameplayMusicID );
+	}
+	if ( m_victoryMusicID != -1 )
+	{
+		g_audioSystem->StopSound( m_victoryMusicID );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::LoadAssets()
 {
 	g_devConsole->PrintString( "Loading Assets..." );
@@ -414,22 +438,7 @@ void Game::UpdateFromKeyboard()
 			{
 				m_isDebugRendering = !m_isDebugRendering;
 			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
-			{
-				m_isNoClipEnabled = !m_isNoClipEnabled;
-			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
-			{
-				m_isDebugCameraEnabled = !m_isDebugCameraEnabled;
-			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
-			{
-				LoadNewMap( m_curMap );
-			}	
-
+			
 			if ( m_player != nullptr )
 			{
 				if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
@@ -601,8 +610,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::PLAYING:
 		{
-			m_hudPanel->Activate();
-			m_hudPanel->Show();
+			/*m_hudPanel->Activate();
+			m_hudPanel->Show();*/
 
 			// Check which state we are changing from
 			switch ( m_gameState )
@@ -708,16 +717,18 @@ void Game::BuildHUD()
 	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 
 	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
+	m_dialoguePanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
 
 	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .8f, 1.f ), childBackground, Rgba8::BLACK );
 	m_verbActionUIText = (UIText*)m_currentActionPanel->AddText( Vec2( .5f, .6f ), Vec2( 0.f, .25f ), "" );
-	//m_verbActionUIText = (UIText*)m_currentActionPanel->AddText( Vec2( .25f, .75f ), Vec2( 0.f, .25f ), "" );
 
 	BuildVerbPanel();
 	BuildInventoryPanel();
 
 	m_hudPanel->Deactivate();
 	m_hudPanel->Hide();
+	/*m_dialoguePanel->Deactivate();
+	m_dialoguePanel->Hide();*/
 }
 
 
@@ -803,6 +814,33 @@ void Game::BuildInventoryPanel()
 
 			m_inventoryButtons.push_back( inventoryButton );
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoices, float fontSize )
+{
+	int numChoices = (int)dialogueChoices.size();
+	if ( numChoices == 0 )
+	{
+		return;
+	}
+
+	float choiceHeight = fontSize / m_dialoguePanel->GetBoundingBox().GetHeight();
+	float currentHeight = 1.f - choiceHeight;
+	float spacing = choiceHeight * .5f;
+	for ( int choiceIdx = 0; choiceIdx < numChoices; ++choiceIdx )
+	{
+		UIButton* newButton = m_dialoguePanel->AddButton( Vec2( 0.f, currentHeight - choiceHeight ), Vec2( 1.f, choiceHeight ) );
+		newButton->AddText( Vec2( 0.01f, 1.f ), Vec2( 0.f, 1.f ), dialogueChoices[choiceIdx], fontSize, ALIGN_CENTERED_LEFT );
+
+		newButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+		newButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
+		newButton->m_onHoverStayEvent.SubscribeMethod( this, &Game::OnInventoryItemHoverStay );
+		newButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
+
+		currentHeight -= ( choiceHeight + spacing );
 	}
 }
 

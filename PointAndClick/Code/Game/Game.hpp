@@ -86,6 +86,8 @@ public:
 	RandomNumberGenerator* m_rng = nullptr;
 
 private:
+	void StopAllSounds();
+
 	void LoadAssets();
 	void LoadMapsFromXml();
 	void LoadActorsFromXml();
@@ -103,6 +105,8 @@ private:
 	void BuildVerbPanel();
 	void BuildInventoryPanel();
 
+	void AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoices, float fontSize );
+
 	// Button Events
 	void OnTestButtonClicked( EventArgs* args );
 	void OnVerbButtonClicked( EventArgs* args );
@@ -119,10 +123,10 @@ private:
 
 	// HUD
 	UIPanel* m_rootPanel = nullptr;
+	UIPanel* m_dialoguePanel = nullptr;
 	UIPanel* m_hudPanel = nullptr;
 	UIPanel* m_verbPanel = nullptr;
 	UIPanel* m_inventoryPanel = nullptr;
-	UIPanel* m_dialoguePanel = nullptr;
 	UIPanel* m_currentActionPanel = nullptr;
 
 	UIText* m_verbActionUIText = nullptr;

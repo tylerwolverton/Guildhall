@@ -48,9 +48,10 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 22          [O]         1.5                     11          Implement "Walk to" action and make it the default action when clicked
 23          [O]         1.5                     13          Add current action section to HUD
 23.1*       [X]         0.5         0.5         13          Refactor UIPanel and UIButton into common class to use labels with panel too
-24          [O]         1                       2, 14       Implement NPC that can be talked to 
-24.1        [O]         1                       14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
-25          [O]         1.5                     9.1         Implement UI panel hiding for HUD
+24          [X]         1           0.25        2, 14       Implement NPC that can be talked to 
+24.1        [X]         1           0.5         14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
+25          [-]         1.5                     9.1         Implement UI panel hiding for HUD
+    Note: Completed along with UI framework implementation in Milestone 1
 25.1        [O]         1.5                     9           Create clickable dialogue options in HUD 
 26          [O]         2                       9           Implement dialogue tree state machine for conversations
 10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen

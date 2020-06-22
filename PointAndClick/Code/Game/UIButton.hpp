@@ -33,7 +33,7 @@ public:
 	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
 					   SpriteDefinition* spriteDef = nullptr );
 	UILabel* AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-					  const std::string& text );
+					  const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
 
 	void	 ClearLabels();
 

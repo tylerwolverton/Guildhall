@@ -145,9 +145,9 @@ UILabel* UIButton::AddImage( const Vec2& relativeFractionMinPosition, const Vec2
 
 
 //-----------------------------------------------------------------------------------------------
-UILabel* UIButton::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text )
+UILabel* UIButton::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize, const Vec2& alignment )
 {
-	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text );
+	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text, fontSize, alignment );
 	m_labels.push_back( newText );
 
 	return newText;
