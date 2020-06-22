@@ -12,13 +12,25 @@
 
   <ItemDefinition name="BarDoor">
     <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5"/>
-    <!--<SpriteAnimSet spriteSheet="OpenDoor.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
-      <SpriteAnim name="Idle"		spriteIndexes="0"/>
-    </SpriteAnimSet>-->
     <ActionEvents>
       <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" />
       <ActionEvent type="Close" texturePath="" />
+      <ActionEvent type="GiveToDestination" />
     </ActionEvents>
+  </ItemDefinition> 
+  
+  <ItemDefinition name="PurpleTentacle">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/>
+    <ActionEvents>
+      <ActionEvent type="TalkTo" />
+    </ActionEvents>
+    <SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteSheetName="Characters" spriteLayout="12,53" fps="10">
+      <SpriteAnim name="MoveEast"		spriteIndexes="15,16,17,16"/>
+      <SpriteAnim name="MoveWest"		spriteIndexes="21,22,23,22"/>
+      <SpriteAnim name="MoveNorth"	spriteIndexes="12,13,14,13"/>
+      <SpriteAnim name="MoveSouth"	spriteIndexes="18,19,20,16"/>
+      <SpriteAnim name="Idle"				spriteIndexes="18,19,20,19" fps="3"/>
+    </SpriteAnimSet>
   </ItemDefinition>
 
 </ItemDefinitions>

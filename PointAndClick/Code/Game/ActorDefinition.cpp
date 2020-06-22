@@ -51,20 +51,6 @@ ActorDefinition::ActorDefinition( const XmlElement& actorDefElem )
 			m_canWalk = true;
 			m_walkSpeed = ParseXmlAttribute( *walkElement, "speed", m_walkSpeed );
 		}
-
-		const XmlElement* flyElement = movementElement->FirstChildElement( "Fly" );
-		if ( flyElement != nullptr )
-		{
-			m_canFly = true;
-			m_flySpeed = ParseXmlAttribute( *flyElement, "speed", m_flySpeed );
-		}
-
-		const XmlElement* swimElement = movementElement->FirstChildElement( "Swim" );
-		if ( swimElement != nullptr )
-		{
-			m_canSwim = true;
-			m_swimSpeed = ParseXmlAttribute( *swimElement, "speed", m_swimSpeed );
-		}
 	}
 
 	const XmlElement* spriteAnimSetElement = actorDefElem.FirstChildElement( "SpriteAnimSet" );

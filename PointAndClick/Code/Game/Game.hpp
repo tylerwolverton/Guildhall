@@ -3,6 +3,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Time/Timer.hpp"
 
 #include <string>
 #include <vector>
@@ -30,6 +31,7 @@ enum class eGameState
 	LOADING,
 	ATTRACT,
 	PLAYING,
+	DIALOGUE,
 	GAME_OVER,
 	VICTORY,
 	PAUSED
@@ -54,6 +56,7 @@ public:
 	void RestartGame();
 	
 	void		LogMapDebugCommands(); 
+	eGameState	GetGameState() const													{ return m_gameState; }
 	void		ChangeGameState( const eGameState& newGameState );
 	void		ChangeMap( const std::string& mapName );
 
@@ -70,15 +73,14 @@ public:
 	void		AddItemToInventory( Item* newItem );
 	void		RemoveItemFromInventory( Item* itemToRemove );
 	bool		IsItemInInventory( Item* item );
-
-	void		PickupAtMousePosition();
-
+	
 	void		SetPlayer( Actor* player )												{ m_player = player; }
 
 	void		ClearCurrentActionText();
 	void		SetNounText( const std::string& nounText )								{ m_nounText = nounText; }
 
 	void		PrintTextOverPlayer( const std::string& text );
+	void		PrintTextOverEntity( const Entity& entity, const std::string& text, float duration = 99999999.f );
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -107,11 +109,6 @@ private:
 	void OnInventoryItemHoverStay( EventArgs* args );
 	void OnTestButtonHoverBegin( EventArgs* args );
 	void OnTestButtonHoverEnd( EventArgs* args );
-	void OnGiveButtonClicked( EventArgs* args );
-	void OnOpenButtonClicked( EventArgs* args );
-	void OnCloseButtonClicked( EventArgs* args );
-	void OnPickUpButtonClicked( EventArgs* args );
-	void OnTalkToButtonClicked( EventArgs* args );
 
 	void UpdateInventoryButtonImages();
 
@@ -140,6 +137,8 @@ private:
 
 	std::vector<UIButton*> m_inventoryButtons;
 	std::vector<Item*> m_inventory;
+
+	Timer m_dialogueTimer;
 
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;

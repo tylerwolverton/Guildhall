@@ -25,8 +25,8 @@ std::string GetEventNameForVerbState( eVerbState verbState )
 		case eVerbState::OPEN: return OnOpenVerbEventName;
 		case eVerbState::CLOSE: return OnCloseVerbEventName;
 		case eVerbState::TALK_TO: return OnTalkToVerbEventName;
-		/*case eVerbState::GIVE_TO_SOURCE: return "Give to source";
-		case eVerbState::GIVE_TO_DESTINATION: return "Give to destination";*/
+		case eVerbState::GIVE_TO_SOURCE: return OnGiveToSourceVerbEventName;
+		case eVerbState::GIVE_TO_DESTINATION: return OnGiveToDestinationVerbEventName;
 		default: return "Unknown State";
 	}
 }
@@ -42,8 +42,8 @@ std::string GetVerbStateAsString( eVerbState verbState )
 		case eVerbState::OPEN: return "Open";
 		case eVerbState::CLOSE: return "Close";
 		case eVerbState::TALK_TO: return "TalkTo";
-		case eVerbState::GIVE_TO_SOURCE: return "Give to source";
-		case eVerbState::GIVE_TO_DESTINATION: return "Give to destination";
+		case eVerbState::GIVE_TO_SOURCE: return "GiveToSource";
+		case eVerbState::GIVE_TO_DESTINATION: return "GiveToDestination";
 		default: return "Unknown State";
 	}
 }
@@ -73,6 +73,8 @@ eVerbState GetVerbStateFromString( const std::string& typeStr )
 	if ( typeStr == "Open" ) { return eVerbState::OPEN; }
 	if ( typeStr == "Close" ) { return eVerbState::CLOSE; }
 	if ( typeStr == "TalkTo" ) { return eVerbState::TALK_TO; }
+	if ( typeStr == "GiveToSource" ) { return eVerbState::GIVE_TO_SOURCE; }
+	if ( typeStr == "GiveToDestination" ) { return eVerbState::GIVE_TO_DESTINATION; }
 
 	return eVerbState::NONE;
 }

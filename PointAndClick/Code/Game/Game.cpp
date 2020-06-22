@@ -75,7 +75,7 @@ void Game::Startup()
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
-
+	
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
 
 	BuildHUD();
@@ -135,20 +135,6 @@ void Game::LogMapDebugCommands()
 }
 
 
-////-----------------------------------------------------------------------------------------------
-//void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
-//{
-//	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
-//}
-//
-//
-////-----------------------------------------------------------------------------------------------
-//void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight )
-//{
-//	SetWorldCameraOrthographicView( AABB2( bottomLeft, topRight ) );
-//}
-
-
 //-----------------------------------------------------------------------------------------------
 void Game::Update()
 {
@@ -200,6 +186,19 @@ void Game::Update()
 			m_world->Update();
 		}
 		break;
+
+		case eGameState::DIALOGUE:
+		{
+			m_world->Update();
+
+			if ( m_dialogueTimer.HasElapsed() )
+			{
+				m_dialogueTimer.Stop();
+				ChangeGameState( eGameState::PLAYING );
+				g_inputSystem->PopMouseOptions();
+			}
+		}
+		break;
 	}
 
 	UpdateCameras();
@@ -218,6 +217,7 @@ void Game::Render() const
 	{
 		case eGameState::PLAYING:
 		case eGameState::PAUSED:
+		case eGameState::DIALOGUE:
 		{
 			m_world->Render();
 			if ( m_isDebugRendering )
@@ -428,34 +428,43 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
 				LoadNewMap( m_curMap );
+			}	
+
+			if ( m_player != nullptr )
+			{
+				if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
+				{
+					// Check if click was in hud
+					if ( GetMouseWorldPosition().y < 0.f )
+					{
+						return;
+					}
+
+					m_player->SetMoveTargetLocation( GetMouseWorldPosition() );
+				}
+				if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+				{
+					// Check if click was in hud
+					if ( GetMouseWorldPosition().y < 0.f )
+					{
+						return;
+					}
+
+					if ( m_player->GetPlayerVerbState() == eVerbState::NONE )
+					{
+						m_player->SetMoveTargetLocation( GetMouseWorldPosition() );
+						return;
+					}
+
+					EventArgs args;
+					args.SetValue( "Type", (int)m_player->GetPlayerVerbState() );
+					args.SetValue( "Position", GetMouseWorldPosition() );
+					g_eventSystem->FireEvent( "VerbAction", &args );
+
+					m_player->SetPlayerVerbState( eVerbState::NONE );
+					ClearCurrentActionText();
+				}
 			}
-
-			//// Handle player click events
-			//if ( g_game->GetMouseWorldPosition().y < 0.f ) // Mouse in HUD
-			//{
-
-			//}
-			//else
-			//{
-			//	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
-			//	{
-			//		m_player->SetMoveTargetLocation( g_game->GetMouseWorldPosition() );
-			//	}
-			//	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
-			//	{
-			//		if ( m_player->GetPlayerVerbState() == eVerbState::NONE )
-			//		{
-			//			m_player->SetMoveTargetLocation( g_game->GetMouseWorldPosition() );
-			//			return;
-			//		}
-
-			//		EventArgs args;
-			//		args.SetValue( "Type", (int)m_player->GetPlayerVerbState() );
-			//		args.SetValue( "Position", g_game->GetMouseWorldPosition() );
-			//		g_eventSystem->FireEvent( "VerbAction", &args );
-			//	}
-			//}
-			
 		}
 		break;
 
@@ -620,6 +629,27 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					//m_world->BuildNewMap( m_curMap );
 				}
 				break;
+
+				case eGameState::DIALOGUE:
+				{
+					m_hudPanel->Show();
+					m_hudPanel->Activate();
+				}
+				break;
+			}
+		}
+		break;
+
+		case eGameState::DIALOGUE:
+		{
+			switch ( m_gameState )
+			{
+				case eGameState::PLAYING:
+				{
+					m_hudPanel->Deactivate();
+					m_hudPanel->Hide();
+					g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, false, true );
+				}
 			}
 		}
 		break;
@@ -790,6 +820,7 @@ void Game::OnVerbButtonClicked( EventArgs* args )
 	else if ( id == m_closeVerbButton->GetId() ) { verbState = eVerbState::CLOSE; }
 	else if ( id == m_pickUpVerbButton->GetId() ) { verbState = eVerbState::PICKUP; }
 	else if ( id == m_talkToVerbButton->GetId() ) { verbState = eVerbState::TALK_TO; }
+	else if ( id == m_giveVerbButton->GetId() ) { verbState = eVerbState::GIVE_TO_SOURCE; }
 
 	m_player->SetPlayerVerbState( verbState );
 	m_verbText = GetDisplayNameForVerbState( verbState );
@@ -825,6 +856,7 @@ void Game::OnInventoryItemHoverStay( EventArgs* args )
 		if ( id == itemButton->GetId() )
 		{
 			std::string itemName = m_inventory[inventoryButtonIdx]->GetName();
+			m_nounText = itemName;
 
 			DebugAddScreenText( Vec4( g_inputSystem->GetNormalizedMouseClientPos(), Vec2::ZERO ),
 								Vec2( .5f, .5f ),
@@ -893,41 +925,6 @@ void Game::OnTestButtonHoverEnd( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::OnGiveButtonClicked( EventArgs* args )
-{
-	UNUSED( args );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::OnOpenButtonClicked( EventArgs* args )
-{
-	UNUSED( args );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::OnCloseButtonClicked( EventArgs* args )
-{
-	UNUSED( args );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::OnPickUpButtonClicked( EventArgs* args )
-{
-	UNUSED( args );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::OnTalkToButtonClicked( EventArgs* args )
-{
-	UNUSED( args );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Game::AddItemToInventory( Item* newItem )
 {
 	m_inventory.push_back( newItem );
@@ -976,13 +973,6 @@ bool Game::IsItemInInventory( Item* item )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::PickupAtMousePosition()
-{
-	Vec2 clickPosition = g_game->GetMouseWorldPosition();
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Game::ClearCurrentActionText()
 {
 	m_verbText = "";
@@ -1003,6 +993,24 @@ void Game::PrintTextOverPlayer( const std::string& text )
 						0.15f,
 						DEBUG_RENDER_ALWAYS,
 						text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::PrintTextOverEntity( const Entity& entity, const std::string& text, float duration )
+{
+	Vec2 textPosition( entity.GetPosition() );
+	textPosition.y += 1.f;
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( textPosition ),
+						Vec2( .5f, .5f ),
+						Rgba8::WHITE,
+						duration,
+						0.15f,
+						DEBUG_RENDER_ALWAYS,
+						text.c_str() );
+
+	m_dialogueTimer.SetSeconds( m_gameClock, (double)duration );
 }
 
 

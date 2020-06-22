@@ -38,19 +38,22 @@ CURRENT SPRINT
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 16          [O]         3                       4           Create a data-driven game object with event interface for each of the verbs 
+16.1*       [O]         1                       4           Add give events to event interface 
 17          [O]         3                       12          Create state machine to handle actions 
 18          [O]         1                       12.2        Implement incorrect action message 
 19          [O]         1                       12.1        Implement "Pick Up" verb 
 20          [O]         1.5                     12.1        Implement "Open/Close" verb with door 
+20.1*       [O]         1                       12.1        Make sure door renders behind player and table 
 21          [O]         1.5                     12.1        Implement "Give to" verb with NPC that can be given item
 22          [O]         1.5                     11          Implement "Walk to" action and make it the default action when clicked
 23          [O]         1.5                     13          Add current action section to HUD
+23.1*       [X]         0.5         0.5         13          Refactor UIPanel and UIButton into common class to use labels with panel too
 24          [O]         1                       2, 14       Implement NPC that can be talked to 
 24.1        [O]         1                       14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
 25          [O]         1.5                     9.1         Implement UI panel hiding for HUD
 25.1        [O]         1.5                     9           Create clickable dialogue options in HUD 
 26          [O]         2                       9           Implement dialogue tree state machine for conversations
-
+10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen
 
 Initial Total           21
 Unexpected Task Total   

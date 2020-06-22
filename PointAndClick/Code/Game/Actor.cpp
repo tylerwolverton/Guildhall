@@ -44,7 +44,7 @@ void Actor::Update( float deltaSeconds )
 
 	if ( m_isPlayer )
 	{
-		UpdateFromKeyboard( deltaSeconds );
+		//UpdateFromKeyboard( deltaSeconds );
 		//UpdateFromGamepad( deltaSeconds );
 	}
 	

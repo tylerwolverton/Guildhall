@@ -67,9 +67,11 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 18          [O]         1                       12.2        Implement incorrect action message 
 19          [O]         1                       12.1        Implement "Pick Up" verb 
 20          [O]         1.5                     12.1        Implement "Open/Close" verb with door 
+20.1*       [O]         1                       12.1        Make sure door renders behind player and table 
 21          [O]         1.5                     12.1        Implement "Give to" verb with NPC that can be given item
 22          [O]         1.5                     11          Implement "Walk to" action and make it the default action when clicked
 23          [O]         1.5                     13          Add current action section to HUD
+23.1*       [X]         0.5         0.5         13          Refactor UIPanel and UIButton into common class to use labels with panel too
 24          [O]         1                       2, 14       Implement NPC that can be talked to 
 24.1        [O]         1                       14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
 25          [O]         1.5                     9.1         Implement UI panel hiding for HUD

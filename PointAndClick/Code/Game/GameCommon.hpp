@@ -83,5 +83,7 @@ const std::string OnPickUpVerbEventName = "OnPickUpVerb";
 const std::string OnOpenVerbEventName = "OnOpenVerb";
 const std::string OnCloseVerbEventName = "OnCloseVerb";
 const std::string OnTalkToVerbEventName = "OnTalkToVerb";
+const std::string OnGiveToSourceVerbEventName = "OnGiveToSourceVerb";
+const std::string OnGiveToDestinationVerbEventName = "OnGiveToDestinationVerbVerb";
 
 std::string GetEventNameForVerbState( eVerbState verbState );

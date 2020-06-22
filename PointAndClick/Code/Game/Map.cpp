@@ -38,6 +38,8 @@ Map::Map( std::string name, MapDefinition* mapDef )
 	g_eventSystem->RegisterMethodEvent( OnOpenVerbEventName, "", GAME, this, &Map::OnOpenVerb );
 	g_eventSystem->RegisterMethodEvent( OnCloseVerbEventName, "", GAME, this, &Map::OnCloseVerb );
 	g_eventSystem->RegisterMethodEvent( OnTalkToVerbEventName, "", GAME, this, &Map::OnTalkToVerb );
+	g_eventSystem->RegisterMethodEvent( OnGiveToSourceVerbEventName, "", GAME, this, &Map::OnGiveToSourceVerb );
+	g_eventSystem->RegisterMethodEvent( OnGiveToDestinationVerbEventName, "", GAME, this, &Map::OnGiveToDestinationVerb );
 
 	m_width = mapDef->m_width;
 	m_height = mapDef->m_height;
@@ -65,7 +67,11 @@ void Map::Update( float deltaSeconds )
 	UpdateEntities( deltaSeconds );
 	UpdateCameras();
 	UpdateMouseDebugInspection();
-	UpdateMouseHover();
+	if ( g_game->GetGameState() == eGameState::PLAYING )
+	{
+		UpdateMouseHover();
+	}
+
 	CheckForTriggers();
 }
 
@@ -394,5 +400,20 @@ void Map::OnTalkToVerb( EventArgs* args )
 		return;
 	}
 
-	g_devConsole->PrintString( Stringf( "Talked to: '%s'", targetItem->GetName().c_str() ), Rgba8::PURPLE );
+	g_game->PrintTextOverEntity( *targetItem, "Hey", 2.f );
+	g_game->ChangeGameState( eGameState::DIALOGUE );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::OnGiveToSourceVerb( EventArgs* args )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::OnGiveToDestinationVerb( EventArgs* args )
+{
+
 }

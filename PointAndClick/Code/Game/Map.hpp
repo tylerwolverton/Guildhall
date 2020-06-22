@@ -61,6 +61,8 @@ private:
 	void				OnOpenVerb( EventArgs* args );
 	void				OnCloseVerb( EventArgs* args );
 	void				OnTalkToVerb( EventArgs* args );
+	void				OnGiveToSourceVerb( EventArgs* args );
+	void				OnGiveToDestinationVerb( EventArgs* args );
 
 private:
 	std::string			m_name;

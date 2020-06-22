@@ -35,7 +35,7 @@ Item::~Item()
 //-----------------------------------------------------------------------------------------------
 void Item::Update( float deltaSeconds )
 {
-	UNUSED( deltaSeconds );
+	m_cumulativeTime += deltaSeconds;
 	if ( m_isInPlayerInventory )
 	{
 		return;
@@ -127,7 +127,24 @@ void Item::HandleVerbAction( eVerbState verbState )
 //-----------------------------------------------------------------------------------------------
 void Item::UpdateAnimation()
 {
-	m_curAnimDef = m_itemDef->GetSpriteAnimDef( "Idle" );
+	if ( m_velocity.x > 0.05f )
+	{
+		m_curAnimDef = m_itemDef->GetSpriteAnimDef( "MoveEast" );
+	}
+	else if ( m_velocity.x < -0.05f )
+	{
+		m_curAnimDef = m_itemDef->GetSpriteAnimDef( "MoveWest" );
+	}
+	else if ( m_velocity.y > 0.05f )
+	{
+		m_curAnimDef = m_itemDef->GetSpriteAnimDef( "MoveNorth" );
+	}
+	else if ( m_velocity.y < -0.05f )
+	{
+		m_curAnimDef = m_itemDef->GetSpriteAnimDef( "MoveSouth" );
+	}
+	else
+	{
+		m_curAnimDef = m_itemDef->GetSpriteAnimDef( "Idle" );
+	}
 }
-
-
