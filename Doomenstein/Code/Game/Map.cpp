@@ -1,6 +1,7 @@
 #include "Game/Map.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
@@ -69,4 +70,24 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 	
 	g_devConsole->PrintError( Stringf( "Tried to spawn entity with unknown type '%s'", entityDef.GetType().c_str() ) );
 	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist )
+{
+	float maxDistToSearch = maxDist;
+	Entity* closestEntity = nullptr;
+
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( IsPointInForwardSector2D( entity->GetPosition(), observerPos, forwardDegrees, apertureDegrees, maxDistToSearch ) )
+		{
+			closestEntity = entity;
+			maxDistToSearch = GetDistance2D( observerPos, entity->GetPosition() );
+		}
+	}
+
+	return closestEntity;
 }

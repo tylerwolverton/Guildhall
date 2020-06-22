@@ -131,6 +131,18 @@ void World::ChangeMap( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* World::GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist )
+{
+	if ( m_curMap != nullptr )
+	{
+		return m_curMap->GetClosestEntityInSector( observerPos, forwardDegrees, apertureDegrees, maxDist );
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Map* World::GetLoadedMapByName( const std::string& mapName )
 {
 	auto mapIter = m_loadedMaps.find( mapName );

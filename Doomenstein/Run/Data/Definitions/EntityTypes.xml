@@ -3,6 +3,10 @@
 	<EntityType name="Player" type="actor">
 		<Physics radius="0.2" height="0.7" walkSpeed="1.0" mass="1.0"/>
 	</EntityType>
+
+  <EntityType name="Pinky" type="actor">
+    <Physics radius="0.1" height="0.8" walkSpeed="2.0" mass=".5"/>
+  </EntityType>
   
 </EntityTypes>
 

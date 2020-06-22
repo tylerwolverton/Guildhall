@@ -232,22 +232,29 @@ void Game::Update()
 	m_rootUIPanel->Update();
 
 	m_world->Update();
+
+	UpdateCameraTransform();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard()
-{
-	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-
-	if ( m_player == nullptr )
-	{
-		UpdateCameraTransform( deltaSeconds );
-	}
-	
+{	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{
 		m_isDebugRendering = !m_isDebugRendering;
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
+	{
+		if ( m_player == nullptr )
+		{
+			PossesNearestEntity();
+		}
+		else
+		{
+			m_player = nullptr;
+		}
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
@@ -258,57 +265,72 @@ void Game::UpdateFromKeyboard()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateCameraTransform( float deltaSeconds )
+void Game::UpdateCameraTransform()
 {
-	Vec3 cameraTranslation;
-
-	if ( g_inputSystem->IsKeyPressed( 'D' ) )
+	if ( m_player == nullptr )
 	{
-		cameraTranslation.y += 1.f;
-	}
+		float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
-	if ( g_inputSystem->IsKeyPressed( 'A' ) )
+		Vec3 cameraTranslation;
+
+		if ( g_inputSystem->IsKeyPressed( 'D' ) )
+		{
+			cameraTranslation.y += 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'A' ) )
+		{
+			cameraTranslation.y -= 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'W' ) )
+		{
+			cameraTranslation.x += 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'S' ) )
+		{
+			cameraTranslation.x -= 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'E' ) )
+		{
+			cameraTranslation.z += 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'Q' ) )
+		{
+			cameraTranslation.z -= 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
+		{
+			cameraTranslation *= 10.f;
+		}
+
+		// Rotation
+		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
+		float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
+		float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
+		yawDegrees *= .009f;
+		pitchDegrees *= .009f;
+
+		Transform transform = m_worldCamera->GetTransform();
+		m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
+
+		// Translation
+		TranslateCameraFPS( cameraTranslation * deltaSeconds );
+	}
+	else
 	{
-		cameraTranslation.y -= 1.f;
+		// Rotation
+		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
+		float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
+		pitchDegrees *= .009f;
+
+		m_worldCamera->SetPosition( Vec3( m_player->GetPosition(), m_player->GetEyeHeight() ) );
+		m_worldCamera->SetPitchRollYawOrientationDegrees( pitchDegrees, 0.f, m_player->GetOrientationDegrees() );
 	}
-
-	if ( g_inputSystem->IsKeyPressed( 'W' ) )
-	{
-		cameraTranslation.x += 1.f;
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'S' ) )
-	{
-		cameraTranslation.x -= 1.f;
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'E' ) )
-	{
-		cameraTranslation.z += 1.f;
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'Q' ) )
-	{
-		cameraTranslation.z -= 1.f;
-	}
-
-	if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
-	{
-		cameraTranslation *= 10.f;
-	}
-
-	// Rotation
-	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-	float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
-	float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
-	yawDegrees *= .009f;
-	pitchDegrees *= .009f;
-
-	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
-
-	// Translation
-	TranslateCameraFPS( cameraTranslation * deltaSeconds );
 }
 
 
@@ -361,6 +383,15 @@ float Game::GetAverageFPS() const
 	}
 
 	return cummulativeFPS / (float)FRAME_HISTORY_COUNT;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::PossesNearestEntity()
+{
+	Transform cameraTransform = m_worldCamera->GetTransform();
+
+	m_player = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
 }
 
 

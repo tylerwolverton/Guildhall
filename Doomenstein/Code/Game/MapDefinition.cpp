@@ -230,6 +230,7 @@ bool MapDefinition::ParseEntitiesNode( const XmlElement& mapDefElem )
 
 			hasParsedPlayerStart = true;
 		}
+	
 
 		entityElem = entityElem->NextSiblingElement();
 	}

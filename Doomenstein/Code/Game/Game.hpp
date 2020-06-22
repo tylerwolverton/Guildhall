@@ -40,9 +40,6 @@ public:
 
 	void		RestartGame();
 	
-	bool		IsNoClipEnabled()														{ return m_isNoClipEnabled; }
-	bool		IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
-
 	const Vec2	GetMouseWorldPosition()													{ return m_mouseWorldPosition; }
 
 	void		AddScreenShakeIntensity( float additionalIntensityFraction );
@@ -73,7 +70,7 @@ private:
 	void BuildUIHud();
 
 	void UpdateFromKeyboard();
-	void UpdateCameraTransform( float deltaSeconds );
+	void UpdateCameraTransform();
 	void UpdateFramesPerSecond();
 
 	void RenderDebugUI() const;
@@ -83,6 +80,8 @@ private:
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
 
 	float GetAverageFPS() const;
+
+	void PossesNearestEntity();
 
 	// Events
 	void WarpMapCommand( EventArgs* args );
@@ -94,11 +93,7 @@ private:
 	Entity* m_player = nullptr;
 
 	bool m_isPaused = false;
-	bool m_isSlowMo = false;
-	bool m_isFastMo = false;
 	bool m_isDebugRendering = false;
-	bool m_isNoClipEnabled = false;
-	bool m_isDebugCameraEnabled = false;
 
 	// UI
 	UIPanel* m_rootUIPanel = nullptr;

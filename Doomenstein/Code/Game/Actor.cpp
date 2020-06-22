@@ -21,6 +21,9 @@ Actor::Actor( const EntityDefinition& entityDef )
 		m_controllerID = 0;
 		m_isPlayer = true;
 	}*/
+	m_canBePushedByWalls = true;
+	m_canBePushedByEntities = true;
+	m_canPushEntities = true;
 }
 
 

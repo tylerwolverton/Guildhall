@@ -31,6 +31,8 @@ public:
 	const Vec2	 GetPosition() const							{ return m_position; };
 	void		 SetPosition( const Vec2& position )			{ m_position = position; };
 	const float  GetPhysicsRadius() const						{ return m_entityDef.m_physicsRadius; };
+	const float  GetEyeHeight() const							{ return m_entityDef.m_physicsHeight; };
+	const float  GetOrientationDegrees() const					{ return m_orientationDegrees; };
 	std::string  GetName() const								{ return m_entityDef.m_name; };
 				 
 	bool		 IsDead() const									{ return m_isDead; }
@@ -52,7 +54,11 @@ protected:
 	Vec2					m_linearAcceleration = Vec2( 0.f, 0.f );		// the Entity’s signed linear acceleration per second per second
 	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
 	float					m_angularVelocity = 0.f;						// the Entity’s signed angular velocity( spin rate ), in degrees per second
-	
+	bool					m_canBePushedByWalls = false;
+	bool					m_canBePushedByEntities = false;
+	bool					m_canPushEntities = false;
+
+
 	// Visual
 	std::vector<Vertex_PCU> m_vertices;
 	Texture*				m_texture = nullptr;

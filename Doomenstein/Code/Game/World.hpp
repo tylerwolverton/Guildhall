@@ -1,10 +1,13 @@
 #pragma once
+
 #include <string>
 #include <map>
 
 
 //-----------------------------------------------------------------------------------------------
+struct Vec2;
 class Clock;
+class Entity;
 class Map;
 class MapDefinition;
 
@@ -22,6 +25,8 @@ public:
 	void LoadMap( const std::string& mapName );
 	void LoadMap( const std::string& mapName, MapDefinition* mapDef );
 	void ChangeMap( const std::string& mapName );
+
+	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );

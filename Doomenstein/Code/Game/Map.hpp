@@ -28,6 +28,7 @@ public:
 	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
 	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
 
+	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 
 protected:
 	std::string			m_name;
