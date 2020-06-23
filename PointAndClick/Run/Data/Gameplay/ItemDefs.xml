@@ -15,7 +15,6 @@
     <ActionEvents>
       <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" />
       <ActionEvent type="Close" texturePath="" />
-      <ActionEvent type="GiveToDestination" />
     </ActionEvents>
   </ItemDefinition> 
   

@@ -16,6 +16,7 @@ public:
 	bool IsValid() const																	{ return m_isValid; }
 	int GetId() const																		{ return m_id; }
 	std::string GetName() const																{ return m_name; }
+	std::string GetIntroText() const														{ return m_introText; }
 	std::vector<std::string> GetDialogueChoices() const										{ return m_dialogueChoices; }
 	DialogueState* GetNextDialogueStateFromChoice( const std::string choiceText ) const;
 
@@ -29,6 +30,7 @@ private:
 	bool m_isValid = false;
 	int m_id = -1;
 	std::string m_name;
+	std::string m_introText;
 	std::vector<std::string> m_dialogueChoices;
 	std::vector<std::string> m_targetDialogueStateNames;
 };

@@ -77,7 +77,7 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 	
-	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
+	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
 	BuildHUD();
 	UpdateInventoryButtonImages();
@@ -196,6 +196,7 @@ void Game::Update()
 
 		case eGameState::DIALOGUE:
 		{
+			UpdateFromKeyboard();
 			m_world->Update();
 
 			/*if ( m_dialogueTimer.HasElapsed() )
@@ -517,6 +518,18 @@ void Game::UpdateFromKeyboard()
 		}
 		break;
 
+		case eGameState::DIALOGUE:
+		{
+			if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+			{
+				if ( GetMouseWorldPosition().y > 0.25f )
+				{
+					// Click was in world, consume all key presses for click
+					g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON );
+				}
+			}
+		}
+		break;
 	}
 }
 
@@ -1142,9 +1155,10 @@ void Game::PrintTextOverEntity( const Entity& entity, const std::string& text, f
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::BeginConversation( DialogueState* initialDialogueState )
+void Game::BeginConversation( DialogueState* initialDialogueState, Entity* dialoguePartner )
 {
 	ChangeGameState( eGameState::DIALOGUE );
+	m_dialoguePartner = dialoguePartner;
 	ChangeDialogueState( initialDialogueState );
 }
 
@@ -1153,9 +1167,18 @@ void Game::BeginConversation( DialogueState* initialDialogueState )
 void Game::ChangeDialogueState( DialogueState* newDialogueState )
 {
 	m_curDialogueState = newDialogueState;
+	if ( newDialogueState == nullptr )
+	{
+		EndConversation();
+		return;
+	}
 
-	if ( newDialogueState == nullptr
-		 || newDialogueState->GetDialogueChoices().size() == 0 )
+	if ( m_dialoguePartner != nullptr )
+	{
+		PrintTextOverEntity( *m_dialoguePartner, newDialogueState->GetIntroText(), 2.f );
+	}
+
+	if ( newDialogueState->GetDialogueChoices().size() == 0 )
 	{
 		EndConversation();
 		return;
@@ -1169,6 +1192,7 @@ void Game::ChangeDialogueState( DialogueState* newDialogueState )
 //-----------------------------------------------------------------------------------------------
 void Game::EndConversation()
 {
+	m_dialoguePartner = nullptr;
 	ChangeGameState( eGameState::PLAYING );
 }
 

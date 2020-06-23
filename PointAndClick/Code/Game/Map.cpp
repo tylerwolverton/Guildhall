@@ -393,9 +393,9 @@ void Map::OnCloseVerb( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Map::OnTalkToVerb( EventArgs* args )
 {
-	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	Item* target = (Item*)args->GetValue( "target", ( void* )nullptr );
 
-	if ( targetItem == nullptr )
+	if ( target == nullptr )
 	{
 		g_devConsole->PrintError( "Tried to talk to someone but target was null" );
 		return;
@@ -406,7 +406,7 @@ void Map::OnTalkToVerb( EventArgs* args )
 	DialogueState* initialState = DialogueState::GetDialogueState( initialDialogueStateName );
 	if ( initialState != nullptr )
 	{
-		g_game->BeginConversation( initialState );
+		g_game->BeginConversation( initialState, target );
 	}
 	/*g_game->PrintTextOverEntity( *targetItem, "Hey", 2.f );
 	g_game->ChangeGameState( eGameState::DIALOGUE );*/

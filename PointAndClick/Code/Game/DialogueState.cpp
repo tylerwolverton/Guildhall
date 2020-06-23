@@ -38,6 +38,8 @@ DialogueState::DialogueState( const XmlElement& dialogueStateDefElem )
 		return;
 	}
 
+	m_introText = ParseXmlAttribute( dialogueStateDefElem, "introText", m_introText );
+
 	const XmlElement* choiceElem = dialogueStateDefElem.FirstChildElement();
 	while ( choiceElem != nullptr )
 	{

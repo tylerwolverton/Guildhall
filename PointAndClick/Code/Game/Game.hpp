@@ -83,7 +83,7 @@ public:
 	void		PrintTextOverPlayer( const std::string& text );
 	void		PrintTextOverEntity( const Entity& entity, const std::string& text, float duration = 99999999.f );
 
-	void		BeginConversation( DialogueState* initialDialogueState );
+	void		BeginConversation( DialogueState* initialDialogueState, Entity* dialoguePartner );
 	void		ChangeDialogueState( DialogueState* newDialogueState );
 	void		EndConversation();
 
@@ -129,6 +129,7 @@ private:
 	Clock* m_gameClock = nullptr;
 
 	Actor* m_player = nullptr;
+	Entity* m_dialoguePartner = nullptr;
 
 	// HUD
 	UIPanel* m_rootPanel = nullptr;

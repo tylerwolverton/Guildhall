@@ -91,6 +91,11 @@ void Item::Die()
 //-----------------------------------------------------------------------------------------------
 SpriteDefinition* Item::GetSpriteDef() const
 {
+	if ( m_curAnimDef == nullptr )
+	{
+		return nullptr;
+	}
+
 	return const_cast<SpriteDefinition*>( &( m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime ) ) );
 }
 
