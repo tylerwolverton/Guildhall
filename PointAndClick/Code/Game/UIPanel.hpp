@@ -34,6 +34,8 @@ public:
 	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, 
 						   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 
+	void		ClearButtons();
+
 private:
 	// UI panel owns its child panels and buttons
 	std::vector<UIPanel*> m_childPanels;

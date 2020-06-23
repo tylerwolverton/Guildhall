@@ -74,7 +74,7 @@ void UIButton::Update()
 			m_onHoverStayEvent.Invoke( &args );
 		}
 
-		if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+		if ( g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON ) )
 		{
 			EventArgs args;
 			args.SetValue( "id", m_id );

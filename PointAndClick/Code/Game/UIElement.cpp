@@ -1,4 +1,5 @@
 #include "Game/UIElement.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/GameCommon.hpp"
@@ -12,6 +13,13 @@
 // Static Definitions
 //-----------------------------------------------------------------------------------------------
 uint UIElement::s_nextId = 0;
+
+
+//-----------------------------------------------------------------------------------------------
+UIElement::~UIElement()
+{
+	PTR_SAFE_DELETE( m_userData );
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -37,6 +45,16 @@ void UIElement::SetButtonAndLabelTint( const Rgba8& tint )
 		m_labels[labelIdx]->SetTint( tint );
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void UIElement::SetUserData( NamedProperties* userData )
+{
+	PTR_SAFE_DELETE( m_userData );
+
+	m_userData = userData;
+}
+
 
 //-----------------------------------------------------------------------------------------------
 UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )

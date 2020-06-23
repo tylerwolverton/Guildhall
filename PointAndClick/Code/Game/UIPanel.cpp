@@ -153,3 +153,10 @@ UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec
 
 	return newButton;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void UIPanel::ClearButtons()
+{
+	PTR_VECTOR_SAFE_DELETE( m_buttons );
+}

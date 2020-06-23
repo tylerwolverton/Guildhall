@@ -55,6 +55,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 25.1        [O]         1.5                     9           Create clickable dialogue options in HUD 
 26          [O]         2                       9           Implement dialogue tree state machine for conversations
 10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen
+??*         [O]                                             Don't lock cursor to game
+??*         [X]                     0.25                    Fixed crashes on unused debug hotkeys 
 
 Initial Total           21
 Unexpected Task Total   

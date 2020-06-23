@@ -1,16 +1,18 @@
 <DialogueStateDefinitions>
 
-  <DialogueStateDefinition id="0" stateName="PurpleTentacle_initial" >
+  <DialogueStateDefinition id="0" stateName="PurpleTentacle_initial" introText="Hey, how's it going?">
     <Choice text="My first choice" targetState="PurpleTentacle_choice1" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition id="1" stateName="PurpleTentacle_choice1" >
+  <DialogueStateDefinition id="1" stateName="PurpleTentacle_choice1" introText="First choice, eh? Not bad">
     <Choice text="Oh, man it's another text choice" targetState="PurpleTentacle_initial" />
     <Choice text="I'm the second choice in the second state!" targetState="PurpleTentacle_choice2" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition id="2" stateName="PurpleTentacle_choice2">
-    <Choice text="The final decision" targetState="" />
+  <DialogueStateDefinition id="2" stateName="PurpleTentacle_choice2" introText="Alright only 1 more">
+    <Choice text="The final decision" targetState="PurpleTentacle_final" />
   </DialogueStateDefinition>
+
+  <DialogueStateDefinition id="3" stateName="PurpleTentacle_final" introText="See ya later!"/>
 
 </DialogueStateDefinitions>

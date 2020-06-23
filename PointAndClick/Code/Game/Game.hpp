@@ -14,15 +14,16 @@ struct AABB2;
 struct Rgba8;
 class Entity;
 class Actor;
-class RandomNumberGenerator;
+class DialogueState;
 class Clock;
 class Camera;
 class Item;
-class World;
+class RandomNumberGenerator;
 class TextBox;
 class UIButton;
 class UIPanel;
 class UIText;
+class World;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -81,6 +82,10 @@ public:
 
 	void		PrintTextOverPlayer( const std::string& text );
 	void		PrintTextOverEntity( const Entity& entity, const std::string& text, float duration = 99999999.f );
+
+	void		BeginConversation( DialogueState* initialDialogueState );
+	void		ChangeDialogueState( DialogueState* newDialogueState );
+	void		EndConversation();
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -147,6 +152,7 @@ private:
 	std::vector<Item*> m_inventory;
 
 	Timer m_dialogueTimer;
+	DialogueState* m_curDialogueState = nullptr;
 
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;

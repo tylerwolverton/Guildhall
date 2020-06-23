@@ -4,6 +4,20 @@
 
 
 //-----------------------------------------------------------------------------------------------
+DialogueState* DialogueState::GetDialogueState( const std::string& stateName )
+{
+	std::map< std::string, DialogueState* >::const_iterator  mapIter = DialogueState::s_dialogueStateMap.find( stateName );
+
+	if ( mapIter == s_dialogueStateMap.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::map< std::string, DialogueState* > DialogueState::s_dialogueStateMap;
 
 
@@ -25,7 +39,7 @@ DialogueState::DialogueState( const XmlElement& dialogueStateDefElem )
 	}
 
 	const XmlElement* choiceElem = dialogueStateDefElem.FirstChildElement();
-	if ( choiceElem != nullptr )
+	while ( choiceElem != nullptr )
 	{
 		if ( !strcmp( choiceElem->Name(), "Choice" ) )
 		{
@@ -33,7 +47,7 @@ DialogueState::DialogueState( const XmlElement& dialogueStateDefElem )
 			std::string targetStateName = ParseXmlAttribute( *choiceElem, "targetState", "" );
 
 			m_dialogueChoices.push_back( text );
-			m_targetDialogueStateIds.push_back( targetStateName );
+			m_targetDialogueStateNames.push_back( targetStateName );
 		}
 		else
 		{
@@ -46,4 +60,19 @@ DialogueState::DialogueState( const XmlElement& dialogueStateDefElem )
 	/*s_dialogueStates.reserve( m_id );
 	s_dialogueStates[m_id] = *this;*/
 	m_isValid = true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+DialogueState* DialogueState::GetNextDialogueStateFromChoice( const std::string choiceText ) const
+{
+	for ( int choiceIdx = 0; choiceIdx < (int)m_dialogueChoices.size(); ++choiceIdx )
+	{
+		if ( choiceText == m_dialogueChoices[choiceIdx] )
+		{
+			return GetDialogueState( m_targetDialogueStateNames[choiceIdx] );
+		}
+	}
+
+	return nullptr;
 }

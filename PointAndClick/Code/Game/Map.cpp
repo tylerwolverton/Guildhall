@@ -17,6 +17,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/DialogueState.hpp"
 #include "Game/World.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
@@ -400,20 +401,27 @@ void Map::OnTalkToVerb( EventArgs* args )
 		return;
 	}
 
-	g_game->PrintTextOverEntity( *targetItem, "Hey", 2.f );
-	g_game->ChangeGameState( eGameState::DIALOGUE );
+	std::string initialDialogueStateName = args->GetValue( "initialDialogueState", "" );
+
+	DialogueState* initialState = DialogueState::GetDialogueState( initialDialogueStateName );
+	if ( initialState != nullptr )
+	{
+		g_game->BeginConversation( initialState );
+	}
+	/*g_game->PrintTextOverEntity( *targetItem, "Hey", 2.f );
+	g_game->ChangeGameState( eGameState::DIALOGUE );*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Map::OnGiveToSourceVerb( EventArgs* args )
 {
-
+	UNUSED( args );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Map::OnGiveToDestinationVerb( EventArgs* args )
 {
-
+	UNUSED( args );
 }

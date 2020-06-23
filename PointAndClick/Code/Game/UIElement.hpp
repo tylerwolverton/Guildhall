@@ -16,6 +16,7 @@ class UIElement
 {
 public:
 	UIElement() = default;
+	~UIElement();
 
 	virtual void Update() = 0;
 	virtual void Render( RenderContext* renderer ) const = 0;
@@ -32,6 +33,8 @@ public:
 	void SetButtonAndLabelTint( const Rgba8& tint );
 	AABB2 GetBoundingBox() const											{ return m_boundingBox; }
 
+	NamedProperties* GetUserData() const									{ return m_userData; }
+	void SetUserData( NamedProperties* userData );
 
 	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
 					   Texture* image = nullptr );
@@ -47,6 +50,7 @@ public:
 
 protected:
 	uint m_id = 0;
+	NamedProperties* m_userData = nullptr;
 	bool m_isActive = true;
 	bool m_isVisible = true;
 

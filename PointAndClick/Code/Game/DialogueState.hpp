@@ -13,9 +13,14 @@ class DialogueState
 public:
 	DialogueState( const XmlElement& dialogueStateDefElem );
 
-	bool IsValid() const										{ return m_isValid; }
-	int GetId() const											{ return m_id; }
-	std::string GetName() const									{ return m_name; }
+	bool IsValid() const																	{ return m_isValid; }
+	int GetId() const																		{ return m_id; }
+	std::string GetName() const																{ return m_name; }
+	std::vector<std::string> GetDialogueChoices() const										{ return m_dialogueChoices; }
+	DialogueState* GetNextDialogueStateFromChoice( const std::string choiceText ) const;
+
+	// Static methods
+	static DialogueState* GetDialogueState( const std::string& stateName );
 
 public:
 	static std::map< std::string, DialogueState* > s_dialogueStateMap;
@@ -25,5 +30,5 @@ private:
 	int m_id = -1;
 	std::string m_name;
 	std::vector<std::string> m_dialogueChoices;
-	std::vector<std::string> m_targetDialogueStateIds;
+	std::vector<std::string> m_targetDialogueStateNames;
 };

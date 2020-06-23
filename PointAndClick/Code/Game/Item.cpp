@@ -112,6 +112,7 @@ void Item::HandleVerbAction( eVerbState verbState )
 	EventArgs args;
 	args.SetValue( "target", (void*)this );
 	args.SetValue( "texture", verbEventProperties->GetValue( "Texture", (void*)nullptr ) );
+	args.SetValue( "initialDialogueState", verbEventProperties->GetValue( "InitialDialogueState", "" ) );
 
 	std::string verbEventName = verbEventProperties->GetValue( "EventName", "" );
 	if ( verbEventName == "" )

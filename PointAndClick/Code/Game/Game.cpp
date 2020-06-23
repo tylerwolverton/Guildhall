@@ -84,7 +84,7 @@ void Game::Startup()
 
 	m_world = new World( m_gameClock );
 	  
-	AddDialogueOptionsToHUD( std::vector<std::string> {"Choice 1", "Another Choice", "One pretty long choice"}, 24 );
+	//AddDialogueOptionsToHUD( std::vector<std::string> {"Choice 1", "Another Choice", "One pretty long choice"}, 24 );
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -198,12 +198,12 @@ void Game::Update()
 		{
 			m_world->Update();
 
-			if ( m_dialogueTimer.HasElapsed() )
+			/*if ( m_dialogueTimer.HasElapsed() )
 			{
 				m_dialogueTimer.Stop();
 				ChangeGameState( eGameState::PLAYING );
 				g_inputSystem->PopMouseOptions();
-			}
+			}*/
 		}
 		break;
 	}
@@ -496,6 +496,9 @@ void Game::UpdateFromKeyboard()
 						return;
 					}
 
+					// Click was in world, consume all key presses for click
+					g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON );
+
 					if ( m_player->GetPlayerVerbState() == eVerbState::NONE )
 					{
 						m_player->SetMoveTargetLocation( GetMouseWorldPosition() );
@@ -647,8 +650,10 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::PLAYING:
 		{
-			/*m_hudPanel->Activate();
-			m_hudPanel->Show();*/
+			m_dialoguePanel->Deactivate();
+			m_dialoguePanel->Hide();
+			m_hudPanel->Activate();
+			m_hudPanel->Show();
 
 			// Check which state we are changing from
 			switch ( m_gameState )
@@ -675,13 +680,6 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					//m_world->BuildNewMap( m_curMap );
 				}
 				break;
-
-				case eGameState::DIALOGUE:
-				{
-					m_hudPanel->Show();
-					m_hudPanel->Activate();
-				}
-				break;
 			}
 		}
 		break;
@@ -694,7 +692,9 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				{
 					m_hudPanel->Deactivate();
 					m_hudPanel->Hide();
-					g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, false, true );
+					m_dialoguePanel->Activate();
+					m_dialoguePanel->Show();
+					//g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, false, true );
 				}
 			}
 		}
@@ -764,8 +764,8 @@ void Game::BuildHUD()
 
 	m_hudPanel->Deactivate();
 	m_hudPanel->Hide();
-	/*m_dialoguePanel->Deactivate();
-	m_dialoguePanel->Hide();*/
+	m_dialoguePanel->Deactivate();
+	m_dialoguePanel->Hide();
 }
 
 
@@ -872,9 +872,13 @@ void Game::AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoi
 		UIButton* newButton = m_dialoguePanel->AddButton( Vec2( 0.f, currentHeight - choiceHeight ), Vec2( 1.f, choiceHeight ) );
 		newButton->AddText( Vec2( 0.f, 0.f ), Vec2( 1.f, 1.f ), dialogueChoices[choiceIdx], fontSize, ALIGN_CENTERED_LEFT );
 
-		newButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+		newButton->m_onClickEvent.SubscribeMethod( this, &Game::OnDialogueChoiceClicked );
 		newButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnDialogueChoiceHoverBegin );
 		newButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnDialogueChoiceHoverEnd );
+
+		NamedProperties* userData = new NamedProperties();
+		userData->SetValue( "choiceText", dialogueChoices[choiceIdx] );
+		newButton->SetUserData( userData );
 
 		currentHeight -= ( choiceHeight + spacing );
 	}
@@ -1003,7 +1007,21 @@ void Game::OnTestButtonHoverEnd( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::OnDialogueChoiceClicked( EventArgs* args )
 {
+	UIButton* button = (UIButton*)args->GetValue( "button", ( void* )nullptr );
+	if ( button == nullptr )
+	{
+		return;
+	}
 
+	if ( button->GetUserData() == nullptr )
+	{
+		return;
+	}
+
+	std::string choiceText = button->GetUserData()->GetValue( "choiceText", "" );
+
+	DialogueState* nextState = m_curDialogueState->GetNextDialogueStateFromChoice( choiceText );
+	ChangeDialogueState( nextState );
 }
 
 
@@ -1011,6 +1029,10 @@ void Game::OnDialogueChoiceClicked( EventArgs* args )
 void Game::OnDialogueChoiceHoverBegin( EventArgs* args )
 {
 	UIButton* button = (UIButton*)args->GetValue( "button", (void*)nullptr );
+	if ( button == nullptr )
+	{
+		return;
+	}
 
 	button->SetButtonAndLabelTint( Rgba8::YELLOW );
 }
@@ -1020,6 +1042,10 @@ void Game::OnDialogueChoiceHoverBegin( EventArgs* args )
 void Game::OnDialogueChoiceHoverEnd( EventArgs* args )
 {
 	UIButton* button = (UIButton*)args->GetValue( "button", ( void* )nullptr );
+	if ( button == nullptr )
+	{
+		return;
+	}
 
 	button->SetButtonAndLabelTint( Rgba8::WHITE );
 }
@@ -1112,6 +1138,38 @@ void Game::PrintTextOverEntity( const Entity& entity, const std::string& text, f
 						text.c_str() );
 
 	m_dialogueTimer.SetSeconds( m_gameClock, (double)duration );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::BeginConversation( DialogueState* initialDialogueState )
+{
+	ChangeGameState( eGameState::DIALOGUE );
+	ChangeDialogueState( initialDialogueState );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ChangeDialogueState( DialogueState* newDialogueState )
+{
+	m_curDialogueState = newDialogueState;
+
+	if ( newDialogueState == nullptr
+		 || newDialogueState->GetDialogueChoices().size() == 0 )
+	{
+		EndConversation();
+		return;
+	}
+
+	m_dialoguePanel->ClearButtons();
+	AddDialogueOptionsToHUD( newDialogueState->GetDialogueChoices(), 24.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::EndConversation()
+{
+	ChangeGameState( eGameState::PLAYING );
 }
 
 
