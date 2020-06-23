@@ -6,6 +6,8 @@
 
 //-----------------------------------------------------------------------------------------------
 class RenderContext;
+class SpriteDefinition;
+class UILabel;
 class Texture;
 
 
@@ -17,6 +19,7 @@ public:
 
 	virtual void Update() = 0;
 	virtual void Render( RenderContext* renderer ) const = 0;
+	virtual void DebugRender( RenderContext* renderer ) const;
 
 	virtual void Activate()													{ m_isActive = true; }
 	virtual void Deactivate()												{ m_isActive = false; }
@@ -25,8 +28,19 @@ public:
 
 	uint GetId() const														{ return m_id; }
 	void SetBackgroundTexture( Texture* backgroundTexture )					{ m_backgroundTexture = backgroundTexture; }
-	void SetTint( const Rgba8& tint )										{ m_tint = tint; }
+	void SetButtonTint( const Rgba8& tint )									{ m_tint = tint; }
+	void SetButtonAndLabelTint( const Rgba8& tint );
 	AABB2 GetBoundingBox() const											{ return m_boundingBox; }
+
+
+	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+					   Texture* image = nullptr );
+	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+					   SpriteDefinition* spriteDef = nullptr );
+	UILabel* AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+					  const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
+
+	void	 ClearLabels();
 
 	// Static methods
 	static uint GetNextId();
@@ -40,6 +54,8 @@ protected:
 	Rgba8 m_tint = Rgba8::WHITE;
 
 	Texture* m_backgroundTexture = nullptr;
+
+	std::vector<UILabel*> m_labels;
 
 private:
 	static uint s_nextId;

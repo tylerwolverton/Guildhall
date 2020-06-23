@@ -9,8 +9,6 @@
 #include "Game/GameCommon.hpp"
 #include "Game/UIPanel.hpp"
 #include "Game/UILabel.hpp"
-#include "Game/UIImage.hpp"
-#include "Game/UIText.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -65,12 +63,14 @@ void UIButton::Update()
 
 			EventArgs args;
 			args.SetValue( "id", m_id );
+			args.SetValue( "button", (void*)this );
 			m_onHoverBeginEvent.Invoke( &args );
 		}
 		else
 		{
 			EventArgs args;
 			args.SetValue( "id", m_id );
+			args.SetValue( "button", (void*)this );
 			m_onHoverStayEvent.Invoke( &args );
 		}
 
@@ -78,7 +78,7 @@ void UIButton::Update()
 		{
 			EventArgs args;
 			args.SetValue( "id", m_id );
-
+			args.SetValue( "button", (void*)this );
 			m_onClickEvent.Invoke( &args );
 		}
 	}
@@ -88,6 +88,7 @@ void UIButton::Update()
 
 		EventArgs args;
 		args.SetValue( "id", m_id );
+		args.SetValue( "button", (void*)this );
 		m_onHoverEndEvent.Invoke( &args );
 	}
 }
@@ -118,46 +119,25 @@ void UIButton::Render( RenderContext* renderer ) const
 
 
 //-----------------------------------------------------------------------------------------------
+void UIButton::DebugRender( RenderContext* renderer ) const
+{
+	if ( !m_isVisible )
+	{
+		return;
+	}
+
+	renderer->BindTexture( 0, nullptr );
+	DrawAABB2Outline( g_renderer, m_boundingBox, Rgba8::CYAN, UI_DEBUG_LINE_THICKNESS );
+
+	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
+	{
+		m_labels[labelIdx]->DebugRender( renderer );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Vec2 UIButton::GetPosition() const
 {
 	return m_boundingBox.GetCenter();
 }
-
-
-//-----------------------------------------------------------------------------------------------
-UILabel* UIButton::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
-{
-	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
-	m_labels.push_back( newImage );
-
-	return newImage;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-UILabel* UIButton::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
-{
-	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
-	m_labels.push_back( newImage );
-
-	return newImage;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-UILabel* UIButton::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize, const Vec2& alignment )
-{
-	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text, fontSize, alignment );
-	m_labels.push_back( newText );
-
-	return newText;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIButton::ClearLabels()
-{
-	PTR_VECTOR_SAFE_DELETE( m_labels );
-}
-
-

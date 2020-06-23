@@ -24,7 +24,7 @@ UIImage::UIImage( const UIElement& parentElement, const Vec2& relativeFractionMi
 
 
 //-----------------------------------------------------------------------------------------------
-void UIImage::Render( RenderContext* renderer )
+void UIImage::Render( RenderContext* renderer ) const
 {
 	if ( m_image != nullptr )
 	{

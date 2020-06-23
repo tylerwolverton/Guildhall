@@ -269,6 +269,10 @@ void Game::Render() const
 	}
 
 	m_rootPanel->Render( g_renderer );
+	if ( m_isDebugRendering )
+	{
+		m_rootPanel->DebugRender( g_renderer );
+	}
 
 	g_renderer->EndCamera( *m_uiCamera );
 
@@ -444,7 +448,7 @@ void Game::UpdateFromKeyboard()
 				if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
 				{
 					// Check if click was in hud
-					if ( GetMouseWorldPosition().y < 0.f )
+					if ( GetMouseWorldPosition().y < 0.25f )
 					{
 						return;
 					}
@@ -454,7 +458,7 @@ void Game::UpdateFromKeyboard()
 				if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 				{
 					// Check if click was in hud
-					if ( GetMouseWorldPosition().y < 0.f )
+					if ( GetMouseWorldPosition().y < 0.25f )
 					{
 						return;
 					}
@@ -833,12 +837,11 @@ void Game::AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoi
 	for ( int choiceIdx = 0; choiceIdx < numChoices; ++choiceIdx )
 	{
 		UIButton* newButton = m_dialoguePanel->AddButton( Vec2( 0.f, currentHeight - choiceHeight ), Vec2( 1.f, choiceHeight ) );
-		newButton->AddText( Vec2( 0.01f, 1.f ), Vec2( 0.f, 1.f ), dialogueChoices[choiceIdx], fontSize, ALIGN_CENTERED_LEFT );
+		newButton->AddText( Vec2( 0.f, 0.f ), Vec2( 1.f, 1.f ), dialogueChoices[choiceIdx], fontSize, ALIGN_CENTERED_LEFT );
 
 		newButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
-		newButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
-		newButton->m_onHoverStayEvent.SubscribeMethod( this, &Game::OnInventoryItemHoverStay );
-		newButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
+		newButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnDialogueChoiceHoverBegin );
+		newButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnDialogueChoiceHoverEnd );
 
 		currentHeight -= ( choiceHeight + spacing );
 	}
@@ -870,6 +873,8 @@ void Game::OnVerbButtonClicked( EventArgs* args )
 void Game::OnTestButtonClicked( EventArgs* args )
 {
 	uint id = args->GetValue( "id", (uint)0 );
+
+	g_devConsole->PrintString( "Button clicked!", Rgba8::ORANGE );
 
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
@@ -919,18 +924,18 @@ void Game::OnTestButtonHoverBegin( EventArgs* args )
 	tint.g += 10;
 	tint.b += 10;
 
-	if ( id == m_giveVerbButton->GetId() )	 { m_giveVerbButton->SetTint( tint );	return; }
-	if ( id == m_openVerbButton->GetId() )	 { m_openVerbButton->SetTint( tint );	return; }
-	if ( id == m_closeVerbButton->GetId() )  { m_closeVerbButton->SetTint( tint );	return; }
-	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetTint( tint ); return; }
-	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetTint( tint ); return; }
+	if ( id == m_giveVerbButton->GetId() )	 { m_giveVerbButton->SetButtonTint( tint );	return; }
+	if ( id == m_openVerbButton->GetId() )	 { m_openVerbButton->SetButtonTint( tint );	return; }
+	if ( id == m_closeVerbButton->GetId() )  { m_closeVerbButton->SetButtonTint( tint );	return; }
+	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetButtonTint( tint ); return; }
+	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetButtonTint( tint ); return; }
 
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
 		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
 		if ( id == itemButton->GetId() )
 		{
-			itemButton->SetTint( tint );
+			itemButton->SetButtonTint( tint );
 			return;
 		}
 	}
@@ -944,21 +949,40 @@ void Game::OnTestButtonHoverEnd( EventArgs* args )
 
 	Rgba8 tint = Rgba8::DARK_BLUE;
 
-	if ( id == m_giveVerbButton->GetId() ) { m_giveVerbButton->SetTint( tint );	return; }
-	if ( id == m_openVerbButton->GetId() ) { m_openVerbButton->SetTint( tint );	return; }
-	if ( id == m_closeVerbButton->GetId() ) { m_closeVerbButton->SetTint( tint );	return; }
-	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetTint( tint ); return; }
-	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetTint( tint ); return; }
+	if ( id == m_giveVerbButton->GetId() ) { m_giveVerbButton->SetButtonTint( tint );	return; }
+	if ( id == m_openVerbButton->GetId() ) { m_openVerbButton->SetButtonTint( tint );	return; }
+	if ( id == m_closeVerbButton->GetId() ) { m_closeVerbButton->SetButtonTint( tint );	return; }
+	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetButtonTint( tint ); return; }
+	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetButtonTint( tint ); return; }
 
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
 		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
 		if ( id == itemButton->GetId() )
 		{
-			itemButton->SetTint( tint );
+			itemButton->SetButtonTint( tint );
 			return;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnDialogueChoiceHoverBegin( EventArgs* args )
+{
+	//uint id = args->GetValue( "id", (uint)0 );
+	UIButton* button = (UIButton*)args->GetValue( "button", (void*)nullptr );
+
+	button->SetButtonAndLabelTint( Rgba8::YELLOW );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnDialogueChoiceHoverEnd( EventArgs* args )
+{
+	UIButton* button = (UIButton*)args->GetValue( "button", ( void* )nullptr );
+
+	button->SetButtonAndLabelTint( Rgba8::WHITE );
 }
 
 

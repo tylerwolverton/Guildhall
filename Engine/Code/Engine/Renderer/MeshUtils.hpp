@@ -27,6 +27,7 @@ void DrawDisc2D( RenderContext* renderer, const Vec2& center, float radius, cons
 void DrawCapsule2D( RenderContext* renderer, const Capsule2& capsule, const Rgba8& color );
 void DrawAABB2( RenderContext* renderer, const AABB2& box, const Rgba8& tint );
 void DrawAABB2Outline( RenderContext* renderer, const Vec2& center, const AABB2& box, const Rgba8& tint, float thickness );
+void DrawAABB2Outline( RenderContext* renderer, const AABB2& box, const Rgba8& tint, float thickness );
 void DrawOBB2( RenderContext* renderer, const OBB2& box, const Rgba8& tint );
 void DrawOBB2Outline( RenderContext* renderer, const Vec2& center, const OBB2& box, const Rgba8& tint, float thickness );
 void DrawPolygon2( RenderContext* renderer, const Polygon2& polygon2, const Rgba8& tint );

@@ -108,6 +108,34 @@ void UIPanel::Render( RenderContext* renderer ) const
 
 
 //-----------------------------------------------------------------------------------------------
+void UIPanel::DebugRender( RenderContext* renderer ) const
+{
+	if ( !m_isVisible )
+	{
+		return;
+	}
+
+	renderer->BindTexture( 0, nullptr );
+	DrawAABB2Outline( g_renderer, m_boundingBox, Rgba8::MAGENTA, UI_DEBUG_LINE_THICKNESS );
+
+	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
+	{
+		m_labels[labelIdx]->DebugRender( renderer );
+	}
+
+	for ( int buttonIdx = 0; buttonIdx < (int)m_buttons.size(); ++buttonIdx )
+	{
+		m_buttons[buttonIdx]->DebugRender( renderer );
+	}
+
+	for ( int panelIdx = 0; panelIdx < (int)m_childPanels.size(); ++panelIdx )
+	{
+		m_childPanels[panelIdx]->DebugRender( renderer );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
 {
 	UIPanel* newPanel = new UIPanel( this, widthFractionRange, heightFractionRange, backgroundTexture, tint );
@@ -124,41 +152,4 @@ UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec
 	m_buttons.push_back( newButton );
 
 	return newButton;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-UILabel* UIPanel::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
-{
-	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
-	m_labels.push_back( newImage );
-
-	return newImage;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-UILabel* UIPanel::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
-{
-	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
-	m_labels.push_back( newImage );
-
-	return newImage;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-UILabel* UIPanel::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text )
-{
-	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text );
-	m_labels.push_back( newText );
-
-	return newText;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void UIPanel::ClearLabels()
-{
-	PTR_VECTOR_SAFE_DELETE( m_labels );
 }

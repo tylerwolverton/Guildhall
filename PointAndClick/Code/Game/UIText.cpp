@@ -17,7 +17,7 @@ UIText::UIText( const UIElement& parentElement, const Vec2& relativeFractionMinP
 
 
 //-----------------------------------------------------------------------------------------------
-void UIText::Render( RenderContext* renderer )
+void UIText::Render( RenderContext* renderer ) const
 {
 	if ( !m_text.empty() )
 	{

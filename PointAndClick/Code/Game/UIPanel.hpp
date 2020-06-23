@@ -27,24 +27,15 @@ public:
 
 	virtual void Update() override;
 	virtual void Render( RenderContext* renderer ) const override;
+	virtual void DebugRender( RenderContext* renderer ) const override;
 	
 	UIPanel*	AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, 
 							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, 
 						   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 
-	UILabel*    AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-			    		  Texture* image = nullptr );
-	UILabel*    AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-			    		  SpriteDefinition* spriteDef = nullptr );
-	UILabel*    AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-			    		 const std::string& text );
-	
-	void		ClearLabels();
-
 private:
 	// UI panel owns its child panels and buttons
 	std::vector<UIPanel*> m_childPanels;
-	std::vector<UILabel*> m_labels;
 	std::vector<UIButton*> m_buttons;
 };

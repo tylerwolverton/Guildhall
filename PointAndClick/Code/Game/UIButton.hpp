@@ -25,17 +25,9 @@ public:
 
 	virtual void Update() override;
 	virtual void Render( RenderContext* renderer ) const override;
+	virtual void DebugRender( RenderContext* renderer ) const override;
 
 	Vec2 GetPosition() const;
-
-	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-					   Texture* image = nullptr );
-	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-					   SpriteDefinition* spriteDef = nullptr );
-	UILabel* AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-					  const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
-
-	void	 ClearLabels();
 
 public:
 	Delegate<EventArgs*> m_onClickEvent;
@@ -45,6 +37,4 @@ public:
 
 private:	
 	bool m_isMouseHovering = false;
-	
-	std::vector<UILabel*> m_labels;
 };

@@ -168,6 +168,21 @@ void DrawAABB2Outline( RenderContext* renderer,
 
 
 //-----------------------------------------------------------------------------------------------
+void DrawAABB2Outline( RenderContext* renderer, const AABB2& box, const Rgba8& tint, float thickness )
+{
+	Vec2 bottomLeft( box.mins );
+	Vec2 bottomRight( Vec2( box.maxs.x, box.mins.y ) );
+	Vec2 topLeft( Vec2( box.mins.x, box.maxs.y ) );
+	Vec2 topRight( box.maxs );
+
+	DrawLine2D( renderer, bottomLeft, bottomRight, tint, thickness );
+	DrawLine2D( renderer, bottomLeft, topLeft, tint, thickness );
+	DrawLine2D( renderer, topLeft, topRight, tint, thickness );
+	DrawLine2D( renderer, topRight, bottomRight, tint, thickness );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DrawOBB2Outline( RenderContext* renderer, 
 					  const Vec2& center, const OBB2& box, 
 					  const Rgba8& tint, float thickness )
