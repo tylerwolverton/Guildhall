@@ -49,11 +49,14 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 			texture = g_renderer->CreateOrGetTextureFromFile( texturePathStr.c_str() );
 		}
 
+		std::string initialDialogueState = ParseXmlAttribute( *actionEventElem, "initialDialogueState", "" );
+
 		NamedProperties* properties = new NamedProperties();
 	
 		eVerbState verbState = GetVerbStateFromString( type );
 		properties->SetValue( "EventName", GetEventNameForVerbState( verbState ) );
 		properties->SetValue( "Texture", (void*)texture );
+		properties->SetValue( "InitialDialogueState", initialDialogueState );
 
 		m_verbPropertiesMap[verbState] = properties;
 

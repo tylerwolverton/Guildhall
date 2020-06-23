@@ -22,7 +22,7 @@
   <ItemDefinition name="PurpleTentacle">
     <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/>
     <ActionEvents>
-      <ActionEvent type="TalkTo" />
+      <ActionEvent type="TalkTo" initialDialogueState="PurpleTentacle_initial" />
     </ActionEvents>
     <SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteSheetName="Characters" spriteLayout="12,53" fps="10">
       <SpriteAnim name="MoveEast"		spriteIndexes="15,16,17,16"/>

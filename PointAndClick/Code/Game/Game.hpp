@@ -89,6 +89,7 @@ private:
 	void StopAllSounds();
 
 	void LoadAssets();
+	void LoadDialogueStatesFromXml();
 	void LoadMapsFromXml();
 	void LoadActorsFromXml();
 	void LoadItemsFromXml();
@@ -113,6 +114,7 @@ private:
 	void OnInventoryItemHoverStay( EventArgs* args );
 	void OnTestButtonHoverBegin( EventArgs* args );
 	void OnTestButtonHoverEnd( EventArgs* args );
+	void OnDialogueChoiceClicked( EventArgs* args );
 	void OnDialogueChoiceHoverBegin( EventArgs* args );
 	void OnDialogueChoiceHoverEnd( EventArgs* args );
 

@@ -27,6 +27,7 @@
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
 #include "Game/World.hpp"
+#include "Game/DialogueState.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
@@ -325,11 +326,43 @@ void Game::LoadAssets()
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" );
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/DebugRender.hlsl" );
 
+	LoadDialogueStatesFromXml();
 	LoadActorsFromXml();
 	LoadItemsFromXml();
 	LoadMapsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadDialogueStatesFromXml()
+{
+	g_devConsole->PrintString( "Loading Dialogue States..." );
+
+	const char* filePath = "Data/Gameplay/DialogueStateDefs.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The dialogue state xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	XmlElement* element = root->FirstChildElement();
+	while ( element )
+	{
+		DialogueState* diagState = new DialogueState( *element );
+		if ( diagState->IsValid() )
+		{
+			DialogueState::s_dialogueStateMap[diagState->GetName()] = diagState;
+		}
+
+		element = element->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "Dialogue States Loaded", Rgba8::GREEN );
 }
 
 
@@ -968,9 +1001,15 @@ void Game::OnTestButtonHoverEnd( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::OnDialogueChoiceClicked( EventArgs* args )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::OnDialogueChoiceHoverBegin( EventArgs* args )
 {
-	//uint id = args->GetValue( "id", (uint)0 );
 	UIButton* button = (UIButton*)args->GetValue( "button", (void*)nullptr );
 
 	button->SetButtonAndLabelTint( Rgba8::YELLOW );

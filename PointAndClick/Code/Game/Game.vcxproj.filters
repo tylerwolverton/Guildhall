@@ -82,6 +82,9 @@
     <ClCompile Include="UIElement.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="DialogueState.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -150,6 +153,9 @@
     <ClInclude Include="UIElement.hpp">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="DialogueState.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">
@@ -165,6 +171,9 @@
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml">
+      <Filter>Data\Gameplay</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\DialogueStateDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
   </ItemGroup>
