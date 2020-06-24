@@ -34,9 +34,11 @@ JOURNAL
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 26          [X]         1           1.5         9           Implement dialogue tree state machine for conversations
-26.1*       [/]         1                       9           Add item acquisition through dialogue
+26.1*       [X]         1           0.75        9           Add item acquisition through dialogue
 ??*         [X]                     0                       Don't lock cursor to game
 21          [X]         1.5         1.25        12.1        Implement "Give to" verb with NPC that can be given item
+
+Total                               3.5
 
 -------------------------------------------------------------------------------
 Notes
@@ -57,6 +59,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 26          [/]         2           1           9           Implement dialogue tree state machine for conversations
 ??*         [X]                     0.25                    Fixed crashes on unused debug hotkeys 
 
+Total                               4.5
 
 -------------------------------------------------------------------------------
 Notes
@@ -78,6 +81,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 19          [-]         1                       12.1        Implement "Pick Up" verb 
 20          [X]         1.5         1           12.1        Implement "Open/Close" verb with door 
 
+Total                               5
+
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
@@ -93,6 +98,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 16          [/]         3           1.5         4           Create a data-driven game object with event interface for each of the verbs 
 22          [X]         1.5         0.25        11          Implement "Walk to" action and make it the default action when clicked
+
+Total                               1.75
 
 -------------------------------------------------------------------------------
 Notes
