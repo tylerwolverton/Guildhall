@@ -5,6 +5,8 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Time/Timer.hpp"
 
+#include "Game/GameCommon.hpp"
+
 #include <string>
 #include <vector>
 
@@ -56,7 +58,6 @@ public:
 
 	void RestartGame();
 	
-	void		LogMapDebugCommands(); 
 	eGameState	GetGameState() const													{ return m_gameState; }
 	void		ChangeGameState( const eGameState& newGameState );
 	void		ChangeMap( const std::string& mapName );
@@ -73,12 +74,15 @@ public:
 
 	void		AddItemToInventory( Item* newItem );
 	void		RemoveItemFromInventory( Item* itemToRemove );
+	void		RemoveItemFromInventory( const std::string& itemName );
 	bool		IsItemInInventory( Item* item );
+	bool		IsItemInInventory( const std::string& itemName );
 	
 	void		SetPlayer( Actor* player )												{ m_player = player; }
+	void		SetPlayerVerbState( eVerbState verbState );
 
 	void		ClearCurrentActionText();
-	void		SetNounText( const std::string& nounText )								{ m_nounText = nounText; }
+	void		SetNounText( const std::string& nounText );
 
 	void		PrintTextOverPlayer( const std::string& text );
 	void		PrintTextOverEntity( const Entity& entity, const std::string& text, float duration = 99999999.f );
@@ -116,6 +120,7 @@ private:
 	// Button Events
 	void OnTestButtonClicked( EventArgs* args );
 	void OnVerbButtonClicked( EventArgs* args );
+	void OnInventoryButtonClicked( EventArgs* args );
 	void OnInventoryItemHoverStay( EventArgs* args );
 	void OnTestButtonHoverBegin( EventArgs* args );
 	void OnTestButtonHoverEnd( EventArgs* args );
@@ -142,6 +147,7 @@ private:
 	UIText* m_verbActionUIText = nullptr;
 	std::string m_verbText;
 	std::string m_nounText;
+	std::string m_giveTargetNounText;
 
 	UIButton* m_giveVerbButton = nullptr;
 	UIButton* m_openVerbButton = nullptr;

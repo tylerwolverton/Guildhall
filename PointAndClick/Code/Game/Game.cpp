@@ -22,7 +22,6 @@
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
 
-#include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
@@ -83,8 +82,6 @@ void Game::Startup()
 	UpdateInventoryButtonImages();
 
 	m_world = new World( m_gameClock );
-	  
-	//AddDialogueOptionsToHUD( std::vector<std::string> {"Choice 1", "Another Choice", "One pretty long choice"}, 24 );
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -134,15 +131,6 @@ void Game::RestartGame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::LogMapDebugCommands()
-{
-	g_devConsole->PrintString( "Map Generation Debug Commands" );
-	g_devConsole->PrintString( "F4 - View entire map" );
-	g_devConsole->PrintString( "F5 - Reload current map" );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Game::Update()
 {
 	switch ( m_gameState )
@@ -187,7 +175,15 @@ void Game::Update()
 			}
 			else
 			{
-				m_verbActionUIText->SetText( m_verbText + " " + m_nounText );
+				std::string actionText( m_verbText + " " + m_nounText );
+
+				if ( m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )
+				{
+					actionText += " to ";
+					actionText += m_giveTargetNounText;
+				}
+
+				m_verbActionUIText->SetText( actionText );
 			}
 
 			m_world->Update();
@@ -853,15 +849,11 @@ void Game::BuildInventoryPanel()
 			Vec2 relativeFractionOfDimensions( rowWidthFraction - .01f, rowHeightFraction - .02f );
 
 			UIButton* inventoryButton = m_inventoryPanel->AddButton( relativeMinPosition, relativeFractionOfDimensions, background, Rgba8::DARK_BLUE );
-			inventoryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnTestButtonClicked );
+			inventoryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnInventoryButtonClicked );
 			inventoryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 			inventoryButton->m_onHoverStayEvent.SubscribeMethod( this, &Game::OnInventoryItemHoverStay );
 			inventoryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
-
-			/*std::string str = "Button";
-			str.append( ToString(i++) );
-			inventoryButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), str );*/
-
+			
 			m_inventoryButtons.push_back( inventoryButton );
 		}
 	}
@@ -920,6 +912,31 @@ void Game::OnVerbButtonClicked( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::OnInventoryButtonClicked( EventArgs* args )
+{
+	uint id = args->GetValue( "id", (uint)0 );
+
+	if ( m_player->GetPlayerVerbState() == eVerbState::NONE )
+	{
+		return;
+	}
+
+	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
+	{
+		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
+		if ( id == itemButton->GetId() )
+		{
+			std::string itemName = m_inventory[inventoryButtonIdx]->GetName();
+
+			m_inventory[inventoryButtonIdx]->HandleVerbAction( m_player->GetPlayerVerbState() );
+			
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::OnTestButtonClicked( EventArgs* args )
 {
 	uint id = args->GetValue( "id", (uint)0 );
@@ -949,7 +966,14 @@ void Game::OnInventoryItemHoverStay( EventArgs* args )
 		if ( id == itemButton->GetId() )
 		{
 			std::string itemName = m_inventory[inventoryButtonIdx]->GetName();
-			m_nounText = itemName;
+			if ( m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )
+			{
+				m_giveTargetNounText = itemName;
+			}
+			else
+			{
+				m_nounText = itemName;
+			}
 
 			DebugAddScreenText( Vec4( g_inputSystem->GetNormalizedMouseClientPos(), Vec2::ZERO ),
 								Vec2( .5f, .5f ),
@@ -1011,6 +1035,12 @@ void Game::OnTestButtonHoverEnd( EventArgs* args )
 		if ( id == itemButton->GetId() )
 		{
 			itemButton->SetButtonTint( tint );
+
+			if ( m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )
+			{
+				m_giveTargetNounText = "";
+			}
+
 			return;
 		}
 	}
@@ -1098,6 +1128,28 @@ void Game::RemoveItemFromInventory( Item* itemToRemove )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::RemoveItemFromInventory( const std::string& itemName )
+{
+	int itemIdx = 0;
+	for ( ; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx]->GetName() == itemName )
+		{
+			m_inventory[itemIdx]->SetIsInPlayerInventory( false );
+			break;
+		}
+	}
+
+	if ( itemIdx < (int)m_inventory.size() )
+	{
+		m_inventory.erase( m_inventory.begin() + itemIdx );
+
+		UpdateInventoryButtonImages();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Game::IsItemInInventory( Item* item )
 {
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
@@ -1113,10 +1165,49 @@ bool Game::IsItemInInventory( Item* item )
 
 
 //-----------------------------------------------------------------------------------------------
+bool Game::IsItemInInventory( const std::string& itemName )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx]->GetName() == itemName )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetPlayerVerbState( eVerbState verbState )
+{
+	if ( m_player != nullptr )
+	{
+		m_player->SetPlayerVerbState( verbState );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ClearCurrentActionText()
 {
 	m_verbText = "";
 	m_nounText = "";
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetNounText( const std::string& nounText )
+{
+	if ( m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )
+	{
+		m_giveTargetNounText = nounText;
+	}
+	else
+	{
+		m_nounText = nounText;
+	}
 }
 
 

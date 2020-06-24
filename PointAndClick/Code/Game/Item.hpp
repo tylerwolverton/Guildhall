@@ -28,6 +28,9 @@ public:
 
 	void SetTexture( Texture* texture )									{ m_texture = texture; }
 
+	void AddVerbState( eVerbState verbState, NamedProperties* properties );
+	void RemoveVerbState( eVerbState verbState );
+
 	// Events
 	void HandleVerbAction( eVerbState verbState );
 

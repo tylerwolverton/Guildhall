@@ -101,6 +101,26 @@ SpriteDefinition* Item::GetSpriteDef() const
 
 
 //-----------------------------------------------------------------------------------------------
+void Item::AddVerbState( eVerbState verbState, NamedProperties* properties )
+{
+	auto mapIter = m_itemDef->m_verbPropertiesMap.find( verbState );
+	if ( mapIter != m_itemDef->m_verbPropertiesMap.end() )
+	{
+		m_itemDef->m_verbPropertiesMap.erase( verbState );
+	}
+
+	m_itemDef->m_verbPropertiesMap[verbState] = properties;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Item::RemoveVerbState( eVerbState verbState )
+{
+	m_itemDef->m_verbPropertiesMap.erase( verbState );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Item::HandleVerbAction( eVerbState verbState )
 {
 	NamedProperties* verbEventProperties = m_itemDef->GetVerbEventProperties( verbState );
@@ -111,13 +131,13 @@ void Item::HandleVerbAction( eVerbState verbState )
 		g_game->ClearCurrentActionText();
 
 		return;
-	
 	}
 
 	EventArgs args;
 	args.SetValue( "target", (void*)this );
 	args.SetValue( "texture", verbEventProperties->GetValue( "Texture", (void*)nullptr ) );
 	args.SetValue( "initialDialogueState", verbEventProperties->GetValue( "InitialDialogueState", "" ) );
+	args.SetValue( "requiredItem", verbEventProperties->GetValue( "RequiredItem", "" ) );
 
 	std::string verbEventName = verbEventProperties->GetValue( "EventName", "" );
 	if ( verbEventName == "" )

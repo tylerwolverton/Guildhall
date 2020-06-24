@@ -50,6 +50,7 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 		}
 
 		std::string initialDialogueState = ParseXmlAttribute( *actionEventElem, "initialDialogueState", "" );
+		std::string requiredItemName = ParseXmlAttribute( *actionEventElem, "requiredItem", "" );
 
 		NamedProperties* properties = new NamedProperties();
 	
@@ -57,6 +58,7 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 		properties->SetValue( "EventName", GetEventNameForVerbState( verbState ) );
 		properties->SetValue( "Texture", (void*)texture );
 		properties->SetValue( "InitialDialogueState", initialDialogueState );
+		properties->SetValue( "RequiredItem", requiredItemName );
 
 		m_verbPropertiesMap[verbState] = properties;
 

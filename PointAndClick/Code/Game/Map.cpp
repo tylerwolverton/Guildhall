@@ -326,6 +326,12 @@ void Map::OnPickupVerb( EventArgs* args )
 	}
 
 	g_game->AddItemToInventory( targetItem );
+	targetItem->RemoveVerbState( eVerbState::PICKUP );
+
+	NamedProperties* properties = new NamedProperties();
+	properties->SetValue( "EventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
+
+	targetItem->AddVerbState( eVerbState::GIVE_TO_SOURCE, properties );
 
 	// Remove from map since game now owns the item
 	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
@@ -416,12 +422,36 @@ void Map::OnTalkToVerb( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Map::OnGiveToSourceVerb( EventArgs* args )
 {
-	UNUSED( args );
+	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+
+	if ( targetItem == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to give an item but target was null" );
+		return;
+	}
+
+	g_game->SetNounText( targetItem->GetName() );
+	g_game->SetPlayerVerbState( eVerbState::GIVE_TO_DESTINATION );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Map::OnGiveToDestinationVerb( EventArgs* args )
 {
-	UNUSED( args );
+	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	
+	if ( targetItem == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to give an item but target was null" );
+		return;
+	}
+
+	std::string requiredItemName = args->GetValue( "requiredItem", "" );
+
+	if ( g_game->IsItemInInventory( requiredItemName ) )
+	{
+		g_game->RemoveItemFromInventory( requiredItemName );
+	}
+
+	g_devConsole->PrintString( "Give to destination called", Rgba8::PURPLE );
 }
