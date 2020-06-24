@@ -1097,6 +1097,10 @@ void Game::OnDialogueChoiceHoverEnd( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::AddItemToInventory( Item* newItem )
 {
+	NamedProperties* properties = new NamedProperties();
+	properties->SetValue( "EventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
+	newItem->AddVerbState( eVerbState::GIVE_TO_SOURCE, properties );
+
 	m_inventory.push_back( newItem );
 	newItem->SetIsInPlayerInventory( true );
 
@@ -1267,6 +1271,15 @@ void Game::ChangeDialogueState( DialogueState* newDialogueState )
 	if ( m_dialoguePartner != nullptr )
 	{
 		PrintTextOverEntity( *m_dialoguePartner, newDialogueState->GetIntroText(), 2.f );
+	}
+
+	if ( newDialogueState->GetItemName() != "" )
+	{
+		ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( newDialogueState->GetItemName() );
+		if ( itemDef != nullptr )
+		{
+			AddItemToInventory( new Item( Vec2::ZERO, itemDef ) );
+		}
 	}
 
 	if ( newDialogueState->GetDialogueChoices().size() == 0 )

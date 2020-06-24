@@ -24,13 +24,6 @@ std::map< std::string, DialogueState* > DialogueState::s_dialogueStateMap;
 //-----------------------------------------------------------------------------------------------
 DialogueState::DialogueState( const XmlElement& dialogueStateDefElem )
 {
-	m_id = ParseXmlAttribute( dialogueStateDefElem, "id", m_id );
-	/*if ( m_id == -1 )
-	{
-		g_devConsole->PrintError( "Dialogue state is missing id" );
-		return;
-	}*/
-
 	m_name = ParseXmlAttribute( dialogueStateDefElem, "stateName", m_name );
 	if ( m_name == "" )
 	{
@@ -51,6 +44,10 @@ DialogueState::DialogueState( const XmlElement& dialogueStateDefElem )
 			m_dialogueChoices.push_back( text );
 			m_targetDialogueStateNames.push_back( targetStateName );
 		}
+		else if ( !strcmp( choiceElem->Name(), "Item" ) )
+		{
+			m_itemName = ParseXmlAttribute( *choiceElem, "name", m_itemName );
+		}
 		else
 		{
 			g_devConsole->PrintError( Stringf( "Dialogue state '%s' has unknown child node '%s'", m_name.c_str(), choiceElem->Name() ) );
@@ -59,8 +56,6 @@ DialogueState::DialogueState( const XmlElement& dialogueStateDefElem )
 		choiceElem = choiceElem->NextSiblingElement();
 	}
 
-	/*s_dialogueStates.reserve( m_id );
-	s_dialogueStates[m_id] = *this;*/
 	m_isValid = true;
 }
 

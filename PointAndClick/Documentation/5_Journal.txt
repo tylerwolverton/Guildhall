@@ -34,9 +34,9 @@ JOURNAL
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 26          [X]         1           1.5         9           Implement dialogue tree state machine for conversations
-26.1*       [O]         1                       9           Add item acquisition through dialogue
+26.1*       [/]         1                       9           Add item acquisition through dialogue
 ??*         [X]                     0                       Don't lock cursor to game
-21          [/]         1.5         1           12.1        Implement "Give to" verb with NPC that can be given item
+21          [X]         1.5         1.25        12.1        Implement "Give to" verb with NPC that can be given item
 
 -------------------------------------------------------------------------------
 Notes

@@ -1,18 +1,30 @@
 <DialogueStateDefinitions>
 
-  <DialogueStateDefinition id="0" stateName="PurpleTentacle_initial" introText="Hey, how's it going?">
-    <Choice text="My first choice" targetState="PurpleTentacle_choice1" />
+  <DialogueStateDefinition stateName="PurpleTentacle_initial" introText="Hey, how's it going?">
+    <Choice text="How did you get here?" targetState="PurpleTentacle_backstory1" />
+    <Choice text="Seen any shiny keys around?" targetState="PurpleTentacle_keyChoice1" />
+    <Choice text="Nevermind, I'll keep wandering around" targetState="PurpleTentacle_final" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition id="1" stateName="PurpleTentacle_choice1" introText="First choice, eh? Not bad">
-    <Choice text="Oh, man it's another text choice" targetState="PurpleTentacle_initial" />
-    <Choice text="I'm the second choice in the second state!" targetState="PurpleTentacle_choice2" />
+  <DialogueStateDefinition stateName="PurpleTentacle_backstory1" introText="An interdimensional quantum teleportation machine">
+    <Choice text="Cool! Can I try it out?" targetState="PurpleTentacle_backstory2" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition id="2" stateName="PurpleTentacle_choice2" introText="Alright only 1 more">
-    <Choice text="The final decision" targetState="PurpleTentacle_final" />
+  <DialogueStateDefinition stateName="PurpleTentacle_backstory2" introText="Do you know anything about quantum mechanics?">
+    <Choice text="My dad taught me how to change the brakes on my car, is it similar to that?" targetState="PurpleTentacle_backstory3" />
+    <Choice text="Uhh, something with quarks and spooky long distance?" targetState="PurpleTentacle_backstory3" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition id="3" stateName="PurpleTentacle_final" introText="See ya later!"/>
+  <DialogueStateDefinition stateName="PurpleTentacle_backstory3" introText="I don't think you're ready"/>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_keyChoice1" introText="Maybe I have, maybe I haven't...">
+    <Choice text="Could I borrow it real quick to unlock the front door?" targetState="PurpleTentacle_keyChoice2" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_keyChoice2" introText="Sure, why not">
+    <Item name="Key" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_final" introText="See ya later"/>
 
 </DialogueStateDefinitions>

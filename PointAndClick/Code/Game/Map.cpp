@@ -331,7 +331,7 @@ void Map::OnPickupVerb( EventArgs* args )
 	NamedProperties* properties = new NamedProperties();
 	properties->SetValue( "EventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
 
-	targetItem->AddVerbState( eVerbState::GIVE_TO_SOURCE, properties );
+	/*targetItem->AddVerbState( eVerbState::GIVE_TO_SOURCE, properties );*/
 
 	// Remove from map since game now owns the item
 	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )

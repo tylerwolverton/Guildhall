@@ -17,6 +17,7 @@ public:
 	int GetId() const																		{ return m_id; }
 	std::string GetName() const																{ return m_name; }
 	std::string GetIntroText() const														{ return m_introText; }
+	std::string GetItemName() const															{ return m_itemName; }
 	std::vector<std::string> GetDialogueChoices() const										{ return m_dialogueChoices; }
 	DialogueState* GetNextDialogueStateFromChoice( const std::string choiceText ) const;
 
@@ -31,6 +32,9 @@ private:
 	int m_id = -1;
 	std::string m_name;
 	std::string m_introText;
+	std::string m_itemName;
+	std::string m_requiredItemName;
+
 	std::vector<std::string> m_dialogueChoices;
 	std::vector<std::string> m_targetDialogueStateNames;
 };
