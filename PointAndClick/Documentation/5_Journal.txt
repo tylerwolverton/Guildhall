@@ -37,8 +37,10 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 26.1*       [X]         1           0.75        9           Add item acquisition through dialogue
 ??*         [X]                     0                       Don't lock cursor to game
 21          [X]         1.5         1.25        12.1        Implement "Give to" verb with NPC that can be given item
+36          [/]         2           0.5         16          Add walking animation for player using XML 
+37          [/]         1           0.5         17          Add idle animation for NPCs using XML 
 
-Total                               3.5
+Total                               4.5
 
 -------------------------------------------------------------------------------
 Notes
