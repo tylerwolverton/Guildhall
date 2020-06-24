@@ -108,7 +108,7 @@ void Map::UpdateMouseHover()
 			 && IsPointInsideDisc( g_game->GetMouseWorldPosition(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
 		{
 			Vec2 hintPosition( entity->GetPosition() );
-			hintPosition.y += entity->GetPhysicsRadius();
+			hintPosition.y += entity->GetTopOfSprite();
 			
 			DebugAddWorldTextf( Mat44::CreateTranslation2D( hintPosition ),
 								Vec2( .5f, .5f ),

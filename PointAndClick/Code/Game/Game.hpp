@@ -109,6 +109,7 @@ private:
 	void UpdateMouseWorldPosition();
 	void UpdateMouseUIPosition();
 	void UpdateCameras();
+	void UpdateNPCResponse();
 
 	void BuildHUD();
 	void CleanupHUD();
@@ -134,7 +135,8 @@ private:
 	Clock* m_gameClock = nullptr;
 
 	Actor* m_player = nullptr;
-	Entity* m_dialoguePartner = nullptr;
+	Entity* m_dialogueNPC = nullptr;
+	std::string m_dialogueNPCText;
 
 	// HUD
 	UIPanel* m_rootPanel = nullptr;

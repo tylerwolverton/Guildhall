@@ -193,6 +193,8 @@ void Game::Update()
 		case eGameState::DIALOGUE:
 		{
 			UpdateFromKeyboard();
+			UpdateNPCResponse();
+
 			m_world->Update();
 
 			/*if ( m_dialogueTimer.HasElapsed() )
@@ -450,6 +452,11 @@ void Game::LoadItemsFromXml()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard()
 {
+	if ( g_devConsole->IsOpen() )
+	{
+		return;
+	}
+
 	switch ( m_gameState )
 	{
 		case eGameState::ATTRACT:
@@ -578,6 +585,27 @@ void Game::UpdateCameras()
 	//m_worldCamera->Translate2D( cameraShakeOffset );
 	m_worldCamera->SetPosition( m_focalPoint + Vec3( cameraShakeOffset, 0.f ) );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateNPCResponse()
+{
+	if ( m_dialogueNPC == nullptr )
+	{
+		return;
+	}
+
+	Vec2 textPosition( m_dialogueNPC->GetPosition() );
+	textPosition.y += 1.f;
+
+	DebugAddWorldTextf( Mat44::CreateTranslation2D( textPosition ),
+						Vec2( .5f, .5f ),
+						Rgba8::WHITE,
+						0.f,
+						0.15f,
+						DEBUG_RENDER_ALWAYS,
+						m_dialogueNPCText.c_str() );
 }
 
 
@@ -1253,7 +1281,7 @@ void Game::PrintTextOverEntity( const Entity& entity, const std::string& text, f
 void Game::BeginConversation( DialogueState* initialDialogueState, Entity* dialoguePartner )
 {
 	ChangeGameState( eGameState::DIALOGUE );
-	m_dialoguePartner = dialoguePartner;
+	m_dialogueNPC = dialoguePartner;
 	ChangeDialogueState( initialDialogueState );
 }
 
@@ -1268,9 +1296,9 @@ void Game::ChangeDialogueState( DialogueState* newDialogueState )
 		return;
 	}
 
-	if ( m_dialoguePartner != nullptr )
+	if ( m_dialogueNPC != nullptr )
 	{
-		PrintTextOverEntity( *m_dialoguePartner, newDialogueState->GetIntroText(), 2.f );
+		m_dialogueNPCText = newDialogueState->GetIntroText();
 	}
 
 	if ( newDialogueState->GetItemName() != "" )
@@ -1284,6 +1312,7 @@ void Game::ChangeDialogueState( DialogueState* newDialogueState )
 
 	if ( newDialogueState->GetDialogueChoices().size() == 0 )
 	{
+		PrintTextOverEntity( *m_dialogueNPC, newDialogueState->GetIntroText(), 2.f );
 		EndConversation();
 		return;
 	}
@@ -1296,7 +1325,7 @@ void Game::ChangeDialogueState( DialogueState* newDialogueState )
 //-----------------------------------------------------------------------------------------------
 void Game::EndConversation()
 {
-	m_dialoguePartner = nullptr;
+	m_dialogueNPC = nullptr;
 	ChangeGameState( eGameState::PLAYING );
 }
 
