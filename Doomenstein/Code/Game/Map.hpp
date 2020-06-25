@@ -33,6 +33,8 @@ public:
 
 protected:
 	void LoadEntitiesFromDefinition();
+	void ResolveEntityVsEntityCollisions();
+	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 
 protected:
 	std::string			m_name;
