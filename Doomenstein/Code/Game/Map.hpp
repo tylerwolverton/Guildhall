@@ -21,6 +21,7 @@ public:
 	virtual void Load() = 0;
 	virtual void Unload() = 0;
 
+	virtual void Update( float deltaSeconds );
 	virtual void UpdateMeshes() = 0;
 	virtual void Render() const = 0;
 	virtual void DebugRender() const;

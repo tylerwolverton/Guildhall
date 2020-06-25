@@ -57,6 +57,7 @@ public:
 	void Translate( const Vec3& translation );
 	void SetPitchRollYawOrientationDegrees( float pitch, float roll, float yaw );
 	void SetYawPitchRollOrientationDegrees( float yawDegrees, float pitchDegrees, float rollDegrees );
+	void SetYawOrientationDegrees( float yawDegrees );
 	void RotateYawPitchRoll( float yawDegrees, float pitchDegrees, float rollDegrees );
 
 	void SetProjectionOrthographic( float height, float nearZ = 1.f, float farZ = -1.f );

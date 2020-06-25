@@ -261,6 +261,49 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->ReloadShaders();
 	}
+
+	if ( m_player != nullptr )
+	{
+		float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+
+		Vec3 playerTranslation;
+		if ( g_inputSystem->IsKeyPressed( 'D' ) )
+		{
+			playerTranslation.y += 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'A' ) )
+		{
+			playerTranslation.y -= 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'W' ) )
+		{
+			playerTranslation.x += 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'S' ) )
+		{
+			playerTranslation.x -= 1.f;
+		}
+
+		playerTranslation *= m_player->GetWalkSpeed();
+
+		// Rotation
+		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
+		float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
+		yawDegrees *= .009f;
+
+		m_player->SetOrientationDegrees( m_player->GetOrientationDegrees() + yawDegrees );
+
+		Vec2 forwardVec = m_player->GetForwardVector();
+		Vec2 rightVec = forwardVec.GetRotatedMinus90Degrees();
+
+		Vec2 translationXY( playerTranslation.x * forwardVec
+							+ playerTranslation.y * rightVec );
+
+		m_player->AddVelocity( translationXY );
+	}
 }
 
 
@@ -329,7 +372,8 @@ void Game::UpdateCameraTransform()
 		pitchDegrees *= .009f;
 
 		m_worldCamera->SetPosition( Vec3( m_player->GetPosition(), m_player->GetEyeHeight() ) );
-		m_worldCamera->SetPitchRollYawOrientationDegrees( pitchDegrees, 0.f, m_player->GetOrientationDegrees() );
+		m_worldCamera->SetYawOrientationDegrees( m_player->GetOrientationDegrees() );
+		m_worldCamera->RotateYawPitchRoll( 0.f, pitchDegrees, 0.f );
 	}
 }
 

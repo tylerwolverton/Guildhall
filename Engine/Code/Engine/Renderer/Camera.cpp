@@ -87,6 +87,13 @@ void Camera::SetYawPitchRollOrientationDegrees( float yawDegrees, float pitchDeg
 
 
 //-----------------------------------------------------------------------------------------------
+void Camera::SetYawOrientationDegrees( float yawDegrees )
+{
+	SetYawPitchRollOrientationDegrees( yawDegrees, m_transform.GetPitchDegrees(), m_transform.GetRollDegrees() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Camera::RotateYawPitchRoll( float yawDegrees, float pitchDegrees, float rollDegrees )
 {
 	SetPitchRollYawOrientationDegrees( m_transform.GetPitchDegrees() + pitchDegrees,

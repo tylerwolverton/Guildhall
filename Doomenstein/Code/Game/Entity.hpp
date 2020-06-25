@@ -33,10 +33,13 @@ public:
 	const float  GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
 	const float  GetHeight() const										{ return m_entityDef.m_height; }
 	const float  GetEyeHeight() const									{ return m_entityDef.m_eyeHeight; }
+	const float  GetWalkSpeed() const									{ return m_entityDef.m_walkSpeed; }
 	const float  GetOrientationDegrees() const							{ return m_orientationDegrees; }
 	void		 SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 	std::string  GetName() const										{ return m_entityDef.m_name; }
 				 
+	void		 AddVelocity( const Vec2& deltaVelocity )				{ m_velocity += deltaVelocity; }
+
 	bool		 IsDead() const											{ return m_isDead; }
 	bool		 IsGarbage() const										{ return m_isGarbage; }
 				 

@@ -40,7 +40,7 @@ void World::Update()
 		return;
 	}
 
-	m_curMap->UpdateMeshes();
+	m_curMap->Update( (float)m_worldClock->GetLastDeltaSeconds() );
 }
 
 

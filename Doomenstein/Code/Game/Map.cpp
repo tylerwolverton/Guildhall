@@ -32,6 +32,24 @@ Map::~Map()
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::Update( float deltaSeconds )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		entity->Update( deltaSeconds );
+	}
+
+	UpdateMeshes();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::DebugRender() const
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
