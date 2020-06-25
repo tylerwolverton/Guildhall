@@ -97,6 +97,9 @@ void DebugAddWorldWireBounds( const AABB3& bounds, const Rgba8& color, float dur
 void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
+void DebugAddWorldWireCylinder( const Vec3& pos0, const Vec3& pos1, float radius, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+void DebugAddWorldWireCylinder( const Vec3& pos0, const Vec3& pos1, float radius, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
 // basis
 void DebugAddWorldBasis( const Mat44& basis, float arrowLength, float duration = 0.0f, const Rgba8 & start_tint = Rgba8::WHITE, const Rgba8& end_tint = Rgba8::WHITE, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );

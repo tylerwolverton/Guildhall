@@ -10,8 +10,18 @@
 
 //-----------------------------------------------------------------------------------------------
 class TileDefinition;
+class EntityDefinition;
 class MapRegionTypeDefinition;
 class Map;
+
+
+//-----------------------------------------------------------------------------------------------
+struct MapEntityDefinition
+{
+	EntityDefinition* entityDef = nullptr;
+	Vec2 position = Vec2::ZERO;
+	float yawDegrees = 0.f;
+};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -30,7 +40,9 @@ public:
 
 	Vec2 GetPlayerStartPos() const											{ return m_playerStartPos; }
 	float GetPlayerStartYaw() const											{ return m_playerStartYaw; }
+	std::vector<MapEntityDefinition> GetMapEntityDefs() const				{ return m_mapEntityDefs; }
 
+	// Static methods
 	static MapDefinition* GetMapDefinition( std::string mapName );
 
 public:
@@ -50,6 +62,7 @@ private:
 	int m_version = -1;
 	IntVec2 m_dimensions = IntVec2::ZERO;
 
+	std::vector<MapEntityDefinition> m_mapEntityDefs;
 	std::vector<MapRegionTypeDefinition*> m_regionTypeDefs;
 
 	// Multiplayer TODO: Make this into an array

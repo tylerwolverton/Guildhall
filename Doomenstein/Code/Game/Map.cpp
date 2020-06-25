@@ -2,7 +2,11 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
+#include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Projectile.hpp"
@@ -16,6 +20,7 @@ Map::Map( std::string name, MapDefinition* mapDef )
 	: m_name( name )
 	, m_mapDef( mapDef )
 {
+	LoadEntitiesFromDefinition();
 }
 
 
@@ -23,6 +28,23 @@ Map::Map( std::string name, MapDefinition* mapDef )
 Map::~Map()
 {
 	PTR_VECTOR_SAFE_DELETE( m_entities );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::DebugRender() const
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		DebugAddWorldWireCylinder( Vec3( entity->GetPosition(), 0.f ), Vec3( entity->GetPosition(), entity->GetHeight() ), 
+								   entity->GetPhysicsRadius(), Rgba8::CYAN );
+	}
 }
 
 
@@ -43,25 +65,25 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 //-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 {
-	if ( entityDef.GetType() == "entity" )
+	if ( entityDef.GetType() == "Entity" )
 	{
 		Entity* entity = new Entity( entityDef );
 		m_entities.emplace_back( entity );
 		return entity;
 	}
-	else if ( entityDef.GetType() == "actor" )
+	else if ( entityDef.GetType() == "Actor" )
 	{
 		Actor* actor = new Actor( entityDef );
 		m_entities.emplace_back( actor );
 		return actor;
 	}
-	else if ( entityDef.GetType() == "projectile" )
+	else if ( entityDef.GetType() == "Projectile" )
 	{
 		Projectile* projectile = new Projectile( entityDef );
 		m_entities.emplace_back( projectile );
 		return projectile;
 	}
-	else if ( entityDef.GetType() == "portal" )
+	else if ( entityDef.GetType() == "Portal" )
 	{
 		Portal* portal = new Portal( entityDef );
 		m_entities.emplace_back( portal );
@@ -82,6 +104,11 @@ Entity* Map::GetClosestEntityInSector( const Vec2& observerPos, float forwardDeg
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
 		if ( IsPointInForwardSector2D( entity->GetPosition(), observerPos, forwardDegrees, apertureDegrees, maxDistToSearch ) )
 		{
 			closestEntity = entity;
@@ -90,4 +117,30 @@ Entity* Map::GetClosestEntityInSector( const Vec2& observerPos, float forwardDeg
 	}
 
 	return closestEntity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::LoadEntitiesFromDefinition()
+{
+	std::vector<MapEntityDefinition> mapEntityDefs = m_mapDef->GetMapEntityDefs();
+
+	for ( int mapEntityIdx = 0; mapEntityIdx < (int)mapEntityDefs.size(); ++mapEntityIdx )
+	{
+		MapEntityDefinition& mapEntityDef = mapEntityDefs[mapEntityIdx];
+		if ( mapEntityDef.entityDef == nullptr )
+		{
+			continue;
+		}
+
+		Entity* newEntity = SpawnNewEntityOfType( *mapEntityDef.entityDef );
+		if ( newEntity == nullptr )
+		{
+			continue;
+		}
+
+		newEntity->SetPosition( mapEntityDef.position );
+		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
+	}
+
 }

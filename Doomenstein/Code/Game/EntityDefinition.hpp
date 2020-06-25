@@ -32,7 +32,8 @@ protected:
 	std::string		m_name;
 	std::string		m_type;
 	float			m_physicsRadius = 0.f;
-	float			m_physicsHeight = 0.f;
+	float			m_height = 0.f;
+	float			m_eyeHeight = 0.f;
 	float			m_mass = 1.f;
 	float			m_walkSpeed = 0.f;
 };

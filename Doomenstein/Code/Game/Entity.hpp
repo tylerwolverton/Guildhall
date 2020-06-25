@@ -28,15 +28,17 @@ public:
 	virtual void DebugRender() const;
 
 	const Vec2	 GetForwardVector() const;
-	const Vec2	 GetPosition() const							{ return m_position; };
-	void		 SetPosition( const Vec2& position )			{ m_position = position; };
-	const float  GetPhysicsRadius() const						{ return m_entityDef.m_physicsRadius; };
-	const float  GetEyeHeight() const							{ return m_entityDef.m_physicsHeight; };
-	const float  GetOrientationDegrees() const					{ return m_orientationDegrees; };
-	std::string  GetName() const								{ return m_entityDef.m_name; };
+	const Vec2	 GetPosition() const									{ return m_position; }
+	void		 SetPosition( const Vec2& position )					{ m_position = position; }
+	const float  GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
+	const float  GetHeight() const										{ return m_entityDef.m_height; }
+	const float  GetEyeHeight() const									{ return m_entityDef.m_eyeHeight; }
+	const float  GetOrientationDegrees() const							{ return m_orientationDegrees; }
+	void		 SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
+	std::string  GetName() const										{ return m_entityDef.m_name; }
 				 
-	bool		 IsDead() const									{ return m_isDead; }
-	bool		 IsGarbage() const								{ return m_isGarbage; }
+	bool		 IsDead() const											{ return m_isDead; }
+	bool		 IsGarbage() const										{ return m_isGarbage; }
 				 
 	void		 TakeDamage( int damage );
 	void		 ApplyFriction();

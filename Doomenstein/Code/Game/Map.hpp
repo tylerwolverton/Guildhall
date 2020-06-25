@@ -23,12 +23,15 @@ public:
 
 	virtual void UpdateMeshes() = 0;
 	virtual void Render() const = 0;
-	virtual void DebugRender() const = 0;
+	virtual void DebugRender() const;
 
 	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
 	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
 
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
+
+protected:
+	void LoadEntitiesFromDefinition();
 
 protected:
 	std::string			m_name;

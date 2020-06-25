@@ -423,6 +423,13 @@ void Game::Render() const
 
 	g_renderer->ReleaseRenderTarget( colorTarget );
 
+	// Debug rendering
+	if ( m_isDebugRendering )
+	{
+		DebugRender();
+	}
+
+	DebugRenderWorldToCamera( m_worldCamera );
 
 	m_uiCamera->SetColorTarget( 0, backbuffer );
 	g_renderer->BeginCamera( *m_uiCamera );
@@ -431,13 +438,6 @@ void Game::Render() const
 
 	g_renderer->EndCamera( *m_uiCamera );
 
-	// Debug rendering
-	if ( m_isDebugRendering )
-	{
-		DebugRender();
-	}
-
-	DebugRenderWorldToCamera( m_worldCamera );
 	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
@@ -452,7 +452,7 @@ void Game::DebugRender() const
 	Mat44 compassMatrix = Mat44::CreateTranslation3D( m_worldCamera->GetTransform().GetPosition() + .1f * m_worldCamera->GetTransform().GetForwardVector() );
 	DebugAddWorldBasis( compassMatrix, .01f, 0.f, Rgba8::WHITE, Rgba8::WHITE, DEBUG_RENDER_ALWAYS );
 
-	//m_world->DebugRender();
+	m_world->DebugRender();
 }
 
 
@@ -572,7 +572,10 @@ void Game::LoadXmlEntityTypes()
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
-		if ( !strcmp( element->Name(), "EntityType" ) )
+		if ( !strcmp( element->Name(), "Actor" )
+			 || !strcmp( element->Name(), "Entity" ) 
+			 || !strcmp( element->Name(), "Projectile" ) 
+			 || !strcmp( element->Name(), "Portal" ) )
 		{
 			EntityDefinition* entityTypeDef = new EntityDefinition( *element );
 			if ( entityTypeDef->IsValid() )

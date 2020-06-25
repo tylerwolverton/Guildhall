@@ -898,6 +898,31 @@ void DebugAddWorldWireSphere( const Vec3& pos, float radius, const Rgba8& color,
 
 
 //-----------------------------------------------------------------------------------------------
+void DebugAddWorldWireCylinder( const Vec3& pos0, const Vec3& pos1, float radius, const Rgba8& start_color, const Rgba8& end_color, float duration, eDebugRenderMode mode )
+{
+	std::vector<Vertex_PCU> vertices;
+	std::vector<uint> indices;
+	
+	AppendVertsAndIndicesForCylinderMesh( vertices, indices, pos0, pos1, radius, radius, start_color, start_color );
+	DebugRenderObject* cylinderObj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
+
+	switch ( mode )
+	{
+		case DEBUG_RENDER_USE_DEPTH: AddDebugRenderObjectToVector( cylinderObj, s_debugRenderWorldOutlineObjects ); return;
+		case DEBUG_RENDER_ALWAYS: AddDebugRenderObjectToVector( cylinderObj, s_debugRenderWorldOutlineObjectsAlways ); return;
+		case DEBUG_RENDER_XRAY: AddDebugRenderObjectToVector( cylinderObj, s_debugRenderWorldOutlineObjectsXRay ); return;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldWireCylinder( const Vec3& pos0, const Vec3& pos1, float radius, const Rgba8& color, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldWireCylinder( pos0, pos1, radius, color, color, duration, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DebugAddWorldBasis( const Mat44& basis, const Rgba8& start_tint, const Rgba8& end_tint, float duration, eDebugRenderMode mode )
 {
 	DebugAddWorldBasis( basis, 1.f, duration, start_tint, end_tint, mode );

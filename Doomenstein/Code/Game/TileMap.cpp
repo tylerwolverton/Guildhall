@@ -178,6 +178,7 @@ void TileMap::Render() const
 //-----------------------------------------------------------------------------------------------
 void TileMap::DebugRender() const
 {
+	Map::DebugRender();
 }
 
 

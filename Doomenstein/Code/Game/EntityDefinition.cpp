@@ -35,19 +35,14 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		return;
 	}
 	
-	m_type = ParseXmlAttribute( entityDefElem, "type", "" );
-	if ( m_type == "" )
-	{
-		g_devConsole->PrintError( Stringf( "EntityTypes.xml: EntityType '%s' is missing a type attribute", m_name ) );
-		return;
-	}
+	m_type = entityDefElem.Name();
 
 	const XmlElement* physicsElem = entityDefElem.FirstChildElement( "Physics" );
 	if( physicsElem != nullptr )
 	{
 		m_physicsRadius = ParseXmlAttribute( *physicsElem, "radius", m_physicsRadius );
-		m_physicsHeight = ParseXmlAttribute( *physicsElem, "height", m_physicsHeight );
-		m_mass = ParseXmlAttribute( *physicsElem, "mass", m_mass );
+		m_height = ParseXmlAttribute( *physicsElem, "height", m_height );
+		m_eyeHeight = ParseXmlAttribute( *physicsElem, "eyeHeight", m_eyeHeight );
 		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
 	}
 
