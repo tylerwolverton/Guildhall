@@ -264,7 +264,7 @@ void Game::UpdateFromKeyboard()
 
 	if ( m_player != nullptr )
 	{
-		float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+		//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 
 		Vec3 playerTranslation;
 		if ( g_inputSystem->IsKeyPressed( 'D' ) )
@@ -435,7 +435,17 @@ void Game::PossesNearestEntity()
 {
 	Transform cameraTransform = m_worldCamera->GetTransform();
 
-	m_player = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
+	Entity* entity = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	if ( GetDistance3D( cameraTransform.GetPosition(), Vec3( entity->GetPosition(), entity->GetHeight() * .5f ) ) < 2.f )
+	{
+		m_player = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
+		m_worldCamera->SetPitchRollYawOrientationDegrees( 0.f, 0.f, m_player->GetOrientationDegrees() );
+	}
 }
 
 

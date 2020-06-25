@@ -33,6 +33,7 @@ public:
 	virtual void Load() override;
 	virtual void Unload() override;
 
+	virtual void Update( float deltaSeconds ) override;
 	virtual void UpdateMeshes() override;
 	virtual void Render() const override;
 	virtual void DebugRender() const override;
@@ -64,6 +65,9 @@ private:
 	void				BuildCardinalDirectionsArray();
 	void				CreateTestBoxes();
 	void				RenderTestBoxes() const;
+
+	void				ResolveEntityVsWallCollisions();
+	void				ResolveEntityVsWallCollision( Entity& entity );
 
 private:
 	std::vector<Tile>	m_tiles;

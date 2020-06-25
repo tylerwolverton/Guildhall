@@ -1,5 +1,6 @@
 #include "Game/TileMap.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Material.hpp"
@@ -51,6 +52,15 @@ void TileMap::Load()
 void TileMap::Unload()
 {
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::Update( float deltaSeconds )
+{
+	Map::Update( deltaSeconds );
+
+	ResolveEntityVsWallCollisions();
 }
 
 
@@ -329,6 +339,49 @@ void TileMap::RenderTestBoxes() const
 		//g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
 		g_renderer->BindMaterial( m_testMaterial );
 		g_renderer->DrawMesh( m_cubeMesh );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::ResolveEntityVsWallCollisions()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		ResolveEntityVsWallCollision( *entity );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::ResolveEntityVsWallCollision( Entity& entity )
+{
+	if ( !entity.m_canBePushedByWalls )
+	{
+		return;
+	}
+
+	Tile* entityTile = GetTileFromWorldCoords( entity.GetPosition() );
+	if ( entityTile == nullptr )
+	{
+		return;
+	}
+
+	std::vector<Tile*> surroundingTiles = GetTilesInRadius( *entityTile, 1, true );
+	for ( int tileIdx = 0; tileIdx < (int)surroundingTiles.size(); ++tileIdx )
+	{
+		Tile*& tile = surroundingTiles[tileIdx];
+		if ( tile != nullptr
+			 && tile->IsSolid() )
+		{
+			PushDiscOutOfAABB2D( entity.m_position, entity.GetPhysicsRadius(), tile->GetBounds() );
+		}
 	}
 }
 

@@ -17,6 +17,7 @@ class Texture;
 class Entity
 {
 	friend class Map;
+	friend class TileMap;
 	
 public:
 	Entity( const EntityDefinition& entityDef );
