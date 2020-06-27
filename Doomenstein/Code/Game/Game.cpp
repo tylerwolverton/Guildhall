@@ -264,8 +264,6 @@ void Game::UpdateFromKeyboard()
 
 	if ( m_player != nullptr )
 	{
-		//float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-
 		Vec3 playerTranslation;
 		if ( g_inputSystem->IsKeyPressed( 'D' ) )
 		{
@@ -286,9 +284,7 @@ void Game::UpdateFromKeyboard()
 		{
 			playerTranslation.x -= 1.f;
 		}
-
-		playerTranslation *= m_player->GetWalkSpeed();
-
+		
 		// Rotation
 		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
 		float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
@@ -302,7 +298,11 @@ void Game::UpdateFromKeyboard()
 		Vec2 translationXY( playerTranslation.x * forwardVec
 							+ playerTranslation.y * rightVec );
 
-		m_player->AddVelocity( translationXY );
+		translationXY *= m_player->GetWalkSpeed();
+
+		//m_player->AddVelocity( translationXY );
+		float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+		m_player->Translate( translationXY * deltaSeconds );
 	}
 }
 

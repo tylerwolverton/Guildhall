@@ -845,6 +845,24 @@ void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std
 
 
 //-----------------------------------------------------------------------------------------------
+void AppendVertsForQuad( std::vector<Vertex_PCU>& vertexArray, Vec3* corners, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	Vec3 bottomLeft = corners[0];
+	Vec3 bottomRight = corners[1];
+	Vec3 topLeft = corners[2];
+	Vec3 topRight = corners[3];
+
+	vertexArray.push_back( Vertex_PCU( bottomLeft, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( bottomRight, tint, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	vertexArray.push_back( Vertex_PCU( topRight, tint, uvAtMaxs ) );
+
+	vertexArray.push_back( Vertex_PCU( bottomLeft, tint, uvAtMins ) );
+	vertexArray.push_back( Vertex_PCU( topRight, tint, uvAtMaxs ) );
+	vertexArray.push_back( Vertex_PCU( topLeft, tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void AppendVertsForAABB2DWithDepth( std::vector<Vertex_PCU>& vertexArray, 
 									const AABB2& spriteBounds, float zDepth, 
 									const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )

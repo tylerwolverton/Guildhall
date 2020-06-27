@@ -170,6 +170,8 @@ void TileMap::AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, cons
 //-----------------------------------------------------------------------------------------------
 void TileMap::Render() const
 {
+	Map::Render();
+
 	if ( m_mesh.size() == 0 )
 	{
 		return;

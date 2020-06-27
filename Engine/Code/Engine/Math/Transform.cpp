@@ -93,7 +93,6 @@ Vec3 Transform::GetForwardVector() const
 
 		case eAxisYawPitchRollOrder::ZYX:
 		{
-			//forwardVec = GetAsMatrix().TransformVector3D( Vec3( s_axisOrientation.GetXAxisDirectionFactor(), 0.f, 0.f ) ).GetNormalized();
 			Mat44 orientation = GetOrientationAsMatrix();
 			forwardVec = orientation.TransformVector3D( -s_identityOrientation.GetKBasis3D() );
 		} 
@@ -101,6 +100,56 @@ Vec3 Transform::GetForwardVector() const
 	}
 
 	return forwardVec;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 Transform::GetRightVector() const
+{
+	Vec3 rightVec;
+
+	switch ( s_axisOrientation.m_axisYawPitchRollOrder )
+	{
+		case eAxisYawPitchRollOrder::YXZ:
+		{
+			rightVec = GetAsMatrix().TransformVector3D( Vec3( s_axisOrientation.GetXAxisDirectionFactor(), 0.f, 0.f) ).GetNormalized();
+		}
+		break;
+
+		case eAxisYawPitchRollOrder::ZYX:
+		{
+			Mat44 orientation = GetOrientationAsMatrix();
+			rightVec = orientation.TransformVector3D( s_identityOrientation.GetIBasis3D() );
+		}
+		break;
+	}
+
+	return rightVec;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 Transform::GetUpVector() const
+{
+	Vec3 upVec;
+
+	switch ( s_axisOrientation.m_axisYawPitchRollOrder )
+	{
+		case eAxisYawPitchRollOrder::YXZ:
+		{
+			upVec = GetAsMatrix().TransformVector3D( Vec3( 0.f, s_axisOrientation.GetYAxisDirectionFactor(), 0.f ) ).GetNormalized();
+		}
+		break;
+
+		case eAxisYawPitchRollOrder::ZYX:
+		{
+			Mat44 orientation = GetOrientationAsMatrix();
+			upVec = orientation.TransformVector3D( s_identityOrientation.GetJBasis3D() );
+		}
+		break;
+	}
+
+	return upVec;
 }
 
 

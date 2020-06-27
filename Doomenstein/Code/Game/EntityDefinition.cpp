@@ -46,5 +46,11 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
 	}
 
+	const XmlElement* appearanceElem = entityDefElem.FirstChildElement( "Appearance" );
+	if ( appearanceElem != nullptr )
+	{
+		m_visualSize = ParseXmlAttribute( *appearanceElem, "size", m_visualSize );
+	}
+
 	m_isValid = true;
 }

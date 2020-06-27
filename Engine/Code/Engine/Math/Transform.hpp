@@ -58,7 +58,10 @@ public:
 
 	Vec3 GetPosition() const						{ return m_position; }
 	Vec3 GetScale() const							{ return m_scale; }
+
 	Vec3 GetForwardVector() const;
+	Vec3 GetRightVector() const;
+	Vec3 GetUpVector() const;
 
 	float GetYawDegrees() const						{ return m_yawDegrees; }
 	float GetPitchDegrees() const					{ return m_pitchDegrees; }

@@ -40,6 +40,7 @@ public:
 	std::string  GetName() const										{ return m_entityDef.m_name; }
 				 
 	void		 AddVelocity( const Vec2& deltaVelocity )				{ m_velocity += deltaVelocity; }
+	void		 Translate( const Vec2& translation )					{ m_position += translation; }
 
 	bool		 IsDead() const											{ return m_isDead; }
 	bool		 IsGarbage() const										{ return m_isGarbage; }

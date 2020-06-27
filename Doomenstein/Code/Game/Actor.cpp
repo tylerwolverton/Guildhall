@@ -1,8 +1,11 @@
 #include "Game/Actor.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
@@ -55,6 +58,19 @@ void Actor::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
+	std::vector<Vertex_PCU> vertices;
+	Vec3 corners[4];
+
+	//BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
+	//BillboardSpriteCameraOpposingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
+	//BillboardSpriteCameraFacingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
+	BillboardSpriteCameraOpposingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
+	
+	AppendVertsForQuad( vertices, corners, Rgba8::WHITE );
+
+	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile("Data/Images/test.png") );
+	g_renderer->DrawVertexArray( vertices );
+
 	/*const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
 		
 	Vec2 mins, maxs;

@@ -72,6 +72,7 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius, const Rgba8& startTint, const Rgba8& endTint, int numSides = 8, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 void AppendVertsAndIndicesForConeMesh( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indices, const Vec3& p0, const Vec3& p1, float radius, const Rgba8& tint, int numSides = 8, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
+void AppendVertsForQuad( std::vector<Vertex_PCU>& vertexArray, Vec3* corners, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
 //-----------------------------------------------------------------------------------------------
 // Vertex_PCUTBN append methods

@@ -6,7 +6,12 @@ class AudioSystem;
 class RenderContext;
 class Game;
 class SpriteSheet;
+class Camera;
 struct Vec2;
+struct Vec3;
+struct Mat44;
+struct OBB2;
+struct OBB3;
 struct Rgba8;
 
 
@@ -23,7 +28,7 @@ extern Game* g_game;
 
 //-----------------------------------------------------------------------------------------------
 // Global Tile Sheets
-//
+//-----------------------------------------------------------------------------------------------
 extern SpriteSheet* g_tileSpriteSheet;
 extern SpriteSheet* g_characterSpriteSheet;
 extern SpriteSheet* g_portraitSpriteSheet;
@@ -31,7 +36,7 @@ extern SpriteSheet* g_portraitSpriteSheet;
 
 //-----------------------------------------------------------------------------------------------
 // Game Constants
-//
+//-----------------------------------------------------------------------------------------------
 constexpr float CLIENT_ASPECT = 16.f / 9.f;
 constexpr int FRAME_HISTORY_COUNT = 10;
 
@@ -59,3 +64,12 @@ constexpr float DEBUG_LINE_THICKNESS = 0.02f;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
+
+
+//-----------------------------------------------------------------------------------------------
+// Billboarding
+//-----------------------------------------------------------------------------------------------
+void BillboardSpriteCameraFacingXY( const Vec2& pos, const Vec2& dimensions, const Camera& camera, Vec3* out_fourCorners );
+void BillboardSpriteCameraOpposingXY( const Vec2& pos, const Vec2& dimensions, const Camera& camera, Vec3* out_fourCorners );
+void BillboardSpriteCameraFacingXYZ( const Vec2& pos, const Vec2& dimensions, const Camera& camera, Vec3* out_fourCorners );
+void BillboardSpriteCameraOpposingXYZ( const Vec2& pos, const Vec2& dimensions, const Camera& camera, Vec3* out_fourCorners );

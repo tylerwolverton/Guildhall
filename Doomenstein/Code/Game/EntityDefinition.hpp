@@ -21,6 +21,7 @@ public:
 	std::string GetName() const											{ return m_name; }
 	std::string GetType() const											{ return m_type; }
 	float		GetWalkSpeed() const									{ return m_walkSpeed; }
+	Vec2		GetVisualSize() const									{ return m_visualSize; }
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
@@ -36,4 +37,6 @@ protected:
 	float			m_eyeHeight = 0.f;
 	float			m_mass = 1.f;
 	float			m_walkSpeed = 0.f;
+
+	Vec2			m_visualSize = Vec2::ZERO;
 };

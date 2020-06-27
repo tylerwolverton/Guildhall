@@ -23,7 +23,7 @@ public:
 
 	virtual void Update( float deltaSeconds );
 	virtual void UpdateMeshes() = 0;
-	virtual void Render() const = 0;
+	virtual void Render() const;
 	virtual void DebugRender() const;
 
 	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
