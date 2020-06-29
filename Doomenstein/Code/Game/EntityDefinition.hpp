@@ -1,12 +1,14 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Game/GameCommon.hpp"
 
 #include <string>
 
 
 //-----------------------------------------------------------------------------------------------
 class SpriteSheet;
+class SpriteAnimationSetDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -39,4 +41,7 @@ protected:
 	float			m_walkSpeed = 0.f;
 
 	Vec2			m_visualSize = Vec2::ZERO;
+	eBillboardStyle m_billboardStyle = eBillboardStyle::CAMERA_FACING_INVALID;
+
+	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 };

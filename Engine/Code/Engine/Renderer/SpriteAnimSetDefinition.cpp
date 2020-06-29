@@ -18,12 +18,12 @@ SpriteAnimSetDefinition::SpriteAnimSetDefinition( RenderContext& renderer, const
 
 	// Try to find spritesheet in static map
 	std::string spriteSheetName = ParseXmlAttribute( spriteAnimSetDefElem, "spriteSheetName", "" );
-	m_spriteSheet = SpriteSheet::GetSpriteSheet( spriteSheetName );
+	m_spriteSheet = SpriteSheet::GetSpriteSheetByName( spriteSheetName );
 	if ( m_spriteSheet == nullptr )
 	{
 		std::string spriteSheetDataPath( "Data/Images/SpriteSheets/" + spriteSheetFileName );
-		SpriteSheet::s_definitions[spriteSheetName] = new SpriteSheet( *( renderer.CreateOrGetTextureFromFile( spriteSheetDataPath.c_str() ) ), spriteSheetLayout );
-		m_spriteSheet = SpriteSheet::s_definitions[spriteSheetName];
+		m_spriteSheet = new SpriteSheet( *( renderer.CreateOrGetTextureFromFile( spriteSheetDataPath.c_str() ) ), spriteSheetLayout );
+		SpriteSheet::s_definitions.push_back( m_spriteSheet );
 	}
 
 	if ( spriteSheetFileName == ""

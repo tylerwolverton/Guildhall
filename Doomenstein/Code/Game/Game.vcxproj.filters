@@ -88,6 +88,9 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="SpriteAnimationSetDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -157,6 +160,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Projectile.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteAnimationSetDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

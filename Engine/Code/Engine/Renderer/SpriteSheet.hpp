@@ -8,11 +8,13 @@
 #include <vector>
 #include <map>
 
+
+//-----------------------------------------------------------------------------------------------
 class SpriteSheet
 {
 public:
 	explicit SpriteSheet( const Texture& texture, const IntVec2& simpleGridLayout );
-	//explicit SpriteSheet( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
+	explicit SpriteSheet( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
 	~SpriteSheet();
 
 	const Texture&			GetTexture() const																	{ return m_texture; }
@@ -22,17 +24,20 @@ public:
 	void					GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, int spriteIndex ) const;
 	void					GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, const IntVec2& spriteCoords ) const;
 
-	static void CreateAndAddToMap( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
-	static SpriteSheet* GetSpriteSheet( std::string spriteSheetName );
-	static void DeleteSpriteSheets();
+	// Static methods
+	static void CreateAndRegister( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
+	static SpriteSheet* GetSpriteSheetByName( std::string spriteSheetName );
+	static SpriteSheet* GetSpriteSheetByPath( std::string spriteSheetPath );
 
 public:
-	static std::map< std::string, SpriteSheet* > s_definitions;
+	static std::vector< SpriteSheet* > s_definitions;
 
 private:
 	int GetSpriteIndexFromSpriteCoords( const IntVec2& spriteCoords ) const;
 
 private:
+	std::string						m_name;
+
 	const Texture&					m_texture;
 	std::vector<SpriteDefinition>	m_spriteDefs;
 	IntVec2							m_dimensions;

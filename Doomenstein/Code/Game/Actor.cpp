@@ -19,11 +19,6 @@
 Actor::Actor( const EntityDefinition& entityDef )
 	: Entity( entityDef )
 {
-	/*if( m_actorDef->GetName() == std::string( "Player" ) )
-	{
-		m_controllerID = 0;
-		m_isPlayer = true;
-	}*/
 	m_canBePushedByWalls = true;
 	m_canBePushedByEntities = true;
 	m_canPushEntities = true;
@@ -39,19 +34,11 @@ Actor::~Actor()
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( float deltaSeconds )
 {
-	//m_cumulativeTime += deltaSeconds;
-
-	/*if ( m_isPlayer )
-	{
-		UpdateFromKeyboard( deltaSeconds );
-		UpdateFromGamepad( deltaSeconds );
-	}*/
-	
+	m_cumulativeTime += deltaSeconds;
+		
 	//UpdateAnimation();
 
 	Entity::Update( deltaSeconds );
-
-	//m_velocity.ClampLength( PLAYER_MAX_SPEED );
 }
 
 
@@ -61,14 +48,19 @@ void Actor::Render() const
 	std::vector<Vertex_PCU> vertices;
 	Vec3 corners[4];
 
-	//BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
+	BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
 	//BillboardSpriteCameraOpposingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
 	//BillboardSpriteCameraFacingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
-	BillboardSpriteCameraOpposingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
+	//BillboardSpriteCameraOpposingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
 	
+	/*Vec2 mins, maxs;
+	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+	spriteDef.GetUVs( mins, maxs );*/
+
 	AppendVertsForQuad( vertices, corners, Rgba8::WHITE );
 
-	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile("Data/Images/test.png") );
+	//g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
+	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
 	g_renderer->DrawVertexArray( vertices );
 
 	/*const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );

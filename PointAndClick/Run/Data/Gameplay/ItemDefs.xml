@@ -24,13 +24,6 @@
       <ActionEvent type="TalkTo" initialDialogueState="PurpleTentacle_initial" />
       <ActionEvent type="GiveToDestination" requiredItem="Key"  />
     </ActionEvents>
-    <!--<SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteSheetName="Characters" spriteLayout="12,53" fps="10">
-      <SpriteAnim name="MoveEast"		spriteIndexes="15,16,17,16"/>
-      <SpriteAnim name="MoveWest"		spriteIndexes="21,22,23,22"/>
-      <SpriteAnim name="MoveNorth"	spriteIndexes="12,13,14,13"/>
-      <SpriteAnim name="MoveSouth"	spriteIndexes="18,19,20,16"/>
-      <SpriteAnim name="Idle"				spriteIndexes="18,19,20,19" fps="3"/>
-    </SpriteAnimSet>-->
     <SpriteAnimSet spriteSheet="PurpleTentacle_Idle.png" spriteSheetName="PurpleTentacle" spriteLayout="3,1" fps="10">
       <SpriteAnim name="Idle"				spriteIndexes="0,1,2,1" fps="3"/>
     </SpriteAnimSet>

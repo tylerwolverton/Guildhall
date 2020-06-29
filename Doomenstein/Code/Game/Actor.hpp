@@ -28,7 +28,7 @@ private:
 
 protected:
 	int						m_controllerID = -1;
-	/*float					m_cumulativeTime = 0.f;
+	float					m_cumulativeTime = 0.f;
 	
-	SpriteAnimDefinition*	m_curAnimDef = nullptr;*/
+	SpriteAnimDefinition*	m_curAnimDef = nullptr;
 };

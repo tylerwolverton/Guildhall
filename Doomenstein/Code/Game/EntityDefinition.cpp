@@ -4,7 +4,6 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
-#include "Game/GameCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -50,6 +49,26 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 	if ( appearanceElem != nullptr )
 	{
 		m_visualSize = ParseXmlAttribute( *appearanceElem, "size", m_visualSize );
+
+		std::string spriteSheetPath = ParseXmlAttribute( *appearanceElem, "spriteSheet", "" );
+		if ( spriteSheetPath == "" )
+		{
+			g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no spriteSheet attribute", m_name.c_str() ) );
+			return;
+		}
+
+		SpriteSheet* spriteSheet = SpriteSheet::GetSpriteSheetByPath( spriteSheetPath );
+		if ( spriteSheet == nullptr )
+		{
+			IntVec2 layout = ParseXmlAttribute( *appearanceElem, "layout", IntVec2( -1,-1 ) );
+			if ( layout == IntVec2( -1,-1 ) )
+			{
+				g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no layout attribute", m_name.c_str() ) );
+				return;
+			}
+
+			//SpriteSheet::CreateAndAddToMap(g_renderer->CreateOrGetTextureFromFile())
+		}
 	}
 
 	m_isValid = true;

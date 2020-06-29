@@ -176,7 +176,7 @@ void Game::BuildUIHud()
 	float fractionOfWidthCenter = worldUIHeightPixels / m_worldUIPanel->GetBoundingBox().GetWidth();
 	float fractionOnSides = ( 1.f - fractionOfWidthCenter ) / 2.f;
 
-	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheet( "ViewModels" );
+	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheetByName( "ViewModels" );
 	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
 	Vec2 uvsAtMins, uvsAtMaxs;
 	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
@@ -590,7 +590,7 @@ void Game::LoadAssets()
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 
-	SpriteSheet::CreateAndAddToMap( "ViewModels", *( g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" ) ), IntVec2( 8, 8 ) );
+	SpriteSheet::CreateAndRegister( "ViewModels", *( g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" ) ), IntVec2( 8, 8 ) );
 	
 	LoadXmlEntityTypes();
 	LoadXmlMapMaterials();
@@ -722,7 +722,7 @@ void Game::LoadXmlMapMaterials()
 		}
 		else
 		{
-			SpriteSheet::CreateAndAddToMap( name, *g_renderer->CreateOrGetTextureFromFile( imagePath.c_str() ), layout );
+			SpriteSheet::CreateAndRegister( name, *g_renderer->CreateOrGetTextureFromFile( imagePath.c_str() ), layout );
 		}
 
 		materialsSheetElement = materialsSheetElement->NextSiblingElement( "MaterialsSheet" );

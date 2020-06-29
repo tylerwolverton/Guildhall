@@ -110,9 +110,6 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( g_characterSpriteSheet );
 	PTR_SAFE_DELETE( g_portraitSpriteSheet );
 	
-	//Clean up spritesheets
-	SpriteSheet::DeleteSpriteSheets();
-
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_rng );

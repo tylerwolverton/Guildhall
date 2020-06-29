@@ -25,6 +25,7 @@ public:
 
 	IntVec2	GetTexelSize() const										{ return m_texelSize; }
 	std::string& GetFilePath()											{ return m_filePath; }
+	std::string GetFilePath() const										{ return m_filePath; }
 
 	float GetAspectRatio() const;
 

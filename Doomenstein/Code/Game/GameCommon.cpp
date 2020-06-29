@@ -16,6 +16,18 @@ Game*			g_game = nullptr;			// Owned by the App
 
 
 //-----------------------------------------------------------------------------------------------
+eBillboardStyle GetBillboardStyleFromString( const std::string& billboardStyleStr )
+{
+	if ( billboardStyleStr == "CameraFacingXY" )	{ return eBillboardStyle::CAMERA_FACING_XY; }
+	if ( billboardStyleStr == "CameraOpposingXY" )	{ return eBillboardStyle::CAMERA_OPPOSING_XY; }
+	if ( billboardStyleStr == "CameraFacingXYZ" )	{ return eBillboardStyle::CAMERA_FACING_XYZ; }
+	if ( billboardStyleStr == "CameraOpposingXYZ" ) { return eBillboardStyle::CAMERA_OPPOSING_XYZ; }
+
+	return eBillboardStyle::CAMERA_FACING_INVALID;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void BillboardSpriteCameraFacingXY( const Vec2& pos, const Vec2& dimensions, const Camera& camera, Vec3* out_fourCorners )
 {
 	Vec3 forward = Vec3( camera.GetTransform().GetPosition().XY() - pos, 0.f ).GetNormalized();

@@ -207,6 +207,7 @@
     <ClCompile Include="MapRegionTypeDefinition.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="SpriteAnimationSetDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="TileMap.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="MapRegionTypeDefinition.hpp" />
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="Projectile.hpp" />
+    <ClInclude Include="SpriteAnimationSetDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="TileMap.hpp" />

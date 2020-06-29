@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 class Window;
 class App;
 class InputSystem;
@@ -68,6 +70,18 @@ constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
 
 //-----------------------------------------------------------------------------------------------
 // Billboarding
+//-----------------------------------------------------------------------------------------------
+enum class eBillboardStyle
+{
+	CAMERA_FACING_INVALID,
+	CAMERA_FACING_XY,
+	CAMERA_OPPOSING_XY,
+	CAMERA_FACING_XYZ,
+	CAMERA_OPPOSING_XYZ,
+};
+
+eBillboardStyle GetBillboardStyleFromString( const std::string& billboardStyleStr );
+
 //-----------------------------------------------------------------------------------------------
 void BillboardSpriteCameraFacingXY( const Vec2& pos, const Vec2& dimensions, const Camera& camera, Vec3* out_fourCorners );
 void BillboardSpriteCameraOpposingXY( const Vec2& pos, const Vec2& dimensions, const Camera& camera, Vec3* out_fourCorners );

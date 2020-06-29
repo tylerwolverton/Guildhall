@@ -10,20 +10,25 @@
 class SpriteAnimDefinition;
 class SpriteSheet;
 class RenderContext;
+class Transform;
 
 
 //-----------------------------------------------------------------------------------------------
-class SpriteAnimSetDefinition
+class SpriteAnimationSetDefinition
 {
 	friend class ActorDefinition;
 	friend class ItemDefinition;
 
 public:
-	SpriteAnimSetDefinition( RenderContext& renderer, const XmlElement& spriteAnimSetDefElem );
-	~SpriteAnimSetDefinition();
+	SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem );
+	~SpriteAnimationSetDefinition();
+
+	SpriteAnimDefinition* GetSpriteAnimationDefForDirection( const Transform& entityTransform, const Transform& cameraTransform );
 
 private:
 	std::map< std::string, SpriteAnimDefinition* > m_spriteAnimDefMapByName;
 
+	std::string m_name;
 	SpriteSheet* m_spriteSheet = nullptr;
+	SpriteAnimDefinition* m_frontAnimDef = nullptr;
 };

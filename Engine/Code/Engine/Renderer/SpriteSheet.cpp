@@ -5,34 +5,47 @@
 
 //-----------------------------------------------------------------------------------------------
 // Static definitions
-std::map< std::string, SpriteSheet* > SpriteSheet::s_definitions;
+std::vector< SpriteSheet* > SpriteSheet::s_definitions;
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteSheet* SpriteSheet::GetSpriteSheet( std::string spriteSheetName )
+SpriteSheet* SpriteSheet::GetSpriteSheetByName( std::string spriteSheetName )
 {
-	std::map< std::string, SpriteSheet* >::const_iterator  mapIter = SpriteSheet::s_definitions.find( spriteSheetName );
-
-	if ( mapIter == s_definitions.cend() )
+	for ( int sheetIdx = 0; sheetIdx < (int)s_definitions.size(); ++sheetIdx )
 	{
-		return nullptr;
+		if ( s_definitions[sheetIdx] == nullptr )
+		{
+			continue;
+		}
+
+		if ( s_definitions[sheetIdx]->m_name == spriteSheetName )
+		{
+			return s_definitions[sheetIdx];
+		}
 	}
 
-	return mapIter->second;
+	return nullptr;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void SpriteSheet::DeleteSpriteSheets()
+SpriteSheet* SpriteSheet::GetSpriteSheetByPath( std::string spriteSheetPath )
 {
-	std::map< std::string, SpriteSheet* >::iterator it;
-
-	for ( it = SpriteSheet::s_definitions.begin(); it != SpriteSheet::s_definitions.end(); it++ )
+	for ( int sheetIdx = 0; sheetIdx < (int)s_definitions.size(); ++sheetIdx )
 	{
-		PTR_SAFE_DELETE( it->second );
+		if ( s_definitions[sheetIdx] == nullptr )
+		{
+			continue;
+		}
+
+		const Texture& texture = s_definitions[sheetIdx]->m_texture;
+		if ( spriteSheetPath == texture.GetFilePath() )
+		{
+			return s_definitions[sheetIdx];
+		}
 	}
 
-	SpriteSheet::s_definitions.clear();
+	return nullptr;
 }
 
 
@@ -61,6 +74,14 @@ SpriteSheet::SpriteSheet( const Texture& texture, const IntVec2& simpleGridLayou
 			--currentYSpritePos;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteSheet::SpriteSheet( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout )
+	: SpriteSheet( texture, simpleGridLayout )
+{
+	m_name = name;
 }
 
 
@@ -99,9 +120,9 @@ void SpriteSheet::GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, const In
 
 
 //-----------------------------------------------------------------------------------------------
-void SpriteSheet::CreateAndAddToMap( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout )
+void SpriteSheet::CreateAndRegister( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout )
 {
-	SpriteSheet::s_definitions[name] = new SpriteSheet( texture, simpleGridLayout );
+	s_definitions.emplace_back( new SpriteSheet( name, texture, simpleGridLayout ) );
 }
 
 

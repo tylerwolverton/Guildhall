@@ -39,7 +39,7 @@ MapMaterialTypeDefinition::MapMaterialTypeDefinition( const XmlElement& mapMater
 		return;
 	}
 
-	m_sheet = SpriteSheet::GetSpriteSheet( sheetStr );
+	m_sheet = SpriteSheet::GetSpriteSheetByName( sheetStr );
 	if ( m_sheet == nullptr )
 	{
 		g_devConsole->PrintError( Stringf( "Material type '%s' references a sprite sheet '%s' that isn't defined", m_name.c_str(), sheetStr.c_str() ) );
