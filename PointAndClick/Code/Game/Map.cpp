@@ -272,7 +272,7 @@ void Map::SpawnPlayer()
 	if ( m_entities.size() > 1 )
 	{
 		m_triggerRegions.emplace_back( Vec2( 2.f, 0.f ), 1.f, "Victory" );
-		m_triggerRegions[0].AddRequiredItem( (Item*)m_entities[1] );
+		m_triggerRegions[0].AddRequiredItem( "Key" );
 	}
 }
 
@@ -330,9 +330,7 @@ void Map::OnPickupVerb( EventArgs* args )
 
 	NamedProperties* properties = new NamedProperties();
 	properties->SetValue( "EventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
-
-	/*targetItem->AddVerbState( eVerbState::GIVE_TO_SOURCE, properties );*/
-
+	
 	// Remove from map since game now owns the item
 	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
 	{
@@ -375,8 +373,23 @@ void Map::OnOpenVerb( EventArgs* args )
 		return;
 	}
 
+	if ( targetItem->IsOpen() )
+	{
+		g_game->PrintTextOverPlayer( "It's already open." );
+		return;
+	}
+
+	std::string requiredItemName = args->GetValue( "requiredItem", "" );
+
+	if ( !g_game->IsItemInInventory( requiredItemName ) )
+	{
+		g_game->PrintTextOverPlayer( "It's locked tight." );
+		return;
+	}
+
 	Texture* openTexture = (Texture*)args->GetValue( "texture", ( void* )nullptr );
 	targetItem->SetTexture( openTexture );
+	targetItem->Open();
 }
 
 
@@ -391,8 +404,15 @@ void Map::OnCloseVerb( EventArgs* args )
 		return;
 	}
 	
+	if ( !targetItem->IsOpen() )
+	{
+		g_game->PrintTextOverPlayer( "It's already closed." );
+		return;
+	}
+
 	Texture* closedTexture = (Texture*)args->GetValue( "texture", ( void* )nullptr );
 	targetItem->SetTexture( closedTexture );
+	targetItem->Close();
 }
 
 
@@ -452,6 +472,4 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 	{
 		g_game->RemoveItemFromInventory( requiredItemName );
 	}
-
-	g_devConsole->PrintString( "Give to destination called", Rgba8::PURPLE );
 }

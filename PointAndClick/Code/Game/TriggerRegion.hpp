@@ -17,6 +17,7 @@ public:
 	~TriggerRegion();
 
 	void AddRequiredItem( Item* item );
+	void AddRequiredItem( const std::string& itemId );
 	
 	const Vec2	 GetPosition() const					{ return m_position; };
 	const float  GetPhysicsRadius() const				{ return m_physicsRadius; };
@@ -27,6 +28,6 @@ protected:
 	Vec2				m_position = Vec2( -1.f, -1.f );
 	float				m_physicsRadius = 0.f;
 
-	std::vector<Item*>	m_requiredItems;
-	std::string			m_targetMap;
+	std::vector<std::string>	m_requiredItemIds;
+	std::string					m_targetMap;
 };

@@ -13,13 +13,13 @@
   <ItemDefinition name="BarDoor">
     <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5"/>
     <ActionEvents>
-      <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" />
+      <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" requiredItem="Key"/>
       <ActionEvent type="Close" texturePath="" />
     </ActionEvents>
   </ItemDefinition> 
   
   <ItemDefinition name="PurpleTentacle">
-    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/>
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
     <ActionEvents>
       <ActionEvent type="TalkTo" initialDialogueState="PurpleTentacle_initial" />
       <ActionEvent type="GiveToDestination" requiredItem="Key"  />

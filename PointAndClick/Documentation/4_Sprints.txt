@@ -33,40 +33,82 @@ CURRENT SPRINT
 ===============================================================================
 
 ===============================================================================
-06/29/2020
+07/13/2020
 ===============================================================================
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-16          [X]         3           2.75        4           Create a data-driven game object with event interface for each of the verbs 
-17          [/]         3                       12          Create state machine to handle actions 
-18          [X]         1           0.5         12.2        Implement incorrect action message 
-19          [-]         1           N/A         12.1        Implement "Pick Up" verb 
-    Note: Between the task last milestone to pick up the key and state machine work, no extra task was needed here
-20          [X]         1.5         1           12.1        Implement "Open/Close" verb with door 
-20.1*       [O]         1                       12.1        Make sure door renders behind player and table 
-21          [X]         1.5         1.25        12.1        Implement "Give to" verb with NPC that can be given item
-22          [X]         1.5         0.25        11          Implement "Walk to" action and make it the default action when clicked
-23          [X]         1.5         1.25        13          Add current action section to HUD
-23.1*       [X]         0.5         0.5         13          Refactor UIPanel and UIButton into common class to use labels with panel too
-24          [X]         1           0.25        2, 14       Implement NPC that can be talked to 
-24.1        [X]         1           0.5         14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
-25          [-]         1.5         N/A         9.1         Implement UI panel hiding for HUD
-    Note: Completed along with UI framework implementation in Milestone 1
-25.1        [X]         1.5         1.75        9           Create clickable dialogue options in HUD 
-26          [X]         1           2.5         9           Implement dialogue tree state machine for conversations
-26.1*       [X]         1           0.75        9           Add item acquisition through dialogue
-10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen
-??*         [X]                     0                       Don't lock cursor to game
-??*         [X]         0.25        0.25                    Fixed crashes on unused debug hotkeys 
+14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
+27          [O]         1                       7           Add trigger/button to switch to new map
+28          [O]         0.5                     5           Attach level sprite to second map
+29          [O]         1                       18          Add background music to each map
+30          [O]         1                       20          Add main menu map 
+30.1        [O]         1                       20          Add start and exit buttons to main menu 
+30.2        [O]         0.5                     20          Implement behavior for start and exit buttons
+30.3        [O]         0.5                     20.1        Add main menu background sprite 
+30.4        [O]         0.5                     20.2        Add main menu background music 
+30.5        [O]         1                       20.1        Add main menu title sprite 
+31          [O]         1.5                     3           Add a character/object that can be interacted with while holding all 3 items to win the game
+32          [O]         0.5                     3.3         Add one item hidden in the forest
+33          [O]         0.5                     3.2         Add one item hidden in the town
+34          [O]         1.5                     3.3         Add NPC who gives item when town item is given to them
+34.1        [O]         0.25                    3.3         Write dialogue for NPC item giver
+35          [O]         2                       3.1         Add NPC with dialogue tree that gives item in one branch
+35.1        [O]         0.75                    3.1         Write dialogue for NPC dialogue tree
+36          [O]         2                       16          Add walking animation for player using XML 
+37          [/]         0.5                     17          Add idle animation for NPCs using XML 
+38          [O]         1                       19          Add pause menu UI panel
+38.1        [O]         0.5                     19          Add resume and quit to main menu buttons to pause menu
+40          [O]         1                       21          Add go back to main menu button on victory screen    
+36          [/]         1.5                     16          Add walking animation for player using XML 
 
-Initial Total           21          11.5
-Unexpected Task Total   3           1.75
-Total                   23.25       13.25
+
+Initial Total           22        
+Unexpected Task Total            
+Total                   22     
 
 
 ===============================================================================
 PAST SPRINTS
 ===============================================================================
+
+
+===============================================================================
+06/29/2020
+===============================================================================
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+16          [X]         3           2.75        4           Create a data-driven game object with event interface for each of the verbs 
+17          [X]         3           1           12          Create state machine to handle actions 
+18          [X]         1           0.5         12.2        Implement incorrect action message 
+19          [-]         1           N/A         12.1        Implement "Pick Up" verb 
+    Note: Between the task last milestone to pick up the key and state machine work, no extra task was needed here
+20          [X]         1.5         1           12.1        Implement "Open/Close" verb with door 
+21          [X]         1.5         1.25        12.1        Implement "Give to" verb with NPC that can be given item
+22          [X]         1.5         0.25        11          Implement "Walk to" action and make it the default action when clicked
+23          [X]         1.5         1.25        13          Add current action section to HUD
+24          [X]         1           0.25        2, 14       Implement NPC that can be talked to 
+24.1        [X]         1           0.5         14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
+25          [-]         1.5         N/A         9.1         Implement UI panel hiding for HUD
+    Note: Completed along with UI framework implementation in Milestone 1
+25.1        [X]         1.5         1.75        9           Create clickable dialogue options in HUD 
+26          [X]         2           2.5         9           Implement dialogue tree state machine for conversations
+---
+23.1*       [X]         0.5         0.5         13          Refactor UIPanel and UIButton into common class to use labels with panel too
+26.1*       [X]         1           0.75        9           Add item acquisition through dialogue
+10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen
+37          [/>]        1           0.5         17          Add idle animation for NPCs using XML 
+36          [/>]        2           0.5         16          Add walking animation for player using XML 
+41.0*       [X]                     0.25                    Bugfixing (text issues when hovering over objects or talking to NPCs)
+41.1*       [X]                     0.25                    Bugfixing (Fixed leaving level with key)
+41.2*       [X]                     0.25                    Bugfixing (Added open/close locked states)
+41.3*       [X]         0           0                       Bugfixing (Don't lock cursor to game)
+41.4*       [X]         0.25        0.25                    Bugfixing (Fixed crashes on unused debug hotkeys)
+
+Initial Total           21          13
+Unexpected Task Total    2           1.5
+Future Milestone Total   3.25        2
+Total                   26.25       16.5
+
 
 ===============================================================================
 06/15/2020

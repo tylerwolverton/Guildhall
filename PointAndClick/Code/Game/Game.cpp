@@ -1199,6 +1199,12 @@ bool Game::IsItemInInventory( Item* item )
 //-----------------------------------------------------------------------------------------------
 bool Game::IsItemInInventory( const std::string& itemName )
 {
+	// consider a null item name as a success
+	if ( itemName == "" )
+	{
+		return true;
+	}
+
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
 		if ( m_inventory[itemIdx]->GetName() == itemName )

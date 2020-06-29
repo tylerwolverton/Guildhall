@@ -26,8 +26,10 @@ public:
 
 	SpriteDefinition* GetSpriteDef() const;
 
-	void SetTexture( Texture* texture )									{ m_texture = texture; }
-
+	void SetTexture( Texture* texture )											{ m_texture = texture; }
+	void Open()																	{ m_isOpen = true; }
+	void Close()																{ m_isOpen = false; }
+	bool IsOpen() const															{ return m_isOpen; }
 	void AddVerbState( eVerbState verbState, NamedProperties* properties );
 	void RemoveVerbState( eVerbState verbState );
 
@@ -43,4 +45,6 @@ protected:
 
 	SpriteAnimDefinition*	m_curAnimDef = nullptr;
 	Texture*				m_texture = nullptr;
+
+	bool					m_isOpen = false;
 };
