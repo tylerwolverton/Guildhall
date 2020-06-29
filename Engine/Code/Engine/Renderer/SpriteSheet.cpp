@@ -120,9 +120,22 @@ void SpriteSheet::GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, const In
 
 
 //-----------------------------------------------------------------------------------------------
-void SpriteSheet::CreateAndRegister( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout )
+SpriteSheet* SpriteSheet::CreateAndRegister( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout )
 {
-	s_definitions.emplace_back( new SpriteSheet( name, texture, simpleGridLayout ) );
+	SpriteSheet* newSpriteSheet = new SpriteSheet( name, texture, simpleGridLayout );
+	s_definitions.push_back( newSpriteSheet );
+
+	return newSpriteSheet;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteSheet* SpriteSheet::CreateAndRegister( const Texture& texture, const IntVec2& simpleGridLayout )
+{
+	SpriteSheet* newSpriteSheet = new SpriteSheet( texture, simpleGridLayout );
+	s_definitions.push_back( newSpriteSheet );
+
+	return newSpriteSheet;
 }
 
 

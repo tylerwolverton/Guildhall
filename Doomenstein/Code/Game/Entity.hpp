@@ -50,7 +50,7 @@ public:
 
 protected:
 	// Game state
-	EntityDefinition		m_entityDef;
+	const EntityDefinition& m_entityDef;
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()

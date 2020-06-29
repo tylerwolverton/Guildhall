@@ -4,6 +4,8 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
+#include "Game/SpriteAnimationSetDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -57,6 +59,14 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 			return;
 		}
 
+		std::string billboardStyleStr = ParseXmlAttribute( *appearanceElem, "billboard", "" );
+		if ( billboardStyleStr == "" )
+		{
+			g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no billboard attribute", m_name.c_str() ) );
+			return;
+		}
+		m_billboardStyle = GetBillboardStyleFromString( billboardStyleStr );
+
 		SpriteSheet* spriteSheet = SpriteSheet::GetSpriteSheetByPath( spriteSheetPath );
 		if ( spriteSheet == nullptr )
 		{
@@ -67,9 +77,32 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 				return;
 			}
 
-			//SpriteSheet::CreateAndAddToMap(g_renderer->CreateOrGetTextureFromFile())
+			Texture* texture = g_renderer->CreateOrGetTextureFromFile( spriteSheetPath.c_str() );
+			if ( texture == nullptr )
+			{
+				g_devConsole->PrintError( Stringf( "Actor '%s' couldn't load texture '%s'", m_name.c_str(), spriteSheetPath.c_str() ) );
+				return;
+			}
+
+			spriteSheet = SpriteSheet::CreateAndRegister( *texture, layout );
+		}
+
+		const XmlElement* animationSetElem = appearanceElem->FirstChildElement();
+		while ( animationSetElem != nullptr )
+		{
+			m_spriteAnimSetDefs[animationSetElem->Name()] = new SpriteAnimationSetDefinition( spriteSheet, *animationSetElem );
+
+			animationSetElem = animationSetElem->NextSiblingElement();
 		}
 	}
 
 	m_isValid = true;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+EntityDefinition::~EntityDefinition()
+{
+	PTR_MAP_SAFE_DELETE( m_spriteAnimSetDefs );
+}
+

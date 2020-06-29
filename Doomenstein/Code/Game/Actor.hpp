@@ -16,15 +16,11 @@ class Actor : public Entity
 {
 public:
 	Actor( const EntityDefinition& entityDef );
-	~Actor();
+	virtual ~Actor() {}
 
 	virtual void Update( float deltaSeconds );
 	virtual void Render() const;
 	virtual void Die();
-
-private:
-	void UpdateFromKeyboard( float deltaSeconds );
-	void UpdateFromGamepad( float deltaSeconds );
 
 protected:
 	int						m_controllerID = -1;

@@ -1,4 +1,5 @@
 #include "Game/SpriteAnimationSetDefinition.hpp"
+#include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Core/DevConsole.hpp"
@@ -12,7 +13,7 @@ SpriteAnimationSetDefinition::SpriteAnimationSetDefinition( SpriteSheet* spriteS
 {
 	m_name = spriteAnimSetDefElem.Name();
 
-	if ( !spriteAnimSetDefElem.Attribute( "front" ) )
+	if ( spriteAnimSetDefElem.Attribute( "front" ) )
 	{
 		Ints spriteIndexes;
 		spriteIndexes = ParseXmlAttribute( spriteAnimSetDefElem, "front", spriteIndexes );
@@ -22,7 +23,7 @@ SpriteAnimationSetDefinition::SpriteAnimationSetDefinition( SpriteSheet* spriteS
 		}
 		else
 		{
-			m_frontAnimDef = new SpriteAnimDefinition( *m_spriteSheet, spriteIndexes, 1.f );
+			m_frontAnimDef = new SpriteAnimDefinition( *m_spriteSheet, spriteIndexes, 4.f );
 		}
 	}	
 }
@@ -35,7 +36,7 @@ SpriteAnimationSetDefinition::~SpriteAnimationSetDefinition()
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDirection( const Transform& entityTransform, const Transform& cameraTransform )
+SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Camera& camera )
 {
 	return m_frontAnimDef;
 }

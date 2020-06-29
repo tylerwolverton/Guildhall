@@ -18,12 +18,14 @@ class EntityDefinition
 
 public:
 	explicit EntityDefinition( const XmlElement& entityDefElem );
+	~EntityDefinition();
 
-	bool		IsValid() const											{ return m_isValid; }
-	std::string GetName() const											{ return m_name; }
-	std::string GetType() const											{ return m_type; }
-	float		GetWalkSpeed() const									{ return m_walkSpeed; }
-	Vec2		GetVisualSize() const									{ return m_visualSize; }
+	bool		IsValid() const																{ return m_isValid; }
+	std::string GetName() const																{ return m_name; }
+	std::string GetType() const																{ return m_type; }
+	float		GetWalkSpeed() const														{ return m_walkSpeed; }
+	Vec2		GetVisualSize() const														{ return m_visualSize; }
+	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 

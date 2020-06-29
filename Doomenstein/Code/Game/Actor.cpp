@@ -13,6 +13,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/SpriteAnimationSetDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -22,12 +23,6 @@ Actor::Actor( const EntityDefinition& entityDef )
 	m_canBePushedByWalls = true;
 	m_canBePushedByEntities = true;
 	m_canPushEntities = true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Actor::~Actor()
-{
 }
 
 
@@ -53,30 +48,29 @@ void Actor::Render() const
 	//BillboardSpriteCameraFacingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
 	//BillboardSpriteCameraOpposingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );
 	
-	/*Vec2 mins, maxs;
-	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
-	spriteDef.GetUVs( mins, maxs );*/
+	
 
-	AppendVertsForQuad( vertices, corners, Rgba8::WHITE );
+	std::map< std::string, SpriteAnimationSetDefinition* > animSetDefs = m_entityDef.GetSpriteAnimSetDefs();
 
-	//g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
-	g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
-	g_renderer->DrawVertexArray( vertices );
-
-	/*const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
-		
 	Vec2 mins, maxs;
-	spriteDef.GetUVs( mins, maxs );
+	auto walkAnim = animSetDefs["Walk"]->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_game->GetWorldCamera() );
+	if ( walkAnim == nullptr )
+	{
+		AppendVertsForQuad( vertices, corners, Rgba8::WHITE );
 
-	std::vector<Vertex_PCU> vertices;
-	AppendVertsForAABB2D( vertices, m_actorDef->m_localDrawBounds, Rgba8::WHITE,
-									  mins,
-									  maxs );
+		g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
+	}
+	else
+	{
+		const SpriteDefinition& spriteDef = walkAnim->GetSpriteDefAtTime( m_cumulativeTime );
+		spriteDef.GetUVs( mins, maxs );
 
-	Vertex_PCU::TransformVertexArray( vertices, 1.f, 0.f, m_position );
+		AppendVertsForQuad( vertices, corners, Rgba8::WHITE, mins, maxs );
 
-	g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
-	g_renderer->DrawVertexArray( vertices );*/
+		g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
+	}
+
+	g_renderer->DrawVertexArray( vertices );
 }
 
 
@@ -85,64 +79,3 @@ void Actor::Die()
 {
 	Entity::Die();
 }
-
-
-//-----------------------------------------------------------------------------------------------
-void Actor::UpdateFromKeyboard( float deltaSeconds )
-{
-	UNUSED( deltaSeconds );
-
-	if ( g_inputSystem->IsKeyPressed( 'W' ) )
-	{
-		m_velocity.y += m_entityDef.GetWalkSpeed();
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'A' ) )
-	{
-		m_velocity.x -= m_entityDef.GetWalkSpeed();
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'D' ) )
-	{
-		m_velocity.x += m_entityDef.GetWalkSpeed();
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'S' ) )
-	{
-		m_velocity.y -= m_entityDef.GetWalkSpeed();
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Actor::UpdateFromGamepad( float deltaSeconds )
-{
-	UNUSED( deltaSeconds );
-
-	// No controller assigned
-	if ( m_controllerID < 0 )
-	{
-		return;
-	}
-
-	// If controller isn't connected return early
-	const XboxController& controller = g_inputSystem->GetXboxController( m_controllerID );
-	if ( !controller.IsConnected() )
-	{
-		return;
-	}
-
-	if ( m_isDead )
-	{
-		return;
-	}
-
-	const AnalogJoystick& leftStick = controller.GetLeftJoyStick();
-	float leftStickMagnitude = leftStick.GetMagnitude();
-	if ( leftStickMagnitude > 0.f )
-	{
-		m_orientationDegrees = leftStick.GetDegrees();
-		m_velocity += leftStickMagnitude * m_entityDef.GetWalkSpeed() * GetForwardVector();
-	}
-}
-

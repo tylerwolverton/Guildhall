@@ -11,6 +11,7 @@ class SpriteAnimDefinition;
 class SpriteSheet;
 class RenderContext;
 class Transform;
+class Camera;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ public:
 	SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem );
 	~SpriteAnimationSetDefinition();
 
-	SpriteAnimDefinition* GetSpriteAnimationDefForDirection( const Transform& entityTransform, const Transform& cameraTransform );
+	SpriteAnimDefinition* GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Camera& camera );
 
 private:
 	std::map< std::string, SpriteAnimDefinition* > m_spriteAnimDefMapByName;

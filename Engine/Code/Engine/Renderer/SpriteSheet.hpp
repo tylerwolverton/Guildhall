@@ -25,7 +25,8 @@ public:
 	void					GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, const IntVec2& spriteCoords ) const;
 
 	// Static methods
-	static void CreateAndRegister( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
+	static SpriteSheet* CreateAndRegister( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
+	static SpriteSheet* CreateAndRegister( const Texture& texture, const IntVec2& simpleGridLayout );
 	static SpriteSheet* GetSpriteSheetByName( std::string spriteSheetName );
 	static SpriteSheet* GetSpriteSheetByPath( std::string spriteSheetPath );
 
