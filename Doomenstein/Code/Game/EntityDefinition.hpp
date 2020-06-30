@@ -26,6 +26,7 @@ public:
 	float		GetWalkSpeed() const														{ return m_walkSpeed; }
 	Vec2		GetVisualSize() const														{ return m_visualSize; }
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
+	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 

@@ -44,6 +44,9 @@ public:
 
 	bool		 IsDead() const											{ return m_isDead; }
 	bool		 IsGarbage() const										{ return m_isGarbage; }
+
+	void		 Possess()												{ m_isPossessed = true; }
+	void		 Unpossess()											{ m_isPossessed = false; }
 				 
 	void		 TakeDamage( int damage );
 	void		 ApplyFriction();
@@ -54,6 +57,7 @@ protected:
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
+	bool					m_isPossessed = false;							
 
 	// Physics
 	Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity’s 2D(x, y) Cartesian origin / center location, in world space
@@ -65,8 +69,8 @@ protected:
 	bool					m_canBePushedByEntities = false;
 	bool					m_canPushEntities = false;
 
-
 	// Visual
+	float					m_cumulativeTime = 0.f;
 	std::vector<Vertex_PCU> m_vertices;
 	Texture*				m_texture = nullptr;
 };

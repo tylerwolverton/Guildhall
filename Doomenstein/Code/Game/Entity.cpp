@@ -4,10 +4,16 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
+#include "Engine/Renderer/SpriteDefinition.hpp"
+#include "Engine/Renderer/SpriteAnimDefinition.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/SpriteAnimationSetDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -20,6 +26,8 @@ Entity::Entity( const EntityDefinition& entityDef )
 //-----------------------------------------------------------------------------------------------
 void Entity::Update( float deltaSeconds )
 {
+	m_cumulativeTime += deltaSeconds;
+
 	// vel += acceleration * dt;
 	m_velocity += m_linearAcceleration * deltaSeconds;
 	m_linearAcceleration = Vec2( 0.f, 0.f );
@@ -36,11 +44,51 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	std::vector<Vertex_PCU> verticesCopy( m_vertices );
-	Vertex_PCU::TransformVertexArray( verticesCopy, 1.f, 0.f, m_position );
+	if ( m_isPossessed )
+	{
+		return;
+	}
 
-	g_renderer->BindDiffuseTexture( m_texture );
-	g_renderer->DrawVertexArray( verticesCopy );
+	std::vector<Vertex_PCU> vertices;
+	Vec3 corners[4];
+
+	switch ( m_entityDef.m_billboardStyle )
+	{
+		case eBillboardStyle::CAMERA_FACING_XY:		BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );	 break;
+		case eBillboardStyle::CAMERA_OPPOSING_XY:	BillboardSpriteCameraOpposingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );	 break;
+		case eBillboardStyle::CAMERA_FACING_XYZ:	BillboardSpriteCameraFacingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );	 break;
+		case eBillboardStyle::CAMERA_OPPOSING_XYZ:	BillboardSpriteCameraOpposingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners ); break;
+		
+		default: BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners ); break;
+	}
+	
+	
+
+	Vec2 mins, maxs;
+	SpriteAnimationSetDefinition* walkAnimSetDef = m_entityDef.GetSpriteAnimSetDef( "Walk" );
+	SpriteAnimDefinition* walkAnimDef = nullptr;
+	if ( walkAnimSetDef != nullptr )
+	{
+		walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_game->GetWorldCamera() );
+	}
+
+	if ( walkAnimDef == nullptr )
+	{
+		AppendVertsForQuad( vertices, corners, Rgba8::WHITE );
+
+		g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
+	}
+	else
+	{
+		const SpriteDefinition& spriteDef = walkAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+		spriteDef.GetUVs( mins, maxs );
+
+		AppendVertsForQuad( vertices, corners, Rgba8::WHITE, mins, maxs );
+
+		g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
+	}
+
+	g_renderer->DrawVertexArray( vertices );
 }
 
 

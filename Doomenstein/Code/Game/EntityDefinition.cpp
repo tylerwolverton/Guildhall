@@ -13,6 +13,20 @@ std::map< std::string, EntityDefinition* > EntityDefinition::s_definitions;
 
 
 //-----------------------------------------------------------------------------------------------
+SpriteAnimationSetDefinition* EntityDefinition::GetSpriteAnimSetDef( const std::string& animSetName ) const
+{
+	auto mapIter = m_spriteAnimSetDefs.find( animSetName );
+
+	if ( mapIter == m_spriteAnimSetDefs.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName )
 {
 	std::map< std::string, EntityDefinition* >::const_iterator  mapIter = EntityDefinition::s_definitions.find( entityName );

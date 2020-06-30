@@ -42,6 +42,8 @@ extern SpriteSheet* g_portraitSpriteSheet;
 constexpr float CLIENT_ASPECT = 16.f / 9.f;
 constexpr int FRAME_HISTORY_COUNT = 10;
 
+constexpr float SQRT_2_OVER_2 = 0.70710678f;
+
 constexpr float WINDOW_WIDTH = 16.f;
 constexpr float WINDOW_HEIGHT = 9.f;
 constexpr float WINDOW_WIDTH_PIXELS = 1920.f;

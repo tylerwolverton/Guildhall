@@ -253,6 +253,7 @@ void Game::UpdateFromKeyboard()
 		}
 		else
 		{
+			m_player->Unpossess();
 			m_player = nullptr;
 		}
 	}
@@ -445,6 +446,8 @@ void Game::PossesNearestEntity()
 	{
 		m_player = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
 		m_worldCamera->SetPitchRollYawOrientationDegrees( 0.f, 0.f, m_player->GetOrientationDegrees() );
+
+		m_player->Possess();
 	}
 }
 
