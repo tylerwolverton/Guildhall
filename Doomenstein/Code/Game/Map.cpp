@@ -2,11 +2,13 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Transform.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/GameCommon.hpp"
+#include "Game/Game.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Projectile.hpp"
@@ -269,4 +271,3 @@ void Map::ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 )
 		}
 	}
 }
-

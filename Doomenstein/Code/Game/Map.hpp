@@ -12,6 +12,21 @@ class MapDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
+struct RaycastResult
+{
+	Vec3 startPos;
+	Vec3 forwardNormal;
+	float maxDist = 0.f;
+	bool didImpact = false;
+	Vec3 impactPos;
+	Entity* impactEntity = nullptr;
+	float impactFraction = 0.f;
+	float impactDist = 0.f;
+	Vec3 impactSurfaceNormal;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Map
 {
 public:
@@ -35,6 +50,8 @@ protected:
 	void LoadEntitiesFromDefinition();
 	void ResolveEntityVsEntityCollisions();
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
+
+	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 
 protected:
 	std::string			m_name;

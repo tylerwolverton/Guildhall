@@ -2,6 +2,8 @@
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
@@ -191,6 +193,66 @@ void TileMap::Render() const
 void TileMap::DebugRender() const
 {
 	Map::DebugRender();
+
+	Transform cameraTransform = g_game->GetWorldCamera()->GetTransform();
+	Raycast( cameraTransform.GetPosition(), cameraTransform.GetForwardVector(), 5.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+RaycastResult TileMap::Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const
+{
+	float floorDist = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
+	float ceilingDist = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, TILE_SIZE );
+
+	std::string message;
+	if ( floorDist < 0.f
+		 || floorDist > 1.f )
+	{
+		if ( ceilingDist < 0.f 
+			 || ceilingDist > 1.f )
+		{
+			message = "Hit nothing";
+		}
+		else
+		{
+			message = "Hit ceiling";
+		}
+	}
+	
+	if ( ceilingDist < 0.f
+		 || ceilingDist > 1.f )
+	{
+		if ( floorDist < 0.f
+			 || floorDist > 1.f )
+		{
+			message = "Hit nothing";
+		}
+		else
+		{
+			message = "Hit floor";
+		}
+	}
+
+	DebugAddScreenText( Vec4( 0.f, .81f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, Rgba8::GREEN, 0.f, message.c_str() );
+
+	return RaycastResult();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float TileMap::RaycastAgainstZPlane( const Vec3& startPos, const Vec3& forwardNormal, float maxDist, float height ) const
+{	
+	Vec3 endPos = startPos + ( maxDist * forwardNormal );
+	Vec3 castVec = endPos - startPos;
+	float castDist = castVec.GetLength();
+	
+	float zRange = endPos.z - startPos.z;
+	float planeFractionDist = ( height - startPos.z ) / zRange;
+
+	float val = RangeMapFloat( startPos.z, endPos.z, 0.f, 1.f, height );
+
+	return val;
 }
 
 

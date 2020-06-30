@@ -62,8 +62,6 @@ void Entity::Render() const
 		default: BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners ); break;
 	}
 	
-	
-
 	Vec2 mins, maxs;
 	SpriteAnimationSetDefinition* walkAnimSetDef = m_entityDef.GetSpriteAnimSetDef( "Walk" );
 	SpriteAnimDefinition* walkAnimDef = nullptr;

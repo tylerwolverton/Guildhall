@@ -38,6 +38,9 @@ public:
 	virtual void Render() const override;
 	virtual void DebugRender() const override;
 
+	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const override;
+	float RaycastAgainstZPlane( const Vec3& startPos, const Vec3& forwardNormal, float maxDist, float height ) const;
+
 private:
 	void				PopulateTiles();
 	void				CreateInitialTiles();
