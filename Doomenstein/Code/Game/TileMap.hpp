@@ -40,6 +40,7 @@ public:
 
 	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const override;
 	RaycastResult RaycastAgainstZPlane( const Vec3& startPos, const Vec3& forwardNormal, float maxDist, float height ) const;
+	RaycastResult RaycastAgainstWalls( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const;
 
 private:
 	void				PopulateTiles();
@@ -51,17 +52,18 @@ private:
 	void				SpawnPlayer();
 
 	// Tile helpers
-	bool				IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction );
-	int					GetTileIndexFromTileCoords( int xCoord, int yCoord );
-	int					GetTileIndexFromTileCoords( const IntVec2& coords );
-	int					GetTileIndexFromWorldCoords( const Vec2& coords );
+	bool				IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction ) const;
+	bool				IsTileSolid( int xCoord, int yCoord ) const;
+	int					GetTileIndexFromTileCoords( int xCoord, int yCoord ) const;
+	int					GetTileIndexFromTileCoords( const IntVec2& coords ) const;
+	int					GetTileIndexFromWorldCoords( const Vec2& coords ) const;
 
-	Tile*				GetTileFromTileCoords( const IntVec2& tileCoords );
-	Tile*				GetTileFromTileCoords( int xCoord, int yCoord );
-	Tile*				GetTileFromWorldCoords( const Vec2& worldCoords );
-	const Vec2			GetWorldCoordsFromTile( const Tile& tile );
+	const Tile*			GetTileFromTileCoords( const IntVec2& tileCoords ) const;
+	const Tile*			GetTileFromTileCoords( int xCoord, int yCoord ) const;
+	const Tile*			GetTileFromWorldCoords( const Vec2& worldCoords ) const;
+	const Vec2			GetWorldCoordsFromTile( const Tile& tile ) const;
 
-	std::vector<Tile*>	GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile );
+	std::vector<const Tile*>	GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile ) const;
 	
 	void				RenderTiles() const;
 

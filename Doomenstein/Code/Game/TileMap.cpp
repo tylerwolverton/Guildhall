@@ -194,10 +194,31 @@ void TileMap::DebugRender() const
 {
 	Map::DebugRender();
 
-	Transform cameraTransform = g_game->GetWorldCamera()->GetTransform();
-	RaycastResult result = Raycast( cameraTransform.GetPosition(), cameraTransform.GetForwardVector(), 3.f );
+	//for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	//{
+	//	Entity* const& entity = m_entities[entityIdx];
+	//	if ( entity == nullptr )
+	//	{
+	//		continue;
+	//	}
 
-	//DebugAddWorldLine( cameraTransform.GetPosition(), cameraTransform.GetPosition() + cameraTransform.GetForwardVector() * 3.f, Rgba8::MAGENTA, .001f );
+	//	RaycastResult result = Raycast( Vec3( entity->GetPosition(), entity->GetEyeHeight() ), Vec3( entity->GetForwardVector(), entity->GetEyeHeight() ), 3.f );
+	//	if ( result.didImpact )
+	//	{
+	//		//message = "Hit floor";
+	//		DebugAddWorldPoint( result.impactPos, Rgba8::GREEN );
+	//		DebugAddWorldArrow( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::BLUE );
+	//	}
+	//}
+
+	Transform cameraTransform = g_game->GetWorldCamera()->GetTransform();
+	RaycastResult result = Raycast( cameraTransform.GetPosition(), cameraTransform.GetForwardVector(), 5.f );
+	if ( result.didImpact )
+	{
+		//message = "Hit floor";
+		DebugAddWorldPoint( result.impactPos, Rgba8::PURPLE );
+		DebugAddWorldArrow( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::ORANGE );
+	}
 }
 
 
@@ -206,25 +227,31 @@ RaycastResult TileMap::Raycast( const Vec3& startPos, const Vec3& forwardNormal,
 {
 	std::string message = "Hit nothing";
 
+	RaycastResult closestImpact;
+	closestImpact.impactDist = maxDist;
+
 	RaycastResult floorResult = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
+	if ( floorResult.didImpact
+		 && floorResult.impactDist < closestImpact.impactDist )
+	{
+		closestImpact = floorResult;
+	}
+
 	RaycastResult ceilingResult = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, TILE_SIZE );
-
-	if ( floorResult.didImpact )
+	if ( ceilingResult.didImpact
+		 && ceilingResult.impactDist < closestImpact.impactDist )
 	{
-		message = "Hit floor";
-		DebugAddWorldPoint( floorResult.impactPos, Rgba8::GREEN );
-		DebugAddWorldArrow( floorResult.impactPos, floorResult.impactPos + floorResult.impactSurfaceNormal * .5f, Rgba8::BLUE );
-	}
-	else if ( ceilingResult.didImpact )
-	{
-		message = "Hit ceiling";
-		DebugAddWorldPoint( ceilingResult.impactPos, Rgba8::GREEN );
-		DebugAddWorldArrow( ceilingResult.impactPos, ceilingResult.impactPos + ceilingResult.impactSurfaceNormal * .5f, Rgba8::BLUE );
+		closestImpact = ceilingResult;
 	}
 
-	DebugAddScreenText( Vec4( 0.f, .81f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, Rgba8::GREEN, 0.f, message.c_str() );
+	RaycastResult wallsResult = RaycastAgainstWalls( startPos, forwardNormal, maxDist );
+	if ( wallsResult.didImpact
+		 && wallsResult.impactDist < closestImpact.impactDist )
+	{
+		closestImpact = wallsResult;
+	}
 
-	return RaycastResult();
+	return closestImpact;
 }
 
 
@@ -251,6 +278,109 @@ RaycastResult TileMap::RaycastAgainstZPlane( const Vec3& startPos, const Vec3& f
 		result.impactPos = startPos + forwardNormal * result.impactDist;
 
 		result.impactSurfaceNormal = startPos.z > height ? Vec3( 0.f, 0.f, 1.f ) : Vec3( 0.f, 0.f, -1.f );
+	}
+
+	return result;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+RaycastResult TileMap::RaycastAgainstWalls( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const
+{
+	RaycastResult result;
+	result.startPos = startPos;
+	result.forwardNormal = forwardNormal;
+	result.maxDist = maxDist;
+
+	// Check if starting tile is solid
+	const Tile* startTile = GetTileFromWorldCoords( startPos.XY() );
+	if ( startTile == nullptr 
+		 || startTile->IsSolid() )
+	{
+		result.didImpact = true;
+		result.impactFraction = 0.f;
+		result.impactDist = 0.f;
+		result.impactPos = startPos;
+		result.impactSurfaceNormal = -forwardNormal;
+
+		return result;
+	}
+
+	// Calculate set up values to be used in each step of the raycast
+	Vec2 rayDisp = forwardNormal.XY() * maxDist;
+
+	// How far along the ray do you have to go to move 1 unit in the x direction of the grid
+	// if ray doesn't have any x movement this value is essentially infinity
+	float xDeltaDistAlongRay = 99999999.f;
+	if ( !IsNearlyEqual( rayDisp.x, 0.f, .000001f ) )
+	{
+		xDeltaDistAlongRay = maxDist / fabs( rayDisp.x );
+	}
+	// +1 or -1 to indicate which direction the steps will take
+	int tileStepDirX = (int)SignFloat( rayDisp.x );
+	// Instead of starting ray in the middle of a tile, adjust the start position
+	// to one of the edges of the starting tile depending on which way the ray faces
+	int offsetInTileCoordsToLeadingEdgeX = ( tileStepDirX + 1 ) / 2;
+	float firstVerticalIntersectionX = (float)( startTile->m_tileCoords.x + offsetInTileCoordsToLeadingEdgeX );
+
+	float dOfNextXCrossing = fabs( firstVerticalIntersectionX - startPos.x ) * xDeltaDistAlongRay;
+
+	// Repeat everything above but for y
+	float yDeltaDistAlongRay = 99999999.f;
+	if ( !IsNearlyEqual( rayDisp.y, 0.f, .000001f ) )
+	{
+		yDeltaDistAlongRay = maxDist / fabs( rayDisp.y );
+	}
+	int tileStepDirY = (int)SignFloat( rayDisp.y );
+
+	int offsetInTileCoordsToLeadingEdgeY = ( tileStepDirY + 1 ) / 2;
+	float firstHorizontalIntersectionY = (float)( startTile->m_tileCoords.y + offsetInTileCoordsToLeadingEdgeY );
+
+	float dOfNextYCrossing = fabs( firstHorizontalIntersectionY - startPos.y ) * yDeltaDistAlongRay;
+
+	int tileCoordX = startTile->m_tileCoords.x;
+	int tileCoordY = startTile->m_tileCoords.y;
+
+	// Perform raycast
+	while ( dOfNextXCrossing <= maxDist
+			|| dOfNextYCrossing <= maxDist )
+	{
+		// We'll cross X line next
+		if ( dOfNextXCrossing < dOfNextYCrossing )
+		{
+			tileCoordX += tileStepDirX;
+			// Hit a solid tile
+			if ( IsTileSolid( tileCoordX, tileCoordY ) )
+			{
+				result.didImpact = true;
+				result.impactFraction = dOfNextXCrossing / maxDist;
+				Vec3 startToImpact( forwardNormal * dOfNextXCrossing );
+				result.impactPos = startPos + startToImpact;
+				result.impactDist = dOfNextXCrossing;
+				result.impactSurfaceNormal = Vec3( (float)-tileStepDirX, 0.f, 0.f );
+				break;
+			}
+
+			dOfNextXCrossing += xDeltaDistAlongRay;
+		}
+		// We'll cross Y line next
+		else
+		{
+			tileCoordY += tileStepDirY;
+			// Hit a solid tile
+			if ( IsTileSolid( tileCoordX, tileCoordY ) )
+			{
+				result.didImpact = true;
+				result.impactFraction = dOfNextYCrossing/ maxDist;
+				Vec3 startToImpact( forwardNormal * dOfNextYCrossing );
+				result.impactPos = startPos + startToImpact;
+				result.impactDist = dOfNextYCrossing;
+				result.impactSurfaceNormal = Vec3( 0.f, (float)-tileStepDirY, 0.f );
+				break;
+			}
+
+			dOfNextYCrossing += yDeltaDistAlongRay;
+		}
 	}
 
 	return result;
@@ -299,21 +429,6 @@ void TileMap::SolidifySurroundingTiles()
 void TileMap::SpawnPlayer()
 {
 
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool TileMap::IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction )
-{
-	Tile* adjacentTile = GetTileFromWorldCoords( Vec2( tile.m_tileCoords ) + m_cardinalDirectionOffsets[(int)direction] );
-
-	if ( adjacentTile == nullptr 
-		 || adjacentTile->m_regionTypeDef == nullptr )
-	{
-		return true;
-	}
-
-	return adjacentTile->IsSolid();
 }
 
 
@@ -432,16 +547,16 @@ void TileMap::ResolveEntityVsWallCollision( Entity& entity )
 		return;
 	}
 
-	Tile* entityTile = GetTileFromWorldCoords( entity.GetPosition() );
+	const Tile* entityTile = GetTileFromWorldCoords( entity.GetPosition() );
 	if ( entityTile == nullptr )
 	{
 		return;
 	}
 
-	std::vector<Tile*> surroundingTiles = GetTilesInRadius( *entityTile, 1, true );
+	std::vector<const Tile*> surroundingTiles = GetTilesInRadius( *entityTile, 1, true );
 	for ( int tileIdx = 0; tileIdx < (int)surroundingTiles.size(); ++tileIdx )
 	{
-		Tile*& tile = surroundingTiles[tileIdx];
+		const Tile*& tile = surroundingTiles[tileIdx];
 		if ( tile != nullptr
 			 && tile->IsSolid() )
 		{
@@ -452,7 +567,37 @@ void TileMap::ResolveEntityVsWallCollision( Entity& entity )
 
 
 //-----------------------------------------------------------------------------------------------
-int TileMap::GetTileIndexFromTileCoords( int xCoord, int yCoord )
+bool TileMap::IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction ) const
+{
+	const Tile* adjacentTile = GetTileFromWorldCoords( Vec2( tile.m_tileCoords ) + m_cardinalDirectionOffsets[(int)direction] );
+
+	if ( adjacentTile == nullptr
+		 || adjacentTile->m_regionTypeDef == nullptr )
+	{
+		return true;
+	}
+
+	return adjacentTile->IsSolid();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool TileMap::IsTileSolid( int xCoord, int yCoord ) const
+{
+	const Tile* tile = GetTileFromTileCoords( xCoord, yCoord );
+
+	if ( tile == nullptr
+		 || tile->m_regionTypeDef == nullptr )
+	{
+		return true;
+	}
+
+	return tile->IsSolid();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int TileMap::GetTileIndexFromTileCoords( int xCoord, int yCoord ) const
 {
 	if ( xCoord < 0
 		 || xCoord > m_dimensions.x - 1
@@ -466,28 +611,28 @@ int TileMap::GetTileIndexFromTileCoords( int xCoord, int yCoord )
 }
 
 //-----------------------------------------------------------------------------------------------
-int TileMap::GetTileIndexFromTileCoords( const IntVec2& coords )
+int TileMap::GetTileIndexFromTileCoords( const IntVec2& coords ) const
 {
 	return GetTileIndexFromTileCoords( coords.x, coords.y );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-int TileMap::GetTileIndexFromWorldCoords( const Vec2& coords )
+int TileMap::GetTileIndexFromWorldCoords( const Vec2& coords ) const
 {
 	return GetTileIndexFromTileCoords( (int)coords.x, (int)coords.y );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-Tile* TileMap::GetTileFromTileCoords( const IntVec2& tileCoords )
+const Tile* TileMap::GetTileFromTileCoords( const IntVec2& tileCoords ) const
 {
 	return GetTileFromTileCoords( tileCoords.x, tileCoords.y );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-Tile* TileMap::GetTileFromTileCoords( int xCoord, int yCoord )
+const Tile* TileMap::GetTileFromTileCoords( int xCoord, int yCoord ) const
 {
 	int tileIndex = GetTileIndexFromTileCoords( xCoord, yCoord );
 	if ( tileIndex < 0
@@ -501,23 +646,23 @@ Tile* TileMap::GetTileFromTileCoords( int xCoord, int yCoord )
 
 
 //-----------------------------------------------------------------------------------------------
-Tile* TileMap::GetTileFromWorldCoords( const Vec2& worldCoords )
+const Tile* TileMap::GetTileFromWorldCoords( const Vec2& worldCoords ) const
 {
 	return GetTileFromTileCoords( IntVec2( (int)worldCoords.x, (int)worldCoords.y ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-const Vec2 TileMap::GetWorldCoordsFromTile( const Tile& tile )
+const Vec2 TileMap::GetWorldCoordsFromTile( const Tile& tile ) const
 {
 	return Vec2( (float)tile.m_tileCoords.x, (float)tile.m_tileCoords.y );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<Tile*> TileMap::GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile )
+std::vector<const Tile*> TileMap::GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile ) const
 {
-	std::vector<Tile*> surroundingTiles;
+	std::vector<const Tile*> surroundingTiles;
 
 	IntVec2 mins( centerTile.m_tileCoords.x - radius, centerTile.m_tileCoords.y - radius );
 	int sideLength = ( 2 * radius ) + 1;
@@ -534,7 +679,7 @@ std::vector<Tile*> TileMap::GetTilesInRadius( const Tile& centerTile, int radius
 				continue;
 			}
 
-			Tile* tile = GetTileFromTileCoords( tileCoords );
+			const Tile* tile = GetTileFromTileCoords( tileCoords );
 			if ( tile != nullptr )
 			{
 				surroundingTiles.push_back( tile );
