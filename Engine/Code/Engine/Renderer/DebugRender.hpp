@@ -67,9 +67,16 @@ void DebugAddWorldPoint( const Vec2& pos, const Rgba8& color, float duration = 0
 // lines
 void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_color,
 						const Vec3& p1, const Rgba8& start_tint, const Rgba8& end_tint,
+						float duration, float thickness,
+						eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
+void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_color,
+						const Vec3& p1, const Rgba8& start_tint, const Rgba8& end_tint,
 						float duration,
 						eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
-void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
+
+
+void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float thickness = 0.01f, float duration = 0.0f, eDebugRenderMode mode = DEBUG_RENDER_USE_DEPTH );
 
 //// line strip [extra]
 //void DebugAddWorldLineStrip( uint count, vec3 const* positions,

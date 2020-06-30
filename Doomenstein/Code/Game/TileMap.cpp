@@ -195,43 +195,31 @@ void TileMap::DebugRender() const
 	Map::DebugRender();
 
 	Transform cameraTransform = g_game->GetWorldCamera()->GetTransform();
-	Raycast( cameraTransform.GetPosition(), cameraTransform.GetForwardVector(), 5.f );
+	RaycastResult result = Raycast( cameraTransform.GetPosition(), cameraTransform.GetForwardVector(), 3.f );
+
+	//DebugAddWorldLine( cameraTransform.GetPosition(), cameraTransform.GetPosition() + cameraTransform.GetForwardVector() * 3.f, Rgba8::MAGENTA, .001f );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 RaycastResult TileMap::Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const
 {
-	float floorDist = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
-	float ceilingDist = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, TILE_SIZE );
+	std::string message = "Hit nothing";
 
-	std::string message;
-	if ( floorDist < 0.f
-		 || floorDist > 1.f )
+	RaycastResult floorResult = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
+	RaycastResult ceilingResult = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, TILE_SIZE );
+
+	if ( floorResult.didImpact )
 	{
-		if ( ceilingDist < 0.f 
-			 || ceilingDist > 1.f )
-		{
-			message = "Hit nothing";
-		}
-		else
-		{
-			message = "Hit ceiling";
-		}
+		message = "Hit floor";
+		DebugAddWorldPoint( floorResult.impactPos, Rgba8::GREEN );
+		DebugAddWorldArrow( floorResult.impactPos, floorResult.impactPos + floorResult.impactSurfaceNormal * .5f, Rgba8::BLUE );
 	}
-	
-	if ( ceilingDist < 0.f
-		 || ceilingDist > 1.f )
+	else if ( ceilingResult.didImpact )
 	{
-		if ( floorDist < 0.f
-			 || floorDist > 1.f )
-		{
-			message = "Hit nothing";
-		}
-		else
-		{
-			message = "Hit floor";
-		}
+		message = "Hit ceiling";
+		DebugAddWorldPoint( ceilingResult.impactPos, Rgba8::GREEN );
+		DebugAddWorldArrow( ceilingResult.impactPos, ceilingResult.impactPos + ceilingResult.impactSurfaceNormal * .5f, Rgba8::BLUE );
 	}
 
 	DebugAddScreenText( Vec4( 0.f, .81f, 0.f, 0.f ), Vec2::ZERO, 20.f, Rgba8::GREEN, Rgba8::GREEN, 0.f, message.c_str() );
@@ -241,18 +229,31 @@ RaycastResult TileMap::Raycast( const Vec3& startPos, const Vec3& forwardNormal,
 
 
 //-----------------------------------------------------------------------------------------------
-float TileMap::RaycastAgainstZPlane( const Vec3& startPos, const Vec3& forwardNormal, float maxDist, float height ) const
+RaycastResult TileMap::RaycastAgainstZPlane( const Vec3& startPos, const Vec3& forwardNormal, float maxDist, float height ) const
 {	
 	Vec3 endPos = startPos + ( maxDist * forwardNormal );
-	Vec3 castVec = endPos - startPos;
-	float castDist = castVec.GetLength();
-	
-	float zRange = endPos.z - startPos.z;
-	float planeFractionDist = ( height - startPos.z ) / zRange;
 
-	float val = RangeMapFloat( startPos.z, endPos.z, 0.f, 1.f, height );
+	float impactFraction = RangeMapFloat( startPos.z, endPos.z, 0.f, 1.f, height );
 
-	return val;
+	RaycastResult result;
+	result.startPos = startPos;
+	result.forwardNormal = forwardNormal;
+	result.maxDist = maxDist;
+	result.impactFraction = impactFraction;
+
+	if ( impactFraction > 0.f && impactFraction <= 1.f )
+	{
+		result.didImpact = true;
+
+		Vec3 castVec = endPos - startPos;
+		float castDist = castVec.GetLength();
+		result.impactDist = castDist * impactFraction;
+		result.impactPos = startPos + forwardNormal * result.impactDist;
+
+		result.impactSurfaceNormal = startPos.z > height ? Vec3( 0.f, 0.f, 1.f ) : Vec3( 0.f, 0.f, -1.f );
+	}
+
+	return result;
 }
 
 

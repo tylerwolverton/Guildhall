@@ -79,8 +79,9 @@ void Map::DebugRender() const
 			continue;
 		}
 
-		DebugAddWorldWireCylinder( Vec3( entity->GetPosition(), 0.f ), Vec3( entity->GetPosition(), entity->GetHeight() ), 
-								   entity->GetPhysicsRadius(), Rgba8::CYAN );
+		entity->DebugRender();
+		/*DebugAddWorldWireCylinder( Vec3( entity->GetPosition(), 0.f ), Vec3( entity->GetPosition(), entity->GetHeight() ), 
+								   entity->GetPhysicsRadius(), Rgba8::CYAN );*/
 	}
 }
 

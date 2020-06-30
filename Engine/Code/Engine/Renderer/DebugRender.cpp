@@ -713,9 +713,7 @@ void DebugAddWorldPoint( const Vec2& pos, const Rgba8& color, float duration, eD
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_color, 
-						const Vec3& p1, const Rgba8& start_tint, const Rgba8& end_tint, 
-						float duration, eDebugRenderMode mode )
+void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_color, const Vec3& p1, const Rgba8& start_tint, const Rgba8& end_tint, float duration, float thickness, eDebugRenderMode mode )
 {
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
@@ -726,7 +724,7 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_c
 	Mat44 lookAt = MakeLookAtMatrix( p0, p1 );
 
 	Vec3 obbCenter = p0 + ( obbBone * .5f );
-	Vec3 obbDimensions( .01f, .01f, obbBone.GetLength() );
+	Vec3 obbDimensions( thickness, thickness, obbBone.GetLength() );
 
 	OBB3 lineBounds( obbCenter, obbDimensions, lookAt.GetIBasis3D(), lookAt.GetJBasis3D() );
 
@@ -745,9 +743,18 @@ void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_c
 
 
 //-----------------------------------------------------------------------------------------------
-void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float duration, eDebugRenderMode mode )
+void DebugAddWorldLine( const Vec3& p0, const Rgba8& p0_color, const Rgba8& p1_color, 
+						const Vec3& p1, const Rgba8& start_tint, const Rgba8& end_tint, 
+						float duration, eDebugRenderMode mode )
 {
-	DebugAddWorldLine( start, color, color, end, color, color, duration, mode );
+	DebugAddWorldLine( p0, p0_color, p1_color, p1, start_tint, end_tint, duration, .01f, mode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldLine( const Vec3& start, const Vec3& end, const Rgba8& color, float thickness, float duration, eDebugRenderMode mode )
+{
+	DebugAddWorldLine( start, color, color, end, color, color, duration, thickness, mode );
 }
 
 

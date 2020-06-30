@@ -8,6 +8,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -100,8 +101,12 @@ void Entity::Die()
 //-----------------------------------------------------------------------------------------------
 void Entity::DebugRender() const
 {
-	g_renderer->BindDiffuseTexture( nullptr );
-	DrawRing2D( g_renderer, m_position, m_entityDef.m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
+	DebugAddWorldWireCylinder( Vec3( m_position, 0.f ), Vec3( m_position, m_entityDef.m_height ), m_entityDef.m_physicsRadius, Rgba8::CYAN );
+
+	if ( m_isPossessed )
+	{
+
+	}
 }
 
 
