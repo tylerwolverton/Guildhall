@@ -7,6 +7,7 @@ Game
 Esc - Quit
 ~ - Open dev console
 F1 - Toggle debug drawing
+F3 - Possess/Unpossess entity
 F4 - Reload all shaders
 WASD - Move camera forward/back/sideways
 QE - Move camera Up/Down
