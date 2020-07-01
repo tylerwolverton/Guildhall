@@ -1,5 +1,6 @@
 #include "Game/TileMap.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -251,6 +252,13 @@ RaycastResult TileMap::Raycast( const Vec3& startPos, const Vec3& forwardNormal,
 		closestImpact = wallsResult;
 	}
 
+	RaycastResult entitiesResult = RaycastAgainstEntities( startPos, forwardNormal, maxDist );
+	if ( entitiesResult.didImpact
+		 && entitiesResult.impactDist < closestImpact.impactDist )
+	{
+		closestImpact = entitiesResult;
+	}
+
 	return closestImpact;
 }
 
@@ -383,6 +391,78 @@ RaycastResult TileMap::RaycastAgainstWalls( const Vec3& startPos, const Vec3& fo
 		}
 	}
 
+	return result;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+RaycastResult TileMap::RaycastAgainstEntities( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const
+{
+	RaycastResult result;
+	result.startPos = startPos;
+	result.forwardNormal = forwardNormal;
+	result.maxDist = maxDist;
+
+	// Step and sample to detect entity ray collision
+	constexpr int maxStepCount = 1000;
+	float stepIncrement = maxDist / (float)maxStepCount;
+	float curStepIncrement = 0.f;
+	for ( int stepCount = 0; stepCount < maxStepCount; ++stepCount )
+	{
+		for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+		{
+			Entity* const& entity = m_entities[entityIdx];
+			if ( entity == nullptr )
+			{
+				continue;
+			}
+
+			Vec3 samplePos = startPos + forwardNormal * curStepIncrement;
+			// Make sure entity is within z range
+			// TODO: Update to account for flying enemies
+			if ( samplePos.z <= 0.f
+				 || samplePos.z > entity->GetHeight() )
+			{
+				continue;
+			}
+
+			// Check if sample is inside entity
+			if ( !IsPointInsideDisc( samplePos.XY(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
+			{
+				continue;
+			}
+
+			result.didImpact = true;
+			result.impactFraction = curStepIncrement / maxDist;
+			result.impactPos = samplePos;
+			result.impactDist = ( samplePos - startPos ).GetLength();
+			result.impactEntity = entity;
+
+			// Detect if collision is with top of cylinder
+			if ( IsNearlyEqual(samplePos.z, entity->GetHeight() ) )
+			{
+				result.impactSurfaceNormal = Vec3( 0.f, 0.f, 1.f );
+			}
+			// TODO: Update for flying enemies
+			else if ( IsNearlyEqual( samplePos.z, 0.f ) )
+			{
+				result.impactSurfaceNormal = Vec3( 0.f, 0.f, -1.f );
+			}
+			else
+			{
+				result.impactSurfaceNormal = ( samplePos - Vec3( entity->GetPosition(), samplePos.z ) ).GetNormalized();
+			}
+
+			return result;
+		}
+
+		curStepIncrement += stepIncrement;
+	}
+
+	
+
+	
+	
 	return result;
 }
 

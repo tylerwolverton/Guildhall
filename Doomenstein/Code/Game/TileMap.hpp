@@ -41,6 +41,7 @@ public:
 	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const override;
 	RaycastResult RaycastAgainstZPlane( const Vec3& startPos, const Vec3& forwardNormal, float maxDist, float height ) const;
 	RaycastResult RaycastAgainstWalls( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const;
+	RaycastResult RaycastAgainstEntities( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const;
 
 private:
 	void				PopulateTiles();
