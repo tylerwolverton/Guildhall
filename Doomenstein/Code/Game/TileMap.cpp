@@ -440,11 +440,62 @@ RaycastResult TileMap::RaycastAgainstEntities( const Vec3& startPos, const Vec3&
 
 		curStepIncrement += stepIncrement;
 	}
+		
+	return result;
+}
 
-	
 
-	
-	
+//-----------------------------------------------------------------------------------------------
+RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const
+{
+	RaycastResult result;
+	result.startPos = startPos;
+	result.forwardNormal = forwardNormal;
+	result.maxDist = maxDist;
+
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		Vec2 displacement = entity->m_position - startPos.XY();
+		Vec2 iBasis = forwardNormal.XY();
+		Vec2 jBasis = iBasis.GetRotated90Degrees();
+
+		Vec2 posOfCircleAlongRay( DotProduct2D( iBasis, displacement ), DotProduct2D( jBasis, displacement ) );
+
+		float bSquared = posOfCircleAlongRay.y * posOfCircleAlongRay.y;
+		float cSquared = entity->GetPhysicsRadius() * entity->GetPhysicsRadius();
+		float aSquared = cSquared - bSquared;
+
+		FloatRange tOverlap;
+		if ( aSquared < 0.f )
+		{
+			continue;
+		}
+		else if ( IsNearlyEqual( aSquared, 0.f ) )
+		{
+			tOverlap.min = -posOfCircleAlongRay.x;
+			tOverlap.max = -posOfCircleAlongRay.x;
+		}
+		else
+		{
+			tOverlap.min = -aSquared - posOfCircleAlongRay.x;
+			tOverlap.max = aSquared - posOfCircleAlongRay.x;
+		}
+
+		result.didImpact = true;
+		result.impactFraction = tOverlap.min;
+		result.impactPos = Vec3( entity->GetPosition(), .5f );//startPos + tOverlap.min * forwardNormal;
+		result.impactDist = ( result.impactPos - startPos ).GetLength();
+		result.impactEntity = entity;
+
+		return result;
+	}
+
 	return result;
 }
 
