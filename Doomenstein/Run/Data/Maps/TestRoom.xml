@@ -19,11 +19,11 @@
 	<Entities>
 		<PlayerStart pos="6.5,1.5" yaw="150"/>
 		<Actor name="Pinky" pos="1.5,1.5" yaw="150"/>
-		<Actor name="Pinky" pos="3.5,1.5" yaw="150"/>
-		<Actor name="Pinky" pos="2.5,1.5" yaw="150"/>
-		<Actor name="Pinky" pos="1.5,3.5" yaw="150"/>
+		<Actor name="Pinky" pos="3.5,1.5" yaw="75"/>
+		<Actor name="Pinky" pos="2.5,1.5" yaw="15"/>
+		<Actor name="Marine" pos="1.5,3.5" yaw="180"/>
 		<Actor name="Pinky" pos="1.5,4.5" yaw="150"/>
-		<Actor name="Pinky" pos="3.5,3.5" yaw="150"/>
+		<Actor name="Pinky" pos="3.5,3.5" yaw="120"/>
 		<Actor name="Pinky" pos="2.5,5.5" yaw="150"/>
 	</Entities>
 

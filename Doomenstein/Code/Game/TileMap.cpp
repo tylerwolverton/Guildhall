@@ -439,12 +439,14 @@ RaycastResult TileMap::RaycastAgainstEntities( const Vec3& startPos, const Vec3&
 			result.impactEntity = entity;
 
 			// Detect if collision is with top of cylinder
-			if ( IsNearlyEqual(samplePos.z, entity->GetHeight() ) )
+			if ( IsNearlyEqual( samplePos.z, entity->GetHeight(), .001f ) 
+				 && startPos.z > entity->GetHeight() )
 			{
 				result.impactSurfaceNormal = Vec3( 0.f, 0.f, 1.f );
 			}
 			// TODO: Update for flying enemies
-			else if ( IsNearlyEqual( samplePos.z, 0.f ) )
+			else if ( IsNearlyEqual( samplePos.z, 0.f, .001f )
+					  && startPos.z < 0.f )
 			{
 				result.impactSurfaceNormal = Vec3( 0.f, 0.f, -1.f );
 			}
