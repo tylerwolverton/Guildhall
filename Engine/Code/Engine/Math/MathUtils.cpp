@@ -817,6 +817,44 @@ void PushDiscsOutOfEachOther2D( Vec2& center1, float radius1, Vec2& center2, flo
 
 
 //-----------------------------------------------------------------------------------------------
+void PushDiscsOutOfEachOtherRelativeToMass2D( Vec2& center1, float radius1, float mass1, Vec2& center2, float radius2, float mass2 )
+{
+	GUARANTEE_OR_DIE( mass1 >= 0.f && mass2 >= 0.f, "Cannot call PushDiscsOutOfEachOtherRelativeToMass2D with a negative mass" );
+
+	if ( !DoDiscsOverlap( center1, radius1, center2, radius2 ) )
+	{
+		return;
+	}
+
+	float fractionOfPushOnMass1 = 1.f;
+	float fractionOfPushOnMass2 = 1.f;
+	
+	float overlapAmount = fabsf( ( radius1 + radius2 ) - GetDistance2D( center1, center2 ) );
+
+	if ( IsNearlyEqual( mass1, mass2 ) )
+	{
+		fractionOfPushOnMass1 = .5f;
+		fractionOfPushOnMass2 = .5f;
+	}
+	else if ( mass1 > mass2 )
+	{
+		fractionOfPushOnMass1 = mass2 / mass1;
+		fractionOfPushOnMass2 = 1.f - fractionOfPushOnMass1;
+	}
+	else
+	{
+		fractionOfPushOnMass2 = mass1 / mass2;
+		fractionOfPushOnMass1 = 1.f - fractionOfPushOnMass2;
+	}
+
+	Vec2 overlapCorrectionDirection1 = GetNormalizedDirectionFromAToB( center2, center1 );
+	Vec2 overlapCorrectionDirection2 = -overlapCorrectionDirection1;
+
+	center1 += ( fractionOfPushOnMass1 * overlapAmount * overlapCorrectionDirection1 );
+	center2 += ( fractionOfPushOnMass2 * overlapAmount * overlapCorrectionDirection2 );
+}
+
+//-----------------------------------------------------------------------------------------------
 void PushDiscOutOfPoint2D( Vec2& center, float radius, const Vec2& point )
 {
 	if ( !DoDiscsOverlap( center, radius, point, 0.f ) )

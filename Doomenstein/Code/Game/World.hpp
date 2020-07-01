@@ -25,7 +25,7 @@ public:
 	void LoadMap( const std::string& mapName );
 	void LoadMap( const std::string& mapName, MapDefinition* mapDef );
 	void ChangeMap( const std::string& mapName );
-
+	
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 
 private:

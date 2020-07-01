@@ -48,7 +48,7 @@ public:
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
 	void		SetCameraPositionAndYaw( const Vec2& pos, float yaw );
-
+	
 	static bool SetMouseSensitivity( EventArgs* args );
 	static bool SetAmbientLightColor( EventArgs* args );
 	

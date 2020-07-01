@@ -13,6 +13,9 @@
   <Actor name="Pinky">
     <Physics radius="0.22" height="0.56" eyeHeight="0.40" walkSpeed="1.5"/>
     <Appearance size="1.5,1.5" billboard="CameraFacingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">
+    <!--<Appearance size="1.5,1.5" billboard="CameraOpposingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->
+    <!--<Appearance size="1.5,1.5" billboard="CameraFacingXYZ" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->
+    <!--<Appearance size="1.5,1.5" billboard="CameraOpposingXYZ" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->
       <Walk front="0,1,2,3" frontLeft="8,9,10,11" left="16,17,18,19" backLeft="24,25,26,27" back="32,33,34,35" backRight="40,41,42,43" right="48,49,50,51" frontRight="56,57,58,59"/>
       <Attack front="4,5,6" frontLeft="12,13,14" left="20,21,22" backLeft="28,29,30" back="36,37,38" backRight="44,45,46" right="52,53,54" frontRight="60,61,62"/>
       <Pain front="7" frontLeft="15" left="23" backLeft="31" back="39" backRight="47" right="55" frontRight="63"/>

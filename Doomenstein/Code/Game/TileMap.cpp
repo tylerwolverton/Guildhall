@@ -195,28 +195,10 @@ void TileMap::DebugRender() const
 {
 	Map::DebugRender();
 
-	//for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
-	//{
-	//	Entity* const& entity = m_entities[entityIdx];
-	//	if ( entity == nullptr )
-	//	{
-	//		continue;
-	//	}
-
-	//	RaycastResult result = Raycast( Vec3( entity->GetPosition(), entity->GetEyeHeight() ), Vec3( entity->GetForwardVector(), entity->GetEyeHeight() ), 3.f );
-	//	if ( result.didImpact )
-	//	{
-	//		//message = "Hit floor";
-	//		DebugAddWorldPoint( result.impactPos, Rgba8::GREEN );
-	//		DebugAddWorldArrow( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::BLUE );
-	//	}
-	//}
-
 	Transform cameraTransform = g_game->GetWorldCamera()->GetTransform();
 	RaycastResult result = Raycast( cameraTransform.GetPosition(), cameraTransform.GetForwardVector(), 5.f );
 	if ( result.didImpact )
 	{
-		//message = "Hit floor";
 		DebugAddWorldPoint( result.impactPos, Rgba8::PURPLE );
 		DebugAddWorldArrow( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::ORANGE );
 	}
@@ -226,8 +208,6 @@ void TileMap::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 RaycastResult TileMap::Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const
 {
-	std::string message = "Hit nothing";
-
 	RaycastResult closestImpact;
 	closestImpact.impactDist = maxDist;
 

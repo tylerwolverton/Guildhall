@@ -102,12 +102,6 @@ void Entity::Die()
 void Entity::DebugRender() const
 {
 	DebugAddWorldWireCylinder( Vec3( m_position, 0.f ), Vec3( m_position, m_entityDef.m_height ), m_entityDef.m_physicsRadius, Rgba8::CYAN );
-	
-
-	if ( m_isPossessed )
-	{
-
-	}
 }
 
 

@@ -236,7 +236,7 @@ void Map::ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 )
 		if ( entity1.m_canPushEntities
 			 && entity2.m_canPushEntities )
 		{
-			PushDiscsOutOfEachOther2D( entity1.m_position, radius1, entity2.m_position, radius2 );
+			PushDiscsOutOfEachOtherRelativeToMass2D( entity1.m_position, radius1, entity1.GetMass(), entity2.m_position, radius2, entity2.GetMass() );
 		}
 		
 		if ( entity1.m_canPushEntities

@@ -35,6 +35,7 @@ public:
 	const float  GetHeight() const										{ return m_entityDef.m_height; }
 	const float  GetEyeHeight() const									{ return m_entityDef.m_eyeHeight; }
 	const float  GetWalkSpeed() const									{ return m_entityDef.m_walkSpeed; }
+	const float  GetMass() const										{ return m_entityDef.m_mass; }
 	const float  GetOrientationDegrees() const							{ return m_orientationDegrees; }
 	void		 SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 	std::string  GetName() const										{ return m_entityDef.m_name; }

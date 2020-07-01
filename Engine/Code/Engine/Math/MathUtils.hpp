@@ -91,10 +91,11 @@ bool			DoOBBAndDiscOverlap2D	    ( const OBB2& obb, const Vec2& discCenter, floa
 bool			DoAABBsOverlap2D			( const AABB2& box1, const AABB2& box2 );
 bool			DoDiscAndAABBOverlap2D		( const Vec2& center, float radius, const AABB2& box );
 
-void			PushDiscOutOfDisc2D		 ( Vec2& mobileCenter,	float mobileRadius, const Vec2& stationaryCenter,	float stationaryRadius );
-void			PushDiscsOutOfEachOther2D( Vec2& center1,		float radius1,			  Vec2& center2,			float radius2 );
-void			PushDiscOutOfPoint2D	 ( Vec2& center,		float radius,		const Vec2& point );
-void			PushDiscOutOfAABB2D		 ( Vec2& center,		float radius,		const AABB2& box );
+void			PushDiscOutOfDisc2D						( Vec2& mobileCenter,	float mobileRadius, const Vec2& stationaryCenter,	float stationaryRadius );
+void			PushDiscsOutOfEachOther2D				( Vec2& center1,		float radius1,			  Vec2& center2,			float radius2 );
+void			PushDiscsOutOfEachOtherRelativeToMass2D ( Vec2& center1,		float radius1,		float mass1,					Vec2& center2, float radius2, float mass2 );
+void			PushDiscOutOfPoint2D					( Vec2& center,			float radius,		const Vec2& point );
+void			PushDiscOutOfAABB2D						( Vec2& center,			float radius,		const AABB2& box );
 
 bool			IsPointInsideDisc		( const Vec2& point, const Vec2& center, float radius );
 bool			IsPointInsideAABB2D		( const Vec2& point, const AABB2& box );
