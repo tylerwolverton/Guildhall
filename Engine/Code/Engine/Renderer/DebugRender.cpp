@@ -910,7 +910,7 @@ void DebugAddWorldWireCylinder( const Vec3& pos0, const Vec3& pos1, float radius
 	std::vector<Vertex_PCU> vertices;
 	std::vector<uint> indices;
 	
-	AppendVertsAndIndicesForCylinderMesh( vertices, indices, pos0, pos1, radius, radius, start_color, start_color, 64 );
+	AppendVertsAndIndicesForCylinderMesh( vertices, indices, pos0, pos1, radius, radius, start_color, start_color, 16 );
 	DebugRenderObject* cylinderObj = new DebugRenderObject( vertices, indices, start_color, end_color, duration );
 
 	switch ( mode )

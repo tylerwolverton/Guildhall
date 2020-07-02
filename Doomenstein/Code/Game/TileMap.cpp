@@ -487,101 +487,98 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 		float cSquared = entity->GetPhysicsRadius() * entity->GetPhysicsRadius();
 		float aSquared = cSquared - bSquared;
 
-		FloatRange tOverlap;
+		FloatRange dOverlap;
 		if ( aSquared < 0.f )
 		{
 			continue;
 		}
 		else if ( IsNearlyEqual( aSquared, 0.f ) )
 		{
-			tOverlap.min = posOfCircleCenterAlongRay.x;
-			tOverlap.max = posOfCircleCenterAlongRay.x;
+			dOverlap.min = posOfCircleCenterAlongRay.x;
+			dOverlap.max = posOfCircleCenterAlongRay.x;
 		}
 		else
 		{
 			float a = sqrtf( aSquared );
-			tOverlap.min = posOfCircleCenterAlongRay.x - a;
-			tOverlap.max = posOfCircleCenterAlongRay.x + a;
+			dOverlap.min = posOfCircleCenterAlongRay.x - a;
+			dOverlap.max = posOfCircleCenterAlongRay.x + a;
 		}
 		
-		tOverlap.min = ClampMin( tOverlap.min, 0.f );
+		dOverlap.min = ClampMin( dOverlap.min, 0.f );
 
-		Vec3 impactPos = startPos + tOverlap.min * forwardNormal;
-		float impactDist = Vec3( impactPos - startPos ).GetLength();
+		float maxDistXY = DotProduct3D( Vec3( forwardNormal.XY(), 0.f ).GetNormalized(), forwardNormal ) * maxDist;
+		float tOverlapMin = dOverlap.min / maxDistXY;
+				
+		float impactDist = tOverlapMin * maxDist;
+		Vec3 impactDisp = forwardNormal * impactDist;
+		Vec3 impactPos = startPos + impactDisp;
+
 		if ( impactDist < result.impactDist )
 		{
-			// 3 cases
-			// Hit side first
-			if ( impactPos.z > 0.f
-				 && impactPos.z < entity->GetHeight() )
-			{
-				Vec2 impactXY = startPos.XY() + tOverlap.min * forwardNormal.XY().GetNormalized();
-				if ( !IsPointInsideDiscFast( impactXY, entity->GetPosition(), entity->GetPhysicsRadius() + .001f ) )
-				{
-					continue;
-				}
-
-				result.impactSurfaceNormal = ( impactPos - Vec3( entity->GetPosition(), impactPos.z ) ).GetNormalized();
-				// we already found the right impact pos
-			}
-			// Hit top first
-			else if ( startPos.z > entity->GetHeight() )
-			{
-				RaycastResult rayAgainstTop = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, entity->GetHeight() );
-				
-
-				if ( rayAgainstTop.didImpact )
-				{
-					if ( IsPointInsideDiscFast( rayAgainstTop.impactPos.XY(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
-					{
-						impactPos = rayAgainstTop.impactPos;
-						result.impactSurfaceNormal = Vec3( 0.f, 0.f, 1.f );
-					}
-					else
-					{
-						continue;
-					}
-				}
-				else
-				{
-					continue;
-				}
-			}
-			// Hit bottom first
-			else if( startPos.z < 0.f )
-			{
-				RaycastResult rayAgainstBottom = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
-				if ( rayAgainstBottom.didImpact )
-				{
-					if ( IsPointInsideDiscFast( rayAgainstBottom.impactPos.XY(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
-					{
-						impactPos = rayAgainstBottom.impactPos;
-						result.impactSurfaceNormal = Vec3( 0.f, 0.f, -1.f );
-					}
-					else
-					{
-						continue;
-					}
-				}
-				else
-				{
-					continue;
-				}
-			}
-			else
+			if ( !DoesRayHitEntityAlongZ( result, impactPos, *entity ) )
 			{
 				continue;
 			}
 
 			result.didImpact = true;
-			result.impactFraction = tOverlap.min / maxDist;
-			result.impactPos = impactPos;
+			result.impactFraction = dOverlap.min / maxDist;
 			result.impactDist = impactDist;
 			result.impactEntity = entity;
 		}
 	}
 
 	return result;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool TileMap::DoesRayHitEntityAlongZ( RaycastResult& raycastResult, const Vec3& potentialImpactPos, const Entity& entity ) const
+{
+	Vec3 impactPos = potentialImpactPos;
+
+	// 3 cases
+	// Hit side first
+	if ( impactPos.z > 0.f
+		 && impactPos.z < entity.GetHeight() )
+	{
+		raycastResult.impactPos = impactPos;
+		raycastResult.impactSurfaceNormal = ( impactPos - Vec3( entity.GetPosition(), impactPos.z ) ).GetNormalized();
+
+		return true;
+	}
+	// Hit top first
+	else if ( raycastResult.startPos.z > entity.GetHeight() )
+	{
+		RaycastResult rayAgainstTop = RaycastAgainstZPlane( raycastResult.startPos, raycastResult.forwardNormal, raycastResult.maxDist, entity.GetHeight() );
+
+		if ( rayAgainstTop.didImpact )
+		{
+			if ( IsPointInsideDiscFast( rayAgainstTop.impactPos.XY(), entity.GetPosition(), entity.GetPhysicsRadius() ) )
+			{
+				raycastResult.impactPos = rayAgainstTop.impactPos;
+				raycastResult.impactSurfaceNormal = Vec3( 0.f, 0.f, 1.f );
+
+				return true;
+			}
+		}
+	}
+	// Hit bottom first
+	else if ( raycastResult.startPos.z < 0.f )
+	{
+		RaycastResult rayAgainstBottom = RaycastAgainstZPlane( raycastResult.startPos, raycastResult.forwardNormal, raycastResult.maxDist, 0.f );
+		if ( rayAgainstBottom.didImpact )
+		{
+			if ( IsPointInsideDiscFast( rayAgainstBottom.impactPos.XY(), entity.GetPosition(), entity.GetPhysicsRadius() ) )
+			{
+				raycastResult.impactPos = rayAgainstBottom.impactPos;
+				raycastResult.impactSurfaceNormal = Vec3( 0.f, 0.f, -1.f );
+				
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 
