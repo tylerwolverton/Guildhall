@@ -510,30 +510,32 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 		float impactDist = Vec3( impactPos - startPos ).GetLength();
 		if ( impactDist < result.impactDist )
 		{
-			RaycastResult rayAgainstTop = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, entity->GetHeight() );
-			RaycastResult rayAgainstBottom = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
-			int x = 9;
 			// 3 cases
 			// Hit side first
 			if ( impactPos.z > 0.f
 				 && impactPos.z < entity->GetHeight() )
 			{
+				Vec2 impactXY = startPos.XY() + tOverlap.min * forwardNormal.XY().GetNormalized();
+				if ( !IsPointInsideDiscFast( impactXY, entity->GetPosition(), entity->GetPhysicsRadius() + .001f ) )
+				{
+					continue;
+				}
+
+				result.impactSurfaceNormal = ( impactPos - Vec3( entity->GetPosition(), impactPos.z ) ).GetNormalized();
 				// we already found the right impact pos
-				x = 0;
 			}
 			// Hit top first
 			else if ( startPos.z > entity->GetHeight() )
 			{
 				RaycastResult rayAgainstTop = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, entity->GetHeight() );
+				
+
 				if ( rayAgainstTop.didImpact )
 				{
-					FloatRange tOverlapInT = tOverlap;
-					tOverlapInT.min /= maxDist;
-					tOverlapInT.max /= maxDist;
-					if ( tOverlapInT.IsInRange( rayAgainstTop.impactFraction ) )
+					if ( IsPointInsideDiscFast( rayAgainstTop.impactPos.XY(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
 					{
 						impactPos = rayAgainstTop.impactPos;
-						//impactPos = startPos + rayAgainstTop.impactFraction * maxDist * forwardNormal;
+						result.impactSurfaceNormal = Vec3( 0.f, 0.f, 1.f );
 					}
 					else
 					{
@@ -551,9 +553,10 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 				RaycastResult rayAgainstBottom = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
 				if ( rayAgainstBottom.didImpact )
 				{
-					if ( tOverlap.IsInRange( rayAgainstBottom.impactFraction ) )
+					if ( IsPointInsideDiscFast( rayAgainstBottom.impactPos.XY(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
 					{
-						impactPos = startPos + rayAgainstBottom.impactDist * forwardNormal;
+						impactPos = rayAgainstBottom.impactPos;
+						result.impactSurfaceNormal = Vec3( 0.f, 0.f, -1.f );
 					}
 					else
 					{
@@ -575,7 +578,6 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 			result.impactPos = impactPos;
 			result.impactDist = impactDist;
 			result.impactEntity = entity;
-			result.impactSurfaceNormal = impactPos - Vec3( entity->GetPosition(), 0.f );
 		}
 	}
 

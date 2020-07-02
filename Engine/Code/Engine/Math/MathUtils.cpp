@@ -382,6 +382,16 @@ bool IsPointInsideDisc( const Vec2& point, const Vec2& center, float radius )
 
 
 //-----------------------------------------------------------------------------------------------
+bool IsPointInsideDiscFast( const Vec2& point, const Vec2& center, float radius )
+{
+	float distSquared = GetDistanceSquared2D( center, point );
+	float radiusSquared = radius * radius;
+
+	return distSquared < radiusSquared;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool IsPointInsideAABB2D( const Vec2& point, const AABB2& box )
 {
 	return box.IsPointInside( point );

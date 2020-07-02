@@ -98,6 +98,7 @@ void			PushDiscOutOfPoint2D					( Vec2& center,			float radius,		const Vec2& poi
 void			PushDiscOutOfAABB2D						( Vec2& center,			float radius,		const AABB2& box );
 
 bool			IsPointInsideDisc		( const Vec2& point, const Vec2& center, float radius );
+bool			IsPointInsideDiscFast	( const Vec2& point, const Vec2& center, float radius );
 bool			IsPointInsideAABB2D		( const Vec2& point, const AABB2& box );
 bool			IsPointInsideCapsule2D	( const Vec2& point, const Vec2& capsuleMidStart, const Vec2& capsuleMidEnd, float capsuleRadius );
 bool			IsPointInsideCapsule2D	( const Vec2& point, const Capsule2& capsule );
