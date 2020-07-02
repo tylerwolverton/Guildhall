@@ -64,6 +64,11 @@ void TileMap::Update( float deltaSeconds )
 	Map::Update( deltaSeconds );
 
 	ResolveEntityVsWallCollisions();
+
+	if ( g_game->g_raytraceFollowCamera )
+	{
+		m_raytraceTransform = g_game->GetWorldCamera()->GetTransform();
+	}
 }
 
 
@@ -195,12 +200,16 @@ void TileMap::DebugRender() const
 {
 	Map::DebugRender();
 
-	Transform cameraTransform = g_game->GetWorldCamera()->GetTransform();
-	RaycastResult result = Raycast( cameraTransform.GetPosition(), cameraTransform.GetForwardVector(), 5.f );
+	RaycastResult result = Raycast( m_raytraceTransform.GetPosition(), m_raytraceTransform.GetForwardVector(), 5.f );
 	if ( result.didImpact )
 	{
 		DebugAddWorldPoint( result.impactPos, Rgba8::PURPLE );
 		DebugAddWorldArrow( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::ORANGE );
+
+		if ( !g_game->g_raytraceFollowCamera )
+		{
+			DebugAddWorldArrow( m_raytraceTransform.GetPosition(), result.impactPos, Rgba8::MAGENTA );
+		}
 	}
 }
 
@@ -232,7 +241,7 @@ RaycastResult TileMap::Raycast( const Vec3& startPos, const Vec3& forwardNormal,
 		closestImpact = wallsResult;
 	}
 
-	RaycastResult entitiesResult = RaycastAgainstEntities( startPos, forwardNormal, maxDist );
+	RaycastResult entitiesResult = RaycastAgainstEntitiesFast( startPos, forwardNormal, maxDist );
 	if ( entitiesResult.didImpact
 		 && entitiesResult.impactDist < closestImpact.impactDist )
 	{
@@ -452,6 +461,7 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 	result.startPos = startPos;
 	result.forwardNormal = forwardNormal;
 	result.maxDist = maxDist;
+	result.impactDist = maxDist;
 
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
@@ -461,13 +471,19 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 			continue;
 		}
 
-		Vec2 displacement = entity->m_position - startPos.XY();
-		Vec2 iBasis = forwardNormal.XY();
+		Vec2 displacementFromStartToCenterOfDisc = entity->m_position - startPos.XY();
+		Vec2 iBasis = forwardNormal.XY().GetNormalized();
 		Vec2 jBasis = iBasis.GetRotated90Degrees();
 
-		Vec2 posOfCircleAlongRay( DotProduct2D( iBasis, displacement ), DotProduct2D( jBasis, displacement ) );
+		Vec2 posOfCircleCenterAlongRay( DotProduct2D( iBasis, displacementFromStartToCenterOfDisc ), DotProduct2D( jBasis, displacementFromStartToCenterOfDisc ) );
 
-		float bSquared = posOfCircleAlongRay.y * posOfCircleAlongRay.y;
+		if ( maxDist < posOfCircleCenterAlongRay.x - entity->GetPhysicsRadius()
+			 || posOfCircleCenterAlongRay.x + entity->GetPhysicsRadius() < 0.f )
+		{
+			continue;
+		}
+
+		float bSquared = posOfCircleCenterAlongRay.y * posOfCircleCenterAlongRay.y;
 		float cSquared = entity->GetPhysicsRadius() * entity->GetPhysicsRadius();
 		float aSquared = cSquared - bSquared;
 
@@ -478,22 +494,89 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 		}
 		else if ( IsNearlyEqual( aSquared, 0.f ) )
 		{
-			tOverlap.min = -posOfCircleAlongRay.x;
-			tOverlap.max = -posOfCircleAlongRay.x;
+			tOverlap.min = posOfCircleCenterAlongRay.x;
+			tOverlap.max = posOfCircleCenterAlongRay.x;
 		}
 		else
 		{
-			tOverlap.min = -aSquared - posOfCircleAlongRay.x;
-			tOverlap.max = aSquared - posOfCircleAlongRay.x;
+			float a = sqrtf( aSquared );
+			tOverlap.min = posOfCircleCenterAlongRay.x - a;
+			tOverlap.max = posOfCircleCenterAlongRay.x + a;
 		}
+		
+		tOverlap.min = ClampMin( tOverlap.min, 0.f );
 
-		result.didImpact = true;
-		result.impactFraction = tOverlap.min;
-		result.impactPos = Vec3( entity->GetPosition(), .5f );//startPos + tOverlap.min * forwardNormal;
-		result.impactDist = ( result.impactPos - startPos ).GetLength();
-		result.impactEntity = entity;
+		Vec3 impactPos = startPos + tOverlap.min * forwardNormal;
+		float impactDist = Vec3( impactPos - startPos ).GetLength();
+		if ( impactDist < result.impactDist )
+		{
+			RaycastResult rayAgainstTop = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, entity->GetHeight() );
+			RaycastResult rayAgainstBottom = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
+			int x = 9;
+			// 3 cases
+			// Hit side first
+			if ( impactPos.z > 0.f
+				 && impactPos.z < entity->GetHeight() )
+			{
+				// we already found the right impact pos
+				x = 0;
+			}
+			// Hit top first
+			else if ( startPos.z > entity->GetHeight() )
+			{
+				RaycastResult rayAgainstTop = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, entity->GetHeight() );
+				if ( rayAgainstTop.didImpact )
+				{
+					FloatRange tOverlapInT = tOverlap;
+					tOverlapInT.min /= maxDist;
+					tOverlapInT.max /= maxDist;
+					if ( tOverlapInT.IsInRange( rayAgainstTop.impactFraction ) )
+					{
+						impactPos = rayAgainstTop.impactPos;
+						//impactPos = startPos + rayAgainstTop.impactFraction * maxDist * forwardNormal;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else
+				{
+					continue;
+				}
+			}
+			// Hit bottom first
+			else if( startPos.z < 0.f )
+			{
+				RaycastResult rayAgainstBottom = RaycastAgainstZPlane( startPos, forwardNormal, maxDist, 0.f );
+				if ( rayAgainstBottom.didImpact )
+				{
+					if ( tOverlap.IsInRange( rayAgainstBottom.impactFraction ) )
+					{
+						impactPos = startPos + rayAgainstBottom.impactDist * forwardNormal;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else
+			{
+				continue;
+			}
 
-		return result;
+			result.didImpact = true;
+			result.impactFraction = tOverlap.min / maxDist;
+			result.impactPos = impactPos;
+			result.impactDist = impactDist;
+			result.impactEntity = entity;
+			result.impactSurfaceNormal = impactPos - Vec3( entity->GetPosition(), 0.f );
+		}
 	}
 
 	return result;

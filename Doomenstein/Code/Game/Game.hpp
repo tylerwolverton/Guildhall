@@ -54,6 +54,7 @@ public:
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
+	bool g_raytraceFollowCamera = true;
 
 	static float m_mouseSensitivityMultiplier;
 

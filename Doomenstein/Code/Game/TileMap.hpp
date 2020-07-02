@@ -77,6 +77,8 @@ private:
 	void				ResolveEntityVsWallCollision( Entity& entity );
 
 private:
+	Transform			m_raytraceTransform;
+
 	std::vector<Tile>	m_tiles;
 	IntVec2				m_dimensions;
 

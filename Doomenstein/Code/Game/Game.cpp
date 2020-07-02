@@ -245,6 +245,11 @@ void Game::UpdateFromKeyboard()
 		m_isDebugRendering = !m_isDebugRendering;
 	}
 
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
+	{
+		g_raytraceFollowCamera = !g_raytraceFollowCamera;
+	}
+
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
 	{
 		if ( m_player == nullptr )
