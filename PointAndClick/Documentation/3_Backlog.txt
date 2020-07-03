@@ -80,7 +80,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 25.1        [X]         1.5         1.75        9           Create clickable dialogue options in HUD 
 26          [X]         2           2.5         9           Implement dialogue tree state machine for conversations
 26.1*       [X]         1           0.75        9           Add item acquisition through dialogue
-27          [O]         1                       7           Add trigger/button to switch to new map
+27          [-]         1           N/A         7           Add trigger/button to switch to new map
+27.0        [O]         1                       7           Add trigger to switch to new map that can be hidden by locked door
 28          [O]         0.5                     5           Attach level sprite to second map
 29          [O]         1                       18          Add background music to each map
 30          [O]         1                       20          Add main menu map 

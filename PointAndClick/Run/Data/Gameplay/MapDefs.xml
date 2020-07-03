@@ -9,6 +9,12 @@
     </Entities>
   </MapDefinition>
 
+  <MapDefinition name="Forest1" width="16" height="7" backgroundTexturePath="Data/Images/SpriteSheets/Forest1.png">
+    <Entities>
+      <Entity name="Player" type="actor" startPos="14,1"/>
+    </Entities>
+  </MapDefinition>
+
   <MapDefinition name="Victory" width="16" height="9" backgroundTexturePath="">
 
   </MapDefinition>

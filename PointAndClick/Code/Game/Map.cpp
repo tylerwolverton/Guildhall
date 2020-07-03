@@ -271,7 +271,7 @@ void Map::SpawnPlayer()
 
 	if ( m_entities.size() > 1 )
 	{
-		m_triggerRegions.emplace_back( Vec2( 2.f, 0.f ), 1.f, "Victory" );
+		m_triggerRegions.emplace_back( Vec2( 2.f, 0.f ), 1.f, "Forest1" );
 		m_triggerRegions[0].AddRequiredItem( "Key" );
 	}
 }

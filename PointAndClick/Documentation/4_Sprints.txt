@@ -37,8 +37,8 @@ CURRENT SPRINT
 ===============================================================================
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there)  
-27          [O]         1                       7           Add trigger/button to switch to new map
+14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there) 
+27.0        [O]         1                       7           Add trigger to switch to new map that can be hidden by locked door
 28          [O]         0.5                     5           Attach level sprite to second map
 29          [O]         1                       18          Add background music to each map
 30          [O]         1                       20          Add main menu map 
@@ -54,7 +54,6 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 34.1        [O]         0.25                    3.3         Write dialogue for NPC item giver
 35          [O]         2                       3.1         Add NPC with dialogue tree that gives item in one branch
 35.1        [O]         0.75                    3.1         Write dialogue for NPC dialogue tree
-36          [O]         2                       16          Add walking animation for player using XML 
 37          [/]         0.5                     17          Add idle animation for NPCs using XML 
 38          [O]         1                       19          Add pause menu UI panel
 38.1        [O]         0.5                     19          Add resume and quit to main menu buttons to pause menu
@@ -62,9 +61,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 36          [/]         1.5                     16          Add walking animation for player using XML 
 
 
-Initial Total           22        
+Initial Total           20        
 Unexpected Task Total            
-Total                   22     
+Total                   20     
 
 
 ===============================================================================

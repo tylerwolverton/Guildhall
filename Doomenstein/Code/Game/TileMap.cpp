@@ -506,6 +506,7 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 		
 		dOverlap.min = ClampMin( dOverlap.min, 0.f );
 
+		// Project XY along the XYZ forward to see how far along it went
 		float maxDistXY = DotProduct3D( Vec3( forwardNormal.XY(), 0.f ).GetNormalized(), forwardNormal ) * maxDist;
 		float tOverlapMin = dOverlap.min / maxDistXY;
 				
