@@ -2,16 +2,18 @@
 
   <MapDefinition name="Bar" width="30" height="7" backgroundTexturePath="Data/Images/SpriteSheets/SCUMMBarBackground.png">
     <Entities>
-      <Entity name="Player" type="actor" startPos="2,1"/>
-      <Entity name="PurpleTentacle" type="item" startPos="14,1.25"/>
+      <Entity name="Player" type="actor" startPos="3,1"/>
+      <Entity name="Purple Tentacle" type="item" startPos="14,1.25"/>
       <Entity name="Key" type="item" startPos="22,2"/>
-      <Entity name="BarDoor" type="item" startPos="2.5,2"/>
+      <Entity name="Door" type="item" startPos="2.5,2"/>
+      <Entity name="PortalToForest" type="portal" startPos="1,1"/>
     </Entities>
   </MapDefinition>
 
   <MapDefinition name="Forest1" width="16" height="7" backgroundTexturePath="Data/Images/SpriteSheets/Forest1.png">
     <Entities>
-      <Entity name="Player" type="actor" startPos="14,1"/>
+      <Entity name="Player" type="actor" startPos="13,1"/>
+      <Entity name="PortalToBar" type="portal" startPos="15,1"/>
     </Entities>
   </MapDefinition>
 

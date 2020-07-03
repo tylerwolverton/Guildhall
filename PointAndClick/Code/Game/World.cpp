@@ -1,4 +1,5 @@
 #include "Game/World.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Time/Clock.hpp"
@@ -44,13 +45,63 @@ void World::DebugRender() const
 
 
 //-----------------------------------------------------------------------------------------------
-void World::BuildNewMap( std::string name )
+void World::LoadMap( const std::string& mapName )
 {
-	MapDefinition* mapDef = MapDefinition::GetMapDefinition( name );
+	Map* mapIter = GetLoadedMapByName( mapName );
+	if ( mapIter != nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "Map '%s' has already been loaded", mapName.c_str() ) );
+		return;
+	}
+
+	// Only load maps that have already been parsed and added to MapDefinitions
+	MapDefinition* mapDef = MapDefinition::GetMapDefinition( mapName );
 	if ( mapDef == nullptr )
 	{
-		ERROR_AND_DIE( Stringf( "Requested map '%s' is not defined!", name.c_str() ) );
+		g_devConsole->PrintError( Stringf( "Map '%s' has not been loaded from Maps directory", mapName.c_str() ) );
+		return;
 	}
+
+	Map* map = new Map( mapName, mapDef );
+	m_loadedMaps[mapName] = map;
 	
-	m_curMap = new Map( name, mapDef );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void World::ChangeMap( const std::string& mapName, Actor* player )
+{
+	Map* newMap = GetLoadedMapByName( mapName );
+	if ( newMap == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "Map '%s' has not been loaded into world", mapName.c_str() ) );
+		return;
+	}
+
+	if ( m_curMap != nullptr )
+	{
+		m_curMap->Unload();
+	}
+
+	m_curMap = newMap;
+
+	if ( m_curMap != nullptr )
+	{
+		m_curMap->Load( (Entity*)player );
+		g_devConsole->PrintString( Stringf( "Map '%s' loaded", mapName.c_str() ), Rgba8::GREEN );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Map* World::GetLoadedMapByName( const std::string& mapName )
+{
+	auto mapIter = m_loadedMaps.find( mapName );
+	if ( mapIter == m_loadedMaps.end() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+

@@ -58,6 +58,5 @@ void TriggerRegion::OnTriggerEnter( Actor* actor )
 	}
 
 	g_game->ChangeMap( m_targetMap );
-	//g_game->ChangeGameState( eGameState::ATTRACT );
 }
 

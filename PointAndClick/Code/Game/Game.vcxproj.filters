@@ -85,6 +85,12 @@
     <ClCompile Include="DialogueState.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="PortalDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -156,6 +162,12 @@
     <ClInclude Include="DialogueState.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Portal.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="PortalDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">
@@ -174,6 +186,9 @@
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\DialogueStateDefs.xml">
+      <Filter>Data\Gameplay</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PortalDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
   </ItemGroup>

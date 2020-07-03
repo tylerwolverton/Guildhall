@@ -25,12 +25,14 @@
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
+#include "Game/Portal.hpp"
 #include "Game/World.hpp"
 #include "Game/DialogueState.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
 #include "Game/ItemDefinition.hpp"
+#include "Game/PortalDefinition.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UIPanel.hpp"
 #include "Game/UIText.hpp"
@@ -104,6 +106,9 @@ void Game::Shutdown()
 	g_audioSystem->Shutdown();
 
 	CleanupHUD();
+
+	// Cleanup player
+	PTR_SAFE_DELETE( m_player );
 
 	// Clean up global sprite sheets
 	PTR_SAFE_DELETE( g_tileSpriteSheet );
@@ -325,6 +330,7 @@ void Game::LoadAssets()
 	LoadDialogueStatesFromXml();
 	LoadActorsFromXml();
 	LoadItemsFromXml();
+	LoadPortalsFromXml();
 	LoadMapsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
@@ -383,6 +389,8 @@ void Game::LoadMapsFromXml()
 		MapDefinition* mapDef = new MapDefinition( *element );
 		MapDefinition::s_definitions[ mapDef->GetName() ] = mapDef;
 
+		m_world->LoadMap( mapDef->GetName() );
+
 		element = element->NextSiblingElement();
 	}
 
@@ -410,6 +418,11 @@ void Game::LoadActorsFromXml()
 	{
 		ActorDefinition* actorDef = new ActorDefinition( *element );
 		ActorDefinition::s_definitions[actorDef->GetName()] = actorDef;
+
+		if ( actorDef->GetName() == "Player" )
+		{
+			m_player = new Actor( Vec2::ZERO, actorDef );
+		}
 
 		element = element->NextSiblingElement();
 	}
@@ -443,6 +456,34 @@ void Game::LoadItemsFromXml()
 	}
 
 	g_devConsole->PrintString( "Items Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadPortalsFromXml()
+{
+	g_devConsole->PrintString( "Loading Portals..." );
+
+	const char* filePath = "Data/Gameplay/PortalDefs.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The portals xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	XmlElement* element = root->FirstChildElement();
+	while ( element )
+	{
+		PortalDefinition* portalDef = new PortalDefinition( *element );
+		PortalDefinition::s_definitions[portalDef->GetName()] = portalDef;
+
+		element = element->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "Portals Loaded", Rgba8::GREEN );
 }
 
 
@@ -531,16 +572,6 @@ void Game::UpdateFromKeyboard()
 		}
 		break;
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadNewMap( const std::string& mapName )
-{
-	delete m_world;
-	m_world = nullptr;
-	m_world = new World( m_gameClock );
-	m_world->BuildNewMap( mapName );
 }
 
 
@@ -765,7 +796,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 //-----------------------------------------------------------------------------------------------
 void Game::ChangeMap( const std::string& mapName )
 {
-	m_world->BuildNewMap( mapName );
+	m_world->ChangeMap( mapName, m_player );
 
 	if ( mapName == "Victory" )
 	{

@@ -6,8 +6,10 @@
 #include "Game/TileDefinition.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
+#include "Game/Portal.hpp"
 #include "Game/ActorDefinition.hpp"
 #include "Game/ItemDefinition.hpp"
+#include "Game/PortalDefinition.hpp"
 #include "Game/Map.hpp"
 
 
@@ -46,6 +48,13 @@ std::vector<Item*> MapDefinition::GetItemsInLevel()
 	}
 
 	return itemsInLevel;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<Portal*> MapDefinition::GetPortalsInLevel()
+{
+	return m_portals;
 }
 
 
@@ -95,9 +104,16 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 
 			if ( type == "actor" )
 			{
-				Actor* newActor = new Actor( pos, ActorDefinition::GetActorDefinition( name ) );
+				if ( name == "Player" )
+				{
+					m_playerStartPos = pos;
+				}
+				else
+				{
+					Actor* newActor = new Actor( pos, ActorDefinition::GetActorDefinition( name ) );
 
-				m_entities.push_back( newActor );
+					m_entities.push_back( newActor );
+				}
 			}
 			else if ( type == "item" )
 			{
@@ -105,6 +121,13 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 
 				m_entities.push_back( newItem );
 				m_items.push_back( newItem );
+			}
+			else if ( type == "portal" )
+			{
+				Portal* newPortal = new Portal( pos, PortalDefinition::GetPortalDefinition( name ) );
+
+				m_entities.push_back( newPortal );
+				m_portals.push_back( newPortal );
 			}
 
 			entityElem = entityElem->NextSiblingElement();

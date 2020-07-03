@@ -21,6 +21,7 @@
 #include "Game/World.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Item.hpp"
+#include "Game/Portal.hpp"
 #include "Game/TriggerRegion.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
@@ -45,17 +46,24 @@ Map::Map( std::string name, MapDefinition* mapDef )
 	m_width = mapDef->m_width;
 	m_height = mapDef->m_height;
 
-	SpawnPlayer();
+	SpawnEntities();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 Map::~Map()
 {
-	// For now this will also delete the player
+	// Don't delete the player
+	m_entities.pop_back();
+
 	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
 	{
 		Entity*& entity = m_entities[entityIndex];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
 		delete entity;
 		entity = nullptr;
 	}
@@ -131,12 +139,20 @@ void Map::UpdateMouseHover()
 //-----------------------------------------------------------------------------------------------
 void Map::CheckForTriggers()
 {
-	for ( int triggerIndex = 0; triggerIndex < (int)m_triggerRegions.size(); ++triggerIndex )
+	/*for ( int triggerIndex = 0; triggerIndex < (int)m_triggerRegions.size(); ++triggerIndex )
 	{
 		TriggerRegion& triggerRegion = m_triggerRegions[triggerIndex];
 		if ( DoDiscsOverlap( m_player->GetPosition(), m_player->GetPhysicsRadius(), triggerRegion.GetPosition(), triggerRegion.GetPhysicsRadius() ) )
 		{
 			triggerRegion.OnTriggerEnter( (Actor*)m_player );
+		}
+	}*/
+	for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
+	{
+		Portal*& portal = m_portals[portalIdx];
+		if ( DoDiscsOverlap( m_player->GetPosition(), m_player->GetPhysicsRadius(), portal->GetPosition(), portal->GetPhysicsRadius() ) )
+		{
+			portal->OnEnter( (Actor*)m_player );
 		}
 	}
 }
@@ -197,6 +213,28 @@ void Map::CenterCameraOnPlayer() const
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::SetPlayer()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			return;
+		}
+
+		if ( entity->GetName() == "Player" )
+		{
+			m_player = entity;
+			g_game->SetPlayer( (Actor*)m_player );
+
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
 	std::vector<Vertex_PCU> vertexes;
@@ -213,6 +251,25 @@ void Map::Render() const
 void Map::DebugRender() const
 {
 	DebugRenderEntities();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::Load( Entity* player )
+{
+	m_player = player;
+	m_entities.push_back( player );
+
+	m_player->SetPosition( m_mapDef->GetPlayerStartPos() );
+	((Actor*)m_player)->SetMoveTargetLocation( m_mapDef->GetPlayerStartPos() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::Unload()
+{
+	m_entities.pop_back();
+	m_player = nullptr;
 }
 
 
@@ -248,32 +305,23 @@ void Map::DebugRenderEntities() const
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::SpawnPlayer()
+void Map::SpawnEntities()
 {
-	// TODO: Load position from XML
-
 	m_entities = m_mapDef->GetEntitiesInLevel();
 	m_items = m_mapDef->GetItemsInLevel();
-	
-	if ( m_entities.size() > 0 )
+	m_portals = m_mapDef->GetPortalsInLevel();
+
+	/*if ( m_entities.size() > 0 )
 	{
 		m_player = m_entities[0];
 		g_game->SetPlayer( (Actor*)m_player );
+	}*/
 
-		DebugAddWorldTextf( Mat44::CreateTranslation2D( m_player->GetPosition() + Vec2( 2.f, 1.f ) ),
-							Vec2( .5f, .5f ),
-							Rgba8::WHITE,
-							2.f,
-							.15f,
-							DEBUG_RENDER_ALWAYS,
-							"Great, locked in again..." );
-	}
-
-	if ( m_entities.size() > 1 )
+	/*if ( m_entities.size() > 1 )
 	{
 		m_triggerRegions.emplace_back( Vec2( 2.f, 0.f ), 1.f, "Forest1" );
 		m_triggerRegions[0].AddRequiredItem( "Key" );
-	}
+	}*/
 }
 
 

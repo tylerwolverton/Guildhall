@@ -10,7 +10,7 @@
     </ActionEvents>
   </ItemDefinition>
 
-  <ItemDefinition name="BarDoor">
+  <ItemDefinition name="Door">
     <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5"/>
     <ActionEvents>
       <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" requiredItem="Key"/>
@@ -18,7 +18,7 @@
     </ActionEvents>
   </ItemDefinition> 
   
-  <ItemDefinition name="PurpleTentacle">
+  <ItemDefinition name="Purple Tentacle">
     <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
     <ActionEvents>
       <ActionEvent type="TalkTo" initialDialogueState="PurpleTentacle_initial" />

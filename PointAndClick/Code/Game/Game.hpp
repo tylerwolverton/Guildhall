@@ -102,9 +102,9 @@ private:
 	void LoadMapsFromXml();
 	void LoadActorsFromXml();
 	void LoadItemsFromXml();
+	void LoadPortalsFromXml();
 
 	void UpdateFromKeyboard();
-	void LoadNewMap( const std::string& mapName );
 	void UpdateMousePositions();
 	void UpdateMouseWorldPosition();
 	void UpdateMouseUIPosition();

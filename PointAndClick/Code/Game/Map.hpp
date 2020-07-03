@@ -11,6 +11,7 @@
 class Player;
 class Actor;
 class Item;
+class Portal;
 class MapDefinition;
 class TriggerRegion;
 
@@ -43,8 +44,13 @@ public:
 	void Render() const;
 	void DebugRender() const;
 
+	void Load( Entity* player );
+	void Unload();
+
+	void				SetPlayer();
+
 private:
-	void				SpawnPlayer();
+	void				SpawnEntities();
 
 	void				UpdateEntities( float deltaSeconds );
 	void				UpdateMouseHover();
@@ -54,7 +60,8 @@ private:
 	void				RenderEntities() const;
 	void				DebugRenderEntities() const;
 	void				CenterCameraOnPlayer() const;
-	
+
+
 	// Event handlers
 	void				OnVerbAction( EventArgs* args );
 	void				OnPickupVerb( EventArgs* args );
@@ -65,15 +72,16 @@ private:
 	void				OnGiveToDestinationVerb( EventArgs* args );
 
 private:
-	std::string			m_name;
-	MapDefinition*      m_mapDef;
+	std::string			 m_name;
+	MapDefinition*       m_mapDef;
 
-	int					m_width = 0;
-	int					m_height = 0;
+	int					 m_width = 0;
+	int					 m_height = 0;
 
-	EntityVector		m_entities;
-	std::vector<Item*>	m_items;
-	Entity*				m_player;
+	EntityVector		 m_entities;
+	std::vector<Item*>	 m_items;
+	std::vector<Portal*> m_portals;
+	Entity*				 m_player;
 
 	std::vector<TriggerRegion> m_triggerRegions;
 };
