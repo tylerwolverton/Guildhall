@@ -34,15 +34,6 @@ Map::Map( std::string name, MapDefinition* mapDef )
 	: m_name( name )
 	, m_mapDef( mapDef )
 {
-	//g_eventSystem->RegisterEvent( "VerbAction", "", GAME, &Map::OnVerbAction );
-	g_eventSystem->RegisterMethodEvent( "VerbAction", "", GAME, this, &Map::OnVerbAction );
-	g_eventSystem->RegisterMethodEvent( OnPickUpVerbEventName, "", GAME, this, &Map::OnPickupVerb );
-	g_eventSystem->RegisterMethodEvent( OnOpenVerbEventName, "", GAME, this, &Map::OnOpenVerb );
-	g_eventSystem->RegisterMethodEvent( OnCloseVerbEventName, "", GAME, this, &Map::OnCloseVerb );
-	g_eventSystem->RegisterMethodEvent( OnTalkToVerbEventName, "", GAME, this, &Map::OnTalkToVerb );
-	g_eventSystem->RegisterMethodEvent( OnGiveToSourceVerbEventName, "", GAME, this, &Map::OnGiveToSourceVerb );
-	g_eventSystem->RegisterMethodEvent( OnGiveToDestinationVerbEventName, "", GAME, this, &Map::OnGiveToDestinationVerb );
-
 	m_width = mapDef->m_width;
 	m_height = mapDef->m_height;
 
@@ -257,6 +248,14 @@ void Map::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Map::Load( Entity* player )
 {
+	g_eventSystem->RegisterMethodEvent( "VerbAction", "", GAME, this, &Map::OnVerbAction );
+	g_eventSystem->RegisterMethodEvent( OnPickUpVerbEventName, "", GAME, this, &Map::OnPickupVerb );
+	g_eventSystem->RegisterMethodEvent( OnOpenVerbEventName, "", GAME, this, &Map::OnOpenVerb );
+	g_eventSystem->RegisterMethodEvent( OnCloseVerbEventName, "", GAME, this, &Map::OnCloseVerb );
+	g_eventSystem->RegisterMethodEvent( OnTalkToVerbEventName, "", GAME, this, &Map::OnTalkToVerb );
+	g_eventSystem->RegisterMethodEvent( OnGiveToSourceVerbEventName, "", GAME, this, &Map::OnGiveToSourceVerb );
+	g_eventSystem->RegisterMethodEvent( OnGiveToDestinationVerbEventName, "", GAME, this, &Map::OnGiveToDestinationVerb );
+
 	m_player = player;
 	m_entities.push_back( player );
 
@@ -268,6 +267,14 @@ void Map::Load( Entity* player )
 //-----------------------------------------------------------------------------------------------
 void Map::Unload()
 {
+	g_eventSystem->DeRegisterMethodEvent( "VerbAction", this, &Map::OnVerbAction );
+	g_eventSystem->DeRegisterMethodEvent( OnPickUpVerbEventName, this, &Map::OnPickupVerb );
+	g_eventSystem->DeRegisterMethodEvent( OnOpenVerbEventName, this, &Map::OnOpenVerb );
+	g_eventSystem->DeRegisterMethodEvent( OnCloseVerbEventName, this, &Map::OnCloseVerb );
+	g_eventSystem->DeRegisterMethodEvent( OnTalkToVerbEventName, this, &Map::OnTalkToVerb );
+	g_eventSystem->DeRegisterMethodEvent( OnGiveToSourceVerbEventName, this, &Map::OnGiveToSourceVerb );
+	g_eventSystem->DeRegisterMethodEvent( OnGiveToDestinationVerbEventName, this, &Map::OnGiveToDestinationVerb );
+
 	m_entities.pop_back();
 	m_player = nullptr;
 }

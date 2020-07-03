@@ -35,8 +35,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 28          [X]         0.5         1           5           Attach level sprite to second map *(build sprite from tileset)
 27.0        [/]         1           1.5         7           Add trigger to switch to new map that can be hidden by locked door
-27.1        [X]         0.5         0.5         7           Restructure map management to support switching back and forth
-14          [O]         1.5                     1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there) 
+27.1*       [X]         0.5         0.5         7           Restructure map management to support switching back and forth
+14          [X]         1.5         0.25        1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there) 
 
 
 
