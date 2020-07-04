@@ -101,10 +101,14 @@ void Entity::Die()
 //-----------------------------------------------------------------------------------------------
 void Entity::DebugRender() const
 {
+	if ( m_isPossessed )
+	{
+		return;
+	}
+
 	DebugAddWorldWireCylinder( Vec3( m_position, 0.f ), Vec3( m_position, m_entityDef.m_height ), m_entityDef.m_physicsRadius, Rgba8::CYAN );
 	g_renderer->BindDiffuseTexture( nullptr );
 	DrawDisc2D( g_renderer, m_position, m_entityDef.m_physicsRadius, Rgba8::WHITE );
-	//( Vec3( m_position, 0.f ), Vec3( m_position, m_entityDef.m_height ), m_entityDef.m_physicsRadius, Rgba8::CYAN );
 }
 
 

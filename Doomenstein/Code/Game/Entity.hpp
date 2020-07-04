@@ -45,6 +45,7 @@ public:
 
 	bool		 IsDead() const											{ return m_isDead; }
 	bool		 IsGarbage() const										{ return m_isGarbage; }
+	bool		 IsPossessed() const									{ return m_isPossessed; }
 
 	void		 Possess()												{ m_isPossessed = true; }
 	void		 Unpossess()											{ m_isPossessed = false; }

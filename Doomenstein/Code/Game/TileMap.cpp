@@ -466,7 +466,8 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity* const& entity = m_entities[entityIdx];
-		if ( entity == nullptr )
+		if ( entity == nullptr 
+			 || entity->IsPossessed() )
 		{
 			continue;
 		}
