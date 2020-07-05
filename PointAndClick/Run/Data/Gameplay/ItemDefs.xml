@@ -10,6 +10,16 @@
     </ActionEvents>
   </ItemDefinition>
 
+  <ItemDefinition name="Red Herring">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="31"/>
+    </SpriteAnimSet>
+    <ActionEvents>
+      <ActionEvent type="PickUp"/>
+    </ActionEvents>
+  </ItemDefinition>
+
   <ItemDefinition name="Door">
     <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5"/>
     <ActionEvents>

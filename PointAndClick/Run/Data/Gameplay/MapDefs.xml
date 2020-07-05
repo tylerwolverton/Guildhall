@@ -14,6 +14,7 @@
     <Entities>
       <Entity name="Player" type="actor" startPos="13,1"/>
       <Entity name="PortalToBar" type="portal" startPos="15,1"/>
+      <Entity name="Red Herring" type="item" startPos="2,1"/>
     </Entities>
   </MapDefinition>
 

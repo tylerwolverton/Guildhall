@@ -245,13 +245,7 @@ void Map::Load( Entity* player )
 //-----------------------------------------------------------------------------------------------
 void Map::Unload()
 {
-	g_eventSystem->DeRegisterMethodEvent( "VerbAction", this, &Map::OnVerbAction );
-	g_eventSystem->DeRegisterMethodEvent( OnPickUpVerbEventName, this, &Map::OnPickupVerb );
-	g_eventSystem->DeRegisterMethodEvent( OnOpenVerbEventName, this, &Map::OnOpenVerb );
-	g_eventSystem->DeRegisterMethodEvent( OnCloseVerbEventName, this, &Map::OnCloseVerb );
-	g_eventSystem->DeRegisterMethodEvent( OnTalkToVerbEventName, this, &Map::OnTalkToVerb );
-	g_eventSystem->DeRegisterMethodEvent( OnGiveToSourceVerbEventName, this, &Map::OnGiveToSourceVerb );
-	g_eventSystem->DeRegisterMethodEvent( OnGiveToDestinationVerbEventName, this, &Map::OnGiveToDestinationVerb );
+	g_eventSystem->DeRegisterObject( this );
 
 	m_entities.pop_back();
 	m_player = nullptr;
