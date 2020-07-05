@@ -27,4 +27,15 @@
 
   <DialogueStateDefinition stateName="PurpleTentacle_final" introText="See ya later"/>
 
+  <DialogueStateDefinition stateName="Wally_initial" introText="Make it quick, lots to do">
+    <Choice text="What are you reading about?" targetState="Wally_choice1" />
+    <Choice text="I'll come back later" targetState="Wally_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_choice1" introText="Here, see for yourself">
+    <Item name="Boring Law Book" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_final" introText="*mumbling and pen scratching"/>
+
 </DialogueStateDefinitions>

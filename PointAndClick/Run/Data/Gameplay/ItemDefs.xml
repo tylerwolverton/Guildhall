@@ -26,8 +26,22 @@
       <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" requiredItem="Key"/>
       <ActionEvent type="Close" texturePath="" />
     </ActionEvents>
-  </ItemDefinition> 
-  
+  </ItemDefinition>
+
+  <ItemDefinition name="BookStack1">
+    <Size physicsRadius="0.0" localDrawBounds="-1.0,-0.5,1.0,.25"/>
+    <SpriteAnimSet spriteSheet="BookStack1.png" spriteSheetName="BookStack1" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>
+  </ItemDefinition>
+
+  <ItemDefinition name="Boring Law Book">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems2_10x15.png" spriteSheetName="InventoryItems2" spriteLayout="10,15" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="45"/>
+    </SpriteAnimSet>
+  </ItemDefinition>
+
   <ItemDefinition name="Purple Tentacle">
     <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
     <ActionEvents>
@@ -39,6 +53,16 @@
     </SpriteAnimSet>
   </ItemDefinition>
 
+  <ItemDefinition name="Wally">
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
+    <ActionEvents>
+      <ActionEvent type="TalkTo" initialDialogueState="Wally_initial" />
+    </ActionEvents>
+    <SpriteAnimSet spriteSheet="Wally_13x6.png" spriteSheetName="Wally" spriteLayout="13,6" fps="10">
+      <SpriteAnim name="Idle"				spriteIndexes="0,1,2,1" fps="2"/>
+    </SpriteAnimSet>
+  </ItemDefinition>
+  
 </ItemDefinitions>
 
 

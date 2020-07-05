@@ -1,24 +1,24 @@
 <ActorDefinitions>
 
 	<ActorDefinition name="Player" faction="good">
-		<Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/>
+		<Size physicsRadius="0.25" localDrawBounds="-0.75,-1.5,0.75,1.5 "/>
 		<Movement>
 			<Walk speed="2.0"/>
 		</Movement>
 		<Health max="100" start="100"/>
-    <SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteSheetName="Characters" spriteLayout="12,53" fps="10">
+    <!--<SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteSheetName="Characters" spriteLayout="12,53" fps="10">
       <SpriteAnim name="MoveEast"		spriteIndexes="3,4,5,4"/>
 			<SpriteAnim name="MoveWest"		spriteIndexes="9,10,11,10"/>
 			<SpriteAnim name="MoveNorth"	spriteIndexes="0,1,2,1"/>
 			<SpriteAnim name="MoveSouth"	spriteIndexes="6,7,8,7"/>
 			<SpriteAnim name="Idle"				spriteIndexes="6,7,8,7" fps="3"/>
-		</SpriteAnimSet>
-    <!--<SpriteAnimSet spriteSheet="GuybrushThreepwoodSprites.png" spriteSheetName="GuyBrushThreepwood" spriteLayout="8,3" fps="10">
-      <SpriteAnim name="MoveEast"		spriteIndexes="8,9,10,11,12,13"/>
-      <SpriteAnim name="MoveWest"		spriteIndexes="16,17,18,19,20,21"/>
+		</SpriteAnimSet>-->
+    <SpriteAnimSet spriteSheet="GuybrushThreepwoodSprites_9x3.png" spriteSheetName="GuyBrushThreepwood" spriteLayout="9,3" fps="10">
+      <SpriteAnim name="MoveEast"		spriteIndexes="9,10,11,12,13,14"/>
+      <SpriteAnim name="MoveWest"		spriteIndexes="18,19,20,21,22,23"/>
       <SpriteAnim name="MoveSouth"	spriteIndexes="0,1,2,3,4,5,6,7"/>
-      <SpriteAnim name="Idle"				spriteIndexes="0,1,2,3,4,5,6,7" fps="3"/>
-    </SpriteAnimSet>-->
+      <SpriteAnim name="Idle"				spriteIndexes="0" fps="3"/>
+    </SpriteAnimSet>
 	</ActorDefinition>
 
 </ActorDefinitions>
