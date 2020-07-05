@@ -80,6 +80,8 @@ void Game::Startup()
 	
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
+	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
+	BuildMenus();
 	BuildHUD();
 	UpdateInventoryButtonImages();
 
@@ -145,8 +147,8 @@ void Game::Update()
 				{
 					++m_loadingFrameNum;
 
-					SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
-					g_audioSystem->PlaySound( anticipation, false, .25f );
+					SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheLookout.mp3" );
+					m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .25f );
 				}
 				break;
 
@@ -198,13 +200,6 @@ void Game::Update()
 			UpdateNPCResponse();
 
 			m_world->Update();
-
-			/*if ( m_dialogueTimer.HasElapsed() )
-			{
-				m_dialogueTimer.Stop();
-				ChangeGameState( eGameState::PLAYING );
-				g_inputSystem->PopMouseOptions();
-			}*/
 		}
 		break;
 	}
@@ -254,12 +249,12 @@ void Game::Render() const
 
 		case eGameState::ATTRACT:
 		{
-			std::vector<Vertex_PCU> vertexes;
+			/*std::vector<Vertex_PCU> vertexes;
 			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 100.f, 500.f ), 60.f, "The Tentacle of Monkey Island" );
 			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Start" );
 
 			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
-			g_renderer->DrawVertexArray( vertexes );
+			g_renderer->DrawVertexArray( vertexes );*/
 		}
 		break;
 
@@ -318,6 +313,7 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/GameOver.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheScummBar.mp3" );
+	g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheLookout.mp3" );
 
 	// TODO: Check for nullptrs when loading textures
 	//g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
@@ -495,14 +491,17 @@ void Game::UpdateFromKeyboard()
 		return;
 	}
 
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+	{
+		m_isDebugRendering = !m_isDebugRendering;
+	}
+
 	switch ( m_gameState )
 	{
 		case eGameState::ATTRACT:
 		{
-			if ( g_inputSystem->WasAnyKeyJustPressed() )
-			{
-				ChangeGameState( eGameState::PLAYING );
-			}
+			m_mainMenuPanel->Update();
+			g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON );
 		}
 		break;
 
@@ -511,11 +510,6 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->WasKeyJustPressed( 'P' ) )
 			{
 				m_isPaused = !m_isPaused;
-			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
-			{
-				m_isDebugRendering = !m_isDebugRendering;
 			}
 			
 			if ( m_player != nullptr )
@@ -691,6 +685,9 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			m_hudPanel->Deactivate();
 			m_hudPanel->Hide();
 
+			m_mainMenuPanel->Activate();
+			m_mainMenuPanel->Show();
+
 			// Check which state we are changing from
 			switch ( m_gameState )
 			{
@@ -708,8 +705,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				break;
 			}
 
-			SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
-			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .25f );
+			/*SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheLookout.mp3" );
+			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .25f );*/
 		}
 		break;
 
@@ -734,6 +731,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 				case eGameState::ATTRACT:
 				{
+					m_mainMenuPanel->Deactivate();
+					m_mainMenuPanel->Hide();
 					g_audioSystem->StopSound( m_attractMusicID );
 
 					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheScummBar.mp3" );
@@ -742,7 +741,6 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
 					ChangeMap( m_curMap );
-					//m_world->BuildNewMap( m_curMap );
 				}
 				break;
 			}
@@ -811,12 +809,30 @@ void Game::ChangeMap( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::BuildMenus()
+{
+	m_mainMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+	
+	m_mainMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
+
+	m_mainMenuPlayButton = m_mainMenuPanel->AddButton( Vec2( .45f, .15f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_mainMenuPlayButton->AddText( Vec2(.5f, 0.f), Vec2( 0.f, 1.f ), "Play" );
+	m_mainMenuPlayButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuPlayButtonClicked );
+
+	m_mainMenuExitButton = m_mainMenuPanel->AddButton( Vec2( .45f, .05f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_mainMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Exit" );
+	m_mainMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
+
+	m_mainMenuPanel->Deactivate();
+	m_mainMenuPanel->Hide();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::BuildHUD()
 {
 	//Texture* rootBackground = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	Texture* childBackground = g_renderer->GetDefaultWhiteTexture();
-
-	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 
 	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
 	m_dialoguePanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
@@ -948,6 +964,22 @@ void Game::AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoi
 
 //-----------------------------------------------------------------------------------------------
 // Button events
+//-----------------------------------------------------------------------------------------------
+void Game::OnMainMenuPlayButtonClicked( EventArgs* args )
+{
+	UNUSED( args );
+	ChangeGameState( eGameState::PLAYING );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnMainMenuExitButtonClicked( EventArgs* args )
+{
+	UNUSED( args );
+	g_eventSystem->FireEvent( "Quit" );
+}
+
+
 //-----------------------------------------------------------------------------------------------
 void Game::OnVerbButtonClicked( EventArgs* args )
 {

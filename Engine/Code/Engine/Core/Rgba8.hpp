@@ -38,6 +38,7 @@ public:
 	static const Rgba8 PURPLE;
 	static const Rgba8 GREY;
 	static const Rgba8 DARK_GREY;
+	static const Rgba8 BROWN;
 
 public:
 	// Construction

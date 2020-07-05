@@ -29,6 +29,7 @@ const Rgba8 Rgba8::ORANGE		( 255, 127, 0 );
 const Rgba8 Rgba8::PURPLE		( 127, 0, 255 );
 const Rgba8 Rgba8::GREY			( 127, 127, 127 );
 const Rgba8 Rgba8::DARK_GREY	( 64, 64, 64 );
+const Rgba8 Rgba8::BROWN		( 139, 69, 19 );
 
 
 //-----------------------------------------------------------------------------------------------

@@ -111,6 +111,7 @@ private:
 	void UpdateCameras();
 	void UpdateNPCResponse();
 
+	void BuildMenus();
 	void BuildHUD();
 	void CleanupHUD();
 	void BuildVerbPanel();
@@ -119,6 +120,8 @@ private:
 	void AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoices, float fontSize );
 
 	// Button Events
+	void OnMainMenuPlayButtonClicked( EventArgs* args );
+	void OnMainMenuExitButtonClicked( EventArgs* args );
 	void OnTestButtonClicked( EventArgs* args );
 	void OnVerbButtonClicked( EventArgs* args );
 	void OnInventoryButtonClicked( EventArgs* args );
@@ -145,6 +148,13 @@ private:
 	UIPanel* m_verbPanel = nullptr;
 	UIPanel* m_inventoryPanel = nullptr;
 	UIPanel* m_currentActionPanel = nullptr;
+
+	UIPanel* m_mainMenuPanel = nullptr;
+	UIButton* m_mainMenuPlayButton = nullptr;
+	UIButton* m_mainMenuExitButton = nullptr;
+	UIPanel* m_pauseMenuPanel = nullptr;
+	UIButton* m_pauseMenuResumeButton = nullptr;
+	UIButton* m_pauseMenuExitButton = nullptr;
 
 	UIText* m_verbActionUIText = nullptr;
 	std::string m_verbText;
