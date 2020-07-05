@@ -164,6 +164,7 @@ void Game::Update()
 		break;
 
 		case eGameState::ATTRACT:
+		case eGameState::PAUSED:
 		{
 			UpdateFromKeyboard();
 		}
@@ -299,6 +300,21 @@ void Game::StopAllSounds()
 	{
 		g_audioSystem->StopSound( m_victoryMusicID );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ResetGame()
+{
+	m_world->UnloadCurrentMap();
+	//m_world->ReloadMaps();
+	LoadActorsFromXml();
+	LoadItemsFromXml();
+	LoadPortalsFromXml();
+	LoadMapsFromXml();
+
+	m_inventory.clear();
+	UpdateInventoryButtonImages();
 }
 
 
@@ -500,6 +516,11 @@ void Game::UpdateFromKeyboard()
 	{
 		case eGameState::ATTRACT:
 		{
+			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			{
+				g_eventSystem->FireEvent( "Quit" );
+			}
+
 			m_mainMenuPanel->Update();
 			g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON );
 		}
@@ -507,9 +528,9 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::PLAYING:
 		{
-			if ( g_inputSystem->WasKeyJustPressed( 'P' ) )
+			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
 			{
-				m_isPaused = !m_isPaused;
+				ChangeGameState( eGameState::PAUSED );
 			}
 			
 			if ( m_player != nullptr )
@@ -549,6 +570,15 @@ void Game::UpdateFromKeyboard()
 					m_player->SetPlayerVerbState( eVerbState::NONE );
 					ClearCurrentActionText();
 				}
+			}
+		}
+		break;
+
+		case eGameState::PAUSED:
+		{
+			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			{
+				ChangeGameState( eGameState::PLAYING );
 			}
 		}
 		break;
@@ -722,10 +752,14 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			{
 				case eGameState::PAUSED:
 				{
-					SoundID unpause = g_audioSystem->CreateOrGetSound( "Data/Audio/Unpause.mp3" );
-					g_audioSystem->PlaySound( unpause );
+					/*SoundID unpause = g_audioSystem->CreateOrGetSound( "Data/Audio/Unpause.mp3" );
+					g_audioSystem->PlaySound( unpause );*/
 
-					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, 1.f );
+					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .25f );
+
+					m_hudPanel->Activate();
+					m_pauseMenuPanel->Hide();
+					m_pauseMenuPanel->Deactivate();
 				}
 				break;
 
@@ -765,10 +799,14 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::PAUSED:
 		{
-			g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .5f );
+			g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .1f );
 
-			SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
-			g_audioSystem->PlaySound( pause );
+			/*SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
+			g_audioSystem->PlaySound( pause );*/
+
+			m_hudPanel->Deactivate();
+			m_pauseMenuPanel->Activate();
+			m_pauseMenuPanel->Show();
 
 		}
 		break;
@@ -820,11 +858,27 @@ void Game::BuildMenus()
 	m_mainMenuPlayButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuPlayButtonClicked );
 
 	m_mainMenuExitButton = m_mainMenuPanel->AddButton( Vec2( .45f, .05f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
-	m_mainMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Exit" );
+	m_mainMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
 	m_mainMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
 
 	m_mainMenuPanel->Deactivate();
 	m_mainMenuPanel->Hide();
+
+	m_pauseMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.3f, .7f ), Vec2( 0.2f, .8f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );// g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+	
+	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), nullptr );
+	titlePanel->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Paused", 48.f );
+
+	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .3f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::GREEN );
+	m_pauseMenuResumeButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Resume" );
+	m_pauseMenuResumeButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuResumeButtonClicked );
+
+	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .15f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::GREEN );
+	m_pauseMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_pauseMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
+	
+	m_pauseMenuPanel->Deactivate();
+	m_pauseMenuPanel->Hide();
 }
 
 
@@ -977,6 +1031,31 @@ void Game::OnMainMenuExitButtonClicked( EventArgs* args )
 {
 	UNUSED( args );
 	g_eventSystem->FireEvent( "Quit" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnPauseMenuResumeButtonClicked( EventArgs* args )
+{
+	UNUSED( args );
+	ChangeGameState( eGameState::PLAYING );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnPauseMenuExitButtonClicked( EventArgs* args )
+{
+	UNUSED( args );
+
+	m_pauseMenuPanel->Deactivate();
+	m_pauseMenuPanel->Hide();
+
+	ResetGame();
+
+	SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheLookout.mp3" );
+	m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .25f );
+	
+	ChangeGameState( eGameState::ATTRACT );
 }
 
 

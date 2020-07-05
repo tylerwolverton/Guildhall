@@ -41,12 +41,12 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 27.0        [O]         1                       7           Add trigger to switch to new map that can be hidden by locked door
 28          [X]         0.5         1           5           Attach level sprite to second map *(build sprite from tileset)
 29          [O]         1                       18          Add background music to each map
-30          [O]         1                       20          Add main menu map 
-30.1        [O]         1                       20          Add start and exit buttons to main menu 
-30.2        [O]         0.5                     20          Implement behavior for start and exit buttons
-30.3        [O]         0.5                     20.1        Add main menu background sprite 
-30.4        [O]         0.5                     20.2        Add main menu background music 
-30.5        [O]         1                       20.1        Add main menu title sprite 
+30          [X]         1            0.5        20          Add main menu map *(UI panel) 
+30.1        [X]         1            0.5        20          Add start and exit buttons to main menu 
+30.2        [X]         0.5          0          20          Implement behavior for start and exit buttons
+30.3        [X]         0.5          0.25       20.1        Add main menu background sprite 
+30.4        [X]         0.5          0          20.2        Add main menu background music 
+30.5        [X]         1            0.25       20.1        Add main menu title sprite 
 31          [O]         1.5                     3           Add a character/object that can be interacted with while holding all 3 items to win the game
 32          [O]         0.5                     3.3         Add one item hidden in the forest
 33          [O]         0.5                     3.2         Add one item hidden in the town

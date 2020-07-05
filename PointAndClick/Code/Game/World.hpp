@@ -22,6 +22,9 @@ public:
 	void LoadMap( const std::string& mapName );
 	void ChangeMap( const std::string& mapName, Actor* player );
 
+	void ReloadMaps();
+	void UnloadCurrentMap();
+
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
 

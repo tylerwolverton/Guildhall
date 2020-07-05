@@ -48,11 +48,12 @@ void World::DebugRender() const
 void World::LoadMap( const std::string& mapName )
 {
 	Map* mapIter = GetLoadedMapByName( mapName );
-	if ( mapIter != nullptr )
-	{
-		g_devConsole->PrintError( Stringf( "Map '%s' has already been loaded", mapName.c_str() ) );
-		return;
-	}
+	//if ( mapIter != nullptr )
+	//{
+	//	
+	//	//g_devConsole->PrintError( Stringf( "Map '%s' has already been loaded", mapName.c_str() ) );
+	//	//return;
+	//}
 
 	// Only load maps that have already been parsed and added to MapDefinitions
 	MapDefinition* mapDef = MapDefinition::GetMapDefinition( mapName );
@@ -90,6 +91,33 @@ void World::ChangeMap( const std::string& mapName, Actor* player )
 		m_curMap->Load( (Entity*)player );
 		g_devConsole->PrintString( Stringf( "Map '%s' loaded", mapName.c_str() ), Rgba8::GREEN );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::ReloadMaps()
+{
+	std::vector<std::string> mapNames;
+
+	for ( auto it = m_loadedMaps.begin(); it != m_loadedMaps.end(); ++it )
+	{
+		mapNames.push_back( it->first );
+		PTR_SAFE_DELETE( it->second );
+	}
+
+	m_loadedMaps.clear();
+
+	for ( int mapIdx = 0; mapIdx < (int)mapNames.size(); ++mapIdx )
+	{
+		LoadMap( mapNames[mapIdx] );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::UnloadCurrentMap()
+{
+	m_curMap->Unload();
 }
 
 

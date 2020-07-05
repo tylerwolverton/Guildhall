@@ -18,7 +18,7 @@
   </MapDefinition>
 
   <!--<MapDefinition name="MainMenu" width="16" height="9" backgroundTexturePath="Data/Images/SpriteSheets/MainMenuBackground.png"/>-->
-  <MapDefinition name="Victory" width="16" height="9" backgroundTexturePath=""/>
+  <!--<MapDefinition name="Victory" width="16" height="9" backgroundTexturePath=""/>-->
   
 </MapDefinitions>
 

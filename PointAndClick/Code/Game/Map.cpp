@@ -204,28 +204,6 @@ void Map::CenterCameraOnPlayer() const
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::SetPlayer()
-{
-	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
-	{
-		Entity*& entity = m_entities[entityIdx];
-		if ( entity == nullptr )
-		{
-			return;
-		}
-
-		if ( entity->GetName() == "Player" )
-		{
-			m_player = entity;
-			g_game->SetPlayer( (Actor*)m_player );
-
-			return;
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
 	std::vector<Vertex_PCU> vertexes;
@@ -317,18 +295,6 @@ void Map::SpawnEntities()
 	m_entities = m_mapDef->GetEntitiesInLevel();
 	m_items = m_mapDef->GetItemsInLevel();
 	m_portals = m_mapDef->GetPortalsInLevel();
-
-	/*if ( m_entities.size() > 0 )
-	{
-		m_player = m_entities[0];
-		g_game->SetPlayer( (Actor*)m_player );
-	}*/
-
-	/*if ( m_entities.size() > 1 )
-	{
-		m_triggerRegions.emplace_back( Vec2( 2.f, 0.f ), 1.f, "Forest1" );
-		m_triggerRegions[0].AddRequiredItem( "Key" );
-	}*/
 }
 
 

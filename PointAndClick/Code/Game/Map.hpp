@@ -47,8 +47,6 @@ public:
 	void Load( Entity* player );
 	void Unload();
 
-	void				SetPlayer();
-
 private:
 	void				SpawnEntities();
 

@@ -169,7 +169,7 @@ void App::UpdateFromKeyboard()
 		}
 		else
 		{
-			HandleQuitRequested();
+			//HandleQuitRequested();
 		}
 	}
 

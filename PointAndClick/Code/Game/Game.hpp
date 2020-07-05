@@ -96,6 +96,8 @@ public:
 
 private:
 	void StopAllSounds();
+	void ResetGame();
+	void ResetInventory();
 
 	void LoadAssets();
 	void LoadDialogueStatesFromXml();
@@ -122,6 +124,8 @@ private:
 	// Button Events
 	void OnMainMenuPlayButtonClicked( EventArgs* args );
 	void OnMainMenuExitButtonClicked( EventArgs* args );
+	void OnPauseMenuResumeButtonClicked( EventArgs* args );
+	void OnPauseMenuExitButtonClicked( EventArgs* args );
 	void OnTestButtonClicked( EventArgs* args );
 	void OnVerbButtonClicked( EventArgs* args );
 	void OnInventoryButtonClicked( EventArgs* args );
