@@ -35,13 +35,23 @@
     </SpriteAnimSet>
   </ItemDefinition>
 
-  <ItemDefinition name="Boring Law Book">
+  <ItemDefinition name="Thick Law Book">
     <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
     <SpriteAnimSet spriteSheet="InventoryItems2_10x15.png" spriteSheetName="InventoryItems2" spriteLayout="10,15" fps="10">
       <SpriteAnim name="Idle"		spriteIndexes="45"/>
     </SpriteAnimSet>
   </ItemDefinition>
 
+  <ItemDefinition name="Rock">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="64"/>
+    </SpriteAnimSet>
+    <ActionEvents>
+      <ActionEvent type="PickUp"/>
+    </ActionEvents>
+  </ItemDefinition>
+  
   <ItemDefinition name="Purple Tentacle">
     <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
     <ActionEvents>
@@ -62,7 +72,19 @@
       <SpriteAnim name="Idle"				spriteIndexes="0,1,2,1" fps="2"/>
     </SpriteAnimSet>
   </ItemDefinition>
-  
+
+  <ItemDefinition name="Cook">
+    <Size physicsRadius="0.75" localDrawBounds="-0.75,-1.5,0.75,1.5 "/>
+    <ActionEvents>
+      <ActionEvent type="TalkTo" initialDialogueState="Cook_initial" />
+      <ActionEvent type="GiveToDestination" requiredItem="Rock."  />
+    </ActionEvents>
+    <SpriteAnimSet spriteSheet="Cook.png" spriteSheetName="Cook" spriteLayout="5,1" fps="10">
+      <SpriteAnim name="Idle"				    spriteIndexes="0,1" fps="1"/>
+      <SpriteAnim name="Sleeping"	      spriteIndexes="2"/>
+    </SpriteAnimSet>
+  </ItemDefinition>
+
 </ItemDefinitions>
 
 

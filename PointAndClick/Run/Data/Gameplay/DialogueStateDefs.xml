@@ -33,9 +33,34 @@
   </DialogueStateDefinition>
 
   <DialogueStateDefinition stateName="Wally_choice1" introText="Here, see for yourself">
-    <Item name="Boring Law Book" />
+    <Item name="Thick Law Book" />
   </DialogueStateDefinition>
 
   <DialogueStateDefinition stateName="Wally_final" introText="*mumbling and pen scratching"/>
+
+  <DialogueStateDefinition stateName="Cook_initial" introText="Hello there">
+    <Choice text="Mind if I borrow those cool arms?" targetState="Cook_choice1" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_choice1" introText="I can't just give them away">
+    <Choice text="What do you want for them?" targetState="Cook_choice2" />
+    <Choice text="Aww, pretty please?" targetState="Cook_no" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_choice2" introText="I lost my rocks in the forest, collect them all and you can have the arms">
+    <Choice text="Alright, I think I can manage that" targetState="Cook_final2" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_no" introText="Nope">
+    <Choice text="Fine, what do you want for them?" targetState="Cook_choice2" />
+    <Choice text="Pretty please with a cherry on top?" targetState="Cook_no" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_final" introText="Have a nice walk"/>
+  <DialogueStateDefinition stateName="Cook_final2" introText="Good luck!"/>
 
 </DialogueStateDefinitions>

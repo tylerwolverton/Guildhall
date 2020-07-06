@@ -28,7 +28,26 @@ JOURNAL
 ===============================================================================
 
 ===============================================================================
-07/03/2020
+07/06/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+35          [/]         1.5                     3.1         Add NPC with dialogue tree that gives item in one branch
+33          [-]         0.5                     3.2         Add one item hidden in the town
+    Note: The item will be the same as the one given through dialogue
+34          [/]         1.5                     3.3         Add NPC who gives item when town item is given to them
+34.1        [O]         0.25                    3.3         Write dialogue for NPC item giver
+35.1        [O]         0.75                    3.1         Write dialogue for NPC dialogue tree
+31          [O]         1.5                     3           Add a character/object that can be interacted with while holding all 3 items to win the game
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+07/05/2020
 ===============================================================================
 -------------------------------------------------------------------------------
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
