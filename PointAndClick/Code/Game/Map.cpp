@@ -487,7 +487,8 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 
 	std::string acceptedItemName = props->GetValue( "acceptedItem", "" );
 
-	if ( g_game->IsItemInInventory( acceptedItemName ) )
+	if ( g_game->IsItemInInventory( acceptedItemName ) 
+		 && g_game->GetNounText() == acceptedItemName )
 	{
 		g_game->RemoveItemFromInventory( acceptedItemName );
 
@@ -500,5 +501,13 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 				g_game->AddItemToInventory( new Item( Vec2::ZERO, itemDef ) );
 			}
 		}
+
+		std::string text = props->GetValue( "text", "" );
+		g_game->PrintTextOverEntity( *targetItem, text, 2.f );
+	}
+	else
+	{
+		std::string text = props->GetValue( "failText", "" );
+		g_game->PrintTextOverEntity( *targetItem, text, 2.f );
 	}
 }

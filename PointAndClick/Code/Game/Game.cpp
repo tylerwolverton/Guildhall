@@ -864,16 +864,16 @@ void Game::BuildMenus()
 	m_mainMenuPanel->Deactivate();
 	m_mainMenuPanel->Hide();
 
-	m_pauseMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.3f, .7f ), Vec2( 0.2f, .8f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );// g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+	m_pauseMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.3f, .7f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ), Rgba8::WHITE );// g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), nullptr );
 	titlePanel->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Paused", 48.f );
 
-	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .3f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::GREEN );
+	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .3f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
 	m_pauseMenuResumeButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Resume" );
 	m_pauseMenuResumeButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuResumeButtonClicked );
 
-	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .15f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::GREEN );
+	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .15f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
 	m_pauseMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
 	m_pauseMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
 	
@@ -1427,6 +1427,15 @@ void Game::BeginConversation( DialogueState* initialDialogueState, Entity* dialo
 {
 	ChangeGameState( eGameState::DIALOGUE );
 	m_dialogueNPC = dialoguePartner;
+	if ( m_dialogueNPC->GetName() == "Purple Tentacle"
+		 && IsItemInInventory("Thick Law Book")
+		 && IsItemInInventory( "Red Herring" ) 
+		 && IsItemInInventory( "Wooden Arms" ) )
+	{
+		ChangeGameState( eGameState::VICTORY );
+		return;
+	}
+
 	ChangeDialogueState( initialDialogueState );
 }
 

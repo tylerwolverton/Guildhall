@@ -91,6 +91,8 @@ public:
 	void		ChangeDialogueState( DialogueState* newDialogueState );
 	void		EndConversation();
 
+	std::string GetNounText() const														{ return m_nounText; }
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 

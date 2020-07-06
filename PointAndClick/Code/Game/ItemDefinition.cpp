@@ -53,6 +53,8 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 		std::string requiredItemName = ParseXmlAttribute( *actionEventElem, "requiredItem", "" );
 		std::string acceptedItemName = ParseXmlAttribute( *actionEventElem, "acceptedItem", "" );
 		std::string receivedItemmName = ParseXmlAttribute( *actionEventElem, "receivedItem", "" );
+		std::string text = ParseXmlAttribute( *actionEventElem, "text", "" );
+		std::string failText = ParseXmlAttribute( *actionEventElem, "failText", "" );
 
 		NamedProperties* properties = new NamedProperties();
 	
@@ -63,6 +65,8 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 		properties->SetValue( "requiredItem", requiredItemName );
 		properties->SetValue( "acceptedItem", acceptedItemName );
 		properties->SetValue( "receivedItem", receivedItemmName );
+		properties->SetValue( "text", text );
+		properties->SetValue( "failText", failText );
 
 		m_verbPropertiesMap[verbState] = properties;
 
