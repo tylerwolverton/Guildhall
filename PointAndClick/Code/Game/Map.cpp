@@ -344,7 +344,7 @@ void Map::OnPickupVerb( EventArgs* args )
 	targetItem->RemoveVerbState( eVerbState::PICKUP );
 
 	NamedProperties* properties = new NamedProperties();
-	properties->SetValue( "EventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
+	properties->SetValue( "eventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
 	
 	// Remove from map since game now owns the item
 	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
@@ -381,6 +381,7 @@ void Map::OnPickupVerb( EventArgs* args )
 void Map::OnOpenVerb( EventArgs* args )
 {
 	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 
 	if ( targetItem == nullptr )
 	{
@@ -394,7 +395,7 @@ void Map::OnOpenVerb( EventArgs* args )
 		return;
 	}
 
-	std::string requiredItemName = args->GetValue( "requiredItem", "" );
+	std::string requiredItemName = props->GetValue( "requiredItem", "" );
 
 	if ( !g_game->IsItemInInventory( requiredItemName ) )
 	{
@@ -402,7 +403,7 @@ void Map::OnOpenVerb( EventArgs* args )
 		return;
 	}
 
-	Texture* openTexture = (Texture*)args->GetValue( "texture", ( void* )nullptr );
+	Texture* openTexture = (Texture*)props->GetValue( "texture", ( void* )nullptr );
 	targetItem->SetTexture( openTexture );
 	targetItem->Open();
 }
@@ -412,6 +413,7 @@ void Map::OnOpenVerb( EventArgs* args )
 void Map::OnCloseVerb( EventArgs* args )
 {
 	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 
 	if ( targetItem == nullptr )
 	{
@@ -425,7 +427,7 @@ void Map::OnCloseVerb( EventArgs* args )
 		return;
 	}
 
-	Texture* closedTexture = (Texture*)args->GetValue( "texture", ( void* )nullptr );
+	Texture* closedTexture = (Texture*)props->GetValue( "texture", ( void* )nullptr );
 	targetItem->SetTexture( closedTexture );
 	targetItem->Close();
 }
@@ -435,6 +437,7 @@ void Map::OnCloseVerb( EventArgs* args )
 void Map::OnTalkToVerb( EventArgs* args )
 {
 	Item* target = (Item*)args->GetValue( "target", ( void* )nullptr );
+	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 
 	if ( target == nullptr )
 	{
@@ -442,7 +445,7 @@ void Map::OnTalkToVerb( EventArgs* args )
 		return;
 	}
 
-	std::string initialDialogueStateName = args->GetValue( "initialDialogueState", "" );
+	std::string initialDialogueStateName = props->GetValue( "initialDialogueState", "" );
 
 	DialogueState* initialState = DialogueState::GetDialogueState( initialDialogueStateName );
 	if ( initialState != nullptr )
@@ -474,6 +477,7 @@ void Map::OnGiveToSourceVerb( EventArgs* args )
 void Map::OnGiveToDestinationVerb( EventArgs* args )
 {
 	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 	
 	if ( targetItem == nullptr )
 	{
@@ -481,10 +485,20 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 		return;
 	}
 
-	std::string requiredItemName = args->GetValue( "requiredItem", "" );
+	std::string acceptedItemName = props->GetValue( "acceptedItem", "" );
 
-	if ( g_game->IsItemInInventory( requiredItemName ) )
+	if ( g_game->IsItemInInventory( acceptedItemName ) )
 	{
-		g_game->RemoveItemFromInventory( requiredItemName );
+		g_game->RemoveItemFromInventory( acceptedItemName );
+
+		std::string receivedItemName = props->GetValue( "receivedItem", "" );
+		if ( receivedItemName != "" )
+		{
+			ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( receivedItemName );
+			if ( itemDef != nullptr )
+			{
+				g_game->AddItemToInventory( new Item( Vec2::ZERO, itemDef ) );
+			}
+		}
 	}
 }

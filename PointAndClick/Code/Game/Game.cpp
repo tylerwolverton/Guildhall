@@ -1265,7 +1265,7 @@ void Game::OnDialogueChoiceHoverEnd( EventArgs* args )
 void Game::AddItemToInventory( Item* newItem )
 {
 	NamedProperties* properties = new NamedProperties();
-	properties->SetValue( "EventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
+	properties->SetValue( "eventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
 	newItem->AddVerbState( eVerbState::GIVE_TO_SOURCE, properties );
 
 	m_inventory.push_back( newItem );

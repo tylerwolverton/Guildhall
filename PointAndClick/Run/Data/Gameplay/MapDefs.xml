@@ -3,10 +3,12 @@
   <MapDefinition name="Bar" width="30" height="7" backgroundTexturePath="Data/Images/SpriteSheets/SCUMMBarBackground.png">
     <Entities>
       <Entity name="Player" type="actor" startPos="3,1.75 "/>
-      <Entity name="Purple Tentacle" type="item" startPos="14,1.25"/>
+      <Entity name="Purple Tentacle" type="item" startPos="28,1.25"/>
       <Entity name="Wally" type="item" startPos="6, 2"/>
       <Entity name="BookStack1" type="item" startPos="6, 2"/>
       <Entity name="Key" type="item" startPos="22,2"/>
+      <Entity name="Cook" type="item" startPos="10,2.5"/>
+      <Entity name="Wooden Arms" type="item" startPos="11.5,2"/>
       <Entity name="Door" type="item" startPos="2.5,2"/>
       <Entity name="PortalToForest" type="portal" startPos="1,2"/>
     </Entities>
@@ -18,7 +20,6 @@
       <Entity name="PortalToBar" type="portal" startPos="15,2"/>
       <Entity name="Red Herring" type="item" startPos="2,1"/>
       <Entity name="Rock" type="item" startPos="4,1"/>
-      <Entity name="Cook" type="item" startPos="8,3"/>
     </Entities>
   </MapDefinition>
 

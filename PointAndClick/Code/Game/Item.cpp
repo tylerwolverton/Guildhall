@@ -135,11 +135,9 @@ void Item::HandleVerbAction( eVerbState verbState )
 
 	EventArgs args;
 	args.SetValue( "target", (void*)this );
-	args.SetValue( "texture", verbEventProperties->GetValue( "Texture", (void*)nullptr ) );
-	args.SetValue( "initialDialogueState", verbEventProperties->GetValue( "InitialDialogueState", "" ) );
-	args.SetValue( "requiredItem", verbEventProperties->GetValue( "RequiredItem", "" ) );
+	args.SetValue( "properties", (void*)verbEventProperties );
 
-	std::string verbEventName = verbEventProperties->GetValue( "EventName", "" );
+	std::string verbEventName = verbEventProperties->GetValue( "eventName", "" );
 	if ( verbEventName == "" )
 	{
 		g_devConsole->PrintError( Stringf( "Invalid event name '%s' seen for verb state '%s'", verbEventName.c_str(), GetEventNameForVerbState( verbState ).c_str() ) );
