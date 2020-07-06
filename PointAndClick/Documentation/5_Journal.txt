@@ -33,7 +33,6 @@ JOURNAL
 -------------------------------------------------------------------------------
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
-27.0        [/]         1                       7           Add trigger to switch to new map that can be hidden by locked door
 30          [X]         1            0.5        20          Add main menu map *(UI panel) 
 30.1        [X]         1            0.5        20          Add start and exit buttons to main menu 
 30.1.1*     [O]         0.5                     20          Finalize main menu button art 
@@ -49,12 +48,11 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 32.1*       [X]         0.75         0.25       3.3         Clean up inventory sprites
  *          [O]         0.5                     3.3         Add dialogue for when a character doesn't accept given item
 35          [/]         2            1.5        3.1         Add NPC with dialogue tree that gives item in one branch
-35.1        [/]         0.75                    3.1         Write dialogue for NPC dialogue tree
 35.2*       [O]         1                       3.1         Only give item if player doesn't have it
-34          [O]         1.5          0.25       3.3         Add NPC who gives item when town item is given to them
+34          [/]         1.5          0.25       3.3         Add NPC who gives item when town item is given to them
 36          [X]         1.5          0.75       16          Add walking animation for player using XML 
 
-Total                               
+Total                                5.25
 
 -------------------------------------------------------------------------------
 Notes
@@ -80,7 +78,7 @@ Total                               3.5
 Notes
 -------------------------------------------------------------------------------
 INSIGHT: Probably should just hardcode item interactions to get the game done rather than try
-        to make a cool system to do it in data
+        to make a cool system to do it in data. Still good research opportunity for thesis though.
 
 
 ===============================================================================

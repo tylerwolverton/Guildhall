@@ -58,12 +58,14 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 38          [X]         1            0.25       19          Add pause menu UI panel
 38.1        [X]         0.5          0.25       19          Add resume and quit to main menu buttons to pause menu
 40          [O]         1                       21          Add go back to main menu button on victory screen    
-36          [/]         1.5                     16          Add walking animation for player using XML 
+36          [X]         1.5          0.75       16          Add walking animation for player using XML  
 
 27.1*       [X]         0.5          0.5         7          Restructure map management to support switching back and forth
 30.1.1*     [O]         0.5                     20          Finalize main menu button art 
+32.1*       [X]         0.75         0.25       3.3         Clean up inventory sprites
 38.2*       [X]         0.5          0.5        19          Add functionality to reset game state when returning to main menu
 38.3*       [O]         0.5                     19          Finalize pause menu art
+ *          [O]         0.5                     3.3         Add dialogue for when a character doesn't accept given item
 
 Initial Total           20        
 Unexpected Task Total            
