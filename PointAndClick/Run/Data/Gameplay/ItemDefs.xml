@@ -35,7 +35,7 @@
     </SpriteAnimSet>
   </ItemDefinition>
 
-  <ItemDefinition name="Thick Law Book">
+  <ItemDefinition name="Thick Book of Maps">
     <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
     <SpriteAnimSet spriteSheet="InventoryItems2_10x15.png" spriteSheetName="InventoryItems2" spriteLayout="10,15" fps="10">
       <SpriteAnim name="Idle"		spriteIndexes="45"/>

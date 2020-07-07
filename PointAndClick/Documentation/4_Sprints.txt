@@ -38,34 +38,40 @@ CURRENT SPRINT
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 14          [X]         1.5         0.25        1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there) 
-27.0        [O]         1                       7           Add trigger to switch to new map that can be hidden by locked door
+27.0        [/]         1                       7           Add trigger to switch to new map that can be hidden by locked door
 28          [X]         0.5         1           5           Attach level sprite to second map *(build sprite from tileset)
-29          [O]         1                       18          Add background music to each map
-30          [X]         1            0.5        20          Add main menu map *(UI panel) 
-30.1        [X]         1            0.5        20          Add start and exit buttons to main menu 
-30.2        [X]         0.5          0          20          Implement behavior for start and exit buttons
-30.3        [X]         0.5          0.25       20.1        Add main menu background sprite 
-30.4        [X]         0.5          0          20.2        Add main menu background music 
-30.5        [X]         1            0.25       20.1        Add main menu title sprite 
-31          [O]         1.5                     3           Add a character/object that can be interacted with while holding all 3 items to win the game
-32          [X]         0.5          0          3.3         Add one item hidden in the forest
-33          [O]         0.5                     3.2         Add one item hidden in the town
-34          [O]         1.5                     3.3         Add NPC who gives item when town item is given to them
-34.1        [O]         0.25                    3.3         Write dialogue for NPC item giver
-35          [O]         2                       3.1         Add NPC with dialogue tree that gives item in one branch
-35.1        [O]         0.75                    3.1         Write dialogue for NPC dialogue tree
-37          [/]         0.5                     17          Add idle animation for NPCs using XML 
-38          [X]         1            0.25       19          Add pause menu UI panel
-38.1        [X]         0.5          0.25       19          Add resume and quit to main menu buttons to pause menu
-40          [O]         1                       21          Add go back to main menu button on victory screen    
-36          [X]         1.5          0.75       16          Add walking animation for player using XML  
+29          [-]         1           N/A         18          Add background music to each map
+    Note: Done along with adding each map
+30          [X]         1           0.5         20          Add main menu map *(UI panel) 
+30.1        [X]         1           0.5         20          Add start and exit buttons to main menu 
+30.2        [X]         0.5         0           20          Implement behavior for start and exit buttons
+30.3        [X]         0.5         0.25        20.1        Add main menu background sprite 
+30.4        [X]         0.5         0           20.2        Add main menu background music 
+30.5        [X]         1           0.25        20.1        Add main menu title sprite 
+31          [X]         1.5         0.75        3           Add a character/object that can be interacted with while holding all 3 items to win the game
+32          [X]         0.5         0           3.3         Add one item hidden in the forest
+33          [-]         0.5         N/A         3.2         Add one item hidden in the town
+    Note: The item will be the same as the one given through dialogue
+34          [X]         1.5         1           3.3          Add NPC who gives item when town item is given to them
+34.1        [X]         0.25        0.25        3.3         Write dialogue for NPC item giver
+35          [X]         2           1.5         3.1         Add NPC with dialogue tree that gives item in one branch
+35.1        [X]         0.75        0.5         3.1         Write dialogue for NPC dialogue tree
+37          [X]         0.5         0           17          Add idle animation for NPCs using XML 
+    Note: This sprint's work on the task was completed along with the "Add NPC" tasks
+38          [X]         1           0.25        19          Add pause menu UI panel
+38.1        [X]         0.5         0.25        19          Add resume and quit to main menu buttons to pause menu
+40          [X]         1           0.5         21          Add go back to main menu button on victory screen    
+36          [X]         1.5         0.75        16          Add walking animation for player using XML  
 
-27.1*       [X]         0.5          0.5         7          Restructure map management to support switching back and forth
+27.1*       [X]         0.5         0.5         7           Restructure map management to support switching back and forth
 30.1.1*     [O]         0.5                     20          Finalize main menu button art 
-32.1*       [X]         0.75         0.25       3.3         Clean up inventory sprites
-38.2*       [X]         0.5          0.5        19          Add functionality to reset game state when returning to main menu
+32.1*       [X]         0.75        0.25        3.3         Clean up inventory sprites
+34.2*       [X]         1           0.5         3.3         Add give item to receive item  
+38.2*       [X]         0.5         0.5         19          Add functionality to reset game state when returning to main menu
 38.3*       [O]         0.5                     19          Finalize pause menu art
- *          [O]         0.5                     3.3         Add dialogue for when a character doesn't accept given item
+    *       [X]         1           0.5                     Add a way to specify failure text for certain actions 
+    *       [O]         1                       3.3         Stackable items in inventory (and pickup multiples) 
+40.1*       [X]                     0.75        21          Create victory screen
 
 Initial Total           20        
 Unexpected Task Total            

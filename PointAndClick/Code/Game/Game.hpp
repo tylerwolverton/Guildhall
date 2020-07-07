@@ -99,7 +99,6 @@ public:
 private:
 	void StopAllSounds();
 	void ResetGame();
-	void ResetInventory();
 
 	void LoadAssets();
 	void LoadDialogueStatesFromXml();

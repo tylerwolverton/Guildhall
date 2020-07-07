@@ -1439,7 +1439,7 @@ void Game::BeginConversation( DialogueState* initialDialogueState, Entity* dialo
 	ChangeGameState( eGameState::DIALOGUE );
 	m_dialogueNPC = dialoguePartner;
 	if ( m_dialogueNPC->GetName() == "Purple Tentacle"
-		 && IsItemInInventory("Thick Law Book")
+		 && IsItemInInventory( "Thick Book of Maps" )
 		 && IsItemInInventory( "Red Herring" ) 
 		 && IsItemInInventory( "Wooden Arms" ) )
 	{
@@ -1500,17 +1500,15 @@ void Game::UpdateInventoryButtonImages()
 {
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
+		// Reset button
+		m_inventoryButtons[inventoryButtonIdx]->ClearLabels();
+		m_inventoryButtons[inventoryButtonIdx]->Deactivate();
+
 		if ( inventoryButtonIdx < (int)m_inventory.size() )
 		{
 			SpriteDefinition* spriteDef = m_inventory[inventoryButtonIdx]->GetSpriteDef();
 			m_inventoryButtons[inventoryButtonIdx]->AddImage( Vec2( .1f, .1f ), Vec2( .8f, .8f ), spriteDef );
 			m_inventoryButtons[inventoryButtonIdx]->Activate();
-		}
-		// Clear Image
-		else
-		{
-			m_inventoryButtons[inventoryButtonIdx]->ClearLabels();
-			m_inventoryButtons[inventoryButtonIdx]->Deactivate();
 		}
 	}
 
