@@ -59,6 +59,10 @@ public:
 	const Vec3	GetNormalized() const;
 	void		Normalize();
 
+	// Mutators
+	void		RotateAboutZDegrees( float angleDeg );
+	void		RotateAboutZRadians( float angleRad );
+
 	// Rotation (return new vectors with const functions)
 	Vec3		GetRotatedAboutZDegrees( float angleDeg ) const;
 	Vec3		GetRotatedAboutZRadians( float angleRad ) const;

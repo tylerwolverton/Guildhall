@@ -1,7 +1,7 @@
 <ActorDefinitions>
 
 	<ActorDefinition name="Player" faction="good">
-		<Size physicsRadius="0.25" localDrawBounds="-0.75,-1.5,0.75,1.5 "/>
+		<Size physicsRadius="0.25" localDrawBounds="-0.75,-1.5,0.75,1.5"/>
 		<Movement>
 			<Walk speed="2.0"/>
 		</Movement>

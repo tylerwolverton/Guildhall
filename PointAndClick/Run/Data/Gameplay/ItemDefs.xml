@@ -21,11 +21,25 @@
   </ItemDefinition>
 
   <ItemDefinition name="Door">
-    <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5"/>
+    <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5" zDepth=".1f"/>
     <ActionEvents>
       <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" requiredItem="Key"/>
       <ActionEvent type="Close" texturePath="" />
     </ActionEvents>
+  </ItemDefinition>
+
+  <ItemDefinition name="LeftTable">
+    <Size physicsRadius="0.0" localDrawBounds="-1.0,0.0,2.0,1.5" drawOrder="1"/>
+    <SpriteAnimSet spriteSheet="SCUMMBarLeftTable.png" spriteSheetName="SCUMMBarLeftTable" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>
+  </ItemDefinition>
+  
+  <ItemDefinition name="MiddleTable">
+    <Size physicsRadius="0.0" localDrawBounds="-1.0,0.0,3.5,1.5" drawOrder="1"/>
+    <SpriteAnimSet spriteSheet="SCUMMBarMiddleTable.png" spriteSheetName="SCUMMBarMiddleTable" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>
   </ItemDefinition>
 
   <ItemDefinition name="BookStack1">

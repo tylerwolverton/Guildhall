@@ -47,14 +47,6 @@ void World::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void World::LoadMap( const std::string& mapName )
 {
-	Map* mapIter = GetLoadedMapByName( mapName );
-	//if ( mapIter != nullptr )
-	//{
-	//	
-	//	//g_devConsole->PrintError( Stringf( "Map '%s' has already been loaded", mapName.c_str() ) );
-	//	//return;
-	//}
-
 	// Only load maps that have already been parsed and added to MapDefinitions
 	MapDefinition* mapDef = MapDefinition::GetMapDefinition( mapName );
 	if ( mapDef == nullptr )

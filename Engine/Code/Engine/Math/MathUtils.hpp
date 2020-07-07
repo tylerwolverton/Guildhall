@@ -35,6 +35,7 @@ const Vec2		TransformPosition2D( const Vec2& initialPos, float scaleUniform, flo
 const Vec2		TransformPosition2D( const Vec2& initialPos, const Vec2& iBasis, const Vec2& jBasis, const Vec2& translation );
 const Vec3		TransformPosition3DXY( const Vec3& initialPos, float scaleUniform, float rotationDeg, const Vec2& translation );
 const Vec3		TransformPosition3DXY( const Vec3& initialPos, const Vec2& iBasis, const Vec2& jBasis, const Vec2& translation );
+const Vec3		TransformPosition3DWithXYRotation( const Vec3& initialPos, float scaleUniform, float rotationDeg, const Vec3& translation );
 
 // Distance
 float			GetDistance2D		  ( const Vec2& pos1, const Vec2& pos2 );

@@ -177,6 +177,19 @@ const Vec3 TransformPosition3DXY( const Vec3& initialPos, const Vec2& iBasisXY, 
 
 
 //-----------------------------------------------------------------------------------------------
+const Vec3 TransformPosition3DWithXYRotation( const Vec3& initialPos, float scaleUniform, float rotationDeg, const Vec3& translation )
+{
+	Vec3 transformedPos( initialPos );
+
+	transformedPos *= scaleUniform;
+	transformedPos.RotateAboutZDegrees( rotationDeg );
+	transformedPos += translation;
+
+	return transformedPos;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float GetDistance2D( const Vec2& pos1, const Vec2& pos2 )
 {
 	return sqrtf( GetDistanceSquared2D(pos1, pos2) );

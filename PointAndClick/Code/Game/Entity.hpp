@@ -35,6 +35,7 @@ public:
 	std::string  GetName() const									{ return m_entityDef->m_name; };
 	std::string  GetType() const									{ return m_entityDef->m_type; };
 	Texture*	 GetTexture() const									{ return m_texture; };
+	int			 GetDrawOrder() const								{ return m_entityDef->m_drawOrder; };
 				 
 	bool		 IsDead() const										{ return m_isDead; }
 	bool		 IsGarbage() const									{ return m_isGarbage; }

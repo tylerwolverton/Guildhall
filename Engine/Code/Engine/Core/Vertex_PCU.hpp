@@ -24,6 +24,8 @@ public:
 
 	static const BufferAttribute LAYOUT[];
 
-	static void TransformVertexArray(Vertex_PCU* vertexArray, int vertexCount, float uniformScale, float orientationDegrees, const Vec2& translation );
-	static void TransformVertexArray(std::vector<Vertex_PCU>& vertices, float uniformScale, float orientationDegrees, const Vec2& translation );
+	static void TransformVertexArray( Vertex_PCU* vertexArray, int vertexCount, float uniformScale, float orientationDegrees, const Vec2& translation );
+	static void TransformVertexArray( std::vector<Vertex_PCU>& vertices, float uniformScale, float orientationDegrees, const Vec2& translation );
+	static void TransformVertexArray( Vertex_PCU* vertexArray, int vertexCount, float uniformScale, float orientationDegrees, const Vec3& translation );
+	static void TransformVertexArray( std::vector<Vertex_PCU>& vertices, float uniformScale, float orientationDegrees, const Vec3& translation );
 };

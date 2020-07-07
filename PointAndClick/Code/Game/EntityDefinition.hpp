@@ -30,6 +30,7 @@ protected:
 	std::string		m_faction;
 	float			m_physicsRadius = 0.f;
 	AABB2			m_localDrawBounds = AABB2::ONE_BY_ONE;
+	int			    m_drawOrder = 0;
 	int				m_maxHealth = 1;
 	int				m_startHealth = 1;
 	SpriteSheet*	m_spriteSheet = nullptr;

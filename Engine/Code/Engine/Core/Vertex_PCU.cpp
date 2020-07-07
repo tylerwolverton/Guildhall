@@ -66,3 +66,32 @@ void Vertex_PCU::TransformVertexArray( std::vector<Vertex_PCU>& vertices, float 
 {
 	TransformVertexArray( &vertices[0], (int)vertices.size(), uniformScale, orientationDegrees, translation );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Vertex_PCU::TransformVertexArray( Vertex_PCU* vertexArray, int vertexCount, float uniformScale, float orientationDegrees, const Vec3& translation )
+{
+	if ( vertexArray == nullptr )
+	{
+		return;
+	}
+
+	for ( int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex )
+	{
+		Vertex_PCU& vertex = vertexArray[vertexIndex];
+		Vec3 vertexXYZ( vertex.m_position.x, vertex.m_position.y, vertex.m_position.z );
+
+		Vec3 newPos = TransformPosition3DWithXYRotation( vertexXYZ, uniformScale, orientationDegrees, translation );
+
+		vertex.m_position.x = newPos.x;
+		vertex.m_position.y = newPos.y;
+		vertex.m_position.z = newPos.z;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Vertex_PCU::TransformVertexArray( std::vector<Vertex_PCU>& vertices, float uniformScale, float orientationDegrees, const Vec3& translation )
+{
+	TransformVertexArray( &vertices[0], (int)vertices.size(), uniformScale, orientationDegrees, translation );
+}

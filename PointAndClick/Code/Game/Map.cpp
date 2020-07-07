@@ -303,15 +303,36 @@ void Map::Unload()
 //-----------------------------------------------------------------------------------------------
 void Map::RenderEntities() const
 {
-	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
+	int numEntitiesToRender = (int)m_entities.size();
+
+	// Could build a dynamic system that keeps track of each entity rendered and orders them while avoiding nullptrs...
+	// Or could just do this since we only have 2 layers
+	for ( int entityIndex = 0; entityIndex < numEntitiesToRender; ++entityIndex )
 	{
-		Entity*const& entity = m_entities[entityIndex];
+		Entity* const& entity = m_entities[entityIndex];
 		if ( entity == nullptr )
 		{
 			continue;
 		}
 
-		entity->Render();
+		if ( entity->GetDrawOrder() == 0 )
+		{
+			entity->Render();
+		}
+	}
+
+	for ( int entityIndex = 0; entityIndex < numEntitiesToRender; ++entityIndex )
+	{
+		Entity* const& entity = m_entities[entityIndex];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		if ( entity->GetDrawOrder() == 1 )
+		{
+			entity->Render();
+		}
 	}
 }
 

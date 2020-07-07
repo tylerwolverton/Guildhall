@@ -36,7 +36,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 30.1.1*     [X]         0.5         0           20          Finalize main menu button art 
     Note: Done with 38.3
 38.3*       [X]         0.5         0.25        19          Finalize pause menu art
-27.0        [/]         1                       7           Add trigger to switch to new map that can be hidden by locked door
+27.0        [X]         1           0.75        7           Add trigger to switch to new map that can be hidden by locked door
+20.1*       [X]         1           0.75        12.1        Make sure door renders behind player and table 
+*           [/]         1           0.25                    Bugfix: Render all other foreground objects on top of characters 
 
 Total                                
 

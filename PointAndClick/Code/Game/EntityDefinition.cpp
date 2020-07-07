@@ -19,6 +19,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 	{
 		m_physicsRadius = ParseXmlAttribute( *sizeElement, "physicsRadius", m_physicsRadius );
 		m_localDrawBounds = ParseXmlAttribute( *sizeElement, "localDrawBounds", m_localDrawBounds );
+		m_drawOrder = ParseXmlAttribute( *sizeElement, "drawOrder", m_drawOrder );
 	}
 
 	const XmlElement* healthElement = entityDefElem.FirstChildElement( "Health" );

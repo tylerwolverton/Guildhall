@@ -257,6 +257,32 @@ void Vec3::Normalize()
 
 
 //-----------------------------------------------------------------------------------------------
+void Vec3::RotateAboutZDegrees( float angleDeg )
+{
+	float radius = GetLengthXY();
+	float thetaDeg = Atan2Degrees( y, x );
+
+	thetaDeg += angleDeg;
+
+	x = radius * CosDegrees( thetaDeg );
+	y = radius * SinDegrees( thetaDeg );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Vec3::RotateAboutZRadians( float angleRad )
+{
+	float radius = GetLengthXY();
+	float thetaRad = atan2f( y, x );
+
+	thetaRad += angleRad;
+
+	x = radius * cosf( thetaRad );
+	y = radius * sinf( thetaRad );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Vec3 Vec3::GetRotatedAboutZDegrees( float angleDeg ) const
 {
 	float radius = GetLengthXY();
