@@ -452,8 +452,6 @@ void Map::OnTalkToVerb( EventArgs* args )
 	{
 		g_game->BeginConversation( initialState, target );
 	}
-	/*g_game->PrintTextOverEntity( *targetItem, "Hey", 2.f );
-	g_game->ChangeGameState( eGameState::DIALOGUE );*/
 }
 
 
@@ -504,6 +502,39 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 
 		std::string text = props->GetValue( "text", "" );
 		g_game->PrintTextOverEntity( *targetItem, text, 2.f );
+
+		if ( targetItem->GetName() == "Cook"
+			 && acceptedItemName == "Rock" )
+		{
+			for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
+			{
+				Item*& item = m_items[itemIdx];
+				if ( item == nullptr )
+				{
+					continue;
+				}
+
+				if ( item->GetName() == receivedItemName )
+				{
+					item->SetIsInPlayerInventory( true );
+					m_items[itemIdx] = nullptr;
+				}
+			}
+
+			for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+			{
+				Entity*& entity = m_entities[entityIdx];
+				if ( entity == nullptr )
+				{
+					continue;
+				}
+
+				if ( entity->GetName() == receivedItemName )
+				{
+					m_entities[entityIdx] = nullptr;
+				}
+			}
+		}
 	}
 	else
 	{
