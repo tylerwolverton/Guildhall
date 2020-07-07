@@ -1,5 +1,7 @@
 #include "Game/MapDefinition.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/GameCommon.hpp"
@@ -110,21 +112,48 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 				}
 				else
 				{
-					Actor* newActor = new Actor( pos, ActorDefinition::GetActorDefinition( name ) );
+					ActorDefinition* actorDef = ActorDefinition::GetActorDefinition( name );
+					if ( actorDef == nullptr )
+					{
+						g_devConsole->PrintError( Stringf("Unexpected actor '%s' defined in map '%s'", name.c_str(), m_name.c_str()) );
+						continue;
+					}
+					// TODO: When updating to entity only model, define this in entity definition
+					actorDef->SetType( "actor" );
 
+					Actor* newActor = new Actor( pos, actorDef );
+					
 					m_entities.push_back( newActor );
 				}
 			}
 			else if ( type == "item" )
 			{
-				Item* newItem = new Item( pos, ItemDefinition::GetItemDefinition( name ) );
+				ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( name );
+				if ( itemDef == nullptr )
+				{
+					g_devConsole->PrintError( Stringf( "Unexpected item '%s' defined in map '%s'", name.c_str(), m_name.c_str() ) );
+					continue;
+				}
+				// TODO: When updating to entity only model, define this in entity definition
+				itemDef->SetType( "item" );
+
+				Item* newItem = new Item( pos, itemDef );
 
 				m_entities.push_back( newItem );
 				m_items.push_back( newItem );
 			}
 			else if ( type == "portal" )
 			{
-				Portal* newPortal = new Portal( pos, PortalDefinition::GetPortalDefinition( name ) );
+				PortalDefinition* portalDef = PortalDefinition::GetPortalDefinition( name );
+				if ( portalDef == nullptr )
+				{
+					g_devConsole->PrintError( Stringf( "Unexpected portal '%s' defined in map '%s'", name.c_str(), m_name.c_str() ) );
+					continue;
+				}
+				// TODO: When updating to entity only model, define this in entity definition
+				portalDef->SetType( "portal" );
+
+				Portal* newPortal = new Portal( pos, portalDef );
 
 				m_entities.push_back( newPortal );
 				m_portals.push_back( newPortal );

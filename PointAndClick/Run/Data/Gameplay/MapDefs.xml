@@ -10,7 +10,7 @@
       <Entity name="Cook" type="item" startPos="10,2.5"/>
       <Entity name="Wooden Arms" type="item" startPos="11.5,2"/>
       <Entity name="Door" type="item" startPos="2.5,2"/>
-      <Entity name="PortalToForest" type="portal" startPos="1,2"/>
+      <Entity name="PortalToForest" type="portal" startPos="2.5,2"/>
     </Entities>
   </MapDefinition>
 

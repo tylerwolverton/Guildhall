@@ -23,6 +23,11 @@ public:
 
 	void OnEnter( Actor* actor );
 
+	bool IsActive() const							{ return m_isActive; }
+	void Activate()									{ m_isActive = true; }
+	void Deactivate()								{ m_isActive = false; }
+
 protected:
 	PortalDefinition*		m_portalDef = nullptr;
+	bool					m_isActive = true;
 };

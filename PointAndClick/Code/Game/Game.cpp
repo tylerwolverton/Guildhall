@@ -849,11 +849,11 @@ void Game::BuildMenus()
 	
 	m_mainMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
 
-	m_mainMenuPlayButton = m_mainMenuPanel->AddButton( Vec2( .45f, .15f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_mainMenuPlayButton = m_mainMenuPanel->AddButton( Vec2( .45f, .15f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_mainMenuPlayButton->AddText( Vec2(.5f, 0.f), Vec2( 0.f, 1.f ), "Play" );
 	m_mainMenuPlayButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuPlayButtonClicked );
 
-	m_mainMenuExitButton = m_mainMenuPanel->AddButton( Vec2( .45f, .05f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_mainMenuExitButton = m_mainMenuPanel->AddButton( Vec2( .45f, .05f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_mainMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
 	m_mainMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
 
@@ -861,16 +861,16 @@ void Game::BuildMenus()
 	m_mainMenuPanel->Hide();
 
 	// Pause
-	m_pauseMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.3f, .7f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ), Rgba8::WHITE );// g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+	m_pauseMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.35f, .65f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), nullptr );
 	titlePanel->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Paused", 48.f );
 
-	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .3f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .3f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_pauseMenuResumeButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Resume" );
 	m_pauseMenuResumeButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuResumeButtonClicked );
 
-	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .4f, .15f ), Vec2( 0.2f, .1f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .15f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_pauseMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
 	m_pauseMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
 	
@@ -880,11 +880,11 @@ void Game::BuildMenus()
 	// Victory 
 	m_victoryPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/VictoryScreen.png" ) );
 	
-	m_victoryRetryButton = m_victoryPanel->AddButton( Vec2( .45f, .1f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_victoryRetryButton = m_victoryPanel->AddButton( Vec2( .45f, .1f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_victoryRetryButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Retry" );
 	m_victoryRetryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
 
-	m_victoryExitButton = m_victoryPanel->AddButton( Vec2( .45f, .03f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_victoryExitButton = m_victoryPanel->AddButton( Vec2( .45f, .03f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_victoryExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
 	m_victoryExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
 

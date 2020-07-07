@@ -59,6 +59,8 @@ private:
 	void				DebugRenderEntities() const;
 	void				CenterCameraOnPlayer() const;
 
+	// Hacks
+	void TiePortalToDoor();
 
 	// Event handlers
 	void				OnVerbAction( EventArgs* args );

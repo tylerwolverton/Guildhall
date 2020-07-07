@@ -16,6 +16,8 @@ public:
 	explicit EntityDefinition( const XmlElement& entityDefElem );
 
 	std::string GetName()											{ return m_name; }
+	std::string GetType()											{ return m_type; }
+	void SetType( const std::string& type )							{ m_type = type; }
 	std::string GetFaction()										{ return m_faction; }
 
 	bool CanWalk()													{ return m_canWalk; }
@@ -24,6 +26,7 @@ public:
 
 protected:
 	std::string		m_name;
+	std::string		m_type;
 	std::string		m_faction;
 	float			m_physicsRadius = 0.f;
 	AABB2			m_localDrawBounds = AABB2::ONE_BY_ONE;

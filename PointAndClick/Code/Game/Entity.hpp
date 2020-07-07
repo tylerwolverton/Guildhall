@@ -33,6 +33,7 @@ public:
 	const float  GetPhysicsRadius() const							{ return m_entityDef->m_physicsRadius; };
 	const float  GetTopOfSprite() const								{ return m_entityDef->m_localDrawBounds.maxs.y; };
 	std::string  GetName() const									{ return m_entityDef->m_name; };
+	std::string  GetType() const									{ return m_entityDef->m_type; };
 	Texture*	 GetTexture() const									{ return m_texture; };
 				 
 	bool		 IsDead() const										{ return m_isDead; }

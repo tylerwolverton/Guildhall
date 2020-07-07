@@ -104,6 +104,7 @@ void Map::UpdateMouseHover()
 		std::string entityName = entity->GetName();
 
 		if ( entityName != "Player"
+			 && entity->GetType() != "portal"
 			 && IsPointInsideDisc( g_game->GetMouseWorldPosition(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
 		{
 			Vec2 hintPosition( entity->GetPosition() );
@@ -141,6 +142,12 @@ void Map::CheckForTriggers()
 	for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
 	{
 		Portal*& portal = m_portals[portalIdx];
+		if ( portal == nullptr
+			 || !portal->IsActive() )
+		{
+			continue;
+		}
+
 		if ( DoDiscsOverlap( m_player->GetPosition(), m_player->GetPhysicsRadius(), portal->GetPosition(), portal->GetPhysicsRadius() ) )
 		{
 			portal->OnEnter( (Actor*)m_player );
@@ -204,6 +211,45 @@ void Map::CenterCameraOnPlayer() const
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::TiePortalToDoor()
+{
+	// Tie portal to forest to door state
+	Item* door = nullptr;
+	Portal* portalToForest = nullptr;
+	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
+	{
+		Entity* const& entity = m_entities[entityIndex];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		if ( entity->GetName() == "Door" )
+		{
+			door = (Item*)entity;
+		}
+		else if ( entity->GetName() == "PortalToForest" )
+		{
+			portalToForest = (Portal*)entity;
+		}
+	}
+
+	if ( door != nullptr
+		 && portalToForest != nullptr )
+	{
+		if ( door->IsOpen() )
+		{
+			portalToForest->Activate();
+		}
+		else
+		{
+			portalToForest->Deactivate();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
 	std::vector<Vertex_PCU> vertexes;
@@ -239,6 +285,8 @@ void Map::Load( Entity* player )
 
 	m_player->SetPosition( m_mapDef->GetPlayerStartPos() );
 	((Actor*)m_player)->SetMoveTargetLocation( m_mapDef->GetPlayerStartPos() );
+
+	TiePortalToDoor();
 }
 
 
@@ -289,6 +337,7 @@ void Map::SpawnEntities()
 	m_entities = m_mapDef->GetEntitiesInLevel();
 	m_items = m_mapDef->GetItemsInLevel();
 	m_portals = m_mapDef->GetPortalsInLevel();
+	TiePortalToDoor();
 }
 
 
@@ -406,6 +455,8 @@ void Map::OnOpenVerb( EventArgs* args )
 	Texture* openTexture = (Texture*)props->GetValue( "texture", ( void* )nullptr );
 	targetItem->SetTexture( openTexture );
 	targetItem->Open();
+
+	TiePortalToDoor();
 }
 
 
@@ -430,6 +481,8 @@ void Map::OnCloseVerb( EventArgs* args )
 	Texture* closedTexture = (Texture*)props->GetValue( "texture", ( void* )nullptr );
 	targetItem->SetTexture( closedTexture );
 	targetItem->Close();
+
+	TiePortalToDoor();
 }
 
 
