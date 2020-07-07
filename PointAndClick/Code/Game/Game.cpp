@@ -165,6 +165,7 @@ void Game::Update()
 
 		case eGameState::ATTRACT:
 		case eGameState::PAUSED:
+		case eGameState::VICTORY:
 		{
 			UpdateFromKeyboard();
 		}
@@ -247,23 +248,6 @@ void Game::Render() const
 			g_renderer->DrawVertexArray( vertexes );
 		}
 		break;
-
-		case eGameState::ATTRACT:
-		{
-			/*std::vector<Vertex_PCU> vertexes;
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 100.f, 500.f ), 60.f, "The Tentacle of Monkey Island" );
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Start" );
-
-			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
-			g_renderer->DrawVertexArray( vertexes );*/
-		}
-		break;
-
-		case eGameState::PLAYING:
-		{
-			//m_world->RenderHUD();
-		}
-		break;
 	}
 
 	m_rootPanel->Render( g_renderer );
@@ -322,14 +306,11 @@ void Game::ResetGame()
 void Game::LoadAssets()
 {
 	g_devConsole->PrintString( "Loading Assets..." );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 
 	// Music
-	g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/GameOver.mp3" );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheScummBar.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheLookout.mp3" );
+	g_audioSystem->CreateOrGetSound( "Data/Audio/Music/MeleeIsland.mp3" );
 
 	// TODO: Check for nullptrs when loading textures
 	//g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
@@ -526,6 +507,18 @@ void Game::UpdateFromKeyboard()
 		}
 		break;
 
+		case eGameState::VICTORY:
+		{
+			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			{
+				g_eventSystem->FireEvent( "Quit" );
+			}
+
+			m_victoryPanel->Update();
+			g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON );
+		}
+		break;
+
 		case eGameState::PLAYING:
 		{
 			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
@@ -712,6 +705,14 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::ATTRACT:
 		{
+			if ( m_gameState == eGameState::VICTORY )
+			{
+				m_victoryPanel->Deactivate();
+				m_victoryPanel->Hide();
+
+				g_audioSystem->StopSound( m_victoryMusicID );
+			}
+
 			m_hudPanel->Deactivate();
 			m_hudPanel->Hide();
 
@@ -813,13 +814,17 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::VICTORY:
 		{
-			//m_curVictoryScreenSeconds = 0.f;
 			m_hudPanel->Deactivate();
 			m_hudPanel->Hide();
+			m_dialoguePanel->Deactivate();
+			m_dialoguePanel->Hide();
+
+			m_victoryPanel->Show();
+			m_victoryPanel->Activate();
 
 			g_audioSystem->StopSound( m_gameplayMusicID );
 
-			SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
+			SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/MeleeIsland.mp3" );
 			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic );
 		}
 		break;
@@ -833,22 +838,13 @@ void Game::ChangeGameState( const eGameState& newGameState )
 void Game::ChangeMap( const std::string& mapName )
 {
 	m_world->ChangeMap( mapName, m_player );
-
-	if ( mapName == "Victory" )
-	{
-		m_hudPanel->Deactivate();
-		m_hudPanel->Hide();
-
-		m_rootPanel->SetBackgroundTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
-
-		m_focalPoint = Vec3( WINDOW_WIDTH * .5f, WINDOW_HEIGHT * .5f, 0.f);
-	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::BuildMenus()
 {
+	// Main Menu
 	m_mainMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	m_mainMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
@@ -864,6 +860,7 @@ void Game::BuildMenus()
 	m_mainMenuPanel->Deactivate();
 	m_mainMenuPanel->Hide();
 
+	// Pause
 	m_pauseMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.3f, .7f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ), Rgba8::WHITE );// g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), nullptr );
@@ -879,6 +876,20 @@ void Game::BuildMenus()
 	
 	m_pauseMenuPanel->Deactivate();
 	m_pauseMenuPanel->Hide();
+
+	// Victory 
+	m_victoryPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/VictoryScreen.png" ) );
+	
+	m_victoryRetryButton = m_victoryPanel->AddButton( Vec2( .45f, .1f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_victoryRetryButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Retry" );
+	m_victoryRetryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
+
+	m_victoryExitButton = m_victoryPanel->AddButton( Vec2( .45f, .03f ), Vec2( 0.1f, .05f ), g_renderer->GetDefaultWhiteTexture(), Rgba8::BROWN );
+	m_victoryExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_victoryExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
+
+	m_victoryPanel->Deactivate();
+	m_victoryPanel->Hide();
 }
 
 
@@ -1051,7 +1062,7 @@ void Game::OnPauseMenuExitButtonClicked( EventArgs* args )
 	m_pauseMenuPanel->Hide();
 
 	ResetGame();
-
+	
 	SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/TheLookout.mp3" );
 	m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .25f );
 	

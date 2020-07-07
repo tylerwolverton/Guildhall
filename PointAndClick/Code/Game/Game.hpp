@@ -155,12 +155,16 @@ private:
 	UIPanel* m_inventoryPanel = nullptr;
 	UIPanel* m_currentActionPanel = nullptr;
 
+	// Menus
 	UIPanel* m_mainMenuPanel = nullptr;
 	UIButton* m_mainMenuPlayButton = nullptr;
 	UIButton* m_mainMenuExitButton = nullptr;
 	UIPanel* m_pauseMenuPanel = nullptr;
 	UIButton* m_pauseMenuResumeButton = nullptr;
 	UIButton* m_pauseMenuExitButton = nullptr;
+	UIPanel* m_victoryPanel = nullptr;
+	UIButton* m_victoryRetryButton = nullptr;
+	UIButton* m_victoryExitButton = nullptr;
 
 	UIText* m_verbActionUIText = nullptr;
 	std::string m_verbText;
