@@ -38,7 +38,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 38.3*       [X]         0.5         0.25        19          Finalize pause menu art
 27.0        [X]         1           0.75        7           Add trigger to switch to new map that can be hidden by locked door
 20.1*       [X]         1           0.75        12.1        Make sure door renders behind player and table 
-*           [/]         1           0.25                    Bugfix: Render all other foreground objects on top of characters 
+*           [X]         1           0.5                     Bugfix: Render all other foreground objects on top of characters 
+42          [X]         2           0.5                     Add opening dialogue sequence
+*           [X]         0.25        0.25                    Bugfix: Don't give an item in dialogue if player already has it    
 
 Total                                
 

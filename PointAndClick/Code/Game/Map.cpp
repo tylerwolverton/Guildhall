@@ -301,6 +301,23 @@ void Map::Unload()
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* Map::GetEntityByName( const std::string& name )
+{
+	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
+	{
+		Entity*& entity = m_entities[entityIndex];
+		if ( entity != nullptr 
+			 && entity->GetName() == name )
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::RenderEntities() const
 {
 	int numEntitiesToRender = (int)m_entities.size();
@@ -565,7 +582,7 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 		g_game->RemoveItemFromInventory( acceptedItemName );
 
 		std::string receivedItemName = props->GetValue( "receivedItem", "" );
-		if ( receivedItemName != "" )
+		if ( receivedItemName != ""  )
 		{
 			ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( receivedItemName );
 			if ( itemDef != nullptr )

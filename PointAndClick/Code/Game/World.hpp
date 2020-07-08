@@ -7,6 +7,7 @@
 class Clock;
 class Map;
 class Actor;
+class Entity;
 
 //-----------------------------------------------------------------------------------------------
 class World
@@ -24,6 +25,8 @@ public:
 
 	void ReloadMaps();
 	void UnloadCurrentMap();
+
+	Entity* GetPurpleTentacle();
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );

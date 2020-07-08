@@ -47,6 +47,8 @@ public:
 	void Load( Entity* player );
 	void Unload();
 
+	Entity* GetEntityByName( const std::string& name );
+
 private:
 	void				SpawnEntities();
 

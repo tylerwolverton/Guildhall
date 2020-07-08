@@ -173,6 +173,18 @@ void Game::Update()
 
 		case eGameState::PLAYING:
 		{
+			if ( !m_hasInitialDialogueHappened )
+			{
+				// Initial dialogue
+				m_player->SetPosition( Vec2( 25.f, m_player->GetPosition().y ) );
+				m_player->SetMoveTargetLocation( Vec2( 25.f, m_player->GetPosition().y ) );
+				DialogueState* initialState = DialogueState::GetDialogueState( "PurpleTentacle_initial" );
+				BeginConversation( initialState, m_world->GetPurpleTentacle() );
+
+				m_hasInitialDialogueHappened = true;
+				return;
+			}
+
 			UpdateFromKeyboard();
 
 			if ( m_verbText.empty() )
@@ -299,6 +311,8 @@ void Game::ResetGame()
 
 	m_inventory.clear();
 	UpdateInventoryButtonImages();
+
+	m_hasInitialDialogueHappened = false;
 }
 
 
@@ -648,7 +662,7 @@ void Game::UpdateNPCResponse()
 						Vec2( .5f, .5f ),
 						Rgba8::WHITE,
 						0.f,
-						0.15f,
+						0.14f,
 						DEBUG_RENDER_ALWAYS,
 						m_dialogueNPCText.c_str() );
 }
@@ -1468,10 +1482,17 @@ void Game::ChangeDialogueState( DialogueState* newDialogueState )
 
 	if ( newDialogueState->GetItemName() != "" )
 	{
-		ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( newDialogueState->GetItemName() );
-		if ( itemDef != nullptr )
+		if ( g_game->IsItemInInventory( newDialogueState->GetItemName() ) )
 		{
-			AddItemToInventory( new Item( Vec2::ZERO, itemDef ) );
+
+		}
+		else
+		{
+			ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( newDialogueState->GetItemName() );
+			if ( itemDef != nullptr )
+			{
+				AddItemToInventory( new Item( Vec2::ZERO, itemDef ) );
+			}
 		}
 	}
 

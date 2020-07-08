@@ -114,6 +114,18 @@ void World::UnloadCurrentMap()
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* World::GetPurpleTentacle()
+{
+	if ( m_curMap == nullptr )
+	{
+		return nullptr;
+	}
+
+	return m_curMap->GetEntityByName( "Purple Tentacle" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Map* World::GetLoadedMapByName( const std::string& mapName )
 {
 	auto mapIter = m_loadedMaps.find( mapName );

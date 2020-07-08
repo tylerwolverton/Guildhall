@@ -22,7 +22,7 @@
     <Choice text="In that case, what do you need?" targetState="PurpleTentacle_requirementsChoice1" />
   </DialogueStateDefinition>
   
-  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice1" introText="I need something to sit on to reach the manual override controls">
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice1" introText="Something to sit on to reach the manual override controls">
     <Choice text="Uh okay, what else?" targetState="PurpleTentacle_requirementsChoice2" />
   </DialogueStateDefinition>
 
@@ -44,7 +44,7 @@
     <Choice text="How about calamari?" targetState="PurpleTentacle_requirementsChoice4.5" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice4.5" introText="You know, it has been awhile since I've vaporized something...">
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice4.5" introText="Hmm, it has been awhile since I've vaporized something...">
     <Choice text="On my way to get that stuff now" targetState="PurpleTentacle_requirementsChoice5" />
   </DialogueStateDefinition>
 
@@ -108,7 +108,6 @@
 
   <DialogueStateDefinition stateName="Cook_no" introText="Nope">
     <Choice text="Fine, what do you want for them?" targetState="Cook_choice2" />
-    <Choice text="Pretty please with a cherry on top?" targetState="Cook_no" />
     <Choice text="Nevermind" targetState="Cook_final" />
   </DialogueStateDefinition>
 

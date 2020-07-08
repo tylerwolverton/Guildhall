@@ -139,6 +139,8 @@ private:
 
 	void UpdateInventoryButtonImages();
 
+	void SetInitialDialogueState( bool hasInitialDialogueHappened ) { m_hasInitialDialogueHappened = hasInitialDialogueHappened; }
+
 private:
 	Clock* m_gameClock = nullptr;
 
@@ -182,6 +184,7 @@ private:
 	Timer m_dialogueTimer;
 	DialogueState* m_curDialogueState = nullptr;
 
+	bool m_hasInitialDialogueHappened = false;
 	bool m_isPaused = false;
 	bool m_isSlowMo = false;
 	bool m_isFastMo = false;

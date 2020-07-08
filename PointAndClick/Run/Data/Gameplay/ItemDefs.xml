@@ -23,7 +23,7 @@
   <ItemDefinition name="Door">
     <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5" zDepth=".1f"/>
     <ActionEvents>
-      <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png" requiredItem="Key"/>
+      <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png"/>
       <ActionEvent type="Close" texturePath="" />
     </ActionEvents>
   </ItemDefinition>
@@ -60,6 +60,13 @@
     <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
     <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
       <SpriteAnim name="Idle"		spriteIndexes="54"/>
+    </SpriteAnimSet>
+  </ItemDefinition>
+
+  <ItemDefinition name="Forest1Foreground">
+    <Size physicsRadius="0.0" localDrawBounds="-8.0,0.0,8.0,2.5" drawOrder="1"/>
+    <SpriteAnimSet spriteSheet="Forest1Foreground.png" spriteSheetName="Forest1Foreground" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
     </SpriteAnimSet>
   </ItemDefinition>
 

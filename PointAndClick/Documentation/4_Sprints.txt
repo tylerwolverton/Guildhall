@@ -75,7 +75,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 40.1*       [X]                     0.75        21          Create victory screen
 
 Extra work pulled in
-20.1*       [O]         1                       12.1        Make sure door renders behind player and table 
+20.1*       [X]         1           0.75        12.1        Make sure door renders behind player and table 
+*           [X]         1           0.5                     Bugfix: Render all other foreground objects on top of characters 
 
 Initial Total           20        
 Unexpected Task Total            
