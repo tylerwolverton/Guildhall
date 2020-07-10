@@ -888,6 +888,26 @@ void Game::SetCameraPositionAndYaw( const Vec2& pos, float yaw )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees )
+{
+	// No entity specified, just load the new map and set camera position and orientation
+	if ( entityToWarp == nullptr )
+	{
+		if ( destMapName != "" )
+		{
+			m_world->ChangeMap( destMapName );
+		}
+
+		SetCameraPositionAndYaw( newPos, newYawDegrees );
+
+		return;
+	}
+
+	m_world->WarpEntityToMap( entityToWarp, destMapName, newPos, newYawDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::WarpMapCommand( EventArgs* args )
 {
 	std::string mapStr = args->GetValue( "map", "" );

@@ -8,7 +8,9 @@
 Portal::Portal( const EntityDefinition& entityDef )
 	: Entity( entityDef )
 {
-
+	m_canBePushedByWalls = false;
+	m_canBePushedByEntities = false;
+	m_canPushEntities = false;
 }
 
 
@@ -28,7 +30,7 @@ void Portal::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Portal::Render() const
 {
-	
+	Entity::Render();
 }
 
 

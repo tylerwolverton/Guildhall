@@ -143,6 +143,33 @@ Entity* World::GetClosestEntityInSector( const Vec2& observerPos, float forwardD
 
 
 //-----------------------------------------------------------------------------------------------
+void World::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees )
+{
+	Map* destMap = GetLoadedMapByName( destMapName );
+
+	// TODO: Verify portal target maps exist while loading xml files
+	// Warp to a new map same map
+	if ( destMap != nullptr 
+		 && destMap != m_curMap )
+	{
+		m_curMap->RemoveOwnershipOfEntity( entityToWarp );
+		ChangeMap( destMapName );
+		m_curMap->TakeOwnershipOfEntity( entityToWarp );
+	}
+
+	entityToWarp->SetPosition( newPos );
+	entityToWarp->SetOrientationDegrees( newYawDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool World::IsMapLoaded( const std::string& mapName )
+{
+	return GetLoadedMapByName( mapName ) != nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Map* World::GetLoadedMapByName( const std::string& mapName )
 {
 	auto mapIter = m_loadedMaps.find( mapName );

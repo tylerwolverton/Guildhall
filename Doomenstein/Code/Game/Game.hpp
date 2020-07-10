@@ -49,6 +49,8 @@ public:
 
 	void		SetCameraPositionAndYaw( const Vec2& pos, float yaw );
 	
+	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
+
 	static bool SetMouseSensitivity( EventArgs* args );
 	static bool SetAmbientLightColor( EventArgs* args );
 	

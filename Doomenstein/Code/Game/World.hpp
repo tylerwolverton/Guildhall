@@ -28,6 +28,9 @@ public:
 	
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 
+	void WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
+	bool IsMapLoaded( const std::string& mapName );
+
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
 

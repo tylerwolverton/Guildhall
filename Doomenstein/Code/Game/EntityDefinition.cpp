@@ -50,7 +50,29 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		return;
 	}
 	
-	m_type = entityDefElem.Name();
+	std::string typeStr = entityDefElem.Name();
+	if ( typeStr == "Entity" )
+	{
+		m_type = eEntityType::ENTITY;
+	}
+	else if ( typeStr == "Actor" )
+	{
+		m_type = eEntityType::ACTOR;
+	}
+	else if ( typeStr == "Projectile" )
+	{
+		m_type = eEntityType::PROJECTILE;
+	}
+	else if ( typeStr == "Portal" )
+	{
+		m_type = eEntityType::PORTAL;
+	}
+	else
+	{
+		g_devConsole->PrintError( Stringf( "EntityTypes.xml: Unsupported entity type seen, '%s'", typeStr.c_str() ) );
+		return;
+	}
+
 
 	const XmlElement* physicsElem = entityDefElem.FirstChildElement( "Physics" );
 	if( physicsElem != nullptr )
@@ -120,3 +142,16 @@ EntityDefinition::~EntityDefinition()
 	PTR_MAP_SAFE_DELETE( m_spriteAnimSetDefs );
 }
 
+
+//-----------------------------------------------------------------------------------------------
+std::string GetEntityTypeAsString( eEntityType entityType )
+{
+	switch ( entityType )
+	{
+		case eEntityType::ACTOR: return "Actor";
+		case eEntityType::PROJECTILE: return "Projectile";
+		case eEntityType::PORTAL: return "Portal";
+		case eEntityType::ENTITY: return "Entity";
+		default: return "Unknown";
+	}
+}

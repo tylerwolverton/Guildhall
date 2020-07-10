@@ -243,9 +243,11 @@ bool MapDefinition::ParseEntitiesNode( const XmlElement& mapDefElem )
 				continue;
 			}
 
-			if ( mapEntityDef.entityDef->GetType() != "Actor" )
+			if ( mapEntityDef.entityDef->GetType() != eEntityType::ACTOR )
 			{
-				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Actor in map '%s'", actorName.c_str(), mapEntityDef.entityDef->GetType().c_str(), m_name.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Actor in map '%s'", actorName.c_str(), 
+																																GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(), 
+																																m_name.c_str() ) );
 				entityElem = entityElem->NextSiblingElement();
 				continue;
 			}
@@ -255,7 +257,41 @@ bool MapDefinition::ParseEntitiesNode( const XmlElement& mapDefElem )
 
 			m_mapEntityDefs.push_back( mapEntityDef );
 		}
-	
+		else if ( !strcmp( entityElem->Value(), "Portal" ) )
+		{
+			MapEntityDefinition mapEntityDef;
+
+			std::string portalName = ParseXmlAttribute( *entityElem, "name", "" );
+			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( portalName );
+			if ( mapEntityDef.entityDef == nullptr )
+			{
+				g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", m_name.c_str(), portalName.c_str() ) );
+				entityElem = entityElem->NextSiblingElement();
+				continue;
+			}
+
+			if ( mapEntityDef.entityDef->GetType() != eEntityType::PORTAL )
+			{
+				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Portal in map '%s'", portalName.c_str(), 
+																																 GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(), 
+																																 m_name.c_str() ) );
+				entityElem = entityElem->NextSiblingElement();
+				continue;
+			}
+
+			mapEntityDef.position = ParseXmlAttribute( *entityElem, "pos", Vec2::ZERO );
+			mapEntityDef.yawDegrees = ParseXmlAttribute( *entityElem, "yaw", 0.f );
+			mapEntityDef.portalDestMap = ParseXmlAttribute( *entityElem, "destMap", "" );
+			mapEntityDef.portalDestPos = ParseXmlAttribute( *entityElem, "destPos", Vec2::ZERO );
+			mapEntityDef.portalDestYawOffset = ParseXmlAttribute( *entityElem, "destYawOffset", 0.f );
+
+
+			m_mapEntityDefs.push_back( mapEntityDef );
+		}
+		else
+		{
+			g_devConsole->PrintError( Stringf( "Entity type '%s' is unknown", entityElem->Value() ) );
+		}
 
 		entityElem = entityElem->NextSiblingElement();
 	}

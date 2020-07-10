@@ -75,3 +75,4 @@ warp
 warp map=TwistyMaze pos=5,5
 warp map=EmptyRoom pos=5,5
 warp map=TestRoom pos=1,1
+warp map=TestRoom pos=2,2

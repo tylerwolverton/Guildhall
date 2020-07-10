@@ -21,6 +21,12 @@ struct MapEntityDefinition
 	EntityDefinition* entityDef = nullptr;
 	Vec2 position = Vec2::ZERO;
 	float yawDegrees = 0.f;
+
+	// Portal specific variables
+	// TODO: Move this to sub struct?
+	std::string portalDestMap = "";
+	Vec2		portalDestPos = Vec2::ZERO;
+	float		portalDestYawOffset = 0.f;
 };
 
 

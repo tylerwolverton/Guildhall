@@ -49,6 +49,7 @@ void Map::Update( float deltaSeconds )
 
 	ResolveEntityVsEntityCollisions();
 	UpdateMeshes();
+	ResolveEntityVsPortalCollisions();
 }
 
 
@@ -103,33 +104,83 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 //-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 {
-	if ( entityDef.GetType() == "Entity" )
+	switch ( entityDef.GetType() )
 	{
-		Entity* entity = new Entity( entityDef );
-		m_entities.emplace_back( entity );
-		return entity;
+		case eEntityType::ACTOR:
+		{
+			Actor* actor = new Actor( entityDef );
+			m_entities.emplace_back( actor );
+			return actor;
+		}
+		break;
+
+		case eEntityType::PROJECTILE:
+		{
+			Projectile* projectile = new Projectile( entityDef );
+			m_entities.emplace_back( projectile );
+			return projectile;
+		}
+		break;
+
+		case eEntityType::PORTAL:
+		{
+			Portal* portal = new Portal( entityDef );
+			m_entities.emplace_back( portal );
+			m_portals.emplace_back( portal );
+			return portal;
+		}
+		break;
+
+		case eEntityType::ENTITY:
+		{
+			Entity* entity = new Entity( entityDef );
+			m_entities.emplace_back( entity );
+			return entity;
+		}
+		break;
+
+		default:
+		{
+			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
+			return nullptr;
+		}
 	}
-	else if ( entityDef.GetType() == "Actor" )
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		Actor* actor = new Actor( entityDef );
-		m_entities.emplace_back( actor );
-		return actor;
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		if ( entity == entityToRemove )
+		{
+			m_entities[entityIdx] = nullptr;
+		}
 	}
-	else if ( entityDef.GetType() == "Projectile" )
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		Projectile* projectile = new Projectile( entityDef );
-		m_entities.emplace_back( projectile );
-		return projectile;
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			entity = entityToAdd;
+			return;
+		}
 	}
-	else if ( entityDef.GetType() == "Portal" )
-	{
-		Portal* portal = new Portal( entityDef );
-		m_entities.emplace_back( portal );
-		return portal;
-	}
-	
-	g_devConsole->PrintError( Stringf( "Tried to spawn entity with unknown type '%s'", entityDef.GetType().c_str() ) );
-	return nullptr;
+
+	m_entities.push_back( entityToAdd );
 }
 
 
@@ -179,6 +230,14 @@ void Map::LoadEntitiesFromDefinition()
 
 		newEntity->SetPosition( mapEntityDef.position );
 		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
+
+		if ( mapEntityDef.entityDef->GetType() == eEntityType::PORTAL )
+		{
+			Portal* portal = (Portal*)newEntity;
+			portal->SetDestinationMap( mapEntityDef.portalDestMap );
+			portal->SetDestinationPosition( mapEntityDef.portalDestPos );
+			portal->SetDestinationYawOffset( mapEntityDef.portalDestYawOffset );
+		}
 	}
 
 }
@@ -271,4 +330,41 @@ void Map::ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 )
 			PushDiscOutOfDisc2D( entity2.m_position, radius2, entity1.m_position, radius1 );
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::ResolveEntityVsPortalCollisions()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity* const& entity = m_entities[entityIdx];
+		// Only allow player to use portals
+		if ( entity == nullptr
+			 || !entity->IsPossessed() )
+		{
+			continue;
+		}
+
+		for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
+		{
+			Portal* const& portal = m_portals[portalIdx];
+			if ( portal == nullptr )
+			{
+				continue;
+			}
+
+			if ( DoDiscsOverlap( entity->GetPosition(), entity->GetPhysicsRadius(), portal->GetPosition(), portal->GetPhysicsRadius() ) )
+			{
+				WarpToNewMap( entity, portal );
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::WarpToNewMap( Entity* entity, Portal* portal )
+{
+	g_game->WarpToMap( entity, portal->GetDestinationMap(), portal->GetDestinationPosition(), entity->GetOrientationDegrees() + portal->GetDestinationYawOffset() );
 }

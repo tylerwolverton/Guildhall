@@ -12,6 +12,18 @@ class SpriteAnimationSetDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
+enum eEntityType
+{
+	UNKNOWN = -1,
+	ENTITY,
+	ACTOR,
+	PROJECTILE,
+	PORTAL,
+};
+
+std::string GetEntityTypeAsString( eEntityType entityType );
+
+//-----------------------------------------------------------------------------------------------
 class EntityDefinition
 {
 	friend class Entity;
@@ -22,7 +34,7 @@ public:
 
 	bool		IsValid() const																{ return m_isValid; }
 	std::string GetName() const																{ return m_name; }
-	std::string GetType() const																{ return m_type; }
+	eEntityType GetType() const																{ return m_type; }
 	float		GetWalkSpeed() const														{ return m_walkSpeed; }
 	Vec2		GetVisualSize() const														{ return m_visualSize; }
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
@@ -36,7 +48,8 @@ public:
 protected:
 	bool			m_isValid = false;
 	std::string		m_name;
-	std::string		m_type;
+	eEntityType		m_type = eEntityType::UNKNOWN;
+	//std::string		m_type;
 	float			m_physicsRadius = 0.f;
 	float			m_height = 0.f;
 	float			m_eyeHeight = 0.f;

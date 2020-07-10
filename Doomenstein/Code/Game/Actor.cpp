@@ -31,8 +31,6 @@ void Actor::Update( float deltaSeconds )
 {
 	m_cumulativeTime += deltaSeconds;
 		
-	//UpdateAnimation();
-
 	Entity::Update( deltaSeconds );
 }
 
