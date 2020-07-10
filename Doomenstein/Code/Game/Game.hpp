@@ -72,7 +72,8 @@ private:
 	void BuildUIHud();
 
 	void UpdateFromKeyboard();
-	void UpdateCameraTransform();
+	void UpdateMovementFromKeyboard();
+	void UpdateCameraTransformToMatchPlayer();
 	void UpdateFramesPerSecond();
 
 	void RenderDebugUI() const;

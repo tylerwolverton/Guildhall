@@ -233,7 +233,7 @@ void Game::Update()
 
 	m_world->Update();
 
-	UpdateCameraTransform();
+	UpdateCameraTransformToMatchPlayer();
 }
 
 
@@ -268,109 +268,94 @@ void Game::UpdateFromKeyboard()
 		g_renderer->ReloadShaders();
 	}
 
+	UpdateMovementFromKeyboard();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateMovementFromKeyboard()
+{
+	Vec3 movementTranslation;
+	if ( g_inputSystem->IsKeyPressed( 'D' ) )
+	{
+		movementTranslation.y += 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'A' ) )
+	{
+		movementTranslation.y -= 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'W' ) )
+	{
+		movementTranslation.x += 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'S' ) )
+	{
+		movementTranslation.x -= 1.f;
+	}
+
+	if ( m_player == nullptr )
+	{
+		if ( g_inputSystem->IsKeyPressed( 'E' ) )
+		{
+			movementTranslation.z += 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'Q' ) )
+		{
+			movementTranslation.z -= 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
+		{
+			movementTranslation *= 10.f;
+		}
+	}
+
+	// Rotation
+	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
+	float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
+	float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
+	yawDegrees *= .009f;
+	pitchDegrees *= .009f;
+
+	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+
+	// An entity is possessed
 	if ( m_player != nullptr )
 	{
-		Vec3 playerTranslation;
-		if ( g_inputSystem->IsKeyPressed( 'D' ) )
-		{
-			playerTranslation.y += 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'A' ) )
-		{
-			playerTranslation.y -= 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'W' ) )
-		{
-			playerTranslation.x += 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'S' ) )
-		{
-			playerTranslation.x -= 1.f;
-		}
-		
-		// Rotation
-		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-		float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
-		yawDegrees *= .009f;
-
+		// Rotation (only consider yaw so the forward vector is always in XY space)
 		m_player->SetOrientationDegrees( m_player->GetOrientationDegrees() + yawDegrees );
 
 		Vec2 forwardVec = m_player->GetForwardVector();
 		Vec2 rightVec = forwardVec.GetRotatedMinus90Degrees();
 
-		Vec2 translationXY( playerTranslation.x * forwardVec
-							+ playerTranslation.y * rightVec );
+		Vec2 translationXY( movementTranslation.x * forwardVec
+							+ movementTranslation.y * rightVec );
 
 		translationXY *= m_player->GetWalkSpeed();
 
 		//m_player->AddVelocity( translationXY );
-		float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 		m_player->Translate( translationXY * deltaSeconds );
+	}
+	// No entity possessed, move the camera directly
+	else
+	{
+		Transform transform = m_worldCamera->GetTransform();
+		m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
+
+		// Translation
+		TranslateCameraFPS( movementTranslation * deltaSeconds );
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateCameraTransform()
+void Game::UpdateCameraTransformToMatchPlayer()
 {
-	if ( m_player == nullptr )
-	{
-		float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-
-		Vec3 cameraTranslation;
-
-		if ( g_inputSystem->IsKeyPressed( 'D' ) )
-		{
-			cameraTranslation.y += 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'A' ) )
-		{
-			cameraTranslation.y -= 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'W' ) )
-		{
-			cameraTranslation.x += 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'S' ) )
-		{
-			cameraTranslation.x -= 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'E' ) )
-		{
-			cameraTranslation.z += 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( 'Q' ) )
-		{
-			cameraTranslation.z -= 1.f;
-		}
-
-		if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
-		{
-			cameraTranslation *= 10.f;
-		}
-
-		// Rotation
-		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-		float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
-		float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
-		yawDegrees *= .009f;
-		pitchDegrees *= .009f;
-
-		Transform transform = m_worldCamera->GetTransform();
-		m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
-
-		// Translation
-		TranslateCameraFPS( cameraTranslation * deltaSeconds );
-	}
-	else
+	if ( m_player != nullptr )
 	{
 		// Rotation
 		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
