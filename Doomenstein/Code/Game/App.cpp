@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/JobSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -49,6 +50,7 @@ void App::Startup()
 	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowMode );
 
 	g_eventSystem = new EventSystem();
+	g_jobSystem = new JobSystem();
 	g_inputSystem = new InputSystem();
 	g_audioSystem = new AudioSystem();
 	g_renderer = new RenderContext();
@@ -57,6 +59,8 @@ void App::Startup()
 
 	g_eventSystem->Startup();
 	g_window->SetEventSystem( g_eventSystem );
+
+	g_jobSystem->Startup();
 
 	g_inputSystem->Startup( g_window );
 	g_window->SetInputSystem( g_inputSystem );
@@ -85,6 +89,7 @@ void App::Shutdown()
 	g_renderer->Shutdown();
 	g_audioSystem->Shutdown();
 	g_inputSystem->Shutdown();
+	g_jobSystem->Shutdown();
 	g_eventSystem->Shutdown();
 	g_window->Close();
 
@@ -93,6 +98,7 @@ void App::Shutdown()
 	PTR_SAFE_DELETE( g_renderer );
 	PTR_SAFE_DELETE( g_audioSystem );
 	PTR_SAFE_DELETE( g_inputSystem );
+	PTR_SAFE_DELETE( g_jobSystem );
 	PTR_SAFE_DELETE( g_eventSystem );
 	PTR_SAFE_DELETE( g_window );
 }
@@ -171,6 +177,7 @@ void App::BeginFrame()
 
 	g_window->BeginFrame();
 	g_eventSystem->BeginFrame();
+	g_jobSystem->BeginFrame();
 	g_devConsole->BeginFrame();
 	g_inputSystem->BeginFrame();
 	g_audioSystem->BeginFrame();
@@ -228,6 +235,7 @@ void App::EndFrame()
 	g_audioSystem->EndFrame();
 	g_inputSystem->EndFrame();
 	g_devConsole->EndFrame();
+	g_jobSystem->EndFrame();
 	g_eventSystem->EndFrame();
 	g_window->EndFrame();
 }

@@ -3,13 +3,13 @@
 #include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 
-
 #include <math.h>
 
 
 //-----------------------------------------------------------------------------------------------
-DevConsole*  g_devConsole = nullptr;
 EventSystem* g_eventSystem = nullptr;
+DevConsole*  g_devConsole = nullptr;
+JobSystem*  g_jobSystem = nullptr;
 NamedStrings g_gameConfigBlackboard;
 
 

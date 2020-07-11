@@ -9,15 +9,17 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class EventSystem;
 class DevConsole;
+class EventSystem;
+class JobSystem;
 class NamedProperties;
 class NamedStrings;
 
 
 //-----------------------------------------------------------------------------------------------
-extern EventSystem* g_eventSystem;
 extern DevConsole* g_devConsole;
+extern EventSystem* g_eventSystem;
+extern JobSystem* g_jobSystem;
 extern NamedStrings g_gameConfigBlackboard;
 
 

@@ -88,6 +88,9 @@ private:
 
 	void PossesNearestEntity();
 
+	/////////////////// TEMP THREAD TESTING
+	void ThreadTester9000();
+
 	// Events
 	void WarpMapCommand( EventArgs* args );
 

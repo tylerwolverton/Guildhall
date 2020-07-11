@@ -9,8 +9,9 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/Image.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/Image.hpp"
+#include "Engine/Core/JobSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/TextBox.hpp"
@@ -32,12 +33,13 @@
 #include "Engine/Time/Time.hpp"
 
 #include "Game/Entity.hpp"
-#include "Game/World.hpp"
-#include "Game/TileDefinition.hpp"
+#include "Game/GameJobs.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
+#include "Game/TileDefinition.hpp"
 #include "Game/UI/UIPanel.hpp"
+#include "Game/World.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -87,6 +89,8 @@ void Game::Startup()
 
 	InitializeCameras();
 	InitializeMeshes();
+
+	ThreadTester9000();
 
 	LoadAssets();
 
@@ -234,6 +238,8 @@ void Game::Update()
 	m_world->Update();
 
 	UpdateCameraTransformToMatchPlayer();
+
+	g_jobSystem->ClaimAndDeleteAllCompletedJobs();
 }
 
 
@@ -443,6 +449,26 @@ void Game::PossesNearestEntity()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::ThreadTester9000()
+{
+	g_jobSystem->CreateWorkerThread();
+	g_jobSystem->CreateWorkerThread();
+	g_jobSystem->CreateWorkerThread();
+	g_jobSystem->CreateWorkerThread();
+
+	TestJob* testJob1 = new TestJob();
+	TestJob* testJob2 = new TestJob();
+	TestJob* testJob3 = new TestJob();
+	TestJob* testJob4 = new TestJob();
+
+	g_jobSystem->PostJob( testJob1 );
+	g_jobSystem->PostJob( testJob2 );
+	g_jobSystem->PostJob( testJob3 );
+	g_jobSystem->PostJob( testJob4 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
 	RenderFPSCounter();
@@ -589,7 +615,7 @@ void Game::LoadAssets()
 	LoadXmlMapMaterials();
 	LoadXmlMapRegions();
 	LoadXmlMaps();
-
+	
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
 

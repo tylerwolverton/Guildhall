@@ -164,6 +164,7 @@
     <ClCompile Include="Core\EventSystem.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
+    <ClCompile Include="Core\JobSystem.cpp" />
     <ClCompile Include="Core\NamedProperties.cpp" />
     <ClCompile Include="Core\NamedStrings.cpp" />
     <ClCompile Include="Core\ObjLoader.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="Core\EventSystem.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
+    <ClInclude Include="Core\JobSystem.hpp" />
     <ClInclude Include="Core\NamedProperties.hpp" />
     <ClInclude Include="Core\NamedStrings.hpp" />
     <ClInclude Include="Core\ObjLoader.hpp" />
