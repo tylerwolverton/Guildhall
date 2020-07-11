@@ -26,11 +26,14 @@ public:
 	JobSystemWorkerThread();
 	~JobSystemWorkerThread();
 
+	void Quit()						{ m_isQuitting = true; }
+
 private:
 	void WorkerThreadMain();
 
 private:
 	std::thread* m_thread = nullptr;
+	bool m_isQuitting = false;
 };
 
 
@@ -44,7 +47,7 @@ public:
 	void Startup() {}
 	void BeginFrame() {}
 	void EndFrame() {}
-	void Shutdown() {}
+	void Shutdown();
 
 	void CreateWorkerThread();
 	
@@ -53,6 +56,9 @@ public:
 	void ClaimAndDeleteAllCompletedJobs();
 
 	Job* GetBestAvailableJob();
+
+private:
+	void StopAllThreads();
 
 private:
 	std::deque<Job*> m_queuedJobs;

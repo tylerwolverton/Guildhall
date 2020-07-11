@@ -453,8 +453,8 @@ void Game::ThreadTester9000()
 {
 	g_jobSystem->CreateWorkerThread();
 	g_jobSystem->CreateWorkerThread();
-	g_jobSystem->CreateWorkerThread();
-	g_jobSystem->CreateWorkerThread();
+	//g_jobSystem->CreateWorkerThread();
+	//g_jobSystem->CreateWorkerThread();
 
 	TestJob* testJob1 = new TestJob();
 	TestJob* testJob2 = new TestJob();

@@ -38,15 +38,18 @@ JobSystemWorkerThread::~JobSystemWorkerThread()
 //-----------------------------------------------------------------------------------------------
 void JobSystemWorkerThread::WorkerThreadMain()
 {
-	Job* job = g_jobSystem->GetBestAvailableJob();
-	if ( job != nullptr )
+	while ( !m_isQuitting )
 	{
-		job->Execute();
-		g_jobSystem->PostCompletedJob( job );
-	}
-	else
-	{
-		std::this_thread::sleep_for( std::chrono::microseconds( 10 ) );
+		Job* job = g_jobSystem->GetBestAvailableJob();
+		if ( job != nullptr )
+		{
+			job->Execute();
+			g_jobSystem->PostCompletedJob( job );
+		}
+		else
+		{
+			std::this_thread::sleep_for( std::chrono::microseconds( 10 ) );
+		}
 	}
 }
 
@@ -59,12 +62,16 @@ void JobSystemWorkerThread::WorkerThreadMain()
 //-----------------------------------------------------------------------------------------------
 JobSystem::~JobSystem()
 {
-	//for ( int workerIdx = 0; workerIdx < (int)m_workerThreads.size(); ++workerIdx )
-	//{
-	//	m_workerThreads[workerIdx]->join();
-	//	
-		PTR_VECTOR_SAFE_DELETE( m_workerThreads );
-//	}
+	
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void JobSystem::Shutdown()
+{
+	StopAllThreads();
+
+	PTR_VECTOR_SAFE_DELETE( m_workerThreads );
 }
 
 
@@ -128,3 +135,14 @@ Job* JobSystem::GetBestAvailableJob()
 
 	return job;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void JobSystem::StopAllThreads()
+{
+	for ( int workerIdx = 0; workerIdx < (int)m_workerThreads.size(); ++workerIdx )
+	{
+		m_workerThreads[workerIdx]->Quit();
+	}
+}
+
