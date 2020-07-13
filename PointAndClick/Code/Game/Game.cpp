@@ -839,7 +839,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			g_audioSystem->StopSound( m_gameplayMusicID );
 
 			SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Music/MeleeIsland.mp3" );
-			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic );
+			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic, true, .25f );
 		}
 		break;
 	}

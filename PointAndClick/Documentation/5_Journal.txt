@@ -38,9 +38,9 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 38.3*       [X]         0.5         0.25        19          Finalize pause menu art
 27.0        [X]         1           0.75        7           Add trigger to switch to new map that can be hidden by locked door
 20.1*       [X]         1           0.75        12.1        Make sure door renders behind player and table 
-*           [X]         1           0.5                     Bugfix: Render all other foreground objects on top of characters 
+41.5*       [X]         1           0.5                     Bugfix: Render all other foreground objects on top of characters 
 42          [X]         2           0.5                     Add opening dialogue sequence
-*           [X]         0.25        0.25                    Bugfix: Don't give an item in dialogue if player already has it    
+41.6*       [X]         0.25        0.25                    Bugfix: Don't give an item in dialogue if player already has it    
 
 Total                               3
 
@@ -63,15 +63,15 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 35.1        [X]         0.75         0.5        3.1         Write dialogue for NPC dialogue tree
 31          [X]         1.5          0.75       3           Add a character/object that can be interacted with while holding all 3 items to win the game
 40          [X]         1            0.5        21          Add go back to main menu button on victory screen    
-40.1*       [X]                      0.75       21          Create victory screen
-    *       [X]         1            0.5                    Add a way to specify failure text for certain actions  
+40.1*       [X]         0.5          0.75       21          Create victory screen
+46*         [X]         1            0.5                    Add a way to specify failure text for certain actions  
 
 Total                                4.75
 
 -------------------------------------------------------------------------------
 Notes
 -------------------------------------------------------------------------------
-NEW_TASK: MAke items stackable if I want a puzzle where you collect multiple rocks
+NEW_TASK: Make items stackable if I want a puzzle where you collect multiple rocks
 
 ===============================================================================
 07/05/2020
@@ -92,7 +92,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 38.3*       [O]         0.5                     19          Finalize pause menu art
 32          [X]         0.5          0          3.3         Add one item hidden in the forest
 32.1*       [X]         0.75         0.25       3.3         Clean up inventory sprites
- *          [O]         0.5                     3.3         Add dialogue for when a character doesn't accept given item (changed to *)
+46*         [O]         0.5                     3.3         Add dialogue for when a character doesn't accept given item (changed to 46*)
 35          [X]         2            1.5        3.1         Add NPC with dialogue tree that gives item in one branch
 35.2*       [O]         1                       3.1         Only give item if player doesn't have it
 34          [/]         1.5          0.25       3.3         Add NPC who gives item when town item is given to them
