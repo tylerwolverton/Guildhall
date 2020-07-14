@@ -10,6 +10,7 @@
 //-----------------------------------------------------------------------------------------------
 class Player;
 class Actor;
+class Cursor;
 class Item;
 class Portal;
 class MapDefinition;
@@ -44,7 +45,7 @@ public:
 	void Render() const;
 	void DebugRender() const;
 
-	void Load( Entity* player );
+	void Load( Entity* player, Cursor* cursor );
 	void Unload();
 
 	Entity* GetEntityByName( const std::string& name );

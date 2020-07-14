@@ -16,6 +16,7 @@ struct AABB2;
 struct Rgba8;
 class Entity;
 class Actor;
+class Cursor;
 class DialogueState;
 class Clock;
 class Camera;
@@ -103,6 +104,7 @@ private:
 	void LoadAssets();
 	void LoadDialogueStatesFromXml();
 	void LoadMapsFromXml();
+	void LoadEntitiesFromXml();
 	void LoadActorsFromXml();
 	void LoadItemsFromXml();
 	void LoadPortalsFromXml();
@@ -145,6 +147,7 @@ private:
 	Clock* m_gameClock = nullptr;
 
 	Actor* m_player = nullptr;
+	Cursor* m_cursor = nullptr;
 	Entity* m_dialogueNPC = nullptr;
 	std::string m_dialogueNPCText;
 

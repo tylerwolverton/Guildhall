@@ -11,6 +11,8 @@
 
 //-----------------------------------------------------------------------------------------------
 class Texture;
+class SpriteAnimDefinition;
+class SpriteAnimSetDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -20,7 +22,7 @@ class Entity
 	
 public:
 	Entity( const Vec2& position, EntityDefinition* entityDef );
-	virtual ~Entity() {}
+	virtual ~Entity();
 
 	virtual void Update( float deltaSeconds );
 	virtual void Render() const;

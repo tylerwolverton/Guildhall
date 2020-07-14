@@ -44,7 +44,8 @@ Map::Map( std::string name, MapDefinition* mapDef )
 //-----------------------------------------------------------------------------------------------
 Map::~Map()
 {
-	// Don't delete the player
+	// Don't delete the player or cursor
+	m_entities.pop_back();
 	m_entities.pop_back();
 
 	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
@@ -82,10 +83,13 @@ void Map::UpdateEntities( float deltaSeconds )
 	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
 	{
 		Entity*& entity = m_entities[entityIndex];
-		if ( entity != nullptr )
+		if ( entity == nullptr
+			 || entity->GetName() == "Cursor" )
 		{
-			entity->Update( deltaSeconds );
+			continue;
 		}
+		
+		entity->Update( deltaSeconds );
 	}
 }
 
@@ -270,7 +274,7 @@ void Map::DebugRender() const
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::Load( Entity* player )
+void Map::Load( Entity* player, Cursor* cursor )
 {
 	g_eventSystem->RegisterMethodEvent( "VerbAction", "", GAME, this, &Map::OnVerbAction );
 	g_eventSystem->RegisterMethodEvent( OnPickUpVerbEventName, "", GAME, this, &Map::OnPickupVerb );
@@ -282,6 +286,7 @@ void Map::Load( Entity* player )
 
 	m_player = player;
 	m_entities.push_back( player );
+	m_entities.push_back( (Entity*)cursor );
 
 	m_player->SetPosition( m_mapDef->GetPlayerStartPos() );
 	((Actor*)m_player)->SetMoveTargetLocation( m_mapDef->GetPlayerStartPos() );
@@ -295,6 +300,7 @@ void Map::Unload()
 {
 	g_eventSystem->DeRegisterObject( this );
 
+	m_entities.pop_back();
 	m_entities.pop_back();
 	m_player = nullptr;
 }
@@ -327,7 +333,8 @@ void Map::RenderEntities() const
 	for ( int entityIndex = 0; entityIndex < numEntitiesToRender; ++entityIndex )
 	{
 		Entity* const& entity = m_entities[entityIndex];
-		if ( entity == nullptr )
+		if ( entity == nullptr
+			 || entity->GetName() == "Cursor" )
 		{
 			continue;
 		}
@@ -341,7 +348,8 @@ void Map::RenderEntities() const
 	for ( int entityIndex = 0; entityIndex < numEntitiesToRender; ++entityIndex )
 	{
 		Entity* const& entity = m_entities[entityIndex];
-		if ( entity == nullptr )
+		if ( entity == nullptr
+			 || entity->GetName() == "Cursor" )
 		{
 			continue;
 		}

@@ -62,7 +62,7 @@ void World::LoadMap( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
-void World::ChangeMap( const std::string& mapName, Actor* player )
+void World::ChangeMap( const std::string& mapName, Actor* player, Cursor* cursor )
 {
 	Map* newMap = GetLoadedMapByName( mapName );
 	if ( newMap == nullptr )
@@ -80,7 +80,7 @@ void World::ChangeMap( const std::string& mapName, Actor* player )
 
 	if ( m_curMap != nullptr )
 	{
-		m_curMap->Load( (Entity*)player );
+		m_curMap->Load( (Entity*)player, cursor );
 		g_devConsole->PrintString( Stringf( "Map '%s' loaded", mapName.c_str() ), Rgba8::GREEN );
 	}
 }

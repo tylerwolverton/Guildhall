@@ -22,6 +22,12 @@ Entity::Entity( const Vec2& position, EntityDefinition* entityDef )
 
 
 //-----------------------------------------------------------------------------------------------
+Entity::~Entity()
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::Update( float deltaSeconds )
 {
 	// vel += acceleration * dt;

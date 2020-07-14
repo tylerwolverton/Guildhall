@@ -4,8 +4,6 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
-#include "Engine/Renderer/SpriteAnimDefinition.hpp"
-#include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Game/GameCommon.hpp"
 
@@ -18,12 +16,6 @@ std::map< std::string, ItemDefinition* > ItemDefinition::s_definitions;
 ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 	: EntityDefinition( itemDefElem )
 {
-	const XmlElement* spriteAnimSetElement = itemDefElem.FirstChildElement( "SpriteAnimSet" );
-	if ( spriteAnimSetElement != nullptr )
-	{
-		m_spriteAnimSetDef = new SpriteAnimSetDefinition( *g_renderer, *spriteAnimSetElement );
-	}
-
 	const XmlElement* actionEventsElem = itemDefElem.FirstChildElement( "ActionEvents" );
 	if(actionEventsElem == nullptr )
 	{
@@ -78,27 +70,7 @@ ItemDefinition::ItemDefinition( const XmlElement& itemDefElem )
 //-----------------------------------------------------------------------------------------------
 ItemDefinition::~ItemDefinition()
 {
-	PTR_SAFE_DELETE( m_spriteAnimSetDef );
 	PTR_MAP_SAFE_DELETE( m_verbPropertiesMap );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-SpriteAnimDefinition* ItemDefinition::GetSpriteAnimDef( const std::string& animName )
-{
-	if ( m_spriteAnimSetDef == nullptr )
-	{
-		return nullptr;
-	}
-
-	std::map< std::string, SpriteAnimDefinition* >::const_iterator  mapIter = m_spriteAnimSetDef->m_spriteAnimDefMapByName.find( animName );
-
-	if ( mapIter == m_spriteAnimSetDef->m_spriteAnimDefMapByName.cend() )
-	{
-		return nullptr;
-	}
-
-	return mapIter->second;
 }
 
 

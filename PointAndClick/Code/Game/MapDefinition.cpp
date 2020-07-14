@@ -7,6 +7,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/Actor.hpp"
+#include "Game/Cursor.hpp"
 #include "Game/Item.hpp"
 #include "Game/Portal.hpp"
 #include "Game/ActorDefinition.hpp"
@@ -158,6 +159,23 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 				m_entities.push_back( newPortal );
 				m_portals.push_back( newPortal );
 			}
+			/*else if ( type == "entity" )
+			{
+				EntityDefinition* entityDef = EntityDefinition::GetEntityDefinition( name );
+				if ( entityDef == nullptr )
+				{
+					g_devConsole->PrintError( Stringf( "Unexpected entity '%s' defined in map '%s'", name.c_str(), m_name.c_str() ) );
+					continue;
+				}
+
+				Entity* newEntity = nullptr;
+				if ( entityDef->GetType() == "cursor" )
+				{
+					newEntity = new Cursor( pos, entityDef );
+				}
+
+				m_entities.push_back( newEntity );
+			}*/
 
 			entityElem = entityElem->NextSiblingElement();
 		}

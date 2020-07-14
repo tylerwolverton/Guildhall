@@ -91,6 +91,9 @@
     <ClCompile Include="PortalDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Cursor.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -168,6 +171,9 @@
     <ClInclude Include="PortalDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Cursor.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">
@@ -189,6 +195,9 @@
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\PortalDefs.xml">
+      <Filter>Data\Gameplay</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\EntityDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
   </ItemGroup>

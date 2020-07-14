@@ -1,0 +1,10 @@
+<EntityDefinitions>
+
+	<EntityDefinition name="Cursor" type="cursor">
+		<Size physicsRadius="0.0" localDrawBounds="-0.25,-.25,0.25,.25"/>
+    <SpriteAnimSet spriteSheet="Cursor.png" spriteSheetName="Cursor" spriteLayout="4,1" fps="2">
+      <SpriteAnim name="Idle"		spriteIndexes="0,1" fps="2"/>
+    </SpriteAnimSet>
+	</EntityDefinition>
+ 
+</EntityDefinitions>

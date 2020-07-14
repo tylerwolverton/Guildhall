@@ -7,6 +7,7 @@
 class Clock;
 class Map;
 class Actor;
+class Cursor;
 class Entity;
 
 //-----------------------------------------------------------------------------------------------
@@ -21,7 +22,7 @@ public:
 	void DebugRender() const;
 
 	void LoadMap( const std::string& mapName );
-	void ChangeMap( const std::string& mapName, Actor* player );
+	void ChangeMap( const std::string& mapName, Actor* player, Cursor* cursor );
 
 	void ReloadMaps();
 	void UnloadCurrentMap();

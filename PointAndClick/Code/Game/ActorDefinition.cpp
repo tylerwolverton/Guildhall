@@ -11,20 +11,6 @@ std::map< std::string, ActorDefinition* > ActorDefinition::s_definitions;
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteAnimDefinition* ActorDefinition::GetSpriteAnimDef( std::string animName )
-{
-	std::map< std::string, SpriteAnimDefinition* >::const_iterator  mapIter = m_spriteAnimSetDef->m_spriteAnimDefMapByName.find( animName );
-	
-	if ( mapIter == m_spriteAnimSetDef->m_spriteAnimDefMapByName.cend() )
-	{
-		return nullptr;
-	}
-
-	return mapIter->second;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 ActorDefinition* ActorDefinition::GetActorDefinition( std::string actorName )
 {
 	std::map< std::string, ActorDefinition* >::const_iterator  mapIter = ActorDefinition::s_definitions.find( actorName );
@@ -51,12 +37,6 @@ ActorDefinition::ActorDefinition( const XmlElement& actorDefElem )
 			m_canWalk = true;
 			m_walkSpeed = ParseXmlAttribute( *walkElement, "speed", m_walkSpeed );
 		}
-	}
-
-	const XmlElement* spriteAnimSetElement = actorDefElem.FirstChildElement( "SpriteAnimSet" );
-	if ( spriteAnimSetElement != nullptr )
-	{
-		m_spriteAnimSetDef = new SpriteAnimSetDefinition( *g_renderer, *spriteAnimSetElement );
 	}
 }
 

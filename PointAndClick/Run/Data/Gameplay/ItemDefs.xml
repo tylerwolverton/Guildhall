@@ -79,7 +79,7 @@
       <ActionEvent type="PickUp"/>
     </ActionEvents>
   </ItemDefinition>
-  
+
   <ItemDefinition name="Purple Tentacle">
     <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
     <ActionEvents>

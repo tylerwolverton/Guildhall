@@ -24,6 +24,7 @@
 
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
+#include "Game/Cursor.hpp"
 #include "Game/Item.hpp"
 #include "Game/Portal.hpp"
 #include "Game/World.hpp"
@@ -78,7 +79,7 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 	
-	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, false, true );
 
 	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 	BuildMenus();
@@ -109,8 +110,9 @@ void Game::Shutdown()
 
 	CleanupHUD();
 
-	// Cleanup player
+	// Cleanup player and cursor
 	PTR_SAFE_DELETE( m_player );
+	PTR_SAFE_DELETE( m_cursor );
 
 	// Clean up global sprite sheets
 	PTR_SAFE_DELETE( g_tileSpriteSheet );
@@ -222,6 +224,11 @@ void Game::Update()
 	UpdateMousePositions();
 
 	m_rootPanel->Update();
+
+	if ( m_cursor != nullptr )
+	{
+		m_cursor->Update( (float)m_gameClock->GetLastDeltaSeconds() );
+	}
 }
 
 
@@ -266,6 +273,11 @@ void Game::Render() const
 	if ( m_isDebugRendering )
 	{
 		m_rootPanel->DebugRender( g_renderer );
+	}
+
+	if ( m_cursor != nullptr )
+	{
+		m_cursor->Render();
 	}
 
 	g_renderer->EndCamera( *m_uiCamera );
@@ -335,6 +347,7 @@ void Game::LoadAssets()
 	g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/DebugRender.hlsl" );
 
 	LoadDialogueStatesFromXml();
+	LoadEntitiesFromXml();
 	LoadActorsFromXml();
 	LoadItemsFromXml();
 	LoadPortalsFromXml();
@@ -402,6 +415,39 @@ void Game::LoadMapsFromXml()
 	}
 
 	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadEntitiesFromXml()
+{
+	g_devConsole->PrintString( "Loading Entities..." );
+
+	const char* filePath = "Data/Gameplay/EntityDefs.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The entities xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	XmlElement* element = root->FirstChildElement();
+	while ( element )
+	{
+		EntityDefinition* entityDef = new EntityDefinition( *element );
+		EntityDefinition::s_definitions[entityDef->GetName()] = entityDef;
+		
+		if ( entityDef->GetName() == "Cursor" )
+		{
+			m_cursor = new Cursor( Vec2::ZERO, entityDef );
+		}
+
+		element = element->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "Entities Loaded", Rgba8::GREEN );
 }
 
 
@@ -851,7 +897,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 //-----------------------------------------------------------------------------------------------
 void Game::ChangeMap( const std::string& mapName )
 {
-	m_world->ChangeMap( mapName, m_player );
+	m_world->ChangeMap( mapName, m_player, m_cursor );
 }
 
 

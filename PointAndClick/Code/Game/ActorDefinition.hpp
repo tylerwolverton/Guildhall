@@ -23,7 +23,6 @@ public:
 	~ActorDefinition();
 
 	std::string GetName() { return m_name; }
-	SpriteAnimDefinition* GetSpriteAnimDef( std::string animName );
 
 	static ActorDefinition* GetActorDefinition( std::string actorName );
 	
@@ -34,6 +33,4 @@ private:
 	float m_walkSpeed = 0.f;
 	float m_flySpeed = 0.f;
 	float m_swimSpeed = 0.f;
-	
-	SpriteAnimSetDefinition* m_spriteAnimSetDef = nullptr;
 };

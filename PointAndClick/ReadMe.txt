@@ -11,11 +11,7 @@ Keyboard
 - WASD or Arrow keys move the player
 
 - Esc -> Exit game
-- F1 -> Toggle degub rendering for entities
-- F3 -> Toggle NoClip
-- F4 -> Toggle debug camera
-- F5 -> Reload existing map
-- F8 -> Restarts the game
+- F1 -> Toggle debub rendering for entities
 - ~ -> Open dev console
 
 Deep Learning

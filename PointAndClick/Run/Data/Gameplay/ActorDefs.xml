@@ -20,5 +20,5 @@
       <SpriteAnim name="Idle"				spriteIndexes="0" fps="3"/>
     </SpriteAnimSet>
 	</ActorDefinition>
-
+  
 </ActorDefinitions>

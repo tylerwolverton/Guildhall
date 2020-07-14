@@ -25,7 +25,6 @@ public:
 	~ItemDefinition();
 
 	std::string GetName() { return m_name; }
-	SpriteAnimDefinition* GetSpriteAnimDef( const std::string& animName );
 	NamedProperties* GetVerbEventProperties( eVerbState verbState );
 
 	static ItemDefinition* GetItemDefinition( const std::string& itemName );
@@ -34,7 +33,5 @@ public:
 	static std::map< std::string, ItemDefinition* > s_definitions;
 
 private:
-	SpriteAnimSetDefinition* m_spriteAnimSetDef = nullptr;
-
 	std::map<eVerbState, NamedProperties*> m_verbPropertiesMap;
 };
