@@ -339,9 +339,7 @@ void Map::ResolveEntityVsPortalCollisions()
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity* const& entity = m_entities[entityIdx];
-		// Only allow player to use portals
-		if ( entity == nullptr
-			 || !entity->IsPossessed() )
+		if ( entity == nullptr )
 		{
 			continue;
 		}
@@ -349,14 +347,15 @@ void Map::ResolveEntityVsPortalCollisions()
 		for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
 		{
 			Portal* const& portal = m_portals[portalIdx];
-			if ( portal == nullptr )
+			if ( portal == nullptr 
+				 || entity->GetType() == eEntityType::PORTAL )
 			{
 				continue;
 			}
 
 			if ( DoDiscsOverlap( entity->GetPosition(), entity->GetPhysicsRadius(), portal->GetPosition(), portal->GetPhysicsRadius() ) )
 			{
-				WarpToNewMap( entity, portal );
+				WarpEntityInMap( entity, portal );
 			}
 		}
 	}
@@ -364,7 +363,7 @@ void Map::ResolveEntityVsPortalCollisions()
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::WarpToNewMap( Entity* entity, Portal* portal )
+void Map::WarpEntityInMap( Entity* entity, Portal* portal )
 {
 	g_game->WarpToMap( entity, portal->GetDestinationMap(), portal->GetDestinationPosition(), entity->GetOrientationDegrees() + portal->GetDestinationYawOffset() );
 }

@@ -56,7 +56,7 @@ protected:
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 	void ResolveEntityVsPortalCollisions();
 
-	void WarpToNewMap( Entity* entity, Portal* portal );
+	void WarpEntityInMap( Entity* entity, Portal* portal );
 
 	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 

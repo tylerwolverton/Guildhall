@@ -38,8 +38,8 @@
   ​
   <Portal name="Energy Teleporter">
     <Physics radius="0.18" height="0.62" eyeHeight="0.58" walkSpeed="0.0"/>
-    <Appearance size="1.5,1.5" billboard="CameraFacingXYZ" spriteSheet="Data/Images/TestAtlas_4x4.png" layout="4,4">
-      <Walk front="0,1,2,3"/>
+    <Appearance size="1,1" billboard="CameraFacingXYZ" spriteSheet="Data/Images/Terrain_8x8.png" layout="8,8">
+      <Walk front="57"/>
     </Appearance>
   </Portal>
   ​

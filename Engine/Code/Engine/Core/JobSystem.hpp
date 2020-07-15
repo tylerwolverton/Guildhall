@@ -1,6 +1,7 @@
 #pragma once
 #include <mutex>
 #include <thread>
+#include <atomic>
 #include <deque>
 #include <vector>
 
@@ -26,20 +27,21 @@ public:
 	JobSystemWorkerThread();
 	~JobSystemWorkerThread();
 
-	void Quit()						{ m_isQuitting = true; }
+	void Join();
 
 private:
 	void WorkerThreadMain();
 
 private:
 	std::thread* m_thread = nullptr;
-	bool m_isQuitting = false;
 };
 
 
 //-----------------------------------------------------------------------------------------------
 class JobSystem
 {
+	friend class JobSystemWorkerThread;
+
 public:
 	JobSystem() {}
 	~JobSystem();
@@ -49,9 +51,9 @@ public:
 	void EndFrame() {}
 	void Shutdown();
 
-	void CreateWorkerThread();
+	void CreateWorkerThreads( int numThreads );
 	
-	void PostJob( Job* job );
+	void QueueJob( Job* job );
 	void PostCompletedJob( Job* job );
 	void ClaimAndDeleteAllCompletedJobs();
 
@@ -63,8 +65,12 @@ private:
 private:
 	std::deque<Job*> m_queuedJobs;
 	std::mutex m_queuedJobsMutex;
+	std::deque<Job*> m_runningJobs;
+	std::mutex m_runningJobsMutex;
 	std::deque<Job*> m_completedJobs;
 	std::mutex m_completedJobsMutex;
 
 	std::vector<JobSystemWorkerThread*> m_workerThreads;
+
+	std::atomic<bool> m_isQuitting = false;
 };

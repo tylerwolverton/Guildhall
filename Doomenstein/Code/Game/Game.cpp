@@ -451,20 +451,12 @@ void Game::PossesNearestEntity()
 //-----------------------------------------------------------------------------------------------
 void Game::ThreadTester9000()
 {
-	g_jobSystem->CreateWorkerThread();
-	g_jobSystem->CreateWorkerThread();
-	//g_jobSystem->CreateWorkerThread();
-	//g_jobSystem->CreateWorkerThread();
+	g_jobSystem->CreateWorkerThreads( 12 );
 
-	TestJob* testJob1 = new TestJob();
-	TestJob* testJob2 = new TestJob();
-	TestJob* testJob3 = new TestJob();
-	TestJob* testJob4 = new TestJob();
-
-	g_jobSystem->PostJob( testJob1 );
-	g_jobSystem->PostJob( testJob2 );
-	g_jobSystem->PostJob( testJob3 );
-	g_jobSystem->PostJob( testJob4 );
+	for ( int i = 0; i < 20; i++ )
+	{
+		g_jobSystem->QueueJob( new TestJob() );
+	}
 }
 
 

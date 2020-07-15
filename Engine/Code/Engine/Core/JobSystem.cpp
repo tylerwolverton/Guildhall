@@ -30,15 +30,20 @@ JobSystemWorkerThread::JobSystemWorkerThread()
 //-----------------------------------------------------------------------------------------------
 JobSystemWorkerThread::~JobSystemWorkerThread()
 {
-	m_thread->join();
 	PTR_SAFE_DELETE( m_thread );
 }
 
 
 //-----------------------------------------------------------------------------------------------
+void JobSystemWorkerThread::Join()
+{
+	m_thread->join();
+}
+
+//-----------------------------------------------------------------------------------------------
 void JobSystemWorkerThread::WorkerThreadMain()
 {
-	while ( !m_isQuitting )
+	while ( !g_jobSystem->m_isQuitting )
 	{
 		Job* job = g_jobSystem->GetBestAvailableJob();
 		if ( job != nullptr )
@@ -48,7 +53,7 @@ void JobSystemWorkerThread::WorkerThreadMain()
 		}
 		else
 		{
-			std::this_thread::sleep_for( std::chrono::microseconds( 10 ) );
+			std::this_thread::sleep_for( std::chrono::microseconds( 50 ) );
 		}
 	}
 }
@@ -76,15 +81,20 @@ void JobSystem::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-void JobSystem::CreateWorkerThread()
+void JobSystem::CreateWorkerThreads( int numThreads )
 {
-	JobSystemWorkerThread* workerThread = new JobSystemWorkerThread();
-	m_workerThreads.emplace_back( workerThread );
+	m_workerThreads.reserve( numThreads );
+
+	for ( int threadNum = 0; threadNum < numThreads; ++threadNum )
+	{
+		JobSystemWorkerThread* workerThread = new JobSystemWorkerThread();
+		m_workerThreads.emplace_back( workerThread );
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void JobSystem::PostJob( Job* job )
+void JobSystem::QueueJob( Job* job )
 {
 	m_queuedJobsMutex.lock();
 	m_queuedJobs.push_back( job );
@@ -140,9 +150,10 @@ Job* JobSystem::GetBestAvailableJob()
 //-----------------------------------------------------------------------------------------------
 void JobSystem::StopAllThreads()
 {
+	m_isQuitting = true;
+
 	for ( int workerIdx = 0; workerIdx < (int)m_workerThreads.size(); ++workerIdx )
 	{
-		m_workerThreads[workerIdx]->Quit();
+		m_workerThreads[workerIdx]->Join();
 	}
 }
-
