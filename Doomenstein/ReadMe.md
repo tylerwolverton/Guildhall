@@ -18,3 +18,4 @@ Debug Commands
 ------
 Dev Console Commands
 set_mouse_sensitivity multiplier=NUMBER - change multiplier for mouse sensitivity
+warp map=desinationMapName pos=float,float yaw=float
