@@ -14,6 +14,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/ActorDefinition.hpp"
+#include "Game/Map.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -87,75 +88,20 @@ void Actor::Die()
 
 
 //-----------------------------------------------------------------------------------------------
-void Actor::UpdateFromKeyboard( float deltaSeconds )
+void Actor::ExecuteAction( const std::string& nounName )
 {
-	UNUSED( deltaSeconds );
-	
-	if ( g_inputSystem->WasKeyJustPressed( MOUSE_RBUTTON ) )
-	{
-		// Check if click was in hud
-		if ( g_game->GetMouseWorldPosition().y < 0.f )
-		{
-			return;
-		}
-
-		m_moveTargetLocation = g_game->GetMouseWorldPosition();
-	}
-	if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
-	{
-		// Check if click was in hud
-		if ( g_game->GetMouseWorldPosition().y < 0.f )
-		{
-			return;
-		}
-
-		if ( m_curVerbState == eVerbState::NONE )
-		{
-			m_moveTargetLocation = g_game->GetMouseWorldPosition();
-			return;
-		}
-
-		EventArgs args;
-		args.SetValue( "Type", (int)m_curVerbState );
-		args.SetValue( "Position", g_game->GetMouseWorldPosition() );
-		g_eventSystem->FireEvent( "VerbAction", &args );
-
-		m_curVerbState = eVerbState::NONE;
-		g_game->ClearCurrentActionText();
-	}
+	m_isExecutingAction = true;
+	m_targetNoun = nounName;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Actor::UpdateFromGamepad( float deltaSeconds )
+void Actor::StopExecutingAction()
 {
-	UNUSED( deltaSeconds );
-
-	// No controller assigned
-	if ( m_controllerID < 0 )
-	{
-		return;
-	}
-
-	// If controller isn't connected return early
-	const XboxController& controller = g_inputSystem->GetXboxController( m_controllerID );
-	if ( !controller.IsConnected() )
-	{
-		return;
-	}
-
-	if ( m_isDead )
-	{
-		return;
-	}
-
-	const AnalogJoystick& leftStick = controller.GetLeftJoyStick();
-	float leftStickMagnitude = leftStick.GetMagnitude();
-	if ( leftStickMagnitude > 0.f )
-	{
-		m_orientationDegrees = leftStick.GetDegrees();
-		m_velocity += leftStickMagnitude * m_actorDef->m_walkSpeed * GetForwardVector();
-	}
+	m_isExecutingAction = false;
+	m_targetNoun = "";
+	m_curVerbState = eVerbState::NONE;
+	g_game->ClearCurrentActionText();
 }
 
 
@@ -189,12 +135,34 @@ void Actor::UpdateAnimation()
 void Actor::MoveToTargetLocation()
 {
 	float distanceToLocation =  m_moveTargetLocation.x - m_position.x;
-	//float distanceToLocation = GetDistance2D( m_position, m_moveTargetLocation );
+
+	if ( m_isExecutingAction
+		 && m_map != nullptr 
+		 && m_curVerbState != eVerbState::NONE )
+	{
+		Entity* targetEntity = m_map->GetEntityByName( m_targetNoun );
+		if ( targetEntity != nullptr )
+		{
+			if ( DoDiscsOverlap( m_position, m_actorDef->m_physicsRadius, targetEntity->GetPosition(), targetEntity->GetPhysicsRadius() ) )
+			{
+				EventArgs args;
+				args.SetValue( "Type", (int)m_curVerbState );
+				args.SetValue( "Position", targetEntity->GetPosition() );
+				g_eventSystem->FireEvent( "VerbAction", &args );
+
+				m_curVerbState = eVerbState::NONE;
+				g_game->ClearCurrentActionText();
+
+				m_moveTargetLocation = m_position;
+				m_targetNoun = "";
+				m_isExecutingAction = false;
+			}
+		}
+	}
 
 	if ( fabsf(distanceToLocation) > 0.1f )
 	{
 		m_velocity.x = distanceToLocation / fabsf( distanceToLocation ) * m_actorDef->m_walkSpeed;
-		//m_velocity = GetNormalizedDirectionFromAToB( m_position, m_moveTargetLocation ) * m_actorDef->m_walkSpeed;
-		m_velocity.y = 0.f;
+		m_velocity.y = 0.f;	
 	}
 }

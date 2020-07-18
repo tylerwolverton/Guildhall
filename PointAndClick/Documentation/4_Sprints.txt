@@ -41,11 +41,12 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 10.2*       [O]         0.5                     11          Click to walk correctly walks to items when clicked on
 41          [/]         5                                   Polish and bugfix
 43          [O]         2                                   Context Sensitive verb selection
-44*         [O]         0.25                                Create cursor image
+44*         [X]         0.25        0.25                    Create cursor image
 45*         [O]         1                       3.3         Stackable items in inventory (and pickup multiples) 
 47*         [O]         1.5                                 Alternate solution to wooden arms puzzle 
 48*         [O]         0.25                                Context sensitive failure message for wooden arms 
   
+44.1*       [X]         0.75        1.25                    Add cursor entity
 
 Initial Total           10.5          
 Unexpected Task Total   

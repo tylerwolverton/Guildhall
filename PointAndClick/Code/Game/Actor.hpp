@@ -7,6 +7,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Map;
 class Texture;
 class ActorDefinition;
 class SpriteAnimDefinition;
@@ -25,23 +26,29 @@ public:
 	virtual void Die();
 
 	bool IsPlayer() const												{ return m_isPlayer; }
+	bool IsExecutingAction() const										{ return m_isExecutingAction; }
+	void ExecuteAction( const std::string& nounName );
+	void StopExecutingAction();
 
 	// Only ever called by Game
 	void SetPlayerVerbState( eVerbState verbState )						{ m_curVerbState = verbState; }
 	eVerbState GetPlayerVerbState() const								{ return m_curVerbState; }
 	void SetMoveTargetLocation( const Vec2& moveTarget )				{ m_moveTargetLocation = moveTarget; }
+	void SetMap( Map* map )												{ m_map = map; }
 
 private:
-	void UpdateFromKeyboard( float deltaSeconds );
-	void UpdateFromGamepad( float deltaSeconds );
 	void UpdateAnimation();
 
 	void MoveToTargetLocation();
 
 protected:
 	ActorDefinition*		m_actorDef = nullptr;
+	Map*					m_map = nullptr;
 	int						m_controllerID = -1;
 	bool					m_isPlayer = false;
+	bool					m_isExecutingAction = false;
+	std::string				m_targetNoun;
+	bool					m_moveStarted = false;
 	float					m_cumulativeTime = 0.f;
 	
 	float					m_wanderDirectionChangeCooldown = 0.f;

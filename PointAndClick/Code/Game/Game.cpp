@@ -609,19 +609,30 @@ void Game::UpdateFromKeyboard()
 					// Click was in world, consume all key presses for click
 					g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON );
 
-					if ( m_player->GetPlayerVerbState() == eVerbState::NONE )
+					if ( !m_player->IsExecutingAction() )
 					{
-						m_player->SetMoveTargetLocation( GetMouseWorldPosition() );
-						return;
+						if ( m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )
+						{
+							if ( m_giveTargetNounText != "" )
+							{
+								m_player->ExecuteAction( m_giveTargetNounText );
+							}
+							else
+							{
+								m_player->StopExecutingAction();
+							}
+						}
+						else if ( m_nounText != "" )
+						{
+							m_player->ExecuteAction( m_nounText );
+						}
 					}
-
-					EventArgs args;
-					args.SetValue( "Type", (int)m_player->GetPlayerVerbState() );
-					args.SetValue( "Position", GetMouseWorldPosition() );
-					g_eventSystem->FireEvent( "VerbAction", &args );
-
-					m_player->SetPlayerVerbState( eVerbState::NONE );
-					ClearCurrentActionText();
+					else
+					{
+						m_player->StopExecutingAction();
+					}
+					
+					m_player->SetMoveTargetLocation( GetMouseWorldPosition() );
 				}
 			}
 		}
@@ -1143,6 +1154,7 @@ void Game::OnVerbButtonClicked( EventArgs* args )
 	else if ( id == m_talkToVerbButton->GetId() ) { verbState = eVerbState::TALK_TO; }
 	else if ( id == m_giveVerbButton->GetId() ) { verbState = eVerbState::GIVE_TO_SOURCE; }
 
+	m_player->StopExecutingAction();
 	m_player->SetPlayerVerbState( verbState );
 	m_verbText = GetDisplayNameForVerbState( verbState );
 	m_nounText = "";
@@ -1196,6 +1208,11 @@ void Game::OnTestButtonClicked( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::OnInventoryItemHoverStay( EventArgs* args )
 {
+	if ( m_player->IsExecutingAction() )
+	{
+		return;
+	}
+
 	uint id = args->GetValue( "id", (uint)0 );
 
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
@@ -1274,7 +1291,8 @@ void Game::OnTestButtonHoverEnd( EventArgs* args )
 		{
 			itemButton->SetButtonTint( tint );
 
-			if ( m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )
+			if ( !m_player->IsExecutingAction()
+				&& m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )
 			{
 				m_giveTargetNounText = "";
 			}

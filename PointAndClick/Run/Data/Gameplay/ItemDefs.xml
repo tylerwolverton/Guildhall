@@ -71,7 +71,7 @@
   </ItemDefinition>
 
   <ItemDefinition name="Rock">
-    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.25,0.5,.25"/>
     <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
       <SpriteAnim name="Idle"		spriteIndexes="64"/>
     </SpriteAnimSet>

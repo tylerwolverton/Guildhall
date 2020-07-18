@@ -97,6 +97,11 @@ void Map::UpdateEntities( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Map::UpdateMouseHover()
 {
+	if ( ( (Actor*)m_player )->IsExecutingAction() )
+	{
+		return;
+	}
+
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity*& entity = m_entities[entityIdx];
@@ -285,6 +290,7 @@ void Map::Load( Entity* player, Cursor* cursor )
 	g_eventSystem->RegisterMethodEvent( OnGiveToDestinationVerbEventName, "", GAME, this, &Map::OnGiveToDestinationVerb );
 
 	m_player = player;
+	((Actor*)m_player)->SetMap( this );
 	m_entities.push_back( player );
 	m_entities.push_back( (Entity*)cursor );
 
