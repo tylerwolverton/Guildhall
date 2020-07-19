@@ -16,7 +16,9 @@
     <Choice text="Uhh, something with quarks and spooky long distance?" targetState="PurpleTentacle_backstory3" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition stateName="PurpleTentacle_backstory3" introText="I don't think you're ready"/>
+  <DialogueStateDefinition stateName="PurpleTentacle_backstory3" introText="I don't think you're ready">
+    <Choice text="In that case, what do you need?" targetState="PurpleTentacle_requirementsChoice1" />
+  </DialogueStateDefinition>
 
   <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice0" introText="Not being vaporized">
     <Choice text="In that case, what do you need?" targetState="PurpleTentacle_requirementsChoice1" />

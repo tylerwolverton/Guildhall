@@ -47,7 +47,7 @@ void BitmapFont::AppendVertsForText2D( std::vector<Vertex_PCU>& vertexArray, con
 void BitmapFont::AppendVertsAndIndicesForText2D( std::vector<Vertex_PCU>& vertexArray, std::vector<uint>& indexArray, const Vec2& textMins, float cellHeight, const std::string& text, const Rgba8& tint, float cellAspect )
 {
 	float cellWidth = cellHeight * cellAspect;
-	int indexNum = 0;
+	int indexNum = (int)vertexArray.size();
 	std::vector<uint> indices;
 	for ( int charIndex = 0; charIndex < text.length(); ++charIndex )
 	{

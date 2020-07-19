@@ -35,7 +35,11 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 10.2*       [X]         0.5         2           11          Click to walk correctly walks to items when clicked on
 48*         [X]         0.25        0.25                    Context sensitive failure message for wooden arms 
-
+41          [/]         5                                   Polish and bugfix
+41.7*       [X]                     0.25                    Polish: Menu button hover highlight
+41.8*       [X]                     0.25                    Polish: "Walk to" default verb in hud
+41.9*       [X]                     0.5                     Polish: Adjusted large table in bar background
+41.10*      [X]                     0.5                     Polish: Added black background to world text
 
 Total                               
 

@@ -123,7 +123,7 @@ void Map::UpdateMouseHover()
 								Vec2( .5f, .5f ),
 								Rgba8::WHITE,
 								0.f,
-								0.1f,
+								0.15f,
 								DEBUG_RENDER_ALWAYS,
 								entityName.c_str() );
 
@@ -291,6 +291,8 @@ void Map::Load( Entity* player, Cursor* cursor )
 
 	m_player = player;
 	((Actor*)m_player)->SetMap( this );
+	( (Actor*)m_player )->StopExecutingAction();
+
 	m_entities.push_back( player );
 	m_entities.push_back( (Entity*)cursor );
 

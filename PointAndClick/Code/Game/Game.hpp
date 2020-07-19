@@ -135,6 +135,8 @@ private:
 	void OnInventoryItemHoverStay( EventArgs* args );
 	void OnTestButtonHoverBegin( EventArgs* args );
 	void OnTestButtonHoverEnd( EventArgs* args );
+	void OnMenuButtonHoverBegin( EventArgs* args );
+	void OnMenuButtonHoverEnd( EventArgs* args );
 	void OnDialogueChoiceClicked( EventArgs* args );
 	void OnDialogueChoiceHoverBegin( EventArgs* args );
 	void OnDialogueChoiceHoverEnd( EventArgs* args );

@@ -969,6 +969,12 @@ void DebugAddWorldText( const Mat44& basis, const Vec2& pivot, const Rgba8& star
 	Vec2 textDimensions = font->GetDimensionsForText2D( textHeight, text );
 	Vec2 textMins = -pivot * textDimensions;
 
+	// BlackOutline
+	font->AppendVertsAndIndicesForText2D( vertices, indices, Vec2( textMins.x - .02f, textMins.y ), textHeight, text, Rgba8::BLACK );
+	font->AppendVertsAndIndicesForText2D( vertices, indices, Vec2( textMins.x + .02f, textMins.y ), textHeight, text, Rgba8::BLACK );
+	font->AppendVertsAndIndicesForText2D( vertices, indices, Vec2( textMins.x, textMins.y - .02f ), textHeight, text, Rgba8::BLACK );
+	font->AppendVertsAndIndicesForText2D( vertices, indices, Vec2( textMins.x, textMins.y + .02f ), textHeight, text, Rgba8::BLACK );
+	
 	font->AppendVertsAndIndicesForText2D( vertices, indices, textMins, textHeight, text, Rgba8::WHITE );
 
 	for ( int vertIdx = 0; vertIdx < (int)vertices.size(); ++vertIdx )

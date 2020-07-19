@@ -191,7 +191,7 @@ void Game::Update()
 
 			if ( m_verbText.empty() )
 			{
-				m_verbActionUIText->SetText( " " );
+				m_verbActionUIText->SetText( "Walk to " );
 			}
 			else
 			{
@@ -915,6 +915,11 @@ void Game::ChangeMap( const std::string& mapName )
 //-----------------------------------------------------------------------------------------------
 void Game::BuildMenus()
 {
+	Rgba8 tint = Rgba8::WHITE;
+	tint.r -= 30;
+	tint.g -= 30;
+	tint.b -= 30;
+
 	// Main Menu
 	m_mainMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
@@ -922,11 +927,17 @@ void Game::BuildMenus()
 
 	m_mainMenuPlayButton = m_mainMenuPanel->AddButton( Vec2( .45f, .15f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_mainMenuPlayButton->AddText( Vec2(.5f, 0.f), Vec2( 0.f, 1.f ), "Play" );
+	m_mainMenuPlayButton->SetButtonAndLabelTint( tint );
 	m_mainMenuPlayButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuPlayButtonClicked );
+	m_mainMenuPlayButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
+	m_mainMenuPlayButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_mainMenuExitButton = m_mainMenuPanel->AddButton( Vec2( .45f, .05f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_mainMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_mainMenuExitButton->SetButtonAndLabelTint( tint );
 	m_mainMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
+	m_mainMenuExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
+	m_mainMenuExitButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_mainMenuPanel->Deactivate();
 	m_mainMenuPanel->Hide();
@@ -939,11 +950,17 @@ void Game::BuildMenus()
 
 	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .3f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_pauseMenuResumeButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Resume" );
+	m_pauseMenuResumeButton->SetButtonAndLabelTint( tint );
 	m_pauseMenuResumeButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuResumeButtonClicked );
+	m_pauseMenuResumeButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
+	m_pauseMenuResumeButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .15f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_pauseMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_pauseMenuExitButton->SetButtonAndLabelTint( tint );
 	m_pauseMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
+	m_pauseMenuExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
+	m_pauseMenuExitButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 	
 	m_pauseMenuPanel->Deactivate();
 	m_pauseMenuPanel->Hide();
@@ -953,11 +970,17 @@ void Game::BuildMenus()
 	
 	m_victoryRetryButton = m_victoryPanel->AddButton( Vec2( .45f, .1f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_victoryRetryButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Retry" );
+	m_victoryRetryButton->SetButtonAndLabelTint( tint );
 	m_victoryRetryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
+	m_victoryRetryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
+	m_victoryRetryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_victoryExitButton = m_victoryPanel->AddButton( Vec2( .45f, .03f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_victoryExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_victoryExitButton->SetButtonAndLabelTint( tint );
 	m_victoryExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
+	m_victoryExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
+	m_victoryExitButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_victoryPanel->Deactivate();
 	m_victoryPanel->Hide();
@@ -1300,6 +1323,37 @@ void Game::OnTestButtonHoverEnd( EventArgs* args )
 			return;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnMenuButtonHoverBegin( EventArgs* args )
+{
+	UIButton* button = (UIButton*)args->GetValue( "button", ( void* )nullptr );
+	if ( button == nullptr )
+	{
+		return;
+	}
+	
+	button->SetButtonAndLabelTint( Rgba8::WHITE );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::OnMenuButtonHoverEnd( EventArgs* args )
+{
+	UIButton* button = (UIButton*)args->GetValue( "button", ( void* )nullptr );
+	if ( button == nullptr )
+	{
+		return;
+	}
+
+	Rgba8 tint = Rgba8::WHITE;
+	tint.r -= 30;
+	tint.g -= 30;
+	tint.b -= 30;
+
+	button->SetButtonAndLabelTint( tint );
 }
 
 
