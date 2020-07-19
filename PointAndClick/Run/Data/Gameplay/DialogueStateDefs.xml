@@ -101,7 +101,7 @@
     <Choice text="Nevermind" targetState="Cook_final" />
   </DialogueStateDefinition>
 
-  <DialogueStateDefinition stateName="Cook_choice2" introText="I lost my rocks in the forest, collect them all and you can have the arms">
+  <DialogueStateDefinition stateName="Cook_choice2" introText="I lost my rock in the forest, bring it back and you can have the arms">
     <Choice text="Alright, I think I can manage that" targetState="Cook_final2" />
     <Choice text="Nevermind" targetState="Cook_final" />
   </DialogueStateDefinition>

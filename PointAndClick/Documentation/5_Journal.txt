@@ -34,7 +34,8 @@ JOURNAL
 Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 -------------------------------------------------------------------------------
 10.2*       [X]         0.5         2           11          Click to walk correctly walks to items when clicked on
- 
+48*         [X]         0.25        0.25                    Context sensitive failure message for wooden arms 
+
 
 Total                               
 

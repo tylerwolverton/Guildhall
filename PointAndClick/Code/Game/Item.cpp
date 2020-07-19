@@ -127,7 +127,16 @@ void Item::HandleVerbAction( eVerbState verbState )
 
 	if( verbEventProperties == nullptr )
 	{
-		g_game->PrintTextOverPlayer( "Hmmm, that's not going to work" );
+		if ( m_itemDef->GetName() == "Wooden Arms"
+			 && verbState == eVerbState::PICKUP )
+		{
+			g_game->PrintTextOverPlayer( "I should ask the cook before taking that" );
+		}
+		else
+		{
+			g_game->PrintTextOverPlayer( "Hmmm, that's not going to work" );
+		}
+
 		g_game->ClearCurrentActionText();
 
 		return;
