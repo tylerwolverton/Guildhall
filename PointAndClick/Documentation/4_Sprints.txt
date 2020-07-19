@@ -52,10 +52,10 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
   
 44.1*       [X]         0.75        1.25                    Add cursor entity
 
-Initial Total           10.5          
-Unexpected Task Total   
+Initial Total           10.5        4  
+Unexpected Task Total   0.75        1.25
 
-Total                   10.5          
+Total                   10.5        5.25  
 
 
 ===============================================================================

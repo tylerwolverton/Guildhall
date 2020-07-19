@@ -41,7 +41,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 41.9*       [X]                     0.5                     Polish: Adjusted large table in bar background
 41.10*      [X]                     0.5                     Polish: Added black background to world text
 
-Total                               
+Total                               3.75
 
 -------------------------------------------------------------------------------
 Notes

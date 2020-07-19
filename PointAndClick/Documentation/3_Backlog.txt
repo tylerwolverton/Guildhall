@@ -54,7 +54,7 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 9           [X]         1.5         1           10          Add OnHover events to items in level and inventory that shows tooltip
 10          [X]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
 10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen
-10.2*       [O]         0.5                     11          Click to walk correctly walks to items when clicked on
+10.2*       [X]         0.5         2           11          Click to walk correctly walks to items when clicked on
 11          [X]         1           1.5         1           Create item game object and place in level
 11.1*       [X]         0.75        0.75        1           Create ItemDefinition and Item classes and hook up to LoadAssets
 12          [X]         1           1           1.1         Create inventory for player and enable adding and removing items
@@ -123,6 +123,10 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 41.4*       [X]         0.25        0.25                    Bugfixing (Fixed crashes on unused debug hotkeys)
 41.5*       [X]         1           0.5                     Bugfix: Render all other foreground objects on top of characters 
 41.6*       [X]         0.25        0.25                    Bugfix: Don't give an item in dialogue if player already has it   
+41.7*       [X]                     0.25                    Polish: Menu button hover highlight
+41.8*       [X]                     0.25                    Polish: "Walk to" default verb in hud
+41.9*       [X]                     0.5                     Polish: Adjusted large table in bar background
+41.10*      [X]                     0.5                     Polish: Added black background to world text
 42          [X]         2           0.5                     Add opening dialogue sequence
 43          [O]         3                                   Context Sensitive verb selection
 44*         [X]         0.25        0.25                    Create cursor image
@@ -130,8 +134,8 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 45*         [O]         1                       3.3         Stackable items in inventory (and pickup multiples) 
 46*         [X]         1           0.5                     Add a way to specify failure text for certain actions 
 47*         [O]         1.5                                 Alternate solution to wooden arms puzzle 
-48*         [O]         0.25                                Context sensitive failure message for wooden arms 
+48*         [X]         0.25        0.25                    Context sensitive failure message for wooden arms 
 
-Initial Total           80          46 
-Extra tasks              9.25       12.75
-Total                   88.5        58.75 
+Initial Total           80          48 
+Extra tasks              9.25       15
+Total                   88.5        63 
