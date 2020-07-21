@@ -136,6 +136,6 @@ Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
 47*         [O]         1.5                                 Alternate solution to wooden arms puzzle 
 48*         [X]         0.25        0.25                    Context sensitive failure message for wooden arms 
 
-Initial Total           80          48 
-Extra tasks              9.25       15
-Total                   88.5        63 
+Initial Total           80           48 
+Extra tasks             15.75        16.75
+Total                   95.75        64.75

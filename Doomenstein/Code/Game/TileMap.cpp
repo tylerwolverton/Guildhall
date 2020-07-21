@@ -472,32 +472,42 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 			continue;
 		}
 
-		Vec2 displacementFromStartToCenterOfDisc = entity->m_position - startPos.XY();
+		// i and j in terms of the forward vector's space
 		Vec2 iBasis = forwardNormal.XY().GetNormalized();
 		Vec2 jBasis = iBasis.GetRotated90Degrees();
 
+		// Project disc into forward vector's space
+		Vec2 displacementFromStartToCenterOfDisc = entity->m_position - startPos.XY();
 		Vec2 posOfCircleCenterAlongRay( DotProduct2D( iBasis, displacementFromStartToCenterOfDisc ), DotProduct2D( jBasis, displacementFromStartToCenterOfDisc ) );
 
+		// TODO: Account for y out of reasonable area also
 		if ( maxDist < posOfCircleCenterAlongRay.x - entity->GetPhysicsRadius()
 			 || posOfCircleCenterAlongRay.x + entity->GetPhysicsRadius() < 0.f )
 		{
 			continue;
 		}
 
+		// Use pythagorean theorum where 
+		// b = side of triangle made by disc center to closest point on line
+		// c = hypoteneuse of triangle made by disc radius
+		// a = side from nearest point on line to disc center to intersection point
 		float bSquared = posOfCircleCenterAlongRay.y * posOfCircleCenterAlongRay.y;
 		float cSquared = entity->GetPhysicsRadius() * entity->GetPhysicsRadius();
 		float aSquared = cSquared - bSquared;
 
 		FloatRange dOverlap;
+		// Did not overlap
 		if ( aSquared < 0.f )
 		{
 			continue;
 		}
+		// Touching the edge, only 1 intersection point
 		else if ( IsNearlyEqual( aSquared, 0.f ) )
 		{
 			dOverlap.min = posOfCircleCenterAlongRay.x;
 			dOverlap.max = posOfCircleCenterAlongRay.x;
 		}
+		// Forard vector has 2 intersection points with disc
 		else
 		{
 			float a = sqrtf( aSquared );
@@ -505,6 +515,7 @@ RaycastResult TileMap::RaycastAgainstEntitiesFast( const Vec3& startPos, const V
 			dOverlap.max = posOfCircleCenterAlongRay.x + a;
 		}
 		
+		// If the min intersection point is behind the start of the forward vector, clamp it to vector start
 		dOverlap.min = ClampMin( dOverlap.min, 0.f );
 
 		// Project XY along the XYZ forward to see how far along it went
