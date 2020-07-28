@@ -24,6 +24,8 @@ void BitmapFont::AppendVertsForText2D( std::vector<Vertex_PCU>& vertexArray, con
 {
 	float cellWidth = cellHeight * cellAspect;
 
+	vertexArray.reserve( vertexArray.size() + text.length() * 6 );
+
 	for( int charIndex = 0; charIndex < text.length(); ++charIndex )
 	{
 		Vec2 charMins( textMins.x + ( charIndex * cellWidth ), textMins.y );

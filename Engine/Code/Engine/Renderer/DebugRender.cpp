@@ -140,76 +140,39 @@ DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, c
 
 //-----------------------------------------------------------------------------------------------
 DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, const Vec3& origin, float duration )
-	: m_vertices( vertices )
-	, m_indices( indices )
-	, m_startColor( startColor )
-	, m_endColor( endColor )
-	, m_duration( duration )
-	, m_origin( origin )
+	: DebugRenderObject( vertices, startColor, endColor, duration )
 {
-	m_timer.m_clock = s_debugRenderContext->GetClock();
-	if ( m_timer.m_clock == nullptr )
-	{
-		m_timer.m_clock = Clock::GetMaster();
-	}
-
-	m_timer.SetSeconds( m_duration );
-	m_timer.Reset();
-
-	startColor.GetAsFloatArray( m_materialData.startTint );
-	endColor.GetAsFloatArray( m_materialData.endTint );
+	m_indices = indices;
+	m_origin = origin;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const std::vector<uint>& indices, const Rgba8& startColor, const Rgba8& endColor, float duration )
-	: m_vertices( vertices )
-	, m_indices( indices )
-	, m_startColor( startColor )
-	, m_endColor( endColor )
-	, m_duration( duration )
+	: DebugRenderObject( vertices, startColor, endColor, duration )
 {
-	m_timer.m_clock = s_debugRenderContext->GetClock();
-	if ( m_timer.m_clock == nullptr )
-	{
-		m_timer.m_clock = Clock::GetMaster();
-	}
-
-	m_timer.SetSeconds( m_duration );
-	m_timer.Reset();
-
-	startColor.GetAsFloatArray( m_materialData.startTint );
-	endColor.GetAsFloatArray( m_materialData.endTint );
+	m_indices = indices;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 DebugRenderObject::DebugRenderObject( const std::vector<Vertex_PCU>& vertices, const Rgba8& startColor, const Rgba8& endColor, Texture* texture, float duration )
-	: m_vertices( vertices )
-	, m_startColor( startColor )
-	, m_endColor( endColor )
-	, m_duration( duration )
-	, m_texture( texture )
+	: DebugRenderObject( vertices, startColor, endColor, duration )
 {
-	m_timer.m_clock = s_debugRenderContext->GetClock();
-	if ( m_timer.m_clock == nullptr )
-	{
-		m_timer.m_clock = Clock::GetMaster();
-	}
-
-	m_timer.SetSeconds( m_duration );
-	m_timer.Reset();
-
-	startColor.GetAsFloatArray( m_materialData.startTint );
-	endColor.GetAsFloatArray( m_materialData.endTint );
+	m_texture = texture;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 static void AppendDebugObjectToVertexArrayAndLerpTint( std::vector<Vertex_PCU>& vertices, std::vector<uint>& indices, DebugRenderObject* obj )
 {
+	// Save off initial vert count to use as offset for indices
+	int oldVertexCount = (int)vertices.size();
+
 	// Update color based on age
 	std::vector<Vertex_PCU> objVerts = obj->GetVertices();
+	vertices.reserve( vertices.size() + objVerts.size() );
+
 	for ( int vertIdx = 0; vertIdx < (int)objVerts.size(); ++vertIdx )
 	{
 		Vertex_PCU vertex = objVerts[vertIdx];
@@ -219,7 +182,11 @@ static void AppendDebugObjectToVertexArrayAndLerpTint( std::vector<Vertex_PCU>& 
 		vertices.push_back( vertex );
 	}
 
-	indices.insert( indices.end(), obj->m_indices.begin(), obj->m_indices.end() );
+	indices.reserve( indices.size() + obj->m_indices.size() );
+	for ( int indexIdx = 0; indexIdx < (int)obj->m_indices.size(); ++indexIdx )
+	{
+		indices.push_back( obj->m_indices[indexIdx] + oldVertexCount );
+	}
 }
 
 

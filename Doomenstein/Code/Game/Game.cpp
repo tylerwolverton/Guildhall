@@ -89,9 +89,7 @@ void Game::Startup()
 
 	InitializeCameras();
 	InitializeMeshes();
-
-	ThreadTester9000();
-
+	
 	LoadAssets();
 
 	BuildUIHud();
@@ -444,18 +442,6 @@ void Game::PossesNearestEntity()
 		m_worldCamera->SetPitchRollYawOrientationDegrees( 0.f, 0.f, m_player->GetOrientationDegrees() );
 
 		m_player->Possess();
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::ThreadTester9000()
-{
-	g_jobSystem->CreateWorkerThreads( 12 );
-
-	for ( int i = 0; i < 20; i++ )
-	{
-		g_jobSystem->QueueJob( new TestJob() );
 	}
 }
 

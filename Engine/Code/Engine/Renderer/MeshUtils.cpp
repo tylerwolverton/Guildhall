@@ -761,6 +761,7 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 	Mat44 lookAt = MakeLookAtMatrix( p0, p1 );
 
 	std::vector<Vec3> localDiscPoints;
+	localDiscPoints.reserve( numSides );
 
 	const float degreesPerSide = 360.f / numSides;
 	float currentDegrees = 0.f;
@@ -773,6 +774,8 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 	}
 
 	uint numLocalDiscPoints = (uint)localDiscPoints.size();
+	vertexArray.reserve( vertexArray.size() + ( 2 * localDiscPoints.size() ) );
+
 	for ( uint pointIdx = 0; pointIdx < numLocalDiscPoints; ++pointIdx )
 	{
 		Vec3 startPoint = p0 + localDiscPoints[pointIdx] * radius1;
@@ -784,6 +787,9 @@ void AppendVertsAndIndicesForCylinderMesh( std::vector<Vertex_PCU>& vertexArray,
 		Vec3 endPoint = p1 + localDiscPoints[pointIdx] * radius2;
 		vertexArray.push_back( Vertex_PCU( endPoint, endTint, uvAtMins ) );
 	}
+
+	// 6 indices for each vertex
+	indices.reserve( indices.size() + ( ( localDiscPoints.size() + 1 ) * 6 ) );
 
 	// Add indices for center
 	for ( uint vertexNum = 0; vertexNum < numLocalDiscPoints; ++vertexNum )
