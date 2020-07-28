@@ -73,10 +73,10 @@ public:
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
-	void		AddItemToInventory( Item* newItem );
-	void		RemoveItemFromInventory( Item* itemToRemove );
+	void		AddItemToInventory( Entity* newItem );
+	void		RemoveItemFromInventory( Entity* itemToRemove );
 	void		RemoveItemFromInventory( const std::string& itemName );
-	bool		IsItemInInventory( Item* item );
+	bool		IsItemInInventory( Entity* item );
 	bool		IsItemInInventory( const std::string& itemName );
 	
 	void		SetPlayer( Actor* player )												{ m_player = player; }
@@ -106,7 +106,6 @@ private:
 	void LoadMapsFromXml();
 	void LoadEntitiesFromXml();
 	void LoadActorsFromXml();
-	void LoadItemsFromXml();
 	void LoadPortalsFromXml();
 
 	void UpdateFromKeyboard();
@@ -184,7 +183,7 @@ private:
 	UIButton* m_talkToVerbButton = nullptr;
 
 	std::vector<UIButton*> m_inventoryButtons;
-	std::vector<Item*> m_inventory;
+	std::vector<Entity*> m_inventory;
 
 	Timer m_dialogueTimer;
 	DialogueState* m_curDialogueState = nullptr;

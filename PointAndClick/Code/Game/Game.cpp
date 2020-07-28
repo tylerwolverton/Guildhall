@@ -25,14 +25,12 @@
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Cursor.hpp"
-#include "Game/Item.hpp"
 #include "Game/Portal.hpp"
 #include "Game/World.hpp"
 #include "Game/DialogueState.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
-#include "Game/ItemDefinition.hpp"
 #include "Game/PortalDefinition.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UIPanel.hpp"
@@ -317,7 +315,6 @@ void Game::ResetGame()
 	m_world->UnloadCurrentMap();
 	//m_world->ReloadMaps();
 	LoadActorsFromXml();
-	LoadItemsFromXml();
 	LoadPortalsFromXml();
 	LoadMapsFromXml();
 
@@ -349,7 +346,6 @@ void Game::LoadAssets()
 	LoadDialogueStatesFromXml();
 	LoadEntitiesFromXml();
 	LoadActorsFromXml();
-	LoadItemsFromXml();
 	LoadPortalsFromXml();
 	LoadMapsFromXml();
 
@@ -481,34 +477,6 @@ void Game::LoadActorsFromXml()
 	}
 
 	g_devConsole->PrintString( "Actors Loaded", Rgba8::GREEN );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadItemsFromXml()
-{
-	g_devConsole->PrintString( "Loading Items..." );
-
-	const char* filePath = "Data/Gameplay/ItemDefs.xml";
-
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The items xml file '%s' could not be opened.", filePath ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		ItemDefinition* itemDef = new ItemDefinition( *element );
-		ItemDefinition::s_definitions[itemDef->GetName()] = itemDef;
-
-		element = element->NextSiblingElement();
-	}
-
-	g_devConsole->PrintString( "Items Loaded", Rgba8::GREEN );
 }
 
 
@@ -1405,7 +1373,7 @@ void Game::OnDialogueChoiceHoverEnd( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::AddItemToInventory( Item* newItem )
+void Game::AddItemToInventory( Entity* newItem )
 {
 	NamedProperties* properties = new NamedProperties();
 	properties->SetValue( "eventName", GetEventNameForVerbState( eVerbState::GIVE_TO_SOURCE ) );
@@ -1419,7 +1387,7 @@ void Game::AddItemToInventory( Item* newItem )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::RemoveItemFromInventory( Item* itemToRemove )
+void Game::RemoveItemFromInventory( Entity* itemToRemove )
 {
 	int itemIdx = 0;
 	for ( ; itemIdx < (int)m_inventory.size(); ++itemIdx )
@@ -1464,7 +1432,7 @@ void Game::RemoveItemFromInventory( const std::string& itemName )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Game::IsItemInInventory( Item* item )
+bool Game::IsItemInInventory( Entity* item )
 {
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
@@ -1606,10 +1574,10 @@ void Game::ChangeDialogueState( DialogueState* newDialogueState )
 		}
 		else
 		{
-			ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( newDialogueState->GetItemName() );
+			EntityDefinition* itemDef = EntityDefinition::GetEntityDefinition( newDialogueState->GetItemName() );
 			if ( itemDef != nullptr )
 			{
-				AddItemToInventory( new Item( Vec2::ZERO, itemDef ) );
+				AddItemToInventory( new Entity( Vec2::ZERO, itemDef ) );
 			}
 		}
 	}

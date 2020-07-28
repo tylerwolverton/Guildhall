@@ -1,10 +1,14 @@
 #include "Game/EntityDefinition.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/NamedProperties.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
+#include "Engine/Renderer/Texture.hpp"
 #include "Game/GameCommon.hpp"
 
 
@@ -19,7 +23,6 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 	GUARANTEE_OR_DIE( m_name != "", "Entity did not have a name attribute" );
 
 	m_type = ParseXmlAttribute( entityDefElem, "type", m_type );
-	m_faction = ParseXmlAttribute( entityDefElem, "faction", m_faction );
 
 	const XmlElement* sizeElement = entityDefElem.FirstChildElement( "Size" );
 	if(sizeElement != nullptr)
@@ -41,13 +44,83 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 	{
 		m_spriteAnimSetDef = new SpriteAnimSetDefinition( *g_renderer, *spriteAnimSetElement );
 	}
+
+	ParseActionEventsFromXml( entityDefElem );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void EntityDefinition::ParseActionEventsFromXml( const XmlElement& entityDefElem )
+{
+	const XmlElement* actionEventsElem = entityDefElem.FirstChildElement( "ActionEvents" );
+	if ( actionEventsElem == nullptr )
+	{
+		return;
+	}
+
+	const XmlElement* actionEventElem = actionEventsElem->FirstChildElement( "ActionEvent" );
+	while ( actionEventElem != nullptr )
+	{
+		std::string type = ParseXmlAttribute( *actionEventElem, "type", "" );
+		if ( type == "" )
+		{
+			g_devConsole->PrintError( Stringf( "Item '%s': Missing type attribute for ActionEvent node" ) );
+
+			actionEventElem = actionEventsElem->NextSiblingElement();
+			continue;
+		}
+
+		Texture* texture = nullptr;
+		std::string texturePathStr = ParseXmlAttribute( *actionEventElem, "texturePath", "" );
+		if ( texturePathStr != "" )
+		{
+			texture = g_renderer->CreateOrGetTextureFromFile( texturePathStr.c_str() );
+		}
+
+		std::string initialDialogueState = ParseXmlAttribute( *actionEventElem, "initialDialogueState", "" );
+		std::string requiredItemName = ParseXmlAttribute( *actionEventElem, "requiredItem", "" );
+		std::string acceptedItemName = ParseXmlAttribute( *actionEventElem, "acceptedItem", "" );
+		std::string receivedItemmName = ParseXmlAttribute( *actionEventElem, "receivedItem", "" );
+		std::string text = ParseXmlAttribute( *actionEventElem, "text", "" );
+		std::string failText = ParseXmlAttribute( *actionEventElem, "failText", "" );
+
+		NamedProperties* properties = new NamedProperties();
+
+		eVerbState verbState = GetVerbStateFromString( type );
+		properties->SetValue( "eventName", GetEventNameForVerbState( verbState ) );
+		properties->SetValue( "texture", (void*)texture );
+		properties->SetValue( "initialDialogueState", initialDialogueState );
+		properties->SetValue( "requiredItem", requiredItemName );
+		properties->SetValue( "acceptedItem", acceptedItemName );
+		properties->SetValue( "receivedItem", receivedItemmName );
+		properties->SetValue( "text", text );
+		properties->SetValue( "failText", failText );
+
+		m_verbPropertiesMap[verbState] = properties;
+
+		actionEventElem = actionEventElem->NextSiblingElement();
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 EntityDefinition::~EntityDefinition()
 {
+	PTR_MAP_SAFE_DELETE( m_verbPropertiesMap );
 	PTR_SAFE_DELETE( m_spriteAnimSetDef );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+NamedProperties* EntityDefinition::GetVerbEventProperties( eVerbState verbState )
+{
+	auto iter = m_verbPropertiesMap.find( verbState );
+	if ( iter == m_verbPropertiesMap.end() )
+	{
+		return nullptr;
+	}
+
+	return iter->second;
 }
 
 
@@ -82,4 +155,3 @@ EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName 
 
 	return mapIter->second;
 }
-

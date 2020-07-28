@@ -6,9 +6,11 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class NamedProperties;
 class SpriteSheet;
 class SpriteAnimDefinition;
 class SpriteAnimSetDefinition;
+enum class eVerbState : int;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -24,14 +26,14 @@ public:
 	std::string GetName()											{ return m_name; }
 	std::string GetType()											{ return m_type; }
 	void SetType( const std::string& type )							{ m_type = type; }
-	std::string GetFaction()										{ return m_faction; }
-	SpriteAnimDefinition* GetSpriteAnimDef( const std::string& animName );
 
-	bool CanWalk()													{ return m_canWalk; }
-	bool CanFly()													{ return m_canFly; }
-	bool CanSwim()													{ return m_canSwim; }
-	
+	NamedProperties* GetVerbEventProperties( eVerbState verbState );
+	SpriteAnimDefinition* GetSpriteAnimDef( const std::string& animName );
+		
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
+
+private:
+	void ParseActionEventsFromXml( const XmlElement& entityDefElem );
 
 public:
 	static std::map< std::string, EntityDefinition* > s_definitions;
@@ -39,7 +41,6 @@ public:
 protected:
 	std::string		m_name;
 	std::string		m_type;
-	std::string		m_faction;
 	float			m_physicsRadius = 0.f;
 	AABB2			m_localDrawBounds = AABB2::ONE_BY_ONE;
 	int			    m_drawOrder = 0;
@@ -49,8 +50,6 @@ protected:
 	SpriteAnimSetDefinition* m_spriteAnimSetDef = nullptr;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
 
-	bool			m_canWalk = false;
-	bool			m_canFly = false;
-	bool			m_canSwim = false;
-
+private:
+	std::map<eVerbState, NamedProperties*> m_verbPropertiesMap;
 };

@@ -6,5 +6,118 @@
       <SpriteAnim name="Idle"		spriteIndexes="0,1" fps="2"/>
     </SpriteAnimSet>
 	</EntityDefinition>
- 
+
+  <EntityDefinition name="Key" type="item">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="23"/>
+    </SpriteAnimSet>
+    <ActionEvents>
+      <ActionEvent type="PickUp"/>
+    </ActionEvents>
+  </EntityDefinition>
+
+  <EntityDefinition name="Red Herring" type="item">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="31"/>
+    </SpriteAnimSet>
+    <ActionEvents>
+      <ActionEvent type="PickUp"/>
+    </ActionEvents>
+  </EntityDefinition>
+
+  <EntityDefinition name="Door" type="item">
+    <Size physicsRadius="1" localDrawBounds="-1,-1,.9,1.5" zDepth=".1f"/>
+    <ActionEvents>
+      <ActionEvent type="Open" texturePath="Data/Images/SpriteSheets/OpenDoor.png"/>
+      <ActionEvent type="Close" texturePath="" />
+    </ActionEvents>
+  </EntityDefinition>
+
+  <EntityDefinition name="LeftTable" type="item">
+    <Size physicsRadius="0.0" localDrawBounds="-1.0,0.0,2.0,1.5" drawOrder="1"/>
+    <SpriteAnimSet spriteSheet="SCUMMBarLeftTable.png" spriteSheetName="SCUMMBarLeftTable" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+  <EntityDefinition name="MiddleTable" type="item">
+    <Size physicsRadius="0.0" localDrawBounds="-1.0,0.0,3.5,1.5" drawOrder="1"/>
+    <SpriteAnimSet spriteSheet="SCUMMBarMiddleTable.png" spriteSheetName="SCUMMBarMiddleTable" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+  <EntityDefinition name="BookStack1" type="item">
+    <Size physicsRadius="0.0" localDrawBounds="-1.0,-0.5,1.0,.25"/>
+    <SpriteAnimSet spriteSheet="BookStack1.png" spriteSheetName="BookStack1" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+  <EntityDefinition name="Thick Book of Maps" type="item">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems2_10x15.png" spriteSheetName="InventoryItems2" spriteLayout="10,15" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="45"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+    <EntityDefinition name="Wooden Arms" type="item">
+    <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="54"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+  <EntityDefinition name="Forest1Foreground" type="item">
+    <Size physicsRadius="0.0" localDrawBounds="-8.0,0.0,8.0,2.5" drawOrder="1"/>
+    <SpriteAnimSet spriteSheet="Forest1Foreground.png" spriteSheetName="Forest1Foreground" spriteLayout="1,1" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="0"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+  <EntityDefinition name="Rock" type="item">
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.25,0.5,.25"/>
+    <SpriteAnimSet spriteSheet="InventoryItems.png" spriteSheetName="InventoryItems" spriteLayout="14,6" fps="10">
+      <SpriteAnim name="Idle"		spriteIndexes="64"/>
+    </SpriteAnimSet>
+    <ActionEvents>
+      <ActionEvent type="PickUp"/>
+    </ActionEvents>
+  </EntityDefinition>
+
+  <EntityDefinition name="Purple Tentacle" type="item">
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
+    <ActionEvents>
+      <ActionEvent type="TalkTo" initialDialogueState="PurpleTentacle_initial" />
+      <ActionEvent type="GiveToDestination" acceptedItem="" failText="Talk to me when you have everything" />
+    </ActionEvents>
+    <SpriteAnimSet spriteSheet="PurpleTentacle_Idle.png" spriteSheetName="PurpleTentacle" spriteLayout="3,1" fps="10">
+      <SpriteAnim name="Idle"				spriteIndexes="0,1,2,1" fps="3"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+  <EntityDefinition name="Wally" type="item">
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,.833"/>
+    <ActionEvents>
+      <ActionEvent type="TalkTo" initialDialogueState="Wally_initial" />
+    </ActionEvents>
+    <SpriteAnimSet spriteSheet="Wally_13x6.png" spriteSheetName="Wally" spriteLayout="13,6" fps="10">
+      <SpriteAnim name="Idle"				spriteIndexes="0,1,2,1" fps="2"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+
+  <EntityDefinition name="Cook" type="item">
+    <Size physicsRadius="0.75" localDrawBounds="-0.75,-1.5,0.75,1.5 "/>
+    <ActionEvents>
+      <ActionEvent type="TalkTo" initialDialogueState="Cook_initial" />
+      <ActionEvent type="GiveToDestination" acceptedItem="Rock" receivedItem="Wooden Arms" text="Just what I needed, here are the arms" failText="I don't want that" />
+    </ActionEvents>
+    <SpriteAnimSet spriteSheet="Cook.png" spriteSheetName="Cook" spriteLayout="5,1" fps="10">
+      <SpriteAnim name="Idle"				    spriteIndexes="0,1" fps="1"/>
+      <SpriteAnim name="Sleeping"	      spriteIndexes="2"/>
+    </SpriteAnimSet>
+  </EntityDefinition>
+  
 </EntityDefinitions>

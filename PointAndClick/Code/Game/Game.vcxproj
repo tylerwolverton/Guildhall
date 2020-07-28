@@ -202,8 +202,6 @@
     <ClCompile Include="EntityDefinition.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCommon.cpp" />
-    <ClCompile Include="Item.cpp" />
-    <ClCompile Include="ItemDefinition.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapDefinition.cpp" />
@@ -211,7 +209,6 @@
     <ClCompile Include="PortalDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
-    <ClCompile Include="TriggerRegion.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIImage.cpp" />
@@ -231,15 +228,12 @@
     <ClInclude Include="EntityDefinition.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
-    <ClInclude Include="Item.hpp" />
-    <ClInclude Include="ItemDefinition.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="MapDefinition.hpp" />
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="PortalDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
-    <ClInclude Include="TriggerRegion.hpp" />
     <ClInclude Include="UIButton.hpp" />
     <ClInclude Include="UIElement.hpp" />
     <ClInclude Include="UIImage.hpp" />
@@ -253,10 +247,8 @@
     <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\DialogueStateDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\EntityDefs.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\PortalDefs.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

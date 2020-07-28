@@ -70,15 +70,6 @@
     <ClCompile Include="UIText.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="ItemDefinition.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Item.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="TriggerRegion.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="UIElement.cpp">
       <Filter>UI</Filter>
     </ClCompile>
@@ -150,15 +141,6 @@
     <ClInclude Include="UIPanel.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="ItemDefinition.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Item.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="TriggerRegion.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="UIElement.hpp">
       <Filter>UI</Filter>
     </ClInclude>
@@ -183,12 +165,6 @@
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml">
-      <Filter>Data\Gameplay</Filter>
-    </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml">
-      <Filter>Data\Gameplay</Filter>
-    </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\DialogueStateDefs.xml">

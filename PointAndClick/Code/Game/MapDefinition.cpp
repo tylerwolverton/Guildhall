@@ -8,10 +8,8 @@
 #include "Game/TileDefinition.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Cursor.hpp"
-#include "Game/Item.hpp"
 #include "Game/Portal.hpp"
 #include "Game/ActorDefinition.hpp"
-#include "Game/ItemDefinition.hpp"
 #include "Game/PortalDefinition.hpp"
 #include "Game/Map.hpp"
 
@@ -38,12 +36,12 @@ EntityVector MapDefinition::GetEntitiesInLevel()
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<Item*> MapDefinition::GetItemsInLevel()
+std::vector<Entity*> MapDefinition::GetItemsInLevel()
 {
-	std::vector<Item*> itemsInLevel;
+	std::vector<Entity*> itemsInLevel;
 	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
 	{
-		Item* const& item = m_items[itemIdx];
+		Entity* const& item = m_items[itemIdx];
 		if ( !item->IsInPlayerInventory() )
 		{
 			itemsInLevel.push_back( item );
@@ -129,16 +127,14 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 			}
 			else if ( type == "item" )
 			{
-				ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( name );
+				EntityDefinition* itemDef = EntityDefinition::GetEntityDefinition( name );
 				if ( itemDef == nullptr )
 				{
 					g_devConsole->PrintError( Stringf( "Unexpected item '%s' defined in map '%s'", name.c_str(), m_name.c_str() ) );
 					continue;
 				}
-				// TODO: When updating to entity only model, define this in entity definition
-				itemDef->SetType( "item" );
 
-				Item* newItem = new Item( pos, itemDef );
+				Entity* newItem = new Entity( pos, itemDef );
 
 				m_entities.push_back( newItem );
 				m_items.push_back( newItem );

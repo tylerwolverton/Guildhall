@@ -20,13 +20,10 @@
 #include "Game/DialogueState.hpp"
 #include "Game/World.hpp"
 #include "Game/Actor.hpp"
-#include "Game/Item.hpp"
 #include "Game/Portal.hpp"
-#include "Game/TriggerRegion.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Game/ActorDefinition.hpp"
-#include "Game/ItemDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -223,7 +220,7 @@ void Map::CenterCameraOnPlayer() const
 void Map::TiePortalToDoor()
 {
 	// Tie portal to forest to door state
-	Item* door = nullptr;
+	Entity* door = nullptr;
 	Portal* portalToForest = nullptr;
 	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
 	{
@@ -235,7 +232,7 @@ void Map::TiePortalToDoor()
 
 		if ( entity->GetName() == "Door" )
 		{
-			door = (Item*)entity;
+			door = entity;
 		}
 		else if ( entity->GetName() == "PortalToForest" )
 		{
@@ -405,7 +402,7 @@ void Map::OnVerbAction( EventArgs* args )
 
 	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
 	{
-		Item*& item = m_items[itemIdx];
+		Entity*& item = m_items[itemIdx];
 		if ( item == nullptr )
 		{
 			continue;
@@ -424,18 +421,13 @@ void Map::OnVerbAction( EventArgs* args )
 			item->HandleVerbAction( eVerbState( verbStateInt ) );
 		}
 	}
-
-	/*if ( args->GetValue( "Type", std::string( "" ) ) == std::string( "PickUp" ) )
-	{
-		PickUpItem( pos );
-	}*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Map::OnPickupVerb( EventArgs* args )
 {
-	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	Entity* targetItem = (Entity*)args->GetValue( "target", ( void* )nullptr );
 
 	if ( targetItem == nullptr )
 	{
@@ -452,7 +444,7 @@ void Map::OnPickupVerb( EventArgs* args )
 	// Remove from map since game now owns the item
 	for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
 	{
-		Item*& item = m_items[itemIdx];
+		Entity*& item = m_items[itemIdx];
 		if ( item == nullptr )
 		{
 			continue;
@@ -483,7 +475,7 @@ void Map::OnPickupVerb( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Map::OnOpenVerb( EventArgs* args )
 {
-	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	Entity* targetItem = (Entity*)args->GetValue( "target", ( void* )nullptr );
 	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 
 	if ( targetItem == nullptr )
@@ -517,7 +509,7 @@ void Map::OnOpenVerb( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Map::OnCloseVerb( EventArgs* args )
 {
-	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	Entity* targetItem = (Entity*)args->GetValue( "target", ( void* )nullptr );
 	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 
 	if ( targetItem == nullptr )
@@ -543,7 +535,7 @@ void Map::OnCloseVerb( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Map::OnTalkToVerb( EventArgs* args )
 {
-	Item* target = (Item*)args->GetValue( "target", ( void* )nullptr );
+	Entity* target = (Entity*)args->GetValue( "target", ( void* )nullptr );
 	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 
 	if ( target == nullptr )
@@ -565,7 +557,7 @@ void Map::OnTalkToVerb( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Map::OnGiveToSourceVerb( EventArgs* args )
 {
-	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	Entity* targetItem = (Entity*)args->GetValue( "target", ( void* )nullptr );
 
 	if ( targetItem == nullptr )
 	{
@@ -581,7 +573,7 @@ void Map::OnGiveToSourceVerb( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Map::OnGiveToDestinationVerb( EventArgs* args )
 {
-	Item* targetItem = (Item*)args->GetValue( "target", ( void* )nullptr );
+	Entity* targetItem = (Entity*)args->GetValue( "target", ( void* )nullptr );
 	NamedProperties* props = (NamedProperties*)args->GetValue( "properties", ( void* )nullptr );
 	
 	if ( targetItem == nullptr )
@@ -600,10 +592,10 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 		std::string receivedItemName = props->GetValue( "receivedItem", "" );
 		if ( receivedItemName != ""  )
 		{
-			ItemDefinition* itemDef = ItemDefinition::GetItemDefinition( receivedItemName );
+			EntityDefinition* itemDef = EntityDefinition::GetEntityDefinition( receivedItemName );
 			if ( itemDef != nullptr )
 			{
-				g_game->AddItemToInventory( new Item( Vec2::ZERO, itemDef ) );
+				g_game->AddItemToInventory( new Entity( Vec2::ZERO, itemDef ) );
 			}
 		}
 
@@ -615,7 +607,7 @@ void Map::OnGiveToDestinationVerb( EventArgs* args )
 		{
 			for ( int itemIdx = 0; itemIdx < (int)m_items.size(); ++itemIdx )
 			{
-				Item*& item = m_items[itemIdx];
+				Entity*& item = m_items[itemIdx];
 				if ( item == nullptr )
 				{
 					continue;

@@ -8,7 +8,6 @@
 
 //-----------------------------------------------------------------------------------------------
 class Map;
-class Item;
 class Portal;
 class Texture;
 
@@ -25,7 +24,7 @@ public:
 	std::string GetName() const												{ return m_name; }
 	Vec2 GetPlayerStartPos() const											{ return m_playerStartPos; }
 	EntityVector GetEntitiesInLevel();
-	std::vector<Item*> GetItemsInLevel();
+	std::vector<Entity*> GetItemsInLevel();
 	std::vector<Portal*> GetPortalsInLevel();
 
 	static MapDefinition* GetMapDefinition( std::string mapName );
@@ -41,7 +40,7 @@ private:
 	Vec2				 m_playerStartPos;
 
 	EntityVector		 m_entities;
-	std::vector<Item*>	 m_items;
+	std::vector<Entity*> m_items;
 	std::vector<Portal*> m_portals;
 
 	Texture*			 m_backgroundTexture = nullptr;

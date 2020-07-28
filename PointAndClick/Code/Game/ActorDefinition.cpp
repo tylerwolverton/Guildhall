@@ -34,7 +34,6 @@ ActorDefinition::ActorDefinition( const XmlElement& actorDefElem )
 		const XmlElement* walkElement = movementElement->FirstChildElement( "Walk" );
 		if ( walkElement != nullptr )
 		{
-			m_canWalk = true;
 			m_walkSpeed = ParseXmlAttribute( *walkElement, "speed", m_walkSpeed );
 		}
 	}

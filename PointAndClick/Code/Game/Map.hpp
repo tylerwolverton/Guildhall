@@ -14,7 +14,6 @@ class Cursor;
 class Item;
 class Portal;
 class MapDefinition;
-class TriggerRegion;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -82,9 +81,7 @@ private:
 	int					 m_height = 0;
 
 	EntityVector		 m_entities;
-	std::vector<Item*>	 m_items;
+	std::vector<Entity*> m_items;
 	std::vector<Portal*> m_portals;
 	Entity*				 m_player;
-
-	std::vector<TriggerRegion> m_triggerRegions;
 };

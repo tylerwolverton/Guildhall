@@ -11,6 +11,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class Texture;
+class SpriteDefinition;
 class SpriteAnimDefinition;
 class SpriteAnimSetDefinition;
 
@@ -47,13 +48,23 @@ public:
 
 	void		 TakeDamage( int damage );
 	void		 ApplyFriction();
-				 
-	bool		 CanWalk() const									{ return m_entityDef->CanWalk(); }
-	bool		 CanFly() const										{ return m_entityDef->CanFly(); }
-	bool		 CanSwim() const									{ return m_entityDef->CanSwim(); }
+
+	// Item functions
+	SpriteDefinition* GetSpriteDef() const;
+
+	void SetTexture( Texture* texture )								{ m_texture = texture; }
+	void Open()														{ m_isOpen = true; }
+	void Close()													{ m_isOpen = false; }
+	bool IsOpen() const												{ return m_isOpen; }
+	void AddVerbState( eVerbState verbState, NamedProperties* properties );
+	void RemoveVerbState( eVerbState verbState );
+
+	// Events
+	void HandleVerbAction( eVerbState verbState );
 
 protected:
 	void PopulateVertexes();
+	void UpdateAnimation();
 
 protected:
 	// Game state
@@ -62,6 +73,7 @@ protected:
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
 	bool					m_isInPlayerInventory = false;
+	bool					m_isOpen = false;
 
 	// Physics
 	Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity’s 2D(x, y) Cartesian origin / center location, in world space
@@ -72,6 +84,8 @@ protected:
 	
 	// Visual
 	std::vector<Vertex_PCU> m_vertexes;
+	float					m_cumulativeTime = 0.f;
+	SpriteAnimDefinition*	m_curAnimDef = nullptr;
 	Texture*				m_texture = nullptr;
 };
 
