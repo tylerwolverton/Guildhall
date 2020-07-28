@@ -1,0 +1,46 @@
+UI Research
+
+Unity
+https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/UICanvas.html
+- GameObject based with components
+- Canvas
+    - The Canvas is the area that all UI elements should be inside. The Canvas is a Game Object with a Canvas component on it, and all UI elements must be children of such a Canvas.
+    - Modes
+        - *Screen space - Overlay -> on top of all elements in scene
+        - Screen space - Camera -> always in front of camera
+        - World space -> object in world (diagetic UI)
+
+- Every element is given a rectangle transform with position, rotation, scale, width and height ( used to specify the dimensions of the rectangle )
+    - Tyler: I like the idea of giving every element an AABB2 and then the task becomes how to lay out those objects
+- Anchors, pivots and stuff applies more to a UI interface to edit the UI elements. I won't have that so no need to mess with that for now
+
+- Text
+    - It is possible to set the font, font style, font size and whether or not the text has rich text capability.
+    - There are options to set the alignment of the text, settings for horizontal and vertical overflow which control what happens if the text is larger 
+        than the width or height of the rectangle, and a Best Fit option that makes the text resize to fit the available space
+        - Tyler: Size to fit box sounds like the most reasonable thing to take from this, that way text can be sized via the bounding box instead of messing with cell height of the font
+
+- Image
+    - Set image into bounding rectangle
+        - *Simple - scales sprite equally
+            - Tyler: Scale sprite to bounding box, up to user to not make something gross
+        - Sliced - Divides sprites into 3x3 so only center is stretched
+        - Tiled - Sliced but center repeats
+        - Filled - Simple but with an amoutn filled ( health bar )
+
+- Interaction components
+    - Separate component that needs to be attached to a visual component
+        - Tyler: Could be used for invisible click region... ehhh maybe not. For something like level changing would need world objects. Could be used to overlap something that wouldn't fit inside rectangle though as fake button
+    - Button 
+        - Has OnClick event
+            - Tyler: Can use delegates to subscribe events to buttons
+    - Selectable base class of all interactables, handles transition
+        - Transition states for normal, highlighted, pressed and disabled.
+        - Button itself would hold alt sprites for each state and keep track of its state
+            - Tyler: My UI elements could keep track of state along with visibility and activeness
+
+
+Unreal
+- Font saved in text object along with size
+        
+    

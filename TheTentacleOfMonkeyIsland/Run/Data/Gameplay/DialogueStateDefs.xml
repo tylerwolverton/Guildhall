@@ -1,0 +1,119 @@
+<DialogueStateDefinitions>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_initial" introText="I crash landed here, can you help me leave?">
+    <Choice text="How did you get here?" targetState="PurpleTentacle_backstory1" />
+    <Choice text="What do you need?" targetState="PurpleTentacle_requirementsChoice1" />
+    <Choice text="What do I get out of it?" targetState="PurpleTentacle_requirementsChoice0" />
+    <Choice text="Nevermind, I'll keep wandering around" targetState="PurpleTentacle_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_backstory1" introText="An interdimensional quantum teleportation machine">
+    <Choice text="Cool! Can I try it out?" targetState="PurpleTentacle_backstory2" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_backstory2" introText="Do you know anything about quantum mechanics?">
+    <Choice text="My dad taught me how to change the brakes on my car, is it similar to that?" targetState="PurpleTentacle_backstory3" />
+    <Choice text="Uhh, something with quarks and spooky long distance?" targetState="PurpleTentacle_backstory3" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_backstory3" introText="I don't think you're ready">
+    <Choice text="In that case, what do you need?" targetState="PurpleTentacle_requirementsChoice1" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice0" introText="Not being vaporized">
+    <Choice text="In that case, what do you need?" targetState="PurpleTentacle_requirementsChoice1" />
+  </DialogueStateDefinition>
+  
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice1" introText="Something to sit on to reach the manual override controls">
+    <Choice text="Uh okay, what else?" targetState="PurpleTentacle_requirementsChoice2" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice2" introText="I need a device to use the controls">
+    <Choice text="Makes sense. Anything else?" targetState="PurpleTentacle_requirementsChoice4" />
+    <Choice text="Wait, how did you get here in the first place?" targetState="PurpleTentacle_requirementsChoice3" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice3" introText="Autopilot, of course">
+    <Choice text="Sounds like it was really effective..." targetState="PurpleTentacle_requirementsChoice3.5" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice3.5" introText="Hey, this is the first time it's failed me">
+    <Choice text="Sure, sure, what else do you need?" targetState="PurpleTentacle_requirementsChoice4" />
+  </DialogueStateDefinition>
+  
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice4" introText="Finally, I need something to eat during the journey">
+    <Choice text="No problem, I'll start investigating" targetState="PurpleTentacle_requirementsChoice5" />
+    <Choice text="How about calamari?" targetState="PurpleTentacle_requirementsChoice4.5" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice4.5" introText="Hmm, it has been awhile since I've vaporized something...">
+    <Choice text="On my way to get that stuff now" targetState="PurpleTentacle_requirementsChoice5" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_requirementsChoice5" introText="Thanks, I'll be here"/>
+
+  <DialogueStateDefinition stateName="PurpleTentacle_final" introText="See ya later"/>
+
+  <DialogueStateDefinition stateName="Wally_initial" introText="Make it quick, lots to do">
+    <Choice text="What are you reading about?" targetState="Wally_choice1" />
+    <Choice text="I'll come back later" targetState="Wally_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_choice1" introText="I'm compiling cartography data from around the world">
+    <Choice text="Cool can I help?" targetState="Wally_quiz1" />
+    <Choice text="Sounds boring, I'll leave you to it" targetState="Wally_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_quiz1" introText="What does a map's legend tell you?">
+    <Choice text="How to interpret the map's symbols" targetState="Wally_quiz2" />
+    <Choice text="The tale of how it was won from a group of ghost pirates" targetState="Wally_quizFail" />
+    <Choice text="The scale of map measurements to real distances" targetState="Wally_quizFail" />
+    <Choice text="Eh nevermind, I'll leave you to it" targetState="Wally_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_quiz2" introText="What does a relief map tell you?">
+    <Choice text="The location of all the bathrooms in an area" targetState="Wally_quizFail" />
+    <Choice text="Information about an area's climate" targetState="Wally_quizFail" />
+    <Choice text="Information about an area's elevation" targetState="Wally_quiz3" />
+    <Choice text="Eh nevermind, I'll leave you to it" targetState="Wally_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_quiz3" introText="How many tables are in this bar?">
+    <Choice text="7" targetState="Wally_quizFail" />
+    <Choice text="8" targetState="Wally_quizFinal" />
+    <Choice text="9" targetState="Wally_quizFail" />
+    <Choice text="Eh nevermind, I'll leave you to it" targetState="Wally_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_quizFinal" introText="Maybe you can help, take this">
+    <Item name="Thick Book of Maps" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Wally_quizFail" introText="Nope, come back when you know about maps"/>
+  <DialogueStateDefinition stateName="Wally_final" introText="*mumbling and pen scratching"/>
+
+  <DialogueStateDefinition stateName="Cook_initial" introText="Hello there">
+    <Choice text="Mind if I borrow those cool arms?" targetState="Cook_choice1" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_choice1" introText="I can't just give them away">
+    <Choice text="What do you want for them?" targetState="Cook_choice2" />
+    <Choice text="Aww, pretty please?" targetState="Cook_no" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_choice2" introText="I lost my rock in the forest, bring it back and you can have the arms">
+    <Choice text="Alright, I think I can manage that" targetState="Cook_final2" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_no" introText="Nope">
+    <Choice text="Fine, what do you want for them?" targetState="Cook_choice2" />
+    <Choice text="Nevermind" targetState="Cook_final" />
+  </DialogueStateDefinition>
+
+  <DialogueStateDefinition stateName="Cook_final" introText="Have a nice walk"/>
+  <DialogueStateDefinition stateName="Cook_final2" introText="Good luck!"/>
+
+</DialogueStateDefinitions>

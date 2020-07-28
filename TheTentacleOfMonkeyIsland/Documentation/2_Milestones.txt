@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------------
+Fields
+-------------------------------------------------------------------------------
+Feature Id 	The feature to be included on this milestone
+Description	Copied from the feature
+-------------------------------------------------------------------------------
+
+===============================================================================
+MILESTONES
+===============================================================================
+
+===============================================================================
+06/15/2020
+Milestone 1
+===============================================================================
+Feature Id 		Description
+-------------------------------------------------------------------------------
+1               Game - Player can move around map collecting items 
+1.1             Game - Clicking on test item adds to inventory
+3               Game - Player can find exit and win game once all required items are collected
+5               Graphics - Game world represented by large sprite taken from Monkey Island
+6               Game - Camera follows player, but doesn't go outside map
+8               UI - HUD showing player's verb actions and inventory, art and layout taken from Monkey Island
+8.1             UI - Inventory section contains buttons representing each item the player has, art taken from Monkey Island
+10              Game - Cursor controlled by mouse, can hover over game objects and inventory items, revealing what they are with text popup
+11              Game - Clicking in empty space of game world causes player to walk to nearest location on a 2D plane at a fixed speed
+21              UI - Victory screen displayed at end of game
+
+===============================================================================
+06/29/2020
+Milestone 2
+===============================================================================
+Feature Id 		Description
+-------------------------------------------------------------------------------
+2               Game - Player can talk with NPCs
+9               UI - Dialogue choices are shown in bottom section of HUD and can be clicked to select
+9.1             UI - Verbs and inventory are hidden from HUD when dialogue is shown
+14              Game - Clicking on "Talk to" then an NPC shows dialogue text object in world
+14.1            Game - While a character is talking, the player has no input for a few seconds to simulate a timed conversation
+14.2            UI - Cursor is hidden while in dialogue cutscene
+4               Game - Pickuppable items and interactable objects are present in game world, art taken from Monkey Island
+12              Game - Action system where clicking on a verb button, then clicking on a game object, NPC, or item triggers an event
+12.1            Game - Support Pick up, talk to, give, open, and close verbs
+12.2            Game - Invalid or incorrect actions will do nothing
+13              UI - Current action shown in HUD
+
+===============================================================================
+07/13/2020
+Milestone 3
+===============================================================================
+Feature Id 		Description
+-------------------------------------------------------------------------------
+7               Game - Player can travel between 2 maps by moving to the edge of a map and clicking in trigger area
+3.1             Game - One item found by talking with NPC
+3.2             Game - One item found by looking around level
+3.3             Game - One item found by giving another item to an NPC
+16              Graphics - Player character has walking animation, taken from Monkey Island
+17              Graphics - NPCs have idle animations, taken from Monkey Island    
+18              Audio - Background music plays in each map, taken from Monkey Island
+19              UI - Pause menu with Resume and Quit buttons
+20              Main menu with Start and Exit buttons
+20.1            Main menu background art taken from Monkey Island
+20.2            Main menu background music taken from Monkey Island
+21.1            UI - Victory screen has button to go back to main menu
+
+===============================================================================
+07/21/2020
+Final Deliverable
+===============================================================================
+Feature Id 		Description
+-------------------------------------------------------------------------------
+-			    Final polish and bug fixing

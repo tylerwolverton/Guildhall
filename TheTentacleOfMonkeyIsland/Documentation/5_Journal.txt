@@ -1,0 +1,451 @@
+-------------------------------------------------------------------------------
+Fields
+-------------------------------------------------------------------------------
+Task Id 	Unique id for sorting, searching, and grouping tasks
+Status 		Current status of this task, see legend
+Estimate 	Estimated time to complete this task, in hours
+Actual 		How much time was actually spent on this task, in hours
+Feature Id 	The feature corresponding to this task
+Description	Sufficient text to fully explain the work to be done
+-------------------------------------------------------------------------------
+Status Codes
+-------------------------------------------------------------------------------
+O Not Started
+/ In Progress
+X Complete
+< Sent to backlog
+> Carried to next sprint
+- Deleted
+-------------------------------------------------------------------------------
+Status Tags
+-------------------------------------------------------------------------------
+* Not originally planned
+! Highest priority
+
+
+===============================================================================
+JOURNAL
+===============================================================================
+
+===============================================================================
+07/18/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+10.2*       [X]         0.5         2           11          Click to walk correctly walks to items when clicked on
+48*         [X]         0.25        0.25                    Context sensitive failure message for wooden arms 
+41          [/]         5                                   Polish and bugfix
+41.7*       [X]                     0.25                    Polish: Menu button hover highlight
+41.8*       [X]                     0.25                    Polish: "Walk to" default verb in hud
+41.9*       [X]                     0.5                     Polish: Adjusted large table in bar background
+41.10*      [X]                     0.5                     Polish: Added black background to world text
+
+Total                               3.75
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+07/13/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+44*         [X]         0.25        0.25                    Create cursor image
+44.1*       [X]         0.75        1.25                    Add cursor entity
+ 
+
+Total                               1.5
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+07/06/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+30.1.1*     [X]         0.5         0           20          Finalize main menu button art 
+    Note: Done with 38.3
+38.3*       [X]         0.5         0.25        19          Finalize pause menu art
+27.0        [X]         1           0.75        7           Add trigger to switch to new map that can be hidden by locked door
+20.1*       [X]         1           0.75        12.1        Make sure door renders behind player and table 
+41.5*       [X]         1           0.5                     Bugfix: Render all other foreground objects on top of characters 
+42          [X]         2           0.5                     Add opening dialogue sequence
+41.6*       [X]         0.25        0.25                    Bugfix: Don't give an item in dialogue if player already has it    
+
+Total                               3
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+INSIGHT: Item interactions require a whole system, just going to hardcode it all for now to finish the game.
+
+===============================================================================
+07/06/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+33          [-]         0.5          N/A        3.2         Add one item hidden in the town
+    Note: The item will be the same as the one given through dialogue
+34          [X]         1.5          1          3.3         Add NPC who gives item when town item is given to them
+34.2*       [X]         1            0.5        3.3         Add give item to receive item  
+34.1        [X]         0.25         0.25       3.3         Write dialogue for NPC item giver
+35.1        [X]         0.75         0.5        3.1         Write dialogue for NPC dialogue tree
+31          [X]         1.5          0.75       3           Add a character/object that can be interacted with while holding all 3 items to win the game
+40          [X]         1            0.5        21          Add go back to main menu button on victory screen    
+40.1*       [X]         0.5          0.75       21          Create victory screen
+46*         [X]         1            0.5                    Add a way to specify failure text for certain actions  
+
+Total                                4.75
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+NEW_TASK: Make items stackable if I want a puzzle where you collect multiple rocks
+
+===============================================================================
+07/05/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+30          [X]         1            0.5        20          Add main menu map *(UI panel) 
+30.1        [X]         1            0.5        20          Add start and exit buttons to main menu 
+30.1.1*     [O]         0.5                     20          Finalize main menu button art 
+30.2        [X]         0.5          0          20          Implement behavior for start and exit buttons
+30.3        [X]         0.5          0.25       20.1        Add main menu background sprite 
+30.4        [X]         0.5          0          20.2        Add main menu background music 
+30.5        [X]         1            0.25       20.1        Add main menu title sprite 
+38          [X]         1            0.25       19          Add pause menu UI panel
+38.1        [X]         0.5          0.25       19          Add resume and quit to main menu buttons to pause menu
+38.2*       [X]         0.5          0.5        19          Add functionality to reset game state when returning to main menu
+38.3*       [O]         0.5                     19          Finalize pause menu art
+32          [X]         0.5          0          3.3         Add one item hidden in the forest
+32.1*       [X]         0.75         0.25       3.3         Clean up inventory sprites
+46*         [O]         0.5                     3.3         Add dialogue for when a character doesn't accept given item (changed to 46*)
+35          [X]         2            1.5        3.1         Add NPC with dialogue tree that gives item in one branch
+35.2*       [O]         1                       3.1         Only give item if player doesn't have it
+34          [/]         1.5          0.25       3.3         Add NPC who gives item when town item is given to them
+36          [X]         1.5          0.75       16          Add walking animation for player using XML 
+
+Total                                5.25
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+07/03/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+28          [X]         0.5         1           5           Attach level sprite to second map *(build sprite from tileset)
+27.0        [/]         1           1.75        7           Add trigger to switch to new map that can be hidden by locked door
+27.1*       [X]         0.5         0.5         7           Restructure map management to support switching back and forth
+14          [X]         1.5         0.25        1           Remove items from game map when they are collected (if picked up in one map and then revisited they aren't there) 
+
+
+
+Total                               3.5
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+INSIGHT: Probably should just hardcode item interactions to get the game done rather than try
+        to make a cool system to do it in data. Still good research opportunity for thesis though.
+
+
+===============================================================================
+06/28/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+41.1*       [X]                     0.25                    Bugfixing (Fixed leaving level with key)
+41.2*       [X]                     0.25                    Bugfixing (Added open/close locked states)
+
+Total                               0.5
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+06/24/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+41.0*       [X]                     0.25                    Bugfixing (text issues when hovering over objects or talking to NPCs)
+            [X]                     1                       Updated documentation and planned next milestone
+
+Total                               1.25
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+06/23/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+26          [X]         1           1.5         9           Implement dialogue tree state machine for conversations
+26.1*       [X]         1           0.75        9           Add item acquisition through dialogue
+41.3*       [X]         0           0                       Bugfixing (Don't lock cursor to game)
+21          [X]         1.5         1.25        12.1        Implement "Give to" verb with NPC that can be given item
+36          [/]         2           0.5         16          Add walking animation for player using XML 
+37          [X]         1           0.5         17          Add idle animation for NPCs using XML 
+
+Total                               4.5
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+06/22/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+17          [X]         2.5         0.5         12          Create state machine to handle actions 
+18          [X]         0.5         0.25        12.2        Implement incorrect action message 
+24          [X]         1           0.25        2, 14       Implement NPC that can be talked to 
+24.1        [X]         1           0.5         14.1, 14.2  Implement dialogue "cutscene" game state ( no input, hide cursor )
+25.1        [X]         1.5         1.75        9           Create clickable dialogue options in HUD 
+26          [/]         2           1           9           Implement dialogue tree state machine for conversations
+41.4*       [X]         0.25        0.25                    Bugfixing (Fixed crashes on unused debug hotkeys)
+
+Total                               4.5
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+06/20/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+16          [X]         1.5         1.25        4           Create a data-driven game object with event interface for each of the verbs 
+17          [/]         3           0.5         12          Create state machine to handle actions 
+10.1*       [X]         0.5         0.25        11          Restrict click to walk to upper section of screen
+23          [X]         1.5         1.25        13          Add current action section to HUD
+23.1*       [X]         0.5         0.5         13          Refactor UIPanel and UIButton into common class to use labels with panel too
+18          [/]         1           0.25        12.2        Implement incorrect action message 
+19          [-]         1                       12.1        Implement "Pick Up" verb 
+20          [X]         1.5         1           12.1        Implement "Open/Close" verb with door 
+
+Total                               5
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+Give is causing a lot of extra work, it needs a second state to handle the state where you have
+the first item selected and are trying to use it.
+
+NEW_TASK: Needed some sub tasks for UI I didn't consider
+
+===============================================================================
+06/18/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+16          [/]         3           1.5         4           Create a data-driven game object with event interface for each of the verbs 
+22          [X]         1.5         0.25        11          Implement "Walk to" action and make it the default action when clicked
+
+Total                               1.75
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+Walk to is no longer an actual verb button, the player just walks to the location clicked by default
+
+
+===============================================================================
+Milestone 1
+===============================================================================
+
+===============================================================================
+06/14/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+15          [X]         0.75        0.5         21          Add Victory map/UI panel      
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+Added some little polish touches for the milestone 1 final build
+
+
+===============================================================================
+06/09/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+9           [X]         1.5         1           10          Add OnHover events to items in level and inventory that shows tooltip
+   
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+
+===============================================================================
+06/09/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+11          [X]         0.5         0.25        1           Create item game object and place in level
+11.1*       [X]         0.75        0.75        1           Create ItemDefinition and Item classes and hook up to LoadAssets
+12          [X]         1           1           1.1         Create inventory for player and enable adding and removing items
+13          [X]         1.5         0.75        1.1         Implement click to collect item
+8           [X]         0.5         0.25        3           Add trigger/button to win game and transition to win state 
+5           [X]         1           0.75        3           Make win game trigger check that player has item   
+15          [/]         1           0.25        21          Add Victory map/UI panel    
+15.1*       [X]         1           1.5         21          Define entities in MapDefs    
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+NEW_TASK: Implement walk to then collect items when picking up
+
+===============================================================================
+06/08/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+7           [-]         1           0           6           Implement follow camera
+    - Note: Already implemented in Protogame, no changes needed
+10          [X]         0.5         0.5         11          Give player speed and walk to location clicked by cursor
+11          [/]         1           1.25        1           Create item game object and place in level
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+INSIGHT: Using protogame brought up a problem where I didn't support multiple sprite sheets
+         so that slowed me down adding an item.
+NEW_TASK: Restrict click to walk to upper section of screen
+
+
+===============================================================================
+06/06/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+0.1			[X]			0.25		0.5 		N/A			Download and organize sprites and music for project
+1.3         [X]        *0.5         0.5         8           Implement UI button with OnHover and OnClicked events
+6           [X]         2           0.75        5           Create map and place inside top panel
+6.1         [X]         0.5         0.25        5           Attach level sprite to first map
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+NEW_TASK: I couldn't find sprites for the cursor, so I'll need to make one of those myself
+
+===============================================================================
+06/05/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+1.4         [X]         0.75        0.75        8           Implement texture backgrounds and font foregrounds for buttons
+2           [X]         1           0.5         8           Build HUD layout
+3           [X]         1.5         0.75        8.1         Represent inventory items as buttons 
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+06/02/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+1.3         [/]         0.75        1           8           Implement UI button with OnHover and OnClicked events
+1.4         [/]         1           0.25        8           Implement texture backgrounds and font foregrounds for buttons
+2           [/]         1.5         0.5         8           Build HUD layout
+2.1         [X]         0.5         0           8           Add buttons for supported verbs
+    - Note: Completed and tracked with work for task 2
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+INSIGHT: The time to actually build the UI framework was less than I expected, 
+         but the time it took to design a usable interface that could easily construct a 
+         UI from game code took longer than anticipated. The times ended up cancelling out 
+         and the overall task took as long as I had anticipated, so I kinda got lucky with that one. 
+         Going top down and writing the code I wish existed in game helped to clarify the 
+         interface I ended up using. I'll definitely keep using that approach going forward.
+
+
+===============================================================================
+06/01/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+0.1			[/]			0.5			0.25		N/A			Download and organize sprites and music for project
+1           [X]         1           0.75        8           Research UI Framework design ( third party, Unity, etc. )
+1.1         [X]         1           0.75        8           Design my UI framework with mock up
+1.2         [X]         1.5         1.5         8           Implement panel division hierarchy
+1.3         [/]         1.5         0.75        8           Implement UI button with OnHover and OnClicked events
+1.4         [/]         1           0.25        8           Implement texture backgrounds and font foregrounds for buttons
+
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+DESIGN: I like how Unity approaches UI, so I'm going to try a similar implementation minus the component 
+        based approach and UI editor support for making a game UI. I'm also only implementing panels, buttons, 
+        and text for now since that's all I need for this project.
+
+The texture background for UI button ended up being necessary to test the events so that part of the task was implemented early.
+
+INSIGHT: I also realized my UI objects need to be in Game for now since they aren't as universal as I thought.
+
+
+===============================================================================
+05/31/2020
+===============================================================================
+-------------------------------------------------------------------------------
+Task Id 	Status 		Estimate 	Actual 		Feature Id	Description
+-------------------------------------------------------------------------------
+0			[X]			0.5			0.5			0			Create New Project
+4			[X]			0.5			0.5			4			Implement state machine in Game for game states
+*           [X]         N/A         2                       Fix up Protogame2D to use as a base for new project
+
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+NEW_TASK: I need a specific task to finish finding sprites and music. I did some 
+          preliminary searches while researching the game but they need to be downloaded 
+          and added to the project.
