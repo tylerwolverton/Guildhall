@@ -25,6 +25,7 @@ class RandomNumberGenerator;
 class TextBox;
 class UIButton;
 class UIPanel;
+class UISystem;
 class UIText;
 class World;
 
@@ -115,7 +116,6 @@ private:
 
 	void BuildMenus();
 	void BuildHUD();
-	void CleanupHUD();
 	void BuildVerbPanel();
 	void BuildInventoryPanel();
 
@@ -151,7 +151,8 @@ private:
 	std::string m_dialogueNPCText;
 
 	// HUD
-	UIPanel* m_rootPanel = nullptr;
+	UISystem* m_uiSystem = nullptr;
+
 	UIPanel* m_dialoguePanel = nullptr;
 	UIPanel* m_hudPanel = nullptr;
 	UIPanel* m_verbPanel = nullptr;

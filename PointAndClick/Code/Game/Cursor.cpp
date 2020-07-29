@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -33,7 +34,7 @@ Cursor::~Cursor()
 void Cursor::Update( float deltaSeconds )
 {
 	m_cumulativeTime += deltaSeconds;
-	m_position = g_inputSystem->GetNormalizedMouseClientPos()* Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS );
+	m_position = g_inputSystem->GetNormalizedMouseClientPos() * g_window->GetDimensions();
 }
 
 

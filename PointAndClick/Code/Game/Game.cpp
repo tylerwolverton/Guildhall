@@ -13,6 +13,7 @@
 #include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -21,6 +22,10 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
+#include "Engine/UI/UIButton.hpp"
+#include "Engine/UI/UIPanel.hpp"
+#include "Engine/UI/UIText.hpp"
+#include "Engine/UI/UISystem.hpp"
 
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
@@ -29,9 +34,6 @@
 #include "Game/World.hpp"
 #include "Game/DialogueState.hpp"
 #include "Game/MapDefinition.hpp"
-#include "Game/UIButton.hpp"
-#include "Game/UIPanel.hpp"
-#include "Game/UIText.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -60,10 +62,12 @@ void Game::Startup()
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 	m_worldCamera->SetPosition( m_focalPoint );
 
+	Vec2 windowDimensions = g_window->GetDimensions();
+	
 	m_uiCamera = new Camera();
-	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
-	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
-	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
+	m_uiCamera->SetOutputSize( windowDimensions );
+	m_uiCamera->SetPosition( Vec3( windowDimensions * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
 
 	EnableDebugRendering();
 
@@ -76,7 +80,8 @@ void Game::Startup()
 	
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, false, true );
 
-	m_rootPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
+	m_uiSystem = new UISystem();
+	m_uiSystem->Startup( g_window, g_renderer );
 	BuildMenus();
 	BuildHUD();
 	UpdateInventoryButtonImages();
@@ -101,7 +106,7 @@ void Game::Shutdown()
 	
 	g_audioSystem->Shutdown();
 
-	CleanupHUD();
+	m_uiSystem->Shutdown();
 
 	// Cleanup player and cursor
 	PTR_SAFE_DELETE( m_player );
@@ -216,7 +221,7 @@ void Game::Update()
 	UpdateCameras();
 	UpdateMousePositions();
 
-	m_rootPanel->Update();
+	m_uiSystem->Update();
 
 	if ( m_cursor != nullptr )
 	{
@@ -262,10 +267,10 @@ void Game::Render() const
 		break;
 	}
 
-	m_rootPanel->Render( g_renderer );
+	m_uiSystem->Render();
 	if ( m_isDebugRendering )
 	{
-		m_rootPanel->DebugRender( g_renderer );
+		m_uiSystem->DebugRender();
 	}
 
 	if ( m_cursor != nullptr )
@@ -827,7 +832,7 @@ void Game::BuildMenus()
 	tint.b -= 30;
 
 	// Main Menu
-	m_mainMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+	m_mainMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	m_mainMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
 
@@ -849,7 +854,7 @@ void Game::BuildMenus()
 	m_mainMenuPanel->Hide();
 
 	// Pause
-	m_pauseMenuPanel = m_rootPanel->AddChildPanel( Vec2( 0.35f, .65f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+	m_pauseMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.35f, .65f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), nullptr );
 	titlePanel->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Paused", 48.f );
@@ -872,7 +877,7 @@ void Game::BuildMenus()
 	m_pauseMenuPanel->Hide();
 
 	// Victory 
-	m_victoryPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/VictoryScreen.png" ) );
+	m_victoryPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/VictoryScreen.png" ) );
 	
 	m_victoryRetryButton = m_victoryPanel->AddButton( Vec2( .45f, .1f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
 	m_victoryRetryButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Retry" );
@@ -899,8 +904,8 @@ void Game::BuildHUD()
 	//Texture* rootBackground = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	Texture* childBackground = g_renderer->GetDefaultWhiteTexture();
 
-	m_hudPanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
-	m_dialoguePanel = m_rootPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
+	m_hudPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
+	m_dialoguePanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
 
 	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .8f, 1.f ), childBackground, Rgba8::BLACK );
 	m_verbActionUIText = (UIText*)m_currentActionPanel->AddText( Vec2( .5f, .6f ), Vec2( 0.f, .25f ), "" );
@@ -912,13 +917,6 @@ void Game::BuildHUD()
 	m_hudPanel->Hide();
 	m_dialoguePanel->Deactivate();
 	m_dialoguePanel->Hide();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::CleanupHUD()
-{
-	PTR_SAFE_DELETE( m_rootPanel );
 }
 
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/UILabel.hpp"
+#include "Engine/UI/UILabel.hpp"
 #include "Engine/Renderer/Texture.hpp"
 
 
@@ -11,9 +11,9 @@ class UIElement;
 class UIText : public UILabel
 {
 public:
-	UIText( const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
+	UIText( const UISystem& uiSystem, const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
 
-	virtual void Render( RenderContext* renderer ) const override;
+	virtual void Render() const override;
 
 	void SetText( const std::string& text )									{ m_text = text; }
 

@@ -1,18 +1,25 @@
-#include "Game/UIElement.hpp"
+#include "Engine/UI/UIElement.hpp"
 #include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
-#include "Game/GameCommon.hpp"
-
-#include "Game/UILabel.hpp"
-#include "Game/UIImage.hpp"
-#include "Game/UIText.hpp"
+#include "Engine/UI/UILabel.hpp"
+#include "Engine/UI/UIImage.hpp"
+#include "Engine/UI/UISystem.hpp"
+#include "Engine/UI/UIText.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 // Static Definitions
 //-----------------------------------------------------------------------------------------------
 uint UIElement::s_nextId = 0;
+
+
+//-----------------------------------------------------------------------------------------------
+UIElement::UIElement( const UISystem& uiSystem )
+	: m_uiSystem( uiSystem )
+{
+
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -23,15 +30,15 @@ UIElement::~UIElement()
 
 
 //-----------------------------------------------------------------------------------------------
-void UIElement::DebugRender( RenderContext* renderer ) const
+void UIElement::DebugRender() const
 {
 	if ( !m_isVisible )
 	{
 		return;
 	}
 
-	renderer->BindTexture( 0, nullptr );
-	DrawAABB2Outline( g_renderer, m_boundingBox, Rgba8::MAGENTA, UI_DEBUG_LINE_THICKNESS );
+	m_uiSystem.m_renderer->BindTexture( 0, nullptr );
+	DrawAABB2Outline( m_uiSystem.m_renderer, m_boundingBox, Rgba8::MAGENTA, UI_DEBUG_LINE_THICKNESS );
 }
 
 
@@ -59,7 +66,7 @@ void UIElement::SetUserData( NamedProperties* userData )
 //-----------------------------------------------------------------------------------------------
 UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
 {
-	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
+	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
 	m_labels.push_back( newImage );
 
 	return newImage;
@@ -69,7 +76,7 @@ UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec
 //-----------------------------------------------------------------------------------------------
 UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
 {
-	UILabel* newImage = new UIImage( *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
+	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
 	m_labels.push_back( newImage );
 
 	return newImage;
@@ -79,7 +86,7 @@ UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec
 //-----------------------------------------------------------------------------------------------
 UILabel* UIElement::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize, const Vec2& alignment )
 {
-	UILabel* newText = new UIText( *this, relativeFractionMinPosition, relativeFractionOfDimensions, text, fontSize, alignment );
+	UILabel* newText = new UIText( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, text, fontSize, alignment );
 	m_labels.push_back( newText );
 
 	return newText;

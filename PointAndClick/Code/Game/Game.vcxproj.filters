@@ -11,9 +11,6 @@
     <Filter Include="Data\Gameplay">
       <UniqueIdentifier>{c91a7c1f-0c87-4c6d-bfea-b9b881719014}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI">
-      <UniqueIdentifier>{626d234c-5c6c-43bc-8d64-2408f689a6ba}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -45,24 +42,6 @@
     </ClCompile>
     <ClCompile Include="EntityDefinition.cpp">
       <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="UIButton.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIImage.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UILabel.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIPanel.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIText.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIElement.cpp">
-      <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="DialogueState.cpp">
       <Filter>Framework</Filter>
@@ -104,24 +83,6 @@
     </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">
       <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="UIText.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UIButton.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UIImage.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UILabel.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UIPanel.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UIElement.hpp">
-      <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="DialogueState.hpp">
       <Filter>Framework</Filter>

@@ -271,6 +271,27 @@
     <ClCompile Include="Core\JobSystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UIButton.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIElement.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIImage.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UILabel.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIPanel.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIText.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UISystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -519,5 +540,12 @@
     <ClInclude Include="Renderer\Shader.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Core\JobSystem.hpp" />
+    <ClInclude Include="UI\UIText.hpp" />
+    <ClInclude Include="UI\UIButton.hpp" />
+    <ClInclude Include="UI\UIElement.hpp" />
+    <ClInclude Include="UI\UIImage.hpp" />
+    <ClInclude Include="UI\UILabel.hpp" />
+    <ClInclude Include="UI\UIPanel.hpp" />
+    <ClInclude Include="UI\UISystem.hpp" />
   </ItemGroup>
 </Project>

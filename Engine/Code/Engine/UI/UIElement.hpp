@@ -5,9 +5,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class RenderContext;
 class SpriteDefinition;
 class UILabel;
+class UISystem;
 class Texture;
 
 
@@ -15,12 +15,12 @@ class Texture;
 class UIElement
 {
 public:
-	UIElement() = default;
+	UIElement( const UISystem& uiSystem );
 	~UIElement();
 
 	virtual void Update() = 0;
-	virtual void Render( RenderContext* renderer ) const = 0;
-	virtual void DebugRender( RenderContext* renderer ) const;
+	virtual void Render() const = 0;
+	virtual void DebugRender() const = 0;
 
 	virtual void Activate()													{ m_isActive = true; }
 	virtual void Deactivate()												{ m_isActive = false; }
@@ -49,6 +49,8 @@ public:
 	static uint GetNextId();
 
 protected:
+	const UISystem& m_uiSystem;
+
 	uint m_id = 0;
 	NamedProperties* m_userData = nullptr;
 	bool m_isActive = true;

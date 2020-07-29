@@ -57,8 +57,6 @@ constexpr float CLIENT_ASPECT = 16.f / 9.f;
 
 constexpr float WINDOW_WIDTH = 16.f;
 constexpr float WINDOW_HEIGHT = 9.f;
-constexpr float WINDOW_WIDTH_PIXELS = 1920.f;
-constexpr float WINDOW_HEIGHT_PIXELS = 1080.f;
 
 constexpr float TILE_SIZE = 1.f;
 
@@ -72,7 +70,6 @@ constexpr float ACTOR_WANDER_DIRECTION_CHANGE_COOLDOWN_SECONDS = 3.f;
 constexpr float PHYSICS_FRICTION_FRACTION = .2f;
 
 constexpr float DEBUG_LINE_THICKNESS = 0.02f;
-constexpr float UI_DEBUG_LINE_THICKNESS = 2.f;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;

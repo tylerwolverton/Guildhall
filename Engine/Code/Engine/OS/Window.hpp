@@ -1,4 +1,6 @@
 #pragma once
+#include "Engine/Math/Vec2.hpp"
+
 #include <string>
 
 
@@ -32,6 +34,8 @@ public:
 
 	unsigned int	GetClientWidth()				{ return m_clientWidth; }
 	unsigned int	GetClientHeight()				{ return m_clientHeight; }
+	Vec2			GetDimensions()					{ return Vec2( (float)GetClientWidth(), (float)GetClientHeight() ); }
+
 
 	EventSystem*	GetEventSystem() const			{ return m_eventSystem; }
 	InputSystem*	GetInputSystem() const			{ return m_inputSystem; }

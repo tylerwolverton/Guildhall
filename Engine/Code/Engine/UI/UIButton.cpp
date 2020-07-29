@@ -1,18 +1,18 @@
-#include "Game/UIButton.hpp"
+#include "Engine/UI/UIButton.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
-
-#include "Game/GameCommon.hpp"
-#include "Game/UIPanel.hpp"
-#include "Game/UILabel.hpp"
+#include "Engine/UI/UIPanel.hpp"
+#include "Engine/UI/UILabel.hpp"
+#include "Engine/UI/UISystem.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
+UIButton::UIButton( const UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
 {
 	m_id = UIElement::GetNextId();
 	m_boundingBox = absoluteScreenBounds;
@@ -22,7 +22,8 @@ UIButton::UIButton( const AABB2& absoluteScreenBounds, Texture* backgroundTextur
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
+UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
 {
 	m_id = UIElement::GetNextId();
 	m_backgroundTexture = backgroundTexture;
@@ -55,7 +56,7 @@ void UIButton::Update()
 		return;
 	}
 
-	if ( m_boundingBox.IsPointInside( g_inputSystem->GetNormalizedMouseClientPos() * Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) )
+	if ( m_boundingBox.IsPointInside( m_uiSystem.m_inputSystem->GetNormalizedMouseClientPos() * m_uiSystem.m_windowDimensions ) )
 	{
 		if ( !m_isMouseHovering )
 		{
@@ -74,7 +75,7 @@ void UIButton::Update()
 			m_onHoverStayEvent.Invoke( &args );
 		}
 
-		if ( g_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON ) )
+		if ( m_uiSystem.m_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON ) )
 		{
 			EventArgs args;
 			args.SetValue( "id", m_id );
@@ -95,7 +96,7 @@ void UIButton::Update()
 
 
 //-----------------------------------------------------------------------------------------------
-void UIButton::Render( RenderContext* renderer ) const
+void UIButton::Render() const
 {
 	if ( !m_isVisible )
 	{
@@ -107,31 +108,31 @@ void UIButton::Render( RenderContext* renderer ) const
 		std::vector<Vertex_PCU> vertices;
 		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint );
 
-		renderer->BindTexture( 0, m_backgroundTexture );
-		renderer->DrawVertexArray( vertices );
+		m_uiSystem.m_renderer->BindTexture( 0, m_backgroundTexture );
+		m_uiSystem.m_renderer->DrawVertexArray( vertices );
 	}
 
 	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
 	{
-		m_labels[labelIdx]->Render( renderer );
+		m_labels[labelIdx]->Render();
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIButton::DebugRender( RenderContext* renderer ) const
+void UIButton::DebugRender() const
 {
 	if ( !m_isVisible )
 	{
 		return;
 	}
 
-	renderer->BindTexture( 0, nullptr );
-	DrawAABB2Outline( g_renderer, m_boundingBox, Rgba8::CYAN, UI_DEBUG_LINE_THICKNESS );
+	m_uiSystem.m_renderer->BindTexture( 0, nullptr );
+	DrawAABB2Outline( m_uiSystem.m_renderer, m_boundingBox, Rgba8::CYAN, UI_DEBUG_LINE_THICKNESS );
 
 	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
 	{
-		m_labels[labelIdx]->DebugRender( renderer );
+		m_labels[labelIdx]->DebugRender();
 	}
 }
 

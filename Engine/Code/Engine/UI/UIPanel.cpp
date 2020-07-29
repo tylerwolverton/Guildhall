@@ -1,16 +1,17 @@
-#include "Game/UIPanel.hpp"
+#include "Engine/UI/UIPanel.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
-#include "Game/GameCommon.hpp"
-#include "Game/UIButton.hpp"
-#include "Game/UIText.hpp"
-#include "Game/UIImage.hpp"
+#include "Engine/UI/UIButton.hpp"
+#include "Engine/UI/UIImage.hpp"
+#include "Engine/UI/UISystem.hpp"
+#include "Engine/UI/UIText.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel::UIPanel( const UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
 {
 	m_boundingBox = absoluteScreenBounds;
 	m_backgroundTexture = backgroundTexture;
@@ -19,13 +20,14 @@ UIPanel::UIPanel( const AABB2& absoluteScreenBounds, Texture* backgroundTexture,
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
 {
 	m_backgroundTexture = backgroundTexture;
 	m_tint = tint;
-
-	m_boundingBox = AABB2( 0.f, 0.f, WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS );
-
+	
+	m_boundingBox = AABB2( Vec2::ZERO, m_uiSystem.m_windowDimensions );
+	
 	if ( parentPanel != nullptr )
 	{
 		m_boundingBox = parentPanel->GetBoundingBox();
@@ -74,7 +76,7 @@ void UIPanel::Update()
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::Render( RenderContext* renderer ) const
+void UIPanel::Render() const
 {
 	if ( !m_isVisible )
 	{
@@ -86,51 +88,51 @@ void UIPanel::Render( RenderContext* renderer ) const
 		std::vector<Vertex_PCU> vertices;
 		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint );
 
-		renderer->BindTexture( 0, m_backgroundTexture );
-		renderer->DrawVertexArray( vertices );
+		m_uiSystem.m_renderer->BindTexture( 0, m_backgroundTexture );
+		m_uiSystem.m_renderer->DrawVertexArray( vertices );
 	}
 
 	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
 	{
-		m_labels[labelIdx]->Render( renderer );
+		m_labels[labelIdx]->Render();
 	}
 
 	for ( int buttonIdx = 0; buttonIdx < (int)m_buttons.size(); ++buttonIdx )
 	{
-		m_buttons[buttonIdx]->Render( renderer );
+		m_buttons[buttonIdx]->Render();
 	}
 
 	for ( int panelIdx = 0; panelIdx < (int)m_childPanels.size(); ++panelIdx )
 	{
-		m_childPanels[panelIdx]->Render( renderer );
+		m_childPanels[panelIdx]->Render();
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void UIPanel::DebugRender( RenderContext* renderer ) const
+void UIPanel::DebugRender() const
 {
 	if ( !m_isVisible )
 	{
 		return;
 	}
 
-	renderer->BindTexture( 0, nullptr );
-	DrawAABB2Outline( g_renderer, m_boundingBox, Rgba8::MAGENTA, UI_DEBUG_LINE_THICKNESS );
+	m_uiSystem.m_renderer->BindTexture( 0, nullptr );
+	DrawAABB2Outline( m_uiSystem.m_renderer, m_boundingBox, Rgba8::MAGENTA, UI_DEBUG_LINE_THICKNESS );
 
 	for ( int labelIdx = 0; labelIdx < (int)m_labels.size(); ++labelIdx )
 	{
-		m_labels[labelIdx]->DebugRender( renderer );
+		m_labels[labelIdx]->DebugRender();
 	}
 
 	for ( int buttonIdx = 0; buttonIdx < (int)m_buttons.size(); ++buttonIdx )
 	{
-		m_buttons[buttonIdx]->DebugRender( renderer );
+		m_buttons[buttonIdx]->DebugRender();
 	}
 
 	for ( int panelIdx = 0; panelIdx < (int)m_childPanels.size(); ++panelIdx )
 	{
-		m_childPanels[panelIdx]->DebugRender( renderer );
+		m_childPanels[panelIdx]->DebugRender();
 	}
 }
 
@@ -138,7 +140,7 @@ void UIPanel::DebugRender( RenderContext* renderer ) const
 //-----------------------------------------------------------------------------------------------
 UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
 {
-	UIPanel* newPanel = new UIPanel( this, widthFractionRange, heightFractionRange, backgroundTexture, tint );
+	UIPanel* newPanel = new UIPanel( m_uiSystem, this, widthFractionRange, heightFractionRange, backgroundTexture, tint );
 	m_childPanels.push_back( newPanel );
 
 	return newPanel;
@@ -148,7 +150,7 @@ UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& hei
 //-----------------------------------------------------------------------------------------------
 UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
 {
-	UIButton* newButton = new UIButton( *this, relativeFractionMinPosition, relativeFractionOfDimensions, backgroundTexture, tint );
+	UIButton* newButton = new UIButton( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, backgroundTexture, tint );
 	m_buttons.push_back( newButton );
 
 	return newButton;
