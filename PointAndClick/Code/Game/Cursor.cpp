@@ -13,7 +13,6 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/ActorDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

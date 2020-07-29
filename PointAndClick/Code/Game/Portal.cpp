@@ -7,13 +7,12 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/Actor.hpp"
-#include "Game/PortalDefinition.hpp"
+#include "Game/EntityDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Portal::Portal( const Vec2& position, PortalDefinition* portalDef )
-	: Entity( position, (EntityDefinition*)portalDef )
-	, m_portalDef( portalDef )
+Portal::Portal( const Vec2& position, EntityDefinition* portalDef )
+	: Entity( position, portalDef )
 {
 }
 
@@ -46,15 +45,6 @@ void Portal::OnEnter( Actor* actor )
 		return;
 	}
 
-	//// Check if each required item is in the player's inventory before continuing
-	//for ( int itemIdx = 0; itemIdx < (int)m_requiredItemIds.size(); ++itemIdx )
-	//{
-	//	if ( !g_game->IsItemInInventory( m_requiredItemIds[itemIdx] ) )
-	//	{
-	//		return;
-	//	}
-	//}
-
-	g_game->ChangeMap( m_portalDef->GetDestinationMapName() );
+	g_game->ChangeMap( m_entityDef->GetDestinationMapName() );
 }
 

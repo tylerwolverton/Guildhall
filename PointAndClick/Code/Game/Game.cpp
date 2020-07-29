@@ -28,10 +28,7 @@
 #include "Game/Portal.hpp"
 #include "Game/World.hpp"
 #include "Game/DialogueState.hpp"
-#include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
-#include "Game/ActorDefinition.hpp"
-#include "Game/PortalDefinition.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UIPanel.hpp"
 #include "Game/UIText.hpp"
@@ -101,9 +98,7 @@ void Game::BeginFrame()
 void Game::Shutdown()
 {
 	StopAllSounds();
-
-	TileDefinition::s_definitions.clear();
-
+	
 	g_audioSystem->Shutdown();
 
 	CleanupHUD();
@@ -313,9 +308,11 @@ void Game::StopAllSounds()
 void Game::ResetGame()
 {
 	m_world->UnloadCurrentMap();
-	//m_world->ReloadMaps();
-	LoadActorsFromXml();
-	LoadPortalsFromXml();
+	
+	PTR_SAFE_DELETE( m_cursor );
+	PTR_SAFE_DELETE( m_player );
+
+	LoadEntitiesFromXml();
 	LoadMapsFromXml();
 
 	m_inventory.clear();
@@ -345,8 +342,6 @@ void Game::LoadAssets()
 
 	LoadDialogueStatesFromXml();
 	LoadEntitiesFromXml();
-	LoadActorsFromXml();
-	LoadPortalsFromXml();
 	LoadMapsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
@@ -435,7 +430,11 @@ void Game::LoadEntitiesFromXml()
 		EntityDefinition* entityDef = new EntityDefinition( *element );
 		EntityDefinition::s_definitions[entityDef->GetName()] = entityDef;
 		
-		if ( entityDef->GetName() == "Cursor" )
+		if ( entityDef->GetName() == "Player" )
+		{
+			m_player = new Actor( Vec2::ZERO, entityDef );
+		}
+		else if ( entityDef->GetName() == "Cursor" )
 		{
 			m_cursor = new Cursor( Vec2::ZERO, entityDef );
 		}
@@ -444,67 +443,6 @@ void Game::LoadEntitiesFromXml()
 	}
 
 	g_devConsole->PrintString( "Entities Loaded", Rgba8::GREEN );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadActorsFromXml()
-{
-	g_devConsole->PrintString( "Loading Actors..." );
-
-	const char* filePath = "Data/Gameplay/ActorDefs.xml";
-
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The actors xml file '%s' could not be opened.", filePath ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		ActorDefinition* actorDef = new ActorDefinition( *element );
-		ActorDefinition::s_definitions[actorDef->GetName()] = actorDef;
-
-		if ( actorDef->GetName() == "Player" )
-		{
-			m_player = new Actor( Vec2::ZERO, actorDef );
-		}
-
-		element = element->NextSiblingElement();
-	}
-
-	g_devConsole->PrintString( "Actors Loaded", Rgba8::GREEN );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadPortalsFromXml()
-{
-	g_devConsole->PrintString( "Loading Portals..." );
-
-	const char* filePath = "Data/Gameplay/PortalDefs.xml";
-
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		ERROR_AND_DIE( Stringf( "The portals xml file '%s' could not be opened.", filePath ) );
-	}
-
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		PortalDefinition* portalDef = new PortalDefinition( *element );
-		PortalDefinition::s_definitions[portalDef->GetName()] = portalDef;
-
-		element = element->NextSiblingElement();
-	}
-
-	g_devConsole->PrintString( "Portals Loaded", Rgba8::GREEN );
 }
 
 

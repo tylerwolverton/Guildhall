@@ -25,7 +25,8 @@ public:
 
 	std::string GetName()											{ return m_name; }
 	std::string GetType()											{ return m_type; }
-	void SetType( const std::string& type )							{ m_type = type; }
+	
+	std::string GetDestinationMapName()								{ return m_destinationMapName; }
 
 	NamedProperties* GetVerbEventProperties( eVerbState verbState );
 	SpriteAnimDefinition* GetSpriteAnimDef( const std::string& animName );
@@ -41,6 +42,7 @@ public:
 protected:
 	std::string		m_name;
 	std::string		m_type;
+	float			m_walkSpeed = 0.f;
 	float			m_physicsRadius = 0.f;
 	AABB2			m_localDrawBounds = AABB2::ONE_BY_ONE;
 	int			    m_drawOrder = 0;
@@ -49,6 +51,9 @@ protected:
 	SpriteSheet*	m_spriteSheet = nullptr;
 	SpriteAnimSetDefinition* m_spriteAnimSetDef = nullptr;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
+	
+	// Portal variables
+	std::string		m_destinationMapName;
 
 private:
 	std::map<eVerbState, NamedProperties*> m_verbPropertiesMap;

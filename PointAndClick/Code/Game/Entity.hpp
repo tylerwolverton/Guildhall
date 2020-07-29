@@ -39,6 +39,7 @@ public:
 	std::string  GetType() const									{ return m_entityDef->m_type; };
 	Texture*	 GetTexture() const									{ return m_texture; };
 	int			 GetDrawOrder() const								{ return m_entityDef->m_drawOrder; };
+	float		 GetWalkSpeed() const								{ return m_entityDef->m_walkSpeed; };
 				 
 	bool		 IsDead() const										{ return m_isDead; }
 	bool		 IsGarbage() const									{ return m_isGarbage; }

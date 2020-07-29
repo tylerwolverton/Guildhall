@@ -13,16 +13,15 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/ActorDefinition.hpp"
 #include "Game/Map.hpp"
+#include "Game/EntityDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Actor::Actor( const Vec2& position, ActorDefinition* actorDef )
-	: Entity( position, (EntityDefinition*)actorDef )
-	, m_actorDef( actorDef )
+Actor::Actor( const Vec2& position, EntityDefinition* entityDef )
+	: Entity( position, entityDef )
 {
-	if( m_actorDef->GetName() == std::string( "Player" ) )
+	if( entityDef->GetName() == std::string( "Player" ) )
 	{
 		m_controllerID = 0;
 		m_isPlayer = true;
@@ -41,16 +40,6 @@ Actor::~Actor()
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( float deltaSeconds )
 {
-	m_cumulativeTime += deltaSeconds;
-
-	if ( m_isPlayer )
-	{
-		//UpdateFromKeyboard( deltaSeconds );
-		//UpdateFromGamepad( deltaSeconds );
-	}
-	
-	UpdateAnimation();
-
 	Entity::Update( deltaSeconds );
 
 	MoveToTargetLocation();
@@ -60,23 +49,7 @@ void Actor::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
-	if ( m_curAnimDef == nullptr )
-	{
-		return;
-	}
-
-	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
-		
-	Vec2 mins, maxs;
-	spriteDef.GetUVs( mins, maxs );
-
-	std::vector<Vertex_PCU> vertexes;
-	AppendVertsForAABB2D( vertexes, m_actorDef->m_localDrawBounds, Rgba8::WHITE, mins, maxs );
-
-	Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
-
-	g_renderer->BindTexture( 0, &( spriteDef.GetTexture() ) );
-	g_renderer->DrawVertexArray( vertexes );
+	Entity::Render();
 }
 
 
@@ -106,32 +79,6 @@ void Actor::StopExecutingAction()
 
 
 //-----------------------------------------------------------------------------------------------
-void Actor::UpdateAnimation()
-{
-	if ( m_velocity.x > 0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveEast" );
-	}
-	else if ( m_velocity.x < -0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveWest" );
-	}
-	else if ( m_velocity.y > 0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveNorth" );
-	}
-	else if ( m_velocity.y < -0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveSouth" );
-	}
-	else
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "Idle" );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Actor::MoveToTargetLocation()
 {
 	float distanceToLocation =  m_moveTargetLocation.x - m_position.x;
@@ -143,7 +90,7 @@ void Actor::MoveToTargetLocation()
 		Entity* targetEntity = m_map->GetEntityByName( m_targetNoun );
 		if ( targetEntity != nullptr )
 		{
-			if ( DoDiscsOverlap( m_position, m_actorDef->m_physicsRadius, targetEntity->GetPosition(), targetEntity->GetPhysicsRadius() ) )
+			if ( DoDiscsOverlap( m_position, GetPhysicsRadius(), targetEntity->GetPosition(), targetEntity->GetPhysicsRadius() ) )
 			{
 				EventArgs args;
 				args.SetValue( "Type", (int)m_curVerbState );
@@ -162,7 +109,7 @@ void Actor::MoveToTargetLocation()
 
 	if ( fabsf(distanceToLocation) > 0.1f )
 	{
-		m_velocity.x = distanceToLocation / fabsf( distanceToLocation ) * m_actorDef->m_walkSpeed;
+		m_velocity.x = distanceToLocation / fabsf( distanceToLocation ) * GetWalkSpeed();
 		m_velocity.y = 0.f;	
 	}
 }

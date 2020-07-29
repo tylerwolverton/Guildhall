@@ -24,12 +24,28 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 
 	m_type = ParseXmlAttribute( entityDefElem, "type", m_type );
 
+	const XmlElement* destinationElem = entityDefElem.FirstChildElement( "Destination" );
+	if ( destinationElem != nullptr )
+	{
+		m_destinationMapName = ParseXmlAttribute( *destinationElem, "mapName", "" );
+	}
+	
 	const XmlElement* sizeElement = entityDefElem.FirstChildElement( "Size" );
 	if(sizeElement != nullptr)
 	{
 		m_physicsRadius = ParseXmlAttribute( *sizeElement, "physicsRadius", m_physicsRadius );
 		m_localDrawBounds = ParseXmlAttribute( *sizeElement, "localDrawBounds", m_localDrawBounds );
 		m_drawOrder = ParseXmlAttribute( *sizeElement, "drawOrder", m_drawOrder );
+	}
+
+	const XmlElement* movementElement = entityDefElem.FirstChildElement( "Movement" );
+	if ( movementElement != nullptr )
+	{
+		const XmlElement* walkElement = movementElement->FirstChildElement( "Walk" );
+		if ( walkElement != nullptr )
+		{
+			m_walkSpeed = ParseXmlAttribute( *walkElement, "speed", m_walkSpeed );
+		}
 	}
 
 	const XmlElement* healthElement = entityDefElem.FirstChildElement( "Health" );

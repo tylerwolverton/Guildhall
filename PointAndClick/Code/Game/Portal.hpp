@@ -7,7 +7,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class PortalDefinition;
+class EntityDefinition;
 class Actor;
 
 
@@ -15,7 +15,7 @@ class Actor;
 class Portal : public Entity
 {
 public:
-	Portal( const Vec2& position, PortalDefinition* itemDef );
+	Portal( const Vec2& position, EntityDefinition* itemDef );
 	~Portal();
 
 	virtual void Update( float deltaSeconds );
@@ -28,6 +28,5 @@ public:
 	void Deactivate()								{ m_isActive = false; }
 
 protected:
-	PortalDefinition*		m_portalDef = nullptr;
 	bool					m_isActive = true;
 };

@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------------------------
 class Map;
 class Texture;
-class ActorDefinition;
+class EntityDefinition;
 class SpriteAnimDefinition;
 
 
@@ -18,7 +18,7 @@ class SpriteAnimDefinition;
 class Actor : public Entity
 {
 public:
-	Actor( const Vec2& position, ActorDefinition* actorDef );
+	Actor( const Vec2& position, EntityDefinition* entityDef );
 	~Actor();
 
 	virtual void Update( float deltaSeconds );
@@ -37,12 +37,9 @@ public:
 	void SetMap( Map* map )												{ m_map = map; }
 
 private:
-	void UpdateAnimation();
-
 	void MoveToTargetLocation();
 
 protected:
-	ActorDefinition*		m_actorDef = nullptr;
 	Map*					m_map = nullptr;
 	int						m_controllerID = -1;
 	bool					m_isPlayer = false;

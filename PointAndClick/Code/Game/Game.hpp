@@ -105,8 +105,6 @@ private:
 	void LoadDialogueStatesFromXml();
 	void LoadMapsFromXml();
 	void LoadEntitiesFromXml();
-	void LoadActorsFromXml();
-	void LoadPortalsFromXml();
 
 	void UpdateFromKeyboard();
 	void UpdateMousePositions();

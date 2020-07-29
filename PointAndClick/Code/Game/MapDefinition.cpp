@@ -5,12 +5,9 @@
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/GameCommon.hpp"
-#include "Game/TileDefinition.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Cursor.hpp"
 #include "Game/Portal.hpp"
-#include "Game/ActorDefinition.hpp"
-#include "Game/PortalDefinition.hpp"
 #include "Game/Map.hpp"
 
 
@@ -103,6 +100,13 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 			Vec2 pos = ParseXmlAttribute( *entityElem, "startPos", Vec2::ZERO );
 			std::string type = ParseXmlAttribute( *entityElem, "type", "actor" );
 
+			EntityDefinition* entityDef = EntityDefinition::GetEntityDefinition( name );
+			if ( entityDef == nullptr )
+			{
+				g_devConsole->PrintError( Stringf("Unexpected actor '%s' defined in map '%s'", name.c_str(), m_name.c_str()) );
+				continue;
+			}
+
 			if ( type == "actor" )
 			{
 				if ( name == "Player" )
@@ -111,67 +115,25 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 				}
 				else
 				{
-					ActorDefinition* actorDef = ActorDefinition::GetActorDefinition( name );
-					if ( actorDef == nullptr )
-					{
-						g_devConsole->PrintError( Stringf("Unexpected actor '%s' defined in map '%s'", name.c_str(), m_name.c_str()) );
-						continue;
-					}
-					// TODO: When updating to entity only model, define this in entity definition
-					actorDef->SetType( "actor" );
-
-					Actor* newActor = new Actor( pos, actorDef );
+					Actor* newActor = new Actor( pos, entityDef );
 					
 					m_entities.push_back( newActor );
 				}
 			}
 			else if ( type == "item" )
 			{
-				EntityDefinition* itemDef = EntityDefinition::GetEntityDefinition( name );
-				if ( itemDef == nullptr )
-				{
-					g_devConsole->PrintError( Stringf( "Unexpected item '%s' defined in map '%s'", name.c_str(), m_name.c_str() ) );
-					continue;
-				}
-
-				Entity* newItem = new Entity( pos, itemDef );
+				Entity* newItem = new Entity( pos, entityDef );
 
 				m_entities.push_back( newItem );
 				m_items.push_back( newItem );
 			}
 			else if ( type == "portal" )
 			{
-				PortalDefinition* portalDef = PortalDefinition::GetPortalDefinition( name );
-				if ( portalDef == nullptr )
-				{
-					g_devConsole->PrintError( Stringf( "Unexpected portal '%s' defined in map '%s'", name.c_str(), m_name.c_str() ) );
-					continue;
-				}
-				// TODO: When updating to entity only model, define this in entity definition
-				portalDef->SetType( "portal" );
-
-				Portal* newPortal = new Portal( pos, portalDef );
+				Portal* newPortal = new Portal( pos, entityDef );
 
 				m_entities.push_back( newPortal );
 				m_portals.push_back( newPortal );
 			}
-			/*else if ( type == "entity" )
-			{
-				EntityDefinition* entityDef = EntityDefinition::GetEntityDefinition( name );
-				if ( entityDef == nullptr )
-				{
-					g_devConsole->PrintError( Stringf( "Unexpected entity '%s' defined in map '%s'", name.c_str(), m_name.c_str() ) );
-					continue;
-				}
-
-				Entity* newEntity = nullptr;
-				if ( entityDef->GetType() == "cursor" )
-				{
-					newEntity = new Cursor( pos, entityDef );
-				}
-
-				m_entities.push_back( newEntity );
-			}*/
 
 			entityElem = entityElem->NextSiblingElement();
 		}

@@ -57,7 +57,6 @@ void World::LoadMap( const std::string& mapName )
 
 	Map* map = new Map( mapName, mapDef );
 	m_loadedMaps[mapName] = map;
-	
 }
 
 

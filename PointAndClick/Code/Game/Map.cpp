@@ -21,9 +21,7 @@
 #include "Game/World.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Portal.hpp"
-#include "Game/TileDefinition.hpp"
 #include "Game/MapDefinition.hpp"
-#include "Game/ActorDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
