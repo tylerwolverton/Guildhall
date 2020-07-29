@@ -236,11 +236,9 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\DialogueStateDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\EntityDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\PortalDefs.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -137,16 +137,10 @@
     <Xml Include="..\..\Run\Data\GameConfig.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml">
-      <Filter>Data\Gameplay</Filter>
-    </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\DialogueStateDefs.xml">
-      <Filter>Data\Gameplay</Filter>
-    </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\PortalDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\EntityDefs.xml">
