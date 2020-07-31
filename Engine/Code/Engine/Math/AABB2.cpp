@@ -429,6 +429,21 @@ void AABB2::FitWithinBounds( const AABB2& boundingBox )
 
 
 //-----------------------------------------------------------------------------------------------
+void AABB2::AlignWithinBounds( const AABB2& boundingBox, const Vec2& alignment )
+{
+	Vec2 myDimensions( maxs - mins );
+	Vec2 boundingBoxDimensions( boundingBox.maxs - boundingBox.mins );
+
+	Vec2 differenceInSize( boundingBoxDimensions - myDimensions );
+
+	Vec2 offset = differenceInSize * alignment;
+
+	mins += offset;
+	maxs += offset;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void AABB2::ChopOffLeft( float fractionOfWidth, float additionalWidth )
 {
 	float width = maxs.x - mins.x;

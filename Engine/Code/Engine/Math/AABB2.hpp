@@ -32,12 +32,13 @@ public:
 	const Vec2	GetPointAtUV( const Vec2& uv ) const;
 	Vec2		GetUVForPoint( Vec2 point ) const;
 
-	// Size and Center
+	// Size and Position
 	Vec2		GetCenter() const;
 	void		SetCenter( const Vec2& point );
 	Vec2		GetDimensions() const;
 	void		SetDimensions( const Vec2& dimensions );
 	void		FitWithinBounds( const AABB2& boundingBox );
+	void		AlignWithinBounds( const AABB2& boundingBox, const Vec2& alignment );
 
 	// Geometric Queries
 	bool		IsPointInside						( const Vec2& point ) const;

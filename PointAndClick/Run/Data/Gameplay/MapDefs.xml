@@ -13,6 +13,7 @@
       <Entity name="LeftTable" type="item" startPos="2,0"/>
       <Entity name="MiddleTable" type="item" startPos="8.15,0"/>
       <Entity name="PortalToForest" type="portal" startPos="2.5,2"/>
+      <Entity name="Red Herring" type="item" startPos="16,2"/>
     </Entities>
   </MapDefinition>
 

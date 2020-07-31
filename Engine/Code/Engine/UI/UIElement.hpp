@@ -5,6 +5,8 @@
 
 
 //-----------------------------------------------------------------------------------------------
+struct UIAlignedPositionData;
+struct UIRelativePositionData;
 class SpriteDefinition;
 class UILabel;
 class UISystem;
@@ -36,12 +38,20 @@ public:
 	NamedProperties* GetUserData() const									{ return m_userData; }
 	void SetUserData( NamedProperties* userData );
 
-	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-					   Texture* image = nullptr );
-	UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-					   SpriteDefinition* spriteDef = nullptr );
-	UILabel* AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
-					  const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
+	//UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+	//				   Texture* image = nullptr );
+	//UILabel* AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+	//				   SpriteDefinition* spriteDef = nullptr );
+	//UILabel* AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions,
+	//				  const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
+
+	// New Add methods
+	UILabel* AddImage( const UIAlignedPositionData& positionData, Texture* image = nullptr );
+	UILabel* AddImage( const UIRelativePositionData& positionData, Texture* image = nullptr );
+	UILabel* AddImage( const UIAlignedPositionData& positionData, SpriteDefinition* spriteDef = nullptr );
+	UILabel* AddImage( const UIRelativePositionData& positionData, SpriteDefinition* spriteDef = nullptr );
+	UILabel* AddText( const UIAlignedPositionData& positionData, const std::string& text, float fontSize = 24.f, const Vec2& textAlignment = ALIGN_CENTERED );
+	UILabel* AddText( const UIRelativePositionData& positionData, const std::string& text, float fontSize = 24.f, const Vec2& textAlignment = ALIGN_CENTERED );
 
 	void	 ClearLabels();
 

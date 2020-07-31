@@ -14,6 +14,7 @@
 // Static member definitions
 const Vec2 Vec2::ZERO( 0.f, 0.f );
 const Vec2 Vec2::ONE( 1.f, 1.f );
+const Vec2 Vec2::ZERO_TO_ONE( 0.f, 1.f );
 
 
 //-----------------------------------------------------------------------------------------------

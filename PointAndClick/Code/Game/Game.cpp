@@ -831,20 +831,24 @@ void Game::BuildMenus()
 	tint.g -= 30;
 	tint.b -= 30;
 
+	UIAlignedPositionData buttonTextPositionCentered;
+	buttonTextPositionCentered.fractionOfParentDimensions = Vec2::ONE;
+	buttonTextPositionCentered.alignmentWithinParentElement = ALIGN_CENTERED;
+
 	// Main Menu
 	m_mainMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	m_mainMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
 
 	m_mainMenuPlayButton = m_mainMenuPanel->AddButton( Vec2( .45f, .15f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_mainMenuPlayButton->AddText( Vec2(.5f, 0.f), Vec2( 0.f, 1.f ), "Play" );
+	m_mainMenuPlayButton->AddText( buttonTextPositionCentered, "Play" );
 	m_mainMenuPlayButton->SetButtonAndLabelTint( tint );
 	m_mainMenuPlayButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuPlayButtonClicked );
 	m_mainMenuPlayButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
 	m_mainMenuPlayButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_mainMenuExitButton = m_mainMenuPanel->AddButton( Vec2( .45f, .05f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_mainMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_mainMenuExitButton->AddText( buttonTextPositionCentered, "Quit" );
 	m_mainMenuExitButton->SetButtonAndLabelTint( tint );
 	m_mainMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
 	m_mainMenuExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
@@ -857,17 +861,17 @@ void Game::BuildMenus()
 	m_pauseMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.35f, .65f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 	
 	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), nullptr );
-	titlePanel->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Paused", 48.f );
+	titlePanel->AddText( buttonTextPositionCentered, "Paused", 48.f );
 
 	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .3f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_pauseMenuResumeButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Resume" );
+	m_pauseMenuResumeButton->AddText( buttonTextPositionCentered, "Resume" );
 	m_pauseMenuResumeButton->SetButtonAndLabelTint( tint );
 	m_pauseMenuResumeButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuResumeButtonClicked );
 	m_pauseMenuResumeButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
 	m_pauseMenuResumeButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .15f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_pauseMenuExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_pauseMenuExitButton->AddText( buttonTextPositionCentered, "Quit" );
 	m_pauseMenuExitButton->SetButtonAndLabelTint( tint );
 	m_pauseMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
 	m_pauseMenuExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
@@ -880,14 +884,14 @@ void Game::BuildMenus()
 	m_victoryPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/VictoryScreen.png" ) );
 	
 	m_victoryRetryButton = m_victoryPanel->AddButton( Vec2( .45f, .1f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_victoryRetryButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Retry" );
+	m_victoryRetryButton->AddText( buttonTextPositionCentered, "Retry" );
 	m_victoryRetryButton->SetButtonAndLabelTint( tint );
 	m_victoryRetryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
 	m_victoryRetryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
 	m_victoryRetryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
 	m_victoryExitButton = m_victoryPanel->AddButton( Vec2( .45f, .03f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_victoryExitButton->AddText( Vec2( .5f, 0.f ), Vec2( 0.f, 1.f ), "Quit" );
+	m_victoryExitButton->AddText( buttonTextPositionCentered, "Quit" );
 	m_victoryExitButton->SetButtonAndLabelTint( tint );
 	m_victoryExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
 	m_victoryExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
@@ -907,8 +911,13 @@ void Game::BuildHUD()
 	m_hudPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
 	m_dialoguePanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
 
-	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .8f, 1.f ), childBackground, Rgba8::BLACK );
-	m_verbActionUIText = (UIText*)m_currentActionPanel->AddText( Vec2( .5f, .6f ), Vec2( 0.f, .25f ), "" );
+	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .9f, 1.f ), childBackground, Rgba8::BLACK );
+
+	UIAlignedPositionData textPositionData;
+	textPositionData.fractionOfParentDimensions = Vec2( 1.f, 1.f );
+	textPositionData.verticalPaddingInPixels = Vec2( 2.f, 2.f );
+
+	m_verbActionUIText = (UIText*)m_currentActionPanel->AddText( textPositionData, "" );
 
 	BuildVerbPanel();
 	BuildInventoryPanel();
@@ -924,6 +933,9 @@ void Game::BuildHUD()
 void Game::BuildVerbPanel()
 {
 	Texture* background = g_renderer->GetDefaultWhiteTexture();
+	
+	UIAlignedPositionData textPositionData;
+	textPositionData.fractionOfParentDimensions = Vec2( .8f, .8f );
 
 	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, .9f ), background, Rgba8::BLACK );
 
@@ -931,31 +943,31 @@ void Game::BuildVerbPanel()
 	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_giveVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_giveVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
-	m_giveVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Give" );
+	m_giveVerbButton->AddText( textPositionData, "Give" );
 
 	m_openVerbButton = m_verbPanel->AddButton( Vec2( .34f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_openVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_openVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
-	m_openVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Open" );
+	m_openVerbButton->AddText( textPositionData, "Open" );
 
 	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .67f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
 	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_closeVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_closeVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
-	m_closeVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Close" );
+	m_closeVerbButton->AddText( textPositionData, "Close" );
 
 	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( .01f, .02f ), Vec2( 0.49f, .48f ), background, Rgba8::DARK_BLUE );
 	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_pickUpVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_pickUpVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
-	m_pickUpVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Pick up" );
+	m_pickUpVerbButton->AddText( textPositionData, "Pick up" );
 
 	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .51f, .02f ), Vec2( 0.48f, .48f ), background, Rgba8::DARK_BLUE );
 	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_talkToVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_talkToVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
-	m_talkToVerbButton->AddText( Vec2( .1f, .1f ), Vec2( .8f, .8f ), "Talk to" );
+	m_talkToVerbButton->AddText( textPositionData, "Talk to" );
 }
 
 
@@ -1010,7 +1022,8 @@ void Game::AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoi
 	for ( int choiceIdx = 0; choiceIdx < numChoices; ++choiceIdx )
 	{
 		UIButton* newButton = m_dialoguePanel->AddButton( Vec2( 0.f, currentHeight - choiceHeight ), Vec2( 1.f, choiceHeight ) );
-		newButton->AddText( Vec2( 0.f, 0.f ), Vec2( 1.f, 1.f ), dialogueChoices[choiceIdx], fontSize, ALIGN_CENTERED_LEFT );
+		UIRelativePositionData textPositionData;
+		newButton->AddText( textPositionData, dialogueChoices[choiceIdx], fontSize, ALIGN_CENTERED_LEFT );
 
 		newButton->m_onClickEvent.SubscribeMethod( this, &Game::OnDialogueChoiceClicked );
 		newButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnDialogueChoiceHoverBegin );
@@ -1541,6 +1554,9 @@ void Game::EndConversation()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateInventoryButtonImages()
 {
+	UIAlignedPositionData positionData;
+	positionData.fractionOfParentDimensions = Vec2( .8f, .8f );
+
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
 		// Reset button
@@ -1550,7 +1566,8 @@ void Game::UpdateInventoryButtonImages()
 		if ( inventoryButtonIdx < (int)m_inventory.size() )
 		{
 			SpriteDefinition* spriteDef = m_inventory[inventoryButtonIdx]->GetSpriteDef();
-			m_inventoryButtons[inventoryButtonIdx]->AddImage( Vec2( .1f, .1f ), Vec2( .8f, .8f ), spriteDef );
+
+			m_inventoryButtons[inventoryButtonIdx]->AddImage( positionData, spriteDef );
 			m_inventoryButtons[inventoryButtonIdx]->Activate();
 		}
 	}

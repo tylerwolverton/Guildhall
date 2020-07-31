@@ -63,10 +63,30 @@ void UIElement::SetUserData( NamedProperties* userData )
 }
 
 
+////-----------------------------------------------------------------------------------------------
+//UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
+//{
+//	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
+//	m_labels.push_back( newImage );
+//
+//	return newImage;
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
+//{
+//	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
+//	m_labels.push_back( newImage );
+//
+//	return newImage;
+//}
+
+
 //-----------------------------------------------------------------------------------------------
-UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
+UILabel* UIElement::AddImage( const UIAlignedPositionData& positionData, SpriteDefinition* spriteDef )
 {
-	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
+	UILabel* newImage = new UIImage( m_uiSystem, *this, positionData, spriteDef );
 	m_labels.push_back( newImage );
 
 	return newImage;
@@ -74,9 +94,9 @@ UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec
 
 
 //-----------------------------------------------------------------------------------------------
-UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
+UILabel* UIElement::AddImage( const UIRelativePositionData& positionData, SpriteDefinition* spriteDef )
 {
-	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
+	UILabel* newImage = new UIImage( m_uiSystem, *this, positionData, spriteDef );
 	m_labels.push_back( newImage );
 
 	return newImage;
@@ -84,9 +104,49 @@ UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec
 
 
 //-----------------------------------------------------------------------------------------------
-UILabel* UIElement::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize, const Vec2& alignment )
+UILabel* UIElement::AddImage( const UIAlignedPositionData& positionData, Texture* image )
 {
-	UILabel* newText = new UIText( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, text, fontSize, alignment );
+	UILabel* newImage = new UIImage( m_uiSystem, *this, positionData, image );
+	m_labels.push_back( newImage );
+
+	return newImage;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UILabel* UIElement::AddImage( const UIRelativePositionData& positionData, Texture* image )
+{
+	UILabel* newImage = new UIImage( m_uiSystem, *this, positionData, image );
+	m_labels.push_back( newImage );
+
+	return newImage;
+}
+
+
+////-----------------------------------------------------------------------------------------------
+//UILabel* UIElement::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize, const Vec2& alignment )
+//{
+//	UILabel* newText = new UIText( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, text, fontSize, alignment );
+//	m_labels.push_back( newText );
+//
+//	return newText;
+//}
+
+
+//-----------------------------------------------------------------------------------------------
+UILabel* UIElement::AddText( const UIAlignedPositionData& positionData, const std::string& text, float fontSize, const Vec2& textAlignment )
+{
+	UILabel* newText = new UIText( m_uiSystem, *this, positionData, text, fontSize, textAlignment );
+	m_labels.push_back( newText );
+
+	return newText;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UILabel* UIElement::AddText( const UIRelativePositionData& positionData, const std::string& text, float fontSize, const Vec2& textAlignment )
+{
+	UILabel* newText = new UIText( m_uiSystem, *this, positionData, text, fontSize, textAlignment );
 	m_labels.push_back( newText );
 
 	return newText;

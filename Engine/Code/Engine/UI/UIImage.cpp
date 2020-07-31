@@ -11,7 +11,6 @@ UIImage::UIImage( const UISystem& uiSystem, const UIElement& parentElement, cons
 	: UILabel( uiSystem, parentElement, relativeFractionMinPosition, relativeFractionOfDimensions )
 	, m_image( image )
 {
-
 }
 
 
@@ -19,8 +18,57 @@ UIImage::UIImage( const UISystem& uiSystem, const UIElement& parentElement, cons
 UIImage::UIImage( const UISystem& uiSystem, const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
 	: UILabel( uiSystem, parentElement, relativeFractionMinPosition, relativeFractionOfDimensions )
 {
+	if ( spriteDef == nullptr )
+	{
+		return;
+	}
+
 	spriteDef->GetUVs( m_uvAtMins, m_uvAtMaxs );
 	m_image = const_cast<Texture*>(&(spriteDef->GetTexture()));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIImage::UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, Texture* image )
+	: UILabel( uiSystem, parentElement, positionData )
+	, m_image( image )
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIImage::UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, Texture* image )
+	: UILabel( uiSystem, parentElement, positionData )
+	, m_image( image )
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIImage::UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, SpriteDefinition* spriteDef )
+	: UILabel( uiSystem, parentElement, positionData )
+{
+	if ( spriteDef == nullptr )
+	{
+		return;
+	}
+
+	spriteDef->GetUVs( m_uvAtMins, m_uvAtMaxs );
+	m_image = const_cast<Texture*>( &( spriteDef->GetTexture() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIImage::UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, SpriteDefinition* spriteDef )
+	: UILabel( uiSystem, parentElement, positionData )
+{
+	if ( spriteDef == nullptr )
+	{
+		return;
+	}
+
+	spriteDef->GetUVs( m_uvAtMins, m_uvAtMaxs );
+	m_image = const_cast<Texture*>( &( spriteDef->GetTexture() ) );
 }
 
 
