@@ -18,7 +18,7 @@ uint UIElement::s_nextId = 0;
 UIElement::UIElement( const UISystem& uiSystem )
 	: m_uiSystem( uiSystem )
 {
-
+	m_id = GetNextId();
 }
 
 
@@ -63,26 +63,6 @@ void UIElement::SetUserData( NamedProperties* userData )
 }
 
 
-////-----------------------------------------------------------------------------------------------
-//UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image )
-//{
-//	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, image );
-//	m_labels.push_back( newImage );
-//
-//	return newImage;
-//}
-//
-//
-////-----------------------------------------------------------------------------------------------
-//UILabel* UIElement::AddImage( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef )
-//{
-//	UILabel* newImage = new UIImage( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, spriteDef );
-//	m_labels.push_back( newImage );
-//
-//	return newImage;
-//}
-
-
 //-----------------------------------------------------------------------------------------------
 UILabel* UIElement::AddImage( const UIAlignedPositionData& positionData, SpriteDefinition* spriteDef )
 {
@@ -121,16 +101,6 @@ UILabel* UIElement::AddImage( const UIRelativePositionData& positionData, Textur
 
 	return newImage;
 }
-
-
-////-----------------------------------------------------------------------------------------------
-//UILabel* UIElement::AddText( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize, const Vec2& alignment )
-//{
-//	UILabel* newText = new UIText( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, text, fontSize, alignment );
-//	m_labels.push_back( newText );
-//
-//	return newText;
-//}
 
 
 //-----------------------------------------------------------------------------------------------

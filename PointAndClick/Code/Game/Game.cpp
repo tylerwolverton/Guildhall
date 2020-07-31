@@ -82,8 +82,8 @@ void Game::Startup()
 
 	m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
-	BuildMenus();
 	BuildHUD();
+	BuildMenus();
 	UpdateInventoryButtonImages();
 
 	m_world = new World( m_gameClock );
@@ -835,20 +835,42 @@ void Game::BuildMenus()
 	buttonTextPositionCentered.fractionOfParentDimensions = Vec2::ONE;
 	buttonTextPositionCentered.alignmentWithinParentElement = ALIGN_CENTERED;
 
-	// Main Menu
-	m_mainMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
-	
-	m_mainMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
+	BuildMainMenu( tint, buttonTextPositionCentered );
+	BuildPauseMenu( tint, buttonTextPositionCentered );
+	BuildVictoryMenu( tint, buttonTextPositionCentered );
+}
 
-	m_mainMenuPlayButton = m_mainMenuPanel->AddButton( Vec2( .45f, .15f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_mainMenuPlayButton->AddText( buttonTextPositionCentered, "Play" );
+
+//-----------------------------------------------------------------------------------------------
+void Game::BuildMainMenu( const Rgba8& tint, const UIAlignedPositionData& textPositionData )
+{
+	UIRelativePositionData panelPositionData;
+	panelPositionData.widthFractionRange = Vec2::ZERO_TO_ONE;
+	panelPositionData.heightFractionRange = Vec2::ZERO_TO_ONE;
+
+	m_mainMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+
+	UIAlignedPositionData logoPositionData;
+	logoPositionData.fractionOfParentDimensions = Vec2( .7f, .7f );
+	logoPositionData.alignmentWithinParentElement = ALIGN_TOP_CENTER;
+
+	m_mainMenuPanel->AddChildPanel( logoPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/TheTentacleOfMonkeyIsland-logo.png" ) );
+
+	UIAlignedPositionData buttonPositionData;
+	buttonPositionData.fractionOfParentDimensions = Vec2( .1f, .05f );
+	buttonPositionData.positionOffsetFraction = Vec2( .0f, -.33f );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_CENTERED;
+
+	m_mainMenuPlayButton = m_mainMenuPanel->AddButton( buttonPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
+	m_mainMenuPlayButton->AddText( textPositionData, "Play" );
 	m_mainMenuPlayButton->SetButtonAndLabelTint( tint );
 	m_mainMenuPlayButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuPlayButtonClicked );
 	m_mainMenuPlayButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
 	m_mainMenuPlayButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
-	m_mainMenuExitButton = m_mainMenuPanel->AddButton( Vec2( .45f, .05f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_mainMenuExitButton->AddText( buttonTextPositionCentered, "Quit" );
+	buttonPositionData.positionOffsetFraction = Vec2( .0f, -.43f );
+	m_mainMenuExitButton = m_mainMenuPanel->AddButton( buttonPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
+	m_mainMenuExitButton->AddText( textPositionData, "Quit" );
 	m_mainMenuExitButton->SetButtonAndLabelTint( tint );
 	m_mainMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
 	m_mainMenuExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
@@ -856,42 +878,71 @@ void Game::BuildMenus()
 
 	m_mainMenuPanel->Deactivate();
 	m_mainMenuPanel->Hide();
+}
 
-	// Pause
-	m_pauseMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.35f, .65f ), Vec2( 0.2f, .8f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
+
+//-----------------------------------------------------------------------------------------------
+void Game::BuildPauseMenu( const Rgba8& tint, const UIAlignedPositionData& textPositionData )
+{
+	UIAlignedPositionData panelPositionData;
+	panelPositionData.fractionOfParentDimensions = Vec2( .35f, .65f );
 	
-	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( Vec2( .15f, .85f ), Vec2( .3f, 1.f ), nullptr );
-	titlePanel->AddText( buttonTextPositionCentered, "Paused", 48.f );
+	m_pauseMenuPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/MainMenuBackground.png" ) );
 
-	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .3f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_pauseMenuResumeButton->AddText( buttonTextPositionCentered, "Resume" );
+	panelPositionData.fractionOfParentDimensions = Vec2( .7f, .7f );
+	UIPanel* titlePanel = m_pauseMenuPanel->AddChildPanel( panelPositionData, nullptr );
+	titlePanel->AddText( textPositionData, "Paused", 48.f );
+
+	UIAlignedPositionData buttonPositionData;
+	buttonPositionData.fractionOfParentDimensions = Vec2( .3f, .1f );
+	buttonPositionData.positionOffsetFraction = Vec2( .0f, -.25f );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_CENTERED;
+
+	m_pauseMenuResumeButton = m_pauseMenuPanel->AddButton( buttonPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
+	m_pauseMenuResumeButton->AddText( textPositionData, "Resume" );
 	m_pauseMenuResumeButton->SetButtonAndLabelTint( tint );
 	m_pauseMenuResumeButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuResumeButtonClicked );
 	m_pauseMenuResumeButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
 	m_pauseMenuResumeButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
-	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( Vec2( .35f, .15f ), Vec2( 0.3f, .1f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_pauseMenuExitButton->AddText( buttonTextPositionCentered, "Quit" );
+	buttonPositionData.positionOffsetFraction = Vec2( .0f, -.42f );
+
+	m_pauseMenuExitButton = m_pauseMenuPanel->AddButton( buttonPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
+	m_pauseMenuExitButton->AddText( textPositionData, "Quit" );
 	m_pauseMenuExitButton->SetButtonAndLabelTint( tint );
 	m_pauseMenuExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
 	m_pauseMenuExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
 	m_pauseMenuExitButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
-	
+
 	m_pauseMenuPanel->Deactivate();
 	m_pauseMenuPanel->Hide();
+}
 
-	// Victory 
-	m_victoryPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, 1.f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/VictoryScreen.png" ) );
-	
-	m_victoryRetryButton = m_victoryPanel->AddButton( Vec2( .45f, .1f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_victoryRetryButton->AddText( buttonTextPositionCentered, "Retry" );
+
+//-----------------------------------------------------------------------------------------------
+void Game::BuildVictoryMenu( const Rgba8& tint, const UIAlignedPositionData& textPositionData )
+{
+	UIRelativePositionData panelPositionData;
+	panelPositionData.widthFractionRange = Vec2::ZERO_TO_ONE;
+	panelPositionData.heightFractionRange = Vec2::ZERO_TO_ONE;
+
+	m_victoryPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/VictoryScreen.png" ) );
+
+	UIAlignedPositionData buttonPositionData;
+	buttonPositionData.fractionOfParentDimensions = Vec2( .1f, .05f );
+	buttonPositionData.positionOffsetFraction = Vec2( .0f, -.33f );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_CENTERED;
+
+	m_victoryRetryButton = m_victoryPanel->AddButton( buttonPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
+	m_victoryRetryButton->AddText( textPositionData, "Retry" );
 	m_victoryRetryButton->SetButtonAndLabelTint( tint );
 	m_victoryRetryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnPauseMenuExitButtonClicked );
 	m_victoryRetryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
 	m_victoryRetryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverEnd );
 
-	m_victoryExitButton = m_victoryPanel->AddButton( Vec2( .45f, .03f ), Vec2( 0.1f, .05f ), g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
-	m_victoryExitButton->AddText( buttonTextPositionCentered, "Quit" );
+	buttonPositionData.positionOffsetFraction = Vec2( .0f, -.4f );
+	m_victoryExitButton = m_victoryPanel->AddButton( buttonPositionData, g_renderer->CreateOrGetTextureFromFile( "Data/Images/UIButtonBackground.png" ) );
+	m_victoryExitButton->AddText( textPositionData, "Quit" );
 	m_victoryExitButton->SetButtonAndLabelTint( tint );
 	m_victoryExitButton->m_onClickEvent.SubscribeMethod( this, &Game::OnMainMenuExitButtonClicked );
 	m_victoryExitButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnMenuButtonHoverBegin );
@@ -905,13 +956,18 @@ void Game::BuildMenus()
 //-----------------------------------------------------------------------------------------------
 void Game::BuildHUD()
 {
-	//Texture* rootBackground = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
 	Texture* childBackground = g_renderer->GetDefaultWhiteTexture();
 
-	m_hudPanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
-	m_dialoguePanel = m_uiSystem->GetRootPanel()->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, .25f ), childBackground, Rgba8::BLACK );
+	UIAlignedPositionData panelPositionData;
+	panelPositionData.fractionOfParentDimensions = Vec2( 1.f, .25f );
+	panelPositionData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
 
-	m_currentActionPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( .9f, 1.f ), childBackground, Rgba8::BLACK );
+	m_hudPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPositionData, childBackground, Rgba8::BLACK );
+	m_dialoguePanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPositionData, childBackground, Rgba8::BLACK );
+
+	panelPositionData.fractionOfParentDimensions = Vec2( 1.f, .1f );
+	panelPositionData.alignmentWithinParentElement = ALIGN_TOP_CENTER;
+	m_currentActionPanel = m_hudPanel->AddChildPanel( panelPositionData, childBackground, Rgba8::BLACK );
 
 	UIAlignedPositionData textPositionData;
 	textPositionData.fractionOfParentDimensions = Vec2( 1.f, 1.f );

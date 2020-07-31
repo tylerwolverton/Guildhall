@@ -22,6 +22,8 @@ class UIPanel : public UIElement
 public:
 	UIPanel( const UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	~UIPanel();
 
 	virtual void Update() override;
@@ -32,6 +34,16 @@ public:
 							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 	UIButton*	AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, 
 						   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+
+	UIPanel*	AddChildPanel( const UIAlignedPositionData& positionData,
+							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIPanel*	AddChildPanel( const UIRelativePositionData& positionData,
+							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+
+	UIButton*	AddButton( const UIAlignedPositionData& positionData,
+							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
+	UIButton*	AddButton( const UIRelativePositionData& positionData,
+							   Texture* backgroundTexture = nullptr, const Rgba8& tint = Rgba8::WHITE );
 
 	void		ClearButtons();
 

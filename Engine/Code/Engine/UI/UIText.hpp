@@ -11,7 +11,6 @@ class UIElement;
 class UIText : public UILabel
 {
 public:
-	UIText( const UISystem& uiSystem, const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize = 24.f, const Vec2& alignment = ALIGN_CENTERED );
 	UIText( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, const std::string& text, float fontSize = 24.f, const Vec2& textAlignment = ALIGN_CENTERED );
 	UIText( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, const std::string& text, float fontSize = 24.f, const Vec2& textAlignment = ALIGN_CENTERED );
 

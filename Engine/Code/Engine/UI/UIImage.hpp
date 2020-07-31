@@ -12,8 +12,6 @@ class SpriteDefinition;
 class UIImage : public UILabel
 {
 public:
-	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* image = nullptr );
-	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, SpriteDefinition* spriteDef );
 	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, Texture* image = nullptr );
 	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, Texture* image = nullptr );
 	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, SpriteDefinition* spriteDef );

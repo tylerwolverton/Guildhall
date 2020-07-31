@@ -14,7 +14,6 @@
 UIButton::UIButton( const UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
 	: UIElement( uiSystem )
 {
-	m_id = UIElement::GetNextId();
 	m_boundingBox = absoluteScreenBounds;
 	m_backgroundTexture = backgroundTexture;
 	m_tint = tint;
@@ -25,7 +24,6 @@ UIButton::UIButton( const UISystem& uiSystem, const AABB2& absoluteScreenBounds,
 UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
 	: UIElement( uiSystem )
 {
-	m_id = UIElement::GetNextId();
 	m_backgroundTexture = backgroundTexture;
 	m_tint = tint;
 
@@ -38,6 +36,26 @@ UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const 
 
 	m_boundingBox.maxs = Vec2( m_boundingBox.mins.x + relativeFractionOfDimensions.x * width,
 							   m_boundingBox.mins.y + relativeFractionOfDimensions.y * height );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
+{
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
+	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentPanel.GetBoundingBox(), positionData );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
+{
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
+	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentPanel.GetBoundingBox(), positionData );
 }
 
 

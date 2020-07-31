@@ -14,6 +14,8 @@
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
 struct Rgba8;
+struct UIAlignedPositionData;
+struct UIRelativePositionData;
 class Entity;
 class Actor;
 class Cursor;
@@ -115,6 +117,10 @@ private:
 	void UpdateNPCResponse();
 
 	void BuildMenus();
+	void BuildMainMenu( const Rgba8& tint, const UIAlignedPositionData& textPositionData );
+	void BuildPauseMenu( const Rgba8& tint, const UIAlignedPositionData& textPositionData );
+	void BuildVictoryMenu( const Rgba8& tint, const UIAlignedPositionData& textPositionData );
+	
 	void BuildHUD();
 	void BuildVerbPanel();
 	void BuildInventoryPanel();

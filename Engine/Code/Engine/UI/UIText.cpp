@@ -8,17 +8,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-UIText::UIText( const UISystem& uiSystem, const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, const std::string& text, float fontSize, const Vec2& alignment )
-	: UILabel( uiSystem, parentElement, relativeFractionMinPosition, relativeFractionOfDimensions )
-	, m_text( text )
-	, m_fontSize( fontSize )
-	, m_textAlignment( alignment )
-{
-	m_fontSize = ClampMinMax( m_fontSize, 0.f, m_boundingBox.GetHeight() );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 UIText::UIText( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, const std::string& text, float fontSize, const Vec2& textAlignment )
 	: UILabel( uiSystem, parentElement, positionData )
 	, m_text( text )

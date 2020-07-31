@@ -20,6 +20,7 @@ public:
 	Vec2 fractionOfParentDimensions = Vec2::ONE;
 	Vec2 horizontalPaddingInPixels = Vec2::ZERO;
 	Vec2 verticalPaddingInPixels = Vec2::ZERO;
+	Vec2 positionOffsetFraction = Vec2::ZERO;
 	Vec2 positionOffsetInPixels = Vec2::ZERO;
 	Vec2 alignmentWithinParentElement = ALIGN_CENTERED;
 };
@@ -35,6 +36,7 @@ public:
 	Vec2 heightFractionRange = Vec2::ZERO_TO_ONE;
 	Vec2 horizontalPaddingInPixels = Vec2::ZERO;
 	Vec2 verticalPaddingInPixels = Vec2::ZERO;
+	Vec2 positionOffsetFraction = Vec2::ZERO;
 	Vec2 positionOffsetInPixels = Vec2::ZERO;
 };
 
@@ -58,6 +60,13 @@ public:
 	void Shutdown();
 
 	UIPanel* const GetRootPanel()										{ return m_rootPanel; }
+
+private:
+	AABB2 GetBoundingBoxFromParentAndPositionData( const AABB2& parentBoundingBox, const UIAlignedPositionData& positionData ) const;
+	AABB2 GetBoundingBoxFromParentAndPositionData( const AABB2& parentBoundingBox, const UIRelativePositionData& positionData ) const;
+
+	void PadBoundingBox( AABB2& boundingBox, const Vec2& horizontalPaddingInPixels, const Vec2& verticalPaddingInPixels ) const;
+	void OffsetBoundingBox( AABB2& boundingBox, const AABB2& parentBoundingBox, const Vec2& offsetFraction, const Vec2& offsetInPixels ) const;
 
 private:
 	RenderContext*	m_renderer = nullptr;

@@ -48,6 +48,41 @@ UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const Vec2& wi
 
 
 //-----------------------------------------------------------------------------------------------
+UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
+{
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
+
+	AABB2 parentBoundingBox = AABB2( Vec2::ZERO, m_uiSystem.m_windowDimensions );
+	if ( parentPanel != nullptr )
+	{
+		parentBoundingBox = parentPanel->GetBoundingBox();
+	}
+
+	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentBoundingBox, positionData );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+	: UIElement( uiSystem )
+{
+	m_backgroundTexture = backgroundTexture;
+	m_tint = tint;
+
+	AABB2 parentBoundingBox = AABB2( Vec2::ZERO, m_uiSystem.m_windowDimensions );
+
+	if ( parentPanel != nullptr )
+	{
+		parentBoundingBox = parentPanel->GetBoundingBox();
+	}
+
+	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentBoundingBox, positionData );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 UIPanel::~UIPanel()
 {
 	PTR_VECTOR_SAFE_DELETE( m_buttons );
@@ -148,9 +183,49 @@ UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& hei
 
 
 //-----------------------------------------------------------------------------------------------
+UIPanel* UIPanel::AddChildPanel( const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+{
+	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint );
+	m_childPanels.push_back( newPanel );
+
+	return newPanel;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIPanel* UIPanel::AddChildPanel( const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+{
+	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint );
+	m_childPanels.push_back( newPanel );
+
+	return newPanel;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
 {
 	UIButton* newButton = new UIButton( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, backgroundTexture, tint );
+	m_buttons.push_back( newButton );
+
+	return newButton;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIButton* UIPanel::AddButton( const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+{
+	UIButton* newButton = new UIButton( m_uiSystem, *this, positionData, backgroundTexture, tint );
+	m_buttons.push_back( newButton );
+
+	return newButton;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIButton* UIPanel::AddButton( const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+{
+	UIButton* newButton = new UIButton( m_uiSystem, *this, positionData, backgroundTexture, tint );
 	m_buttons.push_back( newButton );
 
 	return newButton;

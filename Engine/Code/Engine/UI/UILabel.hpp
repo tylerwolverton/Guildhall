@@ -14,7 +14,6 @@ class UISystem;
 class UILabel
 {
 public:
-	UILabel( const UISystem& uiSystem, const UIElement& parentElement, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions );
 	UILabel( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData );
 	UILabel( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData );
 
