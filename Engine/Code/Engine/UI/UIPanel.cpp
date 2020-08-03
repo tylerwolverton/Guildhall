@@ -173,16 +173,6 @@ void UIPanel::DebugRender() const
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel* UIPanel::AddChildPanel( const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
-{
-	UIPanel* newPanel = new UIPanel( m_uiSystem, this, widthFractionRange, heightFractionRange, backgroundTexture, tint );
-	m_childPanels.push_back( newPanel );
-
-	return newPanel;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 UIPanel* UIPanel::AddChildPanel( const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
 {
 	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint );
@@ -199,16 +189,6 @@ UIPanel* UIPanel::AddChildPanel( const UIRelativePositionData& positionData, Tex
 	m_childPanels.push_back( newPanel );
 
 	return newPanel;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-UIButton* UIPanel::AddButton( const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
-{
-	UIButton* newButton = new UIButton( m_uiSystem, *this, relativeFractionMinPosition, relativeFractionOfDimensions, backgroundTexture, tint );
-	m_buttons.push_back( newButton );
-
-	return newButton;
 }
 
 

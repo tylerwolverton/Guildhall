@@ -993,33 +993,50 @@ void Game::BuildVerbPanel()
 	UIAlignedPositionData textPositionData;
 	textPositionData.fractionOfParentDimensions = Vec2( .8f, .8f );
 
-	m_verbPanel = m_hudPanel->AddChildPanel( Vec2( 0.f, .5f ), Vec2( 0.f, .9f ), background, Rgba8::BLACK );
+	UIAlignedPositionData panelPositionData;
+	panelPositionData.fractionOfParentDimensions = Vec2( .5f, .9f );
+	panelPositionData.alignmentWithinParentElement = ALIGN_BOTTOM_LEFT;
 
-	m_giveVerbButton = m_verbPanel->AddButton( Vec2( 0.01f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
+	m_verbPanel = m_hudPanel->AddChildPanel( panelPositionData, background, Rgba8::BLACK );
+
+	// Top Row
+	UIAlignedPositionData buttonPositionData;
+	buttonPositionData.fractionOfParentDimensions = Vec2( .333f, .5f );
+	buttonPositionData.horizontalPaddingInPixels = Vec2( 5.f, 5.f );
+	buttonPositionData.verticalPaddingInPixels = Vec2( 5.f, 0.f );
+
+	buttonPositionData.alignmentWithinParentElement = ALIGN_TOP_LEFT;
+	m_giveVerbButton = m_verbPanel->AddButton( buttonPositionData, background, Rgba8::DARK_BLUE );
 	m_giveVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_giveVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_giveVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_giveVerbButton->AddText( textPositionData, "Give" );
 
-	m_openVerbButton = m_verbPanel->AddButton( Vec2( .34f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_TOP_CENTER;
+	m_openVerbButton = m_verbPanel->AddButton( buttonPositionData, background, Rgba8::DARK_BLUE );
 	m_openVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_openVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_openVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_openVerbButton->AddText( textPositionData, "Open" );
 
-	m_closeVerbButton = m_verbPanel->AddButton( Vec2( .67f, 0.52f ), Vec2( 0.32f, .48f ), background, Rgba8::DARK_BLUE );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_TOP_RIGHT;
+	m_closeVerbButton = m_verbPanel->AddButton( buttonPositionData, background, Rgba8::DARK_BLUE );
 	m_closeVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_closeVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_closeVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_closeVerbButton->AddText( textPositionData, "Close" );
 
-	m_pickUpVerbButton = m_verbPanel->AddButton( Vec2( .01f, .02f ), Vec2( 0.49f, .48f ), background, Rgba8::DARK_BLUE );
+	// Bottom Row
+	buttonPositionData.fractionOfParentDimensions = Vec2( .5f, .5f );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_BOTTOM_LEFT;
+	m_pickUpVerbButton = m_verbPanel->AddButton( buttonPositionData, background, Rgba8::DARK_BLUE );
 	m_pickUpVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_pickUpVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_pickUpVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 	m_pickUpVerbButton->AddText( textPositionData, "Pick up" );
 
-	m_talkToVerbButton = m_verbPanel->AddButton( Vec2( .51f, .02f ), Vec2( 0.48f, .48f ), background, Rgba8::DARK_BLUE );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_BOTTOM_RIGHT;
+	m_talkToVerbButton = m_verbPanel->AddButton( buttonPositionData, background, Rgba8::DARK_BLUE );
 	m_talkToVerbButton->m_onClickEvent.SubscribeMethod( this, &Game::OnVerbButtonClicked );
 	m_talkToVerbButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 	m_talkToVerbButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
@@ -1032,33 +1049,40 @@ void Game::BuildInventoryPanel()
 {
 	Texture* background = g_renderer->GetDefaultWhiteTexture();
 
-	m_inventoryPanel = m_hudPanel->AddChildPanel( Vec2( .5f, 1.f ), Vec2( 0.f, .9f ), background, Rgba8::BLACK );
+	UIAlignedPositionData panelPositionData;
+	panelPositionData.fractionOfParentDimensions = Vec2( .5f, .9f );
+	panelPositionData.alignmentWithinParentElement = ALIGN_BOTTOM_RIGHT;
+
+	m_inventoryPanel = m_hudPanel->AddChildPanel( panelPositionData, background, Rgba8::BLACK );
 
 	constexpr int NUM_IN_ROW = 4;
 	constexpr int NUM_ROWS = 2;
 	constexpr float rowHeightFraction = 1.f / (float)NUM_ROWS;
 	constexpr float rowWidthFraction = 1.f / (float)NUM_IN_ROW;
+
+	UIAlignedPositionData buttonPositionData;
+	buttonPositionData.fractionOfParentDimensions = Vec2( rowWidthFraction, rowHeightFraction );
+	buttonPositionData.positionOffsetFraction = Vec2::ZERO;
+	buttonPositionData.horizontalPaddingInPixels = Vec2( 2.5f, 2.5f );
+	buttonPositionData.verticalPaddingInPixels = Vec2( 5.f, 0.f );
+	buttonPositionData.alignmentWithinParentElement = ALIGN_TOP_LEFT;
+	
 	for ( int buttonRowNum = 0; buttonRowNum < NUM_ROWS; ++buttonRowNum )
 	{
 		for ( int buttonColumnNum = 0; buttonColumnNum < NUM_IN_ROW; ++buttonColumnNum )
 		{
-			float widthStart = (float)buttonColumnNum * rowWidthFraction;
-			float heightStart = 1.f - ( (float)buttonRowNum + 1.f ) * rowHeightFraction;
-
-			widthStart = ClampZeroToOne( widthStart );
-			heightStart = ClampZeroToOne( heightStart ) + .02f;
-
-			Vec2 relativeMinPosition( widthStart, heightStart );
-			Vec2 relativeFractionOfDimensions( rowWidthFraction - .01f, rowHeightFraction - .02f );
-
-			UIButton* inventoryButton = m_inventoryPanel->AddButton( relativeMinPosition, relativeFractionOfDimensions, background, Rgba8::DARK_BLUE );
+			UIButton* inventoryButton = m_inventoryPanel->AddButton( buttonPositionData, background, Rgba8::DARK_BLUE );
 			inventoryButton->m_onClickEvent.SubscribeMethod( this, &Game::OnInventoryButtonClicked );
 			inventoryButton->m_onHoverBeginEvent.SubscribeMethod( this, &Game::OnTestButtonHoverBegin );
 			inventoryButton->m_onHoverStayEvent.SubscribeMethod( this, &Game::OnInventoryItemHoverStay );
 			inventoryButton->m_onHoverEndEvent.SubscribeMethod( this, &Game::OnTestButtonHoverEnd );
 			
 			m_inventoryButtons.push_back( inventoryButton );
+
+			buttonPositionData.positionOffsetFraction.x += rowWidthFraction;
 		}
+
+		buttonPositionData.positionOffsetFraction = Vec2( 0.f, -rowHeightFraction );
 	}
 }
 
@@ -1077,7 +1101,12 @@ void Game::AddDialogueOptionsToHUD( const std::vector<std::string>& dialogueChoi
 	float spacing = choiceHeight * .5f;
 	for ( int choiceIdx = 0; choiceIdx < numChoices; ++choiceIdx )
 	{
-		UIButton* newButton = m_dialoguePanel->AddButton( Vec2( 0.f, currentHeight - choiceHeight ), Vec2( 1.f, choiceHeight ) );
+		UIRelativePositionData buttonPositionData;
+		buttonPositionData.widthFractionRange = Vec2( 0.f, 1.f );
+		buttonPositionData.heightFractionRange = Vec2( currentHeight - choiceHeight, choiceHeight );
+		buttonPositionData.horizontalPaddingInPixels = Vec2( 3.f, 0.f );
+
+		UIButton* newButton = m_dialoguePanel->AddButton( buttonPositionData );
 		UIRelativePositionData textPositionData;
 		newButton->AddText( textPositionData, dialogueChoices[choiceIdx], fontSize, ALIGN_CENTERED_LEFT );
 
