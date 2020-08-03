@@ -20,39 +20,13 @@ UIPanel::UIPanel( const UISystem& uiSystem, const AABB2& absoluteScreenBounds, T
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const Vec2& widthFractionRange, const Vec2& heightFractionRange, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 	: UIElement( uiSystem )
 {
 	m_backgroundTexture = backgroundTexture;
 	m_tint = tint;
-	
-	m_boundingBox = AABB2( Vec2::ZERO, m_uiSystem.m_windowDimensions );
-	
-	if ( parentPanel != nullptr )
-	{
-		m_boundingBox = parentPanel->GetBoundingBox();
-	}
-
-	AABB2 leftBox = m_boundingBox.GetBoxAtLeft( widthFractionRange.x, 0.f );
-	AABB2 rightBox = m_boundingBox.GetBoxAtRight( 1.f - widthFractionRange.y, 0.f );
-
-	AABB2 bottomBox = m_boundingBox.GetBoxAtBottom( heightFractionRange.x, 0.f );
-	AABB2 topBox = m_boundingBox.GetBoxAtTop( 1.f - heightFractionRange.y, 0.f );
-
-	m_boundingBox.mins.x = leftBox.maxs.x;
-	m_boundingBox.maxs.x = rightBox.mins.x;
-
-	m_boundingBox.mins.y = bottomBox.maxs.y;
-	m_boundingBox.maxs.y = topBox.mins.y;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
-	: UIElement( uiSystem )
-{
-	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_uvsAtMins = uvAtMins;
+	m_uvsAtMaxs = uvAtMaxs;
 
 	AABB2 parentBoundingBox = AABB2( Vec2::ZERO, m_uiSystem.m_windowDimensions );
 	if ( parentPanel != nullptr )
@@ -65,11 +39,13 @@ UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIAligne
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 	: UIElement( uiSystem )
 {
 	m_backgroundTexture = backgroundTexture;
 	m_tint = tint;
+	m_uvsAtMins = uvAtMins;
+	m_uvsAtMaxs = uvAtMaxs;
 
 	AABB2 parentBoundingBox = AABB2( Vec2::ZERO, m_uiSystem.m_windowDimensions );
 
@@ -121,7 +97,7 @@ void UIPanel::Render() const
 	if ( m_backgroundTexture != nullptr )
 	{
 		std::vector<Vertex_PCU> vertices;
-		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint );
+		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint, m_uvsAtMins, m_uvsAtMaxs );
 
 		m_uiSystem.m_renderer->BindTexture( 0, m_backgroundTexture );
 		m_uiSystem.m_renderer->DrawVertexArray( vertices );
@@ -173,9 +149,10 @@ void UIPanel::DebugRender() const
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel* UIPanel::AddChildPanel( const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel* UIPanel::AddChildPanel( const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint,
+								 const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint );
+	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint, uvAtMins, uvAtMaxs );
 	m_childPanels.push_back( newPanel );
 
 	return newPanel;
@@ -183,9 +160,10 @@ UIPanel* UIPanel::AddChildPanel( const UIAlignedPositionData& positionData, Text
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel* UIPanel::AddChildPanel( const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel* UIPanel::AddChildPanel( const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint,
+								 const Vec2& uvAtMins, const Vec2& uvAtMaxs )
 {
-	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint );
+	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint, uvAtMins, uvAtMaxs );
 	m_childPanels.push_back( newPanel );
 
 	return newPanel;

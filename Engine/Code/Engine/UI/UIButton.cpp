@@ -124,7 +124,7 @@ void UIButton::Render() const
 	if ( m_backgroundTexture != nullptr )
 	{
 		std::vector<Vertex_PCU> vertices;
-		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint );
+		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint, m_uvsAtMins, m_uvsAtMaxs );
 
 		m_uiSystem.m_renderer->BindTexture( 0, m_backgroundTexture );
 		m_uiSystem.m_renderer->DrawVertexArray( vertices );

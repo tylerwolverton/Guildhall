@@ -61,6 +61,8 @@ protected:
 
 	AABB2 m_boundingBox;
 	Rgba8 m_tint = Rgba8::WHITE;
+	Vec2 m_uvsAtMins = Vec2::ZERO;
+	Vec2 m_uvsAtMaxs = Vec2::ONE;
 
 	Texture* m_backgroundTexture = nullptr;
 

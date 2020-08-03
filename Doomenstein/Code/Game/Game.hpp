@@ -22,6 +22,7 @@ class Material;
 class TextBox;
 class Texture;
 class UIPanel;
+class UISystem;
 class World;
 
 
@@ -101,7 +102,8 @@ private:
 	bool m_isDebugRendering = false;
 
 	// UI
-	UIPanel* m_rootUIPanel = nullptr;
+	//UIPanel* m_rootUIPanel = nullptr;
+	UISystem* m_uiSystem = nullptr;
 	UIPanel* m_hudUIPanel = nullptr;
 	UIPanel* m_worldUIPanel = nullptr;
 

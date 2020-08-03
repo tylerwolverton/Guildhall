@@ -31,6 +31,9 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
+#include "Engine/UI/UIPanel.hpp"
+#include "Engine/UI/UIText.hpp"
+#include "Engine/UI/UISystem.hpp"
 
 #include "Game/Entity.hpp"
 #include "Game/GameJobs.hpp"
@@ -38,7 +41,6 @@
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
 #include "Game/TileDefinition.hpp"
-#include "Game/UI/UIPanel.hpp"
 #include "Game/World.hpp"
 
 
@@ -92,6 +94,8 @@ void Game::Startup()
 	
 	LoadAssets();
 
+	m_uiSystem = new UISystem();
+	m_uiSystem->Startup( g_window, g_renderer );
 	BuildUIHud();
 
 	m_curMapStr = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapStr );
@@ -116,11 +120,13 @@ void Game::InitializeCameras()
 	Rgba8 backgroundColor( 10, 10, 10, 255 );
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
 
+	Vec2 windowDimensions = g_window->GetDimensions();
+
 	m_uiCamera = new Camera();
+	m_uiCamera->SetOutputSize( windowDimensions );
 	m_uiCamera->SetType( eCameraType::UI );
-	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
-	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
-	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
+	m_uiCamera->SetPosition( Vec3( windowDimensions * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
 }
 
 
@@ -166,27 +172,27 @@ void Game::InitializeMeshes()
 //-----------------------------------------------------------------------------------------------
 void Game::BuildUIHud()
 {
-	m_rootUIPanel = new UIPanel( AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ) );
 	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 	
-	float hudFractionY = .13f;
+	UIAlignedPositionData panelPosData;
+	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .13f );
+	panelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
+	m_hudUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData, hudBaseTexture );
 
-	m_hudUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( 0.f, hudFractionY ), hudBaseTexture );
-	m_worldUIPanel = m_rootUIPanel->AddChildPanel( Vec2( 0.f, 1.f ), Vec2( hudFractionY, 1.f ) );
-
-	float worldUIHeightPixels = m_worldUIPanel->GetBoundingBox().GetHeight();
-	float fractionOfWidthCenter = worldUIHeightPixels / m_worldUIPanel->GetBoundingBox().GetWidth();
-	float fractionOnSides = ( 1.f - fractionOfWidthCenter ) / 2.f;
-
+	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .87f );
+	panelPosData.alignmentWithinParentElement = ALIGN_TOP_CENTER;
+	m_worldUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData );
+	
+	// Add gun sprite
 	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheetByName( "ViewModels" );
 	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
 	Vec2 uvsAtMins, uvsAtMaxs;
 	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
 
-	// TODO: Add alignment options to UI
-	m_worldUIPanel->AddChildPanel( Vec2( fractionOnSides, 1.f - fractionOnSides ), Vec2( 0.f, 1.f ),
-									texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
-
+	UIAlignedPositionData gunPanelPosData;
+	gunPanelPosData.fractionOfParentDimensions = Vec2( .5f, 1.f );
+	gunPanelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
+	m_worldUIPanel->AddChildPanel( gunPanelPosData,	texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
 }
 
 
@@ -197,8 +203,9 @@ void Game::Shutdown()
 
 	TileDefinition::s_definitions.clear();
 	
+	m_uiSystem->Shutdown();
+
 	// Clean up member variables
-	PTR_SAFE_DELETE( m_rootUIPanel );
 	PTR_SAFE_DELETE( m_testMaterial );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
@@ -230,7 +237,7 @@ void Game::Update()
 		UpdateFromKeyboard();
 	}
 
-	m_rootUIPanel->Update();
+	m_uiSystem->Update();
 
 	m_world->Update();
 
@@ -484,7 +491,11 @@ void Game::Render() const
 	m_uiCamera->SetColorTarget( 0, backbuffer );
 	g_renderer->BeginCamera( *m_uiCamera );
 
-	m_rootUIPanel->Render( g_renderer );
+	m_uiSystem->Render();
+	if ( m_isDebugRendering )
+	{
+		m_uiSystem->DebugRender();
+	}
 
 	g_renderer->EndCamera( *m_uiCamera );
 

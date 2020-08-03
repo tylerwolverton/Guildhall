@@ -212,11 +212,6 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="TileMap.cpp" />
-    <ClCompile Include="UI\UIButton.cpp" />
-    <ClCompile Include="UI\UIImage.cpp" />
-    <ClCompile Include="UI\UILabel.cpp" />
-    <ClCompile Include="UI\UIPanel.cpp" />
-    <ClCompile Include="UI\UIText.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -239,11 +234,6 @@
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="TileMap.hpp" />
-    <ClInclude Include="UI\UIButton.hpp" />
-    <ClInclude Include="UI\UIImage.hpp" />
-    <ClInclude Include="UI\UILabel.hpp" />
-    <ClInclude Include="UI\UIPanel.hpp" />
-    <ClInclude Include="UI\UIText.hpp" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>
