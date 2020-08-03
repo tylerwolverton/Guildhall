@@ -35,7 +35,6 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem, const std::string& m
 	std::map<char, MapRegionTypeDefinition*> legend;
 	if ( !ParseLegendNode( mapDefElem, legend ) ) { return; }
 	if ( !ParseMapRowsNode( mapDefElem, legend ) ) { return; }
-	
 	if ( !ParseEntitiesNode( mapDefElem ) ) { return; }
 
 	m_isValid = true;

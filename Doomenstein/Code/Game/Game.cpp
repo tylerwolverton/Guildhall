@@ -243,7 +243,7 @@ void Game::Update()
 
 	UpdateCameraTransformToMatchPlayer();
 
-	g_jobSystem->ClaimAndDeleteAllCompletedJobs();
+	//g_jobSystem->ClaimAndDeleteAllCompletedJobs();
 }
 
 
