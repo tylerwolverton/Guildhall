@@ -1,0 +1,12 @@
+read in file
+	- 1 
+lex into tokens
+	- 2
+parse into ast
+	- 3
+convert ast to bytecode
+	- 3
+create VM to execute bytecode
+	- 4
+error reporting for parsing
+	- 2

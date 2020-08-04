@@ -116,3 +116,7 @@ $RECYCLE.BIN/
 !**/Run/Data/**
 !**/ThirdParty/**/*.lib
 *.user
+*.ilk
+*.pdb
+*.idb
+*.tlog
