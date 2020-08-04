@@ -1,2 +1,2 @@
 8/4
-read in file  
+read in file  .5

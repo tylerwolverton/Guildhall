@@ -151,7 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BytecodeCommon.cpp" />
+    <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ZephyrScriptCompilerTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BytecodeCommon.hpp" />
+    <ClInclude Include="Chunk.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
