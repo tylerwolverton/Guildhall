@@ -25,6 +25,7 @@ byte OpCodeToByte( eOpCode opCode )
 //-----------------------------------------------------------------------------------------------
 eOpCode ByteToOpCode( byte opCodeByte )
 {
-	if ( opCodeByte == eOpCode::OP_RETURN ) { return eOpCode::OP_RETURN; }
+	if ( opCodeByte == eOpCode::OP_CONSTANT ) { return eOpCode::OP_CONSTANT; }
+	else if ( opCodeByte == eOpCode::OP_RETURN ) { return eOpCode::OP_RETURN; }
 	else { return eOpCode::OP_UNKNOWN; }
 }

@@ -11,9 +11,31 @@ Chunk::Chunk( const std::string& name )
 
 
 //-----------------------------------------------------------------------------------------------
+void Chunk::WriteByte( byte newByte )
+{
+	m_bytes.push_back( newByte );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Chunk::WriteByte( eOpCode opCode )
 {
-	m_bytes.push_back( (byte)opCode );
+	WriteByte( (byte)opCode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Chunk::WriteByte( int constantIdx )
+{
+	WriteByte( (byte)constantIdx );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int Chunk::AddConstant( const Value& constant )
+{
+	m_constants.push_back( constant );
+	return (int)m_constants.size() - 1;
 }
 
 
@@ -37,11 +59,16 @@ int Chunk::DisassembleInstruction( int offsetToNextInstruction )
 	eOpCode opCode = ByteToOpCode( m_bytes[offsetToNextInstruction] );
 	switch ( opCode )
 	{
+		case eOpCode::OP_CONSTANT:
+		{
+			byte constantIdx = m_bytes[offsetToNextInstruction + 1];
+			std::cout << "OP_CONSTANT " << constantIdx <<" '" << m_constants[constantIdx].value << "'\n";
+			return offsetToNextInstruction + 2;
+		}
 		case eOpCode::OP_RETURN:
 		{
 			std::cout << "OP_RETURN\n";
 			return offsetToNextInstruction + 1;
-			break;
 		}
 		default:
 		{

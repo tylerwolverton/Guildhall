@@ -153,11 +153,13 @@
   <ItemGroup>
     <ClCompile Include="BytecodeCommon.cpp" />
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="VirtualMachine.cpp" />
     <ClCompile Include="ZephyrScriptCompilerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BytecodeCommon.hpp" />
     <ClInclude Include="Chunk.hpp" />
+    <ClInclude Include="VirtualMachine.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
