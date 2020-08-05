@@ -32,6 +32,13 @@ void Chunk::WriteByte( int constantIdx )
 
 
 //-----------------------------------------------------------------------------------------------
+void Chunk::WriteConstant( const Value& constant )
+{
+	WriteByte( AddConstant( constant ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 int Chunk::AddConstant( const Value& constant )
 {
 	m_constants.push_back( constant );
@@ -62,14 +69,21 @@ int Chunk::DisassembleInstruction( int offsetToNextInstruction )
 		case eOpCode::OP_CONSTANT:
 		{
 			byte constantIdx = m_bytes[offsetToNextInstruction + 1];
-			std::cout << "OP_CONSTANT " << constantIdx <<" '" << m_constants[constantIdx].value << "'\n";
+			std::cout << ToString( opCode ) << " " << (int)constantIdx <<" '" << m_constants[constantIdx].value << "'\n";
 			return offsetToNextInstruction + 2;
 		}
+
+		case eOpCode::OP_ADD:
+		case eOpCode::OP_SUBTRACT:
+		case eOpCode::OP_MULTIPLY:
+		case eOpCode::OP_DIVIDE:
+		case eOpCode::OP_NEGATE:
 		case eOpCode::OP_RETURN:
 		{
-			std::cout << "OP_RETURN\n";
+			std::cout << ToString( opCode ) << std::endl;
 			return offsetToNextInstruction + 1;
 		}
+
 		default:
 		{
 			std::cout << "Unknown opcode '" << m_bytes[offsetToNextInstruction] << "'\n";

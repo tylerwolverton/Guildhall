@@ -15,6 +15,7 @@ public:
 	void WriteByte( byte newByte );
 	void WriteByte( eOpCode opCode );
 	void WriteByte( int constantIdx );
+	void WriteConstant( const Value& constant );
 
 	int AddConstant( const Value& constant );
 

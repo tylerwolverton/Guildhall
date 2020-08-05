@@ -22,7 +22,18 @@ int main()
 
 	Chunk testChunk( "chunk1" );
 	testChunk.WriteByte( eOpCode::OP_CONSTANT );
-	testChunk.WriteByte( testChunk.AddConstant( Value( 4.f ) ) );
+	testChunk.WriteConstant( Value( 4.f ) );
+
+	testChunk.WriteByte( eOpCode::OP_CONSTANT );
+	testChunk.WriteConstant( Value( 2.f ) );
+
+	testChunk.WriteByte( eOpCode::OP_MULTIPLY );
+
+	testChunk.WriteByte( eOpCode::OP_CONSTANT );
+	testChunk.WriteConstant( Value( 2.f ) );
+
+	testChunk.WriteByte( eOpCode::OP_ADD );
+
 	testChunk.WriteByte( eOpCode::OP_RETURN );
 
 	testChunk.Disassemble();
