@@ -10,17 +10,17 @@ typedef unsigned char byte;
 //-----------------------------------------------------------------------------------------------
 enum class eOpCode : byte
 {
-	OP_UNKNOWN,
+	UNKNOWN,
 
-	OP_CONSTANT,
-	OP_ADD,
-	OP_SUBTRACT,
-	OP_MULTIPLY,
-	OP_DIVIDE,
-	OP_NEGATE,
-	OP_RETURN,
+	CONSTANT,
+	ADD,
+	SUBTRACT,
+	MULTIPLY,
+	DIVIDE,
+	NEGATE,
+	RETURN,
 
-	OP_LAST_VAL
+	LAST_VAL
 };
 
 bool operator==( eOpCode opCode, byte opCodeByte );
@@ -30,6 +30,68 @@ byte OpCodeToByte( eOpCode opCode );
 eOpCode ByteToOpCode( byte opCodeByte );
 
 std::string ToString( eOpCode opCode );
+
+
+//-----------------------------------------------------------------------------------------------
+enum class eTokenType
+{
+	UNKNOWN,
+
+	// Single-character tokens
+	LEFT_PAREN, 
+	RIGHT_PAREN,
+	LEFT_BRACE, 
+	RIGHT_BRACE,
+	COMMA, 
+	DOT, 
+	MINUS, 
+	PLUS,
+	SEMICOLON,
+	SLASH, 
+	STAR,
+
+	// One or two character tokens
+	BANG, 
+	BANG_EQUAL,
+	EQUAL, 
+	EQUAL_EQUAL,
+	GREATER, 
+	GREATER_EQUAL,
+	LESS, 
+	LESS_EQUAL,
+
+	// Literals
+	IDENTIFIER, 
+	STRING, 
+	NUMBER,
+
+	// Keywords
+	AND,
+	OR, 
+	IF,
+	ELSE, 
+	FALSE,
+	TRUE, 
+	WHILE,
+	FOR,  
+	PRINT, 
+	RETURN, 
+
+	ERROR,
+	END_OF_FILE,
+
+	LAST_VAL
+};
+
+
+//-----------------------------------------------------------------------------------------------
+enum class eInterpretResult
+{
+	OK,
+	COMPILE_ERROR,
+	RUNTIME_ERROR
+};
+
 
 //-----------------------------------------------------------------------------------------------
 union Value

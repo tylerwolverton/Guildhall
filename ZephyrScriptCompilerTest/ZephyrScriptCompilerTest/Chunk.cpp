@@ -66,19 +66,19 @@ int Chunk::DisassembleInstruction( int offsetToNextInstruction )
 	eOpCode opCode = ByteToOpCode( m_bytes[offsetToNextInstruction] );
 	switch ( opCode )
 	{
-		case eOpCode::OP_CONSTANT:
+		case eOpCode::CONSTANT:
 		{
 			byte constantIdx = m_bytes[offsetToNextInstruction + 1];
 			std::cout << ToString( opCode ) << " " << (int)constantIdx <<" '" << m_constants[constantIdx].value << "'\n";
 			return offsetToNextInstruction + 2;
 		}
 
-		case eOpCode::OP_ADD:
-		case eOpCode::OP_SUBTRACT:
-		case eOpCode::OP_MULTIPLY:
-		case eOpCode::OP_DIVIDE:
-		case eOpCode::OP_NEGATE:
-		case eOpCode::OP_RETURN:
+		case eOpCode::ADD:
+		case eOpCode::SUBTRACT:
+		case eOpCode::MULTIPLY:
+		case eOpCode::DIVIDE:
+		case eOpCode::NEGATE:
+		case eOpCode::RETURN:
 		{
 			std::cout << ToString( opCode ) << std::endl;
 			return offsetToNextInstruction + 1;

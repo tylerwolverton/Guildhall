@@ -11,7 +11,8 @@ class VirtualMachine
 public:
 	VirtualMachine() {}
 
-	void Interpret( const Chunk& chunk );
+	eInterpretResult Interpret( const Chunk& chunk );
+	eInterpretResult Interpret( const std::string& file );
 
 private:
 	// TODO: Write my own stack that does this

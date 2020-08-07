@@ -27,6 +27,15 @@
     <ClCompile Include="VirtualMachine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Compiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Token.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BytecodeCommon.hpp">
@@ -36,6 +45,15 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="VirtualMachine.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scanner.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Token.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

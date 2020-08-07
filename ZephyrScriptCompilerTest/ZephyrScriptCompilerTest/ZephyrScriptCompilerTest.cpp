@@ -1,43 +1,62 @@
 #include <iostream>
-#include <stdio.h>
 #include <fstream>
+#include <sstream>
 
 #include "Chunk.hpp"
 #include "VirtualMachine.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-int main()
+bool RunFromFile( const char* script )
 {
-	/*FILE* scriptFile = nullptr;
-	scriptFile = std::fopen_s( "./test.zs", "r" );
-
-	if ( scriptFile != nullptr )
+	// read file into memory
+	std::ifstream inFile( script );
+	if ( !inFile.is_open() )
 	{
-		fprintf( scriptFile, "" );
-		fclose( scriptFile );
+		std::cout << "Input file couldn't be opened\n";
+		return false;
 	}
 
-    std::cout << "Hello World!\n";*/
+	std::stringstream buffer;
+	buffer << inFile.rdbuf();
+	inFile.close();
+	
+	VirtualMachine vm;
+	eInterpretResult result = vm.Interpret( buffer.str() );
 
-	Chunk testChunk( "chunk1" );
-	testChunk.WriteByte( eOpCode::OP_CONSTANT );
+	if ( result == eInterpretResult::COMPILE_ERROR ) exit( 65 );
+	if ( result == eInterpretResult::RUNTIME_ERROR ) exit( 70 );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int main()
+{
+	if ( !RunFromFile( "./test.zs" ) )
+	{
+		return 1;
+	}
+
+	/*Chunk testChunk( "chunk1" );
+	testChunk.WriteByte( eOpCode::CONSTANT );
 	testChunk.WriteConstant( Value( 4.f ) );
 
-	testChunk.WriteByte( eOpCode::OP_CONSTANT );
+	testChunk.WriteByte( eOpCode::CONSTANT );
 	testChunk.WriteConstant( Value( 2.f ) );
 
-	testChunk.WriteByte( eOpCode::OP_MULTIPLY );
+	testChunk.WriteByte( eOpCode::MULTIPLY );
 
-	testChunk.WriteByte( eOpCode::OP_CONSTANT );
+	testChunk.WriteByte( eOpCode::CONSTANT );
 	testChunk.WriteConstant( Value( 2.f ) );
 
-	testChunk.WriteByte( eOpCode::OP_ADD );
+	testChunk.WriteByte( eOpCode::ADD );
 
-	testChunk.WriteByte( eOpCode::OP_RETURN );
+	testChunk.WriteByte( eOpCode::RETURN );
 
 	testChunk.Disassemble();
 
 	VirtualMachine vm;
-	vm.Interpret( testChunk );
+	vm.Interpret( testChunk );*/
 }

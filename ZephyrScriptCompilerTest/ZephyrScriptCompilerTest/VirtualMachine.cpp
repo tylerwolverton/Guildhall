@@ -1,10 +1,12 @@
 #include "VirtualMachine.hpp"
+#include "Compiler.hpp"
+#include "Scanner.hpp"
 
 #include <iostream>
 
 
 //-----------------------------------------------------------------------------------------------
-void VirtualMachine::Interpret( const Chunk& chunk )
+eInterpretResult VirtualMachine::Interpret( const Chunk& chunk )
 {
 	int chunkIdx = 0;
 
@@ -14,7 +16,7 @@ void VirtualMachine::Interpret( const Chunk& chunk )
 		eOpCode opCode = ByteToOpCode( instruction );
 		switch ( opCode )
 		{
-			case eOpCode::OP_CONSTANT:
+			case eOpCode::CONSTANT:
 			{
 				int constantIdx = chunk.GetByte( chunkIdx++ );
 				Value constant = chunk.GetConstant( constantIdx );
@@ -22,10 +24,10 @@ void VirtualMachine::Interpret( const Chunk& chunk )
 			}
 			break;
 
-			case eOpCode::OP_ADD:
-			case eOpCode::OP_SUBTRACT:
-			case eOpCode::OP_MULTIPLY:
-			case eOpCode::OP_DIVIDE:
+			case eOpCode::ADD:
+			case eOpCode::SUBTRACT:
+			case eOpCode::MULTIPLY:
+			case eOpCode::DIVIDE:
 			{
 				Value b = PopValue();
 				Value a = PopValue();
@@ -33,7 +35,7 @@ void VirtualMachine::Interpret( const Chunk& chunk )
 			}
 			break;
 
-			case eOpCode::OP_NEGATE:
+			case eOpCode::NEGATE:
 			{
 				Value negativeVal = PopValue();
 				negativeVal.value = -negativeVal.value;
@@ -41,19 +43,31 @@ void VirtualMachine::Interpret( const Chunk& chunk )
 			}
 			break;
 
-			case eOpCode::OP_RETURN:
+			case eOpCode::RETURN:
 			{
 				std::cout << "Constant val = " << PopValue().value << std::endl;
-				return;
+				return eInterpretResult::OK;
 			}
 			break;
 
 			default:
 			{
 				std::cout << "Unknown instruction ' " << instruction << "'\n";
+				return eInterpretResult::COMPILE_ERROR;
 			}
 		}
 	}
+
+	return eInterpretResult::OK;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eInterpretResult VirtualMachine::Interpret( const std::string& file )
+{
+
+
+	return eInterpretResult::OK;
 }
 
 
@@ -79,28 +93,28 @@ void VirtualMachine::PushBinaryOp( Value a, Value b, eOpCode opCode )
 {
 	switch ( opCode )
 	{
-		case eOpCode::OP_ADD:
+		case eOpCode::ADD:
 		{
 			float result = a.value + b.value;
 			PushValue( Value( result ) );
 		}
 		break;
 
-		case eOpCode::OP_SUBTRACT:
+		case eOpCode::SUBTRACT:
 		{
 			float result = a.value - b.value;
 			PushValue( Value( result ) );
 		}
 		break;
 
-		case eOpCode::OP_MULTIPLY:
+		case eOpCode::MULTIPLY:
 		{
 			float result = a.value * b.value;
 			PushValue( Value( result ) );
 		}
 		break;
 
-		case eOpCode::OP_DIVIDE:
+		case eOpCode::DIVIDE:
 		{
 			float result = a.value / b.value;
 			PushValue( Value( result ) );

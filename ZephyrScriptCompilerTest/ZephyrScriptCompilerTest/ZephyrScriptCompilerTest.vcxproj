@@ -153,12 +153,18 @@
   <ItemGroup>
     <ClCompile Include="BytecodeCommon.cpp" />
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="Token.cpp" />
     <ClCompile Include="VirtualMachine.cpp" />
     <ClCompile Include="ZephyrScriptCompilerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BytecodeCommon.hpp" />
     <ClInclude Include="Chunk.hpp" />
+    <ClInclude Include="Compiler.hpp" />
+    <ClInclude Include="Scanner.hpp" />
+    <ClInclude Include="Token.hpp" />
     <ClInclude Include="VirtualMachine.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
