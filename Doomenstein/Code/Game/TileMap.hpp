@@ -4,7 +4,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class MapDefinition;
+struct MapData;
 class GPUMesh;
 class Material;
 
@@ -27,7 +27,7 @@ enum class eCardinalDirection
 class TileMap : public Map
 {
 public:
-	TileMap( std::string name, MapDefinition* mapDef );
+	TileMap( const MapData& mapData );
 	virtual ~TileMap();
 
 	virtual void Load() override;
@@ -46,8 +46,8 @@ public:
 	bool DoesRayHitEntityAlongZ( RaycastResult& raycastResult, const Vec3& potentialImpactPos, const Entity& entity ) const;
 
 private:
-	void				PopulateTiles();
-	void				CreateInitialTiles();
+	void				PopulateTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs );
+	void				CreateInitialTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs );
 	void				SolidifySurroundingTiles();
 
 	void				AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topLeft, const Vec3& topRight, const Vec2& uvMins = Vec2::ZERO, const Vec2& uvMaxs = Vec2::ONE );

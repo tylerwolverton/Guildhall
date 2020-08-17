@@ -6,7 +6,7 @@
 
 #include "Game/TileMap.hpp"
 #include "Game/GameCommon.hpp"
-#include "Game/MapDefinition.hpp"
+#include "Game/MapData.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -69,38 +69,12 @@ void World::DebugRender() const
 
 
 //-----------------------------------------------------------------------------------------------
-void World::LoadMap( const std::string& mapName )
+void World::AddNewMap( const MapData& mapData )
 {
-	Map* mapIter = GetLoadedMapByName( mapName );
-	if ( mapIter != nullptr )
+	if ( mapData.type == "TileMap" )
 	{
-		g_devConsole->PrintError( Stringf( "Map '%s' has already been loaded", mapName.c_str() ) );
-		return;
-	}
-
-	// Only load maps that have already been parsed and added to MapDefinitions
-	MapDefinition* mapDef = MapDefinition::GetMapDefinition( mapName );
-	if ( mapDef == nullptr )
-	{
-		g_devConsole->PrintError( Stringf( "Map '%s' has not been loaded from Maps directory", mapName.c_str() ) );
-		return;
-	}
-
-	if ( mapDef->GetType() == "TileMap" )
-	{
-		TileMap* tileMap = new TileMap( mapName, mapDef );
-		m_loadedMaps[mapName] = tileMap;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void World::LoadMap( const std::string& mapName, MapDefinition* mapDef )
-{
-	if ( mapDef->GetType() == "TileMap" )
-	{
-		TileMap* tileMap = new TileMap( mapName, mapDef );
-		m_loadedMaps[mapName] = tileMap;
+		TileMap* tileMap = new TileMap( mapData );
+		m_loadedMaps[mapData.mapName] = tileMap;
 	}
 }
 

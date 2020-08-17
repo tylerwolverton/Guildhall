@@ -9,7 +9,7 @@ struct Vec2;
 class Clock;
 class Entity;
 class Map;
-class MapDefinition;
+struct MapData;
 
 //-----------------------------------------------------------------------------------------------
 class World
@@ -22,8 +22,9 @@ public:
 	void Render() const;
 	void DebugRender() const;
 
-	void LoadMap( const std::string& mapName );
-	void LoadMap( const std::string& mapName, MapDefinition* mapDef );
+	void AddNewMap( const std::string& mapName );
+	void AddNewMap( const std::string& mapName, MapData* mapDef );
+	void AddNewMap( const MapData& mapData );
 	void ChangeMap( const std::string& mapName );
 	
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );

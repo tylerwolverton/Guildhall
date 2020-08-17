@@ -14,15 +14,16 @@
 #include "Game/Projectile.hpp"
 #include "Game/Portal.hpp"
 #include "Game/EntityDefinition.hpp"
-#include "Game/MapDefinition.hpp"
+#include "Game/MapData.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Map::Map( std::string name, MapDefinition* mapDef )
-	: m_name( name )
-	, m_mapDef( mapDef )
+Map::Map( const MapData& mapData )
+	: m_name( mapData.mapName )
+	, m_playerStartPos( mapData.playerStartPos )
+	, m_playerStartYaw( mapData.playerStartYaw )
 {
-	LoadEntitiesFromDefinition();
+	LoadEntities( mapData.mapEntityDefs );
 }
 
 
@@ -210,13 +211,11 @@ Entity* Map::GetClosestEntityInSector( const Vec2& observerPos, float forwardDeg
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::LoadEntitiesFromDefinition()
+void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 {
-	std::vector<MapEntityDefinition> mapEntityDefs = m_mapDef->GetMapEntityDefs();
-
 	for ( int mapEntityIdx = 0; mapEntityIdx < (int)mapEntityDefs.size(); ++mapEntityIdx )
 	{
-		MapEntityDefinition& mapEntityDef = mapEntityDefs[mapEntityIdx];
+		const MapEntityDefinition& mapEntityDef = mapEntityDefs[mapEntityIdx];
 		if ( mapEntityDef.entityDef == nullptr )
 		{
 			continue;

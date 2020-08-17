@@ -12,7 +12,7 @@ class MapMaterialTypeDefinition;
 //-----------------------------------------------------------------------------------------------
 class MapRegionTypeDefinition
 {
-	friend class MapDefinition;
+	friend struct MapData;
 
 public:
 	MapRegionTypeDefinition();

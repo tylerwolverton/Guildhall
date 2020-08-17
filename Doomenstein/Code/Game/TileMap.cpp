@@ -13,19 +13,19 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/MapDefinition.hpp"
+#include "Game/MapData.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-TileMap::TileMap( std::string name, MapDefinition* mapDef )
-	: Map( name, mapDef )
+TileMap::TileMap( const MapData& mapData )
+	: Map( mapData )
 {
-	m_dimensions = mapDef->m_dimensions;
+	m_dimensions = mapData.dimensions;
 
 	BuildCardinalDirectionsArray();
-	PopulateTiles();
+	PopulateTiles( mapData.regionTypeDefs );
 	CreateTestBoxes();
 }
 
@@ -47,7 +47,7 @@ void TileMap::Load()
 
 	g_audioSystem->PlaySound( g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" ), false, volume, balance, speed );
 
-	g_game->SetCameraPositionAndYaw( m_mapDef->GetPlayerStartPos(), m_mapDef->GetPlayerStartYaw() );
+	g_game->SetCameraPositionAndYaw( m_playerStartPos, m_playerStartYaw );
 }
 
 
@@ -596,21 +596,21 @@ bool TileMap::DoesRayHitEntityAlongZ( RaycastResult& raycastResult, const Vec3& 
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::PopulateTiles()
+void TileMap::PopulateTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs )
 {
-	CreateInitialTiles();
+	CreateInitialTiles( regionTypeDefs );
 	//SolidifySurroundingTiles();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::CreateInitialTiles()
+void TileMap::CreateInitialTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs )
 {
 	for ( int y = 0; y < m_dimensions.y; ++y )
 	{
 		for ( int x = 0; x < m_dimensions.x; ++x )
 		{
-			m_tiles.push_back( Tile( IntVec2( x, y ), m_mapDef->m_regionTypeDefs[( y * m_dimensions.x ) + x] ) );
+			m_tiles.push_back( Tile( IntVec2( x, y ), regionTypeDefs[( y * m_dimensions.x ) + x] ) );
 		}
 	}
 }

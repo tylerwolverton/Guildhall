@@ -67,7 +67,7 @@ private:
 	void LoadXmlMapMaterials();
 	void LoadXmlMapRegions();
 	void LoadXmlMaps();
-	void LoadNewMap( const std::string& mapName );
+	void ChangeMap( const std::string& mapName );
 
 	void InitializeCameras();
 	void InitializeMeshes();

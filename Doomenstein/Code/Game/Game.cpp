@@ -37,7 +37,7 @@
 
 #include "Game/Entity.hpp"
 #include "Game/GameJobs.hpp"
-#include "Game/MapDefinition.hpp"
+#include "Game/MapData.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
 #include "Game/TileDefinition.hpp"
@@ -846,10 +846,12 @@ void Game::LoadXmlMaps()
 			return;
 		}
 
-		MapDefinition* mapDef = new MapDefinition( *root, GetFileNameWithoutExtension( mapName ), m_defaultMapRegionStr );
-		MapDefinition::s_definitions[mapDef->GetName()] = mapDef;
+		MapData mapData( *root, GetFileNameWithoutExtension( mapName ), m_defaultMapRegionStr );
 
-		m_world->LoadMap( mapDef->GetName() );
+		if ( mapData.isValid )
+		{
+			m_world->AddNewMap( mapData );
+		}
 	}
 
 	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
@@ -857,11 +859,8 @@ void Game::LoadXmlMaps()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::LoadNewMap( const std::string& mapName )
+void Game::ChangeMap( const std::string& mapName )
 {
-	//PTR_SAFE_DELETE( m_world );
-
-	//m_world = new World( m_gameClock );
 	m_world->ChangeMap( mapName );
 }
 

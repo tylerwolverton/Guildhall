@@ -9,7 +9,8 @@
 //-----------------------------------------------------------------------------------------------
 class Entity;
 class Portal;
-class MapDefinition;
+struct MapData;
+struct MapEntityDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ struct RaycastResult
 class Map
 {
 public:
-	Map( std::string name, MapDefinition* mapDef );
+	Map( const MapData& mapData );
 	virtual ~Map();
 
 	virtual void Load() = 0;
@@ -51,7 +52,7 @@ public:
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 
 protected:
-	void LoadEntitiesFromDefinition();
+	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 	void ResolveEntityVsEntityCollisions();
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 	void ResolveEntityVsPortalCollisions();
@@ -61,8 +62,11 @@ protected:
 	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 
 protected:
-	std::string			m_name;
-	MapDefinition*      m_mapDef;
+	std::string			 m_name;
+
+	// Multiplayer TODO: Make this into an array
+	Vec2				 m_playerStartPos = Vec2::ZERO;
+	float				 m_playerStartYaw = 0.f;
 
 	std::vector<Entity*> m_entities;
 	std::vector<Portal*> m_portals;

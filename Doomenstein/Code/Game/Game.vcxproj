@@ -203,7 +203,7 @@
     <ClCompile Include="GameMeshUtils.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="MapDefinition.cpp" />
+    <ClCompile Include="MapData.cpp" />
     <ClCompile Include="MapMaterialTypeDefinition.cpp" />
     <ClCompile Include="MapRegionTypeDefinition.cpp" />
     <ClCompile Include="Portal.cpp" />
@@ -225,7 +225,7 @@
     <ClInclude Include="GameJobs.hpp" />
     <ClInclude Include="GameMeshUtils.hpp" />
     <ClInclude Include="Map.hpp" />
-    <ClInclude Include="MapDefinition.hpp" />
+    <ClInclude Include="MapData.hpp" />
     <ClInclude Include="MapMaterialTypeDefinition.hpp" />
     <ClInclude Include="MapRegionTypeDefinition.hpp" />
     <ClInclude Include="Portal.hpp" />
