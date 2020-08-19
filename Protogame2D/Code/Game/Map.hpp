@@ -7,91 +7,62 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class Player;
-class Actor;
-class MapDefinition;
+class Entity;
+class Portal;
+struct MapData;
+struct MapEntityDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class CardinalDirections
+struct RaycastResult
 {
-	CENTER,
-	NORTH,
-	EAST,
-	SOUTH,
-	WEST,
-	NORTHWEST,
-	NORTHEAST,
-	SOUTHEAST,
-	SOUTHWEST
+	Vec2 startPos;
+	Vec2 forwardNormal;
+	float maxDist = 0.f;
+	bool didImpact = false;
+	Vec2 impactPos;
+	Entity* impactEntity = nullptr;
+	float impactFraction = 0.f;
+	float impactDist = 0.f;
+	Vec2 impactSurfaceNormal;
 };
 
 
 //-----------------------------------------------------------------------------------------------
 class Map
 {
-	friend class MapGenStep_Mutate;
-	friend class MapGenStep_Worm;
-	friend class MapGenStep_FromImage;
-	friend class MapGenStep_CellularAutomata;
-	friend class MapGenStep_RoomsAndPaths;
-
 public:
-	Map( std::string name, MapDefinition* mapDef );
+	Map( const MapData& mapData );
 	~Map();
 
-	void Update( float deltaSeconds );
+	virtual void Load() = 0;
+	virtual void Unload() = 0;
+
+	virtual void Update( float deltaSeconds );
+	virtual void UpdateMesh() = 0;
 	void UpdateCameras();
-	void Render() const;
-	void DebugRender() const;
+	virtual void Render() const;
+	virtual void DebugRender() const;
+
+	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
+	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
+
+	void RemoveOwnershipOfEntity( Entity* entityToRemove );
+	void TakeOwnershipOfEntity( Entity* entityToAdd );
 
 private:
-	void				PopulateTiles();
-	void				CreateInitialTiles();
-	void				SetEdgeTiles();
+	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
+	void ResolveEntityVsEntityCollisions();
+	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
+	void ResolveEntityVsPortalCollisions();
 
-	Actor*				SpawnNewActor( const Vec2& position, std::string actorName );
-	void				SpawnPlayer();
+	void WarpEntityInMap( Entity* entity, Portal* portal );
 
-	// Tile helpers
-	int					GetTileIndexFromTileCoords( int xCoord, int yCoord );
-	int					GetTileIndexFromTileCoords( const IntVec2& coords );
-	int					GetTileIndexFromWorldCoords( const Vec2& coords );
+	virtual RaycastResult Raycast( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const = 0;
 
-	Tile*				GetTileFromTileCoords( const IntVec2& tileCoords );
-	Tile*				GetTileFromTileCoords( int xCoord, int yCoord );
-	Tile*				GetTileFromWorldCoords( const Vec2& worldCoords );
-	const Vec2			GetWorldCoordsFromTile( const Tile& tile );
+protected:
+	std::string			 m_name;
 
-	std::vector<Tile*>	GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile );
-
-	void				UpdateEntities( float deltaSeconds );
-	void				UpdateMouseDebugInspection();
-
-	void				RenderTiles() const;
-	void				RenderEntities() const;
-	void				DebugRenderEntities() const;
-	void				CenterCameraOnPlayer() const;
-	
-	// Physics
-	void				BuildCardinalDirectionsArray();
-	void				ResolveCollisions();
-	void				ResolveEntityCollisionsWithSurroundingTiles( Entity& entity );
-	void				ResolveEntityCollisionWithTile( Entity& entity, Vec2 tilePosition );
-
-	bool				CanEntityEnterTile( const Entity& entity, const Tile& tile );
-
-private:
-	std::string			m_name;
-	MapDefinition*      m_mapDef;
-
-	int					m_width = 0;
-	int					m_height = 0;
-
-	std::vector<Tile>	m_tiles;
-	EntityVector		m_entities;
-	Entity*				m_player;
-
-	// Physics
-	Vec2				m_cardinalDirectionOffsets[9];
+	std::vector<Entity*> m_entities;
+	std::vector<Portal*> m_portals;
 };

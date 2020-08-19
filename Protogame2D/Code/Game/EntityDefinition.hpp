@@ -1,40 +1,60 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Game/GameCommon.hpp"
 
 #include <string>
 
 
+//-----------------------------------------------------------------------------------------------
 class SpriteSheet;
+class SpriteAnimationSetDefinition;
 
 
+//-----------------------------------------------------------------------------------------------
+enum eEntityType
+{
+	UNKNOWN = -1,
+	ENTITY,
+	ACTOR,
+	PROJECTILE,
+	PORTAL,
+};
+
+std::string GetEntityTypeAsString( eEntityType entityType );
+
+
+//-----------------------------------------------------------------------------------------------
 class EntityDefinition
 {
 	friend class Entity;
 
 public:
 	explicit EntityDefinition( const XmlElement& entityDefElem );
+	~EntityDefinition();
 
-	std::string GetName()											{ return m_name; }
-	std::string GetFaction()										{ return m_faction; }
+	bool		IsValid() const { return m_isValid; }
+	std::string GetName() const { return m_name; }
+	eEntityType GetType() const { return m_type; }
+	float		GetWalkSpeed() const { return m_walkSpeed; }
+	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const { return m_spriteAnimSetDefs; }
+	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
-	bool CanWalk()													{ return m_canWalk; }
-	bool CanFly()													{ return m_canFly; }
-	bool CanSwim()													{ return m_canSwim; }
+	static EntityDefinition* GetEntityDefinition( std::string entityName );
+
+public:
+	static std::map< std::string, EntityDefinition* > s_definitions;
 
 protected:
+	bool			m_isValid = false;
 	std::string		m_name;
-	std::string		m_faction;
+	eEntityType		m_type = eEntityType::UNKNOWN;
 	float			m_physicsRadius = 0.f;
-	AABB2			m_localDrawBounds = AABB2::ONE_BY_ONE;
-	int				m_maxHealth = 1;
-	int				m_startHealth = 1;
-	SpriteSheet*	m_spriteSheet = nullptr;
+	float			m_mass = 1.f;
+	float			m_walkSpeed = 0.f;
+
+	AABB2			m_localDrawBounds;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
 
-	bool			m_canWalk = false;
-	bool			m_canFly = false;
-	bool			m_canSwim = false;
-
+	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 };
-

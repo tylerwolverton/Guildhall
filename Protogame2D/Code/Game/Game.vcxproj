@@ -194,7 +194,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="ActorDefinition.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityDefinition.cpp" />
@@ -202,20 +201,18 @@
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="MapDefinition.cpp" />
-    <ClCompile Include="MapGenStep.cpp" />
-    <ClCompile Include="MapGenStep_CellularAutomata.cpp" />
-    <ClCompile Include="MapGenStep_FromImage.cpp" />
-    <ClCompile Include="MapGenStep_Mutate.cpp" />
-    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp" />
-    <ClCompile Include="MapGenStep_Worm.cpp" />
+    <ClCompile Include="MapData.cpp" />
+    <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="SpriteAnimationSetDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
+    <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="TileMaterialDefinition.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.hpp" />
-    <ClInclude Include="ActorDefinition.hpp" />
     <ClInclude Include="App.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
@@ -223,22 +220,23 @@
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
     <ClInclude Include="Map.hpp" />
-    <ClInclude Include="MapDefinition.hpp" />
-    <ClInclude Include="MapGenStep.hpp" />
-    <ClInclude Include="MapGenStep_CellularAutomata.hpp" />
-    <ClInclude Include="MapGenStep_FromImage.hpp" />
-    <ClInclude Include="MapGenStep_Mutate.hpp" />
-    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp" />
-    <ClInclude Include="MapGenStep_Worm.hpp" />
+    <ClInclude Include="MapData.hpp" />
+    <ClInclude Include="Portal.hpp" />
+    <ClInclude Include="Projectile.hpp" />
+    <ClInclude Include="SpriteAnimationSetDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
+    <ClInclude Include="TileMap.hpp" />
+    <ClInclude Include="TileMaterialDefinition.hpp" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\EntityTypes.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\TileMaterialDefs.xml" />
+    <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

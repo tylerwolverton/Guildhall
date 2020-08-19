@@ -19,11 +19,12 @@ public:
 
 	std::string GetName() const										{ return m_tileDef->GetName(); }
 	AABB2		GetBounds() const;
-	bool		AllowsWalking() const;
-	bool		AllowsSwimming() const;
-	bool		AllowsFlying() const;
+
+	bool IsSolid() const											{ return m_tileDef->m_isSolid; }
 
 	void		SetTileDef( TileDefinition* tileDef )				{ m_tileDef = tileDef; }
+
+	TileMaterialDefinition* GetTileMaterialDef() const				{ return m_tileDef->m_matDef; }
 
 public:
 	IntVec2			m_tileCoords;

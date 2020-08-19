@@ -7,7 +7,6 @@
 
 //-----------------------------------------------------------------------------------------------
 class Texture;
-class ActorDefinition;
 class SpriteAnimDefinition;
 
 
@@ -15,7 +14,7 @@ class SpriteAnimDefinition;
 class Actor : public Entity
 {
 public:
-	Actor( const Vec2& position, ActorDefinition* actorDef );
+	Actor( const EntityDefinition& entityDef );
 	~Actor();
 
 	virtual void Update( float deltaSeconds );
@@ -25,16 +24,9 @@ public:
 private:
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateFromGamepad( float deltaSeconds );
-	void UpdateAnimation();
+	//void UpdateAnimation();
 
 protected:
-	ActorDefinition*		m_actorDef = nullptr;
 	int						m_controllerID = -1;
 	bool					m_isPlayer = false;
-	float					m_cumulativeTime = 0.f;
-	
-	float					m_wanderDirectionChangeCooldown = 0.f;
-	float					m_speed = 0.f;
-
-	SpriteAnimDefinition*	m_curAnimDef = nullptr;
 };

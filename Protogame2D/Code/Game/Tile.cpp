@@ -37,24 +37,3 @@ AABB2 Tile::GetBounds() const
 
 	return AABB2( bottomLeft, topRight );
 }
-
-
-//-----------------------------------------------------------------------------------------------
-bool Tile::AllowsWalking() const
-{
-	return m_tileDef->m_allowsWalking;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool Tile::AllowsSwimming() const
-{
-	return m_tileDef->m_allowsSwimming;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool Tile::AllowsFlying() const
-{
-	return m_tileDef->m_allowsFlying;
-}

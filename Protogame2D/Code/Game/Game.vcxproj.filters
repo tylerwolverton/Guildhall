@@ -11,6 +11,9 @@
     <Filter Include="Data\Gameplay">
       <UniqueIdentifier>{c91a7c1f-0c87-4c6d-bfea-b9b881719014}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Maps">
+      <UniqueIdentifier>{f4db0780-bcd7-41c5-a8fc-393d93529de5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -40,34 +43,28 @@
     <ClCompile Include="TileDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapDefinition.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="Actor.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorDefinition.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_Mutate.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="EntityDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapGenStep_Worm.cpp">
+    <ClCompile Include="MapData.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapGenStep_CellularAutomata.cpp">
+    <ClCompile Include="TileMap.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapGenStep_FromImage.cpp">
+    <ClCompile Include="SpriteAnimationSetDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp">
+    <ClCompile Include="TileMaterialDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
@@ -99,34 +96,28 @@
     <ClInclude Include="TileDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapDefinition.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="Actor.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorDefinition.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_Mutate.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_Worm.hpp">
+    <ClInclude Include="TileMap.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_CellularAutomata.hpp">
+    <ClInclude Include="MapData.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_FromImage.hpp">
+    <ClInclude Include="SpriteAnimationSetDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp">
+    <ClInclude Include="TileMaterialDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
@@ -134,13 +125,19 @@
     <Xml Include="..\..\Run\Data\GameConfig.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml">
-      <Filter>Data\Gameplay</Filter>
-    </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml">
+      <Filter>Data\Gameplay</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\TileMaterialDefs.xml">
+      <Filter>Data\Gameplay</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\EntityTypes.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
   </ItemGroup>

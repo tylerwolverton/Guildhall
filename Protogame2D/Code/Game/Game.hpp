@@ -3,6 +3,8 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
 
+#include "Game/GameCommon.hpp"
+
 #include <string>
 #include <vector>
 
@@ -14,8 +16,9 @@ class Entity;
 class RandomNumberGenerator;
 class Clock;
 class Camera;
-class World;
 class TextBox;
+class UISystem;
+class World;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -47,11 +50,7 @@ public:
 
 	void RestartGame();
 	
-	void		LogMapDebugCommands(); 
 	void		ChangeGameState( const eGameState& newGameState );
-
-	bool		IsNoClipEnabled()														{ return m_isNoClipEnabled; }
-	bool		IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
 
 	const Vec2	GetMouseWorldPosition()													{ return m_mouseWorldPosition; }
 
@@ -60,30 +59,37 @@ public:
 
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
+	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
 private:
 	void LoadAssets();
+	void LoadTileMaterialsFromXml();
 	void LoadTilesFromXml();
 	void LoadMapsFromXml();
-	void LoadActorsFromXml();
+	void LoadEntitiesFromXml();
 
 	void UpdateFromKeyboard();
-	void LoadNewMap( const std::string& mapName );
+	void ChangeMap( const std::string& mapName );
 	void UpdateMousePositions();
 	void UpdateMouseWorldPosition();
 	void UpdateMouseUIPosition();
 	void UpdateCameras();
 
+	void UpdateFramesPerSecond();
+	float GetAverageFPS() const;
+
 private:
 	Clock* m_gameClock = nullptr;
+	float m_fpsHistory[FRAME_HISTORY_COUNT];
+
 	bool m_isPaused = false;
-	bool m_isSlowMo = false;
-	bool m_isFastMo = false;
 	bool m_isDebugRendering = false;
-	bool m_isNoClipEnabled = false;
-	bool m_isDebugCameraEnabled = false;
+
+	// HUD
+	UISystem* m_uiSystem = nullptr;
 
 	TextBox* m_debugInfoTextBox = nullptr;
 
@@ -98,6 +104,10 @@ private:
 	Camera* m_uiCamera = nullptr;
 	Vec3 m_focalPoint = Vec3::ZERO;
 
+	// Default map data
+	std::string m_defaultTileName;
+	std::string m_defaultTileMaterialName;
+
 	// Audio
 	SoundPlaybackID m_attractMusicID = (SoundPlaybackID)-1;
 	SoundPlaybackID m_gameplayMusicID = (SoundPlaybackID)-1;
@@ -106,5 +116,5 @@ private:
 	eGameState m_gameState = eGameState::LOADING;
 
 	World* m_world = nullptr;
-	std::string m_curMap;
+	std::string m_curMapName;
 };

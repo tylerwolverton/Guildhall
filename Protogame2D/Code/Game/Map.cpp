@@ -1,451 +1,342 @@
 #include "Game/Map.hpp"
-#include "Engine/Core/Rgba8.hpp"
-#include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/DevConsole.hpp"
-#include "Engine/Math/Vec2.hpp"
-#include "Engine/Math/AABB2.hpp"
-#include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Transform.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
-#include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/SpriteSheet.hpp"
+
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/World.hpp"
-
+#include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
-#include "Game/TileDefinition.hpp"
-#include "Game/MapDefinition.hpp"
-#include "Game/ActorDefinition.hpp"
+#include "Game/Projectile.hpp"
+#include "Game/Portal.hpp"
+#include "Game/EntityDefinition.hpp"
+#include "Game/MapData.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Map::Map( std::string name, MapDefinition* mapDef )
-	: m_name( name )
-	, m_mapDef( mapDef )
+Map::Map( const MapData& mapData )
+	: m_name( mapData.mapName )
+	/*, m_playerStartPos( mapData.playerStartPos )
+	, m_playerStartYaw( mapData.playerStartYaw )*/
 {
-	m_width = mapDef->m_width;
-	m_height = mapDef->m_height;
-
-	BuildCardinalDirectionsArray();
-	PopulateTiles();
-	SpawnPlayer();
+	LoadEntities( mapData.mapEntityDefs );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 Map::~Map()
 {
-	// For now this will also delete the player
-	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
-	{
-		Entity*& entity = m_entities[entityIndex];
-		delete entity;
-		entity = nullptr;
-	}
+	PTR_VECTOR_SAFE_DELETE( m_entities );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Map::Update( float deltaSeconds )
 {
-	UpdateEntities( deltaSeconds );
-	ResolveCollisions();
-	UpdateCameras();
-	UpdateMouseDebugInspection();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::UpdateEntities( float deltaSeconds )
-{
-	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		Entity*& entity = m_entities[entityIndex];
-		if ( entity != nullptr )
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
 		{
-			entity->Update( deltaSeconds );
+			continue;
 		}
-	}
-}
 
-
-//-----------------------------------------------------------------------------------------------
-void Map::UpdateMouseDebugInspection()
-{
-	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
-	{
-		Entity*& entity = m_entities[entityIndex];
-		if ( entity != nullptr
-			 && IsPointInsideDisc( g_game->GetMouseWorldPosition(), entity->GetPosition(), entity->GetPhysicsRadius() ) )
-		{
-			std::string xPos = Stringf( "x: %.2f", entity->GetPosition().x );
-			std::string yPos = Stringf( "y: %.2f", entity->GetPosition().y );
-
-			std::vector< std::string > textLines = { entity->GetName(), xPos, yPos };
-			g_game->PrintToDebugInfoBox( Rgba8::WHITE, textLines );
-			return;
-		}
+		entity->Update( deltaSeconds );
 	}
 
-	// Print out tile name
-	Tile* tile = GetTileFromWorldCoords( g_game->GetMouseWorldPosition() );
-	if ( tile )
-	{
-		std::string xPos = Stringf( "x: %d", tile->m_tileCoords.x );
-		std::string yPos = Stringf( "y: %d", tile->m_tileCoords.y );
-
-		std::vector< std::string > textLines = { tile->GetName(), xPos, yPos };
-		g_game->PrintToDebugInfoBox( Rgba8::WHITE, textLines );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::UpdateCameras()
-{
-	if ( g_game->IsDebugCameraEnabled() )
-	{
-		Vec2 aspectDimensions = Vec2( WINDOW_WIDTH, WINDOW_HEIGHT );
-		AABB2 cameraBounds( Vec2( 0.f, 0.f ), aspectDimensions );
-		cameraBounds.StretchToIncludePointMaintainAspect( Vec2( (float)m_width, (float)m_height ), aspectDimensions );
-		
-		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
-	}
-	else
-	{
-		CenterCameraOnPlayer();
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::CenterCameraOnPlayer() const
-{
-	if ( m_player != nullptr )
-	{
-		Vec2 halfWindowSize( WINDOW_WIDTH * .5f, WINDOW_HEIGHT * .5f );
-		AABB2 cameraBounds( m_player->GetPosition() - halfWindowSize, m_player->GetPosition() + halfWindowSize );
-
-		AABB2 windowBox( Vec2( 0.f, 0.f ), Vec2( (float)m_width, (float)m_height ) );
-		cameraBounds.FitWithinBounds( windowBox );
-
-		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::BuildCardinalDirectionsArray()
-{
-	// 5 1 6
-	// 4 * 2
-	// 8 3 7
-	m_cardinalDirectionOffsets[(int)CardinalDirections::CENTER] = Vec2::ZERO;
-	m_cardinalDirectionOffsets[(int)CardinalDirections::NORTH] = Vec2( 0.f, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::EAST] = Vec2( TILE_SIZE, 0.f );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::SOUTH] = Vec2( 0.f, -TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::WEST] = Vec2( -TILE_SIZE, 0.f );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::NORTHWEST] = Vec2( -TILE_SIZE, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::NORTHEAST] = Vec2( TILE_SIZE, TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::SOUTHEAST] = Vec2( TILE_SIZE, -TILE_SIZE );
-	m_cardinalDirectionOffsets[(int)CardinalDirections::SOUTHWEST] = Vec2( -TILE_SIZE, -TILE_SIZE );
+	ResolveEntityVsEntityCollisions();
+	UpdateMesh();
+	ResolveEntityVsPortalCollisions();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
-	RenderTiles();
-	RenderEntities();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::DebugRender() const
-{
-	DebugRenderEntities();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::RenderTiles() const
-{
-	std::vector<Vertex_PCU> vertexes;
-
-	for ( int tileIndex = 0; tileIndex < m_tiles.size(); ++tileIndex )
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		const Tile& tile = m_tiles[tileIndex];
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
 
-		AppendVertsForAABB2D( vertexes, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
-	}
-
-	g_renderer->BindTexture( 0, &(g_tileSpriteSheet->GetTexture()) );
-	g_renderer->DrawVertexArray( vertexes );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::RenderEntities() const
-{
-	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
-	{
-		Entity*const& entity = m_entities[entityIndex];
 		entity->Render();
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::DebugRenderEntities() const
+void Map::DebugRender() const
 {
-	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		Entity*const& entity = m_entities[entityIndex];
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
 		entity->DebugRender();
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::ResolveCollisions()
+Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 {
-	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
+	EntityDefinition* entityDef = EntityDefinition::GetEntityDefinition( entityDefName );
+	if ( entityDef == nullptr )
 	{
-		Entity*& entity = m_entities[entityIndex];
+		g_devConsole->PrintError( Stringf( "Tried to spawn unrecognized entity '%s'", entityDefName.c_str() ) );
+		return nullptr;
+	}
+
+	return SpawnNewEntityOfType( *entityDef );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
+{
+	switch ( entityDef.GetType() )
+	{
+		case eEntityType::ACTOR:
+		{
+			Actor* actor = new Actor( entityDef );
+			m_entities.emplace_back( actor );
+			return actor;
+		}
+		break;
+
+		case eEntityType::PROJECTILE:
+		{
+			Projectile* projectile = new Projectile( entityDef );
+			m_entities.emplace_back( projectile );
+			return projectile;
+		}
+		break;
+
+		case eEntityType::PORTAL:
+		{
+			Portal* portal = new Portal( entityDef );
+			m_entities.emplace_back( portal );
+			m_portals.emplace_back( portal );
+			return portal;
+		}
+		break;
+
+		case eEntityType::ENTITY:
+		{
+			Entity* entity = new Entity( entityDef );
+			m_entities.emplace_back( entity );
+			return entity;
+		}
+		break;
+
+		default:
+		{
+			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
+			return nullptr;
+		}
+	}
+}
+
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
 		if ( entity == nullptr )
 		{
 			continue;
 		}
 
-		// Check if tile collisions are enabled
-		if ( !g_game->IsNoClipEnabled() )
+		if ( entity == entityToRemove )
 		{
-			ResolveEntityCollisionsWithSurroundingTiles( *entity );
+			m_entities[entityIdx] = nullptr;
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::ResolveEntityCollisionsWithSurroundingTiles( Entity& entity )
+void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
 {
-	// Check tiles in following order for collision
-	// 5 1 6
-	// 4 * 2
-	// 8 3 7
-	constexpr int numDirections = sizeof( m_cardinalDirectionOffsets ) / sizeof( m_cardinalDirectionOffsets[0] );
-	for ( int dirIndex = 1; dirIndex < numDirections; ++dirIndex )
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		ResolveEntityCollisionWithTile( entity, entity.m_position + m_cardinalDirectionOffsets[dirIndex] );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::ResolveEntityCollisionWithTile( Entity& entity, Vec2 tilePosition )
-{
-	int entityTileIndex = GetTileIndexFromTileCoords( (int)tilePosition.x, (int)tilePosition.y );
-	if ( entityTileIndex < 0
-		|| entityTileIndex >= (int)m_tiles.size() )
-	{
-		return;
-	}
-
-	const Tile& entityTile = m_tiles[entityTileIndex];
-	if ( !CanEntityEnterTile( entity, entityTile ) )
-	{
-		Vec2 newPosition( entity.m_position );
-		PushDiscOutOfAABB2D( newPosition, entity.GetPhysicsRadius(), entityTile.GetBounds() );
-		entity.m_position = newPosition;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool Map::CanEntityEnterTile( const Entity& entity, const Tile& tile )
-{
-	if ( entity.CanFly() 
-		 && tile.AllowsFlying() )
-	{
-		return true;
-	}
-
-	if ( entity.m_entityDef->CanWalk()
-		 && tile.AllowsWalking() )
-	{
-		return true;
-	}
-
-	if ( entity.m_entityDef->CanSwim()
-		 && tile.AllowsSwimming() )
-	{
-		return true;
-	}
-
-	return false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::PopulateTiles()
-{
-	CreateInitialTiles();
-	SetEdgeTiles();
-	m_mapDef->RunMapGenerationSteps( *this );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::CreateInitialTiles()
-{
-	if ( m_mapDef->m_fillTile == nullptr )
-	{
-		ERROR_AND_DIE( Stringf( "Map '%s' does not have a fill tile defined!", m_name.c_str() ) );
-	}
-
-	for ( int y = 0; y < m_height; ++y )
-	{
-		for ( int x = 0; x < m_width; ++x )
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
 		{
-			m_tiles.push_back( Tile( x, y, m_mapDef->m_fillTile ) );
+			entity = entityToAdd;
+			return;
 		}
 	}
+
+	m_entities.push_back( entityToAdd );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::SetEdgeTiles()
+void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 {
-	if ( m_mapDef->m_edgeTile == nullptr )
+	for ( int mapEntityIdx = 0; mapEntityIdx < (int)mapEntityDefs.size(); ++mapEntityIdx )
 	{
-		ERROR_AND_DIE( Stringf( "Map '%s' does not have an edge tile defined!", m_name.c_str() ) );
-	}
-
-	for ( int x = 0; x < m_width; ++x )
-	{
-		m_tiles[GetTileIndexFromTileCoords( x, 0 )].SetTileDef( m_mapDef->m_edgeTile );
-		m_tiles[GetTileIndexFromTileCoords( x, m_height - 1 )].SetTileDef( m_mapDef->m_edgeTile );
-	}
-
-	for ( int y = 0; y < m_height; ++y )
-	{
-		m_tiles[GetTileIndexFromTileCoords( 0, y )].SetTileDef( m_mapDef->m_edgeTile );
-		m_tiles[GetTileIndexFromTileCoords( m_width - 1, y )].SetTileDef( m_mapDef->m_edgeTile );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Actor* Map::SpawnNewActor(  const Vec2& position, std::string actorName )
-{
-	Actor* newActor = new Actor( position, ActorDefinition::GetActorDefinition( actorName ) );
-
-	m_entities.push_back( newActor );
-
-	return newActor;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::SpawnPlayer()
-{
-	m_player = SpawnNewActor( Vec2( 2.f, 2.f ), std::string( "Player" ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-int Map::GetTileIndexFromTileCoords( int xCoord, int yCoord )
-{
-	if ( xCoord < 0
-		 || xCoord > m_width - 1
-		 || yCoord < 0
-		 || yCoord > m_height - 1 )
-	{
-		return -1;
-	}
-
-	return xCoord + yCoord * m_width;
-}
-
-//-----------------------------------------------------------------------------------------------
-int Map::GetTileIndexFromTileCoords( const IntVec2& coords )
-{
-	return GetTileIndexFromTileCoords( coords.x, coords.y );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-int Map::GetTileIndexFromWorldCoords( const Vec2& coords )
-{
-	return GetTileIndexFromTileCoords( (int)coords.x, (int)coords.y );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Tile* Map::GetTileFromTileCoords( const IntVec2& tileCoords )
-{
-	return GetTileFromTileCoords( tileCoords.x, tileCoords.y );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Tile* Map::GetTileFromTileCoords( int xCoord, int yCoord )
-{
-	int tileIndex = GetTileIndexFromTileCoords( xCoord, yCoord );
-	if ( tileIndex < 0
-		 || tileIndex >= (int)m_tiles.size() )
-	{
-		return nullptr;
-	}
-
-	return &( m_tiles[tileIndex] );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Tile* Map::GetTileFromWorldCoords( const Vec2& worldCoords )
-{
-	return GetTileFromTileCoords( IntVec2( (int)worldCoords.x, (int)worldCoords.y ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-const Vec2 Map::GetWorldCoordsFromTile( const Tile& tile )
-{
-	return Vec2( (float)tile.m_tileCoords.x, (float)tile.m_tileCoords.y );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-std::vector<Tile*> Map::GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile )
-{
-	std::vector<Tile*> surroundingTiles;
-
-	IntVec2 mins( centerTile.m_tileCoords.x - radius, centerTile.m_tileCoords.y - radius );
-	int sideLength = ( 2 * radius ) + 1;
-
-	for ( int yPos = 0; yPos < sideLength; ++yPos )
-	{
-		for ( int xPos = 0; xPos < sideLength; ++xPos )
+		const MapEntityDefinition& mapEntityDef = mapEntityDefs[mapEntityIdx];
+		if ( mapEntityDef.entityDef == nullptr )
 		{
-			IntVec2 tileCoords( mins.x + xPos, mins.y + yPos );
+			continue;
+		}
 
-			if ( tileCoords == centerTile.m_tileCoords
-				 && !includeCenterTile )
+		Entity* newEntity = SpawnNewEntityOfType( *mapEntityDef.entityDef );
+		if ( newEntity == nullptr )
+		{
+			continue;
+		}
+
+		newEntity->SetPosition( mapEntityDef.position );
+		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
+
+		if ( mapEntityDef.entityDef->GetType() == eEntityType::PORTAL )
+		{
+			Portal* portal = (Portal*)newEntity;
+			portal->SetDestinationMap( mapEntityDef.portalDestMap );
+			portal->SetDestinationPosition( mapEntityDef.portalDestPos );
+			portal->SetDestinationYawOffset( mapEntityDef.portalDestYawOffset );
+		}
+	}
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::ResolveEntityVsEntityCollisions()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		for ( int otherEntityIdx = entityIdx + 1; otherEntityIdx < (int)m_entities.size(); ++otherEntityIdx )
+		{
+			Entity* const& otherEntity = m_entities[otherEntityIdx];
+			if ( otherEntity == nullptr )
 			{
 				continue;
 			}
 
-			Tile* tile = GetTileFromTileCoords( tileCoords );
-			if ( tile != nullptr )
-			{
-				surroundingTiles.push_back( tile );
-			}
+			ResolveEntityVsEntityCollision( *entity, *otherEntity );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 )
+{
+	// Neither can be moved
+	if ( !entity1.m_canBePushedByEntities
+		 && !entity2.m_canBePushedByEntities )
+	{
+		return;
+	}
+
+	// Neither can push
+	if ( !entity1.m_canPushEntities
+		 && !entity2.m_canPushEntities )
+	{
+		return;
+	}
+
+	float radius1 = entity1.GetPhysicsRadius();
+	float radius2 = entity2.GetPhysicsRadius();
+
+	// Both can be moved
+	if ( entity1.m_canBePushedByEntities
+		 && entity2.m_canBePushedByEntities )
+	{
+		if ( entity1.m_canPushEntities
+			 && entity2.m_canPushEntities )
+		{
+			PushDiscsOutOfEachOtherRelativeToMass2D( entity1.m_position, radius1, entity1.GetMass(), entity2.m_position, radius2, entity2.GetMass() );
+		}
+
+		if ( entity1.m_canPushEntities
+			 && !entity2.m_canPushEntities )
+		{
+			PushDiscOutOfDisc2D( entity2.m_position, radius2, entity1.m_position, radius1 );
+		}
+
+		if ( entity2.m_canPushEntities
+			 && !entity1.m_canPushEntities )
+		{
+			PushDiscOutOfDisc2D( entity1.m_position, radius1, entity2.m_position, radius2 );
 		}
 	}
 
-	return surroundingTiles;
+	// Only entity1 can be moved
+	if ( entity1.m_canBePushedByEntities
+		 && !entity2.m_canBePushedByEntities )
+	{
+		if ( entity2.m_canPushEntities )
+		{
+			PushDiscOutOfDisc2D( entity1.m_position, radius1, entity2.m_position, radius2 );
+		}
+	}
+
+	// Only entity2 can be moved
+	if ( entity2.m_canBePushedByEntities
+		 && !entity1.m_canBePushedByEntities )
+	{
+		if ( entity1.m_canPushEntities )
+		{
+			PushDiscOutOfDisc2D( entity2.m_position, radius2, entity1.m_position, radius1 );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::ResolveEntityVsPortalCollisions()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
+		{
+			Portal* const& portal = m_portals[portalIdx];
+			if ( portal == nullptr
+				 || entity->GetType() == eEntityType::PORTAL )
+			{
+				continue;
+			}
+
+			if ( DoDiscsOverlap( entity->GetPosition(), entity->GetPhysicsRadius(), portal->GetPosition(), portal->GetPhysicsRadius() ) )
+			{
+				WarpEntityInMap( entity, portal );
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::WarpEntityInMap( Entity* entity, Portal* portal )
+{
+	g_game->WarpToMap( entity, portal->GetDestinationMap(), portal->GetDestinationPosition(), entity->GetOrientationDegrees() + portal->GetDestinationYawOffset() );
 }

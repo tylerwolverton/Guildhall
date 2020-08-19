@@ -22,8 +22,6 @@ public:
 	void Render() const;
 	void DebugRender() const;
 
-	void AddNewMap( const std::string& mapName );
-	void AddNewMap( const std::string& mapName, MapData* mapDef );
 	void AddNewMap( const MapData& mapData );
 	void ChangeMap( const std::string& mapName );
 	

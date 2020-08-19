@@ -8,21 +8,24 @@
 #include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/ActorDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Actor::Actor( const Vec2& position, ActorDefinition* actorDef )
-	: Entity( position, (EntityDefinition*)actorDef )
-	, m_actorDef( actorDef )
+Actor::Actor( const EntityDefinition& entityDef )
+	: Entity( entityDef )
 {
-	if( m_actorDef->GetName() == std::string( "Player" ) )
+	if( m_entityDef.GetName() == std::string( "Player" ) )
 	{
 		m_controllerID = 0;
 		m_isPlayer = true;
 	}
+
+	m_canBePushedByWalls = true;
+	m_canBePushedByEntities = true;
+	m_canPushEntities = true;
 }
 
 
@@ -35,42 +38,22 @@ Actor::~Actor()
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( float deltaSeconds )
 {
-	m_cumulativeTime += deltaSeconds;
-
 	if ( m_isPlayer )
 	{
 		UpdateFromKeyboard( deltaSeconds );
 		UpdateFromGamepad( deltaSeconds );
 	}
-	
-	UpdateAnimation();
+
+	//UpdateAnimation();
 
 	Entity::Update( deltaSeconds );
-
-	m_velocity.ClampLength( PLAYER_MAX_SPEED );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
-	if ( m_curAnimDef == nullptr )
-	{
-		return;
-	}
-
-	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
-		
-	Vec2 mins, maxs;
-	spriteDef.GetUVs( mins, maxs );
-
-	std::vector<Vertex_PCU> vertexes;
-	AppendVertsForAABB2D( vertexes, m_actorDef->m_localDrawBounds, Rgba8::WHITE, mins, maxs );
-
-	Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
-
-	g_renderer->BindTexture( 0, &( spriteDef.GetTexture() ) );
-	g_renderer->DrawVertexArray( vertexes );
+	Entity::Render();
 }
 
 
@@ -89,26 +72,26 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 	if ( g_inputSystem->IsKeyPressed( 'W' )
 		 || g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
 	{
-		m_velocity.y += m_actorDef->m_walkSpeed;
+		m_velocity.y += m_entityDef.GetWalkSpeed();
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'A' )
 		 || g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
 	{
-		m_velocity.x -= m_actorDef->m_walkSpeed;
+		m_velocity.x -= m_entityDef.GetWalkSpeed();
 
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'D' )
 		 || g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
 	{
-		m_velocity.x += m_actorDef->m_walkSpeed;
+		m_velocity.x += m_entityDef.GetWalkSpeed();
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' )
 		 || g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
 	{
-		m_velocity.y -= m_actorDef->m_walkSpeed;
+		m_velocity.y -= m_entityDef.GetWalkSpeed();
 	}
 }
 
@@ -141,32 +124,32 @@ void Actor::UpdateFromGamepad( float deltaSeconds )
 	if ( leftStickMagnitude > 0.f )
 	{
 		m_orientationDegrees = leftStick.GetDegrees();
-		m_velocity += leftStickMagnitude * m_actorDef->m_walkSpeed * GetForwardVector();
+		m_velocity += leftStickMagnitude * m_entityDef.GetWalkSpeed() * GetForwardVector();
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Actor::UpdateAnimation()
-{
-	if ( m_velocity.x > 0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveEast" );
-	}
-	else if ( m_velocity.x < -0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveWest" );
-	}
-	else if ( m_velocity.y > 0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveNorth" );
-	}
-	else if ( m_velocity.y < -0.05f )
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveSouth" );
-	}
-	else
-	{
-		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "Idle" );
-	}
-}
+//void Actor::UpdateAnimation()
+//{
+//	if ( m_velocity.x > 0.05f )
+//	{
+//		m_curAnimDef = m_entityDef->GetSpriteAnimDef( "MoveEast" );
+//	}
+//	else if ( m_velocity.x < -0.05f )
+//	{
+//		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveWest" );
+//	}
+//	else if ( m_velocity.y > 0.05f )
+//	{
+//		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveNorth" );
+//	}
+//	else if ( m_velocity.y < -0.05f )
+//	{
+//		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveSouth" );
+//	}
+//	else
+//	{
+//		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "Idle" );
+//	}
+//}

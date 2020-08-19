@@ -10,16 +10,17 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class Texture;
+class SpriteAnimDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
 class Entity
 {
 	friend class Map;
+	friend class TileMap;
 	
 public:
-	Entity( const Vec2& position, EntityDefinition* entityDef );
+	Entity( const EntityDefinition& entityDef );
 	virtual ~Entity() {}
 
 	virtual void Update( float deltaSeconds );
@@ -28,26 +29,25 @@ public:
 	virtual void DebugRender() const;
 
 	const Vec2	 GetForwardVector() const;
-	const Vec2	 GetPosition() const							{ return m_position; };
-	const float  GetPhysicsRadius() const						{ return m_entityDef->m_physicsRadius; };
-	std::string  GetName() const								{ return m_entityDef->m_name; };
+	const Vec2	 GetPosition() const									{ return m_position; }
+	void		 SetPosition( const Vec2& position )					{ m_position = position; }
+	const float  GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
+	const float  GetWalkSpeed() const									{ return m_entityDef.m_walkSpeed; }
+	const float  GetMass() const										{ return m_entityDef.m_mass; }
+	const float  GetOrientationDegrees() const							{ return m_orientationDegrees; }
+	void		 SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
+	std::string  GetName() const										{ return m_entityDef.m_name; }
+	eEntityType  GetType() const										{ return m_entityDef.m_type; }
 				 
-	bool		 IsDead() const									{ return m_isDead; }
-	bool		 IsGarbage() const								{ return m_isGarbage; }
+	bool		 IsDead() const											{ return m_isDead; }
+	bool		 IsGarbage() const										{ return m_isGarbage; }
 				 
 	void		 TakeDamage( int damage );
 	void		 ApplyFriction();
-				 
-	bool		 CanWalk() const								{ return m_entityDef->CanWalk(); }
-	bool		 CanFly() const									{ return m_entityDef->CanFly(); }
-	bool		 CanSwim() const								{ return m_entityDef->CanSwim(); }
-
-protected:
-	void PopulateVertexes();
-
+	
 protected:
 	// Game state
-	EntityDefinition*		m_entityDef = nullptr;
+	const EntityDefinition& m_entityDef;
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
@@ -58,10 +58,14 @@ protected:
 	Vec2					m_linearAcceleration = Vec2( 0.f, 0.f );		// the Entity’s signed linear acceleration per second per second
 	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
 	float					m_angularVelocity = 0.f;						// the Entity’s signed angular velocity( spin rate ), in degrees per second
-	
+	bool					m_canBePushedByWalls = false;
+	bool					m_canBePushedByEntities = false;
+	bool					m_canPushEntities = false;
+
 	// Visual
-	std::vector<Vertex_PCU> m_vertexes;
-	Texture*				m_texture = nullptr;
+	float					m_cumulativeTime = 0.f;
+	std::vector<Vertex_PCU> m_vertices;
+	SpriteAnimDefinition*	m_curAnimDef = nullptr;
 };
 
 

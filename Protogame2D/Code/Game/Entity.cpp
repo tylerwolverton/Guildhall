@@ -5,6 +5,8 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
+#include "Engine/Renderer/SpriteDefinition.hpp"
+#include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Game/Game.hpp"
@@ -12,17 +14,17 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Entity::Entity( const Vec2& position, EntityDefinition* entityDef )
-	: m_position( position )
-	, m_entityDef( entityDef )
+Entity::Entity( const EntityDefinition& entityDef )
+	: m_entityDef( entityDef )
 {
-	PopulateVertexes();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::Update( float deltaSeconds )
 {
+	m_cumulativeTime += deltaSeconds;
+
 	// vel += acceleration * dt;
 	m_velocity += m_linearAcceleration * deltaSeconds;
 	m_linearAcceleration = Vec2( 0.f, 0.f );
@@ -39,11 +41,23 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
-	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, 0.f, m_position );
+	if ( m_curAnimDef == nullptr )
+	{
+		return;
+	}
 
-	g_renderer->BindTexture( 0, m_texture );
-	g_renderer->DrawVertexArray( vertexesCopy );
+	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+
+	Vec2 mins, maxs;
+	spriteDef.GetUVs( mins, maxs );
+
+	std::vector<Vertex_PCU> vertexes;
+	AppendVertsForAABB2D( vertexes, m_entityDef.m_localDrawBounds, Rgba8::WHITE, mins, maxs );
+
+	Vertex_PCU::TransformVertexArray( vertexes, 1.f, 0.f, m_position );
+
+	g_renderer->BindTexture( 0, &( spriteDef.GetTexture() ) );
+	g_renderer->DrawVertexArray( vertexes );
 }
 
 
@@ -58,8 +72,8 @@ void Entity::Die()
 void Entity::DebugRender() const
 {
 	g_renderer->BindTexture( 0, nullptr );
-	DrawRing2D( g_renderer, m_position, m_entityDef->m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
-	DrawAABB2Outline( g_renderer, m_position, m_entityDef->m_localDrawBounds, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
+	DrawRing2D( g_renderer, m_position, m_entityDef.m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
+	DrawAABB2Outline( g_renderer, m_position, m_entityDef.m_localDrawBounds, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
 }
 
 
@@ -94,15 +108,4 @@ void Entity::ApplyFriction()
 	{
 		m_velocity = Vec2( 0.f, 0.f );
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::PopulateVertexes()
-{
-	m_texture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" );
-	
-	AppendVertsForAABB2D( m_vertexes, m_entityDef->m_localDrawBounds, Rgba8::WHITE,
-									  m_entityDef->m_uvCoords.mins,
-									  m_entityDef->m_uvCoords.maxs );
 }

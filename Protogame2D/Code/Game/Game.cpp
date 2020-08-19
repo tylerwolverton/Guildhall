@@ -8,9 +8,11 @@
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
+#include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -19,13 +21,12 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
+#include "Engine/UI/UISystem.hpp"
 
-#include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
-#include "Game/MapDefinition.hpp"
-#include "Game/ActorDefinition.hpp"
+#include "Game/MapData.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -54,9 +55,12 @@ void Game::Startup()
 	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
 	m_worldCamera->SetPosition( m_focalPoint );
 
+	Vec2 windowDimensions = g_window->GetDimensions();
+
 	m_uiCamera = new Camera();
-	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
-	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+	m_uiCamera->SetOutputSize( windowDimensions );
+	m_uiCamera->SetPosition( Vec3( windowDimensions * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
 
 	EnableDebugRendering();
 
@@ -67,15 +71,13 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 
-	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, true );
-	
+	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+
+	m_uiSystem = new UISystem();
+	m_uiSystem->Startup( g_window, g_renderer );
+
 	m_world = new World( m_gameClock );
 
-	/*m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
-	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
-	m_world->BuildNewMap( m_curMap );*/
-
-	//LogMapDebugCommands();
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -91,6 +93,8 @@ void Game::BeginFrame()
 void Game::Shutdown()
 {
 	TileDefinition::s_definitions.clear();
+
+	m_uiSystem->Shutdown();
 
 	// Clean up global sprite sheets
 	PTR_SAFE_DELETE( g_tileSpriteSheet );
@@ -112,29 +116,6 @@ void Game::RestartGame()
 	Shutdown();
 	Startup();
 }
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LogMapDebugCommands()
-{
-	g_devConsole->PrintString( "Map Generation Debug Commands" );
-	g_devConsole->PrintString( "F4 - View entire map" );
-	g_devConsole->PrintString( "F5 - Reload current map" );
-}
-
-
-////-----------------------------------------------------------------------------------------------
-//void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
-//{
-//	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
-//}
-//
-//
-////-----------------------------------------------------------------------------------------------
-//void Game::SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight )
-//{
-//	SetWorldCameraOrthographicView( AABB2( bottomLeft, topRight ) );
-//}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -183,6 +164,8 @@ void Game::Update()
 
 	UpdateCameras();
 	UpdateMousePositions();
+
+	m_uiSystem->Update();
 }
 
 
@@ -231,12 +214,12 @@ void Game::Render() const
 			g_renderer->DrawVertexArray( vertexes );
 		}
 		break;
+	}
 
-		case eGameState::PLAYING:
-		{
-			//m_world->RenderHUD();
-		}
-		break;
+	m_uiSystem->Render();
+	if ( m_isDebugRendering )
+	{
+		m_uiSystem->DebugRender();
 	}
 
 	g_renderer->EndCamera( *m_uiCamera );
@@ -269,11 +252,40 @@ void Game::LoadAssets()
 	g_characterSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" )), IntVec2( 12, 53 ) );
 	g_portraitSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaPortraits_8x8.png" )), IntVec2( 8, 8 ) );
 
+	LoadEntitiesFromXml();
+	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
 	LoadMapsFromXml();
-	LoadActorsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadTileMaterialsFromXml()
+{
+	g_devConsole->PrintString( "Loading Tile Materials..." );
+
+	const char* filePath = "Data/Gameplay/TileMaterialDefs.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		ERROR_AND_DIE( Stringf( "The tile materials xml file '%s' could not be opened.", filePath ) );
+	}
+
+	XmlElement* root = doc.RootElement();
+	XmlElement* element = root->FirstChildElement();
+	while ( element )
+	{
+		TileMaterialDefinition* tileMatDef = new TileMaterialDefinition( *element );
+		TileMaterialDefinition::s_definitions[tileMatDef->GetName()] = tileMatDef;
+
+		element = element->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "Tile Materials Loaded", Rgba8::GREEN );
 }
 
 
@@ -295,7 +307,7 @@ void Game::LoadTilesFromXml()
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
-		TileDefinition* tileDef = new TileDefinition( *element );
+		TileDefinition* tileDef = new TileDefinition( *element, m_defaultTileMaterialName );
 		TileDefinition::s_definitions[ tileDef->GetName() ] = tileDef;
 
 		element = element->NextSiblingElement();
@@ -310,23 +322,38 @@ void Game::LoadMapsFromXml()
 {
 	g_devConsole->PrintString( "Loading Maps..." );
 
-	const char* filePath = "Data/Gameplay/MapDefs.xml";
+	std::string folderPath( "Data/Maps" );
 
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
-	if ( loadError != tinyxml2::XML_SUCCESS )
+	Strings mapFiles = GetFileNamesInFolder( folderPath, "*.xml" );
+	for ( int mapIdx = 0; mapIdx < (int)mapFiles.size(); ++mapIdx )
 	{
-		ERROR_AND_DIE( Stringf( "The maps xml file '%s' could not be opened.", filePath ) );
-	}
+		std::string& mapName = mapFiles[mapIdx];
 
-	XmlElement* root = doc.RootElement();
-	XmlElement* element = root->FirstChildElement();
-	while ( element )
-	{
-		MapDefinition* mapDef = new MapDefinition( *element );
-		MapDefinition::s_definitions[ mapDef->GetName() ] = mapDef;
+		std::string mapFullPath( folderPath );
+		mapFullPath += "/";
+		mapFullPath += mapName;
 
-		element = element->NextSiblingElement();
+		XmlDocument doc;
+		XmlError loadError = doc.LoadFile( mapFullPath.c_str() );
+		if ( loadError != tinyxml2::XML_SUCCESS )
+		{
+			g_devConsole->PrintError( Stringf( "'%s' could not be opened", mapFullPath.c_str() ) );
+			continue;
+		}
+
+		XmlElement* root = doc.RootElement();
+		if ( strcmp( root->Name(), "MapDefinition" ) )
+		{
+			g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be MapDefinition", mapFullPath.c_str() ) );
+			return;
+		}
+
+		MapData mapData( *root, GetFileNameWithoutExtension( mapName ), m_defaultTileName );
+
+		if ( mapData.isValid )
+		{
+			m_world->AddNewMap( mapData );
+		}
 	}
 
 	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
@@ -334,30 +361,50 @@ void Game::LoadMapsFromXml()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::LoadActorsFromXml()
+void Game::LoadEntitiesFromXml()
 {
-	g_devConsole->PrintString( "Loading Actors..." );
+	g_devConsole->PrintString( "Loading Entity Types..." );
 
-	const char* filePath = "Data/Gameplay/ActorDefs.xml";
+	const char* filePath = "Data/Gameplay/EntityTypes.xml";
 
 	XmlDocument doc;
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		ERROR_AND_DIE( Stringf( "The actors xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( "EntityTypes.xml could not be opened" );
+		return;
 	}
 
 	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "EntityTypes" ) )
+	{
+		g_devConsole->PrintError( "EntityTypes.xml: Incorrect root node name, must be EntityTypes" );
+		return;
+	}
+
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
-		ActorDefinition* actorDef = new ActorDefinition( *element );
-		ActorDefinition::s_definitions[actorDef->GetName()] = actorDef;
+		if ( !strcmp( element->Name(), "Actor" )
+			 || !strcmp( element->Name(), "Entity" )
+			 || !strcmp( element->Name(), "Projectile" )
+			 || !strcmp( element->Name(), "Portal" ) )
+		{
+			EntityDefinition* entityTypeDef = new EntityDefinition( *element );
+			if ( entityTypeDef->IsValid() )
+			{
+				EntityDefinition::s_definitions[entityTypeDef->GetName()] = entityTypeDef;
+			}
+		}
+		else
+		{
+			g_devConsole->PrintError( Stringf( "EntityTypes.xml: Unsupported node '%s'", element->Name() ) );
+		}
 
 		element = element->NextSiblingElement();
 	}
 
-	g_devConsole->PrintString( "Actors Loaded", Rgba8::GREEN );
+	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }
 
 
@@ -377,12 +424,9 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::PLAYING:
 		{
-			m_isSlowMo = g_inputSystem->IsKeyPressed( 'T' );
-			m_isFastMo = g_inputSystem->IsKeyPressed( 'Y' );
-
-			if ( g_inputSystem->WasKeyJustPressed( 'P' ) )
+			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
 			{
-				m_isPaused = !m_isPaused;
+				ChangeGameState( eGameState::PAUSED );
 			}
 
 			if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
@@ -390,24 +434,9 @@ void Game::UpdateFromKeyboard()
 				m_isDebugRendering = !m_isDebugRendering;
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
-			{
-				m_isNoClipEnabled = !m_isNoClipEnabled;
-			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
-			{
-				m_isDebugCameraEnabled = !m_isDebugCameraEnabled;
-			}
-
 			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
-				LoadNewMap( m_curMap );
-			}
-
-			if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
-			{
-				g_devConsole->ToggleOpenFull();
+				ChangeMap( m_curMapName );
 			}
 		}
 		break;
@@ -417,12 +446,9 @@ void Game::UpdateFromKeyboard()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::LoadNewMap( const std::string& mapName )
+void Game::ChangeMap( const std::string& mapName )
 {
-	delete m_world;
-	m_world = nullptr;
-	m_world = new World( m_gameClock );
-	m_world->BuildNewMap( mapName );
+	m_world->ChangeMap( mapName );
 }
 
 
@@ -464,10 +490,6 @@ void Game::UpdateCameras()
 	//m_worldCamera->Translate2D( cameraShakeOffset );
 	m_worldCamera->SetPosition( m_focalPoint + Vec3( cameraShakeOffset, 0.f ) );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
-
-	// UI Camera
-	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
-	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 }
 
 
@@ -506,6 +528,24 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 	{
 		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees )
+{
+	// No entity specified, just load the new map and set camera position and orientation
+	if ( entityToWarp == nullptr )
+	{
+		if ( destMapName != "" )
+		{
+			m_world->ChangeMap( destMapName );
+		}
+		
+		return;
+	}
+
+	m_world->WarpEntityToMap( entityToWarp, destMapName, newPos, newYawDegrees );
 }
 
 
@@ -565,9 +605,9 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
 					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true );
 					
-					m_curMap = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMap );
-					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMap.c_str() ) );
-					m_world->BuildNewMap( m_curMap );
+					m_curMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapName );
+					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapName.c_str() ) );
+					m_world->ChangeMap( m_curMapName );
 				}
 				break;
 			}
