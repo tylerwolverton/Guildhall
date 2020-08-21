@@ -27,26 +27,13 @@ TileMaterialDefinition* TileMaterialDefinition::GetTileMaterialDefinition( std::
 
 
 //-----------------------------------------------------------------------------------------------
-TileMaterialDefinition::TileMaterialDefinition( const XmlElement& tileMatDefElem )
+TileMaterialDefinition::TileMaterialDefinition( const XmlElement& tileMatDefElem, SpriteSheet* spriteSheet )
+	: m_spriteSheet( spriteSheet )
 {
 	m_name = ParseXmlAttribute( tileMatDefElem, "name", m_name.c_str() );
 	if ( m_name == "" )
 	{
 		g_devConsole->PrintError( "Material type is missing a name" );
-		return;
-	}
-
-	std::string sheetStr = ParseXmlAttribute( tileMatDefElem, "sheet", "" );
-	if ( sheetStr == "" )
-	{
-		g_devConsole->PrintError( Stringf( "Material type '%s' is missing a sheet attribute", m_name.c_str() ) );
-		return;
-	}
-
-	m_sheet = SpriteSheet::GetSpriteSheetByName( sheetStr );
-	if ( m_sheet == nullptr )
-	{
-		g_devConsole->PrintError( Stringf( "Material type '%s' references a sprite sheet '%s' that isn't defined", m_name.c_str(), sheetStr.c_str() ) );
 		return;
 	}
 
@@ -57,7 +44,7 @@ TileMaterialDefinition::TileMaterialDefinition( const XmlElement& tileMatDefElem
 		return;
 	}
 
-	IntVec2 spriteSheetDimensions = m_sheet->GetDimensions();
+	IntVec2 spriteSheetDimensions = m_spriteSheet->GetDimensions();
 	if ( m_spriteCoords.x < 0
 		 || m_spriteCoords.x > spriteSheetDimensions.x )
 	{
@@ -76,7 +63,7 @@ TileMaterialDefinition::TileMaterialDefinition( const XmlElement& tileMatDefElem
 	m_spriteCoords = ParseXmlAttribute( tileMatDefElem, "spriteCoords", m_spriteCoords );
 
 	Vec2 mins, maxs;
-	m_sheet->GetSpriteUVs( mins, maxs, spriteCoords );
+	m_spriteSheet->GetSpriteUVs( mins, maxs, spriteCoords );
 	m_uvCoords.mins = mins;
 	m_uvCoords.maxs = maxs;
 

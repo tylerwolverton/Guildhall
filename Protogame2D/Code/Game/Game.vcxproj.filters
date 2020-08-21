@@ -125,9 +125,6 @@
     <Xml Include="..\..\Run\Data\GameConfig.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml">
-      <Filter>Data\Gameplay</Filter>
-    </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>

@@ -1,4 +1,4 @@
-<TileMaterialDefinitions spriteSheet="Terrain_32x32.png" spriteLayout="32,32">
+<TileMaterialDefinitions spriteSheet="Images/Terrain_32x32.png" spriteSheetDimensions="32,32">
 
   <TileMaterialDefinitions
 		name="Grass"

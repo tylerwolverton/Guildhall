@@ -18,12 +18,13 @@ class TileMaterialDefinition
 	friend class TileDefinition;
 
 public:
-	explicit TileMaterialDefinition( const XmlElement& tileMatDefElem);
+	explicit TileMaterialDefinition( const XmlElement& tileMatDefElem, SpriteSheet* spriteSheet );
 
+	bool IsValid() const										{ return m_isValid; }
 	std::string GetName() const									{ return m_name; }
 	const AABB2 GetUVCoords() const								{ return m_uvCoords; }
 	const Rgba8 GetSpriteTint()	const							{ return m_spriteTint; }
-	SpriteSheet* GetSpriteSheet() const							{ return m_sheet; }
+	SpriteSheet* GetSpriteSheet() const							{ return m_spriteSheet; }
 	IntVec2 GetSpriteCoords() const								{ return m_spriteCoords; }
 
 	static TileMaterialDefinition* GetTileMaterialDefinition( std::string tileMaterialName );
@@ -36,6 +37,6 @@ private:
 	std::string		m_name;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
 	Rgba8			m_spriteTint = Rgba8::MAGENTA;
-	SpriteSheet*	m_sheet = nullptr;
+	SpriteSheet*	m_spriteSheet = nullptr;
 	IntVec2			m_spriteCoords = IntVec2( -1, -1 );
 };

@@ -22,14 +22,6 @@ extern Game* g_game;
 
 
 //-----------------------------------------------------------------------------------------------
-// Global Tile Sheets
-//
-extern SpriteSheet* g_tileSpriteSheet;
-extern SpriteSheet* g_characterSpriteSheet;
-extern SpriteSheet* g_portraitSpriteSheet;
-
-
-//-----------------------------------------------------------------------------------------------
 // Game Constants
 //
 constexpr float CLIENT_ASPECT = 16.f / 9.f;

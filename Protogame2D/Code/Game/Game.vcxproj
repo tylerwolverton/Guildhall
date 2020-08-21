@@ -233,7 +233,6 @@
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\EntityTypes.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileMaterialDefs.xml" />
     <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml" />

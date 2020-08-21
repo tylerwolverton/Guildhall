@@ -8,6 +8,7 @@
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/NamedStrings.hpp"
@@ -27,12 +28,6 @@
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapData.hpp"
-
-
-//-----------------------------------------------------------------------------------------------
-SpriteSheet* g_tileSpriteSheet = nullptr;
-SpriteSheet* g_characterSpriteSheet = nullptr;
-SpriteSheet* g_portraitSpriteSheet = nullptr;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -96,11 +91,6 @@ void Game::Shutdown()
 
 	m_uiSystem->Shutdown();
 
-	// Clean up global sprite sheets
-	PTR_SAFE_DELETE( g_tileSpriteSheet );
-	PTR_SAFE_DELETE( g_characterSpriteSheet );
-	PTR_SAFE_DELETE( g_portraitSpriteSheet );
-	
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_rng );
@@ -247,12 +237,7 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
 
-	// TODO: Check for nullptrs when loading textures
-	g_tileSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_32x32.png" )), IntVec2( 32, 32 ) );
-	g_characterSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaCharacters_12x53.png" )), IntVec2( 12, 53 ) );
-	g_portraitSpriteSheet = new SpriteSheet( *(g_renderer->CreateOrGetTextureFromFile( "Data/Images/KushnariovaPortraits_8x8.png" )), IntVec2( 8, 8 ) );
-
-	LoadEntitiesFromXml();
+	//LoadEntitiesFromXml();
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
 	LoadMapsFromXml();
@@ -272,15 +257,53 @@ void Game::LoadTileMaterialsFromXml()
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		ERROR_AND_DIE( Stringf( "The tile materials xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( Stringf( "The tile materials xml file '%s' could not be opened.", filePath ) );
+		return;
 	}
 
 	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "TileMaterialDefinitions" ) )
+	{
+		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be TileMaterialDefinitions", filePath ) );
+		return;
+	}
+
+	// Parse spritesheet
+	std::string spriteSheetPath = ParseXmlAttribute( *root, "spriteSheet", "" );
+	if ( spriteSheetPath == "" )
+	{
+		g_devConsole->PrintError( Stringf( "The tile materials xml file '%s' is missing a spriteSheet attribute", filePath ) );
+		return;
+	}
+
+	IntVec2 spriteSheetDimensions( -1, -1 );
+	spriteSheetDimensions = ParseXmlAttribute( *root, "spriteSheetDimensions", spriteSheetDimensions );
+	if ( spriteSheetDimensions == IntVec2( -1, -1 ) )
+	{
+		g_devConsole->PrintError( Stringf( "The tile materials xml file '%s' is missing a spriteSheetDimensions attribute", filePath ) );
+		return;
+	}
+
+	SpriteSheet* spriteSheet = SpriteSheet::GetSpriteSheetByPath( spriteSheetPath );
+	if ( spriteSheet == nullptr )
+	{
+		spriteSheet = new SpriteSheet( *( g_renderer->CreateOrGetTextureFromFile( ( "Data/" + spriteSheetPath ).c_str() ) ), spriteSheetDimensions );
+		SpriteSheet::s_definitions.push_back( spriteSheet );
+	}
+
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
-		TileMaterialDefinition* tileMatDef = new TileMaterialDefinition( *element );
-		TileMaterialDefinition::s_definitions[tileMatDef->GetName()] = tileMatDef;
+		TileMaterialDefinition* tileMatDef = new TileMaterialDefinition( *element, spriteSheet );
+
+		if ( tileMatDef->IsValid() )
+		{
+			TileMaterialDefinition::s_definitions[tileMatDef->GetName()] = tileMatDef;
+		}
+		else
+		{
+			PTR_SAFE_DELETE( tileMatDef );
+		}
 
 		element = element->NextSiblingElement();
 	}
@@ -300,15 +323,30 @@ void Game::LoadTilesFromXml()
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		ERROR_AND_DIE( Stringf( "The tiles xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( Stringf( "The tiles xml file '%s' could not be opened.", filePath ) );
+		return;
 	}
 
 	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "TileDefinitions" ) )
+	{
+		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be TileDefinitions", filePath ) );
+		return;
+	}
+
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
 		TileDefinition* tileDef = new TileDefinition( *element, m_defaultTileMaterialName );
-		TileDefinition::s_definitions[ tileDef->GetName() ] = tileDef;
+
+		if ( tileDef->IsValid() )
+		{
+			TileDefinition::s_definitions[tileDef->GetName()] = tileDef;
+		}
+		else
+		{
+			PTR_SAFE_DELETE( tileDef );
+		}
 
 		element = element->NextSiblingElement();
 	}
@@ -437,6 +475,30 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
 				ChangeMap( m_curMapName );
+			}
+
+			if ( g_inputSystem->IsKeyPressed( 'W' ) )
+			{
+				m_focalPoint.y += 1.f;
+			}
+			if ( g_inputSystem->IsKeyPressed( 'S' ) )
+			{
+				m_focalPoint.y -= 1.f;
+			}
+			if ( g_inputSystem->IsKeyPressed( 'A' ) )
+			{
+				m_focalPoint.x -= 1.f;
+			}
+			if ( g_inputSystem->IsKeyPressed( 'D' ) )
+			{
+				m_focalPoint.x += 1.f;
+			}
+		}
+		case eGameState::PAUSED:
+		{
+			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			{
+				g_eventSystem->FireEvent( "Quit" );
 			}
 		}
 		break;

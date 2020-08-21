@@ -17,14 +17,14 @@ public:
 	Tile( int x, int y, TileDefinition* tileDef );
 	~Tile();
 
-	std::string GetName() const										{ return m_tileDef->GetName(); }
+	std::string GetName() const;
 	AABB2		GetBounds() const;
 
-	bool IsSolid() const											{ return m_tileDef->m_isSolid; }
+	bool IsSolid() const;
 
 	void		SetTileDef( TileDefinition* tileDef )				{ m_tileDef = tileDef; }
 
-	TileMaterialDefinition* GetTileMaterialDef() const				{ return m_tileDef->m_matDef; }
+	TileMaterialDefinition* GetTileMaterialDef() const;
 
 public:
 	IntVec2			m_tileCoords;

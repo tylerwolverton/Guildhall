@@ -34,4 +34,6 @@ TileDefinition::TileDefinition( const XmlElement& tileDefElem, const std::string
 	m_matDef = TileMaterialDefinition::GetTileMaterialDefinition( materialName );
 
 	m_isSolid = ParseXmlAttribute( tileDefElem, "isSolid", m_isSolid );
+
+	m_isValid = true;
 }

@@ -105,7 +105,7 @@ void TileMap::Render() const
 	g_renderer->SetBlendMode( eBlendMode::ALPHA );
 	g_renderer->BindShaderProgram( g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" ) );
 
-	g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8.png" ) );
+	g_renderer->BindTexture( 0, &( m_tiles[0].GetTileMaterialDef()->GetSpriteSheet()->GetTexture() ) );
 
 	g_renderer->DrawVertexArray( m_mesh );
 }
@@ -116,11 +116,12 @@ void TileMap::DebugRender() const
 {
 	Map::DebugRender();
 
-	RaycastResult result = Raycast( m_raytraceTransform.GetPosition().XY(), m_raytraceTransform.GetForwardVector().XY(), 5.f );
-	if ( result.didImpact )
+	for ( int tileIdx = 0; tileIdx < (int)m_tiles.size(); ++tileIdx )
 	{
-		DebugAddWorldPoint( result.impactPos, Rgba8::PURPLE );
-		DebugAddWorldArrow( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::ORANGE );
+		const Tile& tile = m_tiles[tileIdx];
+
+		g_renderer->BindDiffuseTexture( nullptr );
+		DrawAABB2Outline( g_renderer, tile.GetBounds(), Rgba8::CYAN, 2.f );
 	}
 }
 

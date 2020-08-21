@@ -27,6 +27,17 @@ Tile::~Tile()
 
 
 //-----------------------------------------------------------------------------------------------
+std::string Tile::GetName() const
+{
+	if ( m_tileDef == nullptr )
+	{
+		return "";
+	}
+
+	return m_tileDef->GetName();
+}
+
+//-----------------------------------------------------------------------------------------------
 AABB2 Tile::GetBounds() const
 {
 	float tileX = (float)m_tileCoords.x;
@@ -36,4 +47,26 @@ AABB2 Tile::GetBounds() const
 	Vec2 topRight( tileX + TILE_SIZE, tileY + TILE_SIZE );
 
 	return AABB2( bottomLeft, topRight );
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Tile::IsSolid() const
+{
+	if ( m_tileDef == nullptr )
+	{
+		return true;
+	}
+
+	return m_tileDef->m_isSolid;
+}
+
+//-----------------------------------------------------------------------------------------------
+TileMaterialDefinition* Tile::GetTileMaterialDef() const
+{
+	if ( m_tileDef == nullptr )
+	{
+		return nullptr;
+	}
+
+	return m_tileDef->m_matDef;
 }
