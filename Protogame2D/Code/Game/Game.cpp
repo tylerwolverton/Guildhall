@@ -477,21 +477,22 @@ void Game::UpdateFromKeyboard()
 				ChangeMap( m_curMapName );
 			}
 
+			float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
 			if ( g_inputSystem->IsKeyPressed( 'W' ) )
 			{
-				m_focalPoint.y += 1.f;
+				m_focalPoint.y += deltaSeconds;
 			}
 			if ( g_inputSystem->IsKeyPressed( 'S' ) )
 			{
-				m_focalPoint.y -= 1.f;
+				m_focalPoint.y -= deltaSeconds;
 			}
 			if ( g_inputSystem->IsKeyPressed( 'A' ) )
 			{
-				m_focalPoint.x -= 1.f;
+				m_focalPoint.x -= deltaSeconds;
 			}
 			if ( g_inputSystem->IsKeyPressed( 'D' ) )
 			{
-				m_focalPoint.x += 1.f;
+				m_focalPoint.x += deltaSeconds;
 			}
 		}
 		case eGameState::PAUSED:

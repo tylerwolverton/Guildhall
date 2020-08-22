@@ -121,7 +121,7 @@ void TileMap::DebugRender() const
 		const Tile& tile = m_tiles[tileIdx];
 
 		g_renderer->BindDiffuseTexture( nullptr );
-		DrawAABB2Outline( g_renderer, tile.GetBounds(), Rgba8::CYAN, 2.f );
+		DrawAABB2Outline( g_renderer, tile.GetBounds(), Rgba8::CYAN, .1f );
 	}
 }
 

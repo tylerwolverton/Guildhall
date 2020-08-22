@@ -59,11 +59,10 @@ TileMaterialDefinition::TileMaterialDefinition( const XmlElement& tileMatDefElem
 		return;
 	}
 	
-	IntVec2 spriteCoords; 
 	m_spriteCoords = ParseXmlAttribute( tileMatDefElem, "spriteCoords", m_spriteCoords );
 
 	Vec2 mins, maxs;
-	m_spriteSheet->GetSpriteUVs( mins, maxs, spriteCoords );
+	m_spriteSheet->GetSpriteUVs( mins, maxs, m_spriteCoords );
 	m_uvCoords.mins = mins;
 	m_uvCoords.maxs = maxs;
 
