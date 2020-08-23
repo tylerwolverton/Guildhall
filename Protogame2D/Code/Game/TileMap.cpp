@@ -36,15 +36,16 @@ TileMap::~TileMap()
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::Load()
+void TileMap::Load( Entity* player )
 {
+	Map::Load( player );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void TileMap::Unload()
 {
-
+	Map::Unload();
 }
 
 
@@ -94,8 +95,6 @@ void TileMap::UpdateMesh()
 //-----------------------------------------------------------------------------------------------
 void TileMap::Render() const
 {
-	Map::Render();
-
 	if ( m_mesh.size() == 0 )
 	{
 		return;
@@ -108,6 +107,9 @@ void TileMap::Render() const
 	g_renderer->BindTexture( 0, &( m_tiles[0].GetTileMaterialDef()->GetSpriteSheet()->GetTexture() ) );
 
 	g_renderer->DrawVertexArray( m_mesh );
+
+	// Render entities
+	Map::Render();
 }
 
 

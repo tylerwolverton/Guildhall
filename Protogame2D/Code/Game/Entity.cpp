@@ -9,8 +9,10 @@
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Time/Time.hpp"
+
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/SpriteAnimationSetDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -41,12 +43,16 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	if ( m_curAnimDef == nullptr )
+	SpriteAnimationSetDefinition* walkAnimSetDef = m_entityDef.GetSpriteAnimSetDef( "Walk" );
+	SpriteAnimDefinition* walkAnimDef = nullptr;
+	if ( walkAnimSetDef == nullptr )
 	{
 		return;
 	}
 
-	const SpriteDefinition& spriteDef = m_curAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+	walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, m_velocity );
+	
+	const SpriteDefinition& spriteDef = walkAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
 
 	Vec2 mins, maxs;
 	spriteDef.GetUVs( mins, maxs );

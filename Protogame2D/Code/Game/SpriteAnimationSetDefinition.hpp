@@ -38,7 +38,7 @@ public:
 	SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem );
 	~SpriteAnimationSetDefinition();
 
-	SpriteAnimDefinition* GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Camera& camera );
+	SpriteAnimDefinition* GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Vec2& direction );
 
 private:
 	void AddDirectionAnimation( const std::string& animName, const Vec2& facingDir, const XmlElement& spriteAnimSetDefElem );

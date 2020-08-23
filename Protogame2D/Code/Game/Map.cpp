@@ -35,6 +35,33 @@ Map::~Map()
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::Load( Entity* player )
+{
+	m_player = player;
+	m_entities.push_back( player );
+
+	player->SetPosition( m_playerStartPos );
+	player->SetOrientationDegrees( m_playerStartYaw );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::Unload()
+{
+	// Remove reference to player from this map
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		if ( m_entities[entityIdx] == m_player )
+		{
+			m_entities[entityIdx] = nullptr;
+		}
+	}
+
+	m_player = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::Update( float deltaSeconds )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )

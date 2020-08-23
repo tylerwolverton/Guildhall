@@ -73,7 +73,7 @@ void World::AddNewMap( const MapData& mapData )
 
 
 //-----------------------------------------------------------------------------------------------
-void World::ChangeMap( const std::string& mapName )
+void World::ChangeMap( const std::string& mapName, Entity* player )
 {
 	Map* newMap = GetLoadedMapByName( mapName );
 	if ( newMap == nullptr )
@@ -91,7 +91,7 @@ void World::ChangeMap( const std::string& mapName )
 
 	if ( m_curMap != nullptr )
 	{
-		m_curMap->Load();
+		m_curMap->Load( player );
 		g_devConsole->PrintString( Stringf( "Map '%s' loaded", mapName.c_str() ), Rgba8::GREEN );
 	}
 }
@@ -108,7 +108,7 @@ void World::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapNam
 		 && destMap != m_curMap )
 	{
 		m_curMap->RemoveOwnershipOfEntity( entityToWarp );
-		ChangeMap( destMapName );
+		//ChangeMap( destMapName );
 		m_curMap->TakeOwnershipOfEntity( entityToWarp );
 	}
 

@@ -23,7 +23,7 @@ public:
 	void DebugRender() const;
 
 	void AddNewMap( const MapData& mapData );
-	void ChangeMap( const std::string& mapName );
+	void ChangeMap( const std::string& mapName, Entity* player );
 
 	void WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 	bool IsMapLoaded( const std::string& mapName );

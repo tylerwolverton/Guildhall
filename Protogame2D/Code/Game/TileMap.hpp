@@ -32,7 +32,7 @@ public:
 	TileMap( const MapData& mapData );
 	virtual ~TileMap();
 
-	virtual void Load() override;
+	virtual void Load( Entity* player ) override;
 	virtual void Unload() override;
 
 	virtual void Update( float deltaSeconds ) override;

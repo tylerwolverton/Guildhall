@@ -476,6 +476,22 @@ void Game::LoadEntitiesFromXml()
 		element = element->NextSiblingElement();
 	}
 
+	std::string playerActorName = g_gameConfigBlackboard.GetValue( std::string( "playerActorName" ), "" );
+	if ( playerActorName.empty() )
+	{
+		g_devConsole->PrintError( "GameConfig.xml doesn't define a playerActorName" );
+		return;
+	}
+
+	EntityDefinition* playerDef = EntityDefinition::GetEntityDefinition( playerActorName );
+	if ( playerDef == nullptr )
+	{
+		g_devConsole->PrintError( "GameConfig.xml's playerActorName was not loaded from EntityTypes.xml" );
+		return;
+	}
+
+	m_player = new Entity( *playerDef );
+
 	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }
 
@@ -545,7 +561,7 @@ void Game::UpdateFromKeyboard()
 //-----------------------------------------------------------------------------------------------
 void Game::ChangeMap( const std::string& mapName )
 {
-	m_world->ChangeMap( mapName );
+	m_world->ChangeMap( mapName, m_player );
 }
 
 
@@ -636,7 +652,7 @@ void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, cons
 	{
 		if ( destMapName != "" )
 		{
-			m_world->ChangeMap( destMapName );
+			m_world->ChangeMap( destMapName, m_player );
 		}
 		
 		return;
@@ -704,7 +720,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					
 					m_curMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapName );
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapName.c_str() ) );
-					m_world->ChangeMap( m_curMapName );
+					m_world->ChangeMap( m_curMapName, m_player );
 				}
 				break;
 			}

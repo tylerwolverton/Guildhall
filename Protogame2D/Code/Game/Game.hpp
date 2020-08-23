@@ -115,6 +115,8 @@ private:
 
 	eGameState m_gameState = eGameState::LOADING;
 
+	Entity* m_player = nullptr;
+
 	World* m_world = nullptr;
 	std::string m_curMapName;
 };

@@ -35,8 +35,8 @@ public:
 	Map( const MapData& mapData );
 	~Map();
 
-	virtual void Load() = 0;
-	virtual void Unload() = 0;
+	virtual void Load( Entity* player );
+	virtual void Unload();
 
 	virtual void Update( float deltaSeconds );
 	virtual void UpdateMesh() = 0;
@@ -67,6 +67,7 @@ protected:
 	Vec2				 m_playerStartPos = Vec2::ZERO;
 	float				 m_playerStartYaw = 0.f;
 
+	Entity*				 m_player = nullptr;
 	std::vector<Entity*> m_entities;
 	std::vector<Portal*> m_portals;
 };

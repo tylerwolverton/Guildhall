@@ -2,7 +2,7 @@
   ​
   <Actor name="Link">
     <Physics radius="0.18" walkSpeed="1.0"/>
-    <Appearance size="1.0,1.0">
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
       <Walk front="0" left="14" back="28" right="42"/>
       <Attack front="0"/>
       <Pain front="0"/>

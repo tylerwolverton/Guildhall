@@ -33,15 +33,13 @@ SpriteAnimationSetDefinition::~SpriteAnimationSetDefinition()
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Camera& camera )
+SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Vec2& direction )
 {
-	Vec2 entityToCamera = camera.GetTransform().GetPosition().XY() - entityPos;
-
 	float maxDotProduct = -99999.f;
 	std::string closestAnimName = "";
 	for ( auto it = m_directionSpriteAnims.begin(); it != m_directionSpriteAnims.end(); ++it )
 	{ 
-		float dirDotProduct = DotProduct2D( entityToCamera, it->second->facingDirection.GetRotatedDegrees( entityOrientationDegrees ) );
+		float dirDotProduct = DotProduct2D( direction, it->second->facingDirection.GetRotatedDegrees( entityOrientationDegrees ) );
 
 		if ( dirDotProduct > maxDotProduct )
 		{
