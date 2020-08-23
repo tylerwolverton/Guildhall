@@ -40,7 +40,6 @@ public:
 
 	virtual void Update( float deltaSeconds );
 	virtual void UpdateMesh() = 0;
-	void UpdateCameras();
 	virtual void Render() const;
 	virtual void DebugRender() const;
 
@@ -52,6 +51,7 @@ public:
 
 private:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
+	
 	void ResolveEntityVsEntityCollisions();
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 	void ResolveEntityVsPortalCollisions();

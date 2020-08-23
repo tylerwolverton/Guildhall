@@ -17,12 +17,6 @@
 Actor::Actor( const EntityDefinition& entityDef )
 	: Entity( entityDef )
 {
-	if( m_entityDef.GetName() == std::string( "Player" ) )
-	{
-		m_controllerID = 0;
-		m_isPlayer = true;
-	}
-
 	m_canBePushedByWalls = true;
 	m_canBePushedByEntities = true;
 	m_canPushEntities = true;
@@ -61,6 +55,14 @@ void Actor::Render() const
 void Actor::Die()
 {
 	Entity::Die();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Actor::SetAsPlayer()
+{
+	m_controllerID = 0;
+	m_isPlayer = true;
 }
 
 

@@ -52,6 +52,9 @@ private:
 
 	void						SpawnPlayer();
 
+	void UpdateCameras();
+	void CenterCameraOnPlayer() const;
+
 	// Tile helpers
 	bool						IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction ) const;
 	bool						IsTileSolid( int xCoord, int yCoord ) const;

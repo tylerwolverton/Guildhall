@@ -12,6 +12,7 @@
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
 struct Rgba8;
+class Actor;
 class Entity;
 class RandomNumberGenerator;
 class Clock;
@@ -115,7 +116,7 @@ private:
 
 	eGameState m_gameState = eGameState::LOADING;
 
-	Entity* m_player = nullptr;
+	Actor* m_player = nullptr;
 
 	World* m_world = nullptr;
 	std::string m_curMapName;

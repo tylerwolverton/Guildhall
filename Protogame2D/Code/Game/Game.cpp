@@ -24,6 +24,7 @@
 #include "Engine/Time/Time.hpp"
 #include "Engine/UI/UISystem.hpp"
 
+#include "Game/Actor.hpp"
 #include "Game/Entity.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
@@ -490,7 +491,8 @@ void Game::LoadEntitiesFromXml()
 		return;
 	}
 
-	m_player = new Entity( *playerDef );
+	m_player = new Actor( *playerDef );
+	m_player->SetAsPlayer();
 
 	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }
@@ -525,24 +527,6 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
 				ChangeMap( m_curMapName );
-			}
-
-			float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
-			if ( g_inputSystem->IsKeyPressed( 'W' ) )
-			{
-				m_focalPoint.y += deltaSeconds;
-			}
-			if ( g_inputSystem->IsKeyPressed( 'S' ) )
-			{
-				m_focalPoint.y -= deltaSeconds;
-			}
-			if ( g_inputSystem->IsKeyPressed( 'A' ) )
-			{
-				m_focalPoint.x -= deltaSeconds;
-			}
-			if ( g_inputSystem->IsKeyPressed( 'D' ) )
-			{
-				m_focalPoint.x += deltaSeconds;
 			}
 		}
 		case eGameState::PAUSED:

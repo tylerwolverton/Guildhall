@@ -21,6 +21,8 @@ public:
 	virtual void Render() const;
 	virtual void Die();
 
+	void SetAsPlayer();
+
 private:
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateFromGamepad( float deltaSeconds );

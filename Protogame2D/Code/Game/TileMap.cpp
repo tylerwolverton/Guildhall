@@ -55,6 +55,8 @@ void TileMap::Update( float deltaSeconds )
 	Map::Update( deltaSeconds );
 
 	ResolveEntityVsWallCollisions();
+
+	UpdateCameras();
 }
 
 
@@ -88,6 +90,29 @@ void TileMap::UpdateMesh()
 		m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, uvsAtMins ) );
 		m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, uvsAtMaxs ) );
 		m_mesh.push_back( Vertex_PCU( topLeft, Rgba8::WHITE, Vec2( uvsAtMins.x, uvsAtMaxs.y ) ) );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::UpdateCameras()
+{
+	CenterCameraOnPlayer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void TileMap::CenterCameraOnPlayer() const
+{
+	if ( m_player != nullptr )
+	{
+		Vec2 halfWindowSize( WINDOW_WIDTH * .5f, WINDOW_HEIGHT * .5f );
+		AABB2 cameraBounds( m_player->GetPosition() - halfWindowSize, m_player->GetPosition() + halfWindowSize );
+
+		AABB2 windowBox( Vec2( 0.f, 0.f ), Vec2( (float)m_dimensions.x, (float)m_dimensions.y ) );
+		cameraBounds.FitWithinBounds( windowBox );
+
+		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 	}
 }
 
