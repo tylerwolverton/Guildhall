@@ -30,14 +30,14 @@ class EntityDefinition
 	friend class Entity;
 
 public:
-	explicit EntityDefinition( const XmlElement& entityDefElem );
+	explicit EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spritSheet );
 	~EntityDefinition();
 
-	bool		IsValid() const { return m_isValid; }
-	std::string GetName() const { return m_name; }
-	eEntityType GetType() const { return m_type; }
-	float		GetWalkSpeed() const { return m_walkSpeed; }
-	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const { return m_spriteAnimSetDefs; }
+	bool		IsValid() const																{ return m_isValid; }
+	std::string GetName() const																{ return m_name; }
+	eEntityType GetType() const																{ return m_type; }
+	float		GetWalkSpeed() const														{ return m_walkSpeed; }
+	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );

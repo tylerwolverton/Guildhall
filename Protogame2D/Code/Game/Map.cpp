@@ -20,8 +20,8 @@
 //-----------------------------------------------------------------------------------------------
 Map::Map( const MapData& mapData )
 	: m_name( mapData.mapName )
-	/*, m_playerStartPos( mapData.playerStartPos )
-	, m_playerStartYaw( mapData.playerStartYaw )*/
+	, m_playerStartPos( mapData.playerStartPos )
+	, m_playerStartYaw( mapData.playerStartYaw )
 {
 	LoadEntities( mapData.mapEntityDefs );
 }

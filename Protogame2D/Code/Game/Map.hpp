@@ -63,6 +63,10 @@ private:
 protected:
 	std::string			 m_name;
 
+	// Multiplayer TODO: Make this into an array
+	Vec2				 m_playerStartPos = Vec2::ZERO;
+	float				 m_playerStartYaw = 0.f;
+
 	std::vector<Entity*> m_entities;
 	std::vector<Portal*> m_portals;
 };

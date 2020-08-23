@@ -237,7 +237,7 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
 
-	//LoadEntitiesFromXml();
+	LoadEntitiesFromXml();
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
 	LoadMapsFromXml();
@@ -257,14 +257,14 @@ void Game::LoadTileMaterialsFromXml()
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		g_devConsole->PrintError( Stringf( "The tile materials xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( "Data/Gameplay/TileMaterialDefs.xml: Could not be opened." );
 		return;
 	}
 
 	XmlElement* root = doc.RootElement();
 	if ( strcmp( root->Name(), "TileMaterialDefinitions" ) )
 	{
-		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be TileMaterialDefinitions", filePath ) );
+		g_devConsole->PrintError( "TileMaterialDefs.xml: Incorrect root node name, must be TileMaterialDefinitions" );
 		return;
 	}
 
@@ -272,23 +272,29 @@ void Game::LoadTileMaterialsFromXml()
 	std::string spriteSheetPath = ParseXmlAttribute( *root, "spriteSheet", "" );
 	if ( spriteSheetPath == "" )
 	{
-		g_devConsole->PrintError( Stringf( "The tile materials xml file '%s' is missing a spriteSheet attribute", filePath ) );
+		g_devConsole->PrintError( "TileMaterialDefs.xml: Missing a spriteSheet attribute" );
 		return;
 	}
-
-	IntVec2 spriteSheetDimensions( -1, -1 );
-	spriteSheetDimensions = ParseXmlAttribute( *root, "spriteSheetDimensions", spriteSheetDimensions );
-	if ( spriteSheetDimensions == IntVec2( -1, -1 ) )
-	{
-		g_devConsole->PrintError( Stringf( "The tile materials xml file '%s' is missing a spriteSheetDimensions attribute", filePath ) );
-		return;
-	}
-
+	
 	SpriteSheet* spriteSheet = SpriteSheet::GetSpriteSheetByPath( spriteSheetPath );
 	if ( spriteSheet == nullptr )
 	{
-		spriteSheet = new SpriteSheet( *( g_renderer->CreateOrGetTextureFromFile( ( "Data/" + spriteSheetPath ).c_str() ) ), spriteSheetDimensions );
-		SpriteSheet::s_definitions.push_back( spriteSheet );
+		IntVec2 spriteSheetDimensions( -1, -1 );
+		spriteSheetDimensions = ParseXmlAttribute( *root, "spriteSheetDimensions", spriteSheetDimensions );
+		if ( spriteSheetDimensions == IntVec2( -1, -1 ) )
+		{
+			g_devConsole->PrintError( "TileMaterialDefs.xml: Missing a spriteSheetDimensions attribute" );
+			return;
+		}
+
+		Texture* texture = g_renderer->CreateOrGetTextureFromFile( ( "Data/" + spriteSheetPath ).c_str() );
+		if ( texture == nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "TileMaterialDefs.xml: Couldn't load texture '%s'", spriteSheetPath.c_str() ) );
+			return;
+		}
+	
+		spriteSheet = SpriteSheet::CreateAndRegister( *texture, spriteSheetDimensions );
 	}
 
 	XmlElement* element = root->FirstChildElement();
@@ -420,6 +426,34 @@ void Game::LoadEntitiesFromXml()
 		return;
 	}
 
+	// Parse sprite sheet
+	std::string spriteSheetPath = ParseXmlAttribute( *root, "spriteSheet", "" );
+	if ( spriteSheetPath == "" )
+	{
+		g_devConsole->PrintError( "EntityTypes.xml: Missing spriteSheet attribute" );
+		return;
+	}
+
+	SpriteSheet* spriteSheet = SpriteSheet::GetSpriteSheetByPath( spriteSheetPath );
+	if ( spriteSheet == nullptr )
+	{
+		IntVec2 spriteSheetDimensions = ParseXmlAttribute( *root, "spriteSheetDimensions", IntVec2( -1, -1 ) );
+		if ( spriteSheetDimensions == IntVec2( -1, -1 ) )
+		{
+			g_devConsole->PrintError( "EntityTypes.xml: Missing layout attribute" );
+			return;
+		}
+
+		Texture* texture = g_renderer->CreateOrGetTextureFromFile( spriteSheetPath.c_str() );
+		if ( texture == nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "EntityTypes.xml: Couldn't load texture '%s'", spriteSheetPath.c_str() ) );
+			return;
+		}
+
+		spriteSheet = SpriteSheet::CreateAndRegister( *texture, spriteSheetDimensions );
+	}
+
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
@@ -428,7 +462,7 @@ void Game::LoadEntitiesFromXml()
 			 || !strcmp( element->Name(), "Projectile" )
 			 || !strcmp( element->Name(), "Portal" ) )
 		{
-			EntityDefinition* entityTypeDef = new EntityDefinition( *element );
+			EntityDefinition* entityTypeDef = new EntityDefinition( *element, spriteSheet );
 			if ( entityTypeDef->IsValid() )
 			{
 				EntityDefinition::s_definitions[entityTypeDef->GetName()] = entityTypeDef;

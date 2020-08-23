@@ -42,7 +42,7 @@ EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName 
 
 
 //-----------------------------------------------------------------------------------------------
-EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
+EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spriteSheet )
 {
 	m_name = ParseXmlAttribute( entityDefElem, "name", "" );
 	if ( m_name == "" )
@@ -86,33 +86,6 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 	if ( appearanceElem != nullptr )
 	{
 		m_localDrawBounds = ParseXmlAttribute( *appearanceElem, "localDrawBounds", m_localDrawBounds );
-
-		std::string spriteSheetPath = ParseXmlAttribute( *appearanceElem, "spriteSheet", "" );
-		if ( spriteSheetPath == "" )
-		{
-			g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no spriteSheet attribute", m_name.c_str() ) );
-			return;
-		}
-		
-		SpriteSheet* spriteSheet = SpriteSheet::GetSpriteSheetByPath( spriteSheetPath );
-		if ( spriteSheet == nullptr )
-		{
-			IntVec2 layout = ParseXmlAttribute( *appearanceElem, "layout", IntVec2( -1, -1 ) );
-			if ( layout == IntVec2( -1, -1 ) )
-			{
-				g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no layout attribute", m_name.c_str() ) );
-				return;
-			}
-
-			Texture* texture = g_renderer->CreateOrGetTextureFromFile( spriteSheetPath.c_str() );
-			if ( texture == nullptr )
-			{
-				g_devConsole->PrintError( Stringf( "Actor '%s' couldn't load texture '%s'", m_name.c_str(), spriteSheetPath.c_str() ) );
-				return;
-			}
-
-			spriteSheet = SpriteSheet::CreateAndRegister( *texture, layout );
-		}
 
 		const XmlElement* animationSetElem = appearanceElem->FirstChildElement();
 		while ( animationSetElem != nullptr )
