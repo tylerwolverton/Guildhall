@@ -14,14 +14,14 @@ SpriteAnimationSetDefinition::SpriteAnimationSetDefinition( SpriteSheet* spriteS
 {
 	m_name = spriteAnimSetDefElem.Name();
 
-	AddDirectionAnimation( "front",			Vec2( 1.f, 0.f ),						spriteAnimSetDefElem );
-	AddDirectionAnimation( "frontLeft",		Vec2( SQRT_2_OVER_2, SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
-	AddDirectionAnimation( "left",			Vec2( 0.f, 1.f ),						spriteAnimSetDefElem );
-	AddDirectionAnimation( "backLeft",		Vec2( -SQRT_2_OVER_2, SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
-	AddDirectionAnimation( "back",			Vec2( -1.f, 0.f ),						spriteAnimSetDefElem );
-	AddDirectionAnimation( "backRight",		Vec2( -SQRT_2_OVER_2, -SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
-	AddDirectionAnimation( "right",			Vec2( 0.f, -1.f ),						spriteAnimSetDefElem );
-	AddDirectionAnimation( "frontRight",	Vec2( SQRT_2_OVER_2, -SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
+	AddDirectionAnimation( "up",			Vec2( 0.f, 1.f ),						spriteAnimSetDefElem );
+	AddDirectionAnimation( "upLeft",		Vec2( -SQRT_2_OVER_2, SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
+	AddDirectionAnimation( "left",			Vec2( -1.f, 0.f ),						spriteAnimSetDefElem );
+	AddDirectionAnimation( "downLeft",		Vec2( -SQRT_2_OVER_2, -SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
+	AddDirectionAnimation( "down",			Vec2( 0.f, -1.f ),						spriteAnimSetDefElem );
+	AddDirectionAnimation( "downRight",		Vec2( SQRT_2_OVER_2, -SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
+	AddDirectionAnimation( "right",			Vec2( 1.f, 0.f ),						spriteAnimSetDefElem );
+	AddDirectionAnimation( "upRight",		Vec2( SQRT_2_OVER_2, SQRT_2_OVER_2 ),	spriteAnimSetDefElem );
 }
 
 
@@ -33,13 +33,13 @@ SpriteAnimationSetDefinition::~SpriteAnimationSetDefinition()
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Vec2& direction )
+SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDirection( const Vec2& direction )
 {
 	float maxDotProduct = -99999.f;
 	std::string closestAnimName = "";
 	for ( auto it = m_directionSpriteAnims.begin(); it != m_directionSpriteAnims.end(); ++it )
 	{ 
-		float dirDotProduct = DotProduct2D( direction, it->second->facingDirection.GetRotatedDegrees( entityOrientationDegrees ) );
+		float dirDotProduct = DotProduct2D( direction, it->second->facingDirection );
 
 		if ( dirDotProduct > maxDotProduct )
 		{

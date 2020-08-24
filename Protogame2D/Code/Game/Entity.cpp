@@ -50,7 +50,7 @@ void Entity::Render() const
 		return;
 	}
 
-	walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, m_velocity );
+	walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_velocity );
 	
 	const SpriteDefinition& spriteDef = walkAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
 

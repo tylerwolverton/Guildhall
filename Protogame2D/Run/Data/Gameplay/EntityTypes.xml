@@ -1,12 +1,12 @@
 <EntityTypes spriteSheet="Data/Images/KushnariovaCharacters_12x53.png" spriteSheetDimensions="12,53">
   ​
   <Actor name="Link">
-    <Physics radius="0.18" walkSpeed="1.0"/>
+    <Physics radius="0.5" walkSpeed="1.0"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
-      <Walk front="6,7,8" left="9,10,11" back="0,1,2" right="3,4,5"/>
-      <Attack front="0"/>
-      <Pain front="0"/>
-      <Death front="0"/>
+      <Walk up="0,1,2" left="9,10,11" down="6,7,8" right="3,4,5"/>
+      <Attack up="0"/>
+      <Pain up="0"/>
+      <Death up="0"/>
     </Appearance>
   </Actor>
   ​
@@ -22,7 +22,7 @@
   <Portal name="Energy Teleporter">
     <Physics radius="0.18" walkSpeed="0.0"/>
     <Appearance size="1,1">
-      <Walk front="57"/>
+      <Walk up="57"/>
     </Appearance>
   </Portal>
   ​

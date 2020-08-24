@@ -123,7 +123,7 @@ void Game::Update()
 					++m_loadingFrameNum;
 
 					SoundID anticipation = g_audioSystem->CreateOrGetSound( "Data/Audio/Anticipation.mp3" );
-					g_audioSystem->PlaySound( anticipation );
+					g_audioSystem->PlaySound( anticipation, false, .1f );
 				}
 				break;
 
@@ -677,7 +677,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			}
 
 			SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
-			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true );
+			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .1f );
 		}
 		break;
 
@@ -689,7 +689,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::PAUSED:
 				{
 					SoundID unpause = g_audioSystem->CreateOrGetSound( "Data/Audio/Unpause.mp3" );
-					g_audioSystem->PlaySound( unpause );
+					g_audioSystem->PlaySound( unpause, false, .1f );
 
 					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, 1.f );
 				}
@@ -700,7 +700,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					g_audioSystem->StopSound( m_attractMusicID );
 
 					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
-					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true );
+					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true, .1f );
 					
 					m_curMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapName );
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapName.c_str() ) );
@@ -716,7 +716,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .5f );
 
 			SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
-			g_audioSystem->PlaySound( pause );
+			g_audioSystem->PlaySound( pause, false, .1f );
 
 		}
 		break;
@@ -728,7 +728,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			g_audioSystem->StopSound( m_gameplayMusicID );
 
 			SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
-			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic );
+			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic, true, .1f );
 		}
 		break;
 	}
