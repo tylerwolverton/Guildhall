@@ -59,6 +59,8 @@ void Game::Startup()
 	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
 
 	EnableDebugRendering();
+	
+	InitializeFPSHistory();
 
 	m_debugInfoTextBox = new TextBox( *g_renderer, AABB2( Vec2::ZERO, Vec2( 200.f, 80.f ) ) );
 
@@ -155,6 +157,7 @@ void Game::Update()
 
 	UpdateCameras();
 	UpdateMousePositions();
+	UpdateFramesPerSecond();
 
 	m_uiSystem->Update();
 }
@@ -212,6 +215,8 @@ void Game::Render() const
 	{
 		m_uiSystem->DebugRender();
 	}
+
+	RenderFPSCounter();
 
 	g_renderer->EndCamera( *m_uiCamera );
 
@@ -587,6 +592,68 @@ void Game::UpdateCameras()
 	//m_worldCamera->Translate2D( cameraShakeOffset );
 	m_worldCamera->SetPosition( m_focalPoint + Vec3( cameraShakeOffset, 0.f ) );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::InitializeFPSHistory()
+{
+	// Optimistically initialize fps history to 60 fps
+	for ( int i = 0; i < FRAME_HISTORY_COUNT; ++i )
+	{
+		m_fpsHistory[i] = 60.f;
+		m_fpsHistorySum += 60.f;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateFramesPerSecond()
+{
+	float curFPS = 1.f / (float)m_gameClock->GetLastDeltaSeconds();
+
+	m_fpsHistorySum -= m_fpsHistory[m_fpsNextIdx];
+	m_fpsHistory[m_fpsNextIdx] = curFPS;
+	m_fpsHistorySum += curFPS;
+
+	++m_fpsNextIdx;
+	if ( m_fpsNextIdx >= FRAME_HISTORY_COUNT - 1 )
+	{
+		m_fpsNextIdx = 0;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float Game::GetAverageFPS() const
+{
+	constexpr float oneOverFrameCount = 1.f / (float)FRAME_HISTORY_COUNT;
+
+	return m_fpsHistorySum * oneOverFrameCount;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderFPSCounter() const
+{
+	float fps = GetAverageFPS();
+
+	Rgba8 fpsCountercolor = Rgba8::GREEN;
+
+	if ( fps < 30.f )
+	{
+		fpsCountercolor = Rgba8::RED;
+	}
+	if ( fps < 55.f )
+	{
+		fpsCountercolor = Rgba8::YELLOW;
+	}
+
+	float frameTime = (float)m_gameClock->GetLastDeltaSeconds() * 1000.f;
+
+	DebugAddScreenTextf( Vec4( 0.75f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, fpsCountercolor, 0.f,
+						 "FPS: %.2f ( %.2f ms/frame )",
+						 fps, frameTime );
 }
 
 
