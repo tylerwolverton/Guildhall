@@ -1,0 +1,26 @@
+<MapDefinition type="TileMap" version="1" dimensions="16,10">
+
+	<Legend>
+		<Tile glyph="#" tileType="StoneWall"/>
+		<Tile glyph="." tileType="GrassGround"/>
+	</Legend>
+	<MapRows>
+		<MapRow tiles="################"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="################"/>
+	</MapRows>
+	<Entities>
+		<PlayerStart pos="1.5,1.5" yaw="0"/>
+    <!--<Portal name="Energy Teleporter" pos="2,2" yaw="90" destMap="TestRoom" destPos="5,2" destYawOffset="90"/>-->
+	</Entities>
+
+</MapDefinition>
+
+

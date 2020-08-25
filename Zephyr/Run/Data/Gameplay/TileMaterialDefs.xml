@@ -1,0 +1,29 @@
+<TileMaterialDefinitions spriteSheet="Images/Terrain_32x32.png" spriteSheetDimensions="32,32">
+
+  <TileMaterialDefinitions
+		name="Grass"
+		spriteCoords="7,0"
+		spriteTint="180,180,180"
+	/>
+
+  <TileMaterialDefinitions
+		name="Water"
+		spriteCoords="25,31"
+	/>
+
+  <TileMaterialDefinitions
+   name="Lava"
+   spriteCoords="13,29"
+	/>
+
+  <TileMaterialDefinitions
+   name="Stone"
+   spriteCoords="24,22"
+	/>
+
+  <TileMaterialDefinitions
+    name="Wood"
+    spriteCoords="29,1"
+	/>
+
+</TileMaterialDefinitions>

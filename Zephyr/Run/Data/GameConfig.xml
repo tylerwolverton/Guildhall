@@ -1,0 +1,7 @@
+<GameConfig
+	startMap="EmptyRoom"
+  playerActorName="Link"
+	windowAspect="1.777"
+  windowTitle="Protogame2D"
+	windowMode="windowed"
+/>
