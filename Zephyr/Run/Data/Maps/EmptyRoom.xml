@@ -7,12 +7,12 @@
 	<MapRows>
 		<MapRow tiles="################"/>
 		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..........#####"/>
+		<MapRow tiles="#....#.........#"/>
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#.###..........#"/>
+		<MapRow tiles="#.........##...#"/>
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="################"/>
 	</MapRows>

@@ -141,6 +141,7 @@ void Game::Update()
 		break;
 
 		case eGameState::ATTRACT:
+		case eGameState::PAUSED:
 		{
 			UpdateFromKeyboard();
 		}
@@ -504,12 +505,36 @@ void Game::LoadEntitiesFromXml()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::ReloadDataFiles()
+{
+	m_world->ClearMaps();
+
+	PTR_MAP_SAFE_DELETE( EntityDefinition::s_definitions );
+	PTR_MAP_SAFE_DELETE( TileMaterialDefinition::s_definitions );
+	PTR_MAP_SAFE_DELETE( TileDefinition::s_definitions );
+	PTR_VECTOR_SAFE_DELETE( SpriteSheet::s_definitions );
+
+	LoadEntitiesFromXml();
+	LoadTileMaterialsFromXml();
+	LoadTilesFromXml();
+	LoadMapsFromXml();
+
+	g_devConsole->PrintString( "Data files reloaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard()
 {
 	switch ( m_gameState )
 	{
 		case eGameState::ATTRACT:
 		{
+			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
+			{
+				g_eventSystem->FireEvent( "Quit" );
+			}
+
 			if ( g_inputSystem->WasAnyKeyJustPressed() )
 			{
 				ChangeGameState( eGameState::PLAYING );
@@ -519,7 +544,7 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::PLAYING:
 		{
-			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
 			{
 				ChangeGameState( eGameState::PAUSED );
 			}
@@ -536,9 +561,9 @@ void Game::UpdateFromKeyboard()
 		}
 		case eGameState::PAUSED:
 		{
-			if ( g_inputSystem->WasKeyJustPressed( KEY_ESC ) )
+			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
 			{
-				g_eventSystem->FireEvent( "Quit" );
+				ChangeGameState( eGameState::ATTRACT );
 			}
 		}
 		break;
@@ -733,6 +758,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::PLAYING:
 				{
 					g_audioSystem->StopSound( m_gameplayMusicID );
+
+					ReloadDataFiles();
 				}
 				break;
 

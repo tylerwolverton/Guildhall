@@ -125,6 +125,15 @@ bool World::IsMapLoaded( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+void World::ClearMaps()
+{
+	PTR_MAP_SAFE_DELETE( m_loadedMaps );
+
+	m_curMap = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Map* World::GetLoadedMapByName( const std::string& mapName )
 {
 	auto mapIter = m_loadedMaps.find( mapName );

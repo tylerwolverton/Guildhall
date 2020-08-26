@@ -71,6 +71,7 @@ private:
 	void LoadTilesFromXml();
 	void LoadMapsFromXml();
 	void LoadEntitiesFromXml();
+	void ReloadDataFiles();
 
 	void UpdateFromKeyboard();
 	void ChangeMap( const std::string& mapName );
@@ -83,6 +84,7 @@ private:
 	void UpdateFramesPerSecond();
 	float GetAverageFPS() const;
 	void RenderFPSCounter() const;
+
 private:
 	Clock* m_gameClock = nullptr;
 	float m_fpsHistory[FRAME_HISTORY_COUNT];
