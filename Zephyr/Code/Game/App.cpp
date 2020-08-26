@@ -1,4 +1,4 @@
-#include "App.hpp"
+#include "Game/App.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
@@ -16,6 +16,7 @@
 #include "Engine/OS/Window.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Engine/Time/Clock.hpp"
+
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 
@@ -227,7 +228,7 @@ eWindowMode App::GetWindowModeFromGameConfig()
 	}
 	else
 	{
-		g_devConsole->PrintString( Stringf( "Unrecognized window mode '%s' found in game config; using windowed mode.", windowModeStr.c_str() ), Rgba8::YELLOW );
+		g_devConsole->PrintWarning( Stringf( "Unrecognized window mode '%s' found in game config; using windowed mode.", windowModeStr.c_str() ) );
 		return eWindowMode::WINDOWED;
 	}
 }

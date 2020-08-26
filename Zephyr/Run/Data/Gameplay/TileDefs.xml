@@ -1,15 +1,15 @@
 <TileDefinitions>
 
   <TileDefinition
-		name="StoneWall"
-    materialType="Stone"
-		isSolid="true"
+		name="BlueDungeonFloor"
+    materialType="BlueDungeonFloor"
+		isSolid="false"
 	/>
 
   <TileDefinition
-		name="GrassGround"
-    materialType="Grass"
-		isSolid="false"
+		name="BlueDungeonBlock"
+    materialType="BlueDungeonBlock"
+		isSolid="true"
 	/>
 
 </TileDefinitions>

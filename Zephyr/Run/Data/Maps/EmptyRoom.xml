@@ -1,8 +1,8 @@
 <MapDefinition type="TileMap" version="1" dimensions="16,10">
 
 	<Legend>
-		<Tile glyph="#" tileType="StoneWall"/>
-		<Tile glyph="." tileType="GrassGround"/>
+		<Tile glyph="#" tileType="BlueDungeonBlock"/>
+		<Tile glyph="." tileType="BlueDungeonFloor"/>
 	</Legend>
 	<MapRows>
 		<MapRow tiles="################"/>

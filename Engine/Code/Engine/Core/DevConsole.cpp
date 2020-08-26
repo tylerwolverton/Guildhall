@@ -149,6 +149,14 @@ void DevConsole::PrintError( const std::string& message )
 
 
 //-----------------------------------------------------------------------------------------------
+void DevConsole::PrintWarning( const std::string& message )
+{
+	m_logMessages.push_back( DevConsoleLogMessage( message, Rgba8::YELLOW ) );
+	m_latestLogMessageToPrint = (int)m_logMessages.size() - 1;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DevConsole::Render( float lineHeight ) const
 {
 	AABB2 bounds( m_devConsoleCamera->GetOrthoMin(), m_devConsoleCamera->GetOrthoMax() );
