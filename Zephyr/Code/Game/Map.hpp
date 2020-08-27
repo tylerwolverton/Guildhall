@@ -58,6 +58,14 @@ private:
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 	void ResolveEntityVsPortalCollisions();
 
+	void AddToEntityList( Entity* entity );
+	void AddToProjectileList( Projectile* projectile );
+	void AddToPortalList( Portal* portal );
+	void RemoveFromProjectileList( Projectile* projectile );
+	void RemoveFromPortalList( Portal* portal );
+
+	void DeleteDeadEntities();
+
 	void WarpEntityInMap( Entity* entity, Portal* portal );
 
 	virtual RaycastResult Raycast( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const = 0;

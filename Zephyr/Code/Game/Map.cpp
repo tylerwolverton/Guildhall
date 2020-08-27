@@ -79,6 +79,8 @@ void Map::Update( float deltaSeconds )
 	ResolveEntityVsEntityCollisions();
 	UpdateMesh();
 	ResolveEntityVsPortalCollisions();
+
+	DeleteDeadEntities();
 }
 
 
@@ -136,7 +138,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		case eEntityType::ACTOR:
 		{
 			Actor* actor = new Actor( entityDef, this );
-			m_entities.emplace_back( actor );
+			AddToEntityList( actor );
 			return actor;
 		}
 		break;
@@ -144,8 +146,8 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		case eEntityType::PROJECTILE:
 		{
 			Projectile* projectile = new Projectile( entityDef, this );
-			m_entities.emplace_back( projectile );
-			m_projectiles.emplace_back( projectile );
+			AddToEntityList( projectile );
+			AddToProjectileList( projectile );
 			return projectile;
 		}
 		break;
@@ -153,8 +155,8 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		case eEntityType::PORTAL:
 		{
 			Portal* portal = new Portal( entityDef, this );
-			m_entities.emplace_back( portal );
-			m_portals.emplace_back( portal );
+			AddToEntityList( portal );
+			AddToPortalList( portal );
 			return portal;
 		}
 		break;
@@ -162,7 +164,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		case eEntityType::ENTITY:
 		{
 			Entity* entity = new Entity( entityDef, this );
-			m_entities.emplace_back( entity );
+			AddToEntityList( entity );
 			return entity;
 		}
 		break;
@@ -369,6 +371,106 @@ void Map::ResolveEntityVsPortalCollisions()
 				WarpEntityInMap( entity, portal );
 			}
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::AddToEntityList( Entity* entity )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		if ( m_entities[entityIdx] == nullptr )
+		{
+			m_entities[entityIdx] = entity;
+			return;
+		}
+	}
+
+	m_entities.push_back( entity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::AddToProjectileList( Projectile* projectile )
+{
+	for ( int projectileIdx = 0; projectileIdx < (int)m_projectiles.size(); ++projectileIdx )
+	{
+		if ( m_projectiles[projectileIdx] == nullptr )
+		{
+			m_projectiles[projectileIdx] = projectile;
+			return;
+		}
+	}
+
+	m_projectiles.push_back( projectile );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::AddToPortalList( Portal* portal )
+{
+	for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
+	{
+		if ( m_portals[portalIdx] == nullptr )
+		{
+			m_portals[portalIdx] = portal;
+			return;
+		}
+	}
+
+	m_portals.push_back( portal );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::RemoveFromProjectileList( Projectile* projectile )
+{
+	for ( int projectileIdx = 0; projectileIdx < (int)m_projectiles.size(); ++projectileIdx )
+	{
+		if ( projectile == m_projectiles[projectileIdx] )
+		{
+			m_projectiles[projectileIdx] = nullptr;
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::RemoveFromPortalList( Portal* portal )
+{
+	for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
+	{
+		if ( portal == m_portals[portalIdx] )
+		{
+			m_portals[portalIdx] = nullptr;
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::DeleteDeadEntities()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr
+			 || !entity->IsDead() )
+		{
+			continue;
+		}
+
+		switch( entity->GetType() )
+		{
+			case eEntityType::PROJECTILE: RemoveFromProjectileList( (Projectile*)entity ); break;
+			case eEntityType::PORTAL: RemoveFromPortalList( (Portal*)entity ); break;
+		}
+
+		delete( m_entities[entityIdx] );
+		m_entities[entityIdx] = nullptr;
 	}
 }
 

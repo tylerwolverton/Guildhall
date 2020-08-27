@@ -390,7 +390,17 @@ void TileMap::ResolveEntityVsWallCollision( Entity& entity )
 		if ( tile != nullptr
 			 && tile->IsSolid() )
 		{
-			PushDiscOutOfAABB2D( entity.m_position, entity.GetPhysicsRadius(), tile->GetBounds() );
+			if ( entity.m_willDieOnCollision )
+			{
+				if ( DoDiscAndAABBOverlap2D( entity.m_position, entity.GetPhysicsRadius(), tile->GetBounds() ) )
+				{
+					entity.Die();
+				}
+			}
+			else
+			{
+				PushDiscOutOfAABB2D( entity.m_position, entity.GetPhysicsRadius(), tile->GetBounds() );
+			}
 		}
 	}
 }

@@ -67,6 +67,7 @@ protected:
 	bool					m_canBePushedByWalls = false;
 	bool					m_canBePushedByEntities = false;
 	bool					m_canPushEntities = false;
+	bool					m_willDieOnCollision = false;
 
 	// Visual
 	float					m_cumulativeTime = 0.f;
