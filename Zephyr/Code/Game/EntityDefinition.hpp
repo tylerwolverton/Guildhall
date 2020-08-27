@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #include "Game/GameCommon.hpp"
 
 #include <string>
@@ -37,6 +38,8 @@ public:
 	std::string GetName() const																{ return m_name; }
 	eEntityType GetType() const																{ return m_type; }
 	float		GetWalkSpeed() const														{ return m_walkSpeed; }
+	float		GetSpeed() const															{ return m_speed; }
+	FloatRange	GetDamageRange() const														{ return m_damageRange; }
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
@@ -52,6 +55,9 @@ protected:
 	float			m_physicsRadius = 0.f;
 	float			m_mass = 1.f;
 	float			m_walkSpeed = 0.f;
+	float			m_speed = 0.f;
+
+	FloatRange		m_damageRange;
 
 	AABB2			m_localDrawBounds;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;

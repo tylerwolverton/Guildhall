@@ -204,6 +204,7 @@
     <ClCompile Include="MapData.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Scripting\ZephyrScript.cpp" />
     <ClCompile Include="SpriteAnimationSetDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="MapData.hpp" />
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="Projectile.hpp" />
+    <ClInclude Include="Scripting\ZephyrScript.hpp" />
     <ClInclude Include="SpriteAnimationSetDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />

@@ -40,6 +40,7 @@ void Map::Load( Entity* player )
 	m_player = player;
 	m_entities.push_back( player );
 
+	player->SetMap( this );
 	player->SetPosition( m_playerStartPos );
 	player->SetOrientationDegrees( m_playerStartYaw );
 }
@@ -134,7 +135,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 	{
 		case eEntityType::ACTOR:
 		{
-			Actor* actor = new Actor( entityDef );
+			Actor* actor = new Actor( entityDef, this );
 			m_entities.emplace_back( actor );
 			return actor;
 		}
@@ -142,15 +143,16 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 
 		case eEntityType::PROJECTILE:
 		{
-			Projectile* projectile = new Projectile( entityDef );
+			Projectile* projectile = new Projectile( entityDef, this );
 			m_entities.emplace_back( projectile );
+			m_projectiles.emplace_back( projectile );
 			return projectile;
 		}
 		break;
 
 		case eEntityType::PORTAL:
 		{
-			Portal* portal = new Portal( entityDef );
+			Portal* portal = new Portal( entityDef, this );
 			m_entities.emplace_back( portal );
 			m_portals.emplace_back( portal );
 			return portal;
@@ -159,7 +161,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 
 		case eEntityType::ENTITY:
 		{
-			Entity* entity = new Entity( entityDef );
+			Entity* entity = new Entity( entityDef, this );
 			m_entities.emplace_back( entity );
 			return entity;
 		}
@@ -173,6 +175,15 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::SpawnNewEntityOfTypeAtPosition( const std::string& entityDefName, const Vec2& pos )
+{
+	Entity* entity = SpawnNewEntityOfType( entityDefName );
+	entity->SetPosition( pos );
+
+	return entity;
+}
 
 
 //-----------------------------------------------------------------------------------------------

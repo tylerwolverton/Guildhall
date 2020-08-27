@@ -8,6 +8,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class Entity;
+class Projectile;
 class Portal;
 struct MapData;
 struct MapEntityDefinition;
@@ -45,6 +46,7 @@ public:
 
 	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
 	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
+	virtual Entity* SpawnNewEntityOfTypeAtPosition( const std::string& entityDefName, const Vec2& pos );
 
 	void RemoveOwnershipOfEntity( Entity* entityToRemove );
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
@@ -61,13 +63,14 @@ private:
 	virtual RaycastResult Raycast( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const = 0;
 
 protected:
-	std::string			 m_name;
+	std::string					m_name;
 
 	// Multiplayer TODO: Make this into an array
-	Vec2				 m_playerStartPos = Vec2::ZERO;
-	float				 m_playerStartYaw = 0.f;
+	Vec2						m_playerStartPos = Vec2::ZERO;
+	float						m_playerStartYaw = 0.f;
 
-	Entity*				 m_player = nullptr;
-	std::vector<Entity*> m_entities;
-	std::vector<Portal*> m_portals;
+	Entity*						m_player = nullptr;
+	std::vector<Entity*>		m_entities;
+	std::vector<Projectile*>	m_projectiles;
+	std::vector<Portal*>		m_portals;
 };

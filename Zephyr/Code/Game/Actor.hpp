@@ -14,7 +14,7 @@ class SpriteAnimDefinition;
 class Actor : public Entity
 {
 public:
-	Actor( const EntityDefinition& entityDef );
+	Actor( const EntityDefinition& entityDef, Map* map );
 	~Actor();
 
 	virtual void Update( float deltaSeconds );

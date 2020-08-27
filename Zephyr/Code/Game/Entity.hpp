@@ -10,7 +10,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Map;
 class SpriteAnimDefinition;
+class ZephyrScript;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -20,7 +22,7 @@ class Entity
 	friend class TileMap;
 	
 public:
-	Entity( const EntityDefinition& entityDef );
+	Entity( const EntityDefinition& entityDef, Map* map );
 	virtual ~Entity() {}
 
 	virtual void Update( float deltaSeconds );
@@ -38,6 +40,7 @@ public:
 	void		 SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 	std::string  GetName() const										{ return m_entityDef.m_name; }
 	eEntityType  GetType() const										{ return m_entityDef.m_type; }
+	void SetMap( Map* map )												{ m_map = map; }
 				 
 	bool		 IsDead() const											{ return m_isDead; }
 	bool		 IsGarbage() const										{ return m_isGarbage; }
@@ -46,11 +49,14 @@ public:
 	void		 ApplyFriction();
 	
 protected:
+	ZephyrScript*			m_scriptObj = nullptr;
+
 	// Game state
 	const EntityDefinition& m_entityDef;
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
+	Map*					m_map = nullptr;
 
 	// Physics
 	Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity’s 2D(x, y) Cartesian origin / center location, in world space

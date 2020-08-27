@@ -14,6 +14,9 @@
     <Filter Include="Data\Maps">
       <UniqueIdentifier>{f4db0780-bcd7-41c5-a8fc-393d93529de5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\Scripting">
+      <UniqueIdentifier>{15964794-2934-4558-b88a-035e9ebea62d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -67,6 +70,9 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Scripting\ZephyrScript.cpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -119,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="Projectile.hpp">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting\ZephyrScript.hpp">
+      <Filter>Framework\Scripting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

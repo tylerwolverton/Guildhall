@@ -13,11 +13,13 @@
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
+#include "Game/Scripting/ZephyrScript.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Entity::Entity( const EntityDefinition& entityDef )
+Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	: m_entityDef( entityDef )
+	, m_map( map )
 {
 }
 
@@ -26,6 +28,11 @@ Entity::Entity( const EntityDefinition& entityDef )
 void Entity::Update( float deltaSeconds )
 {
 	m_cumulativeTime += deltaSeconds;
+
+	if ( m_scriptObj != nullptr )
+	{
+		m_scriptObj->Update();
+	}
 
 	// vel += acceleration * dt;
 	m_velocity += m_linearAcceleration * deltaSeconds;

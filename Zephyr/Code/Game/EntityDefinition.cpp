@@ -74,14 +74,20 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 		return;
 	}
 
-
+	// Physics
 	const XmlElement* physicsElem = entityDefElem.FirstChildElement( "Physics" );
 	if ( physicsElem != nullptr )
 	{
 		m_physicsRadius = ParseXmlAttribute( *physicsElem, "radius", m_physicsRadius );
-		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
+
+		switch ( m_type )
+		{
+			case eEntityType::ACTOR: m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed ); break;
+			case eEntityType::PROJECTILE: m_speed = ParseXmlAttribute( *physicsElem, "speed", m_speed ); break;
+		}
 	}
 
+	// Appearance
 	const XmlElement* appearanceElem = entityDefElem.FirstChildElement( "Appearance" );
 	if ( appearanceElem != nullptr )
 	{
@@ -94,6 +100,13 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 			animationSetElem = animationSetElem->NextSiblingElement();
 		}
+	}
+
+	// Gameplay
+	const XmlElement* gameplayElem = entityDefElem.FirstChildElement( "Gameplay" );
+	if ( gameplayElem != nullptr )
+	{
+		m_damageRange = ParseXmlAttribute( *gameplayElem, "damage", m_damageRange );
 	}
 
 	m_isValid = true;

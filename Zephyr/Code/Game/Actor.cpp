@@ -11,11 +11,12 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/Map.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Actor::Actor( const EntityDefinition& entityDef )
-	: Entity( entityDef )
+Actor::Actor( const EntityDefinition& entityDef, Map* map )
+	: Entity( entityDef, map )
 {
 	m_canBePushedByWalls = true;
 	m_canBePushedByEntities = true;
@@ -39,6 +40,7 @@ void Actor::Update( float deltaSeconds )
 	}
 
 	//UpdateAnimation();
+	SetOrientationDegrees( m_velocity.GetOrientationDegrees() );
 
 	Entity::Update( deltaSeconds );
 }
@@ -81,7 +83,6 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 		 || g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
 	{
 		m_velocity.x -= m_entityDef.GetWalkSpeed();
-
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'D' )
@@ -94,6 +95,12 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 		 || g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
 	{
 		m_velocity.y -= m_entityDef.GetWalkSpeed();
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_SPACEBAR ) )
+	{
+		Entity* entity = m_map->SpawnNewEntityOfTypeAtPosition( "Fireball", m_position );
+		entity->SetOrientationDegrees( GetForwardVector().GetOrientationDegrees() );
 	}
 }
 

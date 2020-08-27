@@ -497,7 +497,7 @@ void Game::LoadEntitiesFromXml()
 		return;
 	}
 
-	m_player = new Actor( *playerDef );
+	m_player = new Actor( *playerDef, nullptr );
 	m_player->SetAsPlayer();
 
 	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
@@ -564,6 +564,11 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
 			{
 				ChangeGameState( eGameState::ATTRACT );
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_SPACEBAR ) )
+			{
+				ChangeGameState( eGameState::PLAYING );
 			}
 		}
 		break;
@@ -785,7 +790,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					SoundID unpause = g_audioSystem->CreateOrGetSound( "Data/Audio/Unpause.mp3" );
 					g_audioSystem->PlaySound( unpause, false, .1f );
 
-					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, 1.f );
+					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .1f );
 				}
 				break;
 
@@ -807,7 +812,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::PAUSED:
 		{
-			g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .5f );
+			g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .05f );
 
 			SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
 			g_audioSystem->PlaySound( pause, false, .1f );

@@ -5,10 +5,14 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Projectile::Projectile( const EntityDefinition& entityDef )
-	: Entity( entityDef )
+Projectile::Projectile( const EntityDefinition& entityDef, Map* map )
+	: Entity( entityDef, map )
 {
+	m_canBePushedByWalls = true;
+	m_canBePushedByEntities = false;
+	m_canPushEntities = false;
 
+	m_damage = entityDef.GetDamageRange().GetRandomInRange( g_game->m_rng );
 }
 
 
@@ -21,6 +25,8 @@ Projectile::~Projectile()
 //-----------------------------------------------------------------------------------------------
 void Projectile::Update( float deltaSeconds )
 {
+	m_velocity = GetForwardVector() * m_entityDef.GetSpeed();
+
 	Entity::Update( deltaSeconds );
 }
 
@@ -28,7 +34,7 @@ void Projectile::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Projectile::Render() const
 {
-
+	Entity::Render();
 }
 
 

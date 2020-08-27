@@ -9,7 +9,7 @@ class EntityDefinition;
 class Portal : public Entity
 {
 public:
-	Portal( const EntityDefinition& entityDef );
+	Portal( const EntityDefinition& entityDef, Map* map );
 	~Portal();
 
 	virtual void Update( float deltaSeconds );
