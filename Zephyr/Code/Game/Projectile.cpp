@@ -26,7 +26,7 @@ Projectile::~Projectile()
 //-----------------------------------------------------------------------------------------------
 void Projectile::Update( float deltaSeconds )
 {
-	m_velocity = GetForwardVector() * m_entityDef.GetSpeed();
+	//m_velocity = GetForwardVector() * m_entityDef.GetSpeed();
 
 	Entity::Update( deltaSeconds );
 }

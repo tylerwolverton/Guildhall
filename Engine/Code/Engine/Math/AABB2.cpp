@@ -2,6 +2,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Polygon2.hpp"
 
 #include <string>
 #include <vector>
@@ -298,6 +299,17 @@ void AABB2::GetPositionOnEachEdge( float wallFraction, Vec2* out_fourPoints ) co
 	out_fourPoints[1] = InterpolatePoint2D( corners[0], corners[2], wallFraction );
 	out_fourPoints[2] = InterpolatePoint2D( corners[1], corners[3], wallFraction );
 	out_fourPoints[3] = InterpolatePoint2D( corners[2], corners[3], wallFraction );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Polygon2 AABB2::GetAsPolygon2() const
+{
+	Polygon2 polygon;
+	std::vector<Vec2> points{ mins, Vec2( maxs.x, mins.y ), maxs, Vec2( mins.x, maxs.y ) };
+	polygon.SetPoints( points );
+
+	return polygon;
 }
 
 

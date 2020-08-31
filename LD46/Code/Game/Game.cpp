@@ -143,7 +143,7 @@ void Game::InitializeCameras()
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
 	//m_worldCamera->SetProjectionOrthographic( 60.f, -.1f, -100.f );
 
-	m_worldCamera->SetPitchRollYawRotation( 0.f, 0.f, -90.f );
+	m_worldCamera->SetPitchRollYawOrientationDegrees( 0.f, 0.f, -90.f );
 }
 
 
@@ -620,7 +620,7 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	pitch *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawRotation( transform.m_orientation.x + pitch,
+	m_worldCamera->SetPitchRollYawOrientationDegrees( transform.m_orientationDegrees.x + pitch,
 											0.f,
 											transform.m_orientation.z + yaw );
 

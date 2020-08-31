@@ -14,6 +14,7 @@
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/OS/Window.hpp"
+#include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -68,6 +69,10 @@ void Game::Startup()
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
+	g_physicsSystem2D->Startup( m_gameClock );
+	g_physicsSystem2D->SetSceneGravity( 0.f );
+	g_physicsSystem2D->EnableLayerInteraction( 0, 1 );
+	g_physicsSystem2D->DisableLayerInteraction( 0, 0 );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 

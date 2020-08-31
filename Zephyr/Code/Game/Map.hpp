@@ -54,10 +54,6 @@ public:
 private:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 	
-	void ResolveEntityVsEntityCollisions();
-	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
-	void ResolveEntityVsPortalCollisions();
-
 	void AddToEntityList( Entity* entity );
 	void AddToProjectileList( Projectile* projectile );
 	void AddToPortalList( Portal* portal );

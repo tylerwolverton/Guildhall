@@ -8,6 +8,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -55,6 +56,7 @@ void App::Startup()
 	g_audioSystem = new AudioSystem();
 	g_renderer = new RenderContext();
 	g_devConsole = new DevConsole();
+	g_physicsSystem2D = new Physics2D();
 	g_game = new Game();
 
 	g_eventSystem->Startup();
@@ -73,6 +75,7 @@ void App::Startup()
 	g_devConsole->SetRenderer( g_renderer );
 	g_devConsole->SetBitmapFont( g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" ) );
 
+	// Calls g_physicsSystem2D::Startup too
 	g_game->Startup();
 
 	g_eventSystem->RegisterEvent( "Quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
@@ -83,6 +86,7 @@ void App::Startup()
 void App::Shutdown()
 {
 	g_game->Shutdown();
+	g_physicsSystem2D->Shutdown();
 	g_devConsole->Shutdown();
 	DebugRenderSystemShutdown();
 	g_renderer->Shutdown();
@@ -145,6 +149,7 @@ void App::BeginFrame()
 	g_audioSystem->BeginFrame();
 	g_renderer->BeginFrame();
 	DebugRenderBeginFrame();
+	g_physicsSystem2D->BeginFrame();
 	g_game->BeginFrame();
 }
 
@@ -154,6 +159,7 @@ void App::Update()
 {
 	g_devConsole->Update();
 	g_game->Update();
+	g_physicsSystem2D->Update();
 
 	UpdateFromKeyboard();
 }
@@ -189,6 +195,7 @@ void App::Render() const
 void App::EndFrame()
 {
 	g_game->EndFrame();
+	g_physicsSystem2D->EndFrame();
 	DebugRenderEndFrame();
 	g_renderer->EndFrame();
 	g_audioSystem->EndFrame();

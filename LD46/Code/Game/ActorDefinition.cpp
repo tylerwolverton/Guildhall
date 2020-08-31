@@ -11,17 +11,17 @@ std::map< std::string, ActorDefinition* > ActorDefinition::s_definitions;
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteAnimDefinition* ActorDefinition::GetSpriteAnimDef( std::string animName )
-{
-	std::map< std::string, SpriteAnimDefinition* >::const_iterator  mapIter = m_spriteAnimSetDef->m_spriteAnimDefMapByName.find( animName );
-	
-	if ( mapIter == m_spriteAnimSetDef->m_spriteAnimDefMapByName.cend() )
-	{
-		return nullptr;
-	}
-
-	return mapIter->second;
-}
+//SpriteAnimDefinition* ActorDefinition::GetSpriteAnimDef( std::string animName )
+//{
+//	std::map< std::string, SpriteAnimDefinition* >::const_iterator  mapIter = m_spriteAnimSetDef->m_spriteAnimDefMapByName.find( animName );
+//	
+//	if ( mapIter == m_spriteAnimSetDef->m_spriteAnimDefMapByName.cend() )
+//	{
+//		return nullptr;
+//	}
+//
+//	return mapIter->second;
+//}
 
 
 //-----------------------------------------------------------------------------------------------

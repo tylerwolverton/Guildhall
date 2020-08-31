@@ -23,7 +23,7 @@ public:
 	~ActorDefinition();
 
 	std::string GetName() { return m_name; }
-	SpriteAnimDefinition* GetSpriteAnimDef( std::string animName );
+	//SpriteAnimDefinition* GetSpriteAnimDef( std::string animName );
 
 	static ActorDefinition* GetActorDefinition( std::string actorName );
 	

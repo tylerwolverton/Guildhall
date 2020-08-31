@@ -146,7 +146,7 @@ void Actor::UpdateFromGamepad( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateAnimation()
 {
-	if ( m_velocity.x > 0.05f )
+	/*if ( m_velocity.x > 0.05f )
 	{
 		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "MoveEast" );
 	}
@@ -165,5 +165,5 @@ void Actor::UpdateAnimation()
 	else
 	{
 		m_curAnimDef = m_actorDef->GetSpriteAnimDef( "Idle" );
-	}
+	}*/
 }

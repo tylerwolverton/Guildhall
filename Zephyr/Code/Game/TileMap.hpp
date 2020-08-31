@@ -72,9 +72,9 @@ private:
 	void						RenderTiles() const;
 
 	void						BuildCardinalDirectionsArray();
-
-	void						ResolveEntityVsWallCollisions();
-	void						ResolveEntityVsWallCollision( Entity& entity );
+	
+	void						CreateTileRigidbodies();
+	void						DestroyTileRigidbodies();
 
 private:
 	Transform				m_raytraceTransform;
@@ -85,4 +85,6 @@ private:
 	Vec2					m_cardinalDirectionOffsets[9];
 
 	std::vector<Vertex_PCU> m_mesh;
+
+	std::vector<Rigidbody2D*> m_tileRigidbodies;
 };

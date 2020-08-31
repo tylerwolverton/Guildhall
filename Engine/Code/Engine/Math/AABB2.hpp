@@ -4,6 +4,7 @@
 
 //-----------------------------------------------------------------------------------------------
 struct IntVec2;
+class Polygon2;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -60,6 +61,7 @@ public:
 	void		GetCornerPositions( Vec2* out_fourPoints ) const;								// fill float[4] with corners
 	void		GetCornerPositionsCCW( Vec2* out_fourPoints ) const;							// fill float[4] with corners
 	void		GetPositionOnEachEdge( float wallFraction, Vec2* out_fourPoints ) const;		// fill float[4] with points on edges
+	Polygon2	GetAsPolygon2() const;
 
 	// Chop Box
 	void		ChopOffLeft( float fractionOfWidth, float additionalWidth );

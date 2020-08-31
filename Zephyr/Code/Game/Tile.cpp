@@ -1,5 +1,7 @@
 #include "Game/Tile.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Polygon2.hpp"
+
 #include "Game/GameCommon.hpp"
 #include "Game/TileDefinition.hpp"
 

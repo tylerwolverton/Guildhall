@@ -11,8 +11,18 @@
 
 //-----------------------------------------------------------------------------------------------
 class Map;
+class Rigidbody2D;
 class SpriteAnimDefinition;
 class ZephyrScript;
+
+
+//-----------------------------------------------------------------------------------------------
+enum class eFaction
+{
+	GOOD,
+	EVIL,
+	NEUTRAL
+};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -23,45 +33,50 @@ class Entity
 	
 public:
 	Entity( const EntityDefinition& entityDef, Map* map );
-	virtual ~Entity() {}
+	virtual ~Entity();
 
-	virtual void Update( float deltaSeconds );
-	virtual void Render() const;
-	virtual void Die();
-	virtual void DebugRender() const;
+	virtual void	Update( float deltaSeconds );
+	virtual void	Render() const;
+	virtual void	Die();
+	virtual void	DebugRender() const;
 
-	const Vec2	 GetForwardVector() const;
-	const Vec2	 GetPosition() const									{ return m_position; }
-	void		 SetPosition( const Vec2& position )					{ m_position = position; }
-	const float  GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
-	const float  GetWalkSpeed() const									{ return m_entityDef.m_walkSpeed; }
-	const float  GetMass() const										{ return m_entityDef.m_mass; }
-	const float  GetOrientationDegrees() const							{ return m_orientationDegrees; }
-	void		 SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
-	std::string  GetName() const										{ return m_entityDef.m_name; }
-	eEntityType  GetType() const										{ return m_entityDef.m_type; }
-	void SetMap( Map* map )												{ m_map = map; }
+	const Vec2		GetForwardVector() const;
+	const Vec2		GetPosition() const;
+	void			SetPosition( const Vec2& position );
+	void			SetRigidbody2D( Rigidbody2D* rigidbody2D )				{ m_rigidbody2D = rigidbody2D; }
+	const float		GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
+	const float		GetWalkSpeed() const									{ return m_entityDef.m_walkSpeed; }
+	const float		GetMass() const											{ return m_entityDef.m_mass; }
+	const float		GetOrientationDegrees() const							{ return m_orientationDegrees; }
+	void			SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
+	std::string		GetName() const											{ return m_entityDef.m_name; }
+	eEntityType		GetType() const											{ return m_entityDef.m_type; }
+	const eFaction	GetFaction() const										{ return m_faction; }
+	void			SetFaction( const eFaction& faction )					{ m_faction = faction; }
+	void			SetMap( Map* map )										{ m_map = map; }
 				 
-	bool		 IsDead() const											{ return m_isDead; }
-	bool		 IsGarbage() const										{ return m_isGarbage; }
+	bool			IsDead() const											{ return m_isDead; }
+	bool			IsGarbage() const										{ return m_isGarbage; }
 				 
-	void		 TakeDamage( int damage );
-	void		 ApplyFriction();
+	void			TakeDamage( int damage );
+	//void			ApplyFriction();
 	
 protected:
 	ZephyrScript*			m_scriptObj = nullptr;
 
 	// Game state
 	const EntityDefinition& m_entityDef;
+	eFaction				m_faction = eFaction::NEUTRAL;
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
 	Map*					m_map = nullptr;
 
 	// Physics
-	Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity’s 2D(x, y) Cartesian origin / center location, in world space
-	Vec2					m_velocity = Vec2( 0.f, 0.f );					// the Entity’s linear 2D( x, y ) velocity, in world units per second
-	Vec2					m_linearAcceleration = Vec2( 0.f, 0.f );		// the Entity’s signed linear acceleration per second per second
+	Rigidbody2D*			m_rigidbody2D = nullptr;
+	//Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity’s 2D(x, y) Cartesian origin / center location, in world space
+	//Vec2					m_velocity = Vec2( 0.f, 0.f );					// the Entity’s linear 2D( x, y ) velocity, in world units per second
+	//Vec2					m_linearAcceleration = Vec2( 0.f, 0.f );		// the Entity’s signed linear acceleration per second per second
 	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
 	float					m_angularVelocity = 0.f;						// the Entity’s signed angular velocity( spin rate ), in degrees per second
 	bool					m_canBePushedByWalls = false;

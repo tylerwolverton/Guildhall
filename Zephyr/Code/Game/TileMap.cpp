@@ -3,6 +3,9 @@
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Physics/PolygonCollider2D.hpp"
+#include "Engine/Physics/Physics2D.hpp"
+#include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -39,12 +42,16 @@ TileMap::~TileMap()
 void TileMap::Load( Entity* player )
 {
 	Map::Load( player );
+
+	CreateTileRigidbodies();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void TileMap::Unload()
 {
+	DestroyTileRigidbodies();
+
 	Map::Unload();
 }
 
@@ -53,8 +60,6 @@ void TileMap::Unload()
 void TileMap::Update( float deltaSeconds )
 {
 	Map::Update( deltaSeconds );
-
-	ResolveEntityVsWallCollisions();
 
 	UpdateCameras();
 }
@@ -354,55 +359,37 @@ void TileMap::BuildCardinalDirectionsArray()
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::ResolveEntityVsWallCollisions()
+void TileMap::CreateTileRigidbodies()
 {
-	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
-	{
-		Entity* const& entity = m_entities[entityIdx];
-		if ( entity == nullptr )
-		{
-			continue;
-		}
+	m_tileRigidbodies.reserve( m_tiles.size() );
 
-		ResolveEntityVsWallCollision( *entity );
+	for ( int tileIdx = 0; tileIdx < (int)m_tiles.size(); ++tileIdx )
+	{
+		if ( m_tiles[tileIdx].IsSolid() )
+		{
+			Rigidbody2D* rigidbody2D = g_physicsSystem2D->CreateRigidbody();
+
+			PolygonCollider2D* polygonCollider = g_physicsSystem2D->CreatePolygon2Collider( m_tiles[tileIdx].GetBounds().GetAsPolygon2() );
+			rigidbody2D->TakeCollider( polygonCollider );
+			rigidbody2D->SetSimulationMode( SIMULATION_MODE_STATIC );
+			rigidbody2D->SetPosition( m_tiles[tileIdx].GetBounds().GetCenter() );
+			rigidbody2D->SetLayer( 0 );
+
+			m_tileRigidbodies.push_back( rigidbody2D );
+		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::ResolveEntityVsWallCollision( Entity& entity )
+void TileMap::DestroyTileRigidbodies()
 {
-	if ( !entity.m_canBePushedByWalls )
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_tileRigidbodies.size(); ++rigidbodyIdx )
 	{
-		return;
+		m_tileRigidbodies[rigidbodyIdx]->Destroy();
 	}
 
-	const Tile* entityTile = GetTileFromWorldCoords( entity.GetPosition() );
-	if ( entityTile == nullptr )
-	{
-		return;
-	}
-
-	std::vector<const Tile*> surroundingTiles = GetTilesInRadius( *entityTile, 1, true );
-	for ( int tileIdx = 0; tileIdx < (int)surroundingTiles.size(); ++tileIdx )
-	{
-		const Tile*& tile = surroundingTiles[tileIdx];
-		if ( tile != nullptr
-			 && tile->IsSolid() )
-		{
-			if ( entity.m_willDieOnCollision )
-			{
-				if ( DoDiscAndAABBOverlap2D( entity.m_position, entity.GetPhysicsRadius(), tile->GetBounds() ) )
-				{
-					entity.Die();
-				}
-			}
-			else
-			{
-				PushDiscOutOfAABB2D( entity.m_position, entity.GetPhysicsRadius(), tile->GetBounds() );
-			}
-		}
-	}
+	m_tileRigidbodies.clear();
 }
 
 
