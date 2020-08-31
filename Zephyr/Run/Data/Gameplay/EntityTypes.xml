@@ -10,7 +10,14 @@
     </Appearance>
   </Actor>
   ​
-  <Entity name="Lamp">
+  <Actor name="Blob">
+  <Physics radius="0.5" walkSpeed="1.0"/>
+  <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
+    <Walk up="30,31"/>
+  </Appearance>
+</Actor>
+
+<Entity name="Lamp">
     <Physics radius="0.1" />
   </Entity>
   ​
