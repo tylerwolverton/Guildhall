@@ -71,8 +71,9 @@ void Game::Startup()
 	g_renderer->Setup( m_gameClock );
 	g_physicsSystem2D->Startup( m_gameClock );
 	g_physicsSystem2D->SetSceneGravity( 0.f );
-	g_physicsSystem2D->EnableLayerInteraction( 0, 1 );
-	g_physicsSystem2D->DisableLayerInteraction( 0, 0 );
+
+	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::STATIC_ENVIRONMENT, eCollisionLayer::STATIC_ENVIRONMENT );
+	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PLAYER, eCollisionLayer::PLAYER_PROJECTILE );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
@@ -768,6 +769,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::PLAYING:
 				{
 					g_audioSystem->StopSound( m_gameplayMusicID );
+					g_physicsSystem2D->SetFixedDeltaSeconds( 1.0f / 120.0f );
 
 					ReloadDataFiles();
 				}
@@ -796,6 +798,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					g_audioSystem->PlaySound( unpause, false, .1f );
 
 					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .1f );
+
+					g_physicsSystem2D->SetFixedDeltaSeconds( 1.0f / 120.0f );
 				}
 				break;
 
@@ -821,6 +825,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 			SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
 			g_audioSystem->PlaySound( pause, false, .1f );
+
+			g_physicsSystem2D->SetFixedDeltaSeconds( 0.f );
 
 		}
 		break;

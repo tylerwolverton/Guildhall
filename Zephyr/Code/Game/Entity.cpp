@@ -28,7 +28,7 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, m_entityDef.m_physicsRadius );
 	m_rigidbody2D->TakeCollider( discCollider );
 	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
-	m_rigidbody2D->ChangeDrag( 5.f );
+	m_rigidbody2D->SetDrag( 5.f );
 	m_rigidbody2D->SetLayer( 1 );
 }
 
@@ -136,6 +136,16 @@ void Entity::SetPosition( const Vec2& position )
 	if ( m_rigidbody2D != nullptr )
 	{
 		m_rigidbody2D->SetPosition( position );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SetCollisionLayer( uint layer )
+{
+	if ( m_rigidbody2D != nullptr )
+	{
+		m_rigidbody2D->SetLayer( layer );
 	}
 }
 

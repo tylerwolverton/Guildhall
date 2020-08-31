@@ -76,45 +76,37 @@ void Actor::SetAsPlayer()
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
-	UNUSED( deltaSeconds );
+	float impulseMagnitude = 100.f * m_entityDef.GetWalkSpeed() * deltaSeconds;
 
 	if ( g_inputSystem->IsKeyPressed( 'W' )
 		 || g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, 100.f * m_entityDef.GetWalkSpeed() * deltaSeconds ), GetPosition() );
-		//m_rigidbody2D->Translate2D( Vec2( 0.f, m_entityDef.GetWalkSpeed() * deltaSeconds ) );
-		//m_velocity.y += m_entityDef.GetWalkSpeed();
+		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, impulseMagnitude ), GetPosition() );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'A' )
 		 || g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( -100.f * m_entityDef.GetWalkSpeed() * deltaSeconds, 0.f ), GetPosition() );
-		//m_rigidbody2D->ApplyImpulseAt( Vec2( -m_entityDef.GetWalkSpeed(), 0.f ), m_position );
-		//m_velocity.x -= m_entityDef.GetWalkSpeed();
+		m_rigidbody2D->ApplyImpulseAt( Vec2( -impulseMagnitude, 0.f ), GetPosition() );
 	}
-
+	
 	if ( g_inputSystem->IsKeyPressed( 'D' )
 		 || g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( 100.f * m_entityDef.GetWalkSpeed() * deltaSeconds, 0.f ), GetPosition() );
-		//m_rigidbody2D->ApplyImpulseAt( Vec2( m_entityDef.GetWalkSpeed(), 0.f ), m_position );
-		//m_velocity.x += m_entityDef.GetWalkSpeed();
+		m_rigidbody2D->ApplyImpulseAt( Vec2( impulseMagnitude, 0.f ), GetPosition() );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' )
 		 || g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, -100.f * m_entityDef.GetWalkSpeed() * deltaSeconds ), GetPosition() );
-		//m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, -m_entityDef.GetWalkSpeed() ), m_position );
-		//m_velocity.y -= m_entityDef.GetWalkSpeed();
+		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, -impulseMagnitude ), GetPosition() );
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_SPACEBAR ) )
 	{
 		Entity* entity = m_map->SpawnNewEntityOfTypeAtPosition( "Fireball", GetPosition() );
-		entity->SetOrientationDegrees( GetForwardVector().GetOrientationDegrees() );
-		entity->SetFaction( eFaction::GOOD );
+		entity->SetOrientationDegrees( m_rigidbody2D->GetVelocity().GetOrientationDegrees() );
+		entity->SetCollisionLayer( eCollisionLayer::PLAYER_PROJECTILE );
 	}
 }
 

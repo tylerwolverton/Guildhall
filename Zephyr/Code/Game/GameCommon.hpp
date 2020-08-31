@@ -51,3 +51,14 @@ constexpr float DEBUG_LINE_THICKNESS = 0.02f;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
+
+
+//-----------------------------------------------------------------------------------------------
+enum eCollisionLayer : unsigned int
+{
+	STATIC_ENVIRONMENT,
+	PLAYER,
+	PLAYER_PROJECTILE,
+	ENEMY,
+	ENEMY_PROJECTILE,
+};

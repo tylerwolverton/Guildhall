@@ -59,6 +59,7 @@ public:
 	float GetInverseMass() const													{ return m_inverseMass; }
 
 	float GetDrag() const															{ return m_drag; }
+	void SetDrag( float drag )														{ m_drag = drag; }
 	void ChangeDrag( float deltaDrag );
 
 	void AddForce( const Vec2& force );
