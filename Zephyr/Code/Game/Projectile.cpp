@@ -1,5 +1,7 @@
 #include "Game/Projectile.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Physics/Collider2D.hpp"
+#include "Engine/Physics/Collision2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
@@ -17,6 +19,7 @@ Projectile::Projectile( const EntityDefinition& entityDef, Map* map )
 	m_damage = entityDef.GetDamageRange().GetRandomInRange( g_game->m_rng );
 
 	m_rigidbody2D->SetDrag( 0.f );
+	m_rigidbody2D->GetCollider()->m_onOverlapEnterDelegate.SubscribeMethod( this, &Projectile::EnterCollisionEvent );
 }
 
 
@@ -48,3 +51,14 @@ void Projectile::Die()
 {
 	Entity::Die();
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Projectile::EnterCollisionEvent( Collision2D collision )
+{
+	if ( !IsDead() )
+	{
+		Die();
+	}
+}
+
