@@ -750,6 +750,25 @@ void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, cons
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::DecrementEnemyCount()
+{
+	--m_enemiesLeftAlive; 
+	
+	CheckForVictory();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::CheckForVictory()
+{
+	if ( m_enemiesLeftAlive <= 0 )
+	{
+		ChangeGameState( eGameState::VICTORY );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ChangeGameState( const eGameState& newGameState )
 {
 	switch ( newGameState )

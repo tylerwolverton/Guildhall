@@ -5,6 +5,7 @@
 #include "Engine/Physics/DiscCollider2D.hpp"
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
@@ -33,6 +34,11 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 	m_rigidbody2D->SetDrag( 5.f );
 	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY );
+
+	if ( !m_entityDef.GetBirthEventName().empty() )
+	{
+		g_eventSystem->FireEvent( m_entityDef.GetBirthEventName() );
+	}
 }
 
 
@@ -102,6 +108,11 @@ void Entity::Render() const
 void Entity::Die()
 {
 	m_isDead = true;
+
+	if ( !m_entityDef.GetDeathEventName().empty() )
+	{
+		g_eventSystem->FireEvent( m_entityDef.GetDeathEventName() );
+	}
 }
 
 

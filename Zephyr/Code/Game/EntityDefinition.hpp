@@ -44,6 +44,9 @@ public:
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
+	std::string GetBirthEventName()	const													{ return m_birthEventName; }
+	std::string GetDeathEventName()	const													{ return m_deathEventName; }
+
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
 public:
@@ -63,6 +66,10 @@ protected:
 
 	AABB2			m_localDrawBounds;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
+
+	// Events
+	std::string		m_birthEventName;
+	std::string		m_deathEventName;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 };

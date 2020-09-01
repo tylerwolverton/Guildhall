@@ -19,6 +19,8 @@
 	<Entities>
 		<PlayerStart pos="1.5,1.5" yaw="0"/>
 		<Actor name ="Blob" pos="5.5,5.5" yaw="0"/>
+		<Actor name ="Blob" pos="7.5,5.5" yaw="0"/>
+		<Actor name ="Blob" pos="5.5,8.5" yaw="0"/>
     <!--<Portal name="Energy Teleporter" pos="2,2" yaw="90" destMap="TestRoom" destPos="5,2" destYawOffset="90"/>-->
 	</Entities>
 

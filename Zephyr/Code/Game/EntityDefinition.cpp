@@ -7,6 +7,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/SpriteAnimationSetDefinition.hpp"
+#include "Game/Scripting/GameAPI.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -108,6 +109,28 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	{
 		m_maxHealth = ParseXmlAttribute( *gameplayElem, "maxHealth", m_maxHealth );
 		m_damageRange = ParseXmlAttribute( *gameplayElem, "damage", m_damageRange );
+
+		const XmlElement* onBirthElem = gameplayElem->FirstChildElement( "OnBirth" );
+		if ( onBirthElem != nullptr )
+		{
+			m_birthEventName = ParseXmlAttribute( *onBirthElem, "fireEvent", m_birthEventName );
+
+			if ( !g_gameAPI->IsMethodRegistered( m_birthEventName ) )
+			{
+				g_devConsole->PrintError( Stringf( "Birth event '%s' has not been registered", m_birthEventName.c_str() ) );
+			}
+		}
+
+		const XmlElement* onDeathElem = gameplayElem->FirstChildElement( "OnDeath" );
+		if ( onDeathElem != nullptr )
+		{
+			m_deathEventName = ParseXmlAttribute( *onDeathElem, "fireEvent", m_deathEventName );
+
+			if ( !g_gameAPI->IsMethodRegistered( m_deathEventName ) )
+			{
+				g_devConsole->PrintError( Stringf( "Death event '%s' has not been registered", m_deathEventName.c_str() ) );
+			}
+		}
 	}
 
 	m_isValid = true;

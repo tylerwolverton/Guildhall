@@ -41,15 +41,15 @@ public:
 	Game();
 	~Game();
 
-	void Startup();
-	void BeginFrame();
-	void Update();
-	void Render() const;
-	void DebugRender() const;
-	void EndFrame();
-	void Shutdown();
+	void		Startup();
+	void		BeginFrame();
+	void		Update();
+	void		Render() const;
+	void		DebugRender() const;
+	void		EndFrame();
+	void		Shutdown();
 
-	void RestartGame();
+	void		RestartGame();
 	
 	void		ChangeGameState( const eGameState& newGameState );
 
@@ -61,6 +61,10 @@ public:
 	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
 	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
+
+	void		IncrementEnemyCount() { ++m_enemiesLeftAlive; }
+	void		DecrementEnemyCount();
+	void		CheckForVictory();
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -86,6 +90,8 @@ private:
 	void RenderFPSCounter() const;
 
 private:
+	int m_enemiesLeftAlive = 0;
+
 	Clock* m_gameClock = nullptr;
 	float m_fpsHistory[FRAME_HISTORY_COUNT];
 	int m_fpsNextIdx = 0;
