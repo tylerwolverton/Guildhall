@@ -20,6 +20,8 @@ private:
 	void EntityBirthEvent( EventArgs* args );
 	void EntityDeathEvent( EventArgs* args );
 
+	void TestResponseEvent( EventArgs* args );
+
 private:
 	std::unordered_set<std::string> m_registeredMethods;
 };

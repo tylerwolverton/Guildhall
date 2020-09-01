@@ -6,7 +6,9 @@
 #include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
@@ -39,6 +41,8 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	{
 		g_eventSystem->FireEvent( m_entityDef.GetBirthEventName() );
 	}
+
+	RegisterUserEvents();
 }
 
 
@@ -50,6 +54,8 @@ Entity::~Entity()
 		m_rigidbody2D->Destroy();
 		m_rigidbody2D = nullptr;
 	}
+
+	g_eventSystem->DeRegisterObject( this );
 }
 
 
@@ -174,6 +180,41 @@ void Entity::TakeDamage( int damage )
 	}
 	
 	g_game->AddScreenShakeIntensity(.05f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::RegisterUserEvents()
+{
+	std::map<std::string, std::string>const& registeredEvents = m_entityDef.GetRegisteredEvents();
+
+	for ( auto it = registeredEvents.begin(); it != registeredEvents.end(); ++it )
+	{ 
+		g_eventSystem->RegisterMethodEvent( it->first, "", GAME, this, &Entity::FireCorrespondingEvent );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::FireCorrespondingEvent( EventArgs* args )
+{
+	std::string eventName = args->GetValue( "eventName", "" );
+	if ( eventName.empty() )
+	{
+		return;
+	}
+
+	std::map<std::string, std::string> registeredEvents = m_entityDef.GetRegisteredEvents();
+
+	auto iter = registeredEvents.find( eventName );
+	if ( iter == registeredEvents.end() )
+	{
+		g_devConsole->PrintWarning( Stringf( "Event: '%s' had no corresponding event to fire", eventName.c_str() ) );
+		return;
+	}
+
+	g_devConsole->PrintString( Stringf( "Firing event '%s' from '%s'", iter->second.c_str(), m_entityDef.GetName().c_str() ) );
+	g_eventSystem->FireEvent( iter->second );
 }
 
 

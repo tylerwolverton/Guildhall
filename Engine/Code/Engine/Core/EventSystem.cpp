@@ -81,6 +81,16 @@ void EventSystem::DeRegisterEvent( const std::string& eventName, EventCallbackFu
 //-----------------------------------------------------------------------------------------------
 void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs, eUsageLocation location )
 {
+	EventArgs eventArgsObj;
+
+	// Initialize event args if necessary and set this event's name into them
+	if ( eventArgs == nullptr )
+	{
+		eventArgs = &eventArgsObj;
+	}
+
+	eventArgs->SetValue( "eventName", eventName );
+
 	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_eventSubscriptionPtrs.size(); ++subscriptionIndex )
 	{
 		EventSubscription*& sub = m_eventSubscriptionPtrs[subscriptionIndex];

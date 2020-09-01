@@ -117,7 +117,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 			if ( !g_gameAPI->IsMethodRegistered( m_birthEventName ) )
 			{
-				g_devConsole->PrintError( Stringf( "Birth event '%s' has not been registered", m_birthEventName.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - Birth event '%s' has not been registered", m_name.c_str(), m_birthEventName.c_str() ) );
 			}
 		}
 
@@ -128,8 +128,43 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 			if ( !g_gameAPI->IsMethodRegistered( m_deathEventName ) )
 			{
-				g_devConsole->PrintError( Stringf( "Death event '%s' has not been registered", m_deathEventName.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - Death event '%s' has not been registered", m_name.c_str(), m_deathEventName.c_str() ) );
 			}
+		}
+
+		const XmlElement* onEventReceivedElem = gameplayElem->FirstChildElement( "OnEventReceived" );
+		while ( onEventReceivedElem != nullptr )
+		{
+			std::string receivedEventName = ParseXmlAttribute( *onEventReceivedElem, "eventName", "" );
+			if ( receivedEventName.empty() )
+			{
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing eventName attribute in OnEventReceived node", m_name.c_str() ) );
+
+				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
+				continue;
+			}
+
+			std::string fireEventName = ParseXmlAttribute( *onEventReceivedElem, "fireEvent", "" );
+			if ( fireEventName.empty() )
+			{
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing fireEvent attribute in OnEventReceived node", m_name.c_str() ) );
+
+				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
+				continue;
+			}
+
+			if ( !g_gameAPI->IsMethodRegistered( fireEventName ) )
+			{
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - fireEvent '%s' has not been registered", m_name.c_str(), fireEventName.c_str() ) );
+
+				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
+				continue;
+			}
+
+			// We have valid events
+			m_receivedEventsToResponseEvents[receivedEventName] = fireEventName;
+
+			onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
 		}
 	}
 

@@ -62,7 +62,7 @@ void Projectile::EnterCollisionEvent( Collision2D collision )
 		
 		if ( theirEntity != nullptr )
 		{
-			theirEntity->TakeDamage( m_damage );
+			theirEntity->TakeDamage( (int)m_damage );
 		}
 
 		Die();

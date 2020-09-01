@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Game/EntityDefinition.hpp"
@@ -62,6 +63,10 @@ public:
 	void			TakeDamage( int damage );
 	//void			ApplyFriction();
 	
+protected:
+	void			RegisterUserEvents();
+	void			FireCorrespondingEvent( EventArgs* args );
+
 protected:
 	ZephyrScript*			m_scriptObj = nullptr;
 

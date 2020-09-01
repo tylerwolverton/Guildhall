@@ -19,7 +19,7 @@
     <Gameplay maxHealth="3">
       <OnBirth fireEvent="EntityBirthEvent"/>
       <OnDeath fireEvent="EntityDeathEvent"/>
-      <OnEventReceived eventName="test" fireEvent="testResponse" />
+      <OnEventReceived eventName="EntityDeathEvent" fireEvent="TestResponseEvent" />
     </Gameplay>
   </Actor>
 

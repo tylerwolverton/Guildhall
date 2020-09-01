@@ -46,6 +46,7 @@ public:
 
 	std::string GetBirthEventName()	const													{ return m_birthEventName; }
 	std::string GetDeathEventName()	const													{ return m_deathEventName; }
+	std::map<std::string, std::string> GetRegisteredEvents() const							{ return m_receivedEventsToResponseEvents; }
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
@@ -70,6 +71,7 @@ protected:
 	// Events
 	std::string		m_birthEventName;
 	std::string		m_deathEventName;
+	std::map<std::string, std::string> m_receivedEventsToResponseEvents;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 };
