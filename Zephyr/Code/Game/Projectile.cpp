@@ -58,6 +58,13 @@ void Projectile::EnterCollisionEvent( Collision2D collision )
 {
 	if ( !IsDead() )
 	{
+		Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
+		
+		if ( theirEntity != nullptr )
+		{
+			theirEntity->TakeDamage( m_damage );
+		}
+
 		Die();
 	}
 }

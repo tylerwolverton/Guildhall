@@ -106,6 +106,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	const XmlElement* gameplayElem = entityDefElem.FirstChildElement( "Gameplay" );
 	if ( gameplayElem != nullptr )
 	{
+		m_maxHealth = ParseXmlAttribute( *gameplayElem, "maxHealth", m_maxHealth );
 		m_damageRange = ParseXmlAttribute( *gameplayElem, "damage", m_damageRange );
 	}
 

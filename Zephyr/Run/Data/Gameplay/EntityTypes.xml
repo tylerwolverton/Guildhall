@@ -8,6 +8,7 @@
       <Pain up="0"/>
       <Death up="0"/>
     </Appearance>
+    <Gameplay maxHealth="5"/>
   </Actor>
   ​
   <Actor name="Blob">
@@ -15,6 +16,7 @@
   <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
     <Walk up="30,31"/>
   </Appearance>
+  <Gameplay maxHealth="3"/>
 </Actor>
 
 <Entity name="Lamp">
@@ -26,7 +28,7 @@
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
       <Walk up="20"/>
     </Appearance>
-    <Gameplay damage="5~15"/>
+    <Gameplay damage="1~1" maxHealth="1"/>
   </Projectile>
   ​
   <Portal name="Energy Teleporter">

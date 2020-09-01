@@ -36,6 +36,7 @@ public:
 
 	bool		IsValid() const																{ return m_isValid; }
 	std::string GetName() const																{ return m_name; }
+	int			GetMaxHealth() const														{ return m_maxHealth; }
 	eEntityType GetType() const																{ return m_type; }
 	float		GetWalkSpeed() const														{ return m_walkSpeed; }
 	float		GetSpeed() const															{ return m_speed; }
@@ -52,6 +53,7 @@ protected:
 	bool			m_isValid = false;
 	std::string		m_name;
 	eEntityType		m_type = eEntityType::UNKNOWN;
+	int				m_maxHealth = 1;
 	float			m_physicsRadius = 0.f;
 	float			m_mass = 1.f;
 	float			m_walkSpeed = 0.f;

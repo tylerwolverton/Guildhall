@@ -39,7 +39,7 @@ void Actor::Update( float deltaSeconds )
 	if ( m_isPlayer )
 	{
 		UpdateFromKeyboard( deltaSeconds );
-		UpdateFromGamepad( deltaSeconds );
+		//UpdateFromGamepad( deltaSeconds );
 	}
 
 	//UpdateAnimation();
@@ -59,7 +59,15 @@ void Actor::Render() const
 //-----------------------------------------------------------------------------------------------
 void Actor::Die()
 {
-	Entity::Die();
+	if ( m_isPlayer )
+	{
+		m_curHealth = m_entityDef.GetMaxHealth();
+		m_rigidbody2D->SetPosition( m_map->GetPlayerStartPos() );
+	}
+	else
+	{
+		Entity::Die();
+	}
 }
 
 
@@ -70,13 +78,14 @@ void Actor::SetAsPlayer()
 	m_isPlayer = true;
 
 	m_faction = eFaction::GOOD;
+	m_rigidbody2D->SetLayer( eCollisionLayer::PLAYER );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
-	float impulseMagnitude = 100.f * m_entityDef.GetWalkSpeed() * deltaSeconds;
+	float impulseMagnitude = 150.f * m_entityDef.GetWalkSpeed() * deltaSeconds;
 
 	if ( g_inputSystem->IsKeyPressed( 'W' )
 		 || g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
