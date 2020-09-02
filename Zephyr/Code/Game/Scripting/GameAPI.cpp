@@ -7,18 +7,27 @@
 #include "Game/Game.hpp"
 
 
+#define REGISTER_EVENT( eventName ) {\
+										m_registeredMethods.insert( #eventName );\
+										g_eventSystem->RegisterMethodEvent( #eventName, "", EVERYWHERE, this, &GameAPI::eventName );\
+									}
+
 //-----------------------------------------------------------------------------------------------
 GameAPI::GameAPI()
 {
 	// TODO: Find a clever way to register all methods in this file
-	m_registeredMethods.insert( "EntityBirthEvent" );
-	g_eventSystem->RegisterMethodEvent( "EntityBirthEvent", "", EVERYWHERE, this, &GameAPI::EntityBirthEvent );
+	//m_registeredMethods.insert( "EntityBirthEvent" );
+	//g_eventSystem->RegisterMethodEvent( "EntityBirthEvent", "", EVERYWHERE, this, &GameAPI::EntityBirthEvent );
 
-	m_registeredMethods.insert( "EntityDeathEvent" );
-	g_eventSystem->RegisterMethodEvent( "EntityDeathEvent", "", EVERYWHERE, this, &GameAPI::EntityDeathEvent );
+	//m_registeredMethods.insert( "EntityDeathEvent" );
+	//g_eventSystem->RegisterMethodEvent( "EntityDeathEvent", "", EVERYWHERE, this, &GameAPI::EntityDeathEvent );
 
-	m_registeredMethods.insert( "TestResponseEvent" );
-	g_eventSystem->RegisterMethodEvent( "TestResponseEvent", "", EVERYWHERE, this, &GameAPI::TestResponseEvent );
+	//m_registeredMethods.insert( "TestResponseEvent" );
+	//g_eventSystem->RegisterMethodEvent( "TestResponseEvent", "", EVERYWHERE, this, &GameAPI::TestResponseEvent );
+
+	REGISTER_EVENT( EntityBirthEvent );
+	REGISTER_EVENT( EntityDeathEvent );
+	REGISTER_EVENT( TestResponseEvent );
 }
 
 
@@ -59,5 +68,7 @@ void GameAPI::EntityDeathEvent( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::TestResponseEvent( EventArgs* args )
 {
+	UNUSED( args );
+
 	g_devConsole->PrintString( "TestResponse fired", Rgba8::CYAN );
 }
