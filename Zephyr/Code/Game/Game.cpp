@@ -148,6 +148,7 @@ void Game::Update()
 
 		case eGameState::ATTRACT:
 		case eGameState::PAUSED:
+		case eGameState::VICTORY:
 		{
 			UpdateFromKeyboard();
 		}
@@ -215,6 +216,17 @@ void Game::Render() const
 			g_renderer->DrawVertexArray( vertexes );
 		}
 		break;
+
+		case eGameState::VICTORY:
+		{
+			std::vector<Vertex_PCU> vertexes;
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Victory" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Return" );
+
+			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
+			g_renderer->DrawVertexArray( vertexes );
+		}
+		break;
 	}
 
 	m_uiSystem->Render();
@@ -250,6 +262,7 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
 
+	LoadAndCompileZephyrScripts();
 	LoadEntitiesFromXml();
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
@@ -511,6 +524,31 @@ void Game::LoadEntitiesFromXml()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::LoadAndCompileZephyrScripts()
+{
+	g_devConsole->PrintString( "Loading Zephyr Scripts..." );
+
+	std::string folderPath( "Data/Scripts" );
+
+	Strings scriptFiles = GetFileNamesInFolder( folderPath, "*.zephyr" );
+	for ( int scriptIdx = 0; scriptIdx < (int)scriptFiles.size(); ++scriptIdx )
+	{
+		std::string& scriptName = scriptFiles[scriptIdx];
+
+		std::string scriptFullPath( folderPath );
+		scriptFullPath += "/";
+		scriptFullPath += scriptName;
+
+		// Scan
+		// Compile
+		// Save completed into static map?
+	}
+
+	g_devConsole->PrintString( "Zephyr Scripts Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ReloadDataFiles()
 {
 	m_world->ClearMaps();
@@ -579,6 +617,14 @@ void Game::UpdateFromKeyboard()
 		}
 		break;
 
+		case eGameState::VICTORY:
+		{
+			if ( g_inputSystem->WasAnyKeyJustPressed() )
+			{
+				ChangeGameState( eGameState::ATTRACT );
+			}
+		}
+		break;
 	}
 }
 
@@ -797,6 +843,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::VICTORY:
 				{
 					g_audioSystem->StopSound( m_victoryMusicID );
+
+					ReloadDataFiles();
 				}
 				break;
 			}

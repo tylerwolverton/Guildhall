@@ -75,6 +75,7 @@ private:
 	void LoadTilesFromXml();
 	void LoadMapsFromXml();
 	void LoadEntitiesFromXml();
+	void LoadAndCompileZephyrScripts();
 	void ReloadDataFiles();
 
 	void UpdateFromKeyboard();
