@@ -18,7 +18,7 @@ class UIElement
 {
 public:
 	UIElement( const UISystem& uiSystem );
-	~UIElement();
+	virtual ~UIElement();
 
 	virtual void Update() = 0;
 	virtual void Render() const = 0;

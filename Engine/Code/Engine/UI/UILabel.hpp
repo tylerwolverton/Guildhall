@@ -16,6 +16,8 @@ class UILabel
 public:
 	UILabel( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData );
 	UILabel( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData );
+	virtual ~UILabel() {}
+
 
 	virtual void Render() const = 0;
 	virtual void DebugRender() const;

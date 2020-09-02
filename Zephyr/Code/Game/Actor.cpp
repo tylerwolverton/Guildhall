@@ -87,34 +87,59 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
 	float impulseMagnitude = 150.f * m_entityDef.GetWalkSpeed() * deltaSeconds;
 
-	if ( g_inputSystem->IsKeyPressed( 'W' )
-		 || g_inputSystem->IsKeyPressed( KEY_UPARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
 		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, impulseMagnitude ), GetPosition() );
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'A' )
-		 || g_inputSystem->IsKeyPressed( KEY_LEFTARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'A' ) )
 	{
 		m_rigidbody2D->ApplyImpulseAt( Vec2( -impulseMagnitude, 0.f ), GetPosition() );
 	}
 	
-	if ( g_inputSystem->IsKeyPressed( 'D' )
-		 || g_inputSystem->IsKeyPressed( KEY_RIGHTARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
 		m_rigidbody2D->ApplyImpulseAt( Vec2( impulseMagnitude, 0.f ), GetPosition() );
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'S' )
-		 || g_inputSystem->IsKeyPressed( KEY_DOWNARROW ) )
+	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
 		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, -impulseMagnitude ), GetPosition() );
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_SPACEBAR ) )
+	bool spawnProj = false;
+	Vec2 projPosition = GetPosition();
+	float projOrientation = 0.f;
+	// Check for attack
+	if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
 	{
-		Entity* entity = m_map->SpawnNewEntityOfTypeAtPosition( "Fireball", GetPosition() );
-		entity->SetOrientationDegrees( m_rigidbody2D->GetVelocity().GetOrientationDegrees() );
+		spawnProj = true;
+		projPosition += Vec2( 0.f, .6f );
+		projOrientation = 90.f;
+	}
+	else if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
+	{
+		spawnProj = true;
+		projPosition += Vec2( .6f, 0.f );
+		projOrientation = 0.f;
+	}
+	else if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
+	{
+		spawnProj = true;
+		projPosition += Vec2( -.6f, 0.f );
+		projOrientation = 180.f;
+	}
+	else if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+	{
+		spawnProj = true;
+		projPosition += Vec2( 0.f, -.6f );
+		projOrientation = 270.f;
+	}
+
+	if( spawnProj )
+	{
+		Entity* entity = m_map->SpawnNewEntityOfTypeAtPosition( "Fireball", projPosition );
+		entity->SetOrientationDegrees( projOrientation );
 		entity->SetCollisionLayer( eCollisionLayer::PLAYER_PROJECTILE );
 	}
 }
