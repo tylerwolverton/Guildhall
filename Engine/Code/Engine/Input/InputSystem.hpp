@@ -100,6 +100,7 @@ public:
 	bool WasKeyJustReleased( unsigned char keyCode ) const;
 
 	bool WasAnyKeyJustPressed() const;
+	bool ConsumeAnyKeyJustPressed();
 	
 	bool ConsumeKeyPress( unsigned char keyCode );
 	int ConsumeAllKeyPresses( unsigned char keyCode );

@@ -35,6 +35,8 @@ public:
 	void EndFrame();
 	void Shutdown();
 
+	void Reset();
+
 	// Factory style create/destroy
 	Rigidbody2D* CreateRigidbody();
 	void DestroyRigidbody( Rigidbody2D* rigidbodyToDestroy );
@@ -55,6 +57,7 @@ public:
 
 	float GetFixedDeltaSeconds() const;
 	void SetFixedDeltaSeconds( float newDeltaSeconds );
+	void ResetFixedDeltaSecondsToDefault();
 
 	static bool SetPhysicsUpdateRate( EventArgs* args );
 
@@ -78,8 +81,11 @@ private:
 
 	void AddOrUpdateCollision( const Collision2D& collision );
 
-	void CleanupDestroyedObjects();  	
+	void DestroyAllRigidbodies();
+	void DestroyAllColliders();
 
+	void CleanupDestroyedObjects();  	
+	
 private:
 	Clock* m_gameClock = nullptr;
 	Clock* m_physicsClock = nullptr;

@@ -76,6 +76,9 @@
     <ClCompile Include="Scripting\GameAPI.cpp">
       <Filter>Framework\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="Scripting\ZephyrScriptDefinition.cpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -133,6 +136,9 @@
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Scripting\GameAPI.hpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting\ZephyrScriptDefinition.hpp">
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
   </ItemGroup>

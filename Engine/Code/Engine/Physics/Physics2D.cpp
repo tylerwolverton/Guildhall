@@ -281,6 +281,26 @@ void Physics2D::AddOrUpdateCollision( const Collision2D& collision )
 
 
 //-----------------------------------------------------------------------------------------------
+void Physics2D::DestroyAllRigidbodies()
+{
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
+	{
+		m_garbageRigidbodyIndexes.push_back( rigidbodyIdx );		
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::DestroyAllColliders()
+{
+	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
+	{
+		m_garbageColliderIndexes.push_back( colliderIdx );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Physics2D::ResolveCollisions()
 {
 	for ( int collisionIdx = 0; collisionIdx < (int)m_collisions.size(); ++collisionIdx )
@@ -515,6 +535,17 @@ void Physics2D::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
+void Physics2D::Reset()
+{
+	ClearOldCollisions();
+
+	DestroyAllColliders();
+	DestroyAllRigidbodies();
+	CleanupDestroyedObjects();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Rigidbody2D* Physics2D::CreateRigidbody()
 {
 	Rigidbody2D* newRigidbody2D = new Rigidbody2D( 10.f );
@@ -661,6 +692,13 @@ float Physics2D::GetFixedDeltaSeconds() const
 void Physics2D::SetFixedDeltaSeconds( float newDeltaSeconds )
 {
 	s_fixedDeltaSeconds = newDeltaSeconds;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Physics2D::ResetFixedDeltaSecondsToDefault()
+{
+	SetFixedDeltaSeconds( 1.f / 120.f );
 }
 
 

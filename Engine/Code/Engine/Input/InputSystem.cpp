@@ -424,6 +424,17 @@ bool InputSystem::WasAnyKeyJustPressed() const
 
 
 //-----------------------------------------------------------------------------------------------
+bool InputSystem::ConsumeAnyKeyJustPressed()
+{
+	bool wasAnyJustPressed = WasAnyKeyJustPressed();
+
+	ResetAllKeys();
+
+	return wasAnyJustPressed;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool InputSystem::ConsumeKeyPress( unsigned char keyCode )
 {
 	return m_keyStates[keyCode].ConsumeKeyPress();
