@@ -30,13 +30,31 @@ Map::Map( const MapData& mapData )
 //-----------------------------------------------------------------------------------------------
 Map::~Map()
 {
-	PTR_VECTOR_SAFE_DELETE( m_entities );
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		if ( m_entities[entityIdx] != nullptr )
+		{
+			m_entities[entityIdx]->Die();
+
+			PTR_SAFE_DELETE( m_entities[entityIdx] );
+		}
+	}
+
+	m_entities.clear();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Map::Load( Entity* player )
 {
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		if ( m_entities[entityIdx] != nullptr )
+		{
+			m_entities[entityIdx]->FireBirthEvent();
+		}
+	}
+	
 	m_player = player;
 	m_entities.push_back( player );
 

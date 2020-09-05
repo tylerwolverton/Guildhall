@@ -76,7 +76,7 @@ private:
 	void LoadMapsFromXml();
 	void LoadEntitiesFromXml();
 	void LoadAndCompileZephyrScripts();
-	void ReloadDataFiles();
+	void ReloadGame();
 
 	void UpdateFromKeyboard();
 	void ChangeMap( const std::string& mapName );

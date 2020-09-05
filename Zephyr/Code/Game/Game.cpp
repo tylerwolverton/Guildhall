@@ -30,6 +30,7 @@
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapData.hpp"
+#include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -74,6 +75,7 @@ void Game::Startup()
 
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::STATIC_ENVIRONMENT, eCollisionLayer::STATIC_ENVIRONMENT );
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PLAYER, eCollisionLayer::PLAYER_PROJECTILE );
+	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PLAYER_PROJECTILE, eCollisionLayer::PLAYER_PROJECTILE );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
@@ -106,6 +108,7 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
 	PTR_SAFE_DELETE( m_uiCamera );
 	PTR_SAFE_DELETE( m_worldCamera );
+	PTR_SAFE_DELETE( m_uiSystem );
 }
 
 
@@ -159,6 +162,9 @@ void Game::Update()
 			UpdateFromKeyboard();
 
 			m_world->Update();
+
+
+			g_physicsSystem2D->Update();
 		}
 		break;
 	}
@@ -542,6 +548,7 @@ void Game::LoadAndCompileZephyrScripts()
 		// Scan
 		// Compile
 		// Save completed into static map?
+		ZephyrScriptDefinition::s_definitions[scriptFullPath] = new ZephyrScriptDefinition();
 	}
 
 	g_devConsole->PrintString( "Zephyr Scripts Loaded", Rgba8::GREEN );
@@ -549,14 +556,18 @@ void Game::LoadAndCompileZephyrScripts()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::ReloadDataFiles()
+void Game::ReloadGame()
 {
 	m_world->ClearMaps();
+
+	m_player = nullptr;
 
 	PTR_MAP_SAFE_DELETE( EntityDefinition::s_definitions );
 	PTR_MAP_SAFE_DELETE( TileMaterialDefinition::s_definitions );
 	PTR_MAP_SAFE_DELETE( TileDefinition::s_definitions );
 	PTR_VECTOR_SAFE_DELETE( SpriteSheet::s_definitions );
+
+	g_physicsSystem2D->Reset();
 
 	LoadEntitiesFromXml();
 	LoadTileMaterialsFromXml();
@@ -579,7 +590,7 @@ void Game::UpdateFromKeyboard()
 				g_eventSystem->FireEvent( "Quit" );
 			}
 
-			if ( g_inputSystem->WasAnyKeyJustPressed() )
+			if ( g_inputSystem->ConsumeAnyKeyJustPressed() )
 			{
 				ChangeGameState( eGameState::PLAYING );
 			}
@@ -603,6 +614,8 @@ void Game::UpdateFromKeyboard()
 				ChangeMap( m_curMapName );
 			}
 		}
+		break;
+
 		case eGameState::PAUSED:
 		{
 			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
@@ -610,7 +623,7 @@ void Game::UpdateFromKeyboard()
 				ChangeGameState( eGameState::ATTRACT );
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_SPACEBAR ) )
+			if ( g_inputSystem->ConsumeAnyKeyJustPressed() )
 			{
 				ChangeGameState( eGameState::PLAYING );
 			}
@@ -619,7 +632,7 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::VICTORY:
 		{
-			if ( g_inputSystem->WasAnyKeyJustPressed() )
+			if ( g_inputSystem->ConsumeAnyKeyJustPressed() )
 			{
 				ChangeGameState( eGameState::ATTRACT );
 			}
@@ -693,6 +706,15 @@ void Game::InitializeFPSHistory()
 void Game::UpdateFramesPerSecond()
 {
 	float curFPS = 1.f / (float)m_gameClock->GetLastDeltaSeconds();
+
+	if ( curFPS < 0 ) 
+	{ 
+		curFPS = 0; 
+	}
+	else if ( curFPS > 99999.f )
+	{
+		curFPS = 99999.f;
+	}
 
 	m_fpsHistorySum -= m_fpsHistory[m_fpsNextIdx];
 	m_fpsHistory[m_fpsNextIdx] = curFPS;
@@ -809,6 +831,8 @@ void Game::CheckForVictory()
 {
 	if ( m_enemiesLeftAlive <= 0 )
 	{
+		//Update();
+
 		ChangeGameState( eGameState::VICTORY );
 	}
 }
@@ -827,6 +851,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::ATTRACT:
 		{
+			m_gameClock->Resume();
+
 			// Check which state we are changing from
 			switch ( m_gameState )
 			{
@@ -834,17 +860,16 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::PLAYING:
 				{
 					g_audioSystem->StopSound( m_gameplayMusicID );
-					g_physicsSystem2D->SetFixedDeltaSeconds( 1.0f / 120.0f );
 
-					ReloadDataFiles();
+					ReloadGame();
 				}
 				break;
 
 				case eGameState::VICTORY:
 				{
-					g_audioSystem->StopSound( m_victoryMusicID );
-
-					ReloadDataFiles();
+					//g_audioSystem->StopSound( m_victoryMusicID );
+									
+					ReloadGame();
 				}
 				break;
 			}
@@ -856,17 +881,19 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::PLAYING:
 		{
+			m_gameClock->Resume();
+
 			// Check which state we are changing from
 			switch ( m_gameState )
 			{
 				case eGameState::PAUSED:
 				{
+					m_gameClock->Resume();
+
 					SoundID unpause = g_audioSystem->CreateOrGetSound( "Data/Audio/Unpause.mp3" );
 					g_audioSystem->PlaySound( unpause, false, .1f );
 
 					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .1f );
-
-					g_physicsSystem2D->SetFixedDeltaSeconds( 1.0f / 120.0f );
 				}
 				break;
 
@@ -879,7 +906,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					
 					m_curMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapName );
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapName.c_str() ) );
-					m_world->ChangeMap( m_curMapName, m_player );
+					ChangeMap( m_curMapName );
 				}
 				break;
 			}
@@ -893,8 +920,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
 			g_audioSystem->PlaySound( pause, false, .1f );
 
-			g_physicsSystem2D->SetFixedDeltaSeconds( 0.f );
-
+			m_gameClock->Pause();
 		}
 		break;
 
@@ -904,8 +930,9 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 			g_audioSystem->StopSound( m_gameplayMusicID );
 
-			SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
-			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic, true, .1f );
+			m_gameClock->Pause();
+			/*SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
+			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic, true, .1f );*/
 		}
 		break;
 	}

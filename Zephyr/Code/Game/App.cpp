@@ -162,7 +162,6 @@ void App::Update()
 {
 	g_devConsole->Update();
 	g_game->Update();
-	g_physicsSystem2D->Update();
 
 	UpdateFromKeyboard();
 }

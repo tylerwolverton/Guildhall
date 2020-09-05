@@ -42,13 +42,6 @@ void Physics2D::Startup( Clock* gameClock )
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::BeginFrame()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Physics2D::Update()
 {
 	while ( m_stepTimer->CheckAndDecrement() )
@@ -520,13 +513,6 @@ void Physics2D::CleanupDestroyedObjects()
 
 
 //-----------------------------------------------------------------------------------------------
-void Physics2D::EndFrame()
-{
-	
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Physics2D::Shutdown()
 {
 	PTR_SAFE_DELETE( m_stepTimer );
@@ -542,6 +528,9 @@ void Physics2D::Reset()
 	DestroyAllColliders();
 	DestroyAllRigidbodies();
 	CleanupDestroyedObjects();
+
+	m_colliders.clear();
+	m_rigidbodies.clear();
 }
 
 
@@ -550,6 +539,16 @@ Rigidbody2D* Physics2D::CreateRigidbody()
 {
 	Rigidbody2D* newRigidbody2D = new Rigidbody2D( 10.f );
 	newRigidbody2D->m_system = this;
+
+	for ( int rigidbodyIdx = 0; rigidbodyIdx < (int)m_rigidbodies.size(); ++rigidbodyIdx )
+	{
+		if ( m_rigidbodies[rigidbodyIdx] == nullptr )
+		{
+			m_rigidbodies[rigidbodyIdx] = newRigidbody2D;
+			return newRigidbody2D;
+		}
+	}
+
 	m_rigidbodies.push_back( newRigidbody2D );
 	
 	return newRigidbody2D;

@@ -37,11 +37,6 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	m_rigidbody2D->SetDrag( 5.f );
 	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY );
 
-	if ( !m_entityDef.GetBirthEventName().empty() )
-	{
-		g_eventSystem->FireEvent( m_entityDef.GetBirthEventName() );
-	}
-
 	RegisterUserEvents();
 }
 
@@ -113,6 +108,11 @@ void Entity::Render() const
 //-----------------------------------------------------------------------------------------------
 void Entity::Die()
 {
+	if ( IsDead() )
+	{
+		return;
+	}
+
 	m_isDead = true;
 
 	if ( !m_entityDef.GetDeathEventName().empty() )
@@ -171,8 +171,23 @@ void Entity::SetCollisionLayer( uint layer )
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::FireBirthEvent()
+{
+	if ( !m_entityDef.GetBirthEventName().empty() )
+	{
+		g_eventSystem->FireEvent( m_entityDef.GetBirthEventName() );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::TakeDamage( int damage )
 {
+	if ( IsDead() )
+	{
+		return;
+	}
+
 	m_curHealth -= damage;
 	if ( m_curHealth <= 0 )
 	{

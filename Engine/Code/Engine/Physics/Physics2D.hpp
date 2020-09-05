@@ -30,9 +30,9 @@ class Physics2D
 {
 public:
 	void Startup( Clock* gameClock );
-	void BeginFrame();
+	void BeginFrame() {}
 	void Update();
-	void EndFrame();
+	void EndFrame() {}
 	void Shutdown();
 
 	void Reset();

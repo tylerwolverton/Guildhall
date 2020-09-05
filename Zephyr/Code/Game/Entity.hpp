@@ -57,6 +57,8 @@ public:
 	void			SetFaction( const eFaction& faction )					{ m_faction = faction; }
 	void			SetMap( Map* map )										{ m_map = map; }
 				 
+	void			FireBirthEvent();
+
 	bool			IsDead() const											{ return m_isDead; }
 	bool			IsGarbage() const										{ return m_isGarbage; }
 				 
