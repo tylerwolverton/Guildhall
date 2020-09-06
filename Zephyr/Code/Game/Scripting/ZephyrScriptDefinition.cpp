@@ -14,9 +14,9 @@ ZephyrScriptDefinition::ZephyrScriptDefinition()
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinition( const std::string& scriptName )
+ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinitionByPath( const std::string& scriptPath )
 {
-	std::map< std::string, ZephyrScriptDefinition* >::const_iterator  mapIter = ZephyrScriptDefinition::s_definitions.find( scriptName );
+	std::map< std::string, ZephyrScriptDefinition* >::const_iterator  mapIter = ZephyrScriptDefinition::s_definitions.find( scriptPath );
 
 	if ( mapIter == s_definitions.cend() )
 	{
@@ -24,5 +24,13 @@ ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinition( const
 	}
 
 	return mapIter->second;
+}
+
+//-----------------------------------------------------------------------------------------------
+ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( const std::string& scriptName )
+{
+	std::string fullPath = "Data/Scripts/" + scriptName;
+
+	return GetZephyrScriptDefinitionByPath( fullPath );
 }
 

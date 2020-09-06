@@ -20,6 +20,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
 #include "Game/Scripting/ZephyrScript.hpp"
+#include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -38,6 +39,12 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY );
 
 	RegisterUserEvents();
+
+	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
+	if ( scriptDef != nullptr )
+	{
+		m_scriptObj = new ZephyrScript( *scriptDef );
+	}
 }
 
 
@@ -51,6 +58,8 @@ Entity::~Entity()
 	}
 
 	g_eventSystem->DeRegisterObject( this );
+
+	PTR_SAFE_DELETE( m_scriptObj );
 }
 
 

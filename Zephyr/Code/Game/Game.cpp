@@ -547,8 +547,11 @@ void Game::LoadAndCompileZephyrScripts()
 
 		// Scan
 		// Compile
-		// Save completed into static map?
-		ZephyrScriptDefinition::s_definitions[scriptFullPath] = new ZephyrScriptDefinition();
+		// Save completed into static map
+		ZephyrScriptDefinition* scriptDef = new ZephyrScriptDefinition();
+		scriptDef->m_name = scriptName;
+
+		ZephyrScriptDefinition::s_definitions[scriptFullPath] = scriptDef;
 	}
 
 	g_devConsole->PrintString( "Zephyr Scripts Loaded", Rgba8::GREEN );
@@ -831,8 +834,6 @@ void Game::CheckForVictory()
 {
 	if ( m_enemiesLeftAlive <= 0 )
 	{
-		//Update();
-
 		ChangeGameState( eGameState::VICTORY );
 	}
 }

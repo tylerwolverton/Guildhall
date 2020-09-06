@@ -8,6 +8,7 @@
 
 #include "Game/SpriteAnimationSetDefinition.hpp"
 #include "Game/Scripting/GameAPI.hpp"
+#include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -165,6 +166,17 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 			m_receivedEventsToResponseEvents[receivedEventName] = fireEventName;
 
 			onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
+		}
+
+		const XmlElement* scriptElem = gameplayElem->FirstChildElement( "Script" );
+		if ( scriptElem != nullptr )
+		{
+			std::string scriptName = ParseXmlAttribute( *scriptElem, "name", "" );
+
+			if ( !scriptName.empty() )
+			{
+				m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( scriptName );
+			}
 		}
 	}
 

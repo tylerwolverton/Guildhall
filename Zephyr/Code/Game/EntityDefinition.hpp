@@ -10,6 +10,7 @@
 //-----------------------------------------------------------------------------------------------
 class SpriteSheet;
 class SpriteAnimationSetDefinition;
+class ZephyrScriptDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -48,6 +49,8 @@ public:
 	std::string GetDeathEventName()	const													{ return m_deathEventName; }
 	std::map<std::string, std::string> GetRegisteredEvents() const							{ return m_receivedEventsToResponseEvents; }
 
+	ZephyrScriptDefinition* GetZephyrScriptDefinition() const								{ return m_zephyrScriptDef; }
+
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
 public:
@@ -72,6 +75,9 @@ protected:
 	std::string		m_birthEventName;
 	std::string		m_deathEventName;
 	std::map<std::string, std::string> m_receivedEventsToResponseEvents;
+
+	// Scripts
+	ZephyrScriptDefinition* m_zephyrScriptDef = nullptr;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 };
