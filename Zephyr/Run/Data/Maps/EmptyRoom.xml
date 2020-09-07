@@ -8,9 +8,9 @@
 		<MapRow tiles="################"/>
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="#..........#####"/>
-		<MapRow tiles="#....#.........#"/>
+		<MapRow tiles="#....#........##"/>
 		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..........##..#"/>
 		<MapRow tiles="#.###..........#"/>
 		<MapRow tiles="#.........##...#"/>
 		<MapRow tiles="#..............#"/>

@@ -175,12 +175,14 @@ void App::UpdateFromKeyboard()
 		if ( g_devConsole->IsOpen() )
 		{
 			g_devConsole->Close();
+			g_inputSystem->ConsumeAnyKeyJustPressed();
 		}
 	}
 	
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
 	{
 		g_devConsole->ToggleOpenFull();
+		g_inputSystem->ConsumeAnyKeyJustPressed();
 	}
 }
 

@@ -19,6 +19,7 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Time/Clock.hpp"
@@ -218,6 +219,20 @@ void Game::Render() const
 			std::vector<Vertex_PCU> vertexes;
 			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Protogame2D" );
 			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Start" );
+
+			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
+			g_renderer->DrawVertexArray( vertexes );
+		}
+		break;	
+		
+		case eGameState::PAUSED:
+		{
+			std::vector<Vertex_PCU> vertexes;
+			DrawAABB2( g_renderer, AABB2( Vec2::ZERO, Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) ), Rgba8( 0, 0, 0, 100 ) );
+
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Paused" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Esc to Quit" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 350.f ), 30.f, "Any Other Key to Resume" );
 
 			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 			g_renderer->DrawVertexArray( vertexes );
@@ -586,6 +601,11 @@ void Game::ReloadGame()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard()
 {
+	if ( g_devConsole->IsOpen() )
+	{
+		return;
+	}
+
 	switch ( m_gameState )
 	{
 		case eGameState::ATTRACT:
@@ -710,6 +730,11 @@ void Game::InitializeFPSHistory()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateFramesPerSecond()
 {
+	if ( m_gameClock->IsPaused() )
+	{
+		return;
+	}
+
 	float curFPS = 1.f / (float)m_gameClock->GetLastDeltaSeconds();
 
 	if ( curFPS < 0 ) 
@@ -745,6 +770,14 @@ float Game::GetAverageFPS() const
 //-----------------------------------------------------------------------------------------------
 void Game::RenderFPSCounter() const
 {
+	if ( m_gameClock->IsPaused() )
+	{
+		DebugAddScreenTextf( Vec4( 0.75f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::YELLOW, 0.f,
+							 "Game Paused" );
+
+		return;
+	}
+
 	float fps = GetAverageFPS();
 
 	Rgba8 fpsCountercolor = Rgba8::GREEN;
@@ -854,8 +887,6 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::ATTRACT:
 		{
-			m_gameClock->Resume();
-
 			// Check which state we are changing from
 			switch ( m_gameState )
 			{
@@ -879,6 +910,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 			SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
 			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .1f );
+
+			m_gameClock->Resume();
 		}
 		break;
 

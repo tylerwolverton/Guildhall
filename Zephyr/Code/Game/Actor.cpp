@@ -1,4 +1,5 @@
 #include "Game/Actor.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
@@ -85,6 +86,11 @@ void Actor::SetAsPlayer()
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
+	if ( g_devConsole->IsOpen() )
+	{
+		return;
+	}
+
 	float impulseMagnitude = 150.f * m_entityDef.GetWalkSpeed() * deltaSeconds;
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
