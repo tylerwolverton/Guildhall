@@ -30,6 +30,7 @@
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapData.hpp"
+#include "Game/Scripting/ZephyrCompiler.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
 
@@ -548,6 +549,7 @@ void Game::LoadAndCompileZephyrScripts()
 		// Scan
 		// Compile
 		// Save completed into static map
+		ZephyrCompiler::CompileScriptFile( scriptFullPath );
 		ZephyrScriptDefinition* scriptDef = new ZephyrScriptDefinition();
 		scriptDef->m_name = scriptName;
 

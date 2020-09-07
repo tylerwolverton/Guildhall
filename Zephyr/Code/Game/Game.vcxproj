@@ -205,6 +205,7 @@
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Scripting\GameAPI.cpp" />
+    <ClCompile Include="Scripting\ZephyrCompiler.cpp" />
     <ClCompile Include="Scripting\ZephyrScript.cpp" />
     <ClCompile Include="Scripting\ZephyrScriptDefinition.cpp" />
     <ClCompile Include="SpriteAnimationSetDefinition.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="Projectile.hpp" />
     <ClInclude Include="Scripting\GameAPI.hpp" />
+    <ClInclude Include="Scripting\ZephyrCompiler.hpp" />
     <ClInclude Include="Scripting\ZephyrScript.hpp" />
     <ClInclude Include="Scripting\ZephyrScriptDefinition.hpp" />
     <ClInclude Include="SpriteAnimationSetDefinition.hpp" />
