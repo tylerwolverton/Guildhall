@@ -292,6 +292,9 @@
     <ClCompile Include="UI\UISystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\NetworkingSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -547,5 +550,6 @@
     <ClInclude Include="UI\UILabel.hpp" />
     <ClInclude Include="UI\UIPanel.hpp" />
     <ClInclude Include="UI\UISystem.hpp" />
+    <ClInclude Include="Networking\NetworkingSystem.hpp" />
   </ItemGroup>
 </Project>

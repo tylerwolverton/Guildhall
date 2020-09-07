@@ -6,6 +6,7 @@ class App;
 class InputSystem;
 class AudioSystem;
 class RenderContext;
+class NetworkingSystem;
 class Game;
 class SpriteSheet;
 class Camera;
@@ -25,6 +26,7 @@ extern App* g_app;
 extern InputSystem* g_inputSystem;
 extern AudioSystem* g_audioSystem;
 extern RenderContext* g_renderer;
+extern NetworkingSystem* g_networkingSystem;
 extern Game* g_game;
 
 
