@@ -25,10 +25,7 @@ public:
 
 	double GetScale() const											{ return m_timeScale; }
 	bool IsPaused() const											{ return m_isPaused; }
-
-	// OPTIONAL - but useful
-	// void SetFrameLimits( double minFrameTime, double maxFrameTime ); // useful if you never want a simluation jumping too far (for exapmle, while stuck on a breakpoint)
-	
+		
 	// accessor for the master clock of our engine
 	static void MasterStartup();  // create/reset master clock
 	static void MasterShutdown();

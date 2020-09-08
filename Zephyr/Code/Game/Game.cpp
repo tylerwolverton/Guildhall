@@ -71,6 +71,8 @@ void Game::Startup()
 	m_rng = new RandomNumberGenerator();
 
 	m_gameClock = new Clock();
+	m_gameClock->SetFrameLimits( 1.0 / 120.0, 9999.0 );
+
 	g_renderer->Setup( m_gameClock );
 	g_physicsSystem2D->Startup( m_gameClock );
 	g_physicsSystem2D->SetSceneGravity( 0.f );

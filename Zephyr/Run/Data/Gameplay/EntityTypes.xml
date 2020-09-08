@@ -1,9 +1,9 @@
 <EntityTypes spriteSheet="Data/Images/EntitiesSpriteSheet_30x30.png" spriteSheetDimensions="30,30">
   ​
   <Actor name="Link">
-    <Physics radius="0.5" walkSpeed="1.0"/>
-    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
-      <Walk up="6,7" left="4,5" down="0,1" right="2,3"/>
+    <Physics radius="0.5" walkSpeed="100.0"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="5">
+      <Walk up="6,7" left="4,5" down="0,1" right="2,3" fps="2"/>
       <Attack up="0"/>
       <Pain up="0"/>
       <Death up="0"/>
@@ -12,8 +12,8 @@
   </Actor>
   ​
   <Actor name="Blob">
-    <Physics radius="0.5" walkSpeed="1.0"/>
-    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
+    <Physics radius="0.5" walkSpeed="25.0"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
       <Walk up="30,31"/>
     </Appearance>
     <Gameplay maxHealth="3">
@@ -29,7 +29,7 @@
   </Entity>
   ​
   <Projectile name="Fireball">
-    <Physics radius="0.25" speed="5"/>
+    <Physics radius="0.25" speed="4"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
       <Walk up="20"/>
     </Appearance>

@@ -35,7 +35,7 @@ class SpriteAnimationSetDefinition
 	friend class ItemDefinition;
 
 public:
-	SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem );
+	SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem, float defaultFPS );
 	~SpriteAnimationSetDefinition();
 
 	SpriteAnimDefinition* GetSpriteAnimationDefForDirection( const Vec2& direction );
@@ -47,5 +47,6 @@ private:
 	std::map< std::string, DirectionAnimation* > m_directionSpriteAnims;
 
 	std::string m_name;
+	float m_defaultFPS = 1.f;
 	SpriteSheet* m_spriteSheet = nullptr;
 };

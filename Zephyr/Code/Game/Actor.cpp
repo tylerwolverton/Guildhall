@@ -21,10 +21,6 @@ Actor::Actor( const EntityDefinition& entityDef, Map* map )
 	: Entity( entityDef, map )
 {
 	m_faction = eFaction::EVIL;
-
-	m_canBePushedByWalls = true;
-	m_canBePushedByEntities = true;
-	m_canPushEntities = true;
 }
 
 
@@ -91,7 +87,7 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 		return;
 	}
 
-	float impulseMagnitude = 150.f * m_entityDef.GetWalkSpeed() * deltaSeconds;
+	float impulseMagnitude = m_entityDef.GetWalkSpeed() * deltaSeconds;
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{

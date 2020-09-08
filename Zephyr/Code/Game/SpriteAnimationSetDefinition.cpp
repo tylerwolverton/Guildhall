@@ -9,8 +9,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteAnimationSetDefinition::SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem )
+SpriteAnimationSetDefinition::SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem, float defaultFPS )
 	: m_spriteSheet( spriteSheet )
+	, m_defaultFPS( defaultFPS )
 {
 	m_name = spriteAnimSetDefElem.Name();
 
@@ -71,8 +72,10 @@ void SpriteAnimationSetDefinition::AddDirectionAnimation( const std::string& ani
 		}
 		else
 		{
+			float fps = ParseXmlAttribute( spriteAnimSetDefElem, "fps", m_defaultFPS );
+
 			DirectionAnimation* dirAnim = new DirectionAnimation();
-			dirAnim->animDef = new SpriteAnimDefinition( *m_spriteSheet, spriteIndexes, 4.f );
+			dirAnim->animDef = new SpriteAnimDefinition( *m_spriteSheet, spriteIndexes, fps );
 			dirAnim->facingDirection = facingDir;
 
 			m_directionSpriteAnims[animName] = dirAnim;

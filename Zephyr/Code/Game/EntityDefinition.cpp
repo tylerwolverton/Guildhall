@@ -94,11 +94,12 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	if ( appearanceElem != nullptr )
 	{
 		m_localDrawBounds = ParseXmlAttribute( *appearanceElem, "localDrawBounds", m_localDrawBounds );
+		float defaultFPS = ParseXmlAttribute( *appearanceElem, "fps", 1.f );
 
 		const XmlElement* animationSetElem = appearanceElem->FirstChildElement();
 		while ( animationSetElem != nullptr )
 		{
-			m_spriteAnimSetDefs[animationSetElem->Name()] = new SpriteAnimationSetDefinition( spriteSheet, *animationSetElem );
+			m_spriteAnimSetDefs[animationSetElem->Name()] = new SpriteAnimationSetDefinition( spriteSheet, *animationSetElem, defaultFPS );
 
 			animationSetElem = animationSetElem->NextSiblingElement();
 		}

@@ -3,7 +3,12 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Time/Time.hpp"
 
+
+#define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
+#include <windows.h>			// #include this (massive, platform-specific) header in very few places
+
 static Clock* s_masterClock = nullptr;
+
 
 //-----------------------------------------------------------------------------------------------
 Clock::Clock()
@@ -55,7 +60,14 @@ Clock::~Clock()
 //-----------------------------------------------------------------------------------------------
 void Clock::Update( double deltaSeconds )
 {
-	ClampMinMax( deltaSeconds, m_minFrameTime, m_maxFrameTime );
+	deltaSeconds = ClampMinMax( deltaSeconds, 0.0, m_maxFrameTime );
+
+	double minDeltaDiff = m_minFrameTime - deltaSeconds;
+	if ( minDeltaDiff > 0.f )
+	{
+		deltaSeconds = m_minFrameTime;
+		Sleep( DWORD(minDeltaDiff * 1000.0) );
+	}
 
 	if ( m_isPaused )
 	{

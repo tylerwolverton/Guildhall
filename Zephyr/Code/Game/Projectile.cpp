@@ -11,11 +11,6 @@
 Projectile::Projectile( const EntityDefinition& entityDef, Map* map )
 	: Entity( entityDef, map )
 {
-	m_canBePushedByWalls = true;
-	m_canBePushedByEntities = false;
-	m_canPushEntities = false;
-	m_willDieOnCollision = true;
-
 	m_damage = entityDef.GetDamageRange().GetRandomInRange( g_game->m_rng );
 
 	m_rigidbody2D->SetDrag( 0.f );

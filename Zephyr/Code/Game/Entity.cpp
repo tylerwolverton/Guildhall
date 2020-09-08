@@ -72,17 +72,6 @@ void Entity::Update( float deltaSeconds )
 	{
 		m_scriptObj->Update();
 	}
-
-	//// vel += acceleration * dt;
-	//m_velocity += m_linearAcceleration * deltaSeconds;
-	//m_linearAcceleration = Vec2( 0.f, 0.f );
-	//// pos += vel * dt;
-	//m_position += m_velocity * deltaSeconds;
-
-	////update orientation
-	//m_orientationDegrees += m_angularVelocity * deltaSeconds;
-
-	//ApplyFriction();
 }
 
 
