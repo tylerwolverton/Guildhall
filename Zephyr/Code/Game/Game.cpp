@@ -219,8 +219,9 @@ void Game::Render() const
 		case eGameState::ATTRACT:
 		{
 			std::vector<Vertex_PCU> vertexes;
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Protogame2D" );
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Start" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Zephyr Test" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Esc to Quit" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 350.f ), 30.f, "Any Other Key to Start" );
 
 			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 			g_renderer->DrawVertexArray( vertexes );
@@ -636,10 +637,10 @@ void Game::UpdateFromKeyboard()
 				m_isDebugRendering = !m_isDebugRendering;
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
+			/*if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
 				ChangeMap( m_curMapName );
-			}
+			}*/
 		}
 		break;
 
@@ -869,7 +870,7 @@ void Game::DecrementEnemyCount()
 //-----------------------------------------------------------------------------------------------
 void Game::CheckForVictory()
 {
-	if ( m_enemiesLeftAlive <= 0 )
+	if ( m_enemiesLeftAlive == 0 )
 	{
 		ChangeGameState( eGameState::VICTORY );
 	}
