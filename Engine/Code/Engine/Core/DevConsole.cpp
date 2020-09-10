@@ -245,13 +245,18 @@ void DevConsole::RenderBackground( const AABB2& bounds ) const
 //-----------------------------------------------------------------------------------------------
 void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& vertices, const AABB2& bounds, float lineHeight ) const
 {
+	// Nothing to print
+	if ( m_logMessages.size() == 0 )
+	{
+		return;
+	}
+
 	// Show one more line than can technically fit in order to show a partial line if possible
 	float boundsHeightInPixels = bounds.maxs.y - bounds.mins.y;
 	int maxNumLinesToRender = (int)( ( boundsHeightInPixels / lineHeight ) + 1 );
 
 	// Nothing to print
-	if ( m_logMessages.size() == 0
-		 || maxNumLinesToRender <= 0 )
+	if ( maxNumLinesToRender <= 0 )
 	{
 		return;
 	}
@@ -261,13 +266,9 @@ void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& verti
 	if ( m_latestLogMessageToPrint < numLinesToRender )
 	{
 		numLinesToRender = m_latestLogMessageToPrint;
-	}/*if ( (int)m_logMessages.size() < numLinesToRender )
-	{
-		numLinesToRender = (int)m_logMessages.size();
-	}*/
+	}
 	
 	float curLineY = 1;
-	//int latestMessageIndex = (int)m_logMessages.size() - 1;
 	int latestMessageIndex = m_latestLogMessageToPrint;
 
 	for ( int logMessageIndexFromEnd = 0; logMessageIndexFromEnd < numLinesToRender; ++logMessageIndexFromEnd )
@@ -293,9 +294,44 @@ void DevConsole::AppendVertsForInputString( std::vector<Vertex_PCU>& vertices, c
 		cellAspect = .5f;
 	}
 
+	int maxCharsOnLine = (int) ( bounds.GetWidth() / ( lineHeight * cellAspect ) ) - 2;
+
+	Strings linesToRender;
+	int charPos = 0;
+	while ( charPos < (int)m_currentCommandStr.size() )
+	{
+		int numCharsToRead = maxCharsOnLine;
+		if ( maxCharsOnLine > (int)m_currentCommandStr.size() - charPos )
+		{
+			numCharsToRead = (int)m_currentCommandStr.size() - charPos;
+		}
+
+		linesToRender.push_back( m_currentCommandStr.substr( charPos, numCharsToRead ) );
+		
+		charPos += numCharsToRead;
+	}
+
 	Vec2 startMins = Vec2( bounds.mins.x, bounds.mins.y );
+	startMins.y += lineHeight * (float)( (int)linesToRender.size() - 1 );
 	
-	AppendVertsForString( vertices, "> " + m_currentCommandStr, Rgba8::WHITE, startMins, lineHeight, cellAspect );
+	if ( linesToRender.size() == 0 )
+	{
+		AppendVertsForString( vertices, "> ", Rgba8::WHITE, Vec2( bounds.mins.x, bounds.mins.y ), lineHeight, cellAspect );
+		return;
+	}
+
+	for ( int lineIdx = 0; lineIdx < (int)linesToRender.size(); ++lineIdx )
+	{
+		std::string lineToRender = "  " + linesToRender[lineIdx];
+		if ( lineIdx == 0 )
+		{
+			lineToRender[0] = '>';
+		}
+
+		AppendVertsForString( vertices, lineToRender, Rgba8::WHITE, startMins, lineHeight, cellAspect );
+
+		startMins.y -= lineHeight;
+	}
 }
 
 
