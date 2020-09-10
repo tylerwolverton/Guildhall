@@ -7,6 +7,7 @@
 class ZephyrToken
 {
 public:
+	ZephyrToken() {}
 	ZephyrToken( eTokenType type, int lineNum );
 
 	eTokenType	GetType() const							{ return m_type; }

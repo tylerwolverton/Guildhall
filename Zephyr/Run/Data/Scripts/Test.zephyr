@@ -1,2 +1,9 @@
-I'm a test script
-Woohoo!
+StateMachine
+{
+	State
+	{
+		Number +-*/;
+
+		=
+	}
+}
