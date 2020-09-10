@@ -585,6 +585,7 @@ void Game::ReloadGame()
 
 	m_player = nullptr;
 
+	PTR_MAP_SAFE_DELETE( ZephyrScriptDefinition::s_definitions );
 	PTR_MAP_SAFE_DELETE( EntityDefinition::s_definitions );
 	PTR_MAP_SAFE_DELETE( TileMaterialDefinition::s_definitions );
 	PTR_MAP_SAFE_DELETE( TileDefinition::s_definitions );
@@ -592,6 +593,7 @@ void Game::ReloadGame()
 
 	g_physicsSystem2D->Reset();
 
+	LoadAndCompileZephyrScripts();
 	LoadEntitiesFromXml();
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
