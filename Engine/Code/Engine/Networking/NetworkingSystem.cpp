@@ -4,6 +4,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
+#include <array>
 
 //-----------------------------------------------------------------------------------------------
 // Winsock Library link
@@ -110,10 +111,9 @@ void NetworkingSystem::BeginFrame()
 				}
 				
 				g_devConsole->PrintString( Stringf( "Client connected from: %s", GetAddress().c_str() ) );
-				
+			
 				// Read in data from client
-				std::vector<char> dataBuffer;
-				dataBuffer.reserve( 256 );
+				std::array<char, 256> dataBuffer;
 				iResult = recv( m_clientSocket, &dataBuffer[0], (int)dataBuffer.size() - 1, 0 );
 				if ( iResult == SOCKET_ERROR )
 				{
@@ -164,8 +164,7 @@ void NetworkingSystem::Shutdown()
 //-----------------------------------------------------------------------------------------------
 std::string NetworkingSystem::GetAddress()
 {
-	std::vector<char> addressStr;
-	addressStr.resize( 128 );
+	std::array<char, 128> addressStr;
 
 	sockaddr clientAddr;
 	int addrSize = sizeof( clientAddr );
@@ -175,7 +174,7 @@ std::string NetworkingSystem::GetAddress()
 		g_devConsole->PrintError( Stringf( "Networking System: getpeername failed with '%i'", WSAGetLastError() ) );
 	}
 
-	DWORD outlen = (DWORD)addrSize;
+	DWORD outlen = (DWORD)addressStr.size();
 	iResult = WSAAddressToStringA( &clientAddr, addrSize, NULL, &addressStr[0], &outlen );
 	if ( iResult == SOCKET_ERROR )
 	{
@@ -184,7 +183,7 @@ std::string NetworkingSystem::GetAddress()
 	}
 
 	// Is this safe?
-	addressStr[outlen] = '\0';
+	addressStr[outlen - 1] = '\0';
 	return std::string( &addressStr[0] );
 }
 
