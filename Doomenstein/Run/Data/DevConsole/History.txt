@@ -83,3 +83,4 @@ help
 warp TestRoom
 warp TwistyMaze
 warp map=TwistyMaze
+start_tcp_server

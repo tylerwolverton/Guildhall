@@ -4,8 +4,6 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
 
 //-----------------------------------------------------------------------------------------------
 // Winsock Library link
@@ -28,7 +26,9 @@ void NetworkingSystem::Startup()
 		g_devConsole->PrintError( Stringf( "Networking System: WSAStartup failed with '%i'", WSAGetLastError() ) );
 	}
 
-	m_listenSocket = INVALID_SOCKET;
+	FD_ZERO( &m_listenSet );
+	m_timeval.tv_sec = 0l;
+	m_timeval.tv_usec = 0l;
 }
 
 
@@ -87,6 +87,58 @@ void NetworkingSystem::BeginFrame()
 				return;
 			}
 		}
+		// We have a valid socket
+		else
+		{
+			FD_ZERO( &m_listenSet );
+			FD_SET( m_listenSocket, &m_listenSet );
+			int iResult = select( 0, &m_listenSet, nullptr, nullptr, &m_timeval );
+
+			if ( iResult == INVALID_SOCKET )
+			{
+				g_devConsole->PrintError( Stringf( "Networking System: select failed with '%i'", WSAGetLastError() ) );
+				return;
+			}
+
+			if ( FD_ISSET( m_listenSocket, &m_listenSet ) )
+			{
+				m_clientSocket = accept( m_listenSocket, nullptr, nullptr );
+				if ( m_clientSocket == INVALID_SOCKET )
+				{
+					g_devConsole->PrintError( Stringf( "Networking System: client socket accept failed with '%i'", WSAGetLastError() ) );
+					return;
+				}
+				
+				g_devConsole->PrintString( Stringf( "Client connected from: %s", GetAddress().c_str() ) );
+				
+				// Read in data from client
+				std::vector<char> dataBuffer;
+				dataBuffer.reserve( 256 );
+				iResult = recv( m_clientSocket, &dataBuffer[0], (int)dataBuffer.size() - 1, 0 );
+				if ( iResult == SOCKET_ERROR )
+				{
+					g_devConsole->PrintError( Stringf( "Networking System: recv failed with '%i'", WSAGetLastError() ) );
+					return;
+				}
+				else if ( iResult == 0 )
+				{
+					g_devConsole->PrintError( Stringf( "Networking System: recv returned 0 bytes" ) );
+					return;
+				}
+				
+				// Terminate the buffer string
+				dataBuffer[iResult] = '\0';
+				g_devConsole->PrintString( Stringf( "Client message: %s", &dataBuffer[0] ) );
+
+				std::string msg( "Hey client" );
+				iResult = send( m_clientSocket, msg.data(), (int)msg.size(), 0 );
+				if ( iResult == SOCKET_ERROR )
+				{
+					g_devConsole->PrintError( Stringf( "Networking System: send failed with '%i'", WSAGetLastError() ) );
+					return;
+				}
+			}
+		}
 	}
 }
 
@@ -107,6 +159,35 @@ void NetworkingSystem::Shutdown()
 		g_devConsole->PrintError( Stringf( "Networking System: WSACleanup failed with '%i'", WSAGetLastError() ) );
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+std::string NetworkingSystem::GetAddress()
+{
+	std::vector<char> addressStr;
+	addressStr.resize( 128 );
+
+	sockaddr clientAddr;
+	int addrSize = sizeof( clientAddr );
+	int iResult = getpeername( m_clientSocket, &clientAddr, &addrSize );
+	if ( iResult == SOCKET_ERROR )
+	{
+		g_devConsole->PrintError( Stringf( "Networking System: getpeername failed with '%i'", WSAGetLastError() ) );
+	}
+
+	DWORD outlen = (DWORD)addrSize;
+	iResult = WSAAddressToStringA( &clientAddr, addrSize, NULL, &addressStr[0], &outlen );
+	if ( iResult == SOCKET_ERROR )
+	{
+		g_devConsole->PrintError( Stringf( "Networking System: WSAAddressToStringA failed with '%i'", WSAGetLastError() ) );
+		return "";
+	}
+
+	// Is this safe?
+	addressStr[outlen] = '\0';
+	return std::string( &addressStr[0] );
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::StartTCPServer( EventArgs* args )
