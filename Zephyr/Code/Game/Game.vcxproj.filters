@@ -82,6 +82,12 @@
     <ClCompile Include="Scripting\ZephyrCompiler.cpp">
       <Filter>Framework\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="Scripting\ZephyrToken.cpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripting\ZephyrCommon.cpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -145,6 +151,12 @@
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Scripting\ZephyrCompiler.hpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting\ZephyrCommon.hpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting\ZephyrToken.hpp">
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
   </ItemGroup>
