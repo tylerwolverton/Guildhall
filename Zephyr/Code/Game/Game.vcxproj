@@ -207,6 +207,7 @@
     <ClCompile Include="Scripting\GameAPI.cpp" />
     <ClCompile Include="Scripting\ZephyrCommon.cpp" />
     <ClCompile Include="Scripting\ZephyrCompiler.cpp" />
+    <ClCompile Include="Scripting\ZephyrScanner.cpp" />
     <ClCompile Include="Scripting\ZephyrScript.cpp" />
     <ClCompile Include="Scripting\ZephyrScriptDefinition.cpp" />
     <ClCompile Include="Scripting\ZephyrToken.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="Scripting\GameAPI.hpp" />
     <ClInclude Include="Scripting\ZephyrCommon.hpp" />
     <ClInclude Include="Scripting\ZephyrCompiler.hpp" />
+    <ClInclude Include="Scripting\ZephyrScanner.hpp" />
     <ClInclude Include="Scripting\ZephyrScript.hpp" />
     <ClInclude Include="Scripting\ZephyrScriptDefinition.hpp" />
     <ClInclude Include="Scripting\ZephyrToken.hpp" />

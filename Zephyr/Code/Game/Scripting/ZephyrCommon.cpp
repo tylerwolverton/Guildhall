@@ -11,6 +11,8 @@ std::string ToString( eTokenType type )
 		case eTokenType::STATE_MACHINE: return "STATE_MACHINE";
 		case eTokenType::STATE:			return "STATE";
 		case eTokenType::NUMBER:		return "NUMBER";
+		case eTokenType::IDENTIFIER:	return "IDENTIFIER";
+		case eTokenType::CONSTANT:		return "CONSTANT";
 		case eTokenType::PLUS:			return "PLUS";
 		case eTokenType::MINUS:			return "MINUS";
 		case eTokenType::STAR:			return "STAR";

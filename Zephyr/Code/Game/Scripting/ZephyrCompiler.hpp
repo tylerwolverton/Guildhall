@@ -14,8 +14,4 @@ class ZephyrCompiler
 {
 public:
 	static void CompileScriptFile( const std::string& filePath );
-
-private:
-	static std::vector<ZephyrToken> ScanSourceIntoTokens( const std::string& scriptSource );
-	//static void ParseAndAddToTokenList( std::vector<ZephyrToken>& tokens, std::string& word, int lineNum );
 };

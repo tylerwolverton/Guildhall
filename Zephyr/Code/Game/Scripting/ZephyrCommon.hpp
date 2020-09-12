@@ -8,13 +8,16 @@ enum class eTokenType
 {
 	UNKNOWN,
 
+	// Keywords
 	STATE_MACHINE,
 	STATE,
+	NUMBER,
 
 	BRACE_LEFT,
 	BRACE_RIGHT,
 	
-	NUMBER,
+	IDENTIFIER,
+	CONSTANT,
 
 	PLUS,
 	MINUS,
