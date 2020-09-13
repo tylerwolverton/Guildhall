@@ -18,7 +18,8 @@ ZephyrParser::ZephyrParser( const std::vector<ZephyrToken>& tokens )
 std::vector<ZephyrBytecodeChunk> ZephyrParser::ParseTokensIntoBytecodeChunks()
 {
 	// First token must be StateMachine
-	if ( m_tokens[m_curTokenIdx].GetType() != eTokenType::STATE_MACHINE )
+	ZephyrToken nextToken = ConsumeNextToken();
+	if ( nextToken.GetType() != eTokenType::STATE_MACHINE )
 	{
 		ReportError( "File must begin with a StateMachine definition" );
 		return m_bytecodeChunks;
@@ -29,8 +30,146 @@ std::vector<ZephyrBytecodeChunk> ZephyrParser::ParseTokensIntoBytecodeChunks()
 		return m_bytecodeChunks;
 	}
 
+	nextToken = ConsumeNextToken();
+	if ( !DoesTokenMatchType( nextToken, eTokenType::END_OF_FILE ) )
+	{
+		ReportError( "Nothing can be defined outside StateMachine" );
+		return m_bytecodeChunks;
+	}
+
 	m_isErrorFree = true;
 	return m_bytecodeChunks;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseBlock()
+{
+	// Parse first brace
+	ZephyrToken curToken = ConsumeNextToken();
+	if ( !DoesTokenMatchType( curToken, eTokenType::BRACE_LEFT ) )
+	{
+		ReportError( "Expected '{'" );
+		return false;
+	}
+
+	// Parse statements in block
+	while ( !DoesTokenMatchType( curToken, eTokenType::BRACE_RIGHT )
+			&& !DoesTokenMatchType( curToken, eTokenType::END_OF_FILE ) )
+	{
+		if ( !ParseStatement() )
+		{
+			return false;
+		}
+
+		curToken = ConsumeNextToken();
+	}
+
+	// Check for closing brace
+	if ( !DoesTokenMatchType( curToken, eTokenType::BRACE_RIGHT ) )
+	{
+		ReportError( "Expected '}'" );
+		return false;
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseStatement()
+{
+	ZephyrToken curToken = ConsumeNextToken();
+
+	switch ( curToken.GetType() )
+	{
+		// Do something fancier with state name later
+		case eTokenType::STATE:		return ParseBlock();
+		case eTokenType::NUMBER:	return ParseNumberDeclaration();
+
+		default:
+		{
+			std::string errorMsg( "Unknown '" );
+			errorMsg += curToken.GetDebugName();
+			errorMsg += "' seen";
+
+			ReportError( errorMsg );
+			return false;
+		}
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseNumberDeclaration()
+{
+	ZephyrToken curToken = ConsumeNextToken();
+	if ( !DoesTokenMatchType( curToken, eTokenType::IDENTIFIER ) )
+	{
+		ReportError( "Expected variable name after 'Number'" );
+		return false;
+	}
+
+	curToken = ConsumeNextToken();
+	switch( curToken.GetType() )
+	{
+		// TODO: Save variable in table
+		case eTokenType::SEMICOLON: break;
+		case eTokenType::EQUAL:		return ParseNumberExpression();
+
+		default:
+		{
+			std::string errorMsg( "Unexpected '" );
+			errorMsg += curToken.GetDebugName();
+			errorMsg += "' seen, expected ';' or '='";
+
+			ReportError( errorMsg );
+			return false;
+		}
+		break;
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseNumberExpression()
+{
+	ConsumeNextToken();
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrParser::ReportError( const std::string& errorMsg )
+{
+	ZephyrToken const& curToken = GetLastToken();
+
+	std::string fullErrorStr = Stringf( "Error - %s: line %i: %s", "filename", curToken.GetLineNum(), errorMsg.c_str() );
+
+	g_devConsole->PrintError( fullErrorStr );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrToken ZephyrParser::ConsumeNextToken()
+{
+	if ( IsAtEnd() )
+	{
+		return m_tokens[m_tokens.size() - 1] ;
+	}
+
+	return m_tokens[m_curTokenIdx++];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrToken ZephyrParser::GetLastToken()
+{
+	return m_tokens[m_curTokenIdx - 1];
 }
 
 
@@ -48,110 +187,15 @@ bool ZephyrParser::IsCurTokenType( const eTokenType& type )
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseBlock()
+bool ZephyrParser::DoesTokenMatchType( const ZephyrToken& token, const eTokenType& type )
 {
-	// Parse first brace
-	AdvanceToNextToken();
-	if ( !IsCurTokenType( eTokenType::BRACE_LEFT ) )
+	if ( token.GetType() != type )
 	{
-		ReportError( "Expected '{'" );
-		return false;
-	}
-
-	// Parse statements in block
-	AdvanceToNextToken();
-	while ( !IsCurTokenType( eTokenType::BRACE_RIGHT ) )
-	{
-		if ( !ParseStatement() )
-		{
-			return false;
-		}
-	}
-
-	// Check for closing brace
-	if ( !IsCurTokenType( eTokenType::BRACE_RIGHT ) )
-	{
-		ReportError( "Expected '}'" );
 		return false;
 	}
 
 	return true;
-}
 
-
-//-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseStatement()
-{
-	AdvanceToNextToken();
-
-	switch ( GetCurTokenType() )
-	{
-		// Do something fancier with state name later
-		case eTokenType::STATE:		return ParseBlock();
-		case eTokenType::NUMBER:	return ParseNumberDeclaration();
-	}
-
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseNumberDeclaration()
-{
-	AdvanceToNextToken();
-	if ( !IsCurTokenType( eTokenType::IDENTIFIER ) )
-	{
-		ReportError( "Expected variable name after 'Number'" );
-		return false;
-	}
-
-	AdvanceToNextToken();
-	switch( GetCurTokenType() )
-	{
-		// TODO: Save variable in table
-		case eTokenType::SEMICOLON: break;
-		case eTokenType::EQUAL:		return ParseNumberExpression();
-
-		default:
-		{
-			std::string errorMsg( "Unexpected '" );
-			errorMsg += "' seen, expected ';' or '='";
-
-			ReportError( errorMsg );
-			return false;
-		}
-		break;
-	}
-
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseNumberExpression()
-{
-	AdvanceToNextToken();
-
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrParser::ReportError( const std::string& errorMsg )
-{
-	ZephyrToken& curToken = m_tokens[m_curTokenIdx];
-
-	std::string fullErrorStr = Stringf( "Error - %s: line %i: %s", "filename", curToken.GetLineNum(), errorMsg.c_str() );
-
-	g_devConsole->PrintError( fullErrorStr );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-ZephyrToken ZephyrParser::AdvanceToNextToken()
-{
-	++m_curTokenIdx;
-	return m_tokens[m_curTokenIdx - 1];
 }
 
 

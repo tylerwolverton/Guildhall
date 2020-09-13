@@ -22,6 +22,7 @@ private:
 	std::vector<ZephyrBytecodeChunk> ParseTokensIntoBytecodeChunks();
 
 	bool IsCurTokenType( const eTokenType& type );
+	bool DoesTokenMatchType( const ZephyrToken& token, const eTokenType& type );
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseNumberDeclaration();
@@ -29,7 +30,8 @@ private:
 
 	void ReportError( const std::string& errorMsg );
 
-	ZephyrToken AdvanceToNextToken();
+	ZephyrToken ConsumeNextToken();
+	ZephyrToken GetLastToken();
 	bool IsAtEnd();
 
 	eTokenType GetCurTokenType();

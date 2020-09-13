@@ -7,6 +7,7 @@
 enum class eTokenType
 {
 	UNKNOWN,
+	ERROR_TOKEN,
 
 	// Keywords
 	STATE_MACHINE,
