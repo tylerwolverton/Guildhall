@@ -91,7 +91,10 @@
     <ClCompile Include="Scripting\ZephyrScanner.cpp">
       <Filter>Framework\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="ZephyrBytecodeChunk.cpp">
+    <ClCompile Include="Scripting\ZephyrBytecodeChunk.cpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripting\ZephyrParser.cpp">
       <Filter>Framework\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
@@ -168,7 +171,10 @@
     <ClInclude Include="Scripting\ZephyrScanner.hpp">
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="ZephyrBytecodeChunk.hpp">
+    <ClInclude Include="Scripting\ZephyrBytecodeChunk.hpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting\ZephyrParser.hpp">
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
   </ItemGroup>

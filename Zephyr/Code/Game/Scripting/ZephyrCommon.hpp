@@ -23,6 +23,7 @@ enum class eTokenType
 	MINUS,
 	STAR,
 	SLASH,
+	EQUAL,
 	
 	SEMICOLON,
 

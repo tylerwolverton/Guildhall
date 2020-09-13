@@ -17,6 +17,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::MINUS:			return "MINUS";
 		case eTokenType::STAR:			return "STAR";
 		case eTokenType::SLASH:			return "SLASH";
+		case eTokenType::EQUAL:			return "EQUAL";
 		case eTokenType::SEMICOLON:		return "SEMICOLON";
 		case eTokenType::END_OF_FILE:	return "END_OF_FILE";
 		default:						return "UNKNOWN";

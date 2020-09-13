@@ -205,8 +205,10 @@
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Scripting\GameAPI.cpp" />
+    <ClCompile Include="Scripting\ZephyrBytecodeChunk.cpp" />
     <ClCompile Include="Scripting\ZephyrCommon.cpp" />
     <ClCompile Include="Scripting\ZephyrCompiler.cpp" />
+    <ClCompile Include="Scripting\ZephyrParser.cpp" />
     <ClCompile Include="Scripting\ZephyrScanner.cpp" />
     <ClCompile Include="Scripting\ZephyrScript.cpp" />
     <ClCompile Include="Scripting\ZephyrScriptDefinition.cpp" />
@@ -217,12 +219,10 @@
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="TileMaterialDefinition.cpp" />
     <ClCompile Include="World.cpp" />
-    <ClCompile Include="ZephyrBytecodeChunk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="App.hpp" />
-    <ClInclude Include="ZephyrBytecodeChunk.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="EntityDefinition.hpp" />
@@ -233,8 +233,10 @@
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="Projectile.hpp" />
     <ClInclude Include="Scripting\GameAPI.hpp" />
+    <ClInclude Include="Scripting\ZephyrBytecodeChunk.hpp" />
     <ClInclude Include="Scripting\ZephyrCommon.hpp" />
     <ClInclude Include="Scripting\ZephyrCompiler.hpp" />
+    <ClInclude Include="Scripting\ZephyrParser.hpp" />
     <ClInclude Include="Scripting\ZephyrScanner.hpp" />
     <ClInclude Include="Scripting\ZephyrScript.hpp" />
     <ClInclude Include="Scripting\ZephyrScriptDefinition.hpp" />

@@ -4,7 +4,9 @@
 #include "Engine/Core/StringUtils.hpp"
 
 #include "Game/Scripting/ZephyrToken.hpp"
+#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrScanner.hpp"
+#include "Game/Scripting/ZephyrParser.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -19,5 +21,8 @@ void ZephyrCompiler::CompileScriptFile( const std::string& filePath )
 	{
 		g_devConsole->PrintString( Stringf( "%s line: %i", tokens[tokenIdx].GetDebugName().c_str(), tokens[tokenIdx].GetLineNum() ) );
 	}
+
+	ZephyrParser parser( tokens );
+	std::vector<ZephyrBytecodeChunk> bytecodeChunks = parser.ParseTokensIntoBytecodeChunks();
 }
 

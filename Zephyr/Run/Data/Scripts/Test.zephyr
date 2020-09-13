@@ -3,8 +3,6 @@ StateMachine
 	State
 	{
 		Number myNumber;
-		+-*/;
-
-		=
+		
 	}
 }

@@ -25,12 +25,12 @@ void ZephyrBytecodeChunk::WriteByte( eOpCode opCode )
 //-----------------------------------------------------------------------------------------------
 void ZephyrBytecodeChunk::WriteByte( int constantIdx )
 {
-	if ( constantIdx < 0
-		 || constantIdx > sizeof( byte ) - 1 )
-	{
-		// Print error?
-		return;
-	}
+	//if ( constantIdx < 0
+	//	 || constantIdx > sizeof( byte ) - 1 )
+	//{
+	//	// Print error?
+	//	return;
+	//}
 
 	WriteByte( (byte)constantIdx );
 }
