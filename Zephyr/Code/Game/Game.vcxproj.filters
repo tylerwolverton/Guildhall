@@ -91,6 +91,9 @@
     <ClCompile Include="Scripting\ZephyrScanner.cpp">
       <Filter>Framework\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="ZephyrBytecodeChunk.cpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -163,6 +166,9 @@
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Scripting\ZephyrScanner.hpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="ZephyrBytecodeChunk.hpp">
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
   </ItemGroup>

@@ -217,10 +217,12 @@
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="TileMaterialDefinition.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="ZephyrBytecodeChunk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="ZephyrBytecodeChunk.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="EntityDefinition.hpp" />
