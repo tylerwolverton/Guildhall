@@ -3,6 +3,8 @@
 
 #include <string>
 
+#define NUMBER_TYPE float
+
 //-----------------------------------------------------------------------------------------------
 enum class eTokenType
 {
@@ -18,8 +20,10 @@ enum class eTokenType
 	BRACE_RIGHT,
 	
 	IDENTIFIER,
-	CONSTANT,
 
+	CONSTANT_NUMBER,
+
+	// Operators
 	PLUS,
 	MINUS,
 	STAR,

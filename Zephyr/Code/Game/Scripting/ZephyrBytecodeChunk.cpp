@@ -37,7 +37,14 @@ void ZephyrBytecodeChunk::WriteByte( int constantIdx )
 
 
 //-----------------------------------------------------------------------------------------------
-int ZephyrBytecodeChunk::WriteNumberConstant( float constant )
+void ZephyrBytecodeChunk::WriteNumberConstant( NUMBER_TYPE constant )
+{
+	WriteByte( AddNumberConstant( constant ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int ZephyrBytecodeChunk::AddNumberConstant( NUMBER_TYPE constant )
 {
 	m_numberConstants.push_back( constant );
 	return (int)m_numberConstants.size() - 1;

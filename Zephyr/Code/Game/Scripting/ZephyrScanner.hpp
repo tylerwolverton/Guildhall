@@ -20,10 +20,10 @@ private:
 
 	std::vector<ZephyrToken> ScanSourceIntoTokens();
 
-	void AddToken( eTokenType type );
+	void AddToken( eTokenType type, const std::string& data = "" );
 
 	void SkipWhitespaceAndComments();
-	void TokenizeNumber();
+	void TokenizeNumberConstant();
 	void TokenizeIdentifier();
 
 	char ReadAndAdvanceSrcPos();

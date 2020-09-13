@@ -15,7 +15,7 @@ ZephyrParser::ZephyrParser( const std::vector<ZephyrToken>& tokens )
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<ZephyrBytecodeChunk> ZephyrParser::ParseTokensIntoBytecodeChunks()
+std::vector<ZephyrBytecodeChunk*> ZephyrParser::ParseTokensIntoBytecodeChunks()
 {
 	// First token must be StateMachine
 	ZephyrToken nextToken = ConsumeNextToken();
@@ -39,6 +39,76 @@ std::vector<ZephyrBytecodeChunk> ZephyrParser::ParseTokensIntoBytecodeChunks()
 
 	m_isErrorFree = true;
 	return m_bytecodeChunks;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
+{
+	if ( m_curBytecodeChunk != nullptr )
+	{
+		ReportError( "Tried to define a new bytecode chunk while writing to existing one, make Tyler fix this" );
+		return false;
+	}
+
+	ZephyrBytecodeChunk* newChunk = new ZephyrBytecodeChunk( chunkName );
+	m_bytecodeChunks.push_back( newChunk );
+
+	m_curBytecodeChunk = newChunk;
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrParser::FinalizeCurBytecodeChunk()
+{
+	m_curBytecodeChunk = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::WriteByteToCurChunk( byte newByte )
+{
+	if ( m_curBytecodeChunk == nullptr )
+	{
+		ReportError( "No active bytecode chunks to write data to" );
+		return false;
+	}
+
+	m_curBytecodeChunk->WriteByte( newByte );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::WriteOpCodeToCurChunk( eOpCode opCode )
+{
+	if ( m_curBytecodeChunk == nullptr )
+	{
+		ReportError( "No active bytecode chunks to write data to" );
+		return false;
+	}
+
+	m_curBytecodeChunk->WriteByte( opCode );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::WriteNumberConstantToCurChunk( NUMBER_TYPE numConstant )
+{
+	if ( m_curBytecodeChunk == nullptr )
+	{
+		ReportError( "No active bytecode chunks to write data to" );
+		return false;
+	}
+
+	m_curBytecodeChunk->WriteNumberConstant( numConstant );
+
+	return true;
 }
 
 
@@ -84,8 +154,34 @@ bool ZephyrParser::ParseStatement()
 	switch ( curToken.GetType() )
 	{
 		// Do something fancier with state name later
-		case eTokenType::STATE:		return ParseBlock();
-		case eTokenType::NUMBER:	return ParseNumberDeclaration();
+		case eTokenType::STATE:				
+		{
+			bool succeeded = CreateBytecodeChunk( "test" );
+			if ( !succeeded )
+			{
+				return false;
+			}
+
+			succeeded = ParseBlock();
+
+			FinalizeCurBytecodeChunk();
+
+			return succeeded;
+		}
+		break;
+
+		case eTokenType::NUMBER:			return ParseNumberDeclaration();
+
+		// TEMP for testing
+		case eTokenType::CONSTANT_NUMBER:	
+		{
+			NUMBER_TYPE out_value = 0.f;
+			bool succeeded = ParseNumberExpression( out_value );
+
+
+
+			return succeeded;
+		}
 
 		default:
 		{
@@ -116,7 +212,13 @@ bool ZephyrParser::ParseNumberDeclaration()
 	{
 		// TODO: Save variable in table
 		case eTokenType::SEMICOLON: break;
-		case eTokenType::EQUAL:		return ParseNumberExpression();
+		case eTokenType::EQUAL:		
+		{
+			NUMBER_TYPE out_result;
+			bool succeeded = ParseNumberExpression( out_result );
+
+			return succeeded;
+		}
 
 		default:
 		{
@@ -135,11 +237,11 @@ bool ZephyrParser::ParseNumberDeclaration()
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseNumberExpression()
+bool ZephyrParser::ParseNumberExpression( NUMBER_TYPE& out_result )
 {
-	ConsumeNextToken();
+	out_result = (NUMBER_TYPE)atof( GetLastToken().GetData().c_str() );
 
-	return true;
+	return WriteNumberConstantToCurChunk( out_result );
 }
 
 

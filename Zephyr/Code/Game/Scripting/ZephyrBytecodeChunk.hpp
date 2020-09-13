@@ -15,7 +15,8 @@ public:
 	void WriteByte( byte newByte );
 	void WriteByte( eOpCode opCode );
 	void WriteByte( int constantIdx );
-	int WriteNumberConstant( float constant );
+	void WriteNumberConstant( NUMBER_TYPE constant );
+	int AddNumberConstant( NUMBER_TYPE constant );
 
 	// Debug methods
 	void Disassemble();
@@ -23,5 +24,5 @@ public:
 private:
 	std::string m_name;
 	std::vector<byte> m_bytes;
-	std::vector<float> m_numberConstants;
+	std::vector<NUMBER_TYPE> m_numberConstants;
 };

@@ -1,6 +1,7 @@
 StateMachine
 {
-	
-	
-		Number myNumber;
+	State
+	{
+		1
 	}
+}

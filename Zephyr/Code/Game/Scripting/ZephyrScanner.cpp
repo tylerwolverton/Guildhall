@@ -13,9 +13,9 @@ ZephyrScanner::ZephyrScanner( const std::string& scriptSource )
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrScanner::AddToken( eTokenType type )
+void ZephyrScanner::AddToken( eTokenType type, const std::string& data )
 {
-	m_tokens.push_back( ZephyrToken( type, m_curLineNum ) );
+	m_tokens.push_back( ZephyrToken( type, data, m_curLineNum ) );
 }
 
 
@@ -48,7 +48,7 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 			{
 				if ( IsNumber( nextChar ) )
 				{
-					TokenizeNumber();
+					TokenizeNumberConstant();
 				}
 				else if ( IsLetter( nextChar ) )
 				{
@@ -103,9 +103,17 @@ void ZephyrScanner::SkipWhitespaceAndComments()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrScanner::TokenizeNumber()
+void ZephyrScanner::TokenizeNumberConstant()
 {
-	AddToken( eTokenType::CONSTANT );
+	while ( IsNumber( Peek() ) )
+	{
+		ReadAndAdvanceSrcPos();
+	}
+
+	int stringLength = m_curSrcPos - m_startSrcPos;
+	std::string numberConstant = m_scriptSource.substr( m_startSrcPos, stringLength );
+
+	AddToken( eTokenType::CONSTANT_NUMBER, numberConstant );
 }
 
 
@@ -127,7 +135,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	// Must be a variable name
 	else
 	{
-		AddToken( eTokenType::IDENTIFIER );
+		AddToken( eTokenType::IDENTIFIER, curIdentifier );
 	}
 }
 
