@@ -12,15 +12,25 @@ TCPSocket::TCPSocket( SOCKET socket, eBlockingMode mode, size_t bufferSize )
 	, m_bufferSize( bufferSize )
 {
 	FD_ZERO( &m_fdSet );
-	m_bufferPtr = new char[m_bufferSize];
+	m_buffer = new char[m_bufferSize];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+TCPSocket::TCPSocket()
+	: m_socket( INVALID_SOCKET )
+	, m_blockingMode( eBlockingMode::BLOCKING )
+	, m_bufferSize( 256 )
+{
+	FD_ZERO( &m_fdSet );
+	m_buffer = new char[m_bufferSize];
 }
 
 
 //-----------------------------------------------------------------------------------------------
 TCPSocket::~TCPSocket()
 {
-	delete[] m_bufferPtr;
-	m_bufferPtr = nullptr;
+	PTR_SAFE_DELETE( m_buffer );
 }
 
 
@@ -35,7 +45,7 @@ TCPSocket& TCPSocket::operator=( const TCPSocket& src )
 		m_socket = src.m_socket;
 		if ( m_bufferSize > 0 )
 		{
-			m_bufferPtr = new char[m_bufferSize];
+			m_buffer = new char[m_bufferSize];
 		}
 	}
 	return *this;
@@ -77,12 +87,15 @@ void TCPSocket::Send( const char* data, size_t length )
 
 
 //-----------------------------------------------------------------------------------------------
+void TCPSocket::Close()
+{
+	closesocket( m_socket );
+	m_socket = INVALID_SOCKET;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool TCPSocket::IsDataAvailable()
 {
 	return false;
 }
-
-
-
-
-

@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Networking/TCPSocket.hpp"
 
 #include <string>
 #include <vector>
@@ -27,11 +28,16 @@ public:
 private:
 	void StartTCPServer( EventArgs* args );
 	void StopTCPServer( EventArgs* args );
+	void ConnectTCPClient( EventArgs* args );
+	void DisconnectTCPClient( EventArgs* args );
 
 private:
 	// Just one server for now, can be array later
 	TCPServer* m_tcpServer = nullptr;
-	std::vector<TCPClient*> m_tcpClients;
+	TCPClient* m_tcpClient = nullptr;
+	TCPSocket m_serverSocket;
+	TCPSocket m_clientSocket;
+	//std::vector<TCPClient*> m_tcpClients;
 
 
 	/*bool m_isListening = false;

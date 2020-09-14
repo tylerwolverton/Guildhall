@@ -4,9 +4,11 @@
 #include <string>
 
 
+//-----------------------------------------------------------------------------------------------
 class TCPSocket
 {
 public:
+	TCPSocket();
 	TCPSocket( SOCKET socket, eBlockingMode mode = eBlockingMode::BLOCKING, size_t bufferSize = 256 );
 	~TCPSocket();
 
@@ -15,9 +17,11 @@ public:
 	bool IsValid()											{ return m_socket != INVALID_SOCKET; }
 
 	std::string GetAddress();
-
+	
 	void Send( const char* data, size_t length );
 	//TCPData Receive();
+
+	void Close();
 
 	bool IsDataAvailable();
 
@@ -30,5 +34,5 @@ private:
 
 	size_t m_bufferSize = 0;
 	size_t m_receiveSize = 0;
-	char* m_bufferPtr = nullptr;
+	char* m_buffer = nullptr;
 };

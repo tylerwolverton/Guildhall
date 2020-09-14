@@ -22,6 +22,8 @@ void NetworkingSystem::Startup()
 {
 	g_eventSystem->RegisterMethodEvent( "start_tcp_server", "Start TCP server listening for client connections, port=48000.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::StartTCPServer );
 	g_eventSystem->RegisterMethodEvent( "stop_tcp_server", "Stop TCP server listening for client connections.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::StopTCPServer );
+	g_eventSystem->RegisterMethodEvent( "connect", "Connect to TCP server on given host, host=<ip4 address>:<port number>.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::ConnectTCPClient );
+	g_eventSystem->RegisterMethodEvent( "disconnect", "Disconnect TCP client from TCP server.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::DisconnectTCPClient );
 
 	// Initialize winsock
 	WSADATA wsaData;
@@ -35,12 +37,35 @@ void NetworkingSystem::Startup()
 	FD_ZERO( &m_listenSet );
 	m_timeval.tv_sec = 0l;
 	m_timeval.tv_usec = 0l;*/
+
+	m_tcpServer = new TCPServer( eBlockingMode::NONBLOCKING );
+	m_tcpClient = new TCPClient();
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::BeginFrame()
 {
+
+	if ( m_tcpServer->IsListening() )
+	{
+		if ( m_serverSocket.IsValid() )
+		{
+			m_serverSocket = m_tcpServer->Accept();
+
+
+			if ( m_serverSocket.IsValid() )
+			{
+				g_devConsole->PrintString( Stringf( "Client connected from: %s", m_serverSocket.GetAddress().c_str() ) );
+			}
+		}
+	}
+	/*if ( m_serverSocket.IsValid() )
+	{
+
+	}*/
+
+
 	//if ( m_isListening )
 	//{
 	//	// Acquire socket if we don't have one
@@ -158,6 +183,9 @@ void NetworkingSystem::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::Shutdown()
 {
+	PTR_SAFE_DELETE( m_tcpClient );
+	PTR_SAFE_DELETE( m_tcpServer );
+
 	int iResult = WSACleanup();
 	if ( iResult == SOCKET_ERROR )
 	{
@@ -206,6 +234,8 @@ void NetworkingSystem::StartTCPServer( EventArgs* args )
 	m_tcpServer->Bind( listenPort );
 
 	m_tcpServer->StartListening();
+
+	g_devConsole->PrintString( Stringf( "Server listening on port '%i'", listenPort ) );
 }
 
 
@@ -222,3 +252,42 @@ void NetworkingSystem::StopTCPServer( EventArgs* args )
 
 	m_tcpServer->StopListening();
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::ConnectTCPClient( EventArgs* args )
+{
+	std::string connectionAddress = args->GetValue( "host", ":48000" );
+
+	Strings connectionComponents = SplitStringOnDelimiter( connectionAddress, ':' );
+
+	if ( connectionComponents.size() != 2 )
+	{
+		g_devConsole->PrintError( Stringf( "Host must be in the form <ip4 address>:<port number>" ) );
+		return;
+	}
+
+	m_clientSocket = m_tcpClient->Connect( connectionComponents[0], atoi( connectionComponents[1].c_str() ) );
+
+	if ( m_clientSocket.IsValid() )
+	{
+		std::string hostName( connectionComponents[0] );
+		if ( hostName.empty() )
+		{
+			hostName = "localhost";
+		}
+
+		g_devConsole->PrintString( Stringf( "Connected to server '%s:%s'", hostName.c_str(), connectionComponents[1].c_str() ) );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
+{
+	UNUSED( args );
+
+	m_clientSocket.Close();
+}
+
+

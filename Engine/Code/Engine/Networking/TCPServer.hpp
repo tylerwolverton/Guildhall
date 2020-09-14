@@ -2,18 +2,27 @@
 #include "Engine/Networking/NetworkingCommon.hpp"
 
 
+//-----------------------------------------------------------------------------------------------
+class TCPSocket;
+
+
+//-----------------------------------------------------------------------------------------------
 class TCPServer
 {
+	friend class NetworkingSystem;
+
 private:
-	TCPServer();
+	TCPServer( eBlockingMode mode = eBlockingMode::BLOCKING );
 
 public:
 	~TCPServer() = default;
 
+	bool IsListening() const								{ return m_isListening; }
+
 	bool Bind( int port );
 	bool StartListening();
 	bool StopListening();
-	SOCKET Accept();
+	TCPSocket Accept();
 
 private:
 	eBlockingMode m_blockingMode = eBlockingMode::INVALID;

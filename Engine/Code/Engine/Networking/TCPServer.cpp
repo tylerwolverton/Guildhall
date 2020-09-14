@@ -1,4 +1,5 @@
 #include "Engine/Networking/TCPServer.hpp"
+#include "Engine/Networking/TCPSocket.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
@@ -6,7 +7,8 @@
 
 
 //-----------------------------------------------------------------------------------------------
-TCPServer::TCPServer()
+TCPServer::TCPServer( eBlockingMode mode )
+	: m_blockingMode( mode )
 {
 	FD_ZERO( &m_listenSet );
 }
@@ -74,6 +76,7 @@ bool TCPServer::StartListening()
 		return false;
 	}
 
+	m_isListening = true;
 	return true;
 }
 
@@ -81,6 +84,8 @@ bool TCPServer::StartListening()
 //-----------------------------------------------------------------------------------------------
 bool TCPServer::StopListening()
 {
+	m_isListening = false;
+
 	if ( m_listenSocket != INVALID_SOCKET )
 	{
 		int iResult = closesocket( m_listenSocket );
@@ -97,7 +102,7 @@ bool TCPServer::StopListening()
 
 
 //-----------------------------------------------------------------------------------------------
-SOCKET TCPServer::Accept()
+TCPSocket TCPServer::Accept()
 {
 	SOCKET socket = INVALID_SOCKET;
 	if ( m_blockingMode == eBlockingMode::NONBLOCKING )
@@ -110,7 +115,7 @@ SOCKET TCPServer::Accept()
 			g_devConsole->PrintError( Stringf( "Networking System: select failed with '%i'", WSAGetLastError() ) );
 			
 			closesocket( m_listenSocket );
-			return INVALID_SOCKET;
+			return TCPSocket( INVALID_SOCKET );
 		}
 	}
 	
@@ -123,9 +128,9 @@ SOCKET TCPServer::Accept()
 		{
 			g_devConsole->PrintError( Stringf( "Networking System: client socket accept failed with '%i'", WSAGetLastError() ) );
 			closesocket( m_listenSocket );
-			return INVALID_SOCKET;
+			return TCPSocket( INVALID_SOCKET );
 		}
 	}
 
-	return socket;
+	return TCPSocket( socket, m_blockingMode );
 }
