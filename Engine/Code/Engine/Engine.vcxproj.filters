@@ -295,6 +295,15 @@
     <ClCompile Include="Networking\NetworkingSystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\TCPServer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\TCPClient.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\TCPSocket.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -551,5 +560,9 @@
     <ClInclude Include="UI\UIPanel.hpp" />
     <ClInclude Include="UI\UISystem.hpp" />
     <ClInclude Include="Networking\NetworkingSystem.hpp" />
+    <ClInclude Include="Networking\TCPServer.hpp" />
+    <ClInclude Include="Networking\TCPClient.hpp" />
+    <ClInclude Include="Networking\NetworkingCommon.hpp" />
+    <ClInclude Include="Networking\TCPSocket.hpp" />
   </ItemGroup>
 </Project>
