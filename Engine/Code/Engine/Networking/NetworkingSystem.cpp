@@ -49,15 +49,18 @@ void NetworkingSystem::BeginFrame()
 
 	if ( m_tcpServer->IsListening() )
 	{
-		if ( m_serverSocket.IsValid() )
+		if ( !m_serverSocket.IsValid() )
 		{
 			m_serverSocket = m_tcpServer->Accept();
-
 
 			if ( m_serverSocket.IsValid() )
 			{
 				g_devConsole->PrintString( Stringf( "Client connected from: %s", m_serverSocket.GetAddress().c_str() ) );
 			}
+		}
+		else
+		{
+
 		}
 	}
 	/*if ( m_serverSocket.IsValid() )
