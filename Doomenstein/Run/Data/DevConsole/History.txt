@@ -98,3 +98,18 @@ start_tcp_server
 connect
 start_tcp_server
 connect
+start_tcp_server
+send_message msg="hello clients"
+start_tcp_server
+send_message msg="hi client"
+stop_tcp_server
+connect
+disconnect
+start_tcp_server
+stop_tcp_server
+connect
+disconnect
+connect
+disconnect
+connect
+disconnect

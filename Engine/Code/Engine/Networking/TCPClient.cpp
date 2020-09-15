@@ -21,10 +21,8 @@ TCPClient::TCPClient( eBlockingMode mode )
 
 
 //-----------------------------------------------------------------------------------------------
-TCPSocket TCPClient::Connect( const std::string& host, int port, eBlockingMode mode )
+TCPSocket TCPClient::Connect( const std::string& host, int port )
 {
-	m_blockingMode = mode;
-
 	// Resolve the port locally
 	struct addrinfo  addrHintsIn;
 	struct addrinfo* addrInfoOut = NULL;

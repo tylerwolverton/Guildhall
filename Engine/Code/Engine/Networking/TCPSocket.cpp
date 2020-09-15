@@ -132,5 +132,22 @@ void TCPSocket::Close()
 //-----------------------------------------------------------------------------------------------
 bool TCPSocket::IsDataAvailable()
 {
-	return false;
+	if ( m_blockingMode == eBlockingMode::NONBLOCKING )
+	{
+		FD_ZERO( &m_fdSet );
+		FD_SET( m_socket, &m_fdSet );
+		int iResult = select( 0, &m_fdSet, NULL, NULL, &m_timeval );
+		if ( iResult == SOCKET_ERROR )
+		{
+			g_devConsole->PrintError( Stringf( "Networking System: select failed with '%i'", WSAGetLastError() ) );
+			closesocket( m_socket );
+			return false;
+		}
+		return FD_ISSET( m_socket, &m_fdSet );
+	}
+	else
+	{
+		g_devConsole->PrintError( Stringf( "Function isDataAvailable is only valid in non-blocking mode" ) );
+		return false;
+	}
 }

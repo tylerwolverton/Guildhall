@@ -24,7 +24,7 @@ void NetworkingSystem::Startup()
 	g_eventSystem->RegisterMethodEvent( "stop_tcp_server", "Stop TCP server listening for client connections.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::StopTCPServer );
 	g_eventSystem->RegisterMethodEvent( "connect", "Connect to TCP server on given host, host=<ip4 address>:<port number>.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::ConnectTCPClient );
 	g_eventSystem->RegisterMethodEvent( "disconnect", "Disconnect TCP client from TCP server.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::DisconnectTCPClient );
-	g_eventSystem->RegisterMethodEvent( "send_message", "Send a message, msg=<message text>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendMessage );
+	g_eventSystem->RegisterMethodEvent( "send_message", "Send a message, msg=\"<message text>\"", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendMessage );
 
 	// Initialize winsock
 	WSADATA wsaData;
@@ -40,7 +40,7 @@ void NetworkingSystem::Startup()
 	m_timeval.tv_usec = 0l;*/
 
 	m_tcpServer = new TCPServer( eBlockingMode::NONBLOCKING );
-	m_tcpClient = new TCPClient();
+	m_tcpClient = new TCPClient( eBlockingMode::NONBLOCKING );
 }
 
 
@@ -60,21 +60,27 @@ void NetworkingSystem::BeginFrame()
 		}
 		else
 		{
-			TCPData data = m_serverSocket.Receive();
-			if ( data.GetData() != nullptr )
+			if ( m_serverSocket.IsDataAvailable() )
 			{
-				std::string msg( data.GetData(), data.GetLength() );
-				g_devConsole->PrintString( Stringf( "Received from client: %s", msg.c_str() ) );
+				TCPData data = m_serverSocket.Receive();
+				if ( data.GetData() != nullptr )
+				{
+					std::string msg( data.GetData(), data.GetLength() );
+					g_devConsole->PrintString( Stringf( "Received from client: %s", msg.c_str() ) );
+				}
 			}
 		}
 	}
 	else if ( m_clientSocket.IsValid() )
 	{
-		TCPData data = m_clientSocket.Receive();
-		if ( data.GetData() != nullptr )
+		if ( m_clientSocket.IsDataAvailable() )
 		{
-			std::string msg( data.GetData(), data.GetLength() );
-			g_devConsole->PrintString( Stringf( "Received from server: %s", msg.c_str() ) );
+			TCPData data = m_clientSocket.Receive();
+			if ( data.GetData() != nullptr )
+			{
+				std::string msg( data.GetData(), data.GetLength() );
+				g_devConsole->PrintString( Stringf( "Received from server: %s", msg.c_str() ) );
+			}
 		}
 	}
 
@@ -269,6 +275,9 @@ void NetworkingSystem::StopTCPServer( EventArgs* args )
 	}
 
 	m_tcpServer->StopListening();
+
+	m_clientSocket.Close();
+	m_serverSocket.Close();
 }
 
 
@@ -305,7 +314,10 @@ void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
 {
 	UNUSED( args );
 
+	m_tcpClient->Disconnect();
+
 	m_clientSocket.Close();
+	m_serverSocket.Close();
 }
 
 
@@ -314,10 +326,13 @@ void NetworkingSystem::SendMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
 
+	// Send from server to clients
 	if ( m_serverSocket.IsValid() )
 	{
 		m_serverSocket.Send( msg.c_str(), msg.size() );
 	}
+
+	// Send from client to servers
 	else if ( m_clientSocket.IsValid() )
 	{
 		m_clientSocket.Send( msg.c_str(), msg.size() );

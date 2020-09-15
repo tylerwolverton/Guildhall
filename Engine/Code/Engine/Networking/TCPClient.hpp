@@ -16,7 +16,7 @@ private:
 public:
 	~TCPClient() = default;
 
-	TCPSocket Connect( const std::string& host, int port, eBlockingMode mode = eBlockingMode::BLOCKING );
+	TCPSocket Connect( const std::string& host, int port );
 	void Disconnect();
 
 private:

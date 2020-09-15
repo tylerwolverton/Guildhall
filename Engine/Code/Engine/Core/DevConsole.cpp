@@ -743,8 +743,9 @@ void DevConsole::ExecuteCommand()
 		m_commandHistory.push_back( m_currentCommandStr );
 		m_currentCommandHistoryPos = (int)m_commandHistory.size();
 	}
-
-	std::vector<std::string> args = SplitStringOnDelimiter( m_currentCommandStr, ' ' );
+	
+	size_t firstSpace = m_currentCommandStr.find_first_of( ' ' );
+	std::string command = m_currentCommandStr.substr( 0, firstSpace );
 
 	// Check for a match in supported commands with case insensitivity
 	std::vector<std::string> supportedCommandNames = g_eventSystem->GetAllExposedEventNamesForLocation( eUsageLocation::DEV_CONSOLE );
@@ -752,24 +753,39 @@ void DevConsole::ExecuteCommand()
 	for ( int cmdIdx = 0; cmdIdx < (int)supportedCommandNames.size(); ++cmdIdx )
 	{
 		std::string& eventName = supportedCommandNames[cmdIdx];
-		if ( !_strcmpi( args[0].c_str(), eventName.c_str() ) )
+		if ( !_strcmpi( command.c_str(), eventName.c_str() ) )
 		{
 			EventArgs eventArgs;
-
-			if ( (int)args.size() > 1 )
+			size_t argStartIdx = firstSpace;
+			while ( argStartIdx != -1 
+					&& argStartIdx >= firstSpace
+					&& argStartIdx < m_currentCommandStr.size() )
 			{
-				for ( int argIdx = 1; argIdx < (int)args.size(); ++argIdx )
+				size_t equalIdx = m_currentCommandStr.find( '=', argStartIdx );
+				size_t argValIdx = equalIdx + 1;
+				// Parse quoted text
+				if ( m_currentCommandStr.size() > equalIdx + 1
+					 && m_currentCommandStr[equalIdx + 1] == '"' )
 				{
-					// Change this as a method in named strings that tokenizes and parses commands to support quoted strings with =
-					std::vector<std::string> params = SplitStringOnDelimiter( args[argIdx], '=' );
-					if ( (int)params.size() == 2 )
-					{
-						eventArgs.SetValue( params[0], params[1] );
-					}
+					argValIdx = m_currentCommandStr.find( '"', equalIdx + 2 );
+
+					eventArgs.SetValue( m_currentCommandStr.substr( argStartIdx + 1, equalIdx - argStartIdx - 1 ),
+										m_currentCommandStr.substr( equalIdx + 2, argValIdx - ( equalIdx + 2 ) ) );
+
+					++argValIdx;
 				}
+				else
+				{
+					argValIdx = m_currentCommandStr.find( ' ', equalIdx );
+
+					eventArgs.SetValue( m_currentCommandStr.substr( argStartIdx + 1, equalIdx - argStartIdx - 1 ),
+										m_currentCommandStr.substr( equalIdx + 1, argValIdx - ( equalIdx + 1 ) ) );
+				}
+				
+				argStartIdx = argValIdx;
 			}
 
-			g_eventSystem->FireEvent( args[0], &eventArgs, eUsageLocation::DEV_CONSOLE );
+			g_eventSystem->FireEvent( command, &eventArgs, eUsageLocation::DEV_CONSOLE );
 
 			return;
 		}
