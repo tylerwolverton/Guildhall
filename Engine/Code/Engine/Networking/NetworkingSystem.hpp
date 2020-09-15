@@ -30,6 +30,7 @@ private:
 	void StopTCPServer( EventArgs* args );
 	void ConnectTCPClient( EventArgs* args );
 	void DisconnectTCPClient( EventArgs* args );
+	void SendMessage( EventArgs* args );
 
 private:
 	// Just one server for now, can be array later

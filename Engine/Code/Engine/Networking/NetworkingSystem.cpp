@@ -24,6 +24,7 @@ void NetworkingSystem::Startup()
 	g_eventSystem->RegisterMethodEvent( "stop_tcp_server", "Stop TCP server listening for client connections.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::StopTCPServer );
 	g_eventSystem->RegisterMethodEvent( "connect", "Connect to TCP server on given host, host=<ip4 address>:<port number>.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::ConnectTCPClient );
 	g_eventSystem->RegisterMethodEvent( "disconnect", "Disconnect TCP client from TCP server.", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::DisconnectTCPClient );
+	g_eventSystem->RegisterMethodEvent( "send_message", "Send a message, msg=<message text>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendMessage );
 
 	// Initialize winsock
 	WSADATA wsaData;
@@ -46,7 +47,6 @@ void NetworkingSystem::Startup()
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::BeginFrame()
 {
-
 	if ( m_tcpServer->IsListening() )
 	{
 		if ( !m_serverSocket.IsValid() )
@@ -60,9 +60,24 @@ void NetworkingSystem::BeginFrame()
 		}
 		else
 		{
-
+			TCPData data = m_serverSocket.Receive();
+			if ( data.GetData() != nullptr )
+			{
+				std::string msg( data.GetData(), data.GetLength() );
+				g_devConsole->PrintString( Stringf( "Received from client: %s", msg.c_str() ) );
+			}
 		}
 	}
+	else if ( m_clientSocket.IsValid() )
+	{
+		TCPData data = m_clientSocket.Receive();
+		if ( data.GetData() != nullptr )
+		{
+			std::string msg( data.GetData(), data.GetLength() );
+			g_devConsole->PrintString( Stringf( "Received from server: %s", msg.c_str() ) );
+		}
+	}
+
 	/*if ( m_serverSocket.IsValid() )
 	{
 
@@ -294,3 +309,17 @@ void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::SendMessage( EventArgs* args )
+{
+	std::string msg = args->GetValue( "msg", "" );
+
+	if ( m_serverSocket.IsValid() )
+	{
+		m_serverSocket.Send( msg.c_str(), msg.size() );
+	}
+	else if ( m_clientSocket.IsValid() )
+	{
+		m_clientSocket.Send( msg.c_str(), msg.size() );
+	}
+}

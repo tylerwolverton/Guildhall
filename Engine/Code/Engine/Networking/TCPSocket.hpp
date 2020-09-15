@@ -5,6 +5,28 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class TCPData
+{
+public:
+	TCPData() 
+		: m_length( 0 ), m_data( NULL ) {}
+	TCPData( size_t length, char* dataPtr ) 
+		: m_length( length )
+		, m_data( dataPtr )
+	{}
+
+	~TCPData() = default;
+
+	size_t GetLength() const				 { return m_length; }
+	char const* GetData() const				 { return m_data; }
+	
+private:
+	size_t m_length;
+	char* m_data;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class TCPSocket
 {
 public:
@@ -19,7 +41,7 @@ public:
 	std::string GetAddress();
 	
 	void Send( const char* data, size_t length );
-	//TCPData Receive();
+	TCPData Receive();
 
 	void Close();
 

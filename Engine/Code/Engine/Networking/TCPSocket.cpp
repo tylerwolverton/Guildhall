@@ -82,7 +82,42 @@ std::string TCPSocket::GetAddress()
 //-----------------------------------------------------------------------------------------------
 void TCPSocket::Send( const char* data, size_t length )
 {
+	int iResult = send( m_socket, data, (int)length, 0 );
+	if ( iResult == SOCKET_ERROR )
+	{
+		g_devConsole->PrintError( Stringf( "Networking System: send failed with '%i'", WSAGetLastError() ) );
+		closesocket( m_socket );
+		return;
+	}
+	else if ( iResult < (int)length )
+	{
+		g_devConsole->PrintError( Stringf( "Requested '%i' bytes to be sent, but only '%i' were sent", (int)length, iResult ) );
+		closesocket( m_socket );
+		return;
+	}
+}
 
+
+//-----------------------------------------------------------------------------------------------
+TCPData TCPSocket::Receive()
+{
+	int iResult = recv( m_socket, m_buffer, (int)m_bufferSize, 0 );
+	if ( iResult == SOCKET_ERROR )
+	{
+		int errorCode = WSAGetLastError();
+		if ( errorCode == WSAEWOULDBLOCK && m_blockingMode == eBlockingMode::NONBLOCKING )
+		{
+			return TCPData( 9999999, nullptr );
+		}
+		else
+		{
+			g_devConsole->PrintError( Stringf( "Networking System: recv failed with '%i'", errorCode ) );
+			closesocket( m_socket );
+			return TCPData( 9999999, nullptr );
+		}
+	}
+
+	return TCPData( size_t( iResult ), m_buffer );
 }
 
 
