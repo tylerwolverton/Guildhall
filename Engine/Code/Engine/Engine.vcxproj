@@ -299,6 +299,7 @@
     <ClInclude Include="Math\Vec2.hpp" />
     <ClInclude Include="Math\Vec3.hpp" />
     <ClInclude Include="Math\Vec4.hpp" />
+    <ClInclude Include="Networking\MessageProtocols.hpp" />
     <ClInclude Include="Networking\NetworkingCommon.hpp" />
     <ClInclude Include="Networking\NetworkingSystem.hpp" />
     <ClInclude Include="Networking\TCPClient.hpp" />

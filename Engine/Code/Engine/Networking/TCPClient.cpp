@@ -5,12 +5,6 @@
 
 #include <cstdint>
 
-//struct MessageHeader
-//{
-//	std::uint16_t id;
-//	std::uint16_t size;
-//};
-
 
 //-----------------------------------------------------------------------------------------------
 TCPClient::TCPClient( eBlockingMode mode )

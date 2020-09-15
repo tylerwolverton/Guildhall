@@ -113,3 +113,20 @@ connect
 disconnect
 connect
 disconnect
+connect
+send_message msg="hello there server, I'm client"
+connect
+disconnect
+start_tcp_server
+connect
+disconnect
+connect
+send_message msg=hi there i forgot my quotes
+send_message msg="hi there i forgot my quotes"
+start_tcp_server
+send_message msg="hello client"
+stop_tcp_server
+connect
+disconnect
+connect
+send_message msg="hi there here is a long message that may not make it in one shot"

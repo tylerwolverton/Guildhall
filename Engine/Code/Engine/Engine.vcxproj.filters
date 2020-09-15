@@ -564,5 +564,6 @@
     <ClInclude Include="Networking\TCPClient.hpp" />
     <ClInclude Include="Networking\NetworkingCommon.hpp" />
     <ClInclude Include="Networking\TCPSocket.hpp" />
+    <ClInclude Include="Networking\MessageProtocols.hpp" />
   </ItemGroup>
 </Project>

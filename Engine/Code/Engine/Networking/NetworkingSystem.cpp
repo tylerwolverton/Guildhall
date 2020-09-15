@@ -1,4 +1,5 @@
 #include "Engine/Networking/NetworkingSystem.hpp"
+#include "Engine/Networking/MessageProtocols.hpp"
 #include "Engine/Networking/TCPClient.hpp"
 #include "Engine/Networking/TCPServer.hpp"
 #include "Engine/Core/NamedProperties.hpp"
@@ -47,153 +48,29 @@ void NetworkingSystem::Startup()
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::BeginFrame()
 {
+	// Check if we are a server that's listening
 	if ( m_tcpServer->IsListening() )
 	{
 		if ( !m_serverSocket.IsValid() )
 		{
-			m_serverSocket = m_tcpServer->Accept();
-
-			if ( m_serverSocket.IsValid() )
-			{
-				g_devConsole->PrintString( Stringf( "Client connected from: %s", m_serverSocket.GetAddress().c_str() ) );
-			}
+			CheckForNewClientConnection();
 		}
 		else
 		{
 			if ( m_serverSocket.IsDataAvailable() )
 			{
-				TCPData data = m_serverSocket.Receive();
-				if ( data.GetData() != nullptr )
-				{
-					std::string msg( data.GetData(), data.GetLength() );
-					g_devConsole->PrintString( Stringf( "Received from client: %s", msg.c_str() ) );
-				}
+				ReceiveMessageFromClient();
 			}
 		}
 	}
+	// Check if we are a client
 	else if ( m_clientSocket.IsValid() )
 	{
 		if ( m_clientSocket.IsDataAvailable() )
 		{
-			TCPData data = m_clientSocket.Receive();
-			if ( data.GetData() != nullptr )
-			{
-				std::string msg( data.GetData(), data.GetLength() );
-				g_devConsole->PrintString( Stringf( "Received from server: %s", msg.c_str() ) );
-			}
+			ReceiveMessageFromServer();
 		}
 	}
-
-	/*if ( m_serverSocket.IsValid() )
-	{
-
-	}*/
-
-
-	//if ( m_isListening )
-	//{
-	//	// Acquire socket if we don't have one
-	//	if ( m_listenSocket == INVALID_SOCKET )
-	//	{
-	//		addrinfo addrHintsIn;
-	//		memset( &addrHintsIn, 0, sizeof( addrHintsIn ) );
-
-	//		addrHintsIn.ai_family = AF_INET;
-	//		addrHintsIn.ai_socktype = SOCK_STREAM;
-	//		addrHintsIn.ai_protocol = IPPROTO_TCP;
-	//		addrHintsIn.ai_flags = AI_PASSIVE;
-
-	//		std::string serverPort( "48000" );
-	//		addrinfo* addrInfoOut;
-
-	//		int iResult = getaddrinfo( NULL, serverPort.c_str(), &addrHintsIn, &addrInfoOut );
-	//		if ( iResult != 0 )
-	//		{
-	//			g_devConsole->PrintError( Stringf( "Networking System: getaddrinfo failed with '%i'", iResult ) );
-	//			return;
-	//		}
-
-	//		m_listenSocket = socket( addrInfoOut->ai_family, addrInfoOut->ai_socktype, addrInfoOut->ai_protocol );
-	//		if ( m_listenSocket == INVALID_SOCKET )
-	//		{
-	//			g_devConsole->PrintError( Stringf( "Networking System: socket creation failed with '%i'", WSAGetLastError() ) );
-	//			return;
-	//		}
-
-	//		unsigned long blockingMode = 1;
-	//		iResult = ioctlsocket( m_listenSocket, FIONBIO, &blockingMode );
-	//		if ( iResult == SOCKET_ERROR )
-	//		{
-	//			g_devConsole->PrintError( Stringf( "Networking System: ioctlsocket failed with '%i'", WSAGetLastError() ) );
-	//			return;
-	//		}
-
-	//		iResult = bind( m_listenSocket, addrInfoOut->ai_addr, (int)addrInfoOut->ai_addrlen );
-	//		if ( iResult == SOCKET_ERROR )
-	//		{
-	//			g_devConsole->PrintError( Stringf( "Networking System: bind failed with '%i'", WSAGetLastError() ) );
-	//			return;
-	//		}
-
-	//		iResult = listen( m_listenSocket, SOMAXCONN );
-	//		if ( iResult == SOCKET_ERROR )
-	//		{
-	//			g_devConsole->PrintError( Stringf( "Networking System: listen failed with '%i'", WSAGetLastError() ) );
-	//			return;
-	//		}
-	//	}
-	//	// We have a valid socket
-	//	else
-	//	{
-	//		FD_ZERO( &m_listenSet );
-	//		FD_SET( m_listenSocket, &m_listenSet );
-	//		int iResult = select( 0, &m_listenSet, nullptr, nullptr, &m_timeval );
-
-	//		if ( iResult == INVALID_SOCKET )
-	//		{
-	//			g_devConsole->PrintError( Stringf( "Networking System: select failed with '%i'", WSAGetLastError() ) );
-	//			return;
-	//		}
-
-	//		if ( FD_ISSET( m_listenSocket, &m_listenSet ) )
-	//		{
-	//			m_clientSocket = accept( m_listenSocket, nullptr, nullptr );
-	//			if ( m_clientSocket == INVALID_SOCKET )
-	//			{
-	//				g_devConsole->PrintError( Stringf( "Networking System: client socket accept failed with '%i'", WSAGetLastError() ) );
-	//				return;
-	//			}
-	//			
-	//			g_devConsole->PrintString( Stringf( "Client connected from: %s", GetAddress().c_str() ) );
-	//		
-	//			// Read in data from client
-	//			std::array<char, 256> dataBuffer;
-	//			iResult = recv( m_clientSocket, &dataBuffer[0], (int)dataBuffer.size() - 1, 0 );
-	//			if ( iResult == SOCKET_ERROR )
-	//			{
-	//				g_devConsole->PrintError( Stringf( "Networking System: recv failed with '%i'", WSAGetLastError() ) );
-	//				return;
-	//			}
-	//			else if ( iResult == 0 )
-	//			{
-	//				g_devConsole->PrintError( Stringf( "Networking System: recv returned 0 bytes" ) );
-	//				return;
-	//			}
-	//			
-	//			// Terminate the buffer string
-	//			dataBuffer[iResult] = '\0';
-	//			g_devConsole->PrintString( Stringf( "Client message: %s", &dataBuffer[0] ) );
-
-	//			std::string msg( "Hey client" );
-	//			iResult = send( m_clientSocket, msg.data(), (int)msg.size(), 0 );
-	//			if ( iResult == SOCKET_ERROR )
-	//			{
-	//				g_devConsole->PrintError( Stringf( "Networking System: send failed with '%i'", WSAGetLastError() ) );
-	//				return;
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 
@@ -219,30 +96,105 @@ void NetworkingSystem::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-//std::string NetworkingSystem::GetAddress()
-//{
-//	std::array<char, 128> addressStr;
-//
-//	sockaddr clientAddr;
-//	int addrSize = sizeof( clientAddr );
-//	int iResult = getpeername( m_clientSocket, &clientAddr, &addrSize );
-//	if ( iResult == SOCKET_ERROR )
-//	{
-//		g_devConsole->PrintError( Stringf( "Networking System: getpeername failed with '%i'", WSAGetLastError() ) );
-//	}
-//
-//	DWORD outlen = (DWORD)addressStr.size();
-//	iResult = WSAAddressToStringA( &clientAddr, addrSize, NULL, &addressStr[0], &outlen );
-//	if ( iResult == SOCKET_ERROR )
-//	{
-//		g_devConsole->PrintError( Stringf( "Networking System: WSAAddressToStringA failed with '%i'", WSAGetLastError() ) );
-//		return "";
-//	}
-//
-//	// Is this safe?
-//	addressStr[outlen - 1] = '\0';
-//	return std::string( &addressStr[0] );
-//}
+void NetworkingSystem::CheckForNewClientConnection()
+{
+	m_serverSocket = m_tcpServer->Accept();
+
+	if ( !m_serverSocket.IsValid() )
+	{
+		return;
+	}
+
+	// We found a new connection, send a server listening and print connection info
+	g_devConsole->PrintString( Stringf( "Client connected from: %s", m_serverSocket.GetAddress().c_str() ) );
+
+	std::string gameName( "Doomenstein" );
+	ServerListeningMsg msg;
+	msg.header.id = 1;
+	msg.header.size = ( std::uint16_t )gameName.size();
+
+	msg.gameName = gameName;
+
+	m_serverSocket.Send( reinterpret_cast<char*>( &msg ), sizeof( msg ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::ReceiveMessageFromServer()
+{
+	TCPData data = m_clientSocket.Receive();
+	if ( data.GetData() == nullptr )
+	{
+		return;
+	}
+
+	// Process message
+	const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
+	switch ( header->id )
+	{
+		case (uint16_t)eMessasgeProtocolIds::SERVER_LISTENING:
+		{
+			const ServerListeningMsg* svrListeningMsg = reinterpret_cast<const ServerListeningMsg*>( data.GetData() );
+
+			g_devConsole->PrintString( Stringf( "Connected to game: %s", svrListeningMsg->gameName.c_str() ) );
+		}
+		break;
+
+		case (uint16_t)eMessasgeProtocolIds::TEXT:
+		{
+			const TextMsg* textMsg = reinterpret_cast<const TextMsg*>( data.GetData() );
+
+			g_devConsole->PrintString( Stringf( "Received from server: %s", textMsg->msg.c_str() ) );
+		}
+		break;
+
+		default:
+		{
+			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
+			return;
+		}
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::ReceiveMessageFromClient()
+{
+	TCPData data = m_serverSocket.Receive();
+	if ( data.GetData() == nullptr )
+	{
+		return;
+	}
+
+	// Process message
+	const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
+	switch ( header->id )
+	{
+		case (uint16_t)eMessasgeProtocolIds::TEXT:
+		{
+			const TextMsg* textMsg = reinterpret_cast<const TextMsg*>( data.GetData() );
+
+			g_devConsole->PrintString( Stringf( "Received from client: %s", textMsg->msg.c_str() ) );
+		}
+		break;
+
+		case (uint16_t)eMessasgeProtocolIds::CLIENT_DISCONNECTING:
+		{
+			m_clientSocket.Close();
+			m_serverSocket.Close();
+			g_devConsole->PrintString( Stringf( "Client disconnected" ) );
+		}
+		break;
+
+		default:
+		{
+			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
+			return;
+		}
+		break;	
+	}
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -314,6 +266,15 @@ void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
 {
 	UNUSED( args );
 
+	if ( m_clientSocket.IsValid() )
+	{
+		ClientDisconnectingMsg msg;
+		msg.header.id = (uint16_t)eMessasgeProtocolIds::CLIENT_DISCONNECTING;
+		msg.header.size = 0;
+
+		m_clientSocket.Send( reinterpret_cast<char*>( &msg ), sizeof( msg ) );
+	}
+
 	m_tcpClient->Disconnect();
 
 	m_clientSocket.Close();
@@ -326,15 +287,24 @@ void NetworkingSystem::SendMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
 
+	TextMsg textMsg;
+	textMsg.header.id = (uint16_t)eMessasgeProtocolIds::TEXT;
+	textMsg.header.size = (uint16_t)msg.size();
+
+	textMsg.msg = msg;
+
 	// Send from server to clients
 	if ( m_serverSocket.IsValid() )
 	{
-		m_serverSocket.Send( msg.c_str(), msg.size() );
+		m_serverSocket.Send( reinterpret_cast<char*>( &textMsg ), sizeof( textMsg ) );
+
+		//m_serverSocket.Send( msg.c_str(), msg.size() );
 	}
 
 	// Send from client to servers
 	else if ( m_clientSocket.IsValid() )
 	{
-		m_clientSocket.Send( msg.c_str(), msg.size() );
+		m_clientSocket.Send( reinterpret_cast<char*>( &textMsg ), sizeof( textMsg ) );
+		//m_clientSocket.Send( msg.c_str(), msg.size() );
 	}
 }

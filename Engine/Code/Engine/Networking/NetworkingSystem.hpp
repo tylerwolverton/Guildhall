@@ -26,6 +26,11 @@ public:
 	//std::string GetAddress();
 
 private:
+	void CheckForNewClientConnection();
+	void ReceiveMessageFromServer();
+	void ReceiveMessageFromClient();
+
+	// Console commands
 	void StartTCPServer( EventArgs* args );
 	void StopTCPServer( EventArgs* args );
 	void ConnectTCPClient( EventArgs* args );
