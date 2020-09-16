@@ -24,3 +24,15 @@ std::string ToString( eTokenType type )
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+eOpCode ByteToOpCode( byte opCodeByte )
+{
+	if ( opCodeByte < 0
+			|| opCodeByte >= (byte)eOpCode::LAST_VAL )
+	{
+		return eOpCode::UNKNOWN;
+	}
+
+	return (eOpCode)opCodeByte;	
+}
+

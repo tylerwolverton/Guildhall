@@ -8,10 +8,13 @@ class ZephyrBytecodeChunk
 public:
 	ZephyrBytecodeChunk( const std::string& name );
 
-	std::vector<byte> GetCode() const { return m_bytes; }
-	byte GetByte( int idx ) const { return m_bytes[idx]; }
-	float GetNumberConstant( int idx ) const { return m_numberConstants[idx]; }
+	// Accessors
+	std::vector<byte>	GetCode() const									{ return m_bytes; }
+	int					GetNumBytes() const								{ return (int)m_bytes.size(); }
+	byte				GetByte( int idx ) const						{ return m_bytes[idx]; }
+	float				GetNumberConstant( int idx ) const				{ return m_numberConstants[idx]; }
 
+	// Methods to write data to chunk
 	void WriteByte( byte newByte );
 	void WriteByte( eOpCode opCode );
 	void WriteByte( int constantIdx );

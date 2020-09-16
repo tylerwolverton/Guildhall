@@ -97,6 +97,9 @@
     <ClCompile Include="Scripting\ZephyrParser.cpp">
       <Filter>Framework\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="Scripting\ZephyrVirtualMachine.cpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -175,6 +178,9 @@
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Scripting\ZephyrParser.hpp">
+      <Filter>Framework\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting\ZephyrVirtualMachine.hpp">
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
   </ItemGroup>

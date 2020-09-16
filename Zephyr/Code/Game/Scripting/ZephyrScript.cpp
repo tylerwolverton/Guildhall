@@ -3,12 +3,16 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
+#include "Game/GameCommon.hpp"
+#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
+#include "Game/Scripting/ZephyrVirtualMachine.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef )
 	: m_name( scriptDef.m_name )
+	, m_scriptDef( scriptDef )
 {
 
 }
@@ -17,7 +21,8 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef )
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::Update()
 {
-	// VM->Interpret( m_updateChunk );
+	// For now, just interpret the first chunk
+	g_zephyrVM->InterpretBytecodeChunk( *m_scriptDef.GetBytecodeChunks()[0] );
 
 	if ( !m_hasPrinted )
 	{

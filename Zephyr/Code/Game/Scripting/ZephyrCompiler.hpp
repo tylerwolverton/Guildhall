@@ -6,12 +6,12 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class ZephyrToken;
+class ZephyrBytecodeChunk;
 
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrCompiler
 {
 public:
-	static void CompileScriptFile( const std::string& filePath );
+	static std::vector<ZephyrBytecodeChunk*> CompileScriptFile( const std::string& filePath );
 };

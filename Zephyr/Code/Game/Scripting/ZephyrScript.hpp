@@ -17,6 +17,10 @@ public:
 private:
 	std::string m_name;
 
+	// TODO: save bytecode chunks into map that is managed by this class
+	const ZephyrScriptDefinition& m_scriptDef;
+
+
 	// TEMP
 	bool m_hasPrinted = false;
 

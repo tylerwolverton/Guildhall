@@ -106,6 +106,7 @@ bool ZephyrParser::WriteNumberConstantToCurChunk( NUMBER_TYPE numConstant )
 		return false;
 	}
 
+	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT_NUMBER );
 	m_curBytecodeChunk->WriteNumberConstant( numConstant );
 
 	return true;

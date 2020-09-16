@@ -21,6 +21,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/Scripting/GameAPI.hpp"
+#include "Game/Scripting/ZephyrVirtualMachine.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -59,6 +60,7 @@ void App::Startup()
 	g_devConsole = new DevConsole();
 	g_physicsSystem2D = new Physics2D();
 	g_gameAPI = new GameAPI();
+	g_zephyrVM = new ZephyrVirtualMachine();
 	g_game = new Game();
 
 	g_eventSystem->Startup();
@@ -77,6 +79,8 @@ void App::Startup()
 	g_devConsole->SetRenderer( g_renderer );
 	g_devConsole->SetBitmapFont( g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" ) );
 
+	g_zephyrVM->Startup();
+
 	// Calls g_physicsSystem2D::Startup too
 	g_game->Startup();
 
@@ -89,6 +93,7 @@ void App::Shutdown()
 {
 	g_game->Shutdown();
 	g_physicsSystem2D->Shutdown();
+	g_zephyrVM->Shutdown();
 	g_devConsole->Shutdown();
 	DebugRenderSystemShutdown();
 	g_renderer->Shutdown();
@@ -100,6 +105,7 @@ void App::Shutdown()
 	Clock::MasterShutdown();
 		
 	PTR_SAFE_DELETE( g_game );
+	PTR_SAFE_DELETE( g_zephyrVM );
 	PTR_SAFE_DELETE( g_gameAPI );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_renderer );

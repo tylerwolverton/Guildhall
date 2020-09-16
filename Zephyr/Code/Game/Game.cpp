@@ -567,8 +567,8 @@ void Game::LoadAndCompileZephyrScripts()
 		// Scan
 		// Compile
 		// Save completed into static map
-		ZephyrCompiler::CompileScriptFile( scriptFullPath );
-		ZephyrScriptDefinition* scriptDef = new ZephyrScriptDefinition();
+		std::vector<ZephyrBytecodeChunk*> bytecodeChunks = ZephyrCompiler::CompileScriptFile( scriptFullPath );
+		ZephyrScriptDefinition* scriptDef = new ZephyrScriptDefinition( bytecodeChunks );
 		scriptDef->m_name = scriptName;
 
 		ZephyrScriptDefinition::s_definitions[scriptFullPath] = scriptDef;

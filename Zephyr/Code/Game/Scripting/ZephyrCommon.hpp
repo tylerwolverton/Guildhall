@@ -41,12 +41,18 @@ std::string ToString( eTokenType type );
 //-----------------------------------------------------------------------------------------------
 enum class eOpCode : byte
 {
+	UNKNOWN,
+
 	NEGATE,
 
-	CONSTANT,
+	CONSTANT_NUMBER,
 
 	ADD,
 	MINUS, 
 	MULTIPLY,
 	DIVIDE,
+
+	LAST_VAL,
 };
+
+eOpCode ByteToOpCode( byte opCodeByte );

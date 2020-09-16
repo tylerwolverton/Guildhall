@@ -213,6 +213,7 @@
     <ClCompile Include="Scripting\ZephyrScript.cpp" />
     <ClCompile Include="Scripting\ZephyrScriptDefinition.cpp" />
     <ClCompile Include="Scripting\ZephyrToken.cpp" />
+    <ClCompile Include="Scripting\ZephyrVirtualMachine.cpp" />
     <ClCompile Include="SpriteAnimationSetDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
@@ -241,6 +242,7 @@
     <ClInclude Include="Scripting\ZephyrScript.hpp" />
     <ClInclude Include="Scripting\ZephyrScriptDefinition.hpp" />
     <ClInclude Include="Scripting\ZephyrToken.hpp" />
+    <ClInclude Include="Scripting\ZephyrVirtualMachine.hpp" />
     <ClInclude Include="SpriteAnimationSetDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />

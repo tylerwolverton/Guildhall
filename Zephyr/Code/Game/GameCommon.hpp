@@ -8,6 +8,7 @@ class Game;
 class GameAPI;
 class Physics2D;
 class SpriteSheet;
+class ZephyrVirtualMachine;
 struct Vec2;
 struct Rgba8;
 
@@ -23,6 +24,7 @@ extern AudioSystem* g_audioSystem;
 extern RenderContext* g_renderer;
 extern Game* g_game;
 extern GameAPI* g_gameAPI;
+extern ZephyrVirtualMachine* g_zephyrVM;
 
 
 //-----------------------------------------------------------------------------------------------

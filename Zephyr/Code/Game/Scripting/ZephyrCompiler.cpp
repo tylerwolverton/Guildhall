@@ -11,7 +11,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrCompiler::CompileScriptFile( const std::string& filePath )
+std::vector<ZephyrBytecodeChunk*> ZephyrCompiler::CompileScriptFile( const std::string& filePath )
 {
 	std::string scriptSource( (char*)FileReadToNewBuffer( filePath ) );
 
@@ -24,9 +24,9 @@ void ZephyrCompiler::CompileScriptFile( const std::string& filePath )
 	}
 
 	ZephyrParser parser( tokens );
-	std::vector<ZephyrBytecodeChunk*> bytecodeChunks = parser.ParseTokensIntoBytecodeChunks();
+	return parser.ParseTokensIntoBytecodeChunks();
 
 	// TODO: Ownership of this will eventually be transferred to ZephyrScriptDefinition
-	PTR_VECTOR_SAFE_DELETE( bytecodeChunks );
+	//PTR_VECTOR_SAFE_DELETE( bytecodeChunks );
 }
 

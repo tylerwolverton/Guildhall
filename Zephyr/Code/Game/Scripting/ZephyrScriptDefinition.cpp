@@ -1,4 +1,6 @@
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -7,9 +9,17 @@ std::map< std::string, ZephyrScriptDefinition* > ZephyrScriptDefinition::s_defin
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrScriptDefinition::ZephyrScriptDefinition()
+ZephyrScriptDefinition::ZephyrScriptDefinition( const std::vector<ZephyrBytecodeChunk*>& bytecodeChunks )
+	: m_bytecodeChunks( bytecodeChunks )
 {
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrScriptDefinition::~ZephyrScriptDefinition()
+{
+	PTR_VECTOR_SAFE_DELETE( m_bytecodeChunks );
 }
 
 
@@ -26,6 +36,7 @@ ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinitionByPath(
 	return mapIter->second;
 }
 
+
 //-----------------------------------------------------------------------------------------------
 ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( const std::string& scriptName )
 {
@@ -33,4 +44,3 @@ ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinitionByName(
 
 	return GetZephyrScriptDefinitionByPath( fullPath );
 }
-
