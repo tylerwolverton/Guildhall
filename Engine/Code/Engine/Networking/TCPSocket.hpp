@@ -17,9 +17,11 @@ public:
 
 	~TCPData() = default;
 
-	size_t GetLength() const				 { return m_length; }
-	char const* GetData() const				 { return m_data; }
+	size_t		GetLength() const				{ return m_length; }
+	const char* GetData() const					{ return m_data; }
 	
+	std::string GetDataAsString() const			{ return std::string( m_data, m_length ); }
+
 private:
 	size_t m_length;
 	char* m_data;

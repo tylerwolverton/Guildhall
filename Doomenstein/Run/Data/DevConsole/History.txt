@@ -130,3 +130,34 @@ connect
 disconnect
 connect
 send_message msg="hi there here is a long message that may not make it in one shot"
+connect
+send_message msg="hi there her is a long message that will fail"
+connect
+send_message msg="sdkjhflskdhflkshdflkj sldkfhslkdfhlksd lsdkhfjlksdjhfl"
+connect
+send_message msg="hello here is a nice message"
+connect
+send_message msg="here is another nice message that I hope the server can see"
+connect
+send_message msg="dfkjhdlfkghsldkfhglksdfhjglkjsdhlfkgj"
+connect
+send_message msg="dfkjhdlfkghsldkfhglksdfhjglkjsdhlfkgj"
+start_tcp_server
+connect
+start_tcp_server
+send_message msg="here is a great message"
+send_message msg="here is a great messags;dlnkfsdknf;lskdnflk;nsd;lfn;slkdnf;lksndf;lknsdl;kfns;lkdnflsdnf;ln;l ds;lfnsldfn;lskdnfe"
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+send_message msg="Yeah this is a nice long message that will show off my cool game"
+connect
+con
+connect

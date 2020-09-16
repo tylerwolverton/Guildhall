@@ -35,6 +35,7 @@ private:
 	void StopTCPServer( EventArgs* args );
 	void ConnectTCPClient( EventArgs* args );
 	void DisconnectTCPClient( EventArgs* args );
+	void DisconnectTCPServer( EventArgs* args );
 	void SendMessage( EventArgs* args );
 
 private:

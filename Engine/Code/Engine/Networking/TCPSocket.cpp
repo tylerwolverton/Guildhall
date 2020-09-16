@@ -117,6 +117,7 @@ TCPData TCPSocket::Receive()
 		}
 	}
 
+	m_buffer[iResult] = '\0';
 	return TCPData( size_t( iResult ), m_buffer );
 }
 

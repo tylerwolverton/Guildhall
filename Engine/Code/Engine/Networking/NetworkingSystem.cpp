@@ -35,11 +35,7 @@ void NetworkingSystem::Startup()
 	{
 		g_devConsole->PrintError( Stringf( "Networking System: WSAStartup failed with '%i'", WSAGetLastError() ) );
 	}
-/*
-	FD_ZERO( &m_listenSet );
-	m_timeval.tv_sec = 0l;
-	m_timeval.tv_usec = 0l;*/
-
+	
 	m_tcpServer = new TCPServer( eBlockingMode::NONBLOCKING );
 	m_tcpClient = new TCPClient( eBlockingMode::NONBLOCKING );
 }
@@ -84,6 +80,9 @@ void NetworkingSystem::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::Shutdown()
 {
+	DisconnectTCPClient( nullptr );
+	DisconnectTCPServer( nullptr );
+
 	PTR_SAFE_DELETE( m_tcpClient );
 	PTR_SAFE_DELETE( m_tcpServer );
 
@@ -109,13 +108,14 @@ void NetworkingSystem::CheckForNewClientConnection()
 	g_devConsole->PrintString( Stringf( "Client connected from: %s", m_serverSocket.GetAddress().c_str() ) );
 
 	std::string gameName( "Doomenstein" );
-	ServerListeningMsg msg;
-	msg.header.id = 1;
-	msg.header.size = ( std::uint16_t )gameName.size();
+	std::array<char, 256> buffer;
+	MessageHeader* msg = reinterpret_cast<MessageHeader*>( &buffer[0] );
+	msg->id = (uint16_t)eMessasgeProtocolIds::SERVER_LISTENING;
+	msg->size = ( uint16_t )gameName.size();
 
-	msg.gameName = gameName;
+	memcpy( &buffer[4], gameName.c_str(), msg->size );
 
-	m_serverSocket.Send( reinterpret_cast<char*>( &msg ), sizeof( msg ) );
+	m_serverSocket.Send( &buffer[0], gameName.size() + 4 );
 }
 
 
@@ -134,17 +134,25 @@ void NetworkingSystem::ReceiveMessageFromServer()
 	{
 		case (uint16_t)eMessasgeProtocolIds::SERVER_LISTENING:
 		{
-			const ServerListeningMsg* svrListeningMsg = reinterpret_cast<const ServerListeningMsg*>( data.GetData() );
+			const char* dataStr = data.GetData() + 4;
 
-			g_devConsole->PrintString( Stringf( "Connected to game: %s", svrListeningMsg->gameName.c_str() ) );
+			g_devConsole->PrintString( Stringf( "Connected to game: %s", dataStr ) );
+		}
+		break;
+
+		case (uint16_t)eMessasgeProtocolIds::SERVER_DISCONNECTING:
+		{
+			m_clientSocket.Close();
+			m_serverSocket.Close();
+			g_devConsole->PrintString( Stringf( "Server disconnected" ) );
 		}
 		break;
 
 		case (uint16_t)eMessasgeProtocolIds::TEXT:
 		{
-			const TextMsg* textMsg = reinterpret_cast<const TextMsg*>( data.GetData() );
+			const char* dataStr = data.GetData() + 4;
 
-			g_devConsole->PrintString( Stringf( "Received from server: %s", textMsg->msg.c_str() ) );
+			g_devConsole->PrintString( Stringf( "Received from server: %s", dataStr ) );
 		}
 		break;
 
@@ -173,9 +181,8 @@ void NetworkingSystem::ReceiveMessageFromClient()
 	{
 		case (uint16_t)eMessasgeProtocolIds::TEXT:
 		{
-			const TextMsg* textMsg = reinterpret_cast<const TextMsg*>( data.GetData() );
-
-			g_devConsole->PrintString( Stringf( "Received from client: %s", textMsg->msg.c_str() ) );
+			const char* dataStr = data.GetData() + 4;
+			g_devConsole->PrintString( Stringf( "Received from client: %s", dataStr ) );
 		}
 		break;
 
@@ -272,7 +279,7 @@ void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
 		msg.header.id = (uint16_t)eMessasgeProtocolIds::CLIENT_DISCONNECTING;
 		msg.header.size = 0;
 
-		m_clientSocket.Send( reinterpret_cast<char*>( &msg ), sizeof( msg ) );
+		m_clientSocket.Send( reinterpret_cast<char*>( &msg ), msg.GetSize() );
 	}
 
 	m_tcpClient->Disconnect();
@@ -283,28 +290,46 @@ void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void NetworkingSystem::DisconnectTCPServer( EventArgs* args )
+{
+	UNUSED( args );
+
+	if ( m_serverSocket.IsValid() )
+	{
+		MessageHeader msgHeader;
+		msgHeader.id = (uint16_t)eMessasgeProtocolIds::SERVER_DISCONNECTING;
+		msgHeader.size = 0;
+
+		m_serverSocket.Send( reinterpret_cast<char*>( &msgHeader ), 4 );
+	}
+	
+	m_clientSocket.Close();
+	m_serverSocket.Close();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::SendMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
+	
+	std::array<char, 256> buffer;
+	MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
 
-	TextMsg textMsg;
-	textMsg.header.id = (uint16_t)eMessasgeProtocolIds::TEXT;
-	textMsg.header.size = (uint16_t)msg.size();
+	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
+	msgHeader->size = (uint16_t)msg.size();
 
-	textMsg.msg = msg;
+	memcpy( &buffer[4], msg.c_str(), msgHeader->size );
 
 	// Send from server to clients
 	if ( m_serverSocket.IsValid() )
 	{
-		m_serverSocket.Send( reinterpret_cast<char*>( &textMsg ), sizeof( textMsg ) );
-
-		//m_serverSocket.Send( msg.c_str(), msg.size() );
+		m_serverSocket.Send( &buffer[0], msgHeader->size + 4 );
 	}
 
 	// Send from client to servers
 	else if ( m_clientSocket.IsValid() )
 	{
-		m_clientSocket.Send( reinterpret_cast<char*>( &textMsg ), sizeof( textMsg ) );
-		//m_clientSocket.Send( msg.c_str(), msg.size() );
+		m_clientSocket.Send( &buffer[0], msgHeader->size + 4 );
 	}
 }
