@@ -24,6 +24,8 @@ private:
 
 	void TestResponseEvent( EventArgs* args );
 
+	void PrintDebugTextEvent( EventArgs* args );
+
 private:
 	std::unordered_set<std::string> m_registeredMethods;
 };

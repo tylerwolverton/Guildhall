@@ -2,6 +2,8 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Math/Vec4.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
@@ -71,4 +73,13 @@ void GameAPI::TestResponseEvent( EventArgs* args )
 	UNUSED( args );
 
 	g_devConsole->PrintString( "TestResponse fired", Rgba8::CYAN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::PrintDebugTextEvent( EventArgs* args )
+{
+	std::string text = args->GetValue( "text", "" );
+
+	DebugAddScreenText( Vec4( 2.f, 2.f, 0.f, 0.f ), Vec2::ONE, 10.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, text.c_str() );
 }
