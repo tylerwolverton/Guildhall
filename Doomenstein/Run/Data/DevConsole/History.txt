@@ -161,3 +161,19 @@ send_message msg="Yeah this is a nice long message that will show off my cool ga
 connect
 con
 connect
+start_tcp_server
+connect host=107.140.218.204:48000
+send_message msg="woohoo I have harnessed the power of the internet"
+connect
+start_tcp_server
+connect
+start_tcp_server
+stop_tcp_server
+start_tcp_server
+stop_tcp_server
+connect
+send_message msg="ksdnlfkjanslkdjfnalskjdnflkasndlkjfnalsjdnflkasjndklfansldnfalskjdnflkasdnlfnakslndfj"
+start_tcp_server 48001
+connect :48001
+connect localhost:48001
+connect host=:48001

@@ -52,3 +52,13 @@ struct ClientDisconnectingMsg
 public:
 	size_t GetSize()				{ return sizeof( header ); }
 };
+
+
+//-----------------------------------------------------------------------------------------------
+struct ServerDisconnectingMsg
+{
+	MessageHeader header;
+
+public:
+	size_t GetSize() { return sizeof( header ); }
+};

@@ -235,8 +235,7 @@ void NetworkingSystem::StopTCPServer( EventArgs* args )
 
 	m_tcpServer->StopListening();
 
-	m_clientSocket.Close();
-	m_serverSocket.Close();
+	DisconnectTCPServer( nullptr );
 }
 
 
@@ -285,7 +284,6 @@ void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
 	m_tcpClient->Disconnect();
 
 	m_clientSocket.Close();
-	m_serverSocket.Close();
 }
 
 
@@ -296,14 +294,13 @@ void NetworkingSystem::DisconnectTCPServer( EventArgs* args )
 
 	if ( m_serverSocket.IsValid() )
 	{
-		MessageHeader msgHeader;
-		msgHeader.id = (uint16_t)eMessasgeProtocolIds::SERVER_DISCONNECTING;
-		msgHeader.size = 0;
+		ServerDisconnectingMsg msg;
+		msg.header.id = (uint16_t)eMessasgeProtocolIds::SERVER_DISCONNECTING;
+		msg.header.size = 0;
 
-		m_serverSocket.Send( reinterpret_cast<char*>( &msgHeader ), 4 );
+		m_serverSocket.Send( reinterpret_cast<char*>( &msg ), msg.GetSize() );
 	}
 	
-	m_clientSocket.Close();
 	m_serverSocket.Close();
 }
 
