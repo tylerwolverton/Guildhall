@@ -177,3 +177,19 @@ start_tcp_server 48001
 connect :48001
 connect localhost:48001
 connect host=:48001
+send_message msg="Hello server!"
+disconnect
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+start_tcp_server
+start_tcp_server 48001
+connect host=:48001
+send_message msg="Hello server!"
+disconnect
+connect host=:48001
+send_message msg="Doomenstein rules"
+connect
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server

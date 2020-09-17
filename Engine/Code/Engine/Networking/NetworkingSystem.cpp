@@ -236,6 +236,8 @@ void NetworkingSystem::StopTCPServer( EventArgs* args )
 	m_tcpServer->StopListening();
 
 	DisconnectTCPServer( nullptr );
+
+	g_devConsole->PrintString( Stringf( "Server stopped" ) );
 }
 
 
