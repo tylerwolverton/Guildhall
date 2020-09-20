@@ -1,5 +1,8 @@
 #include "Game/Scripting/ZephyrVirtualMachine.hpp"
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -42,6 +45,18 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::ADD:
+			case eOpCode::SUBTRACT:
+			case eOpCode::MULTIPLY:
+			case eOpCode::DIVIDE:
+			{
+				// TODO: Support string concatenation?
+				NUMBER_TYPE b = PopNumber();
+				NUMBER_TYPE a = PopNumber();
+				PushNumberBinaryOp( a, b, opCode );
+			}
+			break;
+
 			default:
 			{
 			}
@@ -65,6 +80,48 @@ NUMBER_TYPE ZephyrVirtualMachine::PopNumber()
 
 	return topNum;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode )
+{
+	switch ( opCode )
+	{
+		case eOpCode::ADD:
+		{
+			NUMBER_TYPE result = a + b;
+			PushNumber( result );
+		}
+		break;
+
+		case eOpCode::SUBTRACT:
+		{
+			NUMBER_TYPE result = a - b;
+			PushNumber( result );
+		}
+		break;
+
+		case eOpCode::MULTIPLY:
+		{
+			NUMBER_TYPE result = a * b;
+			PushNumber( result );
+		}
+		break;
+
+		case eOpCode::DIVIDE:
+		{
+			NUMBER_TYPE result = a / b;
+			PushNumber( result );
+		}
+		break;
+
+		default:
+		{
+
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::ClearNumberStack()

@@ -11,6 +11,23 @@ class ZephyrToken;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eOpPrecedenceLevel
+{
+	NONE,
+	ASSIGNMENT,  // =
+	OR,          // or
+	AND,         // and
+	EQUALITY,    // == !=
+	COMPARISON,  // < > <= >=
+	TERM,        // + -
+	FACTOR,      // * /
+	UNARY,       // ! -
+	CALL,        // . ()
+	PRIMARY
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class ZephyrParser
 {
 	friend class ZephyrCompiler;
@@ -34,22 +51,36 @@ private:
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseNumberDeclaration();
+	bool ParseExpression();
+	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel );
+	bool ParseParenthesesGroup();
+	bool ParseUnaryExpression();
+	bool ParseBinaryExpression();
 	bool ParseNumberExpression( NUMBER_TYPE& out_result );
+
+	// Pratt Parser Helpers
+	bool CallPrefixFunction( const ZephyrToken& token );
+	bool CallInfixFunction( const ZephyrToken& token );
+	eOpPrecedenceLevel GetPrecedenceLevel( const ZephyrToken& token );
+	eOpPrecedenceLevel GetNextHighestPrecedenceLevel( const ZephyrToken& token );
 
 	void ReportError( const std::string& errorMsg );
 
 	ZephyrToken ConsumeNextToken();
+	bool ConsumeExpectedNextToken( eTokenType expectedType );
 	ZephyrToken GetLastToken();
 	bool IsAtEnd();
 
+	ZephyrToken GetCurToken();
 	eTokenType GetCurTokenType();
 	int GetCurTokenLineNum();
+
 
 private:
 	bool m_isErrorFree = false;
 	std::vector<ZephyrToken> m_tokens;
 	int m_curTokenIdx = 0;
-
+	
 	std::vector<ZephyrBytecodeChunk*> m_bytecodeChunks;
 	ZephyrBytecodeChunk* m_curBytecodeChunk = nullptr;
 };

@@ -193,3 +193,12 @@ connect
 start_tcp_server
 send_message msg="Hello client!"
 stop_tcp_server
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server

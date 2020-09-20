@@ -30,6 +30,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( EntityBirthEvent );
 	REGISTER_EVENT( EntityDeathEvent );
 	REGISTER_EVENT( TestResponseEvent );
+	REGISTER_EVENT( PrintDebugTextEvent );
 }
 
 

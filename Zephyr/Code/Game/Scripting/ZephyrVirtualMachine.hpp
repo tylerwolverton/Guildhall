@@ -23,6 +23,8 @@ private:
 	void		PushNumber( NUMBER_TYPE number );
 	NUMBER_TYPE PopNumber();
 
+	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
+
 	void ClearNumberStack();
 
 private:

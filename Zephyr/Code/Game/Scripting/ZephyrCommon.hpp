@@ -18,6 +18,8 @@ enum class eTokenType
 
 	BRACE_LEFT,
 	BRACE_RIGHT,
+	PARENTHESIS_LEFT,
+	PARENTHESIS_RIGHT,
 	
 	IDENTIFIER,
 
@@ -33,9 +35,12 @@ enum class eTokenType
 	SEMICOLON,
 
 	END_OF_FILE,
+
+	LAST_VAL
 };
 
 std::string ToString( eTokenType type );
+std::string GetTokenName( eTokenType type );
 
 
 //-----------------------------------------------------------------------------------------------
@@ -48,7 +53,7 @@ enum class eOpCode : byte
 	CONSTANT_NUMBER,
 
 	ADD,
-	MINUS, 
+	SUBTRACT, 
 	MULTIPLY,
 	DIVIDE,
 
