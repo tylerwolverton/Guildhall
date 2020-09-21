@@ -216,12 +216,11 @@ bool ZephyrParser::ParseNumberDeclaration()
 		case eTokenType::SEMICOLON: break;
 		case eTokenType::EQUAL:		
 		{
-			/*NUMBER_TYPE out_result;
-			bool succeeded = ParseNumberExpression( out_result );
-
-			return succeeded;*/
-
-			return ParseExpression();
+			if ( !ParseExpression() )
+			{
+				return false;
+			}
+			return ConsumeExpectedNextToken( eTokenType::SEMICOLON );
 		}
 
 		default:
@@ -262,7 +261,7 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 	while ( precLevel <= GetPrecedenceLevel( curToken ) )
 	{
 		CallInfixFunction( curToken );
-		curToken = ConsumeNextToken();
+		curToken = GetCurToken();
 	}
 
 	return true;
@@ -272,6 +271,8 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseParenthesesGroup()
 {
+	ConsumeNextToken();
+
 	if ( !ParseExpression() )
 	{
 		return false;

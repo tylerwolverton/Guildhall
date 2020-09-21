@@ -45,6 +45,13 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::NEGATE:
+			{
+				NUMBER_TYPE a = PopNumber();
+				PushNumber( -a );
+			}
+			break;
+
 			case eOpCode::ADD:
 			case eOpCode::SUBTRACT:
 			case eOpCode::MULTIPLY:

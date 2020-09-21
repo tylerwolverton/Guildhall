@@ -35,14 +35,16 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 		switch ( nextChar )
 		{
 			// Compare against known token types
-			case '{': AddToken( eTokenType::BRACE_LEFT );	break;
-			case '}': AddToken( eTokenType::BRACE_RIGHT );	break;
-			case '+': AddToken( eTokenType::PLUS );			break;
-			case '-': AddToken( eTokenType::MINUS );		break;
-			case '*': AddToken( eTokenType::STAR );			break;
-			case '/': AddToken( eTokenType::SLASH );		break;
-			case '=': AddToken( eTokenType::EQUAL );		break;
-			case ';': AddToken( eTokenType::SEMICOLON );	break;
+			case '{': AddToken( eTokenType::BRACE_LEFT );			break;
+			case '}': AddToken( eTokenType::BRACE_RIGHT );			break;
+			case '(': AddToken( eTokenType::PARENTHESIS_LEFT );		break;
+			case ')': AddToken( eTokenType::PARENTHESIS_RIGHT );	break;
+			case '+': AddToken( eTokenType::PLUS );					break;
+			case '-': AddToken( eTokenType::MINUS );				break;
+			case '*': AddToken( eTokenType::STAR );					break;
+			case '/': AddToken( eTokenType::SLASH );				break;
+			case '=': AddToken( eTokenType::EQUAL );				break;
+			case ';': AddToken( eTokenType::SEMICOLON );			break;
 			
 			default:
 			{
