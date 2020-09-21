@@ -1,10 +1,26 @@
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 ZephyrBytecodeChunk::ZephyrBytecodeChunk( const std::string& name )
 	: m_name( name )
 {
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrBytecodeChunk::TryToGetVariable( const std::string& identifier, NUMBER_TYPE& out_value ) const
+{
+	auto variableEntry = m_variables.find( identifier );
+	if ( variableEntry == m_variables.end() )
+	{
+		return false;
+	}
+
+	out_value = variableEntry->second;
+	return true;
 }
 
 
@@ -48,6 +64,13 @@ int ZephyrBytecodeChunk::AddNumberConstant( NUMBER_TYPE constant )
 {
 	m_numberConstants.push_back( constant );
 	return (int)m_numberConstants.size() - 1;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrBytecodeChunk::SetVariable( const std::string& identifier, NUMBER_TYPE value )
+{
+	m_variables[identifier] = value;
 }
 
 

@@ -209,6 +209,9 @@ bool ZephyrParser::ParseNumberDeclaration()
 		return false;
 	}
 	
+	// TODO: Update for variant types
+	m_curBytecodeChunk->SetVariable( identifier.GetData(), 0.f );
+
 	ZephyrToken curToken = ConsumeNextToken();
 	switch( curToken.GetType() )
 	{
@@ -216,10 +219,13 @@ bool ZephyrParser::ParseNumberDeclaration()
 		case eTokenType::SEMICOLON: break;
 		case eTokenType::EQUAL:		
 		{
+			// Write an assignment byte
+
 			if ( !ParseExpression() )
 			{
 				return false;
 			}
+
 			return ConsumeExpectedNextToken( eTokenType::SEMICOLON );
 		}
 
