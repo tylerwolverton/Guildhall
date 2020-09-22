@@ -22,7 +22,11 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef )
 void ZephyrScript::Update()
 {
 	// For now, just interpret the first chunk
-	g_zephyrVM->InterpretBytecodeChunk( *m_scriptDef.GetBytecodeChunks()[0] );
+	std::vector<ZephyrBytecodeChunk*> bytecodeChunks = m_scriptDef.GetBytecodeChunks();
+	if ( bytecodeChunks.size() > 0 )
+	{
+		g_zephyrVM->InterpretBytecodeChunk( *bytecodeChunks[0] );
+	}
 
 	if ( !m_hasPrinted )
 	{

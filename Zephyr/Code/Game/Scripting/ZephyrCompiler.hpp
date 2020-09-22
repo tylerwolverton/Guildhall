@@ -13,5 +13,5 @@ class ZephyrBytecodeChunk;
 class ZephyrCompiler
 {
 public:
-	static std::vector<ZephyrBytecodeChunk*> CompileScriptFile( const std::string& filePath );
+	static bool CompileScriptFile( const std::string& filePath, std::vector<ZephyrBytecodeChunk*>& out_bytecodeChunks );
 };

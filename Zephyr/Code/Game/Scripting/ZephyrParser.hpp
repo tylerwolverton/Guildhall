@@ -34,7 +34,9 @@ class ZephyrParser
 
 private:
 	// Private constructor so only ZephyrCompiler can use this class
-	ZephyrParser( const std::vector<ZephyrToken>& tokens );
+	ZephyrParser( const std::string& filename, const std::vector<ZephyrToken>& tokens );
+
+	bool IsErrorFree() const												{ return m_isErrorFree; }
 
 	std::vector<ZephyrBytecodeChunk*> ParseTokensIntoBytecodeChunks();
 
@@ -78,6 +80,7 @@ private:
 
 
 private:
+	std::string m_filename;
 	bool m_isErrorFree = false;
 	std::vector<ZephyrToken> m_tokens;
 	int m_curTokenIdx = 0;

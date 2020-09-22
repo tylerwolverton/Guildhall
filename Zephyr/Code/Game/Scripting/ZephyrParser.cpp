@@ -8,10 +8,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrParser::ZephyrParser( const std::vector<ZephyrToken>& tokens )
-	: m_tokens( tokens )
+ZephyrParser::ZephyrParser( const std::string& filename, const std::vector<ZephyrToken>& tokens )
+	: m_filename( filename )
+	, m_tokens( tokens )
 {
-
 }
 
 
@@ -444,7 +444,7 @@ void ZephyrParser::ReportError( const std::string& errorMsg )
 {
 	ZephyrToken const& curToken = GetLastToken();
 
-	std::string fullErrorStr = Stringf( "Error - %s: line %i: %s", "filename", curToken.GetLineNum(), errorMsg.c_str() );
+	std::string fullErrorStr = Stringf( "Error - %s: line %i: %s", m_filename.c_str(), curToken.GetLineNum(), errorMsg.c_str() );
 
 	g_devConsole->PrintError( fullErrorStr );
 }

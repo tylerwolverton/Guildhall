@@ -567,11 +567,14 @@ void Game::LoadAndCompileZephyrScripts()
 		// Scan
 		// Compile
 		// Save completed into static map
-		std::vector<ZephyrBytecodeChunk*> bytecodeChunks = ZephyrCompiler::CompileScriptFile( scriptFullPath );
-		ZephyrScriptDefinition* scriptDef = new ZephyrScriptDefinition( bytecodeChunks );
-		scriptDef->m_name = scriptName;
+		std::vector<ZephyrBytecodeChunk*> bytecodeChunks;
+		if ( ZephyrCompiler::CompileScriptFile( scriptFullPath, bytecodeChunks ) )
+		{
+			ZephyrScriptDefinition* scriptDef = new ZephyrScriptDefinition( bytecodeChunks );
+			scriptDef->m_name = scriptName;
 
-		ZephyrScriptDefinition::s_definitions[scriptFullPath] = scriptDef;
+			ZephyrScriptDefinition::s_definitions[scriptFullPath] = scriptDef;
+		}
 	}
 
 	g_devConsole->PrintString( "Zephyr Scripts Loaded", Rgba8::GREEN );

@@ -11,11 +11,8 @@
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<ZephyrBytecodeChunk*> ZephyrCompiler::CompileScriptFile( const std::string& filePath )
+bool ZephyrCompiler::CompileScriptFile( const std::string& filePath, std::vector<ZephyrBytecodeChunk*>& out_bytecodeChunks )
 {
-	ZephyrValue numberVal( 5.f );
-	ZephyrValue strVal( std::string( "Hello World" ) );
-
 	std::string scriptSource( (char*)FileReadToNewBuffer( filePath ) );
 
 	ZephyrScanner scanner( scriptSource );
@@ -26,9 +23,10 @@ std::vector<ZephyrBytecodeChunk*> ZephyrCompiler::CompileScriptFile( const std::
 		g_devConsole->PrintString( Stringf( "%s line: %i - %s", tokens[tokenIdx].GetDebugName().c_str(), tokens[tokenIdx].GetLineNum(), tokens[tokenIdx].GetData().c_str() ) );
 	}
 
-	ZephyrParser parser( tokens );
-	return parser.ParseTokensIntoBytecodeChunks();
+	ZephyrParser parser( GetFileName( filePath ), tokens );
+	out_bytecodeChunks = parser.ParseTokensIntoBytecodeChunks();
 
+	return parser.IsErrorFree();
 	// TODO: Ownership of this will eventually be transferred to ZephyrScriptDefinition
 	//PTR_VECTOR_SAFE_DELETE( bytecodeChunks );
 }

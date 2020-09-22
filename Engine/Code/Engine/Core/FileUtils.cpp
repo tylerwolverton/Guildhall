@@ -91,6 +91,24 @@ Strings GetFileNamesInFolder( const std::string& relativeFolderPath, const char*
 
 
 //-----------------------------------------------------------------------------------------------
+std::string GetFileName( const std::string& filePath )
+{
+	size_t lastSlashPos = filePath.find_last_of( "/" );
+	
+	if ( lastSlashPos == std::string::npos )
+	{
+		lastSlashPos = 0;
+	}
+	else
+	{
+		++lastSlashPos;
+	}
+
+	return filePath.substr( lastSlashPos, filePath.size() - 1 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::string GetFileNameWithoutExtension( const std::string& filePath )
 {
 	size_t extensionPos = filePath.find( "." );
