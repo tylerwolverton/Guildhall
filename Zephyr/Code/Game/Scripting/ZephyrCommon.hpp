@@ -80,19 +80,19 @@ public:
 	ZephyrValue()
 	{
 		m_type = eValueType::NONE;
-		fData = 0.f;
+		numberData = 0.f;
 	}
 
-	ZephyrValue( float value )
+	ZephyrValue( NUMBER_TYPE value )
 	{
 		m_type = eValueType::NUMBER;
-		fData = value;
+		numberData = value;
 	}
 
 	ZephyrValue( bool value )
 	{
 		m_type = eValueType::BOOL;
-		bData = value;
+		boolData = value;
 	}
 
 	ZephyrValue( const std::string& value )
@@ -101,7 +101,7 @@ public:
 		strData = new std::string( value );
 	}
 
-	ZephyrValue( ZephyrValue& other )
+	ZephyrValue( ZephyrValue const& other )
 	{
 		if ( this->m_type == eValueType::STRING )
 		{
@@ -111,14 +111,14 @@ public:
 		switch ( other.m_type )
 		{
 			case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
-			case eValueType::NUMBER: this->fData = other.fData;	break;
-			case eValueType::BOOL: this->bData = other.bData;	break;
+			case eValueType::NUMBER: this->numberData = other.numberData;	break;
+			case eValueType::BOOL: this->boolData = other.boolData;	break;
 		}
 
 		m_type = other.m_type;
 	}
 
-	ZephyrValue operator=( ZephyrValue& other )
+	ZephyrValue operator=( ZephyrValue const& other )
 	{
 		if ( this->m_type == eValueType::STRING )
 		{
@@ -128,11 +128,13 @@ public:
 		switch ( other.m_type )
 		{
 			case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
-			case eValueType::NUMBER: this->fData = other.fData;	break;
-			case eValueType::BOOL: this->bData = other.bData;	break;
+			case eValueType::NUMBER: this->numberData = other.numberData;	break;
+			case eValueType::BOOL: this->boolData = other.boolData;	break;
 		}
 
 		m_type = other.m_type;
+
+		return this;
 	}
 
 	~ZephyrValue()
@@ -144,8 +146,10 @@ public:
 		}
 	}
 
-	float GetAsFloat() const { return fData; }
-	bool GetAsBool() const { return bData; }
+	eValueType	GetType() const			{ return m_type; }
+
+	float		GetAsNumber() const		{ return numberData; }
+	bool		GetAsBool() const		{ return boolData; }
 	std::string GetAsString() const 
 	{ 
 		if ( strData == nullptr )
@@ -161,8 +165,8 @@ private:
 
 	union
 	{
-		float fData;
-		bool bData;
+		NUMBER_TYPE numberData;
+		bool boolData;
 		std::string* strData = nullptr;
 	};
 };

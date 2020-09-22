@@ -11,7 +11,7 @@ ZephyrBytecodeChunk::ZephyrBytecodeChunk( const std::string& name )
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrBytecodeChunk::TryToGetVariable( const std::string& identifier, NUMBER_TYPE& out_value ) const
+bool ZephyrBytecodeChunk::TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const
 {
 	auto variableEntry = m_variables.find( identifier );
 	if ( variableEntry == m_variables.end() )
@@ -53,22 +53,22 @@ void ZephyrBytecodeChunk::WriteByte( int constantIdx )
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrBytecodeChunk::WriteNumberConstant( NUMBER_TYPE constant )
+void ZephyrBytecodeChunk::WriteConstant( const ZephyrValue& constant )
 {
-	WriteByte( AddNumberConstant( constant ) );
+	WriteByte( AddConstant( constant ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-int ZephyrBytecodeChunk::AddNumberConstant( NUMBER_TYPE constant )
+int ZephyrBytecodeChunk::AddConstant( const ZephyrValue& constant )
 {
-	m_numberConstants.push_back( constant );
-	return (int)m_numberConstants.size() - 1;
+	m_constants.push_back( constant );
+	return (int)m_constants.size() - 1;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrBytecodeChunk::SetVariable( const std::string& identifier, NUMBER_TYPE value )
+void ZephyrBytecodeChunk::SetVariable( const std::string& identifier, const ZephyrValue& value )
 {
 	m_variables[identifier] = value;
 }

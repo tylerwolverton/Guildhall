@@ -99,7 +99,7 @@ bool ZephyrParser::WriteOpCodeToCurChunk( eOpCode opCode )
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::WriteNumberConstantToCurChunk( NUMBER_TYPE numConstant )
+bool ZephyrParser::WriteConstantToCurChunk( const ZephyrValue& constant )
 {
 	if ( m_curBytecodeChunk == nullptr )
 	{
@@ -108,7 +108,7 @@ bool ZephyrParser::WriteNumberConstantToCurChunk( NUMBER_TYPE numConstant )
 	}
 
 	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT_NUMBER );
-	m_curBytecodeChunk->WriteNumberConstant( numConstant );
+	m_curBytecodeChunk->WriteConstant( constant );
 
 	return true;
 }
@@ -177,8 +177,7 @@ bool ZephyrParser::ParseStatement()
 		// TEMP for testing
 		case eTokenType::CONSTANT_NUMBER:	
 		{
-			NUMBER_TYPE out_value = 0.f;
-			bool succeeded = ParseNumberExpression( out_value );
+			bool succeeded = ParseNumberExpression();
 
 
 
@@ -336,50 +335,21 @@ bool ZephyrParser::ParseBinaryExpression()
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseNumberExpression( NUMBER_TYPE& out_result )
+bool ZephyrParser::ParseNumberExpression()
 {
 	ZephyrToken curToken = ConsumeNextToken();
 
-	out_result = (NUMBER_TYPE)atof( curToken.GetData().c_str() );
-	return WriteNumberConstantToCurChunk( out_result );
-	//while ( curToken.GetType() != eTokenType::SEMICOLON )
-	//{
-	//	switch ( curToken.GetType() )
-	//	{
-	//		// Token is just a number, return it
-	//		case eTokenType::CONSTANT_NUMBER:
-	//		{
-	//			out_result = (NUMBER_TYPE)atof( curToken.GetData().c_str() );
-	//			return WriteNumberConstantToCurChunk( out_result );
-	//		}
-	//		break;
-
-	//		case eTokenType::PLUS:
-	//		{
-	//			NUMBER_TYPE rightResult;
-	//			ParseNumberExpression( rightResult );
-
-	//			WriteNumberConstantToCurChunk( rightResult );
-
-	//			WriteOpCodeToCurChunk( eOpCode::ADD );
-	//			return true;
-	//		}
-	//		break;
-	//	}
-	//}
-
-	//return true;
+	return WriteConstantToCurChunk( (NUMBER_TYPE)atof( curToken.GetData().c_str() ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 {
-	NUMBER_TYPE out;
 	switch ( token.GetType() )
 	{
 		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup();
-		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression( out );
+		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression();
 		case eTokenType::MINUS:				return ParseUnaryExpression();
 	}
 

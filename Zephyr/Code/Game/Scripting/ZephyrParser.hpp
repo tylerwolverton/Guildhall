@@ -44,7 +44,7 @@ private:
 
 	bool WriteByteToCurChunk( byte newByte );
 	bool WriteOpCodeToCurChunk( eOpCode opCode );
-	bool WriteNumberConstantToCurChunk( NUMBER_TYPE numConstant );
+	bool WriteConstantToCurChunk( const ZephyrValue& constant );
 
 	bool IsCurTokenType( const eTokenType& type );
 	bool DoesTokenMatchType( const ZephyrToken& token, const eTokenType& type );
@@ -56,7 +56,7 @@ private:
 	bool ParseParenthesesGroup();
 	bool ParseUnaryExpression();
 	bool ParseBinaryExpression();
-	bool ParseNumberExpression( NUMBER_TYPE& out_result );
+	bool ParseNumberExpression();
 
 	// Pratt Parser Helpers
 	bool CallPrefixFunction( const ZephyrToken& token );

@@ -28,7 +28,7 @@ void ZephyrVirtualMachine::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk )
 {
-	ClearNumberStack();
+	ClearConstantStack();
 
 	int byteIdx = 0;
 	while ( byteIdx < bytecodeChunk.GetNumBytes() )
@@ -39,16 +39,19 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 		{
 			case eOpCode::CONSTANT_NUMBER:
 			{
-				int numConstIdx = bytecodeChunk.GetByte( byteIdx++ );
-				NUMBER_TYPE numConstant = bytecodeChunk.GetNumberConstant( numConstIdx );
-				PushNumber( numConstant );
+				int constIdx = bytecodeChunk.GetByte( byteIdx++ );
+				ZephyrValue constant = bytecodeChunk.GetConstant( constIdx );
+				PushConstant( constant );
 			}
 			break;
 
 			case eOpCode::NEGATE:
 			{
-				NUMBER_TYPE a = PopNumber();
-				PushNumber( -a );
+				ZephyrValue a = PopConstant();
+				if ( a.GetType() == eValueType::NUMBER )
+				{
+					PushConstant( -a.GetAsNumber() );
+				}
 			}
 			break;
 
@@ -58,9 +61,9 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::DIVIDE:
 			{
 				// TODO: Support string concatenation?
-				NUMBER_TYPE b = PopNumber();
-				NUMBER_TYPE a = PopNumber();
-				PushNumberBinaryOp( a, b, opCode );
+				ZephyrValue b = PopConstant();
+				ZephyrValue a = PopConstant();
+				PushBinaryOp( a, b, opCode );
 			}
 			break;
 
@@ -73,19 +76,30 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 }
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::PushNumber( NUMBER_TYPE number )
+void ZephyrVirtualMachine::PushConstant( const ZephyrValue& number )
 {
-	m_numberStack.push( number );
+	m_constantStack.push( number );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-NUMBER_TYPE ZephyrVirtualMachine::PopNumber()
+ZephyrValue ZephyrVirtualMachine::PopConstant()
 {
-	NUMBER_TYPE topNum = m_numberStack.top();
-	m_numberStack.pop();
+	ZephyrValue topConstant = m_constantStack.top();
+	m_constantStack.pop();
 
-	return topNum;
+	return topConstant;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode )
+{
+	if ( a.GetType() == eValueType::NUMBER
+		 && b.GetType() == eValueType::NUMBER )
+	{
+		PushNumberBinaryOp( a.GetAsNumber(), b.GetAsNumber(), opCode );
+	}
 }
 
 
@@ -97,28 +111,28 @@ void ZephyrVirtualMachine::PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOp
 		case eOpCode::ADD:
 		{
 			NUMBER_TYPE result = a + b;
-			PushNumber( result );
+			PushConstant( result );
 		}
 		break;
 
 		case eOpCode::SUBTRACT:
 		{
 			NUMBER_TYPE result = a - b;
-			PushNumber( result );
+			PushConstant( result );
 		}
 		break;
 
 		case eOpCode::MULTIPLY:
 		{
 			NUMBER_TYPE result = a * b;
-			PushNumber( result );
+			PushConstant( result );
 		}
 		break;
 
 		case eOpCode::DIVIDE:
 		{
 			NUMBER_TYPE result = a / b;
-			PushNumber( result );
+			PushConstant( result );
 		}
 		break;
 
@@ -131,10 +145,10 @@ void ZephyrVirtualMachine::PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOp
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::ClearNumberStack()
+void ZephyrVirtualMachine::ClearConstantStack()
 {
-	while ( !m_numberStack.empty() )
+	while ( !m_constantStack.empty() )
 	{
-		m_numberStack.pop();
+		m_constantStack.pop();
 	}
 }

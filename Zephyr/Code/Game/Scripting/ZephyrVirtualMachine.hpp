@@ -20,13 +20,14 @@ public:
 	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk );
 
 private:
-	void		PushNumber( NUMBER_TYPE number );
-	NUMBER_TYPE PopNumber();
+	void		PushConstant( const ZephyrValue& number );
+	ZephyrValue PopConstant();
 
+	void PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode );
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
 
 	void ClearNumberStack();
 
 private:
-	std::stack<NUMBER_TYPE> m_numberStack;
+	std::stack<ZephyrValue> m_constantStack;
 };
