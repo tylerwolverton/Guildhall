@@ -61,3 +61,108 @@ enum class eOpCode : byte
 };
 
 eOpCode ByteToOpCode( byte opCodeByte );
+
+
+//-----------------------------------------------------------------------------------------------
+enum class eValueType
+{
+	NONE,
+	NUMBER,
+	BOOL,
+	STRING,
+};
+
+
+//-----------------------------------------------------------------------------------------------
+class ZephyrValue
+{
+public:
+	ZephyrValue()
+	{
+		m_type = eValueType::NONE;
+		fData = 0.f;
+	}
+
+	ZephyrValue( float value )
+	{
+		m_type = eValueType::NUMBER;
+		fData = value;
+	}
+
+	ZephyrValue( bool value )
+	{
+		m_type = eValueType::BOOL;
+		bData = value;
+	}
+
+	ZephyrValue( const std::string& value )
+	{
+		m_type = eValueType::STRING;
+		strData = new std::string( value );
+	}
+
+	ZephyrValue( ZephyrValue& other )
+	{
+		if ( this->m_type == eValueType::STRING )
+		{
+			delete this->strData;
+		}
+
+		switch ( other.m_type )
+		{
+			case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
+			case eValueType::NUMBER: this->fData = other.fData;	break;
+			case eValueType::BOOL: this->bData = other.bData;	break;
+		}
+
+		m_type = other.m_type;
+	}
+
+	ZephyrValue operator=( ZephyrValue& other )
+	{
+		if ( this->m_type == eValueType::STRING )
+		{
+			delete this->strData;
+		}
+
+		switch ( other.m_type )
+		{
+			case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
+			case eValueType::NUMBER: this->fData = other.fData;	break;
+			case eValueType::BOOL: this->bData = other.bData;	break;
+		}
+
+		m_type = other.m_type;
+	}
+
+	~ZephyrValue()
+	{
+		if ( m_type == eValueType::STRING )
+		{
+			delete strData;
+			strData = nullptr;
+		}
+	}
+
+	float GetAsFloat() const { return fData; }
+	bool GetAsBool() const { return bData; }
+	std::string GetAsString() const 
+	{ 
+		if ( strData == nullptr )
+		{
+			return "";
+		}
+		
+		return *strData;
+	}
+
+private:
+	eValueType m_type = eValueType::NONE;
+
+	union
+	{
+		float fData;
+		bool bData;
+		std::string* strData = nullptr;
+	};
+};

@@ -13,6 +13,9 @@
 //-----------------------------------------------------------------------------------------------
 std::vector<ZephyrBytecodeChunk*> ZephyrCompiler::CompileScriptFile( const std::string& filePath )
 {
+	ZephyrValue numberVal( 5.f );
+	ZephyrValue strVal( std::string( "Hello World" ) );
+
 	std::string scriptSource( (char*)FileReadToNewBuffer( filePath ) );
 
 	ZephyrScanner scanner( scriptSource );
