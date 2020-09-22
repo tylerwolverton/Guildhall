@@ -67,6 +67,21 @@ eOpCode ByteToOpCode( byte opCodeByte )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string ToString( eValueType valueType )
+{
+	switch ( valueType )
+	{
+		case eValueType::NUMBER:	return "Number";
+		case eValueType::BOOL:		return "Bool";
+		case eValueType::STRING:	 return "String";
+
+		case eValueType::NONE:		
+		default: return "None";
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 ZephyrValue::ZephyrValue()
 {
 	m_type = eValueType::NONE;

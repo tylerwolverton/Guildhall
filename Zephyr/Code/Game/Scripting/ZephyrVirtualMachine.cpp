@@ -53,6 +53,13 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::GET_VARIABLE_VALUE:
+			{
+				ZephyrValue constant = PopConstant();
+				PushConstant( variables[constant.GetAsString()] );
+			}
+			break;
+
 			case eOpCode::NEGATE:
 			{
 				ZephyrValue a = PopConstant();
@@ -68,7 +75,6 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::MULTIPLY:
 			case eOpCode::DIVIDE:
 			{
-				// TODO: Support string concatenation?
 				ZephyrValue b = PopConstant();
 				ZephyrValue a = PopConstant();
 				PushBinaryOp( a, b, opCode );

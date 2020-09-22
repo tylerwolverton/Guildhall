@@ -173,17 +173,11 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
-		case eTokenType::NUMBER:			return ParseNumberDeclaration();
-
-		// TEMP for testing
-	/*	case eTokenType::CONSTANT_NUMBER:	*/
-	/*	{
-			bool succeeded = ParseNumberExpression();
-
-
-
-			return succeeded;
-		}*/
+		case eTokenType::NUMBER:			
+		{
+			return ParseNumberDeclaration();
+		}
+		break;
 
 		default:
 		{
@@ -219,8 +213,6 @@ bool ZephyrParser::ParseNumberDeclaration()
 		case eTokenType::SEMICOLON: 
 		{
 			WriteConstantToCurChunk( ZephyrValue( 0.f ) );
-			/*WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-			WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );*/
 		}
 		break;
 		
@@ -359,12 +351,44 @@ bool ZephyrParser::ParseNumberExpression()
 
 
 //-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseIdentifierExpressionOfType( eValueType expectedType )
+{
+	ZephyrToken curToken = ConsumeNextToken();
+
+	if ( curToken.GetType() != eTokenType::IDENTIFIER )
+	{
+		ReportError( Stringf( "Expected Identifier, but found '%s'", ToString( curToken.GetType() ).c_str() ) );
+		return false;
+	}
+
+	ZephyrValue value;
+	if ( !m_curBytecodeChunk->TryToGetVariable( curToken.GetData(), value ) )
+	{
+		ReportError( Stringf( "Undefined variable seen, '%s'", curToken.GetData().c_str() ) );
+		return false;
+	}
+
+	if ( value.GetType() != expectedType )
+	{
+		ReportError( Stringf( "Type mismatch, expected '%s' to be '%s', but instead it was '%s'", curToken.GetData().c_str(), ToString( expectedType ).c_str(), ToString( value.GetType() ).c_str() ) );
+		return false;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 {
 	switch ( token.GetType() )
 	{
 		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup();
 		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression();
+		case eTokenType::IDENTIFIER:		return ParseIdentifierExpressionOfType( eValueType::NUMBER );
 		case eTokenType::MINUS:				return ParseUnaryExpression();
 	}
 

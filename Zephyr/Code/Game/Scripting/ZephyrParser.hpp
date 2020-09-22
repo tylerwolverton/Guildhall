@@ -57,6 +57,7 @@ private:
 	bool ParseUnaryExpression();
 	bool ParseBinaryExpression();
 	bool ParseNumberExpression();
+	bool ParseIdentifierExpressionOfType( eValueType expectedType );
 
 	// Pratt Parser Helpers
 	bool CallPrefixFunction( const ZephyrToken& token );

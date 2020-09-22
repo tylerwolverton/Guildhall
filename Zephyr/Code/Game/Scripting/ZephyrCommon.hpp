@@ -53,6 +53,7 @@ enum class eOpCode : byte
 	CONSTANT_NUMBER,
 
 	DEFINE_VARIABLE,
+	GET_VARIABLE_VALUE,
 
 	ADD,
 	SUBTRACT, 
@@ -73,6 +74,8 @@ enum class eValueType
 	BOOL,
 	STRING,
 };
+
+std::string ToString( eValueType valueType );
 
 
 //-----------------------------------------------------------------------------------------------
