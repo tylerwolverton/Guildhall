@@ -26,7 +26,7 @@ private:
 	void PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode );
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
 
-	void ClearNumberStack();
+	void ClearConstantStack();
 
 private:
 	std::stack<ZephyrValue> m_constantStack;

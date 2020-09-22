@@ -29,6 +29,7 @@ void ZephyrVirtualMachine::Shutdown()
 void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk )
 {
 	ClearConstantStack();
+	std::map<std::string, ZephyrValue> variables;
 
 	int byteIdx = 0;
 	while ( byteIdx < bytecodeChunk.GetNumBytes() )
@@ -42,6 +43,13 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				int constIdx = bytecodeChunk.GetByte( byteIdx++ );
 				ZephyrValue constant = bytecodeChunk.GetConstant( constIdx );
 				PushConstant( constant );
+			}
+			break;
+
+			case eOpCode::DEFINE_VARIABLE:
+			{
+				ZephyrValue constant = PopConstant();
+				variables[constant.GetAsString()] = constant;
 			}
 			break;
 

@@ -134,10 +134,11 @@ bool ZephyrParser::ParseBlock()
 			return false;
 		}
 
-		curToken = ConsumeNextToken();
+		curToken = GetCurToken();
 	}
 
 	// Check for closing brace
+	curToken = ConsumeNextToken();
 	if ( !DoesTokenMatchType( curToken, eTokenType::BRACE_RIGHT ) )
 	{
 		ReportError( "Expected '}'" );
@@ -175,14 +176,14 @@ bool ZephyrParser::ParseStatement()
 		case eTokenType::NUMBER:			return ParseNumberDeclaration();
 
 		// TEMP for testing
-		case eTokenType::CONSTANT_NUMBER:	
-		{
+	/*	case eTokenType::CONSTANT_NUMBER:	*/
+	/*	{
 			bool succeeded = ParseNumberExpression();
 
 
 
 			return succeeded;
-		}
+		}*/
 
 		default:
 		{
@@ -209,13 +210,19 @@ bool ZephyrParser::ParseNumberDeclaration()
 	}
 	
 	// TODO: Update for variant types
-	m_curBytecodeChunk->SetVariable( identifier.GetData(), 0.f );
+	m_curBytecodeChunk->SetVariable( identifier.GetData(), ZephyrValue( 0.f ) );
 
 	ZephyrToken curToken = ConsumeNextToken();
 	switch( curToken.GetType() )
 	{
 		// TODO: Save variable in table
-		case eTokenType::SEMICOLON: break;
+		case eTokenType::SEMICOLON: 
+		{
+			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
+		}
+		break;
+		
 		case eTokenType::EQUAL:		
 		{
 			// Write an assignment byte

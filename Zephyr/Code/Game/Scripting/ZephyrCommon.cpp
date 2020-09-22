@@ -65,3 +65,97 @@ eOpCode ByteToOpCode( byte opCodeByte )
 	return (eOpCode)opCodeByte;	
 }
 
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue()
+{
+	m_type = eValueType::NONE;
+	numberData = 0.f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue( NUMBER_TYPE value )
+{
+	m_type = eValueType::NUMBER;
+	numberData = value;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue( bool value )
+{
+	m_type = eValueType::BOOL;
+	boolData = value;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue( const std::string& value )
+{
+	m_type = eValueType::STRING;
+	strData = new std::string( value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue( ZephyrValue const& other )
+{
+	if ( this->m_type == eValueType::STRING )
+	{
+		delete this->strData;
+	}
+
+	switch ( other.m_type )
+	{
+		case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
+		case eValueType::NUMBER: this->numberData = other.numberData;	break;
+		case eValueType::BOOL: this->boolData = other.boolData;	break;
+	}
+
+	m_type = other.m_type;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::~ZephyrValue()
+{
+	if ( m_type == eValueType::STRING )
+	{
+		delete strData;
+		strData = nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ZephyrValue::GetAsString() const
+{
+	if ( strData == nullptr )
+	{
+		return "";
+	}
+
+	return *strData;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue ZephyrValue::operator=( ZephyrValue const& other )
+{
+	if ( this->m_type == eValueType::STRING )
+	{
+		delete this->strData;
+	}
+
+	switch ( other.m_type )
+	{
+		case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
+		case eValueType::NUMBER: this->numberData = other.numberData;	break;
+		case eValueType::BOOL: this->boolData = other.boolData;	break;
+	}
+
+	m_type = other.m_type;
+
+	return this;
+}

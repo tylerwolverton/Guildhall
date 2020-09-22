@@ -2,6 +2,7 @@ StateMachine
 {
 	State
 	{
+		Number declarationTest; 
 		Number testNum = (-1 + 10) * 2;
 	}
 }

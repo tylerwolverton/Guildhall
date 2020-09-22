@@ -52,6 +52,8 @@ enum class eOpCode : byte
 
 	CONSTANT_NUMBER,
 
+	DEFINE_VARIABLE,
+
 	ADD,
 	SUBTRACT, 
 	MULTIPLY,
@@ -77,88 +79,21 @@ enum class eValueType
 class ZephyrValue
 {
 public:
-	ZephyrValue()
-	{
-		m_type = eValueType::NONE;
-		numberData = 0.f;
-	}
+	ZephyrValue();
+	ZephyrValue( NUMBER_TYPE value );
+	ZephyrValue( bool value );
+	ZephyrValue( const std::string& value );
+	ZephyrValue( ZephyrValue const& other );
+	~ZephyrValue();
 
-	ZephyrValue( NUMBER_TYPE value )
-	{
-		m_type = eValueType::NUMBER;
-		numberData = value;
-	}
-
-	ZephyrValue( bool value )
-	{
-		m_type = eValueType::BOOL;
-		boolData = value;
-	}
-
-	ZephyrValue( const std::string& value )
-	{
-		m_type = eValueType::STRING;
-		strData = new std::string( value );
-	}
-
-	ZephyrValue( ZephyrValue const& other )
-	{
-		if ( this->m_type == eValueType::STRING )
-		{
-			delete this->strData;
-		}
-
-		switch ( other.m_type )
-		{
-			case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
-			case eValueType::NUMBER: this->numberData = other.numberData;	break;
-			case eValueType::BOOL: this->boolData = other.boolData;	break;
-		}
-
-		m_type = other.m_type;
-	}
-
-	ZephyrValue operator=( ZephyrValue const& other )
-	{
-		if ( this->m_type == eValueType::STRING )
-		{
-			delete this->strData;
-		}
-
-		switch ( other.m_type )
-		{
-			case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
-			case eValueType::NUMBER: this->numberData = other.numberData;	break;
-			case eValueType::BOOL: this->boolData = other.boolData;	break;
-		}
-
-		m_type = other.m_type;
-
-		return this;
-	}
-
-	~ZephyrValue()
-	{
-		if ( m_type == eValueType::STRING )
-		{
-			delete strData;
-			strData = nullptr;
-		}
-	}
+	ZephyrValue operator=( ZephyrValue const& other );
 
 	eValueType	GetType() const			{ return m_type; }
 
 	float		GetAsNumber() const		{ return numberData; }
 	bool		GetAsBool() const		{ return boolData; }
-	std::string GetAsString() const 
-	{ 
-		if ( strData == nullptr )
-		{
-			return "";
-		}
-		
-		return *strData;
-	}
+	std::string GetAsString() const;
+	
 
 private:
 	eValueType m_type = eValueType::NONE;
