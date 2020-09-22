@@ -86,7 +86,7 @@ public:
 	ZephyrValue( ZephyrValue const& other );
 	~ZephyrValue();
 
-	ZephyrValue operator=( ZephyrValue const& other );
+	ZephyrValue& operator=( ZephyrValue const& other );
 
 	eValueType	GetType() const			{ return m_type; }
 

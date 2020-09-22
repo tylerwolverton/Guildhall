@@ -141,7 +141,7 @@ std::string ZephyrValue::GetAsString() const
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrValue ZephyrValue::operator=( ZephyrValue const& other )
+ZephyrValue& ZephyrValue::operator=( ZephyrValue const& other )
 {
 	if ( this->m_type == eValueType::STRING )
 	{
@@ -157,5 +157,5 @@ ZephyrValue ZephyrValue::operator=( ZephyrValue const& other )
 
 	m_type = other.m_type;
 
-	return this;
+	return *this;
 }

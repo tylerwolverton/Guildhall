@@ -218,8 +218,9 @@ bool ZephyrParser::ParseNumberDeclaration()
 		// TODO: Save variable in table
 		case eTokenType::SEMICOLON: 
 		{
-			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-			WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
+			WriteConstantToCurChunk( ZephyrValue( 0.f ) );
+			/*WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );*/
 		}
 		break;
 		
@@ -232,8 +233,12 @@ bool ZephyrParser::ParseNumberDeclaration()
 				return false;
 			}
 
-			return ConsumeExpectedNextToken( eTokenType::SEMICOLON );
+			if ( !ConsumeExpectedNextToken( eTokenType::SEMICOLON ) )
+			{
+				return false;
+			}
 		}
+		break;
 
 		default:
 		{
@@ -246,6 +251,9 @@ bool ZephyrParser::ParseNumberDeclaration()
 		}
 		break;
 	}
+
+	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
 
 	return true;
 }

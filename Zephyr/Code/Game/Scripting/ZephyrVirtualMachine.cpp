@@ -49,7 +49,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::DEFINE_VARIABLE:
 			{
 				ZephyrValue constant = PopConstant();
-				variables[constant.GetAsString()] = constant;
+				variables[constant.GetAsString()] = PopConstant();
 			}
 			break;
 
