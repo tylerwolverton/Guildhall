@@ -1,7 +1,10 @@
 StateMachine
 {
 	State TestState
-	{
+	{	
+		DebugPrintText( text="Hey"  );
+		FireEvent( DebugPrintText( text="Hey" )  );
+		
 		Number declarationTest; 
 		Number testNum = (-1 + 10) * 2;
 
