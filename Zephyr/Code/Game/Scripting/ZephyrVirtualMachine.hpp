@@ -22,6 +22,7 @@ public:
 private:
 	void		PushConstant( const ZephyrValue& number );
 	ZephyrValue PopConstant();
+	ZephyrValue PeekConstant();
 
 	void PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode );
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );

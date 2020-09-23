@@ -53,6 +53,7 @@ private:
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseNumberDeclaration();
+	bool ParseAssignment();
 	bool ParseExpression();
 	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel );
 	bool ParseParenthesesGroup();
@@ -69,6 +70,7 @@ private:
 
 	void ReportError( const std::string& errorMsg );
 
+	ZephyrToken PeekNextToken();
 	ZephyrToken ConsumeNextToken();
 	bool ConsumeExpectedNextToken( eTokenType expectedType );
 	ZephyrToken GetLastToken();

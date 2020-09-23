@@ -156,10 +156,16 @@ bool ZephyrParser::ParseStatement()
 
 	switch ( curToken.GetType() )
 	{
-		// Do something fancier with state name later
 		case eTokenType::STATE:				
 		{
-			bool succeeded = CreateBytecodeChunk( "test" );
+			curToken = ConsumeNextToken();
+			if ( curToken.GetType() != eTokenType::IDENTIFIER )
+			{
+				ReportError( "State must be followed by a name" );
+				return false;
+			}
+
+			bool succeeded = CreateBytecodeChunk( curToken.GetData() );
 			if ( !succeeded )
 			{
 				return false;
@@ -175,7 +181,19 @@ bool ZephyrParser::ParseStatement()
 
 		case eTokenType::NUMBER:			
 		{
-			return ParseNumberDeclaration();
+			if ( !ParseNumberDeclaration() )
+			{
+				return false;
+			}
+		}
+		break;
+
+		case eTokenType::IDENTIFIER:
+		{
+			if ( !ParseAssignment() )
+			{
+				return false;
+			}
 		}
 		break;
 
@@ -190,6 +208,13 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 	}
+
+	if ( !ConsumeExpectedNextToken( eTokenType::SEMICOLON ) )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -203,13 +228,11 @@ bool ZephyrParser::ParseNumberDeclaration()
 		return false;
 	}
 	
-	// TODO: Update for variant types
 	m_curBytecodeChunk->SetVariable( identifier.GetData(), ZephyrValue( 0.f ) );
 
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = GetCurToken();
 	switch( curToken.GetType() )
 	{
-		// TODO: Save variable in table
 		case eTokenType::SEMICOLON: 
 		{
 			WriteConstantToCurChunk( ZephyrValue( 0.f ) );
@@ -218,17 +241,18 @@ bool ZephyrParser::ParseNumberDeclaration()
 		
 		case eTokenType::EQUAL:		
 		{
-			// Write an assignment byte
+			ConsumeNextToken();
 
+			// Write an assignment byte
 			if ( !ParseExpression() )
 			{
 				return false;
 			}
 
-			if ( !ConsumeExpectedNextToken( eTokenType::SEMICOLON ) )
+			/*if ( !ConsumeExpectedNextToken( eTokenType::SEMICOLON ) )
 			{
 				return false;
-			}
+			}*/
 		}
 		break;
 
@@ -246,6 +270,30 @@ bool ZephyrParser::ParseNumberDeclaration()
 
 	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
 	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseAssignment()
+{
+	ZephyrToken identifier = GetLastToken();
+	ZephyrToken curToken = ConsumeNextToken();
+
+	if ( curToken.GetType() != eTokenType::EQUAL )
+	{
+		ReportError( Stringf( "Assignment to variable '%s' expected a '=' sign after the variable name", identifier.GetData().c_str() ) );
+		return false;
+	}
+
+	if ( !ParseExpression() )
+	{
+		return false;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
 
 	return true;
 }
@@ -388,8 +436,18 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 	{
 		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup();
 		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression();
-		case eTokenType::IDENTIFIER:		return ParseIdentifierExpressionOfType( eValueType::NUMBER );
 		case eTokenType::MINUS:				return ParseUnaryExpression();
+		case eTokenType::IDENTIFIER:		
+		{
+			if ( PeekNextToken().GetType() == eTokenType::EQUAL )
+			{
+				ConsumeNextToken();
+				return ParseAssignment();
+			}
+
+			return ParseIdentifierExpressionOfType( eValueType::NUMBER );
+		}
+		break;
 	}
 
 	return false;
@@ -409,6 +467,12 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 			return ParseBinaryExpression();
 		}
 		break;
+
+		/*case eTokenType::EQUAL:
+		{
+			return ParseAssignment();
+		}
+		break;*/
 	}
 
 	return false;
@@ -447,6 +511,18 @@ void ZephyrParser::ReportError( const std::string& errorMsg )
 	std::string fullErrorStr = Stringf( "Error - %s: line %i: %s", m_filename.c_str(), curToken.GetLineNum(), errorMsg.c_str() );
 
 	g_devConsole->PrintError( fullErrorStr );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrToken ZephyrParser::PeekNextToken()
+{
+	if ( IsAtEnd() )
+	{
+		return m_tokens[m_tokens.size() - 1];
+	}
+
+	return m_tokens[m_curTokenIdx + 1];
 }
 
 

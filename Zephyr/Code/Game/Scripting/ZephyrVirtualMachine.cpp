@@ -60,6 +60,13 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::ASSIGNMENT:
+			{
+				ZephyrValue constant = PopConstant(); 
+				variables[constant.GetAsString()] = PeekConstant();
+			}
+			break;
+
 			case eOpCode::NEGATE:
 			{
 				ZephyrValue a = PopConstant();
@@ -103,6 +110,13 @@ ZephyrValue ZephyrVirtualMachine::PopConstant()
 	m_constantStack.pop();
 
 	return topConstant;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue ZephyrVirtualMachine::PeekConstant()
+{
+	return m_constantStack.top();
 }
 
 

@@ -54,6 +54,7 @@ enum class eOpCode : byte
 
 	DEFINE_VARIABLE,
 	GET_VARIABLE_VALUE,
+	ASSIGNMENT,
 
 	ADD,
 	SUBTRACT, 
