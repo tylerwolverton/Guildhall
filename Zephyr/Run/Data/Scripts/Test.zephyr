@@ -7,6 +7,8 @@ StateMachine
 
 		Number variableTest = 10 + testNum;
 
-		testNum = 7;
+		testNum = 12 - 7;
+
+		declarationTest = testNum = variableTest = 4;
 	}
 }
