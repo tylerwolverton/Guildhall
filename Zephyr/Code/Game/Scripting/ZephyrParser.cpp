@@ -287,6 +287,13 @@ bool ZephyrParser::ParseAssignment()
 		return false;
 	}
 
+	ZephyrValue value;
+	if ( !m_curBytecodeChunk->TryToGetVariable( identifier.GetData(), value ) )
+	{
+		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+		return false;
+	}
+
 	if ( !ParseExpression() )
 	{
 		return false;

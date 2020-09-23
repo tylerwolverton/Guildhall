@@ -7,6 +7,6 @@ StateMachine
 
 		Number variableTest = 10 + testNum;
 
-		testNum = variableTest = 7;
+		testNum = 7;
 	}
 }
