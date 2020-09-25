@@ -45,6 +45,7 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 			case '/': AddToken( eTokenType::SLASH );				break;
 			case '=': AddToken( eTokenType::EQUAL );				break;
 			case ';': AddToken( eTokenType::SEMICOLON );			break;
+			case EOF: 												break;
 			
 			default:
 			{
@@ -76,9 +77,24 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScanner::SkipWhitespaceAndComments()
 {
-	// Skip whitespace and comments (once we have comments...)
+	bool parsingComment = false;
+
 	while ( true )
 	{
+		if ( parsingComment )
+		{
+			if ( Peek() == '\n'
+				 || Peek() == EOF )
+			{
+				parsingComment = false;
+			}
+			else
+			{
+				ReadAndAdvanceSrcPos();
+				continue;
+			}
+		}
+
 		switch ( Peek() )
 		{
 			case ' ':
@@ -93,6 +109,16 @@ void ZephyrScanner::SkipWhitespaceAndComments()
 			{
 				++m_curLineNum;
 				ReadAndAdvanceSrcPos();
+			}
+			break;
+
+			// Comment
+			case '/':
+			{
+				if ( PeekNextChar() == '/' )
+				{
+					parsingComment = true;
+				}
 			}
 			break;
 
@@ -157,6 +183,11 @@ char ZephyrScanner::ReadAndAdvanceSrcPos()
 //-----------------------------------------------------------------------------------------------
 char ZephyrScanner::Peek()
 {
+	if ( IsSrcPosAtEnd() )
+	{
+		return EOF;
+	}
+
 	return m_scriptSource[m_curSrcPos];
 }
 
