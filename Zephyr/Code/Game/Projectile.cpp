@@ -1,5 +1,7 @@
 #include "Game/Projectile.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Physics/DiscCollider2D.hpp"
+#include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/Collision2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
@@ -13,14 +15,23 @@ Projectile::Projectile( const EntityDefinition& entityDef, Map* map )
 {
 	m_damage = entityDef.GetDamageRange().GetRandomInRange( g_game->m_rng );
 
+	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 	m_rigidbody2D->SetDrag( 0.f );
-	m_rigidbody2D->GetCollider()->m_onOverlapEnterDelegate.SubscribeMethod( this, &Projectile::EnterCollisionEvent );
+	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY_PROJECTILE );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 Projectile::~Projectile()
 {
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Projectile::Load()
+{
+	Entity::Load();
+	m_rigidbody2D->GetCollider()->m_onOverlapEnterDelegate.SubscribeMethod( this, &Projectile::EnterCollisionEvent );
 }
 
 

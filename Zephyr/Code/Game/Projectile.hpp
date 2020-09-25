@@ -14,6 +14,8 @@ public:
 	Projectile( const EntityDefinition& entityDef, Map* map );
 	~Projectile();
 
+	virtual void Load() override;
+
 	virtual void Update( float deltaSeconds );
 	virtual void Render() const;
 	virtual void Die();

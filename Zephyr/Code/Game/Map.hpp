@@ -53,6 +53,8 @@ public:
 	void RemoveOwnershipOfEntity( Entity* entityToRemove );
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
 
+	void WarpEntityInMap( Entity* entity, Portal* portal );
+
 private:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 	
@@ -63,8 +65,6 @@ private:
 	void RemoveFromPortalList( Portal* portal );
 
 	void DeleteDeadEntities();
-
-	void WarpEntityInMap( Entity* entity, Portal* portal );
 
 	virtual RaycastResult Raycast( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const = 0;
 

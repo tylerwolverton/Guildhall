@@ -52,6 +52,7 @@ void Map::Load( Entity* player )
 		if ( m_entities[entityIdx] != nullptr )
 		{
 			m_entities[entityIdx]->FireBirthEvent();
+			m_entities[entityIdx]->Load();
 		}
 	}
 	
@@ -73,6 +74,12 @@ void Map::Unload()
 		if ( m_entities[entityIdx] == m_player )
 		{
 			m_entities[entityIdx] = nullptr;
+			continue;
+		}
+
+		if ( m_entities[entityIdx] != nullptr )
+		{
+			m_entities[entityIdx]->Unload();
 		}
 	}
 

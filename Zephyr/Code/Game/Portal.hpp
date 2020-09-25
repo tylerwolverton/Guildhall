@@ -3,6 +3,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class EntityDefinition;
+class Collision2D;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -16,12 +17,17 @@ public:
 	virtual void Render() const;
 	virtual void Die();
 
+	virtual void Load() override;
+
 	std::string GetDestinationMap() const							{ return m_destMap; }
 	void SetDestinationMap( const std::string& destMap )			{ m_destMap = destMap; }
 	Vec2 GetDestinationPosition()									{ return m_destPos; }
 	void SetDestinationPosition( const Vec2& destPos )				{ m_destPos = destPos; }
 	float GetDestinationYawOffset()									{ return m_destYawOffset; }
 	void SetDestinationYawOffset( float destYawOffset )				{ m_destYawOffset = destYawOffset; }
+
+private:
+	void EnterTriggerEvent( Collision2D collision );
 
 private:
 	std::string m_destMap = "";

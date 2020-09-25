@@ -30,5 +30,4 @@ private:
 
 protected:
 	int						m_controllerID = -1;
-	bool					m_isPlayer = false;
 };

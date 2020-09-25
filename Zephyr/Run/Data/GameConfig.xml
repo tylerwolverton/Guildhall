@@ -1,7 +1,7 @@
 <GameConfig
-	startMap="EmptyRoom"
+	startMap="Level1"
   playerActorName="Link"
 	windowAspect="1.777"
-  windowTitle="ZephyrTest"
+  windowTitle="Zephyr Test"
 	windowMode="windowed"
 />

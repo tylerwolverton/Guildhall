@@ -14,7 +14,7 @@ class ZephyrScriptDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
-enum eEntityType
+enum class eEntityType
 {
 	UNKNOWN = -1,
 	ENTITY,

@@ -41,6 +41,9 @@ public:
 	virtual void	Die();
 	virtual void	DebugRender() const;
 
+	virtual void	Load();
+	virtual void	Unload();
+
 	const Vec2		GetForwardVector() const;
 	const Vec2		GetPosition() const;
 	void			SetPosition( const Vec2& position );
@@ -61,10 +64,11 @@ public:
 
 	bool			IsDead() const											{ return m_isDead; }
 	bool			IsGarbage() const										{ return m_isGarbage; }
+	bool			IsPlayer() const										{ return m_isPlayer; }
 				 
 	void			TakeDamage( int damage );
 	//void			ApplyFriction();
-	
+
 protected:
 	void			RegisterUserEvents();
 	void			FireCorrespondingEvent( EventArgs* args );
@@ -78,6 +82,7 @@ protected:
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
+	bool					m_isPlayer = false;
 	Map*					m_map = nullptr;
 
 	// Physics

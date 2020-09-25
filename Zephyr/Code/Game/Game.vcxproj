@@ -255,7 +255,8 @@
     <Xml Include="..\..\Run\Data\Gameplay\EntityTypes.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileMaterialDefs.xml" />
-    <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml" />
+    <Xml Include="..\..\Run\Data\Maps\Level1.xml" />
+    <Xml Include="..\..\Run\Data\Maps\Level2.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

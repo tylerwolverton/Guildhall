@@ -54,7 +54,10 @@ void Rigidbody2D::Update( float deltaSeconds )
 		m_orientationRadians += twoPI;
 	}
 
-	m_collider->UpdateWorldShape();
+	if ( m_collider != nullptr )
+	{
+		m_collider->UpdateWorldShape();
+	}
 
 	m_forces = Vec2::ZERO;
 	m_frameTorque = 0.f;

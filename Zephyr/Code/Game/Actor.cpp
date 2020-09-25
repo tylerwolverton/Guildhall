@@ -3,6 +3,8 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Physics/DiscCollider2D.hpp"
+#include "Engine/Physics/Physics2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
@@ -21,6 +23,10 @@ Actor::Actor( const EntityDefinition& entityDef, Map* map )
 	: Entity( entityDef, map )
 {
 	m_faction = eFaction::EVIL;
+
+	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+	m_rigidbody2D->SetDrag( 5.f );
+	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY );
 }
 
 
@@ -76,6 +82,9 @@ void Actor::SetAsPlayer()
 
 	m_faction = eFaction::GOOD;
 	m_rigidbody2D->SetLayer( eCollisionLayer::PLAYER );
+
+	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, GetPhysicsRadius() );
+	m_rigidbody2D->TakeCollider( discCollider );
 }
 
 
@@ -141,6 +150,7 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 	if( spawnProj )
 	{
 		Entity* entity = m_map->SpawnNewEntityOfTypeAtPosition( "Fireball", projPosition );
+		entity->Load();
 		entity->SetOrientationDegrees( projOrientation );
 		entity->SetCollisionLayer( eCollisionLayer::PLAYER_PROJECTILE );
 	}

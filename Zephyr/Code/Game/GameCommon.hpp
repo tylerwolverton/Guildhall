@@ -65,4 +65,5 @@ enum eCollisionLayer : unsigned int
 	PLAYER_PROJECTILE,
 	ENEMY,
 	ENEMY_PROJECTILE,
+	PORTAL,
 };

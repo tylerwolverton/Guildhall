@@ -71,7 +71,7 @@ void Game::Startup()
 	m_rng = new RandomNumberGenerator();
 
 	m_gameClock = new Clock();
-	m_gameClock->SetFrameLimits( 1.0 / 120.0, 9999.0 );
+	m_gameClock->SetFrameLimits( 1.0 / 240.0, .1 );
 
 	g_renderer->Setup( m_gameClock );
 	g_physicsSystem2D->Startup( m_gameClock );
@@ -80,6 +80,9 @@ void Game::Startup()
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::STATIC_ENVIRONMENT, eCollisionLayer::STATIC_ENVIRONMENT );
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PLAYER, eCollisionLayer::PLAYER_PROJECTILE );
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PLAYER_PROJECTILE, eCollisionLayer::PLAYER_PROJECTILE );
+	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PORTAL, eCollisionLayer::PLAYER_PROJECTILE );
+	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PORTAL, eCollisionLayer::ENEMY );
+	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PORTAL, eCollisionLayer::ENEMY_PROJECTILE );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 

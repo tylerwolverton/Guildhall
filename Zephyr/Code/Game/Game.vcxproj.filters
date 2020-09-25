@@ -194,11 +194,14 @@
     <Xml Include="..\..\Run\Data\Gameplay\TileMaterialDefs.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml">
-      <Filter>Data\Maps</Filter>
-    </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\EntityTypes.xml">
       <Filter>Data\Gameplay</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\Level1.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\Level2.xml">
+      <Filter>Data\Maps</Filter>
     </Xml>
   </ItemGroup>
 </Project>

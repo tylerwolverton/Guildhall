@@ -36,11 +36,8 @@
     <Gameplay damage="1~1" maxHealth="1"/>
   </Projectile>
   ​
-  <Portal name="Energy Teleporter">
-    <Physics radius="0.18" walkSpeed="0.0"/>
-    <Appearance size="1,1">
-      <Walk up="57"/>
-    </Appearance>
+  <Portal name="InvisibleTeleporter">
+    <Physics radius="0.25" walkSpeed="0.0"/>
   </Portal>
   ​
 </EntityTypes>

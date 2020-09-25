@@ -32,11 +32,6 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 
 	m_rigidbody2D = g_physicsSystem2D->CreateRigidbody();
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
-	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, m_entityDef.m_physicsRadius );
-	m_rigidbody2D->TakeCollider( discCollider );
-	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
-	m_rigidbody2D->SetDrag( 5.f );
-	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY );
 
 	RegisterUserEvents();
 
@@ -193,6 +188,25 @@ void Entity::TakeDamage( int damage )
 	}
 	
 	g_game->AddScreenShakeIntensity(.05f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::Load()
+{
+	m_rigidbody2D->Enable();
+
+	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, GetPhysicsRadius() );
+	m_rigidbody2D->TakeCollider( discCollider );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::Unload()
+{
+	m_rigidbody2D->Disable();
+
+	g_physicsSystem2D->DestroyCollider( m_rigidbody2D->GetCollider() );
 }
 
 
