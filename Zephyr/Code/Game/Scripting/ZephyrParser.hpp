@@ -53,6 +53,8 @@ private:
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseNumberDeclaration();
+	bool ParseFireEvent();
+	bool ParseEventArgs();
 	bool ParseAssignment();
 	bool ParseExpression();
 	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel );
@@ -72,6 +74,8 @@ private:
 
 	ZephyrToken PeekNextToken();
 	ZephyrToken ConsumeNextToken();
+	void AdvanceToNextToken();
+	void AdvanceToNextTokenIfTypeMatches( eTokenType expectedType );
 	bool ConsumeExpectedNextToken( eTokenType expectedType );
 	ZephyrToken GetLastToken();
 	bool IsAtEnd();

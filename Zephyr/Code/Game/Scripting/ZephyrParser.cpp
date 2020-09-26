@@ -107,7 +107,7 @@ bool ZephyrParser::WriteConstantToCurChunk( const ZephyrValue& constant )
 		return false;
 	}
 
-	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT_NUMBER );
+	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
 	m_curBytecodeChunk->WriteConstant( constant );
 
 	return true;
@@ -190,35 +190,10 @@ bool ZephyrParser::ParseStatement()
 
 		case eTokenType::FIRE_EVENT:
 		{
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+			if ( !ParseFireEvent() )
 			{
 				return false;
 			}
-
-			ZephyrToken eventName = ConsumeNextToken();
-			if ( !DoesTokenMatchType( eventName, eTokenType::IDENTIFIER ) )
-			{
-				ReportError( "FireEvent must specify an event to call in parentheses" );
-				return false;
-			}
-
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
-			{
-				return false;
-			}
-
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
-			{
-				return false;
-			}
-
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
-			{
-				return false;
-			}
-
-			WriteConstantToCurChunk( ZephyrValue( eventName.GetData() ) );
-			WriteOpCodeToCurChunk( eOpCode::FIRE_EVENT );
 		}
 		break;
 
@@ -275,7 +250,7 @@ bool ZephyrParser::ParseNumberDeclaration()
 		
 		case eTokenType::EQUAL:		
 		{
-			ConsumeNextToken();
+			AdvanceToNextToken();
 
 			// Write an assignment byte
 			if ( !ParseExpression() )
@@ -304,6 +279,112 @@ bool ZephyrParser::ParseNumberDeclaration()
 
 	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
 	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseFireEvent()
+{
+	// FireEvent opening paren
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+	{
+		return false;
+	}
+
+	ZephyrToken eventName = ConsumeNextToken();
+	if ( !DoesTokenMatchType( eventName, eTokenType::IDENTIFIER ) )
+	{
+		ReportError( "FireEvent must specify an event to call in parentheses" );
+		return false;
+	}
+
+	// Event opening paren
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+	{
+		return false;
+	}
+
+	if ( !ParseEventArgs() )
+	{
+		return false;
+	}
+
+	// Event closing paren
+	if ( GetCurToken().GetType() != eTokenType::PARENTHESIS_RIGHT )
+	{
+		ReportError( "Expected ')' after parameter list for event" );
+		return false;
+	}
+
+	// FireEvent closing paren
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+	{
+		return false;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( eventName.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::FIRE_EVENT );
+	
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseEventArgs()
+{
+	ZephyrToken identifier = ConsumeNextToken();
+	int paramCount = 0;
+
+	while ( identifier.GetType() == eTokenType::IDENTIFIER )
+	{
+		
+		if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
+		{
+			ReportError( "Parameter to event must be in the form, var = value" );
+			return false;
+		}
+
+		ZephyrToken valueToken = ConsumeNextToken();
+		switch ( valueToken.GetType() )
+		{
+			case eTokenType::CONSTANT_NUMBER:
+			{
+				WriteConstantToCurChunk( valueToken.GetData() );
+			}
+			break;
+
+			case eTokenType::IDENTIFIER:
+			{
+				ZephyrValue value;
+				if ( !m_curBytecodeChunk->TryToGetVariable( valueToken.GetData(), value ) )
+				{
+					ReportError( Stringf( "Undefined variable, '%s', cannot be used as a parameter ", valueToken.GetData().c_str() ) );
+					return false;
+				}
+
+				WriteConstantToCurChunk( value );
+				//WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
+			}
+			break;
+
+			default:
+			{
+				ReportError( "Must set parameter equal to a value in the form, var = value" );
+				return false;
+			}
+		}
+
+		WriteConstantToCurChunk( identifier.GetData() );
+		++paramCount;
+
+		AdvanceToNextTokenIfTypeMatches( eTokenType::COMMA );
+
+		identifier = ConsumeNextToken();
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( (float)paramCount ) );
 
 	return true;
 }
@@ -482,7 +563,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 		{
 			if ( PeekNextToken().GetType() == eTokenType::EQUAL )
 			{
-				ConsumeNextToken();
+				AdvanceToNextToken();
 				return ParseAssignment();
 			}
 
@@ -576,6 +657,28 @@ ZephyrToken ZephyrParser::ConsumeNextToken()
 	}
 
 	return m_tokens[m_curTokenIdx++];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrParser::AdvanceToNextToken()
+{
+	if ( IsAtEnd() )
+	{
+		 return;
+	}
+
+	m_curTokenIdx++;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrParser::AdvanceToNextTokenIfTypeMatches( eTokenType expectedType )
+{
+	if ( GetCurToken().GetType() == expectedType )
+	{
+		AdvanceToNextToken();
+	}
 }
 
 

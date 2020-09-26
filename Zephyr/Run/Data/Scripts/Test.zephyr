@@ -2,8 +2,10 @@ StateMachine
 {
 	State TestState
 	{	
-		//FireEvent( PrintDebugText( text=4 )  );
-		FireEvent( PrintDebugText() );
+		Number testNum = (-1 + 10) * 2;
+		
+		FireEvent( PrintDebugText( text = 25 )  );
+		//FireEvent( PrintDebugText() );
 		
 		Number declarationTest; 
 		Number testNum = (-1 + 10) * 2;

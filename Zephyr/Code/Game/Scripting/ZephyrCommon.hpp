@@ -34,6 +34,7 @@ enum class eTokenType
 	EQUAL,
 	
 	SEMICOLON,
+	COMMA,
 
 	END_OF_FILE,
 
@@ -51,7 +52,7 @@ enum class eOpCode : byte
 
 	NEGATE,
 
-	CONSTANT_NUMBER,
+	CONSTANT,
 
 	DEFINE_VARIABLE,
 	GET_VARIABLE_VALUE,

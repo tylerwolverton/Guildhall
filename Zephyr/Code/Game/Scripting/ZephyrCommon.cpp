@@ -22,6 +22,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::SLASH:				return "/";
 		case eTokenType::EQUAL:				return "=";
 		case eTokenType::SEMICOLON:			return ";";
+		case eTokenType::COMMA:				return ",";
 		case eTokenType::END_OF_FILE:		return "End of File";
 		default:							return "Unknown";
 	}
@@ -49,6 +50,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::SLASH:				return "SLASH";
 		case eTokenType::EQUAL:				return "EQUAL";
 		case eTokenType::SEMICOLON:			return "SEMICOLON";
+		case eTokenType::COMMA: 			return "COMMA";
 		case eTokenType::END_OF_FILE:		return "END_OF_FILE";
 		default:							return "UNKNOWN";
 	}

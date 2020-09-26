@@ -39,7 +39,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 		eOpCode opCode = ByteToOpCode( instruction );
 		switch ( opCode )
 		{
-			case eOpCode::CONSTANT_NUMBER:
+			case eOpCode::CONSTANT:
 			{
 				int constIdx = bytecodeChunk.GetByte( byteIdx++ );
 				ZephyrValue constant = bytecodeChunk.GetConstant( constIdx );
@@ -94,6 +94,22 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				ZephyrValue eventName = PopConstant();
 				EventArgs args;
 				args.SetValue( "entity", (void*)parentEntity );
+
+				ZephyrValue paramCount = PopConstant();
+
+				for ( int paramIdx = 0; paramIdx < (int)paramCount.GetAsNumber(); ++paramIdx )
+				{
+					ZephyrValue param = PopConstant();
+					ZephyrValue value = PopConstant();
+
+					switch ( value.GetType() )
+					{
+						case eValueType::BOOL:		args.SetValue( param.GetAsString(), value.GetAsBool() ); break;
+						case eValueType::NUMBER:	args.SetValue( param.GetAsString(), value.GetAsNumber() ); break;
+						case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
+					}					
+				}
+
 				g_eventSystem->FireEvent( eventName.GetAsString(), &args, EVERYWHERE );
 			}
 			break;
