@@ -188,6 +188,40 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::FIRE_EVENT:
+		{
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+			{
+				return false;
+			}
+
+			ZephyrToken eventName = ConsumeNextToken();
+			if ( !DoesTokenMatchType( eventName, eTokenType::IDENTIFIER ) )
+			{
+				ReportError( "FireEvent must specify an event to call in parentheses" );
+				return false;
+			}
+
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+			{
+				return false;
+			}
+
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+			{
+				return false;
+			}
+
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+			{
+				return false;
+			}
+
+			WriteConstantToCurChunk( ZephyrValue( eventName.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::FIRE_EVENT );
+		}
+		break;
+
 		case eTokenType::IDENTIFIER:
 		{
 			if ( !ParseAssignment() )

@@ -1,4 +1,5 @@
 #include "Game/Scripting/GameAPI.hpp"
+#include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Rgba8.hpp"
@@ -7,6 +8,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/Entity.hpp"
 
 
 #define REGISTER_EVENT( eventName ) {\
@@ -30,7 +32,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( EntityBirthEvent );
 	REGISTER_EVENT( EntityDeathEvent );
 	REGISTER_EVENT( TestResponseEvent );
-	REGISTER_EVENT( PrintDebugTextEvent );
+	REGISTER_EVENT( PrintDebugText );
 }
 
 
@@ -78,9 +80,17 @@ void GameAPI::TestResponseEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::PrintDebugTextEvent( EventArgs* args )
+void GameAPI::PrintDebugText( EventArgs* args )
 {
-	std::string text = args->GetValue( "text", "" );
+	std::string text = args->GetValue( "text", "TestPrint" );
+	Entity* entity = (Entity*)args->GetValue( "entity", (void*)nullptr );
 
-	DebugAddScreenText( Vec4( 2.f, 2.f, 0.f, 0.f ), Vec2::ONE, 10.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, text.c_str() );
+	Mat44 textLocation;
+
+	if ( entity != nullptr )
+	{
+		textLocation.SetTranslation2D( entity->GetPosition() );
+	}
+	
+	DebugAddWorldText( textLocation, Vec2::HALF, Rgba8::WHITE, Rgba8::WHITE, 0.f, .1f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, text.c_str() );
 }

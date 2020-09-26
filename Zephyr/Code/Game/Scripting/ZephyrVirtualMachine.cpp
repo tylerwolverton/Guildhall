@@ -2,6 +2,7 @@
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
 
@@ -26,7 +27,7 @@ void ZephyrVirtualMachine::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk )
+void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, Entity* parentEntity )
 {
 	ClearConstantStack();
 	std::map<std::string, ZephyrValue> variables;
@@ -85,6 +86,15 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				ZephyrValue b = PopConstant();
 				ZephyrValue a = PopConstant();
 				PushBinaryOp( a, b, opCode );
+			}
+			break;
+
+			case eOpCode::FIRE_EVENT:
+			{
+				ZephyrValue eventName = PopConstant();
+				EventArgs args;
+				args.SetValue( "entity", (void*)parentEntity );
+				g_eventSystem->FireEvent( eventName.GetAsString(), &args, EVERYWHERE );
 			}
 			break;
 

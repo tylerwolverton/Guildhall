@@ -38,7 +38,7 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
 	if ( scriptDef != nullptr )
 	{
-		m_scriptObj = new ZephyrScript( *scriptDef );
+		m_scriptObj = new ZephyrScript( *scriptDef, this );
 	}
 }
 

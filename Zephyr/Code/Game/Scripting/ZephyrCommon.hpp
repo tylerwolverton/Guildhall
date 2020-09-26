@@ -15,6 +15,7 @@ enum class eTokenType
 	STATE_MACHINE,
 	STATE,
 	NUMBER,
+	FIRE_EVENT,
 
 	BRACE_LEFT,
 	BRACE_RIGHT,
@@ -60,6 +61,8 @@ enum class eOpCode : byte
 	SUBTRACT, 
 	MULTIPLY,
 	DIVIDE,
+
+	FIRE_EVENT,
 
 	LAST_VAL,
 };

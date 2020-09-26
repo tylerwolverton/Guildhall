@@ -4,18 +4,20 @@
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrScriptDefinition;
+class Entity;
 
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrScript
 {
 public:
-	ZephyrScript( const ZephyrScriptDefinition& scriptDef );
+	ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* parentEntity = nullptr );
 
 	void Update();
 
 private:
 	std::string m_name;
+	Entity* m_parentEntity = nullptr;
 
 	// TODO: save bytecode chunks into map that is managed by this class
 	const ZephyrScriptDefinition& m_scriptDef;

@@ -6,6 +6,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrBytecodeChunk;
+class Entity;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -17,7 +18,7 @@ public:
 	void Startup();
 	void Shutdown();
 
-	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk );
+	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, Entity* parentEntity = nullptr );
 
 private:
 	void		PushConstant( const ZephyrValue& number );
