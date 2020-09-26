@@ -364,8 +364,8 @@ bool ZephyrParser::ParseEventArgs()
 					return false;
 				}
 
-				WriteConstantToCurChunk( value );
-				//WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
+				WriteConstantToCurChunk( ZephyrValue( valueToken.GetData() ) );
+				WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
 			}
 			break;
 

@@ -4,7 +4,7 @@ StateMachine
 	{	
 		Number testNum = (-1 + 10) * 2;
 		
-		FireEvent( PrintDebugText( text = 25 )  );
+		FireEvent( PrintDebugText( text = testNum )  );
 		//FireEvent( PrintDebugText() );
 		
 		Number declarationTest; 
