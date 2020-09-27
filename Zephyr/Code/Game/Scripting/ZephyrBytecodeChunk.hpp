@@ -16,6 +16,8 @@ public:
 	byte				GetByte( int idx ) const						{ return m_bytes[idx]; }
 	ZephyrValue			GetConstant( int idx ) const					{ return m_constants[idx]; }
 	bool				TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const;
+	ZephyrValueMap		GetVariables() const							{ return m_variables; }
+	ZephyrValueMap*		GetUpdateableVariables() 						{ return &m_variables; }
 
 	// Methods to write data to chunk
 	void WriteByte( byte newByte );
@@ -33,5 +35,5 @@ private:
 	std::string m_name;
 	std::vector<byte> m_bytes;
 	std::vector<ZephyrValue> m_constants;
-	std::map<std::string, ZephyrValue> m_variables;
+	ZephyrValueMap m_variables;
 };

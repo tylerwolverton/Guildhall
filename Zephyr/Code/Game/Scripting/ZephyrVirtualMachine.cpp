@@ -27,10 +27,10 @@ void ZephyrVirtualMachine::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, Entity* parentEntity )
+void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity )
 {
 	ClearConstantStack();
-	std::map<std::string, ZephyrValue> variables;
+	std::map<std::string, ZephyrValue> localVariables = *globalVariables;
 
 	int byteIdx = 0;
 	while ( byteIdx < bytecodeChunk.GetNumBytes() )
@@ -50,21 +50,21 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::DEFINE_VARIABLE:
 			{
 				ZephyrValue constant = PopConstant();
-				variables[constant.GetAsString()] = PopConstant();
+				localVariables[constant.GetAsString()] = PopConstant();
 			}
 			break;
 
 			case eOpCode::GET_VARIABLE_VALUE:
 			{
 				ZephyrValue constant = PopConstant();
-				PushConstant( variables[constant.GetAsString()] );
+				PushConstant( localVariables[constant.GetAsString()] );
 			}
 			break;
 
 			case eOpCode::ASSIGNMENT:
 			{
 				ZephyrValue constant = PopConstant(); 
-				variables[constant.GetAsString()] = PeekConstant();
+				localVariables[constant.GetAsString()] = PeekConstant();
 			}
 			break;
 
@@ -120,6 +120,8 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			break;
 		}
 	}
+
+	UpdateGlobalVariables( *globalVariables, localVariables );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -194,6 +196,17 @@ void ZephyrVirtualMachine::PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOp
 		{
 
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::UpdateGlobalVariables( ZephyrValueMap& globalVariables, const ZephyrValueMap& localVariables )
+{
+	for ( auto& globalVarEntry : globalVariables )
+	{
+		auto localVarIter = localVariables.find( globalVarEntry.first );
+		globalVariables[globalVarEntry.first] = localVarIter->second;
 	}
 }
 

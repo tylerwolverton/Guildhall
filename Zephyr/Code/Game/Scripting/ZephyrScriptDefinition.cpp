@@ -9,8 +9,10 @@ std::map< std::string, ZephyrScriptDefinition* > ZephyrScriptDefinition::s_defin
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrScriptDefinition::ZephyrScriptDefinition( const std::vector<ZephyrBytecodeChunk*>& bytecodeChunks )
-	: m_bytecodeChunks( bytecodeChunks )
+ZephyrScriptDefinition::ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachineBytecodeChunk, 
+												const std::vector<ZephyrBytecodeChunk*>& bytecodeChunks )
+	: m_stateMachineBytecodeChunk( stateMachineBytecodeChunk )
+	, m_bytecodeChunks( bytecodeChunks )
 {
 
 }

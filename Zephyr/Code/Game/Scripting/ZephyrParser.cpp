@@ -5,6 +5,7 @@
 
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrToken.hpp"
+#include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -16,37 +17,47 @@ ZephyrParser::ZephyrParser( const std::string& filename, const std::vector<Zephy
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<ZephyrBytecodeChunk*> ZephyrParser::ParseTokensIntoBytecodeChunks()
+ZephyrScriptDefinition* ZephyrParser::ParseTokensIntoScriptDefinition()
 {
 	// First token must be StateMachine
 	ZephyrToken nextToken = ConsumeNextToken();
 	if ( nextToken.GetType() != eTokenType::STATE_MACHINE )
 	{
 		ReportError( "File must begin with a StateMachine definition" );
-		return m_bytecodeChunks;
+		return nullptr;
 	}
+
+	CreateStateMachineBytecodeChunk();
 
 	if ( !ParseBlock() )
 	{
-		return m_bytecodeChunks;
+		return nullptr;
 	}
 
 	nextToken = ConsumeNextToken();
 	if ( !DoesTokenMatchType( nextToken, eTokenType::END_OF_FILE ) )
 	{
 		ReportError( "Nothing can be defined outside StateMachine" );
-		return m_bytecodeChunks;
+		return nullptr;
 	}
 
-	m_isErrorFree = true;
-	return m_bytecodeChunks;
+	return new ZephyrScriptDefinition( m_stateMachineBytecodeChunk, m_bytecodeChunks );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrParser::CreateStateMachineBytecodeChunk()
+{
+	m_stateMachineBytecodeChunk = new ZephyrBytecodeChunk( "StateMachine" );
+
+	m_curBytecodeChunk = m_stateMachineBytecodeChunk;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
 {
-	if ( m_curBytecodeChunk != nullptr )
+	if ( m_curBytecodeChunk != m_stateMachineBytecodeChunk )
 	{
 		ReportError( "Tried to define a new bytecode chunk while writing to existing one, make Tyler fix this" );
 		return false;
@@ -64,7 +75,7 @@ bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
 //-----------------------------------------------------------------------------------------------
 void ZephyrParser::FinalizeCurBytecodeChunk()
 {
-	m_curBytecodeChunk = nullptr;
+	m_curBytecodeChunk = m_stateMachineBytecodeChunk;
 }
 
 
@@ -237,7 +248,8 @@ bool ZephyrParser::ParseNumberDeclaration()
 		return false;
 	}
 	
-	m_curBytecodeChunk->SetVariable( identifier.GetData(), ZephyrValue( 0.f ) );
+	//m_curBytecodeChunk->SetVariable( identifier.GetData(), ZephyrValue( 0.f ) );
+	DeclareVariable( identifier );
 
 	ZephyrToken curToken = GetCurToken();
 	switch( curToken.GetType() )
@@ -358,7 +370,7 @@ bool ZephyrParser::ParseEventArgs()
 			case eTokenType::IDENTIFIER:
 			{
 				ZephyrValue value;
-				if ( !m_curBytecodeChunk->TryToGetVariable( valueToken.GetData(), value ) )
+				if ( !TryToGetVariable( valueToken.GetData(), value ) )
 				{
 					ReportError( Stringf( "Undefined variable, '%s', cannot be used as a parameter ", valueToken.GetData().c_str() ) );
 					return false;
@@ -403,7 +415,7 @@ bool ZephyrParser::ParseAssignment()
 	}
 
 	ZephyrValue value;
-	if ( !m_curBytecodeChunk->TryToGetVariable( identifier.GetData(), value ) )
+	if ( !TryToGetVariable( identifier.GetData(), value ) )
 	{
 		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
 		return false;
@@ -532,7 +544,7 @@ bool ZephyrParser::ParseIdentifierExpressionOfType( eValueType expectedType )
 	}
 
 	ZephyrValue value;
-	if ( !m_curBytecodeChunk->TryToGetVariable( curToken.GetData(), value ) )
+	if ( !TryToGetVariable( curToken.GetData(), value ) )
 	{
 		ReportError( Stringf( "Undefined variable seen, '%s'", curToken.GetData().c_str() ) );
 		return false;
@@ -727,6 +739,27 @@ bool ZephyrParser::DoesTokenMatchType( const ZephyrToken& token, const eTokenTyp
 
 	return true;
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrParser::DeclareVariable( const ZephyrToken& identifier )
+{
+	// m_curBytecodeChunk will be the global state machine if outside a state declaration, should never be null
+	m_curBytecodeChunk->SetVariable( identifier.GetData(), ZephyrValue( 0.f ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const
+{
+	if ( !m_curBytecodeChunk->TryToGetVariable( identifier, out_value )
+		 && m_curBytecodeChunk != m_stateMachineBytecodeChunk )
+	{
+		return m_stateMachineBytecodeChunk->TryToGetVariable( identifier, out_value );
+	}
+
+	return true;
 }
 
 

@@ -7,11 +7,12 @@
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrBytecodeChunk;
+class ZephyrScriptDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrCompiler
 {
 public:
-	static bool CompileScriptFile( const std::string& filePath, std::vector<ZephyrBytecodeChunk*>& out_bytecodeChunks );
+	static ZephyrScriptDefinition* CompileScriptFile( const std::string& filePath );
 };

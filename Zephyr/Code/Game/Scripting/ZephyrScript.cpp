@@ -15,7 +15,10 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 	, m_scriptDef( scriptDef )
 	, m_parentEntity( parentEntity )
 {
+	ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+	GUARANTEE_OR_DIE( globalBytecodeChunk != nullptr, "Global Bytecode Chunk was null" );
 
+	g_zephyrVM->InterpretBytecodeChunk( *globalBytecodeChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 }
 
 
@@ -26,7 +29,8 @@ void ZephyrScript::Update()
 	std::vector<ZephyrBytecodeChunk*> bytecodeChunks = m_scriptDef.GetBytecodeChunks();
 	if ( bytecodeChunks.size() > 0 )
 	{
-		g_zephyrVM->InterpretBytecodeChunk( *bytecodeChunks[0], m_parentEntity );
+		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		g_zephyrVM->InterpretBytecodeChunk( *bytecodeChunks[0], globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 
 	if ( !m_hasPrinted )

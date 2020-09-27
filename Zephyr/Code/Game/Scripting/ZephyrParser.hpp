@@ -7,6 +7,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrBytecodeChunk;
+class ZephyrScriptDefinition;
 class ZephyrToken;
 
 
@@ -35,12 +36,11 @@ class ZephyrParser
 private:
 	// Private constructor so only ZephyrCompiler can use this class
 	ZephyrParser( const std::string& filename, const std::vector<ZephyrToken>& tokens );
-
-	bool IsErrorFree() const												{ return m_isErrorFree; }
-
-	std::vector<ZephyrBytecodeChunk*> ParseTokensIntoBytecodeChunks();
+	
+	ZephyrScriptDefinition* ParseTokensIntoScriptDefinition();
 
 	// Bytecode chunk manipulation
+	void CreateStateMachineBytecodeChunk();
 	bool CreateBytecodeChunk( const std::string& chunkName );
 	void FinalizeCurBytecodeChunk();
 
@@ -50,6 +50,10 @@ private:
 
 	bool IsCurTokenType( const eTokenType& type );
 	bool DoesTokenMatchType( const ZephyrToken& token, const eTokenType& type );
+
+	void DeclareVariable( const ZephyrToken& identifier );
+	bool TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const;
+
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseNumberDeclaration();
@@ -87,10 +91,10 @@ private:
 
 private:
 	std::string m_filename;
-	bool m_isErrorFree = false;
 	std::vector<ZephyrToken> m_tokens;
 	int m_curTokenIdx = 0;
 	
+	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;
 	std::vector<ZephyrBytecodeChunk*> m_bytecodeChunks;
 	ZephyrBytecodeChunk* m_curBytecodeChunk = nullptr;
 };

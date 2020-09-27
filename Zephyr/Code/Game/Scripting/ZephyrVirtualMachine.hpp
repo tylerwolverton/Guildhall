@@ -18,7 +18,7 @@ public:
 	void Startup();
 	void Shutdown();
 
-	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, Entity* parentEntity = nullptr );
+	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity = nullptr );
 
 private:
 	void		PushConstant( const ZephyrValue& number );
@@ -28,6 +28,7 @@ private:
 	void PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode );
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
 
+	void UpdateGlobalVariables( ZephyrValueMap& globalVariables, const ZephyrValueMap& localVariables );
 	void ClearConstantStack();
 
 private:
