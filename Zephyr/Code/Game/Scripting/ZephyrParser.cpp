@@ -64,7 +64,7 @@ bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
 	}
 
 	ZephyrBytecodeChunk* newChunk = new ZephyrBytecodeChunk( chunkName );
-	m_bytecodeChunks.push_back( newChunk );
+	m_bytecodeChunks[chunkName] = newChunk;
 
 	m_curBytecodeChunk = newChunk;
 

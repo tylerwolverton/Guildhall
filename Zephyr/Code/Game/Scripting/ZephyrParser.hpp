@@ -95,6 +95,6 @@ private:
 	int m_curTokenIdx = 0;
 	
 	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;
-	std::vector<ZephyrBytecodeChunk*> m_bytecodeChunks;
+	ZephyrBytecodeChunkMap m_bytecodeChunks;
 	ZephyrBytecodeChunk* m_curBytecodeChunk = nullptr;
 };

@@ -14,11 +14,14 @@ class ZephyrBytecodeChunk;
 class ZephyrScriptDefinition
 {
 public:
-	ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachineBytecodeChunk, const std::vector<ZephyrBytecodeChunk*>& bytecodeChunks );
+	ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachineBytecodeChunk, const ZephyrBytecodeChunkMap& bytecodeChunks );
 	~ZephyrScriptDefinition();
 
-	ZephyrBytecodeChunk*				GetGlobalBytecodeChunk() const				{ return m_stateMachineBytecodeChunk; }
-	std::vector<ZephyrBytecodeChunk*>	GetBytecodeChunks() const					{ return m_bytecodeChunks; }
+	ZephyrBytecodeChunk* GetGlobalBytecodeChunk() const										{ return m_stateMachineBytecodeChunk; }
+	ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& name ) const;
+	// TODO: IS this enough or do we need a variable in StateMachine for the initial state?
+	ZephyrBytecodeChunk* GetFirstStateBytecodeChunk() const;
+	//std::vector<ZephyrBytecodeChunk*>	GetBytecodeChunks() const					{ return m_bytecodeChunks; }
 
 	static ZephyrScriptDefinition* GetZephyrScriptDefinitionByPath( const std::string& scriptPath );
 	static ZephyrScriptDefinition* GetZephyrScriptDefinitionByName( const std::string& scriptName );
@@ -31,5 +34,5 @@ public:
 
 private:
 	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;
-	std::vector<ZephyrBytecodeChunk*> m_bytecodeChunks;
+	ZephyrBytecodeChunkMap m_bytecodeChunks;
 };

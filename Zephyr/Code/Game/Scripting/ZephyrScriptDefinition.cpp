@@ -10,7 +10,7 @@ std::map< std::string, ZephyrScriptDefinition* > ZephyrScriptDefinition::s_defin
 
 //-----------------------------------------------------------------------------------------------
 ZephyrScriptDefinition::ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachineBytecodeChunk, 
-												const std::vector<ZephyrBytecodeChunk*>& bytecodeChunks )
+												const ZephyrBytecodeChunkMap& bytecodeChunks )
 	: m_stateMachineBytecodeChunk( stateMachineBytecodeChunk )
 	, m_bytecodeChunks( bytecodeChunks )
 {
@@ -21,7 +21,33 @@ ZephyrScriptDefinition::ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachin
 //-----------------------------------------------------------------------------------------------
 ZephyrScriptDefinition::~ZephyrScriptDefinition()
 {
-	PTR_VECTOR_SAFE_DELETE( m_bytecodeChunks );
+	PTR_MAP_SAFE_DELETE( m_bytecodeChunks );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrBytecodeChunk* ZephyrScriptDefinition::GetBytecodeChunkByName( const std::string& name ) const
+{
+	ZephyrBytecodeChunkMap::const_iterator  mapIter = m_bytecodeChunks.find( name );
+
+	if ( mapIter == m_bytecodeChunks.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrBytecodeChunk* ZephyrScriptDefinition::GetFirstStateBytecodeChunk() const
+{
+	if ( m_bytecodeChunks.empty() )
+	{
+		return nullptr;
+	}
+
+	return m_bytecodeChunks.begin()->second;
 }
 
 
