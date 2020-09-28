@@ -304,6 +304,9 @@
     <ClCompile Include="Networking\TCPSocket.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\UDPSocket.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -565,5 +568,6 @@
     <ClInclude Include="Networking\NetworkingCommon.hpp" />
     <ClInclude Include="Networking\TCPSocket.hpp" />
     <ClInclude Include="Networking\MessageProtocols.hpp" />
+    <ClInclude Include="Networking\UDPSocket.hpp" />
   </ItemGroup>
 </Project>

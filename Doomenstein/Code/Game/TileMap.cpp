@@ -41,9 +41,9 @@ TileMap::~TileMap()
 //-----------------------------------------------------------------------------------------------
 void TileMap::Load()
 {
-	float volume = g_game->m_rng->RollRandomFloatInRange( .5f, 1.f );
+	/*float volume = g_game->m_rng->RollRandomFloatInRange( .5f, 1.f );
 	float balance = g_game->m_rng->RollRandomFloatInRange( -1.f, 1.f );
-	float speed = g_game->m_rng->RollRandomFloatInRange( .5f, 2.f );
+	float speed = g_game->m_rng->RollRandomFloatInRange( .5f, 2.f );*/
 
 	//g_audioSystem->PlaySound( g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" ), false, volume, balance, speed );
 
