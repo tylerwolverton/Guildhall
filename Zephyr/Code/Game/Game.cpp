@@ -644,6 +644,11 @@ void Game::UpdateFromKeyboard()
 				m_isDebugRendering = !m_isDebugRendering;
 			}
 
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
+			{
+				g_eventSystem->FireEvent( "TestEvent" );
+			}
+
 			/*if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
 				ChangeMap( m_curMapName );

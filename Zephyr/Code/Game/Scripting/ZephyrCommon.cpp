@@ -14,6 +14,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::STATE:				return "State";
 		case eTokenType::NUMBER:			return "Number";
 		case eTokenType::FIRE_EVENT:		return "FireEvent";
+		case eTokenType::ON_EVENT:			return "OnEvent";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant number";
 		case eTokenType::PLUS:				return "+";
@@ -42,6 +43,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::STATE:				return "STATE";
 		case eTokenType::NUMBER:			return "NUMBER";
 		case eTokenType::FIRE_EVENT:		return "FIRE_EVENT";
+		case eTokenType::ON_EVENT:			return "ON_EVENT";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
 		case eTokenType::PLUS:				return "PLUS";

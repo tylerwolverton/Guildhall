@@ -47,7 +47,32 @@ ZephyrBytecodeChunk* ZephyrScriptDefinition::GetFirstStateBytecodeChunk() const
 		return nullptr;
 	}
 
-	return m_bytecodeChunks.begin()->second;
+	for ( auto chunk : m_bytecodeChunks )
+	{
+		if ( chunk.second->GetType() == eBytecodeChunkType::STATE )
+		{
+			return chunk.second;
+		}
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrBytecodeChunkMap ZephyrScriptDefinition::GetAllEventBytecodeChunks() const
+{
+	ZephyrBytecodeChunkMap eventChunks;
+
+	for ( auto chunk : m_bytecodeChunks )
+	{
+		if ( chunk.second->GetType() == eBytecodeChunkType::EVENT )
+		{
+			eventChunks[chunk.first] = chunk.second;
+		}
+	}
+
+	return eventChunks;
 }
 
 

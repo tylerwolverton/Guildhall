@@ -1,4 +1,7 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
+#include "Game/Scripting/ZephyrCommon.hpp"
+
 #include <string>
 
 
@@ -13,8 +16,15 @@ class ZephyrScript
 {
 public:
 	ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* parentEntity = nullptr );
+	~ZephyrScript();
 
 	void Update();
+
+private:
+	void RegisterScriptEvents();
+
+	void OnEvent( EventArgs* args );
+	ZephyrBytecodeChunk* GetEventBytecodeChunk( const std::string& eventName );
 
 private:
 	std::string m_name;
@@ -25,6 +35,6 @@ private:
 	// TODO: save bytecode chunks into map that is managed by this class
 	const ZephyrScriptDefinition& m_scriptDef;
 
-	// std::map< "EventName", BytecodeChunk > m_eventChunks; 
+	ZephyrBytecodeChunkMap m_eventBytecodeChunks; 
 	// std::map< "StateName", BytecodeChunk > m_stateUpdateChunks; 
 };

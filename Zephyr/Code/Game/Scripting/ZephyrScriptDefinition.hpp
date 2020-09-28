@@ -21,7 +21,7 @@ public:
 	ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& name ) const;
 	// TODO: IS this enough or do we need a variable in StateMachine for the initial state?
 	ZephyrBytecodeChunk* GetFirstStateBytecodeChunk() const;
-	//std::vector<ZephyrBytecodeChunk*>	GetBytecodeChunks() const					{ return m_bytecodeChunks; }
+	ZephyrBytecodeChunkMap GetAllEventBytecodeChunks() const;
 
 	static ZephyrScriptDefinition* GetZephyrScriptDefinitionByPath( const std::string& scriptPath );
 	static ZephyrScriptDefinition* GetZephyrScriptDefinitionByName( const std::string& scriptName );

@@ -2,20 +2,13 @@ StateMachine
 {
 	Number testNum = (-1 + 10) * 2;
 
-	State TestState
-	{	
-		
-		FireEvent( PrintDebugText( text = testNum )  );
-		//FireEvent( PrintDebugText() );
-		
-		Number declarationTest; 
-		Number testNum = (-1 + 10) * 2;
-
-
-		testNum = 12 - 7;
-
-		//declarationTest = testNum = variableTest = 4;
+	OnEvent( TestEvent )
+	{
+		testNum = 7;
 	}
 
-	Number variableTest = 3;
+	State TestState
+	{	
+		FireEvent( PrintDebugText( text = testNum )  );
+	}
 }

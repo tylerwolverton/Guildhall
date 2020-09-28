@@ -184,6 +184,41 @@ bool ZephyrParser::ParseStatement()
 
 			succeeded = ParseBlock();
 
+			m_curBytecodeChunk->SetType( eBytecodeChunkType::STATE );
+			FinalizeCurBytecodeChunk();
+
+			return succeeded;
+		}
+		break;
+
+		case eTokenType::ON_EVENT:
+		{
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+			{
+				return false;
+			}
+
+			curToken = ConsumeNextToken();
+			if ( curToken.GetType() != eTokenType::IDENTIFIER )
+			{
+				ReportError( "OnEvent must specify an event name" );
+				return false;
+			}
+
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+			{
+				return false;
+			}
+
+			bool succeeded = CreateBytecodeChunk( curToken.GetData() );
+			if ( !succeeded )
+			{
+				return false;
+			}
+
+			succeeded = ParseBlock();
+
+			m_curBytecodeChunk->SetType( eBytecodeChunkType::EVENT );
 			FinalizeCurBytecodeChunk();
 
 			return succeeded;

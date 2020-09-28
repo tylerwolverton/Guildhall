@@ -162,6 +162,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "State" )	 { AddToken( eTokenType::STATE ); }
 	else if ( curIdentifier == "Number" )	 { AddToken( eTokenType::NUMBER ); }
 	else if ( curIdentifier == "FireEvent" ) { AddToken( eTokenType::FIRE_EVENT ); }
+	else if ( curIdentifier == "OnEvent" ) { AddToken( eTokenType::ON_EVENT ); }
 	// Must be a variable name
 	else
 	{

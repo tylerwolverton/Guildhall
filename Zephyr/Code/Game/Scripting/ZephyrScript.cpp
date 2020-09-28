@@ -1,6 +1,7 @@
 #include "Game/Scripting/ZephyrScript.hpp"
 #include "Engine/Core/DevConsole.hpp"
-#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
 #include "Game/GameCommon.hpp"
@@ -21,6 +22,16 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 	g_zephyrVM->InterpretBytecodeChunk( *globalBytecodeChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 
 	m_curStateBytecodeChunk = m_scriptDef.GetFirstStateBytecodeChunk();
+	m_eventBytecodeChunks = m_scriptDef.GetAllEventBytecodeChunks();
+
+	RegisterScriptEvents();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrScript::~ZephyrScript()
+{
+	g_eventSystem->DeRegisterObject( this );
 }
 
 
@@ -33,3 +44,43 @@ void ZephyrScript::Update()
 		g_zephyrVM->InterpretBytecodeChunk( *m_curStateBytecodeChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScript::RegisterScriptEvents()
+{
+	for ( auto chunk : m_eventBytecodeChunks )
+	{
+		g_eventSystem->RegisterMethodEvent( chunk.first, "", eUsageLocation::EVERYWHERE, this, &ZephyrScript::OnEvent );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScript::OnEvent( EventArgs* args )
+{
+	std::string eventName = args->GetValue( "eventName", "" );
+
+	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( eventName );
+	if ( eventChunk != nullptr )
+	{
+		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		g_zephyrVM->InterpretBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrBytecodeChunk* ZephyrScript::GetEventBytecodeChunk( const std::string& eventName )
+{
+	ZephyrBytecodeChunkMap::const_iterator  mapIter = m_eventBytecodeChunks.find( eventName );
+
+	if ( mapIter == m_eventBytecodeChunks.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+
+

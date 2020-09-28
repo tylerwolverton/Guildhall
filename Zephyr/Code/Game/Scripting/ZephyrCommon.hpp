@@ -27,6 +27,7 @@ enum class eTokenType
 	STATE,
 	NUMBER,
 	FIRE_EVENT,
+	ON_EVENT,
 
 	BRACE_LEFT,
 	BRACE_RIGHT,
