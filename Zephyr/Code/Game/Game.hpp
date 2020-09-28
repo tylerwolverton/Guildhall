@@ -62,7 +62,8 @@ public:
 
 	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
-	void		IncrementEnemyCount() { ++m_enemiesLeftAlive; }
+	void		UpdateEnemyCount( int enemyCount );
+	void		IncrementEnemyCount()													{ ++m_enemiesLeftAlive; }
 	void		DecrementEnemyCount();
 	void		CheckForVictory();
 

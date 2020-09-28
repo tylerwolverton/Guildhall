@@ -1,0 +1,7 @@
+StateMachine
+{
+	OnEvent( QuestComplete )
+	{
+		FireEvent( GameComplete() );
+	}
+}

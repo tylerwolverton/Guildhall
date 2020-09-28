@@ -210,6 +210,33 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 
 			hasParsedPlayerStart = true;
 		}
+		else if ( !strcmp( entityElem->Value(), "Entity" ) )
+		{
+			MapEntityDefinition mapEntityDef;
+
+			std::string entityName = ParseXmlAttribute( *entityElem, "name", "" );
+			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
+			if ( mapEntityDef.entityDef == nullptr )
+			{
+				g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), entityName.c_str() ) );
+				entityElem = entityElem->NextSiblingElement();
+				continue;
+			}
+
+			if ( mapEntityDef.entityDef->GetType() != eEntityType::ENTITY )
+			{
+				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Entity in map '%s'", entityName.c_str(),
+												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
+												   mapName.c_str() ) );
+				entityElem = entityElem->NextSiblingElement();
+				continue;
+			}
+
+			mapEntityDef.position = ParseXmlAttribute( *entityElem, "pos", Vec2::ZERO );
+			mapEntityDef.yawDegrees = ParseXmlAttribute( *entityElem, "yaw", 0.f );
+
+			mapEntityDefs.push_back( mapEntityDef );
+		}
 		else if ( !strcmp( entityElem->Value(), "Actor" ) )
 		{
 			MapEntityDefinition mapEntityDef;

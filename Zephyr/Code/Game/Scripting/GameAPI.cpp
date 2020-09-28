@@ -19,16 +19,7 @@
 //-----------------------------------------------------------------------------------------------
 GameAPI::GameAPI()
 {
-	// TODO: Find a clever way to register all methods in this file
-	//m_registeredMethods.insert( "EntityBirthEvent" );
-	//g_eventSystem->RegisterMethodEvent( "EntityBirthEvent", "", EVERYWHERE, this, &GameAPI::EntityBirthEvent );
-
-	//m_registeredMethods.insert( "EntityDeathEvent" );
-	//g_eventSystem->RegisterMethodEvent( "EntityDeathEvent", "", EVERYWHERE, this, &GameAPI::EntityDeathEvent );
-
-	//m_registeredMethods.insert( "TestResponseEvent" );
-	//g_eventSystem->RegisterMethodEvent( "TestResponseEvent", "", EVERYWHERE, this, &GameAPI::TestResponseEvent );
-
+	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( EntityBirthEvent );
 	REGISTER_EVENT( EntityDeathEvent );
 	REGISTER_EVENT( TestResponseEvent );
@@ -53,6 +44,15 @@ bool GameAPI::IsMethodRegistered( const std::string& methodName )
 
 
 //-----------------------------------------------------------------------------------------------
+void GameAPI::UpdateEnemyCount( EventArgs* args )
+{
+	float enemyCount = args->GetValue( "enemyCount", 0.f );
+
+	g_game->UpdateEnemyCount( (int)enemyCount );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void GameAPI::EntityBirthEvent( EventArgs* args )
 {
 	UNUSED( args );
@@ -66,7 +66,9 @@ void GameAPI::EntityDeathEvent( EventArgs* args )
 {
 	UNUSED( args );
 
-	g_game->DecrementEnemyCount();
+	g_eventSystem->FireEvent( "EnemyDied" );
+
+	//g_game->DecrementEnemyCount();
 }
 
 

@@ -129,12 +129,12 @@ bool ZephyrParser::WriteConstantToCurChunk( const ZephyrValue& constant )
 bool ZephyrParser::ParseBlock()
 {
 	// Parse first brace
-	ZephyrToken curToken = ConsumeNextToken();
-	if ( !DoesTokenMatchType( curToken, eTokenType::BRACE_LEFT ) )
+	if ( !ConsumeExpectedNextToken( eTokenType::BRACE_LEFT ) )
 	{
-		ReportError( "Expected '{'" );
 		return false;
 	}
+
+	ZephyrToken curToken = GetCurToken();
 
 	// Parse statements in block
 	while ( !DoesTokenMatchType( curToken, eTokenType::BRACE_RIGHT )
@@ -249,6 +249,13 @@ bool ZephyrParser::ParseStatement()
 			{
 				return false;
 			}
+		}
+		break;
+
+		// End of block
+		case eTokenType::BRACE_RIGHT:
+		{
+			return true;
 		}
 		break;
 

@@ -168,16 +168,16 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 			onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
 		}
+	}
 
-		const XmlElement* scriptElem = gameplayElem->FirstChildElement( "Script" );
-		if ( scriptElem != nullptr )
+	const XmlElement* scriptElem = entityDefElem.FirstChildElement( "Script" );
+	if ( scriptElem != nullptr )
+	{
+		std::string scriptName = ParseXmlAttribute( *scriptElem, "name", "" );
+
+		if ( !scriptName.empty() )
 		{
-			std::string scriptName = ParseXmlAttribute( *scriptElem, "name", "" );
-
-			if ( !scriptName.empty() )
-			{
-				m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( scriptName );
-			}
+			m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( scriptName );
 		}
 	}
 

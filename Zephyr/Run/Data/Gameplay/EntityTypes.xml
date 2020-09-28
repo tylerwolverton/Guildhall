@@ -20,10 +20,18 @@
       <OnBirth fireEvent="EntityBirthEvent"/>
       <OnDeath fireEvent="EntityDeathEvent"/>
       <OnEventReceived eventName="EntityDeathEvent" fireEvent="TestResponseEvent" />
-      <Script name="Test.zephyr"/>
     </Gameplay>
+    <Script name="Test.zephyr"/>
   </Actor>
 
+  <Entity name="GameManager">
+    <Script name="GameManager.zephyr"/>
+  </Entity>
+
+  <Entity name="Level1Manager">
+    <Script name="KillEverythingQuest.zephyr"/>
+  </Entity>
+  
   <Entity name="Lamp">
     <Physics radius="0.1" />
   </Entity>

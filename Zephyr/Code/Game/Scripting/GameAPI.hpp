@@ -19,6 +19,7 @@ public:
 	bool IsMethodRegistered( const std::string& methodName );
 
 private:
+	void UpdateEnemyCount( EventArgs* args );
 	void EntityBirthEvent( EventArgs* args );
 	void EntityDeathEvent( EventArgs* args );
 

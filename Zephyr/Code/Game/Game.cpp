@@ -871,6 +871,15 @@ void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, cons
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateEnemyCount( int enemyCount )
+{
+	m_enemiesLeftAlive = enemyCount;
+
+	CheckForVictory();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::DecrementEnemyCount()
 {
 	--m_enemiesLeftAlive; 
