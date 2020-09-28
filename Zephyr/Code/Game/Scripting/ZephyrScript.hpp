@@ -20,6 +20,9 @@ public:
 
 	void Update();
 
+	void FireSpawnEvent();
+	void FireDieEvent();
+
 private:
 	void RegisterScriptEvents();
 

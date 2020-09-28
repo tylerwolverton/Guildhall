@@ -112,6 +112,11 @@ void Entity::Die()
 	{
 		g_eventSystem->FireEvent( m_entityDef.GetDeathEventName() );
 	}
+
+	if ( m_scriptObj != nullptr )
+	{
+		m_scriptObj->FireDieEvent();
+	}
 }
 
 
@@ -169,6 +174,11 @@ void Entity::FireBirthEvent()
 	if ( !m_entityDef.GetBirthEventName().empty() )
 	{
 		g_eventSystem->FireEvent( m_entityDef.GetBirthEventName() );
+	}
+
+	if ( m_scriptObj != nullptr )
+	{
+		m_scriptObj->FireSpawnEvent();
 	}
 }
 

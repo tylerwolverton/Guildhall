@@ -47,6 +47,30 @@ void ZephyrScript::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScript::FireSpawnEvent()
+{
+	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Spawn" );
+	if ( eventChunk != nullptr )
+	{
+		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		g_zephyrVM->InterpretBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScript::FireDieEvent()
+{
+	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Die" );
+	if ( eventChunk != nullptr )
+	{
+		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		g_zephyrVM->InterpretBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::RegisterScriptEvents()
 {
 	for ( auto chunk : m_eventBytecodeChunks )

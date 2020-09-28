@@ -17,9 +17,6 @@
       <Walk up="30,31"/>
     </Appearance>
     <Gameplay maxHealth="3">
-      <OnBirth fireEvent="EntityBirthEvent"/>
-      <OnDeath fireEvent="EntityDeathEvent"/>
-      <OnEventReceived eventName="EntityDeathEvent" fireEvent="TestResponseEvent" />
     </Gameplay>
     <Script name="Test.zephyr"/>
   </Actor>

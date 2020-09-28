@@ -57,7 +57,8 @@ void GameAPI::EntityBirthEvent( EventArgs* args )
 {
 	UNUSED( args );
 
-	g_game->IncrementEnemyCount();
+	g_eventSystem->FireEvent( "EnemySpawned" );
+	//g_game->IncrementEnemyCount();
 }
 
 

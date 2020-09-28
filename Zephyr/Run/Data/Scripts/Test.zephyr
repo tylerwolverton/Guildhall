@@ -2,6 +2,17 @@ StateMachine
 {
 	Number testNum = (-1 + 10) * 2;
 
+	// TODO: reserve Spawn and Die as special events that the user can't fire 
+	OnEvent( Spawn )
+	{
+		FireEvent( EnemySpawned() );
+	}
+
+	OnEvent( Die )
+	{
+		FireEvent( EnemyDied() );
+	}
+
 	OnEvent( TestEvent )
 	{
 		testNum = 7;

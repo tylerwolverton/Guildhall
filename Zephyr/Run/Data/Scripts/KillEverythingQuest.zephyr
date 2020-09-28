@@ -1,6 +1,13 @@
 StateMachine
 {
-	Number enemiesInLevel = 3;
+	Number enemiesInLevel;
+
+	OnEvent( EnemySpawned )
+	{
+		enemiesInLevel = enemiesInLevel + 1;
+
+		FireEvent( UpdateEnemyCount( enemyCount = enemiesInLevel ) );
+	}
 
 	OnEvent( EnemyDied )
 	{
