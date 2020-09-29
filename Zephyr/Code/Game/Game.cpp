@@ -895,7 +895,8 @@ void Game::CheckForVictory()
 {
 	if ( m_enemiesLeftAlive == 0 )
 	{
-		ChangeGameState( eGameState::VICTORY );
+		//ChangeGameState( eGameState::VICTORY );
+		g_eventSystem->FireEvent( "OpenDoor" );
 	}
 }
 

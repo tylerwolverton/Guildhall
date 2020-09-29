@@ -20,6 +20,7 @@
 GameAPI::GameAPI()
 {
 	REGISTER_EVENT( UpdateEnemyCount );
+	REGISTER_EVENT( DestroyEntity );
 	REGISTER_EVENT( PrintDebugText );
 }
 
@@ -46,6 +47,18 @@ void GameAPI::UpdateEnemyCount( EventArgs* args )
 	float enemyCount = args->GetValue( "enemyCount", 0.f );
 
 	g_game->UpdateEnemyCount( (int)enemyCount );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::DestroyEntity( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity != nullptr )
+	{
+		entity->Die();
+	}
 }
 
 

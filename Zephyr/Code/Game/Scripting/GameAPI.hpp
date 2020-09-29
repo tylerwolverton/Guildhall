@@ -20,6 +20,7 @@ public:
 
 private:
 	void UpdateEnemyCount( EventArgs* args );
+	void DestroyEntity( EventArgs* args );
 
 	void PrintDebugText( EventArgs* args );
 
