@@ -54,6 +54,7 @@ public:
 	bool DoLayersInteract( uint layer0, uint layer1 ) const;
 	void EnableLayerInteraction( uint layer0, uint layer1 );
 	void DisableLayerInteraction( uint layer0, uint layer1 );
+	void DisableAllLayerInteraction( uint layer );
 
 	float GetFixedDeltaSeconds() const;
 	void SetFixedDeltaSeconds( float newDeltaSeconds );

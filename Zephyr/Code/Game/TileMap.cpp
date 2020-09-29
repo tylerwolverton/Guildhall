@@ -300,47 +300,6 @@ void TileMap::CreateInitialTiles( const std::vector<TileDefinition*>& tileDefs )
 
 
 //-----------------------------------------------------------------------------------------------
-void TileMap::SolidifySurroundingTiles()
-{
-	for ( int y = 0; y < m_dimensions.y; ++y )
-	{
-		for ( int x = 0; x < m_dimensions.x; ++x )
-		{
-			if ( x == 0 || x == m_dimensions.x - 1
-				|| y == 0 || y == m_dimensions.y - 1 )
-			{
-				//GetTileFromTileCoords( IntVec2( x, y ) )->m_isSolid = true;
-			}
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void TileMap::SpawnPlayer()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void TileMap::RenderTiles() const
-{
-	std::vector<Vertex_PCU> vertices;
-
-	for ( int tileIndex = 0; tileIndex < m_tiles.size(); ++tileIndex )
-	{
-		//const Tile& tile = m_tiles[tileIndex];
-
-		//AppendVertsForAABB2D( vertices, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
-	}
-
-	//g_renderer->BindTexture( &(g_tileSpriteSheet->GetTexture()) );
-	//g_renderer->DrawVertexArray( vertices );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void TileMap::BuildCardinalDirectionsArray()
 {
 	// 5 1 6
@@ -373,7 +332,7 @@ void TileMap::CreateTileRigidbodies()
 			rigidbody2D->TakeCollider( polygonCollider );
 			rigidbody2D->SetSimulationMode( SIMULATION_MODE_STATIC );
 			rigidbody2D->SetPosition( m_tiles[tileIdx].GetBounds().GetCenter() );
-			rigidbody2D->SetLayer( 0 );
+			rigidbody2D->SetLayer( eCollisionLayer::STATIC_ENVIRONMENT );
 
 			m_tileRigidbodies.push_back( rigidbody2D );
 		}

@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 class Window;
 class App;
 class InputSystem;
@@ -60,6 +62,7 @@ constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
 //-----------------------------------------------------------------------------------------------
 enum eCollisionLayer : unsigned int
 {
+	NONE,
 	STATIC_ENVIRONMENT,
 	PLAYER,
 	PLAYER_PROJECTILE,
@@ -67,3 +70,5 @@ enum eCollisionLayer : unsigned int
 	ENEMY_PROJECTILE,
 	PORTAL,
 };
+
+eCollisionLayer GetCollisionLayerFromString( const std::string& layerStr );

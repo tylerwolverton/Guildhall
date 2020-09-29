@@ -31,6 +31,13 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	m_curHealth = m_entityDef.GetMaxHealth();
 
 	m_rigidbody2D = g_physicsSystem2D->CreateRigidbody();
+	
+	m_rigidbody2D->SetLayer( m_entityDef.GetCollisionLayer() );
+	if( m_entityDef.GetCollisionLayer() == eCollisionLayer::STATIC_ENVIRONMENT )
+	{
+		m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_STATIC );
+	}
+
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
 
 	RegisterUserEvents();
@@ -108,11 +115,6 @@ void Entity::Die()
 
 	m_isDead = true;
 
-	if ( !m_entityDef.GetDeathEventName().empty() )
-	{
-		g_eventSystem->FireEvent( m_entityDef.GetDeathEventName() );
-	}
-
 	if ( m_scriptObj != nullptr )
 	{
 		m_scriptObj->FireDieEvent();
@@ -169,13 +171,8 @@ void Entity::SetCollisionLayer( uint layer )
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::FireBirthEvent()
+void Entity::FireSpawnEvent()
 {
-	if ( !m_entityDef.GetBirthEventName().empty() )
-	{
-		g_eventSystem->FireEvent( m_entityDef.GetBirthEventName() );
-	}
-
 	if ( m_scriptObj != nullptr )
 	{
 		m_scriptObj->FireSpawnEvent();

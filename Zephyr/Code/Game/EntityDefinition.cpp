@@ -87,6 +87,9 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 			case eEntityType::ACTOR: m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed ); break;
 			case eEntityType::PROJECTILE: m_speed = ParseXmlAttribute( *physicsElem, "speed", m_speed ); break;
 		}
+
+		std::string collisionLayerStr = ParseXmlAttribute( *physicsElem, "collisionLayer", "" );
+		m_collisionLayer = GetCollisionLayerFromString( collisionLayerStr );
 	}
 
 	// Appearance

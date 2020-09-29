@@ -20,9 +20,6 @@
 GameAPI::GameAPI()
 {
 	REGISTER_EVENT( UpdateEnemyCount );
-	REGISTER_EVENT( EntityBirthEvent );
-	REGISTER_EVENT( EntityDeathEvent );
-	REGISTER_EVENT( TestResponseEvent );
 	REGISTER_EVENT( PrintDebugText );
 }
 
@@ -49,36 +46,6 @@ void GameAPI::UpdateEnemyCount( EventArgs* args )
 	float enemyCount = args->GetValue( "enemyCount", 0.f );
 
 	g_game->UpdateEnemyCount( (int)enemyCount );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameAPI::EntityBirthEvent( EventArgs* args )
-{
-	UNUSED( args );
-
-	g_eventSystem->FireEvent( "EnemySpawned" );
-	//g_game->IncrementEnemyCount();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameAPI::EntityDeathEvent( EventArgs* args )
-{
-	UNUSED( args );
-
-	g_eventSystem->FireEvent( "EnemyDied" );
-
-	//g_game->DecrementEnemyCount();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameAPI::TestResponseEvent( EventArgs* args )
-{
-	UNUSED( args );
-
-	g_devConsole->PrintString( "TestResponse fired", Rgba8::CYAN );
 }
 
 

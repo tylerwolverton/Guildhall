@@ -19,3 +19,18 @@ Physics2D* g_physicsSystem2D = nullptr;		// Owned by the App
 Game* g_game = nullptr;						// Owned by the App
 GameAPI* g_gameAPI = nullptr;
 ZephyrVirtualMachine* g_zephyrVM = nullptr;
+
+
+//-----------------------------------------------------------------------------------------------
+eCollisionLayer GetCollisionLayerFromString( const std::string& layerStr )
+{
+	if ( !_stricmp( layerStr.c_str(), "StaticEnvironment" ) )	{ return eCollisionLayer::STATIC_ENVIRONMENT; }
+	if ( !_stricmp( layerStr.c_str(), "Player" ) )				{ return eCollisionLayer::PLAYER; }
+	if ( !_stricmp( layerStr.c_str(), "PlayerProjectile" ) )	{ return eCollisionLayer::PLAYER_PROJECTILE; }
+	if ( !_stricmp( layerStr.c_str(), "Enemy" ) )				{ return eCollisionLayer::ENEMY; }
+	if ( !_stricmp( layerStr.c_str(), "EnemyProjectile" ) )		{ return eCollisionLayer::ENEMY_PROJECTILE; }
+	if ( !_stricmp( layerStr.c_str(), "Portal" ) )				{ return eCollisionLayer::PORTAL; }
+
+	return eCollisionLayer::NONE;
+}
+

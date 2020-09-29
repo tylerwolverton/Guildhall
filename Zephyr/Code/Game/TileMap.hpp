@@ -48,9 +48,6 @@ public:
 private:
 	void						PopulateTiles( const std::vector<TileDefinition*>& tileDefs );
 	void						CreateInitialTiles( const std::vector<TileDefinition*>& tileDefs );
-	void						SolidifySurroundingTiles();
-
-	void						SpawnPlayer();
 
 	void UpdateCameras();
 	void CenterCameraOnPlayer() const;
@@ -69,8 +66,6 @@ private:
 
 	std::vector<const Tile*>	GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile ) const;
 	
-	void						RenderTiles() const;
-
 	void						BuildCardinalDirectionsArray();
 	
 	void						CreateTileRigidbodies();

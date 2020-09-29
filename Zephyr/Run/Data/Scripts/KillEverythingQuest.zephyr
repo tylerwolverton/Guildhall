@@ -2,6 +2,8 @@ StateMachine
 {
 	Number enemiesInLevel;
 
+	// TODO: Add parameters to scripts so this can query the map for enemy count
+
 	OnEvent( EnemySpawned )
 	{
 		enemiesInLevel = enemiesInLevel + 1;

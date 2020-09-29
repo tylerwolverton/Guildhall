@@ -20,10 +20,6 @@ public:
 
 private:
 	void UpdateEnemyCount( EventArgs* args );
-	void EntityBirthEvent( EventArgs* args );
-	void EntityDeathEvent( EventArgs* args );
-
-	void TestResponseEvent( EventArgs* args );
 
 	void PrintDebugText( EventArgs* args );
 

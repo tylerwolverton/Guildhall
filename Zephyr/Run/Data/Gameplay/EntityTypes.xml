@@ -1,7 +1,7 @@
 <EntityTypes spriteSheet="Data/Images/EntitiesSpriteSheet_30x30.png" spriteSheetDimensions="30,30">
   ​
   <Actor name="Link">
-    <Physics radius="0.5" walkSpeed="100.0"/>
+    <Physics radius="0.5" walkSpeed="100.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="5">
       <Walk up="6,7" left="4,5" down="0,1" right="2,3" fps="2"/>
       <Attack up="0"/>
@@ -12,13 +12,23 @@
   </Actor>
   ​
   <Actor name="Blob">
-    <Physics radius="0.5" walkSpeed="25.0"/>
+    <Physics radius="0.5" walkSpeed="25.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
       <Walk up="30,31"/>
     </Appearance>
     <Gameplay maxHealth="3">
     </Gameplay>
-    <Script name="Test.zephyr"/>
+    <Script name="BasicEnemy.zephyr"/>
+  </Actor>
+
+  <Actor name="SuperBlob">
+    <Physics radius="0.5" walkSpeed="25.0" collisionLayer="Enemy"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="3">
+      <Walk up="32,33"/>
+    </Appearance>
+    <Gameplay maxHealth="6">
+    </Gameplay>
+    <Script name="AdvancedEnemy.zephyr"/>
   </Actor>
 
   <Entity name="GameManager">
@@ -29,12 +39,16 @@
     <Script name="KillEverythingQuest.zephyr"/>
   </Entity>
   
-  <Entity name="Lamp">
-    <Physics radius="0.1" />
+  <Entity name="ClosedDoorVertical">
+    <Physics radius="0.5" collisionLayer="StaticEnvironment"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
+      <Walk up="157"/>
+    </Appearance>
+    <Script name="ClosedDoor.zephyr"/>
   </Entity>
   ​
   <Projectile name="Fireball">
-    <Physics radius="0.25" speed="4"/>
+    <Physics radius="0.25" speed="4" collisionLayer="EnemyProjectile"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
       <Walk up="20"/>
     </Appearance>
@@ -42,7 +56,7 @@
   </Projectile>
   ​
   <Portal name="InvisibleTeleporter">
-    <Physics radius="0.25" walkSpeed="0.0"/>
+    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal"/>
   </Portal>
   ​
 </EntityTypes>

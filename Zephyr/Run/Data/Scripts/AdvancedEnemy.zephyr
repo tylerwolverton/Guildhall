@@ -15,7 +15,7 @@ StateMachine
 
 	OnEvent( TestEvent )
 	{
-		testNum = 7;
+		testNum = 7777777;
 	}
 
 	State TestState

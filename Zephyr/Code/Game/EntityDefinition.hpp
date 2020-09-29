@@ -35,18 +35,20 @@ public:
 	explicit EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spritSheet );
 	~EntityDefinition();
 
-	bool		IsValid() const																{ return m_isValid; }
-	std::string GetName() const																{ return m_name; }
-	int			GetMaxHealth() const														{ return m_maxHealth; }
-	eEntityType GetType() const																{ return m_type; }
-	float		GetWalkSpeed() const														{ return m_walkSpeed; }
-	float		GetSpeed() const															{ return m_speed; }
-	FloatRange	GetDamageRange() const														{ return m_damageRange; }
+	bool			IsValid() const																{ return m_isValid; }
+	std::string		GetName() const																{ return m_name; }
+	int				GetMaxHealth() const														{ return m_maxHealth; }
+	eEntityType		GetType() const																{ return m_type; }
+	
+	float			GetWalkSpeed() const														{ return m_walkSpeed; }
+	float			GetSpeed() const															{ return m_speed; }
+	eCollisionLayer	GetCollisionLayer() const													{ return m_collisionLayer; }
+
+	FloatRange		GetDamageRange() const														{ return m_damageRange; }
+	
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
-	std::string GetBirthEventName()	const													{ return m_birthEventName; }
-	std::string GetDeathEventName()	const													{ return m_deathEventName; }
 	std::map<std::string, std::string> GetRegisteredEvents() const							{ return m_receivedEventsToResponseEvents; }
 
 	ZephyrScriptDefinition* GetZephyrScriptDefinition() const								{ return m_zephyrScriptDef; }
@@ -60,6 +62,7 @@ protected:
 	bool			m_isValid = false;
 	std::string		m_name;
 	eEntityType		m_type = eEntityType::UNKNOWN;
+	eCollisionLayer	m_collisionLayer = eCollisionLayer::NONE;
 	int				m_maxHealth = 1;
 	float			m_physicsRadius = 0.f;
 	float			m_mass = 1.f;

@@ -681,6 +681,18 @@ void Physics2D::DisableLayerInteraction( uint layer0, uint layer1 )
 
 
 //-----------------------------------------------------------------------------------------------
+void Physics2D::DisableAllLayerInteraction( uint layer )
+{
+	m_layerInteractions[layer] = 0U;
+
+	for ( int layerIdx = 0; layerIdx < 32; ++layerIdx )
+	{
+		m_layerInteractions[layerIdx] &= ~( 1 << layer );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float Physics2D::GetFixedDeltaSeconds() const
 {
 	return s_fixedDeltaSeconds;
