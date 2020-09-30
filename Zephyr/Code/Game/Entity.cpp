@@ -62,6 +62,8 @@ Entity::~Entity()
 	g_eventSystem->DeRegisterObject( this );
 
 	PTR_SAFE_DELETE( m_scriptObj );
+
+	PTR_VECTOR_SAFE_DELETE( m_inventory );
 }
 
 
@@ -167,6 +169,54 @@ void Entity::SetCollisionLayer( uint layer )
 	{
 		m_rigidbody2D->SetLayer( layer );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::AddItemToInventory( Entity* item )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] == nullptr )
+		{
+			m_inventory[itemIdx] = item;
+			return;
+		}
+	}
+
+	m_inventory.push_back( item );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Entity::IsInInventory( const std::string& itemId )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] != nullptr
+			&& m_inventory[itemIdx]->GetId() == itemId )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Entity::IsInInventory( Entity* item )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] != nullptr
+			&& m_inventory[itemIdx] == item )
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 

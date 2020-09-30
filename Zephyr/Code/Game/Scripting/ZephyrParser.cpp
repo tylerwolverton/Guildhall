@@ -84,7 +84,7 @@ bool ZephyrParser::WriteByteToCurChunk( byte newByte )
 {
 	if ( m_curBytecodeChunk == nullptr )
 	{
-		ReportError( "No active bytecode chunks to write data to" );
+		ReportError( "No active bytecode chunks to write data to, make Tyler fix this" );
 		return false;
 	}
 
@@ -99,7 +99,7 @@ bool ZephyrParser::WriteOpCodeToCurChunk( eOpCode opCode )
 {
 	if ( m_curBytecodeChunk == nullptr )
 	{
-		ReportError( "No active bytecode chunks to write data to" );
+		ReportError( "No active bytecode chunks to write data to, make Tyler fix this" );
 		return false;
 	}
 
@@ -114,7 +114,7 @@ bool ZephyrParser::WriteConstantToCurChunk( const ZephyrValue& constant )
 {
 	if ( m_curBytecodeChunk == nullptr )
 	{
-		ReportError( "No active bytecode chunks to write data to" );
+		ReportError( "No active bytecode chunks to write data to, make Tyler fix this" );
 		return false;
 	}
 
@@ -149,10 +149,8 @@ bool ZephyrParser::ParseBlock()
 	}
 
 	// Check for closing brace
-	curToken = ConsumeNextToken();
-	if ( !DoesTokenMatchType( curToken, eTokenType::BRACE_RIGHT ) )
+	if ( !ConsumeExpectedNextToken( eTokenType::BRACE_RIGHT ) )
 	{
-		ReportError( "Expected '}'" );
 		return false;
 	}
 
@@ -290,7 +288,6 @@ bool ZephyrParser::ParseNumberDeclaration()
 		return false;
 	}
 	
-	//m_curBytecodeChunk->SetVariable( identifier.GetData(), ZephyrValue( 0.f ) );
 	DeclareVariable( identifier );
 
 	ZephyrToken curToken = GetCurToken();
@@ -311,11 +308,6 @@ bool ZephyrParser::ParseNumberDeclaration()
 			{
 				return false;
 			}
-
-			/*if ( !ConsumeExpectedNextToken( eTokenType::SEMICOLON ) )
-			{
-				return false;
-			}*/
 		}
 		break;
 

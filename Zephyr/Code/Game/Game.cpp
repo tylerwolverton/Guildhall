@@ -82,9 +82,10 @@ void Game::Startup()
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PLAYER, eCollisionLayer::PLAYER_PROJECTILE );
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PLAYER_PROJECTILE, eCollisionLayer::PLAYER_PROJECTILE );
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PORTAL, eCollisionLayer::PLAYER_PROJECTILE );
-	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PORTAL, eCollisionLayer::ENEMY );
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PORTAL, eCollisionLayer::ENEMY_PROJECTILE );
 	g_physicsSystem2D->DisableLayerInteraction( eCollisionLayer::PORTAL, eCollisionLayer::STATIC_ENVIRONMENT );
+	g_physicsSystem2D->DisableAllLayerInteraction( eCollisionLayer::PICKUP );
+	g_physicsSystem2D->EnableLayerInteraction( eCollisionLayer::PLAYER, eCollisionLayer::PICKUP );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
@@ -516,7 +517,8 @@ void Game::LoadEntitiesFromXml()
 		if ( !strcmp( element->Name(), "Actor" )
 			 || !strcmp( element->Name(), "Entity" )
 			 || !strcmp( element->Name(), "Projectile" )
-			 || !strcmp( element->Name(), "Portal" ) )
+			 || !strcmp( element->Name(), "Portal" ) 
+			 || !strcmp( element->Name(), "Pickup" ) )
 		{
 			EntityDefinition* entityTypeDef = new EntityDefinition( *element, spriteSheet );
 			if ( entityTypeDef->IsValid() )

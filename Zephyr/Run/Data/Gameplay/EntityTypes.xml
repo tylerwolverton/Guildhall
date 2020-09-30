@@ -38,7 +38,7 @@
   <Entity name="Level1Manager">
     <Script name="KillEverythingQuest.zephyr"/>
   </Entity>
-  
+
   <Entity name="ClosedDoorVertical">
     <Physics radius="0.5" collisionLayer="StaticEnvironment"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
@@ -47,6 +47,14 @@
     <Script name="ClosedDoor.zephyr"/>
   </Entity>
   ​
+  <Entity name="LockedDoorVertical">
+    <Physics radius="0.5" collisionLayer="StaticEnvironment"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
+      <Walk up="155"/>
+    </Appearance>
+    <Script name="LockedDoor.zephyr"/>
+  </Entity>
+
   <Projectile name="Fireball">
     <Physics radius="0.25" speed="4" collisionLayer="EnemyProjectile"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
@@ -59,4 +67,11 @@
     <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal"/>
   </Portal>
   ​
+  <Pickup name="Key">
+    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Pickup"/>
+    <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
+      <Walk up="120"/>
+    </Appearance>
+  </Pickup>
+
 </EntityTypes>

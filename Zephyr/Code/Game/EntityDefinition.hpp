@@ -21,6 +21,7 @@ enum class eEntityType
 	ACTOR,
 	PROJECTILE,
 	PORTAL,
+	PICKUP,
 };
 
 std::string GetEntityTypeAsString( eEntityType entityType );

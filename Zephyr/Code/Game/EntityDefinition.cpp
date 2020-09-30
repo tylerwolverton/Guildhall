@@ -70,6 +70,10 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	{
 		m_type = eEntityType::PORTAL;
 	}
+	else if ( typeStr == "Pickup" )
+	{
+		m_type = eEntityType::PICKUP;
+	}
 	else
 	{
 		g_devConsole->PrintError( Stringf( "EntityTypes.xml: Unsupported entity type seen, '%s'", typeStr.c_str() ) );
@@ -203,6 +207,7 @@ std::string GetEntityTypeAsString( eEntityType entityType )
 		case eEntityType::ACTOR: return "Actor";
 		case eEntityType::PROJECTILE: return "Projectile";
 		case eEntityType::PORTAL: return "Portal";
+		case eEntityType::PICKUP: return "Pickup";
 		case eEntityType::ENTITY: return "Entity";
 		default: return "Unknown";
 	}

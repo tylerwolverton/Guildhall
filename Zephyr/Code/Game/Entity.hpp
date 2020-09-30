@@ -55,11 +55,16 @@ public:
 	const float		GetOrientationDegrees() const							{ return m_orientationDegrees; }
 	void			SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 	std::string		GetName() const											{ return m_entityDef.m_name; }
+	std::string		GetId() const											{ return m_id; }
 	eEntityType		GetType() const											{ return m_entityDef.m_type; }
 	const eFaction	GetFaction() const										{ return m_faction; }
 	void			SetFaction( const eFaction& faction )					{ m_faction = faction; }
 	void			SetMap( Map* map )										{ m_map = map; }
-				 
+		
+	void			AddItemToInventory( Entity* item );
+	bool			IsInInventory( const std::string& itemId );
+	bool			IsInInventory( Entity* item );
+
 	void			FireSpawnEvent();
 
 	bool			IsDead() const											{ return m_isDead; }
@@ -78,12 +83,14 @@ protected:
 
 	// Game state
 	const EntityDefinition& m_entityDef;
+	std::string				m_id;
 	eFaction				m_faction = eFaction::NEUTRAL;
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
 	bool					m_isPlayer = false;
 	Map*					m_map = nullptr;
+	std::vector<Entity*>	m_inventory;									// entity owns all items in inventory
 
 	// Physics
 	Rigidbody2D*			m_rigidbody2D = nullptr;

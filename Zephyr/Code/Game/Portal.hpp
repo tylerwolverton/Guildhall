@@ -13,10 +13,6 @@ public:
 	Portal( const EntityDefinition& entityDef, Map* map );
 	~Portal();
 
-	virtual void Update( float deltaSeconds );
-	virtual void Render() const;
-	virtual void Die();
-
 	virtual void Load() override;
 
 	std::string GetDestinationMap() const							{ return m_destMap; }

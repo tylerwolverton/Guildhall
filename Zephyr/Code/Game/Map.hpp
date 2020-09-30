@@ -53,6 +53,8 @@ public:
 	void RemoveOwnershipOfEntity( Entity* entityToRemove );
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
 
+	void AddItemToTargetInventory( Entity* item, Entity* targetEntity );
+
 	void WarpEntityInMap( Entity* entity, Portal* portal );
 
 private:

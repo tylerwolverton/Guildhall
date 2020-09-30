@@ -202,6 +202,7 @@
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapData.cpp" />
+    <ClCompile Include="Pickup.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Scripting\GameAPI.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="GameCommon.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="MapData.hpp" />
+    <ClInclude Include="Pickup.hpp" />
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="Projectile.hpp" />
     <ClInclude Include="Scripting\GameAPI.hpp" />

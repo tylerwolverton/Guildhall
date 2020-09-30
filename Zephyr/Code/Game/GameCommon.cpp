@@ -30,6 +30,7 @@ eCollisionLayer GetCollisionLayerFromString( const std::string& layerStr )
 	if ( !_stricmp( layerStr.c_str(), "Enemy" ) )				{ return eCollisionLayer::ENEMY; }
 	if ( !_stricmp( layerStr.c_str(), "EnemyProjectile" ) )		{ return eCollisionLayer::ENEMY_PROJECTILE; }
 	if ( !_stricmp( layerStr.c_str(), "Portal" ) )				{ return eCollisionLayer::PORTAL; }
+	if ( !_stricmp( layerStr.c_str(), "Pickup" ) )				{ return eCollisionLayer::PICKUP; }
 
 	return eCollisionLayer::NONE;
 }

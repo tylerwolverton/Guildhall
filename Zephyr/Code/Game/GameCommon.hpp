@@ -69,6 +69,7 @@ enum eCollisionLayer : unsigned int
 	ENEMY,
 	ENEMY_PROJECTILE,
 	PORTAL,
+	PICKUP,
 };
 
 eCollisionLayer GetCollisionLayerFromString( const std::string& layerStr );

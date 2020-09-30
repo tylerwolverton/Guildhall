@@ -13,6 +13,7 @@
 #include "Game/Actor.hpp"
 #include "Game/Projectile.hpp"
 #include "Game/Portal.hpp"
+#include "Game/Pickup.hpp"
 #include "Game/EntityDefinition.hpp"
 #include "Game/MapData.hpp"
 
@@ -183,6 +184,14 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		}
 		break;
 
+		case eEntityType::PICKUP:
+		{
+			Pickup* pickup = new Pickup( entityDef, this );
+			AddToEntityList( pickup );
+			return pickup;
+		}
+		break;
+
 		case eEntityType::ENTITY:
 		{
 			Entity* entity = new Entity( entityDef, this );
@@ -243,6 +252,21 @@ void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
 	}
 
 	m_entities.push_back( entityToAdd );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::AddItemToTargetInventory( Entity* item, Entity* targetEntity )
+{
+	if ( targetEntity == nullptr
+		 || item == nullptr )
+	{
+		return;
+	}
+
+	targetEntity->AddItemToInventory( item );
+
+	RemoveOwnershipOfEntity( item );
 }
 
 
