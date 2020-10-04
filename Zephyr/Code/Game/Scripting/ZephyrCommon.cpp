@@ -13,10 +13,12 @@ std::string ToString( eTokenType type )
 		case eTokenType::STATE_MACHINE:		return "StateMachine";
 		case eTokenType::STATE:				return "State";
 		case eTokenType::NUMBER:			return "Number";
+		case eTokenType::STRING:			return "String";
 		case eTokenType::FIRE_EVENT:		return "FireEvent";
 		case eTokenType::ON_EVENT:			return "OnEvent";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant number";
+		case eTokenType::CONSTANT_STRING:	return "Constant string";
 		case eTokenType::PLUS:				return "+";
 		case eTokenType::MINUS:				return "-";
 		case eTokenType::STAR:				return "*";
@@ -24,6 +26,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::EQUAL:				return "=";
 		case eTokenType::SEMICOLON:			return ";";
 		case eTokenType::COMMA:				return ",";
+		case eTokenType::QUOTE:				return "\"";
 		case eTokenType::END_OF_FILE:		return "End of File";
 		default:							return "Unknown";
 	}
@@ -42,10 +45,12 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::STATE_MACHINE:		return "STATE_MACHINE";
 		case eTokenType::STATE:				return "STATE";
 		case eTokenType::NUMBER:			return "NUMBER";
+		case eTokenType::STRING:			return "STRING";
 		case eTokenType::FIRE_EVENT:		return "FIRE_EVENT";
 		case eTokenType::ON_EVENT:			return "ON_EVENT";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
+		case eTokenType::CONSTANT_STRING:	return "CONSTANT_STRING";
 		case eTokenType::PLUS:				return "PLUS";
 		case eTokenType::MINUS:				return "MINUS";
 		case eTokenType::STAR:				return "STAR";
@@ -53,6 +58,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::EQUAL:				return "EQUAL";
 		case eTokenType::SEMICOLON:			return "SEMICOLON";
 		case eTokenType::COMMA: 			return "COMMA";
+		case eTokenType::QUOTE: 			return "QUOTE";
 		case eTokenType::END_OF_FILE:		return "END_OF_FILE";
 		default:							return "UNKNOWN";
 	}
@@ -79,7 +85,7 @@ std::string ToString( eValueType valueType )
 	{
 		case eValueType::NUMBER:	return "Number";
 		case eValueType::BOOL:		return "Bool";
-		case eValueType::STRING:	 return "String";
+		case eValueType::STRING:	return "String";
 
 		case eValueType::NONE:		
 		default: return "None";

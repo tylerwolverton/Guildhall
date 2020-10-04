@@ -46,6 +46,7 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 			case '=': AddToken( eTokenType::EQUAL );				break;
 			case ';': AddToken( eTokenType::SEMICOLON );			break;
 			case ',': AddToken( eTokenType::COMMA );				break;
+			case '"': TokenizeStringConstant();						break;
 			case EOF: 												break;
 			
 			default:
@@ -147,6 +148,27 @@ void ZephyrScanner::TokenizeNumberConstant()
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScanner::TokenizeStringConstant()
+{
+	while ( Peek() != '"'
+			&& Peek() != EOF )
+	{
+		ReadAndAdvanceSrcPos();
+	}
+
+	int strStartPos = m_startSrcPos + 1;
+
+	int stringLength = m_curSrcPos - strStartPos;
+	std::string stringConstant = m_scriptSource.substr( strStartPos, stringLength );
+
+	AddToken( eTokenType::CONSTANT_STRING, stringConstant );
+
+	// Consume closing " 
+	ReadAndAdvanceSrcPos();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScanner::TokenizeIdentifier()
 {
 	while ( IsLetterOrNumber( Peek() ) )
@@ -161,8 +183,9 @@ void ZephyrScanner::TokenizeIdentifier()
 	if ( curIdentifier == "StateMachine" )	 { AddToken( eTokenType::STATE_MACHINE ); }
 	else if ( curIdentifier == "State" )	 { AddToken( eTokenType::STATE ); }
 	else if ( curIdentifier == "Number" )	 { AddToken( eTokenType::NUMBER ); }
+	else if ( curIdentifier == "String" )	 { AddToken( eTokenType::STRING ); }
 	else if ( curIdentifier == "FireEvent" ) { AddToken( eTokenType::FIRE_EVENT ); }
-	else if ( curIdentifier == "OnEvent" ) { AddToken( eTokenType::ON_EVENT ); }
+	else if ( curIdentifier == "OnEvent" )	 { AddToken( eTokenType::ON_EVENT ); }
 	// Must be a variable name
 	else
 	{

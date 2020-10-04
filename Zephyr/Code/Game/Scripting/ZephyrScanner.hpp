@@ -24,6 +24,7 @@ private:
 
 	void SkipWhitespaceAndComments();
 	void TokenizeNumberConstant();
+	void TokenizeStringConstant();
 	void TokenizeIdentifier();
 
 	char ReadAndAdvanceSrcPos();

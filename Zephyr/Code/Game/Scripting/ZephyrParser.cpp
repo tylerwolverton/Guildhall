@@ -232,6 +232,15 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::STRING:
+		{
+			if ( !ParseStringDeclaration() )
+			{
+				return false;
+			}
+		}
+		break;
+
 		case eTokenType::FIRE_EVENT:
 		{
 			if ( !ParseFireEvent() )
@@ -288,7 +297,7 @@ bool ZephyrParser::ParseNumberDeclaration()
 		return false;
 	}
 	
-	DeclareVariable( identifier );
+	DeclareVariable( identifier, eValueType::NUMBER );
 
 	ZephyrToken curToken = GetCurToken();
 	switch( curToken.GetType() )
@@ -303,7 +312,6 @@ bool ZephyrParser::ParseNumberDeclaration()
 		{
 			AdvanceToNextToken();
 
-			// Write an assignment byte
 			if ( !ParseExpression() )
 			{
 				return false;
@@ -316,6 +324,57 @@ bool ZephyrParser::ParseNumberDeclaration()
 			std::string errorMsg( "Unexpected '" );
 			errorMsg += curToken.GetDebugName();
 			errorMsg += "' seen, expected ';' or '=' after Number declaration";
+
+			ReportError( errorMsg );
+			return false;
+		}
+		break;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseStringDeclaration()
+{
+	ZephyrToken identifier = ConsumeNextToken();
+	if ( !DoesTokenMatchType( identifier, eTokenType::IDENTIFIER ) )
+	{
+		ReportError( "Expected variable name after 'String'" );
+		return false;
+	}
+
+	DeclareVariable( identifier, eValueType::STRING );
+
+	ZephyrToken curToken = GetCurToken();
+	switch ( curToken.GetType() )
+	{
+		case eTokenType::SEMICOLON:
+		{
+			WriteConstantToCurChunk( ZephyrValue( std::string( "" ) ) );
+		}
+		break;
+
+		case eTokenType::EQUAL:
+		{
+			AdvanceToNextToken();
+
+			if ( !ParseStringExpression() )
+			{
+				return false;
+			}
+		}
+		break;
+
+		default:
+		{
+			std::string errorMsg( "Unexpected '" );
+			errorMsg += curToken.GetDebugName();
+			errorMsg += "' seen, expected ';' or '=' after String declaration";
 
 			ReportError( errorMsg );
 			return false;
@@ -396,6 +455,7 @@ bool ZephyrParser::ParseEventArgs()
 		switch ( valueToken.GetType() )
 		{
 			case eTokenType::CONSTANT_NUMBER:
+			case eTokenType::CONSTANT_STRING:
 			{
 				WriteConstantToCurChunk( valueToken.GetData() );
 			}
@@ -455,9 +515,25 @@ bool ZephyrParser::ParseAssignment()
 		return false;
 	}
 
-	if ( !ParseExpression() )
+	switch ( value.GetType() )
 	{
-		return false;
+		case eValueType::NUMBER:
+		{
+			if ( !ParseExpression() )
+			{
+				return false;
+			}
+		}
+		break;
+
+		case eValueType::STRING:
+		{
+			if ( !ParseStringExpression() )
+			{
+				return false;
+			}
+		}
+		break;
 	}
 
 	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
@@ -563,6 +639,41 @@ bool ZephyrParser::ParseNumberExpression()
 	ZephyrToken curToken = ConsumeNextToken();
 
 	return WriteConstantToCurChunk( (NUMBER_TYPE)atof( curToken.GetData().c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseStringExpression()
+{
+	ZephyrToken curToken = GetCurToken();
+
+	switch ( curToken.GetType() )
+	{
+		case eTokenType::CONSTANT_STRING:
+		{
+			WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
+
+			AdvanceToNextToken();
+		}
+		break;
+
+		case eTokenType::IDENTIFIER:
+		{
+			if ( !ParseIdentifierExpressionOfType( eValueType::STRING ) )
+			{
+				return false;
+			}
+		}
+		break;
+
+		default:
+		{
+			ReportError( "Must specify text in quotes or another string in string assignment" );
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
@@ -777,10 +888,18 @@ bool ZephyrParser::DoesTokenMatchType( const ZephyrToken& token, const eTokenTyp
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrParser::DeclareVariable( const ZephyrToken& identifier )
+void ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueType& varType )
 {
 	// m_curBytecodeChunk will be the global state machine if outside a state declaration, should never be null
-	m_curBytecodeChunk->SetVariable( identifier.GetData(), ZephyrValue( 0.f ) );
+	ZephyrValue value;
+	switch ( varType )
+	{
+		case eValueType::NUMBER: value = ZephyrValue( 0.f ); break;
+		case eValueType::STRING: value = ZephyrValue( std::string("") ); break;
+		case eValueType::BOOL:	 value = ZephyrValue( false ); break;
+	}
+
+	m_curBytecodeChunk->SetVariable( identifier.GetData(), value );
 }
 
 

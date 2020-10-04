@@ -51,12 +51,13 @@ private:
 	bool IsCurTokenType( const eTokenType& type );
 	bool DoesTokenMatchType( const ZephyrToken& token, const eTokenType& type );
 
-	void DeclareVariable( const ZephyrToken& identifier );
+	void DeclareVariable( const ZephyrToken& identifier, const eValueType& varType );
 	bool TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const;
 
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseNumberDeclaration();
+	bool ParseStringDeclaration();
 	bool ParseFireEvent();
 	bool ParseEventArgs();
 	bool ParseAssignment();
@@ -66,6 +67,7 @@ private:
 	bool ParseUnaryExpression();
 	bool ParseBinaryExpression();
 	bool ParseNumberExpression();
+	bool ParseStringExpression();
 	bool ParseIdentifierExpressionOfType( eValueType expectedType );
 
 	// Pratt Parser Helpers

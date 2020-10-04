@@ -26,6 +26,7 @@ enum class eTokenType
 	STATE_MACHINE,
 	STATE,
 	NUMBER,
+	STRING,
 	FIRE_EVENT,
 	ON_EVENT,
 
@@ -37,6 +38,7 @@ enum class eTokenType
 	IDENTIFIER,
 
 	CONSTANT_NUMBER,
+	CONSTANT_STRING,
 
 	// Operators
 	PLUS,
@@ -47,6 +49,7 @@ enum class eTokenType
 	
 	SEMICOLON,
 	COMMA,
+	QUOTE,
 
 	END_OF_FILE,
 

@@ -1,6 +1,6 @@
 StateMachine
 {
-	Number testNum = (-1 + 10) * 2;
+	String msg = "Hello"; 
 
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
 	OnEvent( Spawn )
@@ -15,11 +15,11 @@ StateMachine
 
 	OnEvent( TestEvent )
 	{
-		testNum = 9;
+		msg = "Goodbye";
 	}
 
 	State TestState
 	{	
-		FireEvent( PrintDebugText( text = testNum )  );
+		FireEvent( PrintDebugText( text = msg )  );
 	}
 }
