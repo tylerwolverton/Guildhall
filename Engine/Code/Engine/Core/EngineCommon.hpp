@@ -42,6 +42,7 @@ typedef unsigned char byte;
 #define PTR_VECTOR_SAFE_DELETE(vector) for( int vectorIdx = 0; vectorIdx < (int)vector.size(); ++vectorIdx ) {	PTR_SAFE_DELETE( vector[vectorIdx] ); } vector.clear();
 #define PTR_MAP_SAFE_DELETE(map) for( auto it = map.begin(); it != map.end(); ++it ) {	PTR_SAFE_DELETE( it->second ); } map.clear();
 
+
 //-----------------------------------------------------------------------------------------------
 const Vec2 ALIGN_CENTERED		= Vec2( 0.5f, 0.5f );
 const Vec2 ALIGN_CENTERED_LEFT	= Vec2( 0.f, 0.5f );

@@ -1,4 +1,5 @@
 #include "Engine/Networking/UDPSocket.hpp"
+#include "Engine/Core/DevConsole.hpp"
 
 #include <iostream>
 
@@ -13,7 +14,7 @@ UDPSocket::UDPSocket( const std::string& host, int port )
 	m_socket = ::socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
 	if ( m_socket == INVALID_SOCKET )
 	{
-		std::cout <<"Socket instantiate failed, error: " << WSAGetLastError() << std::endl;
+		LOG_ERROR( "Socket instantiate failed '%i'", WSAGetLastError() );
 	}
 }
 
@@ -28,15 +29,14 @@ UDPSocket::~UDPSocket()
 //-----------------------------------------------------------------------------------------------
 void UDPSocket::Bind( int port )
 {
-	sockaddr_in bindAddr;
-	bindAddr.sin_family = AF_INET;
-	bindAddr.sin_port = htons( (u_short)port );
-	bindAddr.sin_addr.s_addr = htonl( INADDR_ANY );
+	m_bindAddress.sin_family = AF_INET;
+	m_bindAddress.sin_port = htons( (u_short)port );
+	m_bindAddress.sin_addr.s_addr = htonl( INADDR_ANY );
 
-	int result = bind( m_socket, (SOCKADDR*)&bindAddr, sizeof( bindAddr ) );
+	int result = bind( m_socket, (SOCKADDR*)&m_bindAddress, sizeof( m_bindAddress ) );
 	if ( result != 0 )
 	{
-		std::cout <<"Bind failed with " << WSAGetLastError() << std::endl;
+		LOG_ERROR( "Bind failed with '%i'", WSAGetLastError() );
 	}
 }
 
@@ -49,7 +49,7 @@ void UDPSocket::Close()
 		int result = closesocket( m_socket );
 		if ( result == SOCKET_ERROR )
 		{
-			std::cout <<"Socket instantiate failed with " << WSAGetLastError() << std::endl;
+			LOG_ERROR( "Socket instantiate failed with '%i'", WSAGetLastError() );
 		}
 
 		m_socket = INVALID_SOCKET;

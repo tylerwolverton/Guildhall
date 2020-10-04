@@ -35,6 +35,17 @@ namespace UnitTest
 			}
 		}
 
+		/*BEGIN_TEST_METHOD_ATTRIBUTE
+
+		END_TEST_METHOD_ATTRIBUTE*/
+
+		struct MessageHeader
+		{
+			uint16_t id;
+			uint16_t length;
+			uint32_t sequenceNum;
+		};
+
 
 		TEST_METHOD(UDPSocketTest)
 		{

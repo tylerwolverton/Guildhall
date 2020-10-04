@@ -45,12 +45,4 @@ private:
 	TCPSocket m_serverSocket;
 	TCPSocket m_clientSocket;
 	//std::vector<TCPClient*> m_tcpClients;
-
-
-	/*bool m_isListening = false;
-	FD_SET m_listenSet;
-	timeval m_timeval;
-	int m_listenPort = -1;
-	SOCKET m_listenSocket = INVALID_SOCKET;
-	SOCKET m_clientSocket = INVALID_SOCKET;*/
 };
