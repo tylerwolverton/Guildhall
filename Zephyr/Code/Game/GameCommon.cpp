@@ -1,8 +1,10 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Scripting/GameAPI.hpp"
 #include "Game/Scripting/ZephyrVirtualMachine.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/Physics2D.hpp"
@@ -19,6 +21,21 @@ Physics2D* g_physicsSystem2D = nullptr;		// Owned by the App
 Game* g_game = nullptr;						// Owned by the App
 GameAPI* g_gameAPI = nullptr;
 ZephyrVirtualMachine* g_zephyrVM = nullptr;
+
+
+//-----------------------------------------------------------------------------------------------
+void PopulateGameConfig()
+{
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( "Data/GameConfig.xml" );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		return;
+	}
+
+	XmlElement* root = doc.RootElement();
+	g_gameConfigBlackboard.PopulateFromXmlElementAttributes( *root );
+}
 
 
 //-----------------------------------------------------------------------------------------------

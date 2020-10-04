@@ -220,6 +220,22 @@ Entity* Map::SpawnNewEntityOfTypeAtPosition( const std::string& entityDefName, c
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::ReloadAllEntityScripts()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		entity->ReloadZephyrScript();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )

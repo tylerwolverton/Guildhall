@@ -78,6 +78,7 @@ private:
 	void LoadEntitiesFromXml();
 	void LoadAndCompileZephyrScripts();
 	void ReloadGame();
+	void ReloadScripts();
 
 	void UpdateFromKeyboard();
 	void ChangeMap( const std::string& mapName );
@@ -133,4 +134,5 @@ private:
 
 	World* m_world = nullptr;
 	std::string m_curMapName;
+	std::string m_startingMapName;
 };

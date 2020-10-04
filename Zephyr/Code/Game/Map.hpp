@@ -48,6 +48,8 @@ public:
 	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
 	virtual Entity* SpawnNewEntityOfTypeAtPosition( const std::string& entityDefName, const Vec2& pos );
 
+	void			ReloadAllEntityScripts();
+
 	Vec2 GetPlayerStartPos() const										{ return m_playerStartPos; }
 
 	void RemoveOwnershipOfEntity( Entity* entityToRemove );

@@ -127,6 +127,16 @@ bool World::IsMapLoaded( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+void World::ReloadAllEntityScripts()
+{
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->ReloadAllEntityScripts();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void World::ClearMaps()
 {
 	PTR_MAP_SAFE_DELETE( m_loadedMaps );

@@ -18,11 +18,4 @@ StateMachine
 		FireEvent( UpdateEnemyCount( enemyCount = enemiesInLevel ) );
 	}
 
-	State Update
-	{	
-		//if( enemiesInLevel <= 0 )
-		//{
-		//	FireEvent( QuestComplete()  );
-		//}
-	}
 }

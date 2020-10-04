@@ -43,6 +43,7 @@ public:
 
 	virtual void	Load();
 	virtual void	Unload();
+	void			ReloadZephyrScript();
 
 	const Vec2		GetForwardVector() const;
 	const Vec2		GetPosition() const;

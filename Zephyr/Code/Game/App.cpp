@@ -215,20 +215,6 @@ void App::EndFrame()
 	g_window->EndFrame();
 }
 
-//-----------------------------------------------------------------------------------------------
-void App::PopulateGameConfig()
-{
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( "Data/GameConfig.xml" );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		return;
-	}
-
-	XmlElement* root = doc.RootElement();
-	g_gameConfigBlackboard.PopulateFromXmlElementAttributes( *root );
-}
-
 
 //-----------------------------------------------------------------------------------------------
 eWindowMode App::GetWindowModeFromGameConfig()

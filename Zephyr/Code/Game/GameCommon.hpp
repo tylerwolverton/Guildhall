@@ -30,6 +30,12 @@ extern ZephyrVirtualMachine* g_zephyrVM;
 
 
 //-----------------------------------------------------------------------------------------------
+// Global Functions
+//
+void PopulateGameConfig();
+
+
+//-----------------------------------------------------------------------------------------------
 // Game Constants
 //
 constexpr float CLIENT_ASPECT = 16.f / 9.f;

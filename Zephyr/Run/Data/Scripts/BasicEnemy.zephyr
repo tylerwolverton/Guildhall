@@ -15,7 +15,7 @@ StateMachine
 
 	OnEvent( TestEvent )
 	{
-		msg = "Goodbye";
+		msg = "World";
 	}
 
 	State TestState

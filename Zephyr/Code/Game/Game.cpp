@@ -94,6 +94,8 @@ void Game::Startup()
 
 	m_world = new World( m_gameClock );
 
+	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -592,6 +594,9 @@ void Game::ReloadGame()
 {
 	m_world->ClearMaps();
 
+	PopulateGameConfig();
+	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
+
 	m_player = nullptr;
 
 	PTR_MAP_SAFE_DELETE( ZephyrScriptDefinition::s_definitions );
@@ -609,6 +614,27 @@ void Game::ReloadGame()
 	LoadMapsFromXml();
 
 	g_devConsole->PrintString( "Data files reloaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ReloadScripts()
+{
+	PTR_MAP_SAFE_DELETE( ZephyrScriptDefinition::s_definitions );
+	
+	LoadAndCompileZephyrScripts();
+
+	for ( auto& entityDef : EntityDefinition::s_definitions )
+	{
+		if ( entityDef.second != nullptr )
+		{
+			entityDef.second->ReloadZephyrScriptDefinition();
+		}
+	}
+
+	m_world->ReloadAllEntityScripts();
+
+	g_devConsole->PrintString( "Scripts reloaded", Rgba8::GREEN );
 }
 
 
@@ -653,10 +679,16 @@ void Game::UpdateFromKeyboard()
 				g_eventSystem->FireEvent( "TestEvent" );
 			}
 
-			/*if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
 			{
-				ChangeMap( m_curMapName );
-			}*/
+				ReloadGame();
+				ChangeMap( m_startingMapName );
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
+			{
+				ReloadScripts();
+			}
 		}
 		break;
 
@@ -969,9 +1001,8 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
 					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true, .1f );
 					
-					m_curMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapName );
-					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapName.c_str() ) );
-					ChangeMap( m_curMapName );
+					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_startingMapName.c_str() ) );
+					ChangeMap( m_startingMapName );
 				}
 				break;
 			}

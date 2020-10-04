@@ -36,6 +36,8 @@ public:
 	explicit EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spritSheet );
 	~EntityDefinition();
 
+	void			ReloadZephyrScriptDefinition();
+
 	bool			IsValid() const																{ return m_isValid; }
 	std::string		GetName() const																{ return m_name; }
 	int				GetMaxHealth() const														{ return m_maxHealth; }
@@ -81,6 +83,7 @@ protected:
 	std::map<std::string, std::string> m_receivedEventsToResponseEvents;
 
 	// Scripts
+	std::string				m_zephyrScriptName;
 	ZephyrScriptDefinition* m_zephyrScriptDef = nullptr;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;

@@ -180,11 +180,11 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	const XmlElement* scriptElem = entityDefElem.FirstChildElement( "Script" );
 	if ( scriptElem != nullptr )
 	{
-		std::string scriptName = ParseXmlAttribute( *scriptElem, "name", "" );
+		m_zephyrScriptName = ParseXmlAttribute( *scriptElem, "name", "" );
 
-		if ( !scriptName.empty() )
+		if ( !m_zephyrScriptName.empty() )
 		{
-			m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( scriptName );
+			m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( m_zephyrScriptName );
 		}
 	}
 
@@ -196,6 +196,16 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 EntityDefinition::~EntityDefinition()
 {
 	PTR_MAP_SAFE_DELETE( m_spriteAnimSetDefs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void EntityDefinition::ReloadZephyrScriptDefinition()
+{
+	if ( !m_zephyrScriptName.empty() )
+	{
+		m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( m_zephyrScriptName );
+	}
 }
 
 

@@ -26,7 +26,6 @@ public:
 	void RestartGame();
 
 private:
-	void PopulateGameConfig();
 	eWindowMode GetWindowModeFromGameConfig();
 
 	void BeginFrame();

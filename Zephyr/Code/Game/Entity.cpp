@@ -268,6 +268,22 @@ void Entity::Unload()
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::ReloadZephyrScript()
+{
+	if ( m_scriptObj != nullptr )
+	{
+		PTR_SAFE_DELETE( m_scriptObj );
+
+		ZephyrScriptDefinition* scriptDef = m_entityDef.GetZephyrScriptDefinition();
+		if ( scriptDef != nullptr )
+		{
+			m_scriptObj = new ZephyrScript( *scriptDef, this );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::RegisterUserEvents()
 {
 	std::map<std::string, std::string>const& registeredEvents = m_entityDef.GetRegisteredEvents();
