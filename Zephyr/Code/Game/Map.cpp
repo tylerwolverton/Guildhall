@@ -303,6 +303,7 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 			continue;
 		}
 
+		newEntity->SetId( mapEntityDef.id );
 		newEntity->SetPosition( mapEntityDef.position );
 		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
 

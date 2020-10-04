@@ -20,7 +20,7 @@
     <Entity name="LockedDoorVertical" pos="7.5,9.5"/>
     <Portal name="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
 		<PlayerStart pos="3.5,1.5" yaw="0"/>
-    <Pickup name="Key" pos="5.5,4.5" />
+    <Pickup name="Key" id="key1" pos="5.5,4.5" />
     <Portal name="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
 	</Entities>
 

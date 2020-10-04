@@ -57,6 +57,7 @@ public:
 	void			SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 	std::string		GetName() const											{ return m_entityDef.m_name; }
 	std::string		GetId() const											{ return m_id; }
+	void			SetId( const std::string& id ) 							{ m_id = id; }
 	eEntityType		GetType() const											{ return m_entityDef.m_type; }
 	const eFaction	GetFaction() const										{ return m_faction; }
 	void			SetFaction( const eFaction& faction )					{ m_faction = faction; }

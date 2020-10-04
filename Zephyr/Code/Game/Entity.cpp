@@ -185,6 +185,11 @@ void Entity::AddItemToInventory( Entity* item )
 	}
 
 	m_inventory.push_back( item );
+
+	if ( item->GetId() == "key1" )
+	{
+		g_eventSystem->FireEvent( "PickupKey" );
+	}
 }
 
 

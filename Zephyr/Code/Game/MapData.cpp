@@ -215,6 +215,7 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 			MapEntityDefinition mapEntityDef;
 
 			std::string entityName = ParseXmlAttribute( *entityElem, "name", "" );
+			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
 			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
 			if ( mapEntityDef.entityDef == nullptr )
 			{
@@ -242,6 +243,7 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 			MapEntityDefinition mapEntityDef;
 
 			std::string actorName = ParseXmlAttribute( *entityElem, "name", "" );
+			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
 			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( actorName );
 			if ( mapEntityDef.entityDef == nullptr )
 			{
@@ -269,6 +271,7 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 			MapEntityDefinition mapEntityDef;
 
 			std::string portalName = ParseXmlAttribute( *entityElem, "name", "" );
+			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
 			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( portalName );
 			if ( mapEntityDef.entityDef == nullptr )
 			{
@@ -299,6 +302,7 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 			MapEntityDefinition mapEntityDef;
 
 			std::string entityName = ParseXmlAttribute( *entityElem, "name", "" );
+			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
 			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
 			if ( mapEntityDef.entityDef == nullptr )
 			{

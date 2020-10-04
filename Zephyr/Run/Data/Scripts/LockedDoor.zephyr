@@ -1,6 +1,6 @@
 StateMachine
 {
-	OnEvent( OpenDoor )
+	OnEvent( PickupKey )
 	{
 		FireEvent( DestroyEntity() );
 	}
