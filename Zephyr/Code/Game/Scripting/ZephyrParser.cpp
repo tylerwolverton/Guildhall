@@ -64,9 +64,17 @@ bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
 	}
 
 	ZephyrBytecodeChunk* newChunk = new ZephyrBytecodeChunk( chunkName );
+	
+	for ( auto globalVar : m_stateMachineBytecodeChunk->GetVariables() )
+	{
+		newChunk->SetVariable( globalVar.first, globalVar.second );
+	}
+
 	m_bytecodeChunks[chunkName] = newChunk;
 
 	m_curBytecodeChunk = newChunk;
+
+
 
 	return true;
 }
@@ -225,10 +233,7 @@ bool ZephyrParser::ParseStatement()
 
 		case eTokenType::IF:
 		{
-			if ( !ParseIfStatement() )
-			{
-				return false;
-			}
+			return ParseIfStatement();
 		}
 		break;
 
@@ -321,7 +326,7 @@ bool ZephyrParser::ParseNumberDeclaration()
 		{
 			AdvanceToNextToken();
 
-			if ( !ParseExpression() )
+			if ( !ParseExpression( eValueType::NUMBER ) )
 			{
 				return false;
 			}
@@ -372,7 +377,8 @@ bool ZephyrParser::ParseStringDeclaration()
 		{
 			AdvanceToNextToken();
 
-			if ( !ParseStringExpression() )
+			if ( !ParseExpression( eValueType::STRING ) )
+			//if ( !ParseStringExpression() )
 			{
 				return false;
 			}
@@ -510,7 +516,7 @@ bool ZephyrParser::ParseIfStatement()
 {
 	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) return false;
 
-	if ( !ParseExpression() ) return false;
+	if ( !ParseExpression( GetNextValueTypeInExpression() ) ) return false;
 
 	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) return false;
 
@@ -548,26 +554,31 @@ bool ZephyrParser::ParseAssignment()
 		return false;
 	}
 
-	switch ( value.GetType() )
+	if ( !ParseExpression( value.GetType() ) )
 	{
-		case eValueType::NUMBER:
-		{
-			if ( !ParseExpression() )
-			{
-				return false;
-			}
-		}
-		break;
-
-		case eValueType::STRING:
-		{
-			if ( !ParseStringExpression() )
-			{
-				return false;
-			}
-		}
-		break;
+		return false;
 	}
+
+	//switch ( value.GetType() )
+	//{
+	//	case eValueType::NUMBER:
+	//	{
+	//		if ( !ParseExpression( value.GetType() ) )
+	//		{
+	//			return false;
+	//		}
+	//	}
+	//	break;
+
+	//	case eValueType::STRING:
+	//	{
+	//		if ( !ParseStringExpression() )
+	//		{
+	//			return false;
+	//		}
+	//	}
+	//	break;
+	//}
 
 	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
 	WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
@@ -577,17 +588,17 @@ bool ZephyrParser::ParseAssignment()
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseExpression()
+bool ZephyrParser::ParseExpression( const eValueType& expressionType )
 {
-	return ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel::ASSIGNMENT );
+	return ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel::ASSIGNMENT, expressionType );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel )
+bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel, const eValueType& expressionType )
 {
 	ZephyrToken curToken = GetCurToken();
-	if ( !CallPrefixFunction( curToken ) )
+	if ( !CallPrefixFunction( curToken, expressionType ) )
 	{
 		// TODO: Make this more descriptive
 		ReportError( "Missing expression" );
@@ -597,7 +608,7 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 	curToken = GetCurToken();
 	while ( precLevel <= GetPrecedenceLevel( curToken ) )
 	{
-		CallInfixFunction( curToken );
+		CallInfixFunction( curToken, expressionType );
 		curToken = GetCurToken();
 	}
 
@@ -606,11 +617,11 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseParenthesesGroup()
+bool ZephyrParser::ParseParenthesesGroup( const eValueType& expressionType )
 {
 	ConsumeNextToken();
 
-	if ( !ParseExpression() )
+	if ( !ParseExpression( expressionType ) )
 	{
 		return false;
 	}
@@ -620,51 +631,82 @@ bool ZephyrParser::ParseParenthesesGroup()
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseUnaryExpression()
+bool ZephyrParser::ParseUnaryExpression( const eValueType& expressionType )
 {
 	ZephyrToken curToken = ConsumeNextToken();
 
-	if ( !ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel::UNARY ) )
+	if ( !ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel::UNARY, expressionType ) )
 	{
 		return false;
 	}
 
-	// Add strings and type check here
-	switch ( curToken.GetType() )
+	switch ( expressionType )
 	{
-		case eTokenType::MINUS:			return WriteOpCodeToCurChunk( eOpCode::NEGATE );
-		case eTokenType::BANG:			return WriteOpCodeToCurChunk( eOpCode::NOT );
+		case eValueType::NUMBER:
+		{
+			switch ( curToken.GetType() )
+			{
+				case eTokenType::MINUS:			return WriteOpCodeToCurChunk( eOpCode::NEGATE );
+				case eTokenType::BANG:			return WriteOpCodeToCurChunk( eOpCode::NOT );
+			}
+		}
+		break;
+
+		case eValueType::STRING:
+		{
+			switch ( curToken.GetType() )
+			{
+				case eTokenType::BANG:			return WriteOpCodeToCurChunk( eOpCode::NOT );
+			}
+		}
 		break;
 	}
-
 	return true;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseBinaryExpression()
+bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 {
 	ZephyrToken curToken = ConsumeNextToken();
 
 	eOpPrecedenceLevel precLevel = GetNextHighestPrecedenceLevel( curToken );
 
-	if ( !ParseExpressionWithPrecedenceLevel( precLevel ) )
+	if ( !ParseExpressionWithPrecedenceLevel( precLevel, expressionType ) )
 	{
 		return false;
 	}
 
-	switch ( curToken.GetType() )
+	switch ( expressionType )
 	{
-		case eTokenType::PLUS:			return WriteOpCodeToCurChunk( eOpCode::ADD );
-		case eTokenType::MINUS:			return WriteOpCodeToCurChunk( eOpCode::SUBTRACT );
-		case eTokenType::STAR:			return WriteOpCodeToCurChunk( eOpCode::MULTIPLY );
-		case eTokenType::SLASH:			return WriteOpCodeToCurChunk( eOpCode::DIVIDE );
-		case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
-		case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
-		case eTokenType::GREATER:		return WriteOpCodeToCurChunk( eOpCode::GREATER );
-		case eTokenType::GREATER_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::GREATER_EQUAL );
-		case eTokenType::LESS:			return WriteOpCodeToCurChunk( eOpCode::LESS );
-		case eTokenType::LESS_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::LESS_EQUAL );
+		case eValueType::NUMBER:
+		{
+			switch ( curToken.GetType() )
+			{
+				case eTokenType::PLUS:			return WriteOpCodeToCurChunk( eOpCode::ADD );
+				case eTokenType::MINUS:			return WriteOpCodeToCurChunk( eOpCode::SUBTRACT );
+				case eTokenType::STAR:			return WriteOpCodeToCurChunk( eOpCode::MULTIPLY );
+				case eTokenType::SLASH:			return WriteOpCodeToCurChunk( eOpCode::DIVIDE );
+				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
+				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
+				case eTokenType::GREATER:		return WriteOpCodeToCurChunk( eOpCode::GREATER );
+				case eTokenType::GREATER_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::GREATER_EQUAL );
+				case eTokenType::LESS:			return WriteOpCodeToCurChunk( eOpCode::LESS );
+				case eTokenType::LESS_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::LESS_EQUAL );
+			}
+		}
+		break;
+
+		case eValueType::STRING:
+		{
+			switch ( curToken.GetType() )
+			{
+				case eTokenType::PLUS:			return WriteOpCodeToCurChunk( eOpCode::ADD );
+				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
+				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
+			}
+		}
+		break;
 	}
 
 	return true;
@@ -683,7 +725,11 @@ bool ZephyrParser::ParseNumberExpression()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseStringExpression()
 {
-	ZephyrToken curToken = GetCurToken();
+	ZephyrToken curToken = ConsumeNextToken();
+
+	return WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
+
+	/*ZephyrToken curToken = GetCurToken();
 
 	switch ( curToken.GetType() )
 	{
@@ -711,7 +757,7 @@ bool ZephyrParser::ParseStringExpression()
 		}
 	}
 
-	return true;
+	return true;*/
 }
 
 
@@ -747,14 +793,15 @@ bool ZephyrParser::ParseIdentifierExpressionOfType( eValueType expectedType )
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
+bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token, const eValueType& expectedType )
 {
 	switch ( token.GetType() )
 	{
-		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup();
+		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup( expectedType );
 		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression();
-		case eTokenType::MINUS:				return ParseUnaryExpression();
-		case eTokenType::BANG:				return ParseUnaryExpression();
+		case eTokenType::CONSTANT_STRING:	return ParseStringExpression();
+		case eTokenType::MINUS:				return ParseUnaryExpression( expectedType );
+		case eTokenType::BANG:				return ParseUnaryExpression( expectedType );
 		case eTokenType::IDENTIFIER:		
 		{
 			if ( PeekNextToken().GetType() == eTokenType::EQUAL )
@@ -763,7 +810,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 				return ParseAssignment();
 			}
 
-			return ParseIdentifierExpressionOfType( eValueType::NUMBER );
+			return ParseIdentifierExpressionOfType( expectedType );
 		}
 		break;
 	}
@@ -773,7 +820,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
+bool ZephyrParser::CallInfixFunction( const ZephyrToken& token, const eValueType& expectedType )
 {
 	switch ( token.GetType() )
 	{
@@ -788,7 +835,7 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 		case eTokenType::LESS:
 		case eTokenType::LESS_EQUAL:
 		{
-			return ParseBinaryExpression();
+			return ParseBinaryExpression( expectedType );
 		}
 		break;
 
@@ -825,6 +872,34 @@ eOpPrecedenceLevel ZephyrParser::GetNextHighestPrecedenceLevel( const ZephyrToke
 
 	//TODO: Make this safer
 	return (eOpPrecedenceLevel)( (int)precLevel + 1 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eValueType ZephyrParser::GetNextValueTypeInExpression()
+{
+	ZephyrToken curToken = GetCurToken();
+
+	int tokenIdx = m_curTokenIdx;
+	while ( curToken.GetType() != eTokenType::END_OF_FILE )
+	{
+		switch ( curToken.GetType() )
+		{
+			case eTokenType::CONSTANT_NUMBER: return eValueType::NUMBER;
+			case eTokenType::CONSTANT_STRING: return eValueType::STRING;
+			case eTokenType::IDENTIFIER:
+			{
+				ZephyrValue value;
+				m_curBytecodeChunk->TryToGetVariable( curToken.GetData(), value );
+				return value.GetType();
+			}
+		}
+
+		++tokenIdx;
+		curToken = m_tokens[tokenIdx];
+	}
+
+	return eValueType::NONE;
 }
 
 

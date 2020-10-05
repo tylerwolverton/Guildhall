@@ -62,20 +62,21 @@ private:
 	bool ParseEventArgs();
 	bool ParseIfStatement();
 	bool ParseAssignment();
-	bool ParseExpression();
-	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel );
-	bool ParseParenthesesGroup();
-	bool ParseUnaryExpression();
-	bool ParseBinaryExpression();
+	bool ParseExpression( const eValueType& expressionType );
+	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel, const eValueType& expressionType );
+	bool ParseParenthesesGroup( const eValueType& expressionType );
+	bool ParseUnaryExpression( const eValueType& expressionType );
+	bool ParseBinaryExpression( const eValueType& expressionType );
 	bool ParseNumberExpression();
 	bool ParseStringExpression();
 	bool ParseIdentifierExpressionOfType( eValueType expectedType );
 
 	// Pratt Parser Helpers
-	bool CallPrefixFunction( const ZephyrToken& token );
-	bool CallInfixFunction( const ZephyrToken& token );
+	bool CallPrefixFunction( const ZephyrToken& token, const eValueType& expressionType );
+	bool CallInfixFunction( const ZephyrToken& token, const eValueType& expressionType );
 	eOpPrecedenceLevel GetPrecedenceLevel( const ZephyrToken& token );
 	eOpPrecedenceLevel GetNextHighestPrecedenceLevel( const ZephyrToken& token );
+	eValueType GetNextValueTypeInExpression();
 
 	void ReportError( const std::string& errorMsg );
 

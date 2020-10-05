@@ -142,7 +142,7 @@ void ZephyrScanner::TokenizeComparator( char curChar )
 	{
 		case '=':
 		{
-			if ( PeekNextChar() == '=' )
+			if ( Peek() == '=' )
 			{
 				AddToken( eTokenType::EQUAL_EQUAL );
 				ReadAndAdvanceSrcPos();
@@ -156,7 +156,7 @@ void ZephyrScanner::TokenizeComparator( char curChar )
 
 		case '!':
 		{
-			if ( PeekNextChar() == '=' )
+			if ( Peek() == '=' )
 			{
 				AddToken( eTokenType::BANG_EQUAL );
 				ReadAndAdvanceSrcPos();
@@ -170,7 +170,7 @@ void ZephyrScanner::TokenizeComparator( char curChar )
 
 		case '>':
 		{
-			if ( PeekNextChar() == '=' )
+			if ( Peek() == '=' )
 			{
 				AddToken( eTokenType::GREATER_EQUAL );
 				ReadAndAdvanceSrcPos();
@@ -184,7 +184,7 @@ void ZephyrScanner::TokenizeComparator( char curChar )
 
 		case '<':
 		{
-			if ( PeekNextChar() == '=' )
+			if ( Peek() == '=' )
 			{
 				AddToken( eTokenType::LESS_EQUAL );
 				ReadAndAdvanceSrcPos();

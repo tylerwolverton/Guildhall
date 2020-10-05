@@ -8,9 +8,9 @@ StateMachine
 	{
 		FireEvent( PrintDebugText( text = itemId, duration = 5 ) );
 
-		//if( itemId == "key1" )
-		//{
-		//	FireEvent( DestroyEntity() );
-		//}
+		if( itemId == "key1" )
+		{
+			FireEvent( DestroyEntity() );
+		}
 	}
 }
