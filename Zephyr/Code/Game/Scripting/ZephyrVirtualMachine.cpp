@@ -70,6 +70,19 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::IF:
+			{
+				ZephyrValue expression = PopConstant();
+				ZephyrValue numBytesToSkip = PopConstant();
+
+				// Check if we should jump over the if block 
+				if ( !expression.IsTrue() )
+				{
+					byteIdx += (int)numBytesToSkip.GetAsNumber();
+				}
+			}
+			break;
+
 			case eOpCode::NEGATE:
 			{
 				ZephyrValue a = PopConstant();

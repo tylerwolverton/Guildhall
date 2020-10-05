@@ -35,6 +35,7 @@ public:
 	void WriteByte( int constantIdx );
 	void WriteConstant( const ZephyrValue& constant );
 	int AddConstant( const ZephyrValue& constant );
+	void SetConstantAtIdx( int idx, const ZephyrValue& constant );
 
 	void SetVariable( const std::string& identifier, const ZephyrValue& value );
 	void SetType( eBytecodeChunkType type )								{ m_type = type; }

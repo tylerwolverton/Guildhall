@@ -29,6 +29,8 @@ enum class eTokenType
 	STRING,
 	FIRE_EVENT,
 	ON_EVENT,
+	IF,
+	ELSE,
 
 	BRACE_LEFT,
 	BRACE_RIGHT,
@@ -47,6 +49,15 @@ enum class eTokenType
 	SLASH,
 	EQUAL,
 	
+	// Comparators
+	EQUAL_EQUAL,
+	BANG,
+	BANG_EQUAL,
+	GREATER,
+	GREATER_EQUAL,
+	LESS,
+	LESS_EQUAL,
+
 	SEMICOLON,
 	COMMA,
 	QUOTE,
@@ -66,6 +77,7 @@ enum class eOpCode : byte
 	UNKNOWN,
 
 	NEGATE,
+	NOT,
 
 	CONSTANT,
 
@@ -73,12 +85,23 @@ enum class eOpCode : byte
 	GET_VARIABLE_VALUE,
 	ASSIGNMENT,
 
+	// Arithmetic
 	ADD,
 	SUBTRACT, 
 	MULTIPLY,
 	DIVIDE,
 
+	// Comparators
+	NOT_EQUAL,
+	EQUAL,
+	GREATER,
+	GREATER_EQUAL,
+	LESS,
+	LESS_EQUAL,
+
 	FIRE_EVENT,
+
+	IF,
 
 	LAST_VAL,
 };
@@ -117,6 +140,7 @@ public:
 	bool		GetAsBool() const		{ return boolData; }
 	std::string GetAsString() const;
 	
+	bool		IsTrue() const;
 
 private:
 	eValueType m_type = eValueType::NONE;

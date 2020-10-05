@@ -68,6 +68,19 @@ int ZephyrBytecodeChunk::AddConstant( const ZephyrValue& constant )
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrBytecodeChunk::SetConstantAtIdx( int idx, const ZephyrValue& constant )
+{
+	if ( idx > (int)m_constants.size() - 1 )
+	{
+		g_devConsole->PrintWarning( "Tried to write to constant outside bounds of constant vector" );
+		return;
+	}
+
+	m_constants[idx] = constant;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrBytecodeChunk::SetVariable( const std::string& identifier, const ZephyrValue& value )
 {
 	m_variables[identifier] = value;

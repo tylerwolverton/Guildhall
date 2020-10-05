@@ -23,6 +23,7 @@ private:
 	void AddToken( eTokenType type, const std::string& data = "" );
 
 	void SkipWhitespaceAndComments();
+	void TokenizeComparator( char curChar );
 	void TokenizeNumberConstant();
 	void TokenizeStringConstant();
 	void TokenizeIdentifier();

@@ -60,6 +60,7 @@ private:
 	bool ParseStringDeclaration();
 	bool ParseFireEvent();
 	bool ParseEventArgs();
+	bool ParseIfStatement();
 	bool ParseAssignment();
 	bool ParseExpression();
 	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel );

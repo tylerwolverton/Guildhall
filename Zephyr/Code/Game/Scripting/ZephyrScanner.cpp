@@ -35,19 +35,22 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 		switch ( nextChar )
 		{
 			// Compare against known token types
-			case '{': AddToken( eTokenType::BRACE_LEFT );			break;
-			case '}': AddToken( eTokenType::BRACE_RIGHT );			break;
-			case '(': AddToken( eTokenType::PARENTHESIS_LEFT );		break;
-			case ')': AddToken( eTokenType::PARENTHESIS_RIGHT );	break;
-			case '+': AddToken( eTokenType::PLUS );					break;
-			case '-': AddToken( eTokenType::MINUS );				break;
-			case '*': AddToken( eTokenType::STAR );					break;
-			case '/': AddToken( eTokenType::SLASH );				break;
-			case '=': AddToken( eTokenType::EQUAL );				break;
-			case ';': AddToken( eTokenType::SEMICOLON );			break;
-			case ',': AddToken( eTokenType::COMMA );				break;
-			case '"': TokenizeStringConstant();						break;
-			case EOF: 												break;
+			case '{': AddToken( eTokenType::BRACE_LEFT );														 break;
+			case '}': AddToken( eTokenType::BRACE_RIGHT );														 break;
+			case '(': AddToken( eTokenType::PARENTHESIS_LEFT );													 break;
+			case ')': AddToken( eTokenType::PARENTHESIS_RIGHT );												 break;
+			case '+': AddToken( eTokenType::PLUS );																 break;
+			case '-': AddToken( eTokenType::MINUS );															 break;
+			case '*': AddToken( eTokenType::STAR );																 break;
+			case '/': AddToken( eTokenType::SLASH );															 break;
+			case ';': AddToken( eTokenType::SEMICOLON );														 break;
+			case ',': AddToken( eTokenType::COMMA );															 break;
+			case '=': 
+			case '!':
+			case '>':
+			case '<': TokenizeComparator( nextChar );															 break;
+			case '"': TokenizeStringConstant();																	 break;
+			case EOF: 																							 break;
 			
 			default:
 			{
@@ -133,6 +136,70 @@ void ZephyrScanner::SkipWhitespaceAndComments()
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScanner::TokenizeComparator( char curChar )
+{
+	switch ( curChar )
+	{
+		case '=':
+		{
+			if ( PeekNextChar() == '=' )
+			{
+				AddToken( eTokenType::EQUAL_EQUAL );
+				ReadAndAdvanceSrcPos();
+			}
+			else
+			{
+				AddToken( eTokenType::EQUAL );
+			}
+		}
+		break;
+
+		case '!':
+		{
+			if ( PeekNextChar() == '=' )
+			{
+				AddToken( eTokenType::BANG_EQUAL );
+				ReadAndAdvanceSrcPos();
+			}
+			else
+			{
+				AddToken( eTokenType::BANG );
+			}
+		}
+		break;
+
+		case '>':
+		{
+			if ( PeekNextChar() == '=' )
+			{
+				AddToken( eTokenType::GREATER_EQUAL );
+				ReadAndAdvanceSrcPos();
+			}
+			else
+			{
+				AddToken( eTokenType::GREATER );
+			}
+		}
+		break;
+
+		case '<':
+		{
+			if ( PeekNextChar() == '=' )
+			{
+				AddToken( eTokenType::LESS_EQUAL );
+				ReadAndAdvanceSrcPos();
+			}
+			else
+			{
+				AddToken( eTokenType::LESS );
+			}
+		}
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScanner::TokenizeNumberConstant()
 {
 	while ( IsNumber( Peek() ) )
@@ -186,6 +253,8 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "String" )	 { AddToken( eTokenType::STRING ); }
 	else if ( curIdentifier == "FireEvent" ) { AddToken( eTokenType::FIRE_EVENT ); }
 	else if ( curIdentifier == "OnEvent" )	 { AddToken( eTokenType::ON_EVENT ); }
+	else if ( curIdentifier == "if" )		 { AddToken( eTokenType::IF ); }
+	else if ( curIdentifier == "else" )		 { AddToken( eTokenType::ELSE ); }
 	// Must be a variable name
 	else
 	{

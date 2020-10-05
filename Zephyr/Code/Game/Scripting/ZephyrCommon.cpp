@@ -1,4 +1,5 @@
 #include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -16,6 +17,8 @@ std::string ToString( eTokenType type )
 		case eTokenType::STRING:			return "String";
 		case eTokenType::FIRE_EVENT:		return "FireEvent";
 		case eTokenType::ON_EVENT:			return "OnEvent";
+		case eTokenType::IF:				return "if";
+		case eTokenType::ELSE:				return "else";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant number";
 		case eTokenType::CONSTANT_STRING:	return "Constant string";
@@ -48,6 +51,8 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::STRING:			return "STRING";
 		case eTokenType::FIRE_EVENT:		return "FIRE_EVENT";
 		case eTokenType::ON_EVENT:			return "ON_EVENT";
+		case eTokenType::IF:				return "IF";
+		case eTokenType::ELSE:				return "ELSE";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
 		case eTokenType::CONSTANT_STRING:	return "CONSTANT_STRING";
@@ -164,6 +169,20 @@ std::string ZephyrValue::GetAsString() const
 	}
 
 	return *strData;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrValue::IsTrue() const
+{
+	switch ( m_type )
+	{
+		case eValueType::STRING: 	return *strData != std::string( "" );
+		case eValueType::NUMBER: 	return !IsNearlyEqual( numberData, 0.f );			
+		case eValueType::BOOL:		return boolData;					
+	}
+
+	return false;
 }
 
 
