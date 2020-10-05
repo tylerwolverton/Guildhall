@@ -27,6 +27,13 @@ std::string ToString( eTokenType type )
 		case eTokenType::STAR:				return "*";
 		case eTokenType::SLASH:				return "/";
 		case eTokenType::EQUAL:				return "=";
+		case eTokenType::EQUAL_EQUAL:		return "==";
+		case eTokenType::BANG:				return "!";
+		case eTokenType::BANG_EQUAL:		return "!=";
+		case eTokenType::GREATER:			return ">";
+		case eTokenType::GREATER_EQUAL:		return ">=";
+		case eTokenType::LESS:				return "<";
+		case eTokenType::LESS_EQUAL:		return "<=";
 		case eTokenType::SEMICOLON:			return ";";
 		case eTokenType::COMMA:				return ",";
 		case eTokenType::QUOTE:				return "\"";
@@ -61,6 +68,13 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::STAR:				return "STAR";
 		case eTokenType::SLASH:				return "SLASH";
 		case eTokenType::EQUAL:				return "EQUAL";
+		case eTokenType::EQUAL_EQUAL:		return "EQUAL_EQUAL";
+		case eTokenType::BANG:				return "BANG";
+		case eTokenType::BANG_EQUAL:		return "BANG_EQUAL";
+		case eTokenType::GREATER:			return "GREATER";
+		case eTokenType::GREATER_EQUAL:		return "GREATER_EQUAL";
+		case eTokenType::LESS:				return "LESS";
+		case eTokenType::LESS_EQUAL:		return "LESS_EQUAL";
 		case eTokenType::SEMICOLON:			return "SEMICOLON";
 		case eTokenType::COMMA: 			return "COMMA";
 		case eTokenType::QUOTE: 			return "QUOTE";

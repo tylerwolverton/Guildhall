@@ -6,11 +6,13 @@ StateMachine
 	
 	OnEvent( PickupItem )
 	{
-		FireEvent( PrintDebugText( text = itemId, duration = 5 ) );
+		//FireEvent( PrintDebugText( text = itemId, duration = 5 ) );
 
-		if( itemId == "key1" )
+		if( itemId == "key51" )
 		{
 			FireEvent( DestroyEntity() );
 		}
+
+		FireEvent( PrintDebugText( text = itemId, duration = 5 ) );
 	}
 }

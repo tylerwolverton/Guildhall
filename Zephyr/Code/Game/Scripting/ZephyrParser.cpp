@@ -514,6 +514,11 @@ bool ZephyrParser::ParseEventArgs()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseIfStatement()
 {
+	// Write a placeholder for how many bytes the if block is so we can update it with the length later
+	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
+	int instructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
+	m_curBytecodeChunk->WriteByte( instructionCountIdx );
+
 	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) return false;
 
 	if ( !ParseExpression( GetNextValueTypeInExpression() ) ) return false;
@@ -522,14 +527,11 @@ bool ZephyrParser::ParseIfStatement()
 
 	WriteOpCodeToCurChunk( eOpCode::IF );
 	
-	// Write a placeholder for how many bytes the if block is so we can update it with the length later
-	int instructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
-	m_curBytecodeChunk->WriteByte( instructionCountIdx );
-	int preBlockbyteCount = m_curTokenIdx;
+	int preBlockByteCount = m_curBytecodeChunk->GetCode().size();
 
 	if ( !ParseBlock() ) return false;
 
-	m_curBytecodeChunk->SetConstantAtIdx( instructionCountIdx, ZephyrValue( (float)( m_curTokenIdx - preBlockbyteCount ) ) );
+	m_curBytecodeChunk->SetConstantAtIdx( instructionCountIdx, ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preBlockByteCount ) ) );
 
 	return true;
 }
@@ -558,28 +560,7 @@ bool ZephyrParser::ParseAssignment()
 	{
 		return false;
 	}
-
-	//switch ( value.GetType() )
-	//{
-	//	case eValueType::NUMBER:
-	//	{
-	//		if ( !ParseExpression( value.GetType() ) )
-	//		{
-	//			return false;
-	//		}
-	//	}
-	//	break;
-
-	//	case eValueType::STRING:
-	//	{
-	//		if ( !ParseStringExpression() )
-	//		{
-	//			return false;
-	//		}
-	//	}
-	//	break;
-	//}
-
+	
 	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
 	WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
 
@@ -728,36 +709,6 @@ bool ZephyrParser::ParseStringExpression()
 	ZephyrToken curToken = ConsumeNextToken();
 
 	return WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
-
-	/*ZephyrToken curToken = GetCurToken();
-
-	switch ( curToken.GetType() )
-	{
-		case eTokenType::CONSTANT_STRING:
-		{
-			WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
-
-			AdvanceToNextToken();
-		}
-		break;
-
-		case eTokenType::IDENTIFIER:
-		{
-			if ( !ParseIdentifierExpressionOfType( eValueType::STRING ) )
-			{
-				return false;
-			}
-		}
-		break;
-
-		default:
-		{
-			ReportError( "Must specify text in quotes or another string in string assignment" );
-			return false;
-		}
-	}
-
-	return true;*/
 }
 
 
@@ -798,6 +749,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token, const eValueTyp
 	switch ( token.GetType() )
 	{
 		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup( expectedType );
+		// do type checking here
 		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression();
 		case eTokenType::CONSTANT_STRING:	return ParseStringExpression();
 		case eTokenType::MINUS:				return ParseUnaryExpression( expectedType );

@@ -4,6 +4,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -97,6 +98,12 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::SUBTRACT:
 			case eOpCode::MULTIPLY:
 			case eOpCode::DIVIDE:
+			case eOpCode::NOT_EQUAL:
+			case eOpCode::EQUAL:
+			case eOpCode::GREATER:
+			case eOpCode::GREATER_EQUAL:
+			case eOpCode::LESS:
+			case eOpCode::LESS_EQUAL:
 			{
 				ZephyrValue b = PopConstant();
 				ZephyrValue a = PopConstant();
@@ -212,6 +219,11 @@ void ZephyrVirtualMachine::PushBinaryOp( const ZephyrValue& a, const ZephyrValue
 	{
 		PushNumberBinaryOp( a.GetAsNumber(), b.GetAsNumber(), opCode );
 	}
+	else if ( a.GetType() == eValueType::STRING
+			  && b.GetType() == eValueType::STRING )
+	{
+		PushStringBinaryOp( a.GetAsString(), b.GetAsString(), opCode );
+	}
 }
 
 
@@ -244,6 +256,83 @@ void ZephyrVirtualMachine::PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOp
 		case eOpCode::DIVIDE:
 		{
 			NUMBER_TYPE result = a / b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::NOT_EQUAL:
+		{
+			bool result = !IsNearlyEqual( a, b );
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::EQUAL:
+		{
+			bool result = IsNearlyEqual( a, b );
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::GREATER:
+		{
+			bool result = a > b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::GREATER_EQUAL:
+		{
+			bool result = a >= b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::LESS:
+		{
+			bool result = a < b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::LESS_EQUAL:
+		{
+			bool result = a <= b;
+			PushConstant( result );
+		}
+		break;
+
+		default:
+		{
+
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushStringBinaryOp( const std::string& a, const std::string& b, eOpCode opCode )
+{
+	switch ( opCode )
+	{
+		case eOpCode::ADD:
+		{
+			std::string result = a;
+			result.append( b );
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::NOT_EQUAL:
+		{
+			bool result = a != b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::EQUAL:
+		{
+			bool result = a == b;
 			PushConstant( result );
 		}
 		break;

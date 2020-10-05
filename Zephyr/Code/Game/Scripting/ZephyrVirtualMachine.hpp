@@ -29,6 +29,7 @@ private:
 
 	void PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode );
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
+	void PushStringBinaryOp( const std::string& a, const std::string& b, eOpCode opCode );
 
 	void UpdateGlobalVariables( ZephyrValueMap& globalVariables, const ZephyrValueMap& localVariables );
 	void ClearConstantStack();
