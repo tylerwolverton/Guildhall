@@ -18,9 +18,11 @@ public:
 	void Startup();
 	void Shutdown();
 
-	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity = nullptr );
+	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity = nullptr, EventArgs* eventArgs = nullptr );
 
 private:
+	void		AddEventArgsToLocalVariables( EventArgs* eventArgs, ZephyrValueMap& localVariables );
+
 	void		PushConstant( const ZephyrValue& number );
 	ZephyrValue PopConstant();
 	ZephyrValue PeekConstant();

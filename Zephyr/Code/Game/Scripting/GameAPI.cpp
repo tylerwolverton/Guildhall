@@ -66,6 +66,7 @@ void GameAPI::DestroyEntity( EventArgs* args )
 void GameAPI::PrintDebugText( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "TestPrint" );
+	float duration = args->GetValue( "duration", 0.f );
 	Entity* entity = (Entity*)args->GetValue( "entity", (void*)nullptr );
 
 	Mat44 textLocation;
@@ -75,5 +76,5 @@ void GameAPI::PrintDebugText( EventArgs* args )
 		textLocation.SetTranslation2D( entity->GetPosition() );
 	}
 	
-	DebugAddWorldText( textLocation, Vec2::HALF, Rgba8::WHITE, Rgba8::WHITE, 0.f, .1f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, text.c_str() );
+	DebugAddWorldText( textLocation, Vec2::HALF, Rgba8::WHITE, Rgba8::WHITE, duration, .1f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, text.c_str() );
 }

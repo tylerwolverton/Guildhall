@@ -27,10 +27,12 @@ void ZephyrVirtualMachine::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity )
+void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity, EventArgs* eventArgs )
 {
 	ClearConstantStack();
 	std::map<std::string, ZephyrValue> localVariables = *globalVariables;
+
+	AddEventArgsToLocalVariables( eventArgs, localVariables );
 
 	int byteIdx = 0;
 	while ( byteIdx < bytecodeChunk.GetNumBytes() )
@@ -123,6 +125,47 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 	UpdateGlobalVariables( *globalVariables, localVariables );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::AddEventArgsToLocalVariables( EventArgs* eventArgs, ZephyrValueMap& localVariables )
+{
+	if ( eventArgs == nullptr )
+	{
+		return;
+	}
+
+	// For each event arg that matches a known ZephyrType, add it to the local variables map so the event can use it
+	std::map<std::string, TypedPropertyBase*> argKeyValuePairs = eventArgs->GetAllKeyValuePairs();
+
+	for ( auto keyValuePair : argKeyValuePairs )
+	{
+		if ( keyValuePair.second->Is<float>() )
+		{
+			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, 0.f ) );
+		}
+		else if ( keyValuePair.second->Is<int>() )
+		{
+			localVariables[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0 ) );
+		}
+		else if ( keyValuePair.second->Is<double>() )
+		{
+			localVariables[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0.0 ) );
+		}
+		else if ( keyValuePair.second->Is<bool>() )
+		{
+			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, false ) );
+		}
+		else if ( keyValuePair.second->Is<std::string>() 
+				  || keyValuePair.second->Is<char*>() )
+		{
+			localVariables[keyValuePair.first] = ZephyrValue( keyValuePair.second->GetAsString() );
+		}
+
+		// Any other variables will be ignored since they have no ZephyrType equivalent
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::PushConstant( const ZephyrValue& number )

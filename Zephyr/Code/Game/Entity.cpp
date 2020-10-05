@@ -186,10 +186,10 @@ void Entity::AddItemToInventory( Entity* item )
 
 	m_inventory.push_back( item );
 
-	if ( item->GetId() == "key1" )
-	{
-		g_eventSystem->FireEvent( "PickupKey" );
-	}
+	EventArgs args;
+	args.SetValue( "itemId", item->GetId() );
+
+	g_eventSystem->FireEvent( "PickupItem", &args );
 }
 
 

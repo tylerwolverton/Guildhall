@@ -1,7 +1,16 @@
 StateMachine
 {
-	OnEvent( PickupKey )
+	// Event arguments to reference
+	// TODO: Make this definition more intuitive
+	String itemId;
+	
+	OnEvent( PickupItem )
 	{
-		FireEvent( DestroyEntity() );
+		FireEvent( PrintDebugText( text = itemId, duration = 5 ) );
+
+		//if( itemId == "key1" )
+		//{
+		//	FireEvent( DestroyEntity() );
+		//}
 	}
 }

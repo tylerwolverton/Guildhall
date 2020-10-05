@@ -131,6 +131,8 @@ public:
 		}
 	}
 
+	std::map<std::string, TypedPropertyBase*> GetAllKeyValuePairs() const								{ return m_keyValuePairs; }
+
 private:
 	TypedPropertyBase* FindInMap( const std::string& key  ) const;
 	

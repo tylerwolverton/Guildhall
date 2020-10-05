@@ -3,6 +3,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Transform.hpp"
+#include "Engine/Physics/Rigidbody2D.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -281,6 +282,8 @@ void Map::AddItemToTargetInventory( Entity* item, Entity* targetEntity )
 	}
 
 	targetEntity->AddItemToInventory( item );
+
+	item->m_rigidbody2D->Disable();
 
 	RemoveOwnershipOfEntity( item );
 }

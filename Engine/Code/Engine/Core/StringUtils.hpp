@@ -38,6 +38,7 @@ std::string ToString( bool value );
 std::string ToString( int value );
 std::string ToString( uint value );
 std::string ToString( float value );
+std::string ToString( double value );
 std::string ToString( const std::string& value );
 std::string ToString( const Rgba8& value );
 std::string ToString( const Vec2& value );

@@ -237,7 +237,7 @@ std::string ToString( bool value )
 //-----------------------------------------------------------------------------------------------
 std::string ToString( int value )
 {
-	return std::string( Stringf( "%d", value ) );
+	return std::string( Stringf( "%i", value ) );
 }
 
 
@@ -252,6 +252,13 @@ std::string ToString( uint value )
 std::string ToString( float value )
 {
 	return std::string( Stringf( "%f", value ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ToString( double value )
+{
+	return std::string( Stringf( "%d", value ) );
 }
 
 

@@ -89,7 +89,7 @@ void ZephyrScript::OnEvent( EventArgs* args )
 	if ( eventChunk != nullptr )
 	{
 		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
-		g_zephyrVM->InterpretBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+		g_zephyrVM->InterpretBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args );
 	}
 }
 
