@@ -28,6 +28,7 @@ public:
 	//std::string GetAddress();
 
 private:
+	void ProcessTCPCommunication();
 	void CheckForNewTCPClientConnection();
 	void ReceiveMessageFromTCPServer();
 	void ReceiveMessageFromTCPClient();
@@ -51,5 +52,5 @@ private:
 	TCPSocket m_serverSocket;
 	TCPSocket m_clientSocket;
 	//std::vector<TCPClient*> m_tcpClients;
-	std::map<int, UDPSocket> m_udpSockets;
+	std::map<int, UDPSocket*> m_udpSockets;
 };

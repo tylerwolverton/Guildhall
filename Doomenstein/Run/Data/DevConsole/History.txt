@@ -202,3 +202,5 @@ stop_tcp_server
 start_tcp_server
 send_message msg="Hello client!"
 stop_tcp_server
+open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
