@@ -1,7 +1,9 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Networking/TCPSocket.hpp"
+#include "Engine/Networking/UDPSocket.hpp"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -26,9 +28,9 @@ public:
 	//std::string GetAddress();
 
 private:
-	void CheckForNewClientConnection();
-	void ReceiveMessageFromServer();
-	void ReceiveMessageFromClient();
+	void CheckForNewTCPClientConnection();
+	void ReceiveMessageFromTCPServer();
+	void ReceiveMessageFromTCPClient();
 
 	// Console commands
 	void StartTCPServer( EventArgs* args );
@@ -38,6 +40,10 @@ private:
 	void DisconnectTCPServer( EventArgs* args );
 	void SendMessage( EventArgs* args );
 
+	void OpenUDPPort( EventArgs* args );
+	void CloseUDPPort( EventArgs* args );
+	void SendUDPMessage( EventArgs* args );
+
 private:
 	// Just one server for now, can be array later
 	TCPServer* m_tcpServer = nullptr;
@@ -45,4 +51,5 @@ private:
 	TCPSocket m_serverSocket;
 	TCPSocket m_clientSocket;
 	//std::vector<TCPClient*> m_tcpClients;
+	std::map<int, UDPSocket> m_udpSockets;
 };

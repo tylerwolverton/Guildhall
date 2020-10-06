@@ -5,18 +5,21 @@
 #include <string>
 
 
+//-----------------------------------------------------------------------------------------------
 constexpr int BUFFER_SIZE = 512;
 
 
+//-----------------------------------------------------------------------------------------------
 class UDPSocket
 {
 public:
 	UDPSocket( const std::string& host, int port );
+	UDPSocket();
 	~UDPSocket();
 
 	void Bind( int port );
 	void Close();
-	int Send();
+	int Send( int length );
 	int Receive();
 
 	//std::array<char, BUFFER_SIZE> 

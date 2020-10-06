@@ -20,6 +20,14 @@ UDPSocket::UDPSocket( const std::string& host, int port )
 
 
 //-----------------------------------------------------------------------------------------------
+UDPSocket::UDPSocket()
+	: UDPSocket( "", 48000 )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 UDPSocket::~UDPSocket()
 {
 	Close();
@@ -58,14 +66,29 @@ void UDPSocket::Close()
 
 
 //-----------------------------------------------------------------------------------------------
-int UDPSocket::Send()
+int UDPSocket::Send( int length )
 {
-	return 0;
+	int bytesSent = sendto( m_socket, &m_sendBuffer[0], length, 0, reinterpret_cast<SOCKADDR*>(&m_toAddress), sizeof(m_toAddress) );
+	if ( bytesSent == SOCKET_ERROR )
+	{
+		LOG_ERROR( "Send to failed with '%i'", WSAGetLastError() );
+	}
+	
+	return bytesSent;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 int UDPSocket::Receive()
 {
-	return 0;
+	sockaddr_in fromAddress;
+	int fromAddrLength = sizeof( fromAddress );
+
+	int iResult = recvfrom( m_socket, &m_receiveBuffer[0], (int)m_receiveBuffer.size(), 0, reinterpret_cast<SOCKADDR*>( &fromAddress ), &fromAddrLength);
+	if ( iResult == SOCKET_ERROR )
+	{
+		LOG_ERROR( "Receive from failed with '%i'", WSAGetLastError() );
+	}
+
+	return iResult;
 }

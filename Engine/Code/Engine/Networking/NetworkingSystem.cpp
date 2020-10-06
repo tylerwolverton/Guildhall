@@ -49,13 +49,13 @@ void NetworkingSystem::BeginFrame()
 	{
 		if ( !m_serverSocket.IsValid() )
 		{
-			CheckForNewClientConnection();
+			CheckForNewTCPClientConnection();
 		}
 		else
 		{
 			if ( m_serverSocket.IsDataAvailable() )
 			{
-				ReceiveMessageFromClient();
+				ReceiveMessageFromTCPClient();
 			}
 		}
 	}
@@ -64,7 +64,7 @@ void NetworkingSystem::BeginFrame()
 	{
 		if ( m_clientSocket.IsDataAvailable() )
 		{
-			ReceiveMessageFromServer();
+			ReceiveMessageFromTCPServer();
 		}
 	}
 }
@@ -95,7 +95,7 @@ void NetworkingSystem::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::CheckForNewClientConnection()
+void NetworkingSystem::CheckForNewTCPClientConnection()
 {
 	m_serverSocket = m_tcpServer->Accept();
 
@@ -120,7 +120,7 @@ void NetworkingSystem::CheckForNewClientConnection()
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::ReceiveMessageFromServer()
+void NetworkingSystem::ReceiveMessageFromTCPServer()
 {
 	TCPData data = m_clientSocket.Receive();
 	if ( data.GetData() == nullptr )
@@ -167,7 +167,7 @@ void NetworkingSystem::ReceiveMessageFromServer()
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::ReceiveMessageFromClient()
+void NetworkingSystem::ReceiveMessageFromTCPClient()
 {
 	TCPData data = m_serverSocket.Receive();
 	if ( data.GetData() == nullptr )
@@ -330,5 +330,42 @@ void NetworkingSystem::SendMessage( EventArgs* args )
 	else if ( m_clientSocket.IsValid() )
 	{
 		m_clientSocket.Send( &buffer[0], msgHeader->size + 4 );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::OpenUDPPort( EventArgs* args )
+{
+	int bindPort = args->GetValue( "bindPort", 48000 );
+	int sendToPort = args->GetValue( "sendToPort", 48001 );
+	
+	m_udpSockets[bindPort] = UDPSocket( "", sendToPort );
+	m_udpSockets[bindPort].Bind( bindPort );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::CloseUDPPort( EventArgs* args )
+{
+	int bindPort = args->GetValue( "bindPort", 48000 );
+
+	auto iter = m_udpSockets.find( bindPort );
+	if ( iter != m_udpSockets.end() )
+	{
+		iter->second.Close();
+		m_udpSockets.erase( bindPort );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::SendUDPMessage( EventArgs* args )
+{
+	std::string msg = args->GetValue( "msg", "" );
+
+	for ( auto udpSocket : m_udpSockets )
+	{
+		udpSocket.second.Send( (int)msg.size() );
 	}
 }

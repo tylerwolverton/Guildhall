@@ -38,6 +38,12 @@
     <Filter Include="Time">
       <UniqueIdentifier>{2b06d991-dda8-4c55-9904-e3ed47542039}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{dd7a7535-2b3f-4b1a-84ae-45bd5b86eb4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking">
+      <UniqueIdentifier>{6ba07c54-17de-4297-a6f5-984375926f09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -223,9 +229,6 @@
     <ClCompile Include="Renderer\IndexBuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\MeshUtils.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Time\Clock.cpp">
       <Filter>Time</Filter>
     </ClCompile>
@@ -238,22 +241,7 @@
     <ClCompile Include="Renderer\DebugRender.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Math\AABB3.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\OBB3.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Plane2D.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Vertex_PCUTBN.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ThirdParty\mikkt\mikktspace.c">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\ObjLoader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Core\NamedProperties.cpp">
@@ -265,47 +253,65 @@
     <ClCompile Include="Renderer\Shader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\Material.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\JobSystem.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIButton.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIElement.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIImage.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UILabel.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIPanel.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIText.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UISystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Networking\NetworkingSystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Networking\TCPServer.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="UI\UIText.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="Networking\TCPClient.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="UI\UIButton.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIElement.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIImage.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UILabel.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIPanel.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UISystem.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="Networking\TCPSocket.cpp">
-      <Filter>Core</Filter>
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\TCPServer.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\TCPClient.cpp">
+      <Filter>Networking</Filter>
     </ClCompile>
     <ClCompile Include="Networking\UDPSocket.cpp">
-      <Filter>Core</Filter>
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\mikkt\mikktspace.c">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\OBB3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Plane2D.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\AABB3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Material.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\MeshUtils.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ObjLoader.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -537,37 +543,89 @@
     <ClInclude Include="Time\Time.hpp">
       <Filter>Time</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\MeshUtils.hpp" />
     <ClInclude Include="Renderer\DebugRender.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Math\AABB3.hpp" />
-    <ClInclude Include="Math\OBB3.hpp" />
-    <ClInclude Include="Math\Plane2D.hpp" />
-    <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
-    <ClInclude Include="Core\Delegate.hpp" />
-    <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h" />
-    <ClInclude Include="Core\ObjLoader.hpp" />
-    <ClInclude Include="Core\NamedProperties.hpp" />
     <ClInclude Include="Renderer\ShaderProgram.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\Shader.hpp" />
-    <ClInclude Include="Renderer\Material.hpp" />
-    <ClInclude Include="Core\JobSystem.hpp" />
-    <ClInclude Include="UI\UIText.hpp" />
-    <ClInclude Include="UI\UIButton.hpp" />
-    <ClInclude Include="UI\UIElement.hpp" />
-    <ClInclude Include="UI\UIImage.hpp" />
-    <ClInclude Include="UI\UILabel.hpp" />
-    <ClInclude Include="UI\UIPanel.hpp" />
-    <ClInclude Include="UI\UISystem.hpp" />
-    <ClInclude Include="Networking\NetworkingSystem.hpp" />
-    <ClInclude Include="Networking\TCPServer.hpp" />
-    <ClInclude Include="Networking\TCPClient.hpp" />
-    <ClInclude Include="Networking\NetworkingCommon.hpp" />
-    <ClInclude Include="Networking\TCPSocket.hpp" />
-    <ClInclude Include="Networking\MessageProtocols.hpp" />
-    <ClInclude Include="Networking\UDPSocket.hpp" />
+    <ClInclude Include="Math\AABB3.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\NetworkingSystem.hpp">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\NetworkingCommon.hpp">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\UDPSocket.hpp">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\TCPSocket.hpp">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\TCPServer.hpp">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\TCPClient.hpp">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\JobSystem.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Delegate.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIText.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIButton.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIElement.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIImage.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UILabel.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIPanel.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UISystem.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\MessageProtocols.hpp">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NamedProperties.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Vertex_PCUTBN.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Shader.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjLoader.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\MeshUtils.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Material.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\OBB3.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Plane2D.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

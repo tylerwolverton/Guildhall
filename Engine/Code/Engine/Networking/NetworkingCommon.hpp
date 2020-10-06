@@ -10,7 +10,6 @@
 #include <ws2tcpip.h>
 
 class DevConsole;
-
 extern DevConsole* g_devConsole;
 
 #ifdef UNIT_TEST_MODE
