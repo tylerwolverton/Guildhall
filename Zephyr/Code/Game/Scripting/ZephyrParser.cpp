@@ -516,8 +516,8 @@ bool ZephyrParser::ParseIfStatement()
 {
 	// Write a placeholder for how many bytes the if block is so we can update it with the length later
 	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
-	int instructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
-	m_curBytecodeChunk->WriteByte( instructionCountIdx );
+	int ifInstructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
+	m_curBytecodeChunk->WriteByte( ifInstructionCountIdx );
 
 	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) return false;
 
@@ -526,12 +526,33 @@ bool ZephyrParser::ParseIfStatement()
 	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) return false;
 
 	WriteOpCodeToCurChunk( eOpCode::IF );
-	
-	int preBlockByteCount = (int)m_curBytecodeChunk->GetCode().size();
+
+	int preIfBlockByteCount = (int)m_curBytecodeChunk->GetCode().size();
 
 	if ( !ParseBlock() ) return false;
 
-	m_curBytecodeChunk->SetConstantAtIdx( instructionCountIdx, ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preBlockByteCount ) ) );
+	// Set the number of bytes to jump to be the size of the if block plus 3 bytes
+	// 2 for the constant declaration and 1 for the JUMP op to jump over the else statement
+	m_curBytecodeChunk->SetConstantAtIdx( ifInstructionCountIdx, ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preIfBlockByteCount ) + 3.f ) );
+
+	// Write a placeholder for the jump over the else block
+	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
+	int elseInstructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
+	m_curBytecodeChunk->WriteByte( elseInstructionCountIdx );
+
+	WriteOpCodeToCurChunk( eOpCode::JUMP );
+
+	// Check for else statement
+	if ( GetCurToken().GetType() == eTokenType::ELSE )
+	{
+		AdvanceToNextToken();
+
+		int preElseBlockByteCount = (int)m_curBytecodeChunk->GetCode().size();
+
+		if ( !ParseBlock() ) return false;
+
+		m_curBytecodeChunk->SetConstantAtIdx( elseInstructionCountIdx, ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preElseBlockByteCount ) ) );
+	}
 
 	return true;
 }

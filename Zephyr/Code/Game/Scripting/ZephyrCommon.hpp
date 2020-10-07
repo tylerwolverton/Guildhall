@@ -103,6 +103,8 @@ enum class eOpCode : byte
 
 	IF,
 
+	JUMP,
+
 	LAST_VAL,
 };
 
