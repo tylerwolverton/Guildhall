@@ -527,7 +527,7 @@ bool ZephyrParser::ParseIfStatement()
 
 	WriteOpCodeToCurChunk( eOpCode::IF );
 	
-	int preBlockByteCount = m_curBytecodeChunk->GetCode().size();
+	int preBlockByteCount = (int)m_curBytecodeChunk->GetCode().size();
 
 	if ( !ParseBlock() ) return false;
 

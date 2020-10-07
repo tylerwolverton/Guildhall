@@ -7,6 +7,11 @@ Keyboard
 - Esc -> Pause, press again to Exit game
 - ~ -> Open dev console
 
+Debug Commands
+- F2 -> Fire debug event ( change blob text )
+- F5 -> Reload all data files and restart game
+- F6 -> Reload all script files only (warning, doing this can break certain script interactions like the door in level 1. The main use of this might be to debug some AI in a level, not to test larger game management functionality)
+
 Scripts
 Data\Scripts -> Location for all .zephyr files
 
@@ -16,3 +21,7 @@ Supported features
 - State
 - Number variables
 - Arithmetic operators
+- String variables
+- if statements (no else)
+- FireEvent(<parameters>)
+- OnEvent(<event name>)

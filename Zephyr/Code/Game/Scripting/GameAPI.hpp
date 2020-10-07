@@ -24,6 +24,8 @@ private:
 
 	void PrintDebugText( EventArgs* args );
 
+	void WinGame( EventArgs* args );
+
 private:
 	std::unordered_set<std::string> m_registeredMethods;
 };

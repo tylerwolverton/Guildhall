@@ -254,7 +254,7 @@ void Game::Render() const
 		{
 			std::vector<Vertex_PCU> vertexes;
 			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Victory" );
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Any Key to Return" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Press Enter to Return to Menu" );
 
 			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 			g_renderer->DrawVertexArray( vertexes );
@@ -708,7 +708,7 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::VICTORY:
 		{
-			if ( g_inputSystem->ConsumeAnyKeyJustPressed() )
+			if ( g_inputSystem->ConsumeKeyPress( KEY_ENTER ) )
 			{
 				ChangeGameState( eGameState::ATTRACT );
 			}
@@ -929,7 +929,6 @@ void Game::CheckForVictory()
 {
 	if ( m_enemiesLeftAlive == 0 )
 	{
-		//ChangeGameState( eGameState::VICTORY );
 		g_eventSystem->FireEvent( "OpenDoor" );
 	}
 }

@@ -39,11 +39,18 @@
     <Script name="KillEverythingQuest.zephyr"/>
   </Entity>
 
+  <Entity name="VictoryTrigger">
+    <Gameplay maxHealth="1">
+    </Gameplay>
+    <Script name="VictoryTrigger.zephyr"/>
+  </Entity>
+
   <Entity name="ClosedDoorVertical">
     <Physics radius="0.5" collisionLayer="StaticEnvironment"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
       <Walk up="157"/>
     </Appearance>
+    <Gameplay maxHealth="99999"/>
     <Script name="ClosedDoor.zephyr"/>
   </Entity>
   ​
@@ -52,6 +59,7 @@
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
       <Walk up="155"/>
     </Appearance>
+    <Gameplay maxHealth="99999"/>
     <Script name="LockedDoor.zephyr"/>
   </Entity>
 

@@ -5,7 +5,7 @@
 		<Tile glyph="." tileType="BlueDungeonFloor"/>
 	</Legend>
 	<MapRows>
-		<MapRow tiles="#######.########"/>
+		<MapRow tiles="################"/>
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="#..............#"/>
@@ -14,14 +14,11 @@
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="#..............#"/>
-		<MapRow tiles="###.############"/>
+		<MapRow tiles="################"/>
 	</MapRows>
 	<Entities>
-    <Entity name="LockedDoorVertical" pos="7.5,9.5"/>
-    <Portal name="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
-		<PlayerStart pos="3.5,1.5" yaw="0"/>
-    <Pickup name="Key" id="key1" pos="5.5,7.5" />
-    <Portal name="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
+    <Entity name="VictoryTrigger" pos="7.5,9.5"/>
+    <PlayerStart pos="3.5,1.5" yaw="0"/>
 	</Entities>
 
 </MapDefinition>

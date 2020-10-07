@@ -22,6 +22,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( DestroyEntity );
 	REGISTER_EVENT( PrintDebugText );
+	REGISTER_EVENT( WinGame );
 }
 
 
@@ -77,4 +78,13 @@ void GameAPI::PrintDebugText( EventArgs* args )
 	}
 	
 	DebugAddWorldText( textLocation, Vec2::HALF, Rgba8::WHITE, Rgba8::WHITE, duration, .1f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::WinGame( EventArgs* args )
+{
+	UNUSED( args );
+
+	g_game->ChangeGameState( eGameState::VICTORY );
 }
