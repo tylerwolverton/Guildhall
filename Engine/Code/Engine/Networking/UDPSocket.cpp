@@ -7,9 +7,15 @@
 //-----------------------------------------------------------------------------------------------
 UDPSocket::UDPSocket( const std::string& host, int port )
 {
+	std::string hostAddr( host );
+	if ( hostAddr.empty() )
+	{
+		hostAddr = "127.0.0.1";
+	}
+
 	m_toAddress.sin_family = AF_INET;
 	m_toAddress.sin_port = htons((u_short)port);
-	m_toAddress.sin_addr.s_addr = inet_addr( host.c_str() );
+	m_toAddress.sin_addr.s_addr = inet_addr( hostAddr.c_str() );
 
 	m_socket = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
 	if ( m_socket == INVALID_SOCKET )
@@ -68,7 +74,7 @@ void UDPSocket::Close()
 //-----------------------------------------------------------------------------------------------
 int UDPSocket::Send( const char* data, size_t length )
 {
-	int bytesSent = sendto( m_socket, &data[0], (int)length, 0, reinterpret_cast<SOCKADDR*>( &m_toAddress ), sizeof( m_toAddress ) );
+	int bytesSent = sendto( m_socket, &m_sendBuffer[0], (int)length, 0, reinterpret_cast<SOCKADDR*>( &m_toAddress ), sizeof( m_toAddress ) );
 	if ( bytesSent == SOCKET_ERROR )
 	{
 		LOG_ERROR( "Send to failed with '%i'", WSAGetLastError() );

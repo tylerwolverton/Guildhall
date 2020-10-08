@@ -44,6 +44,9 @@ void NetworkingSystem::Startup()
 	
 	m_tcpServer = new TCPServer( eBlockingMode::NONBLOCKING );
 	m_tcpClient = new TCPClient( eBlockingMode::NONBLOCKING );
+
+	m_udpReaderThread = new std::thread( &NetworkingSystem::UDPReaderThreadMain, this );
+	m_udpWriterThread = new std::thread( &NetworkingSystem::UDPWriterThreadMain, this );
 }
 
 
@@ -52,14 +55,21 @@ void NetworkingSystem::BeginFrame()
 {
 	ProcessTCPCommunication();
 
-	/*for ( auto& udpSocket : m_udpSockets )
+	MessageHeader* msg = nullptr;
+	if ( !m_incomingMessages.Pop( msg )
+		 || msg == nullptr
+		 || msg->size <= 0 )
 	{
-		UDPData data = udpSocket.second->Receive();
-		if ( data.GetLength() > 0 )
-		{
-			g_devConsole->PrintString( Stringf( "Received data from '%s'", data.GetFromAddress().c_str() ) );
-		}
-	}*/
+		return;
+	}
+
+	std::array<char, 512> buffer;
+	MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
+
+	memcpy( &buffer[0], msg + 4, msg->size );
+
+	g_devConsole->PrintString( Stringf( "Received message from '%s'", buffer ) );
+
 }
 
 
@@ -73,8 +83,16 @@ void NetworkingSystem::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::Shutdown()
 {
+	m_isQuitting = true;
+
 	DisconnectTCPClient( nullptr );
 	DisconnectTCPServer( nullptr );
+
+	m_udpReaderThread->join();
+	m_udpWriterThread->join();
+
+	PTR_SAFE_DELETE( m_udpReaderThread );
+	PTR_SAFE_DELETE( m_udpWriterThread );
 
 	PTR_SAFE_DELETE( m_tcpClient );
 	PTR_SAFE_DELETE( m_tcpServer );
@@ -234,6 +252,58 @@ void NetworkingSystem::ReceiveMessageFromTCPClient()
 
 
 //-----------------------------------------------------------------------------------------------
+void NetworkingSystem::UDPReaderThreadMain()
+{
+	while( !m_isQuitting )
+	{
+		if ( m_udpSocket == nullptr )
+		{
+			continue;
+		}
+
+		UDPData data = m_udpSocket->Receive();
+		if ( data.GetLength() > 0 )
+		{
+			MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( data.GetData() );
+
+			if ( msgHeader->size > 0 )
+			{
+				m_incomingMessages.Push( msgHeader );
+			}
+		}		
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::UDPWriterThreadMain()
+{
+	while ( !m_isQuitting )
+	{
+		if ( m_udpSocket == nullptr )
+		{
+			continue;
+		}
+
+		MessageHeader* msgHeader = nullptr;
+		m_outgoingMessages.Pop( msgHeader );
+
+		while ( msgHeader != nullptr )
+		{
+			m_udpSocket->sendBuffer() = std::array<char,512>();
+			m_udpSocket->sendBuffer() = *reinterpret_cast<std::array<char,512>*>( msgHeader );
+
+			m_udpSocket->Send( reinterpret_cast<char*>( msgHeader ), msgHeader->size );
+			//m_udpSocket->Send( reinterpret_cast<char*>( msgHeader ), 0 );
+
+			msgHeader = nullptr;
+			m_outgoingMessages.Pop( msgHeader );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::StartTCPServer( EventArgs* args )
 {
 	if ( m_tcpServer == nullptr )
@@ -369,10 +439,17 @@ void NetworkingSystem::OpenUDPPort( EventArgs* args )
 	int bindPort = args->GetValue( "bindPort", 48000 );
 	int sendToPort = args->GetValue( "sendToPort", 48001 );
 	
-	UDPSocket* udpSocket = new UDPSocket( "", sendToPort );
+	if ( m_udpSocket != nullptr )
+	{
+		m_udpSocket->Close();
+		PTR_SAFE_DELETE( m_udpSocket );
+	}
 
-	m_udpSockets[bindPort] = udpSocket;
-	udpSocket->Bind( bindPort );
+	m_udpSocket = new UDPSocket( "", sendToPort );
+	//UDPSocket* udpSocket = new UDPSocket( "", sendToPort );
+
+	//m_udpSockets[bindPort] = udpSocket;
+	m_udpSocket->Bind( bindPort );
 }
 
 
@@ -381,12 +458,19 @@ void NetworkingSystem::CloseUDPPort( EventArgs* args )
 {
 	int bindPort = args->GetValue( "bindPort", 48000 );
 
+	if ( m_udpSocket != nullptr )
+	{
+		m_udpSocket->Close();
+		PTR_SAFE_DELETE( m_udpSocket );
+	}
+	
+	/*
 	auto iter = m_udpSockets.find( bindPort );
 	if ( iter != m_udpSockets.end() )
 	{
 		iter->second->Close();
 		m_udpSockets.erase( bindPort );
-	}
+	}*/
 }
 
 
@@ -400,11 +484,13 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
 	msgHeader->size = (uint16_t)msg.size();
-
+	
 	memcpy( &buffer[4], msg.c_str(), msgHeader->size );
 
-	for ( const auto& udpSocket : m_udpSockets )
+	m_outgoingMessages.Push( msgHeader );
+
+	/*for ( const auto& udpSocket : m_udpSockets )
 	{
 		udpSocket.second->Send( &buffer[0], msgHeader->size + 4 );
-	}
+	}*/
 }

@@ -24,7 +24,7 @@ public:
 	~UDPData() = default;
 
 	size_t		GetLength() const				{ return m_length; }
-	const char* GetData() const					{ return m_data; }
+	char*		GetData() const					{ return m_data; }
 	std::string GetFromAddress() const			{ return m_fromAddress; }
 
 	std::string GetDataAsString() const			{ return std::string( m_data, m_length ); }
@@ -49,7 +49,8 @@ public:
 	int Send( const char* data, size_t length );
 	UDPData Receive();
 
-	//std::array<char, BUFFER_SIZE> 
+	std::array<char, BUFFER_SIZE>& sendBuffer()			{ return m_sendBuffer; }
+	std::array<char, BUFFER_SIZE>& receiveBuffer()		{ return m_receiveBuffer; }
 
 private:
 	std::array<char, BUFFER_SIZE> m_sendBuffer;

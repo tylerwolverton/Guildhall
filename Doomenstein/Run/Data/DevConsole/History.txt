@@ -204,3 +204,12 @@ send_message msg="Hello client!"
 stop_tcp_server
 open_udp_port
 open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="hello"
+close_udp_port bindPort=48001
+send_udp_message msg="hello"
+open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+open_udp_port
+send_udp_message msg="try this"
+open_udp_port
+send_udp_message msg="try this"

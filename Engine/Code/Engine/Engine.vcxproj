@@ -199,6 +199,7 @@
     <ClCompile Include="Math\Vec2.cpp" />
     <ClCompile Include="Math\Vec3.cpp" />
     <ClCompile Include="Math\Vec4.cpp" />
+    <ClCompile Include="Networking\NetworkingJobs.cpp" />
     <ClCompile Include="Networking\NetworkingSystem.cpp" />
     <ClCompile Include="Networking\TCPClient.cpp" />
     <ClCompile Include="Networking\TCPServer.cpp" />
@@ -271,6 +272,8 @@
     <ClInclude Include="Core\ObjLoader.hpp" />
     <ClInclude Include="Core\Rgba8.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
+    <ClInclude Include="Core\SynchronizedBlockingQueue.hpp" />
+    <ClInclude Include="Core\SynchronizedNonBlockingQueue.hpp" />
     <ClInclude Include="Core\TextBox.hpp" />
     <ClInclude Include="Core\Vertex_PCU.hpp" />
     <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
@@ -302,6 +305,7 @@
     <ClInclude Include="Math\Vec4.hpp" />
     <ClInclude Include="Networking\MessageProtocols.hpp" />
     <ClInclude Include="Networking\NetworkingCommon.hpp" />
+    <ClInclude Include="Networking\NetworkingJobs.hpp" />
     <ClInclude Include="Networking\NetworkingSystem.hpp" />
     <ClInclude Include="Networking\TCPClient.hpp" />
     <ClInclude Include="Networking\TCPServer.hpp" />
