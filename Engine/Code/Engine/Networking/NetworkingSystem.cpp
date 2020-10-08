@@ -55,20 +55,23 @@ void NetworkingSystem::BeginFrame()
 {
 	ProcessTCPCommunication();
 
-	MessageHeader* msg = nullptr;
-	if ( !m_incomingMessages.Pop( msg )
-		 || msg == nullptr
-		 || msg->size <= 0 )
+	UDPData data;
+	//MessageHeader* msg = nullptr;
+	if ( !m_incomingMessages.Pop( data )
+		 //|| msg == nullptr
+		 //|| msg->size <= 0 )
+		 || data.GetLength() <= 0 )
 	{
 		return;
 	}
 
-	std::array<char, 512> buffer;
-	MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
+	//std::array<char, 512> buffer;
+	//MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
 
-	memcpy( &buffer[0], msg + 4, msg->size );
+	//memcpy( &buffer[0], msg + 4, msg->size );
 
-	g_devConsole->PrintString( Stringf( "Received message from '%s'", buffer ) );
+	//g_devConsole->PrintString( Stringf( "Received message from '%s'", buffer ) );
+	g_devConsole->PrintString( Stringf( "Received message from '%s'", data.GetData() ) );
 
 }
 
@@ -264,12 +267,12 @@ void NetworkingSystem::UDPReaderThreadMain()
 		UDPData data = m_udpSocket->Receive();
 		if ( data.GetLength() > 0 )
 		{
-			MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( data.GetData() );
+			//MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( data.GetData() );
 
-			if ( msgHeader->size > 0 )
-			{
-				m_incomingMessages.Push( msgHeader );
-			}
+			/*if ( msgHeader->size > 0 )
+			{*/
+				m_incomingMessages.Push( data );
+			//}
 		}		
 	}
 }
@@ -479,7 +482,7 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
 
-	std::array<char, 256> buffer;
+	std::array<char, 256> buffer = {};
 	MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
 
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;

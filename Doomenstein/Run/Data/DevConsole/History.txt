@@ -213,3 +213,6 @@ open_udp_port
 send_udp_message msg="try this"
 open_udp_port
 send_udp_message msg="try this"
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="hello"
+send_udp_message msg="try this"

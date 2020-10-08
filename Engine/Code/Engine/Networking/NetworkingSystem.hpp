@@ -63,7 +63,8 @@ private:
 	std::map<int, UDPSocket*> m_udpSockets;
 	UDPSocket* m_udpSocket = nullptr;
 
-	SynchronizedNonBlockingQueue<MessageHeader*> m_incomingMessages;
+	//SynchronizedNonBlockingQueue<MessageHeader*> m_incomingMessages;
+	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
 	SynchronizedNonBlockingQueue<MessageHeader*> m_outgoingMessages;
 	//SynchronizedBlockingQueue<MessageHeader*> m_outgoingMessages;
 
