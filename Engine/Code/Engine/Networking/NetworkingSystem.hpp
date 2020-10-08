@@ -62,7 +62,7 @@ private:
 	UDPSocket* m_udpSocket = nullptr;
 
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
-	SynchronizedNonBlockingQueue<std::string> m_outgoingMessages;
+	SynchronizedBlockingQueue<std::string> m_outgoingMessages;
 
 	bool m_isQuitting = false;
 	std::thread* m_udpReaderThread = nullptr;

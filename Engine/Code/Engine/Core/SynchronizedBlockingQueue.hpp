@@ -23,10 +23,20 @@ public:
 	void Push( const T& value );
 	T Pop();
 
+	void NotifyAll();
+
 private:
 	std::mutex m_lock;
 	std::condition_variable m_condition;
 };
+
+
+//-----------------------------------------------------------------------------------------------
+template<typename T>
+void SynchronizedBlockingQueue<T>::NotifyAll()
+{
+	m_condition.notify_all();
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -43,7 +53,7 @@ void SynchronizedBlockingQueue<T>::Push( const T& value )
 template<typename T>
 typename T SynchronizedBlockingQueue<T>::Pop()
 {
-	T value = nullptr;
+	T value = T();
 
 	std::unique_lock<std::mutex> uniqueLock( m_lock );
 	if ( base::empty() )
@@ -51,8 +61,11 @@ typename T SynchronizedBlockingQueue<T>::Pop()
 		m_condition.wait( uniqueLock );
 	}
 
-	value = base::front();
-	base::pop();
+	if ( !base::empty() )
+	{
+		value = base::front();
+		base::pop();
+	}
 
 	return value;
 }

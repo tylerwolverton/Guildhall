@@ -84,8 +84,13 @@ void NetworkingSystem::Shutdown()
 	PTR_SAFE_DELETE( m_tcpClient );
 	PTR_SAFE_DELETE( m_tcpServer );
 
-	m_udpSocket->Close();
-	PTR_SAFE_DELETE( m_udpSocket );
+	m_outgoingMessages.NotifyAll();
+	
+	if ( m_udpSocket != nullptr )
+	{
+		m_udpSocket->Close();
+		PTR_SAFE_DELETE( m_udpSocket );
+	}
 
 	m_udpReaderThread->join();
 	m_udpWriterThread->join();
@@ -269,15 +274,14 @@ void NetworkingSystem::UDPWriterThreadMain()
 			continue;
 		}
 
-		std::string msg;
-		m_outgoingMessages.Pop( msg );
+		std::string msg = m_outgoingMessages.Pop();
+
 
 		while ( !msg.empty() )
 		{
 			m_udpSocket->Send( msg.c_str(), msg.size() );
 
-			msg = "";
-			m_outgoingMessages.Pop( msg );
+			msg = m_outgoingMessages.Pop();
 		}
 	}
 }

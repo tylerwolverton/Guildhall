@@ -224,3 +224,13 @@ send_udp_message msg="try this oh yeah buddy"
 open_udp_port
 send_udp_message msg="try this oh yeah buddy"
 open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="try this oh yeah buddy"
+close_udp_port
+open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="try this oh yeah buddy"
+close_udp_port
+open_udp_port
+close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
