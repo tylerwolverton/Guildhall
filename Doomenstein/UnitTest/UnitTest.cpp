@@ -83,7 +83,7 @@ namespace UnitTest
 			//// Copy the message data into the buffer.
 			//socket.sendBuffer()[sizeof( MessageHeader ) + header.length] = NULL;
 
-			socket.Send( message.c_str(), message.length() );
+			//socket.Send( message.c_str(), message.length() );
 			//socket.Send( message.text.c_str(), message.length );
 			//socket.Send( message.text.c_str(), sizeof( MessageHeader ) + header.length + 1 );
 		}

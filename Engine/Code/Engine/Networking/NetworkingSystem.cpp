@@ -274,14 +274,18 @@ void NetworkingSystem::UDPWriterThreadMain()
 			continue;
 		}
 
-		std::string msg = m_outgoingMessages.Pop();
+		std::array<char, 512> message = m_outgoingMessages.Pop();
+		UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &message[0] );
 
-
-		while ( !msg.empty() )
+		while ( msgHeader->size > 0 )
 		{
-			m_udpSocket->Send( msg.c_str(), msg.size() );
+			// Copy the header and data into the buffer.
+			m_udpSocket->SendBuffer() = message;
 
-			msg = m_outgoingMessages.Pop();
+			m_udpSocket->Send( sizeof( UDPMessageHeader ) + msgHeader->size + 1 );
+
+			message = m_outgoingMessages.Pop();
+			msgHeader = reinterpret_cast<UDPMessageHeader*>( &message[0] );
 		}
 	}
 }
@@ -454,5 +458,16 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
 
-	m_outgoingMessages.Push( msg );
+	std::array<char, 512> buffer = {};
+	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
+
+	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
+	msgHeader->size = (uint16_t)msg.size();
+	msgHeader->sequenceNum = (uint16_t)0;
+
+	memcpy( &buffer[sizeof( UDPMessageHeader )], msg.c_str(), msgHeader->size );
+
+	buffer[sizeof( UDPMessageHeader ) + msgHeader->size] = '\0';
+
+	m_outgoingMessages.Push( buffer );
 }

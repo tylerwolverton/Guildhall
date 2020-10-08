@@ -46,11 +46,12 @@ public:
 
 	void Bind( int port );
 	void Close();
-	int Send( const char* data, size_t length );
+	int Send( size_t length );
+	//int Send( const char* data, size_t length );
 	UDPData Receive();
 
-	std::array<char, BUFFER_SIZE>& sendBuffer()			{ return m_sendBuffer; }
-	std::array<char, BUFFER_SIZE>& receiveBuffer()		{ return m_receiveBuffer; }
+	std::array<char, BUFFER_SIZE>& SendBuffer()			{ return m_sendBuffer; }
+	std::array<char, BUFFER_SIZE>& ReceiveBuffer()		{ return m_receiveBuffer; }
 
 	int			GetReceivePort() const					{ return m_bindPort; }
 

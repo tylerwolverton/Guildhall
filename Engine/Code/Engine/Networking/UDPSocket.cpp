@@ -74,9 +74,10 @@ void UDPSocket::Close()
 
 
 //-----------------------------------------------------------------------------------------------
-int UDPSocket::Send( const char* data, size_t length )
+//int UDPSocket::Send( const char* data, size_t length )
+int UDPSocket::Send( size_t length )
 {
-	int bytesSent = sendto( m_socket, &data[0], (int)length, 0, reinterpret_cast<SOCKADDR*>( &m_toAddress ), sizeof( m_toAddress ) );
+	int bytesSent = sendto( m_socket, &m_sendBuffer[0], (int)length, 0, reinterpret_cast<SOCKADDR*>( &m_toAddress ), sizeof( m_toAddress ) );
 	if ( bytesSent == SOCKET_ERROR )
 	{
 		LOG_ERROR( "Send to failed with '%i'", WSAGetLastError() );
@@ -118,5 +119,5 @@ UDPData UDPSocket::Receive()
 
 	std::string fromAddressStr = std::string( inet_ntoa( fromAddress.sin_addr ) );
 	
-	return UDPData( iResult, &m_receiveBuffer[0], fromAddressStr );
+	return UDPData( iResult, &m_receiveBuffer[6], fromAddressStr );
 }

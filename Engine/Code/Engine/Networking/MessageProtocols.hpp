@@ -23,6 +23,15 @@ struct MessageHeader
 
 
 //-----------------------------------------------------------------------------------------------
+struct UDPMessageHeader
+{
+	uint16_t id;
+	uint16_t size;
+	uint16_t sequenceNum;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 struct ServerListeningMsg
 {
 	MessageHeader header;

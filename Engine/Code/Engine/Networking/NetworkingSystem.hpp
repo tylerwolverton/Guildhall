@@ -2,9 +2,11 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/SynchronizedBlockingQueue.hpp"
 #include "Engine/Core/SynchronizedNonBlockingQueue.hpp"
+#include "Engine/Networking/MessageProtocols.hpp"
 #include "Engine/Networking/TCPSocket.hpp"
 #include "Engine/Networking/UDPSocket.hpp"
 
+#include <array>
 #include <map>
 #include <string>
 #include <thread>
@@ -12,9 +14,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-struct MessageHeader;
 class TCPClient;
 class TCPServer;
+
 
 //-----------------------------------------------------------------------------------------------
 class NetworkingSystem
@@ -62,7 +64,7 @@ private:
 	UDPSocket* m_udpSocket = nullptr;
 
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
-	SynchronizedBlockingQueue<std::string> m_outgoingMessages;
+	SynchronizedBlockingQueue<std::array<char, 512>> m_outgoingMessages;
 
 	bool m_isQuitting = false;
 	std::thread* m_udpReaderThread = nullptr;
