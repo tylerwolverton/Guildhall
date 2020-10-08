@@ -52,10 +52,13 @@ public:
 	std::array<char, BUFFER_SIZE>& sendBuffer()			{ return m_sendBuffer; }
 	std::array<char, BUFFER_SIZE>& receiveBuffer()		{ return m_receiveBuffer; }
 
+	int			GetReceivePort() const					{ return m_bindPort; }
+
 private:
 	std::array<char, BUFFER_SIZE> m_sendBuffer;
 	std::array<char, BUFFER_SIZE> m_receiveBuffer;
 	sockaddr_in m_toAddress;
 	sockaddr_in m_bindAddress;
 	SOCKET m_socket = INVALID_SOCKET;
+	int m_bindPort = -1;
 };

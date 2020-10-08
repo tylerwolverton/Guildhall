@@ -27,9 +27,7 @@ public:
 	void BeginFrame();
 	void EndFrame();
 	void Shutdown();
-
-	//std::string GetAddress();
-
+	
 private:
 	// TCP
 	void ProcessTCPCommunication();
@@ -63,10 +61,8 @@ private:
 	std::map<int, UDPSocket*> m_udpSockets;
 	UDPSocket* m_udpSocket = nullptr;
 
-	//SynchronizedNonBlockingQueue<MessageHeader*> m_incomingMessages;
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
-	SynchronizedNonBlockingQueue<MessageHeader*> m_outgoingMessages;
-	//SynchronizedBlockingQueue<MessageHeader*> m_outgoingMessages;
+	SynchronizedNonBlockingQueue<std::string> m_outgoingMessages;
 
 	bool m_isQuitting = false;
 	std::thread* m_udpReaderThread = nullptr;
