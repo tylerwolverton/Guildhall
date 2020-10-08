@@ -74,13 +74,20 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::IF:
 			{
 				ZephyrValue expression = PopConstant();
-				ZephyrValue numBytesToSkip = PopConstant();
+				ZephyrValue ifBlockByteCount = PopConstant();
 
-				// Check if we should jump over the if block 
+				// The if statement is false, jump over the bytes corresponding to that code block
 				if ( !expression.IsTrue() )
 				{
-					byteIdx += (int)numBytesToSkip.GetAsNumber();
+					byteIdx += (int)ifBlockByteCount.GetAsNumber();
 				}
+			}
+			break;
+
+			case eOpCode::JUMP:
+			{
+				ZephyrValue numBytesToJump = PopConstant();
+				byteIdx += (int)numBytesToJump.GetAsNumber();
 			}
 			break;
 
