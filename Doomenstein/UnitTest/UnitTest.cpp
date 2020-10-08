@@ -41,51 +41,47 @@ namespace UnitTest
 		
 
 		//-----------------------------------------------------------------------------------------------
-		struct MessageHeader
+		struct UDPMessageHeader
 		{
 			uint16_t id;
 			uint16_t length;
-			uint32_t sequenceNum;
+			uint16_t sequenceNum;
 		};
 
 
 		//-----------------------------------------------------------------------------------------------
 		struct Message
 		{
-			int id = -1;
-			int length = -1;
-			int sequenceNum = -1;
+			uint16_t id = 0;
+			uint16_t length = 0;
+			uint16_t sequenceNum = 0;
 			std::string text;
 		};
 
 
-
-
 		//-----------------------------------------------------------------------------------------------
 		// Thread methods
-		static void WriterMain( UDPSocket& socket, const std::string& message )
+		static void WriterMain( UDPSocket& socket, const Message& message )
 		{
-			MessageHeader header;
+			UDPMessageHeader header;
 			
 			// Setup the message header.
-		/*	header.id = message.id;
+			header.id = message.id;
 			header.length = message.length;
-			header.sequenceNum = message.sequenceNum;*/
+			header.sequenceNum = message.sequenceNum;
 
-			//// Copy the header into the buffer.
-			//auto& buffer = socket.sendBuffer();
-			//*reinterpret_cast<MessageHeader*>( &buffer[0] ) = header;
+			// Copy the header into the buffer.
+			auto& buffer = socket.SendBuffer();
+			*reinterpret_cast<UDPMessageHeader*>( &buffer[0] ) = header;
 
-			//// Copy the data into the buffer.
-			//// Notice we offset message header size into the buffer to write the data.
-			//std::memcpy( &( socket.sendBuffer()[sizeof( MessageHeader )] ), message.text.c_str(), header.length );
+			// Copy the data into the buffer.
+			// Notice we offset message header size into the buffer to write the data.
+			std::memcpy( &( socket.SendBuffer()[sizeof( UDPMessageHeader )] ), message.text.c_str(), header.length );
 
-			//// Copy the message data into the buffer.
-			//socket.sendBuffer()[sizeof( MessageHeader ) + header.length] = NULL;
+			// Copy the message data into the buffer.
+			socket.SendBuffer()[sizeof( UDPMessageHeader ) + header.length] = NULL;
 
-			//socket.Send( message.c_str(), message.length() );
-			//socket.Send( message.text.c_str(), message.length );
-			//socket.Send( message.text.c_str(), sizeof( MessageHeader ) + header.length + 1 );
+			socket.Send( sizeof( UDPMessageHeader ) + header.length + 1 );
 		}
 
 
@@ -94,28 +90,24 @@ namespace UnitTest
 		{
 			static std::mutex lock;
 
-			const MessageHeader* msgHeader = nullptr;
-			std::string dataStr;
-			std::size_t length = 0;
+			const UDPMessageHeader* msgHeader = nullptr;
 
 			do
 			{
 				UDPData data = socket.Receive();
 
-				//dataStr.clear();
+				message.text = "";
 				if ( data.GetLength() > 0 )
 				{
-					//auto& buffer = socket.receiveBuffer();
+					auto& buffer = socket.ReceiveBuffer();
 
-					//// Copy the message header.
-					//msgHeader = reinterpret_cast<MessageHeader const*>( &buffer[0] );
-					//if ( msgHeader->length > 0 )
-					//{
-					//	// Copy the data.
-					//	dataStr = &buffer[sizeof( MessageHeader )];
-					//}
-					message.text = data.GetDataAsString();// [msgHeader->seqNo] = dataStr;
-					
+					// Copy the message header.
+					msgHeader = reinterpret_cast<const UDPMessageHeader*>( &buffer[0] );
+					if ( msgHeader->length > 0 )
+					{
+						// Copy the data.
+						message.text = std::string( data.GetData(), msgHeader->length );
+					}
 				}
 			} while ( msgHeader != nullptr && msgHeader->id != 0 );
 		}
@@ -134,12 +126,16 @@ namespace UnitTest
 
 			Message readMessageOne;
 			std::string text1( "Hello from message one!" );
+			readMessageOne.length = (int)text1.length();
+			readMessageOne.text = text1;
 
 			Message readMessageTwo;
 			std::string text2( "Greetings from message two!" );
+			readMessageTwo.length = (int)text2.length();
+			readMessageTwo.text = text2;
 
-			std::thread writerOne( &UDPSocketTestCase::WriterMain, std::ref( socketOne ), std::cref( text1 ) );
-			std::thread writerTwo( &UDPSocketTestCase::WriterMain, std::ref( socketTwo ), std::cref( text2 ) );
+			std::thread writerOne( &UDPSocketTestCase::WriterMain, std::ref( socketOne ), std::cref( readMessageOne ) );
+			std::thread writerTwo( &UDPSocketTestCase::WriterMain, std::ref( socketTwo ), std::cref( readMessageTwo ) );
 
 			std::thread readerOne( &UDPSocketTestCase::ReaderMain, std::ref( socketOne ), std::ref( readMessageTwo ) );
 			std::thread readerTwo( &UDPSocketTestCase::ReaderMain, std::ref( socketTwo ), std::ref( readMessageOne ) );

@@ -27,8 +27,6 @@ public:
 	char*		GetData() const					{ return m_data; }
 	std::string GetFromAddress() const			{ return m_fromAddress; }
 
-	std::string GetDataAsString() const			{ return std::string( m_data, m_length ); }
-
 private:
 	size_t m_length = 0;
 	char* m_data = nullptr;

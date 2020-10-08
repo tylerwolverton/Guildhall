@@ -251,3 +251,16 @@ send_udp_message msg="come on man!"
 send_udp_message msg="hey there is this okay uhhhhhh what is going on now"
 send_udp_message msg="hi"
 close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="hello from udp!"
+close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_message msg="Hi udp, nice to meet you!"
+open_udp_port bindPort=48001 sendToPort=48000
+send_message msg="Hello from udp!"
+open_udp_port
+send_udp_message msg="hello from udp"
+send_udp_message msg="sdfnsldkjfn"
+open_udp_port
+send_udp_message msg="good to meet you udp"
+close_udp_port
