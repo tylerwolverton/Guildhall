@@ -313,6 +313,9 @@
     <ClCompile Include="Core\ObjLoader.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\NetworkingJobs.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -627,5 +630,8 @@
     <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h">
       <Filter>ThirdParty</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\NetworkingJobs.hpp" />
+    <ClInclude Include="Core\SynchronizedBlockingQueue.hpp" />
+    <ClInclude Include="Core\SynchronizedNonBlockingQueue.hpp" />
   </ItemGroup>
 </Project>

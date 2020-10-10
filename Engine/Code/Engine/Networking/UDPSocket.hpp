@@ -24,10 +24,8 @@ public:
 	~UDPData() = default;
 
 	size_t		GetLength() const				{ return m_length; }
-	const char* GetData() const					{ return m_data; }
+	char*		GetData() const					{ return m_data; }
 	std::string GetFromAddress() const			{ return m_fromAddress; }
-
-	std::string GetDataAsString() const			{ return std::string( m_data, m_length ); }
 
 private:
 	size_t m_length = 0;
@@ -46,10 +44,14 @@ public:
 
 	void Bind( int port );
 	void Close();
-	int Send( const char* data, size_t length );
+	int Send( size_t length );
+	//int Send( const char* data, size_t length );
 	UDPData Receive();
 
-	//std::array<char, BUFFER_SIZE> 
+	std::array<char, BUFFER_SIZE>& SendBuffer()			{ return m_sendBuffer; }
+	std::array<char, BUFFER_SIZE>& ReceiveBuffer()		{ return m_receiveBuffer; }
+
+	int			GetReceivePort() const					{ return m_bindPort; }
 
 private:
 	std::array<char, BUFFER_SIZE> m_sendBuffer;
@@ -57,4 +59,5 @@ private:
 	sockaddr_in m_toAddress;
 	sockaddr_in m_bindAddress;
 	SOCKET m_socket = INVALID_SOCKET;
+	int m_bindPort = -1;
 };
