@@ -60,6 +60,7 @@ private:
 	bool ParseStringDeclaration();
 	bool ParseFireEvent();
 	bool ParseEventArgs();
+	bool ParseChangeStateStatement();
 	bool ParseIfStatement();
 	bool ParseAssignment();
 	bool ParseExpression( const eValueType& expressionType );

@@ -60,6 +60,23 @@ ZephyrBytecodeChunk* ZephyrScriptDefinition::GetFirstStateBytecodeChunk() const
 
 
 //-----------------------------------------------------------------------------------------------
+ZephyrBytecodeChunkMap ZephyrScriptDefinition::GetAllStateBytecodeChunks() const
+{
+	ZephyrBytecodeChunkMap stateChunks;
+
+	for ( auto chunk : m_bytecodeChunks )
+	{
+		if ( chunk.second->GetType() == eBytecodeChunkType::STATE )
+		{
+			stateChunks[chunk.first] = chunk.second;
+		}
+	}
+
+	return stateChunks;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 ZephyrBytecodeChunkMap ZephyrScriptDefinition::GetAllEventBytecodeChunks() const
 {
 	ZephyrBytecodeChunkMap eventChunks;

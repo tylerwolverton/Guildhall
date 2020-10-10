@@ -19,11 +19,12 @@ public:
 	bool IsMethodRegistered( const std::string& methodName );
 
 private:
-	void UpdateEnemyCount( EventArgs* args );
-	void DestroyEntity( EventArgs* args );
-
+	void ChangeZephyrScriptState( EventArgs* args );
 	void PrintDebugText( EventArgs* args );
 
+	// Game events
+	void DestroyEntity( EventArgs* args );
+	void UpdateEnemyCount( EventArgs* args );
 	void WinGame( EventArgs* args );
 
 private:

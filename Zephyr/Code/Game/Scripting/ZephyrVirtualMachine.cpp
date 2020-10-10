@@ -143,6 +143,21 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::CHANGE_STATE:
+			{
+				ZephyrValue stateName = PopConstant();
+
+				EventArgs args;
+				args.SetValue( "entity", (void*)parentEntity );
+				args.SetValue( "targetState", stateName.GetAsString() );
+				g_eventSystem->FireEvent( "ChangeZephyrScriptState", &args, EVERYWHERE );
+				
+				// Bail out of this chunk to avoid trying to execute bytecode in the wrong update chunk
+				UpdateGlobalVariables( *globalVariables, localVariables );
+				return;
+			}
+			break;
+
 			default:
 			{
 			}

@@ -43,6 +43,8 @@ public:
 
 	virtual void	Load();
 	virtual void	Unload();
+
+	void			ChangeZephyrScriptState( const std::string& targetState );
 	void			ReloadZephyrScript();
 
 	const Vec2		GetForwardVector() const;

@@ -19,9 +19,10 @@
 //-----------------------------------------------------------------------------------------------
 GameAPI::GameAPI()
 {
+	REGISTER_EVENT( ChangeZephyrScriptState );
+	REGISTER_EVENT( PrintDebugText );
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( DestroyEntity );
-	REGISTER_EVENT( PrintDebugText );
 	REGISTER_EVENT( WinGame );
 }
 
@@ -59,6 +60,20 @@ void GameAPI::DestroyEntity( EventArgs* args )
 	if ( entity != nullptr )
 	{
 		entity->Die();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::ChangeZephyrScriptState( EventArgs* args )
+{
+	std::string targetState = args->GetValue( "targetState", "" );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity != nullptr
+		 && !targetState.empty() )
+	{
+		entity->ChangeZephyrScriptState( targetState );
 	}
 }
 

@@ -231,6 +231,15 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::CHANGE_STATE:
+		{
+			if ( !ParseChangeStateStatement() )
+			{
+				return false;
+			}
+		}
+		break;
+
 		case eTokenType::IF:
 		{
 			return ParseIfStatement();
@@ -506,6 +515,38 @@ bool ZephyrParser::ParseEventArgs()
 	}
 
 	WriteConstantToCurChunk( ZephyrValue( (float)paramCount ) );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseChangeStateStatement()
+{
+	// Opening paren
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+	{
+		return false;
+	}
+
+	ZephyrToken stateName = ConsumeNextToken();
+	if ( !DoesTokenMatchType( stateName, eTokenType::IDENTIFIER ) )
+	{
+		ReportError( "ChangeState must specify a target state" );
+		return false;
+	}
+
+	// TODO: Check that the state name is valid
+
+
+	// Closing paren
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+	{
+		return false;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( stateName.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::CHANGE_STATE );
 
 	return true;
 }

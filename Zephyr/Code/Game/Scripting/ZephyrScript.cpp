@@ -22,6 +22,7 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 	g_zephyrVM->InterpretBytecodeChunk( *globalBytecodeChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 
 	m_curStateBytecodeChunk = m_scriptDef.GetFirstStateBytecodeChunk();
+	m_stateBytecodeChunks = m_scriptDef.GetAllStateBytecodeChunks();
 	m_eventBytecodeChunks = m_scriptDef.GetAllEventBytecodeChunks();
 
 	RegisterScriptEvents();
@@ -71,6 +72,20 @@ void ZephyrScript::FireDieEvent()
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScript::ChangeState( const std::string& targetState )
+{
+	ZephyrBytecodeChunk* targetStateBytecodeChunk = GetStateBytecodeChunk( targetState );
+	if ( targetStateBytecodeChunk == nullptr )
+	{
+		// State doesn't exist, should be reported by compiler to avoid flooding with errors here
+		return;
+	}
+
+	m_curStateBytecodeChunk = targetStateBytecodeChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::RegisterScriptEvents()
 {
 	for ( auto chunk : m_eventBytecodeChunks )
@@ -91,6 +106,20 @@ void ZephyrScript::OnEvent( EventArgs* args )
 		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
 		g_zephyrVM->InterpretBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrBytecodeChunk* ZephyrScript::GetStateBytecodeChunk( const std::string& stateName )
+{
+	ZephyrBytecodeChunkMap::const_iterator  mapIter = m_stateBytecodeChunks.find( stateName );
+
+	if ( mapIter == m_stateBytecodeChunks.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
 }
 
 

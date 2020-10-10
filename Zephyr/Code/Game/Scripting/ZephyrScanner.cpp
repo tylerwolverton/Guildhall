@@ -247,14 +247,15 @@ void ZephyrScanner::TokenizeIdentifier()
 	std::string curIdentifier = m_scriptSource.substr( m_startSrcPos, stringLength );
 
 	// Match keywords
-	if ( curIdentifier == "StateMachine" )	 { AddToken( eTokenType::STATE_MACHINE ); }
-	else if ( curIdentifier == "State" )	 { AddToken( eTokenType::STATE ); }
-	else if ( curIdentifier == "Number" )	 { AddToken( eTokenType::NUMBER ); }
-	else if ( curIdentifier == "String" )	 { AddToken( eTokenType::STRING ); }
-	else if ( curIdentifier == "FireEvent" ) { AddToken( eTokenType::FIRE_EVENT ); }
-	else if ( curIdentifier == "OnEvent" )	 { AddToken( eTokenType::ON_EVENT ); }
-	else if ( curIdentifier == "if" )		 { AddToken( eTokenType::IF ); }
-	else if ( curIdentifier == "else" )		 { AddToken( eTokenType::ELSE ); }
+	if ( curIdentifier == "StateMachine" )			{ AddToken( eTokenType::STATE_MACHINE ); }
+	else if ( curIdentifier == "State" )			{ AddToken( eTokenType::STATE ); }
+	else if ( curIdentifier == "Number" )			{ AddToken( eTokenType::NUMBER ); }
+	else if ( curIdentifier == "String" )			{ AddToken( eTokenType::STRING ); }
+	else if ( curIdentifier == "FireEvent" )		{ AddToken( eTokenType::FIRE_EVENT ); }
+	else if ( curIdentifier == "OnEvent" )			{ AddToken( eTokenType::ON_EVENT ); }
+	else if ( curIdentifier == "ChangeState" )		{ AddToken( eTokenType::CHANGE_STATE ); }
+	else if ( curIdentifier == "if" )				{ AddToken( eTokenType::IF ); }
+	else if ( curIdentifier == "else" )				{ AddToken( eTokenType::ELSE ); }
 	// Must be a variable name
 	else
 	{

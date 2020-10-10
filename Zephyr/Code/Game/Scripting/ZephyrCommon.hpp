@@ -29,6 +29,7 @@ enum class eTokenType
 	STRING,
 	FIRE_EVENT,
 	ON_EVENT,
+	CHANGE_STATE,
 	IF,
 	ELSE,
 
@@ -100,6 +101,7 @@ enum class eOpCode : byte
 	LESS_EQUAL,
 
 	FIRE_EVENT,
+	CHANGE_STATE,
 
 	IF,
 

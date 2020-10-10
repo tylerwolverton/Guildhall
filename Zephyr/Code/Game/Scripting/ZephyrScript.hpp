@@ -23,10 +23,13 @@ public:
 	void FireSpawnEvent();
 	void FireDieEvent();
 
+	void ChangeState( const std::string& targetState );
+
 private:
 	void RegisterScriptEvents();
 
 	void OnEvent( EventArgs* args );
+	ZephyrBytecodeChunk* GetStateBytecodeChunk( const std::string& stateName );
 	ZephyrBytecodeChunk* GetEventBytecodeChunk( const std::string& eventName );
 
 private:
@@ -39,5 +42,5 @@ private:
 	const ZephyrScriptDefinition& m_scriptDef;
 
 	ZephyrBytecodeChunkMap m_eventBytecodeChunks; 
-	// std::map< "StateName", BytecodeChunk > m_stateUpdateChunks; 
+	ZephyrBytecodeChunkMap m_stateBytecodeChunks; 
 };

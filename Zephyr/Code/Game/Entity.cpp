@@ -273,6 +273,19 @@ void Entity::Unload()
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::ChangeZephyrScriptState( const std::string& targetState )
+{
+	if ( m_scriptObj == nullptr )
+	{
+		g_devConsole->PrintWarning( Stringf( "Tried to change state of entity: %s to %s, but it doesn't have a script", m_id.c_str(), targetState.c_str() ) );
+		return;
+	}
+
+	m_scriptObj->ChangeState( targetState );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::ReloadZephyrScript()
 {
 	if ( m_scriptObj != nullptr )

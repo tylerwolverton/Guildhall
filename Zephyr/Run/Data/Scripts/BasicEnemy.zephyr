@@ -15,28 +15,39 @@ StateMachine
 	}
 
 	OnEvent( TestEvent )
-	{
-		msg = "Goodbye";
-		
-		if( testToggle == 1 )
-		{
-			testToggle = 2;
-		}
-		else
-		{
-			testToggle = 1;
-		}
+	{		
+		//if( testToggle == 1 )
+		//{
+		//	testToggle = 2;
+		//}
+		//else
+		//{
+		//	testToggle = 1;
+		//}
+
+		ChangeState( ZNoDebug );
 	}
 
 	State TestState
 	{	
 		if ( testToggle == 1 )
 		{
-			FireEvent( PrintDebugText( text = "Hello" )  );
+			if ( msg == "Hello" )
+			{
+				FireEvent( PrintDebugText( text = "Hello" )  );
+			}
 		}
 		else
 		{
-			FireEvent( PrintDebugText( text = "Goodbye" )  );
+			if( msg == "" )
+			{
+				FireEvent( PrintDebugText( text = "Goodbye" )  );
+			}
 		}
+	}
+
+	State ZNoDebug
+	{	
+		FireEvent( PrintDebugText( text = "No debug text in this state, pal" ) );
 	}
 }

@@ -1,7 +1,7 @@
 <EntityTypes spriteSheet="Data/Images/EntitiesSpriteSheet_30x30.png" spriteSheetDimensions="30,30">
   ​
   <Actor name="Link">
-    <Physics radius="0.5" walkSpeed="100.0" collisionLayer="Enemy"/>
+    <Physics radius="0.5" walkSpeed="150.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="5">
       <Walk up="6,7" left="4,5" down="0,1" right="2,3" fps="2"/>
       <Attack up="0"/>
