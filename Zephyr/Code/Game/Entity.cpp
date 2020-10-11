@@ -286,6 +286,18 @@ void Entity::ChangeZephyrScriptState( const std::string& targetState )
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::UnloadZephyrScript()
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return;
+	}
+
+	m_scriptObj->UnloadScript();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::ReloadZephyrScript()
 {
 	if ( m_scriptObj != nullptr )

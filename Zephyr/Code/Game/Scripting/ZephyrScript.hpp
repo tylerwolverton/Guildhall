@@ -19,6 +19,7 @@ public:
 	~ZephyrScript();
 
 	void Update();
+	void UnloadScript();
 
 	void FireSpawnEvent();
 	void FireDieEvent();

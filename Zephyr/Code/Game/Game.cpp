@@ -592,6 +592,7 @@ void Game::LoadAndCompileZephyrScripts()
 //-----------------------------------------------------------------------------------------------
 void Game::ReloadGame()
 {
+	m_world->UnloadAllEntityScripts();
 	m_world->ClearMaps();
 
 	PopulateGameConfig();
@@ -620,6 +621,8 @@ void Game::ReloadGame()
 //-----------------------------------------------------------------------------------------------
 void Game::ReloadScripts()
 {
+	m_world->UnloadAllEntityScripts();
+
 	PTR_MAP_SAFE_DELETE( ZephyrScriptDefinition::s_definitions );
 	
 	LoadAndCompileZephyrScripts();

@@ -28,6 +28,7 @@ public:
 	void WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 	bool IsMapLoaded( const std::string& mapName );
 
+	void UnloadAllEntityScripts();
 	void ReloadAllEntityScripts();
 
 	void ClearMaps();

@@ -91,9 +91,14 @@ void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs,
 
 	eventArgs->SetValue( "eventName", eventName );
 
-	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_eventSubscriptionPtrs.size(); ++subscriptionIndex )
+	// Copy current state of event registrations and iterate over them to fire events
+	// This effectively ignores any new events that are registered from other events
+	std::vector<EventSubscription*> curEvents = m_eventSubscriptionPtrs;
+	std::vector<DelegateEventSubscription> curDelegateSubs = m_delegateEventSubscriptions;
+
+	for ( int subscriptionIndex = 0; subscriptionIndex < (int)curEvents.size(); ++subscriptionIndex )
 	{
-		EventSubscription*& sub = m_eventSubscriptionPtrs[subscriptionIndex];
+		EventSubscription*& sub = curEvents[subscriptionIndex];
 		if ( !_strcmpi( sub->m_eventName.c_str(), eventName.c_str() )
 			 && sub->m_usageMode & location
 			 && sub->m_callbackFuncPtr != nullptr )
@@ -102,10 +107,9 @@ void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs,
 		}
 	}
 
-	int numSubscriptions = (int)m_delegateEventSubscriptions.size();
-	for ( int subscriptionIndex = 0; subscriptionIndex < numSubscriptions; ++subscriptionIndex )
+	for ( int subscriptionIndex = 0; subscriptionIndex < (int)curDelegateSubs.size(); ++subscriptionIndex )
 	{
-		DelegateEventSubscription& sub = m_delegateEventSubscriptions[subscriptionIndex];
+		DelegateEventSubscription& sub = curDelegateSubs[subscriptionIndex];
 		if ( !_strcmpi( sub.m_eventName.c_str(), eventName.c_str() )
 			 && sub.m_usageMode & location )
 		{

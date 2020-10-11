@@ -49,6 +49,14 @@ void ZephyrScript::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScript::UnloadScript()
+{
+	UnRegisterScriptEvents( m_curStateBytecodeChunk );
+	UnRegisterScriptEvents( m_scriptDef.GetGlobalBytecodeChunk() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::FireSpawnEvent()
 {
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Spawn" );
@@ -108,6 +116,11 @@ void ZephyrScript::RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk )
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk )
 {
+	if ( bytecodeChunk == nullptr )
+	{
+		return;
+	}
+
 	for ( auto chunk : bytecodeChunk->GetEventBytecodeChunks() )
 	{
 		g_eventSystem->DeRegisterMethodEvent( chunk.first, this, &ZephyrScript::OnEvent );

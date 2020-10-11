@@ -127,6 +127,16 @@ bool World::IsMapLoaded( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+void World::UnloadAllEntityScripts()
+{
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->UnloadAllEntityScripts();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void World::ReloadAllEntityScripts()
 {
 	for ( auto& map : m_loadedMaps )
