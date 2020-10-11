@@ -26,7 +26,8 @@ public:
 	void ChangeState( const std::string& targetState );
 
 private:
-	void RegisterScriptEvents();
+	void RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
+	void UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
 
 	void OnEvent( EventArgs* args );
 	ZephyrBytecodeChunk* GetStateBytecodeChunk( const std::string& stateName );
@@ -41,6 +42,5 @@ private:
 	// TODO: save bytecode chunks into map that is managed by this class
 	const ZephyrScriptDefinition& m_scriptDef;
 
-	ZephyrBytecodeChunkMap m_eventBytecodeChunks; 
 	ZephyrBytecodeChunkMap m_stateBytecodeChunks; 
 };

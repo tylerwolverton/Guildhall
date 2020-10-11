@@ -121,21 +121,31 @@ bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName, const eByt
 		newChunk->SetVariable( globalVar.first, globalVar.second );
 	}
 
-	m_bytecodeChunks[chunkName] = newChunk;
+	newChunk->SetType( type );
+
+	// Save any state chunks into a map for the ZephyrScriptDefinition
+	if ( type == eBytecodeChunkType::STATE )
+	{
+		// Set the first state seen in the file as the initial state
+		if ( m_isFirstStateDef )
+		{
+			m_isFirstStateDef = false;
+
+			newChunk->SetAsInitialState();
+		}
+
+		m_bytecodeChunks[chunkName] = newChunk;
+	}
+
+	// Save event chunk into parent chunk's event map
+	if ( type == eBytecodeChunkType::EVENT )
+	{
+		m_curBytecodeChunk->AddEventChunk( newChunk );
+	}
+
 
 	m_curBytecodeChunk = newChunk;
-	m_curBytecodeChunk->SetType( type );
-
 	m_curBytecodeChunksStack.push( newChunk );
-
-	// Set the first state seen in the file as the initial state
-	if ( type == eBytecodeChunkType::STATE
-		 && m_isFirstStateDef )
-	{
-		m_isFirstStateDef = false;
-
-		m_curBytecodeChunk->SetAsInitialState();
-	}
 
 	return true;
 }

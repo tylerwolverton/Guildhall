@@ -102,7 +102,8 @@ void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs,
 		}
 	}
 
-	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_delegateEventSubscriptions.size(); ++subscriptionIndex )
+	int numSubscriptions = (int)m_delegateEventSubscriptions.size();
+	for ( int subscriptionIndex = 0; subscriptionIndex < numSubscriptions; ++subscriptionIndex )
 	{
 		DelegateEventSubscription& sub = m_delegateEventSubscriptions[subscriptionIndex];
 		if ( !_strcmpi( sub.m_eventName.c_str(), eventName.c_str() )

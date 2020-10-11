@@ -24,6 +24,8 @@ public:
 	};
 
 public:
+	int GetSubscriptionCount() const													{ return (int)m_subscriptions.size(); }
+
 	void Subscribe( const c_callback_t& callback );
 	void Unsubscribe( const c_callback_t& callback );
 

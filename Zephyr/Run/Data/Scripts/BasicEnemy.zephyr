@@ -18,7 +18,7 @@ StateMachine
 	{	
 		OnEvent( TestEvent )
 		{		
-			ChangeState( ZNoDebug );
+			ChangeState( NoDebug );
 		}
 
 		String msg = "Goodbye";
@@ -33,7 +33,7 @@ StateMachine
 		
 	}
 
-	State ZNoDebug
+	State NoDebug
 	{	
 		OnEvent( TestEvent )
 		{		

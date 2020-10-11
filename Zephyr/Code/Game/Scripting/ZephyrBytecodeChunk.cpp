@@ -81,6 +81,13 @@ void ZephyrBytecodeChunk::SetConstantAtIdx( int idx, const ZephyrValue& constant
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrBytecodeChunk::AddEventChunk( ZephyrBytecodeChunk* eventBytecodeChunk )
+{
+	m_eventBytecodeChunks[eventBytecodeChunk->GetName()] = eventBytecodeChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrBytecodeChunk::SetVariable( const std::string& identifier, const ZephyrValue& value )
 {
 	m_variables[identifier] = value;

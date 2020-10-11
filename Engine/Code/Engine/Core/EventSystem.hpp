@@ -137,6 +137,10 @@ void EventSystem::DeRegisterMethodEvent( const std::string& eventName,
 		if ( !_strcmpi( sub.m_eventName.c_str(), eventName.c_str() ) )
 		{
 			sub.m_delegate.UnsubscribeMethod( obj, callbackMethod );
+			if ( sub.m_delegate.GetSubscriptionCount() == 0 )
+			{		
+				m_delegateEventSubscriptions.erase( m_delegateEventSubscriptions.begin() + subscriptionIndex );
+			}
 			return;
 		}
 	}
