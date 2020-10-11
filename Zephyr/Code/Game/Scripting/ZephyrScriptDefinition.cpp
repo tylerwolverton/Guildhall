@@ -49,7 +49,8 @@ ZephyrBytecodeChunk* ZephyrScriptDefinition::GetFirstStateBytecodeChunk() const
 
 	for ( auto chunk : m_bytecodeChunks )
 	{
-		if ( chunk.second->GetType() == eBytecodeChunkType::STATE )
+		if ( chunk.second->GetType() == eBytecodeChunkType::STATE
+			 && chunk.second->IsInitialState() )
 		{
 			return chunk.second;
 		}

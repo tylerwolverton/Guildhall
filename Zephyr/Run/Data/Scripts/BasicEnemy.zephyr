@@ -14,40 +14,33 @@ StateMachine
 		FireEvent( EnemyDied() );
 	}
 
-	OnEvent( TestEvent )
-	{		
-		//if( testToggle == 1 )
-		//{
-		//	testToggle = 2;
-		//}
-		//else
-		//{
-		//	testToggle = 1;
-		//}
-
-		ChangeState( ZNoDebug );
-	}
-
 	State TestState
 	{	
-		if ( testToggle == 1 )
+		OnEvent( TestEvent )
+		{		
+			ChangeState( ZNoDebug );
+		}
+
+		String msg = "Goodbye";
+		if ( msg == "Hello" )
 		{
-			if ( msg == "Hello" )
-			{
-				FireEvent( PrintDebugText( text = "Hello" )  );
-			}
+			FireEvent( PrintDebugText( text = "Hello" )  );
 		}
 		else
 		{
-			if( msg == "" )
-			{
-				FireEvent( PrintDebugText( text = "Goodbye" )  );
-			}
+			FireEvent( PrintDebugText( text = "Goodbye" )  );
 		}
+		
 	}
 
 	State ZNoDebug
 	{	
+		OnEvent( TestEvent )
+		{		
+			ChangeState( TestState );
+		}
+
 		FireEvent( PrintDebugText( text = "No debug text in this state, pal" ) );
 	}
 }
+

@@ -8,6 +8,7 @@
 enum class eBytecodeChunkType
 {
 	NONE,
+	STATE_MACHINE,
 	STATE,
 	EVENT,
 };
@@ -28,6 +29,7 @@ public:
 	ZephyrValueMap		GetVariables() const							{ return m_variables; }
 	ZephyrValueMap*		GetUpdateableVariables() 						{ return &m_variables; }
 	eBytecodeChunkType  GetType() const									{ return m_type; }
+	bool				IsInitialState() const							{ return m_isInitialState; }
 
 	// Methods to write data to chunk
 	void WriteByte( byte newByte );
@@ -39,12 +41,14 @@ public:
 
 	void SetVariable( const std::string& identifier, const ZephyrValue& value );
 	void SetType( eBytecodeChunkType type )								{ m_type = type; }
+	void SetAsInitialState()											{ m_isInitialState = true; }
 
 	// Debug methods
 	void Disassemble();
 
 private:
 	std::string m_name;
+	bool m_isInitialState = false;
 	eBytecodeChunkType m_type = eBytecodeChunkType::NONE;
 	std::vector<byte> m_bytes;
 	std::vector<ZephyrValue> m_constants;

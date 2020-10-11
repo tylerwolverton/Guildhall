@@ -2,6 +2,7 @@
 #include "Game/Scripting/ZephyrCommon.hpp"
 
 #include <string>
+#include <stack>
 #include <vector>
 
 
@@ -9,7 +10,7 @@
 class ZephyrBytecodeChunk;
 class ZephyrScriptDefinition;
 class ZephyrToken;
-
+enum class eBytecodeChunkType;
 
 //-----------------------------------------------------------------------------------------------
 enum class eOpPrecedenceLevel
@@ -41,7 +42,7 @@ private:
 
 	// Bytecode chunk manipulation
 	void CreateStateMachineBytecodeChunk();
-	bool CreateBytecodeChunk( const std::string& chunkName );
+	bool CreateBytecodeChunk( const std::string& chunkName, const eBytecodeChunkType& type );
 	void FinalizeCurBytecodeChunk();
 
 	bool WriteByteToCurChunk( byte newByte );
@@ -99,7 +100,9 @@ private:
 	std::vector<ZephyrToken> m_tokens;
 	int m_curTokenIdx = 0;
 	
+	bool m_isFirstStateDef = true;
 	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;
+	std::stack<ZephyrBytecodeChunk*> m_curBytecodeChunksStack;
 	ZephyrBytecodeChunkMap m_bytecodeChunks;
 	ZephyrBytecodeChunk* m_curBytecodeChunk = nullptr;
 };

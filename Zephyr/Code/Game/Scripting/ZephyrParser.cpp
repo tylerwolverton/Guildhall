@@ -49,23 +49,74 @@ ZephyrScriptDefinition* ZephyrParser::ParseTokensIntoScriptDefinition()
 void ZephyrParser::CreateStateMachineBytecodeChunk()
 {
 	m_stateMachineBytecodeChunk = new ZephyrBytecodeChunk( "StateMachine" );
+	m_stateMachineBytecodeChunk->SetType( eBytecodeChunkType::STATE_MACHINE );
 
 	m_curBytecodeChunk = m_stateMachineBytecodeChunk;
+
+	m_curBytecodeChunksStack.push( m_stateMachineBytecodeChunk );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
+bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName, const eBytecodeChunkType& type )
 {
-	if ( m_curBytecodeChunk != m_stateMachineBytecodeChunk )
+	if ( type == eBytecodeChunkType::STATE_MACHINE )
 	{
-		ReportError( "Tried to define a new bytecode chunk while writing to existing one, make Tyler fix this" );
+		ReportError( "Each file can only have 1 StateMachine definition" );
 		return false;
 	}
 
+	switch ( m_curBytecodeChunk->GetType() )
+	{
+		case eBytecodeChunkType::STATE_MACHINE:
+		{
+			// No error here, can define anything
+		}
+		break;
+
+		case eBytecodeChunkType::STATE:
+		{
+			if ( type == eBytecodeChunkType::STATE )
+			{
+				ReportError( "Cannot define a State inside of another State definition" );
+				return false;
+			}
+		}
+		break;
+
+		case eBytecodeChunkType::EVENT:
+		{
+			switch ( type )
+			{
+				case eBytecodeChunkType::STATE:
+				{
+					ReportError( "Cannot define a State inside of an OnEvent definition" );
+					return false;
+				}
+				break;
+
+				case eBytecodeChunkType::EVENT:
+				{
+					ReportError( "Cannot define an Event inside of another OnEvent definition" );
+					return false;
+				}
+				break;
+			}
+		}
+		break;
+
+		default:
+		{
+			ReportError( "Tried to define a new bytecode chunk while inside an invalid chunk, make Tyler fix this" );
+			return false;
+		}
+		break;
+	}
+
+	// This is a valid chunk definition, create with current chunk as parent scope
 	ZephyrBytecodeChunk* newChunk = new ZephyrBytecodeChunk( chunkName );
 	
-	for ( auto globalVar : m_stateMachineBytecodeChunk->GetVariables() )
+	for ( auto globalVar : m_curBytecodeChunk->GetVariables() )
 	{
 		newChunk->SetVariable( globalVar.first, globalVar.second );
 	}
@@ -73,8 +124,18 @@ bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
 	m_bytecodeChunks[chunkName] = newChunk;
 
 	m_curBytecodeChunk = newChunk;
+	m_curBytecodeChunk->SetType( type );
 
+	m_curBytecodeChunksStack.push( newChunk );
 
+	// Set the first state seen in the file as the initial state
+	if ( type == eBytecodeChunkType::STATE
+		 && m_isFirstStateDef )
+	{
+		m_isFirstStateDef = false;
+
+		m_curBytecodeChunk->SetAsInitialState();
+	}
 
 	return true;
 }
@@ -83,7 +144,12 @@ bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName )
 //-----------------------------------------------------------------------------------------------
 void ZephyrParser::FinalizeCurBytecodeChunk()
 {
-	m_curBytecodeChunk = m_stateMachineBytecodeChunk;
+	m_curBytecodeChunksStack.pop();
+
+	if ( !m_curBytecodeChunksStack.empty() )
+	{
+		m_curBytecodeChunk = m_curBytecodeChunksStack.top();
+	}
 }
 
 
@@ -182,7 +248,7 @@ bool ZephyrParser::ParseStatement()
 				return false;
 			}
 
-			bool succeeded = CreateBytecodeChunk( curToken.GetData() );
+			bool succeeded = CreateBytecodeChunk( curToken.GetData(), eBytecodeChunkType::STATE );
 			if ( !succeeded )
 			{
 				return false;
@@ -190,7 +256,6 @@ bool ZephyrParser::ParseStatement()
 
 			succeeded = ParseBlock();
 
-			m_curBytecodeChunk->SetType( eBytecodeChunkType::STATE );
 			FinalizeCurBytecodeChunk();
 
 			return succeeded;
@@ -216,7 +281,7 @@ bool ZephyrParser::ParseStatement()
 				return false;
 			}
 
-			bool succeeded = CreateBytecodeChunk( curToken.GetData() );
+			bool succeeded = CreateBytecodeChunk( curToken.GetData(), eBytecodeChunkType::EVENT );
 			if ( !succeeded )
 			{
 				return false;
@@ -224,7 +289,6 @@ bool ZephyrParser::ParseStatement()
 
 			succeeded = ParseBlock();
 
-			m_curBytecodeChunk->SetType( eBytecodeChunkType::EVENT );
 			FinalizeCurBytecodeChunk();
 
 			return succeeded;
