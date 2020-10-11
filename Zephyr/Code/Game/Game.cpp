@@ -577,12 +577,12 @@ void Game::LoadAndCompileZephyrScripts()
 		// Compile
 		// Save completed into static map
 		ZephyrScriptDefinition* scriptDef = ZephyrCompiler::CompileScriptFile( scriptFullPath );
-		if ( scriptDef != nullptr )
-		{
+		//if ( scriptDef != nullptr )
+		//{
 			scriptDef->m_name = scriptName;
 
 			ZephyrScriptDefinition::s_definitions[scriptFullPath] = scriptDef;
-		}
+		//}
 	}
 
 	g_devConsole->PrintString( "Zephyr Scripts Loaded", Rgba8::GREEN );

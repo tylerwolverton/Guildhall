@@ -17,6 +17,9 @@ public:
 	ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachineBytecodeChunk, const ZephyrBytecodeChunkMap& bytecodeChunks );
 	~ZephyrScriptDefinition();
 
+	bool IsValid() const																	{ return m_isValid; }
+	void SetIsValid( bool isValid )															{ m_isValid = isValid; }
+
 	ZephyrBytecodeChunk* GetGlobalBytecodeChunk() const										{ return m_stateMachineBytecodeChunk; }
 	ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& name ) const;
 	// TODO: IS this enough or do we need a variable in StateMachine for the initial state?
@@ -34,6 +37,8 @@ public:
 	std::string m_name;
 
 private:
+	bool m_isValid = false;
+
 	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;
 	ZephyrBytecodeChunkMap m_bytecodeChunks;
 };

@@ -16,6 +16,11 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 	, m_scriptDef( scriptDef )
 	, m_parentEntity( parentEntity )
 {
+	if ( !m_scriptDef.IsValid() )
+	{
+		return;
+	}
+
 	ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
 	GUARANTEE_OR_DIE( globalBytecodeChunk != nullptr, "Global Bytecode Chunk was null" );
 
@@ -23,7 +28,6 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 
 	m_curStateBytecodeChunk = m_scriptDef.GetFirstStateBytecodeChunk();
 	m_stateBytecodeChunks = m_scriptDef.GetAllStateBytecodeChunks();
-	//m_eventBytecodeChunks = m_scriptDef.GetAllEventBytecodeChunks();
 
 	RegisterScriptEvents( globalBytecodeChunk );
 	RegisterScriptEvents( m_curStateBytecodeChunk );
@@ -40,6 +44,17 @@ ZephyrScript::~ZephyrScript()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::Update()
 {
+	if ( !m_scriptDef.IsValid() )
+	{
+		EventArgs args;
+		args.SetValue( "entity", (void*)m_parentEntity );
+		args.SetValue( "text", "Error Script" );
+		args.SetValue( "color", Rgba8::RED );
+
+		g_eventSystem->FireEvent( "PrintDebugText", &args );
+		return;
+	}
+
 	if ( m_curStateBytecodeChunk != nullptr )
 	{
 		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
@@ -51,6 +66,11 @@ void ZephyrScript::Update()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::UnloadScript()
 {
+	if ( !m_scriptDef.IsValid() )
+	{
+		return;
+	}
+
 	UnRegisterScriptEvents( m_curStateBytecodeChunk );
 	UnRegisterScriptEvents( m_scriptDef.GetGlobalBytecodeChunk() );
 }
@@ -59,6 +79,11 @@ void ZephyrScript::UnloadScript()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::FireSpawnEvent()
 {
+	if ( !m_scriptDef.IsValid() )
+	{
+		return;
+	}
+
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Spawn" );
 	if ( eventChunk != nullptr )
 	{
@@ -71,6 +96,11 @@ void ZephyrScript::FireSpawnEvent()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::FireDieEvent()
 {
+	if ( !m_scriptDef.IsValid() )
+	{
+		return;
+	}
+
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Die" );
 	if ( eventChunk != nullptr )
 	{
@@ -83,6 +113,11 @@ void ZephyrScript::FireDieEvent()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::ChangeState( const std::string& targetState )
 {
+	if ( !m_scriptDef.IsValid() )
+	{
+		return;
+	}
+
 	ZephyrBytecodeChunk* targetStateBytecodeChunk = GetStateBytecodeChunk( targetState );
 	if ( targetStateBytecodeChunk == nullptr )
 	{

@@ -38,10 +38,7 @@ private:
 	std::string m_name;
 	Entity* m_parentEntity = nullptr;
 
-	ZephyrBytecodeChunk* m_curStateBytecodeChunk = nullptr;
-
-	// TODO: save bytecode chunks into map that is managed by this class
 	const ZephyrScriptDefinition& m_scriptDef;
-
+	ZephyrBytecodeChunk* m_curStateBytecodeChunk = nullptr;
 	ZephyrBytecodeChunkMap m_stateBytecodeChunks; 
 };

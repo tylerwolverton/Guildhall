@@ -24,24 +24,27 @@ ZephyrScriptDefinition* ZephyrParser::ParseTokensIntoScriptDefinition()
 	if ( nextToken.GetType() != eTokenType::STATE_MACHINE )
 	{
 		ReportError( "File must begin with a StateMachine definition" );
-		return nullptr;
+		return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
 	}
 
 	CreateStateMachineBytecodeChunk();
 
 	if ( !ParseBlock() )
 	{
-		return nullptr;
+		return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
 	}
 
 	nextToken = ConsumeNextToken();
 	if ( !DoesTokenMatchType( nextToken, eTokenType::END_OF_FILE ) )
 	{
 		ReportError( "Nothing can be defined outside StateMachine" );
-		return nullptr;
+		return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
 	}
 
-	return new ZephyrScriptDefinition( m_stateMachineBytecodeChunk, m_bytecodeChunks );
+	ZephyrScriptDefinition* validScript =  new ZephyrScriptDefinition( m_stateMachineBytecodeChunk, m_bytecodeChunks );
+	validScript->SetIsValid( true );
+
+	return validScript;
 }
 
 
