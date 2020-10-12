@@ -76,6 +76,12 @@
     <ClCompile Include="MapData.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="AuthoritativeServer.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -136,6 +142,12 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="MapData.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="AuthoritativeServer.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

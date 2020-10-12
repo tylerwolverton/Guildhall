@@ -8,6 +8,8 @@ class AudioSystem;
 class RenderContext;
 class NetworkingSystem;
 class Game;
+class Server;
+class Client;
 class SpriteSheet;
 class Camera;
 struct Vec2;
@@ -28,6 +30,8 @@ extern AudioSystem* g_audioSystem;
 extern RenderContext* g_renderer;
 extern NetworkingSystem* g_networkingSystem;
 extern Game* g_game;
+extern Server* g_server;
+extern Client* g_client;
 
 
 //-----------------------------------------------------------------------------------------------

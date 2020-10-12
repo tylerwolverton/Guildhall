@@ -21,6 +21,7 @@
 #include "Engine/Time/Clock.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/AuthoritativeServer.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -36,49 +37,80 @@ App::~App()
 
 
 //-----------------------------------------------------------------------------------------------
-void App::Startup()
+void App::Startup( eAppMode appMode )
 {
-	PopulateGameConfig();
+	m_appMode = appMode;
 
-	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "Protogame3D" );
-	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
-	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
-	eWindowMode windowMode = GetWindowModeFromGameConfig();
+	PopulateGameConfig();
 
 	Clock::MasterStartup();
 
-	g_window = new Window();
-	g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowMode );
-
 	g_eventSystem = new EventSystem();
-	g_jobSystem = new JobSystem();
-	g_inputSystem = new InputSystem();
-	g_audioSystem = new AudioSystem();
-	g_renderer = new RenderContext();
-	g_networkingSystem = new NetworkingSystem();
-	g_devConsole = new DevConsole();
-	g_game = new Game();
-
 	g_eventSystem->Startup();
-	g_window->SetEventSystem( g_eventSystem );
 
+	g_jobSystem = new JobSystem();
 	g_jobSystem->Startup();
 
-	g_inputSystem->Startup( g_window );
-	g_window->SetInputSystem( g_inputSystem );
-
-	g_audioSystem->Startup();
-	g_renderer->Startup( g_window );
-	DebugRenderSystemStartup( g_renderer, g_eventSystem );
-	
+	g_networkingSystem = new NetworkingSystem();
 	g_networkingSystem->Startup();
 
-	g_devConsole->Startup();
-	g_devConsole->SetInputSystem( g_inputSystem );
-	g_devConsole->SetRenderer( g_renderer );
-	g_devConsole->SetBitmapFont( g_renderer->GetSystemFont() );
+	if ( appMode != eAppMode::HEADLESS_SERVER )
+	{
+		std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "Protogame3D" );
+		float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
+		float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
+		eWindowMode windowMode = GetWindowModeFromGameConfig();
 
-	g_game->Startup();
+		g_window = new Window();
+		g_window->Open( windowTitle, windowAspect, windowHeightRatio, windowMode );
+
+		g_inputSystem = new InputSystem();
+		g_inputSystem->Startup( g_window );
+
+		g_window->SetEventSystem( g_eventSystem );
+		g_window->SetInputSystem( g_inputSystem );
+
+		g_audioSystem = new AudioSystem();
+		g_audioSystem->Startup();
+
+		g_renderer = new RenderContext();
+		g_renderer->Startup( g_window );
+		DebugRenderSystemStartup( g_renderer, g_eventSystem );
+
+		g_devConsole = new DevConsole();
+		g_devConsole->Startup();
+		g_devConsole->SetInputSystem( g_inputSystem );
+		g_devConsole->SetRenderer( g_renderer );
+		g_devConsole->SetBitmapFont( g_renderer->GetSystemFont() );
+	}
+
+	switch ( appMode )
+	{
+		case eAppMode::SINGLE_PLAYER:
+		{
+			g_server = new AuthoritativeServer();
+			g_server->Startup();
+		}
+		break;
+
+		case eAppMode::MULTIPLAYER_SERVER:
+		{
+
+		}
+		break;
+
+		case eAppMode::MULTIPLAYER_CLIENT:
+		{
+
+		}
+		break;
+
+		case eAppMode::HEADLESS_SERVER:
+		{
+
+		}
+		break;
+	}
 
 	g_eventSystem->RegisterEvent( "quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
 }
@@ -87,26 +119,56 @@ void App::Startup()
 //-----------------------------------------------------------------------------------------------
 void App::Shutdown()
 {
-	g_game->Shutdown();
-	g_devConsole->Shutdown();
+	switch ( m_appMode )
+	{
+		case eAppMode::SINGLE_PLAYER:
+		{
+			g_server->Shutdown();
+		}
+		break;
+
+		case eAppMode::MULTIPLAYER_SERVER:
+		{
+
+		}
+		break;
+
+		case eAppMode::MULTIPLAYER_CLIENT:
+		{
+
+		}
+		break;
+
+		case eAppMode::HEADLESS_SERVER:
+		{
+
+		}
+		break;
+	}
+
+	if ( m_appMode != eAppMode::HEADLESS_SERVER )
+	{
+		g_devConsole->Shutdown();
+		DebugRenderSystemShutdown();
+		g_renderer->Shutdown();
+		g_audioSystem->Shutdown();
+		g_inputSystem->Shutdown();
+		g_window->Close();
+	}
+
 	g_networkingSystem->Shutdown();
-	DebugRenderSystemShutdown();
-	g_renderer->Shutdown();
-	g_audioSystem->Shutdown();
-	g_inputSystem->Shutdown();
 	g_jobSystem->Shutdown();
 	g_eventSystem->Shutdown();
-	g_window->Close();
 
-	PTR_SAFE_DELETE( g_game );
+	PTR_SAFE_DELETE( g_server );
 	PTR_SAFE_DELETE( g_devConsole );
-	PTR_SAFE_DELETE( g_networkingSystem );
 	PTR_SAFE_DELETE( g_renderer );
 	PTR_SAFE_DELETE( g_audioSystem );
 	PTR_SAFE_DELETE( g_inputSystem );
+	PTR_SAFE_DELETE( g_window );
+	PTR_SAFE_DELETE( g_networkingSystem );
 	PTR_SAFE_DELETE( g_jobSystem );
 	PTR_SAFE_DELETE( g_eventSystem );
-	PTR_SAFE_DELETE( g_window );
 }
 
 
@@ -181,25 +243,32 @@ void App::BeginFrame()
 {
 	Clock::MasterBeginFrame();
 
-	g_window->BeginFrame();
 	g_eventSystem->BeginFrame();
 	g_jobSystem->BeginFrame();
-	g_devConsole->BeginFrame();
-	g_inputSystem->BeginFrame();
-	g_audioSystem->BeginFrame();
-	g_renderer->BeginFrame();
-	DebugRenderBeginFrame();
 	g_networkingSystem->BeginFrame();
+
+	if ( m_appMode != eAppMode::HEADLESS_SERVER )
+	{
+		g_window->BeginFrame();
+		g_inputSystem->BeginFrame();
+		g_audioSystem->BeginFrame();
+		g_renderer->BeginFrame();
+		DebugRenderBeginFrame();
+		g_devConsole->BeginFrame();
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void App::Update()
 {
-	g_devConsole->Update();
-	g_game->Update();
+	if ( m_appMode != eAppMode::HEADLESS_SERVER )
+	{
+		g_devConsole->Update();
+		g_game->Update();
 
-	UpdateFromKeyboard();
+		UpdateFromKeyboard();
+	}
 }
 
 
@@ -228,24 +297,30 @@ void App::UpdateFromKeyboard()
 //-----------------------------------------------------------------------------------------------
 void App::Render() const
 {
-	g_game->Render();
-	//DebugRenderScreenTo( g_renderer->GetBackBuffer() );
-	g_devConsole->Render();
+	if ( m_appMode != eAppMode::HEADLESS_SERVER )
+	{
+		g_game->Render();
+		g_devConsole->Render();
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void App::EndFrame()
 {
-	DebugRenderEndFrame();
-	g_renderer->EndFrame();
+	if ( m_appMode != eAppMode::HEADLESS_SERVER )
+	{
+		g_devConsole->EndFrame();
+		DebugRenderEndFrame();
+		g_renderer->EndFrame();
+		g_audioSystem->EndFrame();
+		g_inputSystem->EndFrame();
+		g_window->EndFrame();
+	}
+
 	g_networkingSystem->EndFrame();
-	g_audioSystem->EndFrame();
-	g_inputSystem->EndFrame();
-	g_devConsole->EndFrame();
 	g_jobSystem->EndFrame();
 	g_eventSystem->EndFrame();
-	g_window->EndFrame();
 }
 
 

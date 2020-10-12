@@ -11,12 +11,22 @@ enum class eWindowMode;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eAppMode
+{
+	SINGLE_PLAYER,
+	MULTIPLAYER_SERVER,
+	MULTIPLAYER_CLIENT,
+	HEADLESS_SERVER,
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class App 
 {
 public:
 	App();
 	~App();
-	void Startup();
+	void Startup( eAppMode appMode = eAppMode::SINGLE_PLAYER );
 	void Shutdown();
 	void RunFrame();
 
@@ -38,4 +48,5 @@ private:
 
 private:
 	bool m_isQuitting = false;
+	eAppMode m_appMode = eAppMode::SINGLE_PLAYER;
 };
