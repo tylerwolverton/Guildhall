@@ -82,6 +82,15 @@
     <ClCompile Include="AuthoritativeServer.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerClient.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteClient.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -148,6 +157,15 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="AuthoritativeServer.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerClient.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteClient.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

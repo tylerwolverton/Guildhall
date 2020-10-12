@@ -1,29 +1,24 @@
-#include "Game/AuthoritativeServer.hpp"
+#include "Game/PlayerClient.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::Startup()
+void PlayerClient::Startup()
 {
-	g_game = new Game();
-	g_game->Startup();
+
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::Shutdown()
+void PlayerClient::Shutdown()
 {
-	g_game->Shutdown();
 
-	PTR_SAFE_DELETE( g_game );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::Update()
+void PlayerClient::Render() const
 {
-	g_game->Update();
+	g_game->Render();
 }
-
-

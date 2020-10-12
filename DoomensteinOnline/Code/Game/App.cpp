@@ -22,6 +22,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/AuthoritativeServer.hpp"
+#include "Game/Client.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -90,6 +91,9 @@ void App::Startup( eAppMode appMode )
 		{
 			g_server = new AuthoritativeServer();
 			g_server->Startup();
+
+			g_client = new Client();
+			g_client->Startup();
 		}
 		break;
 
@@ -123,6 +127,7 @@ void App::Shutdown()
 	{
 		case eAppMode::SINGLE_PLAYER:
 		{
+			g_client->Shutdown();
 			g_server->Shutdown();
 		}
 		break;
@@ -160,6 +165,7 @@ void App::Shutdown()
 	g_jobSystem->Shutdown();
 	g_eventSystem->Shutdown();
 
+	PTR_SAFE_DELETE( g_client );
 	PTR_SAFE_DELETE( g_server );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_renderer );
@@ -265,7 +271,7 @@ void App::Update()
 	if ( m_appMode != eAppMode::HEADLESS_SERVER )
 	{
 		g_devConsole->Update();
-		g_game->Update();
+		g_server->Update();
 
 		UpdateFromKeyboard();
 	}
@@ -299,7 +305,7 @@ void App::Render() const
 {
 	if ( m_appMode != eAppMode::HEADLESS_SERVER )
 	{
-		g_game->Render();
+		g_client->Render();
 		g_devConsole->Render();
 	}
 }
