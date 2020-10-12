@@ -1,0 +1,266 @@
+quit
+Tyler has a history
+quit
+help
+quit
+help
+set_mouse_sensitivity multiplier=10
+set_mouse_sensitivity multiplier=25
+set_mouse_sensitivity multiplier=15
+set_mouse_sensitivity multiplier=20
+set_mouse_sensitivity multiplier=25
+set_mouse_sensitivity multiplier=30
+debug_render enabled=false
+debug_render enabled=true
+debug_add_world_point position=(0,4,2) duration=10
+debug_add_world_point position=(0,4,-2) duration=10
+debug_add_world_point position=(0,0,0) duration=10
+debug_add_world_billboard_text text="This is a string"
+debug_add_screen_quad min=(0,0) max=(50,50)
+debug_add_screen_quad min=(0,0) max=(50,50) duration=50
+debug_add_world_point position=(0,0,0) duration=10
+debug_add_screen_quad min=0,0 max=50,50 duration=50
+help
+debug_add_screen_point position=1000,500 duration=20
+debug_add_world_billboard_text text=stringsarefun
+debug_add_screen_point position=1000,500 duration=20
+debug_add_screen_quad min=0,0 max=50,50 duration=50
+debug_add_world_point position=(0,0,0) duration=10
+help
+debug_add_world_wire_sphere position=0,0,0 radius=3
+hello
+help
+light_set_ambient_color color=1,0,0
+light_set_ambient_color color=1,1,0
+light_set_color color=0,0,1
+light_set_color color=.5,.75,.2
+light_set_color color=1,0,1
+set_mouse_sensitivity multiplier=2
+help
+set_mouse_sensitivity multiplier=10
+set_mouse_sensitivity multiplier=.5
+light_set_color rgb=1,0,0
+light_set_color color=1,0,0
+light_set_color color=0,0,1
+light_set_color color=0,1,1
+light_set_color color=0,0,1
+light_set_color color=1,0,0
+light_set_color color=1,1,0
+light_set_color color=1,0,1
+warp
+warp map=EmptyRoom
+warp map=TestRoom
+warp map=TestRoom pos=1,1
+warp map=TestRoom pos=1,3
+warp pos=1,3
+warp yaw=90
+warp yaw=180
+warp pos=1,3
+warp map=EmptyRoom
+warp map=TestRoom pos=1,3
+warp map=TestRoom pos=1,3 yaw=270
+warp
+warp=TwistyMaze
+warp map=TwistyMaze
+warp map=EmptyRoom
+warp map=TestRoom
+warp map=EmptyRoom
+warp map=TwistyMaze
+warp map=SpaceCastle
+warp
+warp map=UVTest
+warp map=TwistyMaze
+warp map=TwistyMaze 
+warp
+warp map=TwistyMaze pos=5,5
+warp map=EmptyRoom pos=5,5
+warp map=TestRoom pos=1,1
+warp map=TestRoom pos=2,2
+warp map=TestRoom pos=1,1
+help
+map
+help
+warp TestRoom
+warp TwistyMaze
+warp map=TwistyMaze
+start_tcp_server
+stop_tcp_server
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+help
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+send_message msg="hello clients"
+start_tcp_server
+send_message msg="hi client"
+stop_tcp_server
+connect
+disconnect
+start_tcp_server
+stop_tcp_server
+connect
+disconnect
+connect
+disconnect
+connect
+disconnect
+connect
+send_message msg="hello there server, I'm client"
+connect
+disconnect
+start_tcp_server
+connect
+disconnect
+connect
+send_message msg=hi there i forgot my quotes
+send_message msg="hi there i forgot my quotes"
+start_tcp_server
+send_message msg="hello client"
+stop_tcp_server
+connect
+disconnect
+connect
+send_message msg="hi there here is a long message that may not make it in one shot"
+connect
+send_message msg="hi there her is a long message that will fail"
+connect
+send_message msg="sdkjhflskdhflkshdflkj sldkfhslkdfhlksd lsdkhfjlksdjhfl"
+connect
+send_message msg="hello here is a nice message"
+connect
+send_message msg="here is another nice message that I hope the server can see"
+connect
+send_message msg="dfkjhdlfkghsldkfhglksdfhjglkjsdhlfkgj"
+connect
+send_message msg="dfkjhdlfkghsldkfhglksdfhjglkjsdhlfkgj"
+start_tcp_server
+connect
+start_tcp_server
+send_message msg="here is a great message"
+send_message msg="here is a great messags;dlnkfsdknf;lskdnflk;nsd;lfn;slkdnf;lksndf;lknsdl;kfns;lkdnflsdnf;ln;l ds;lfnsldfn;lskdnfe"
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+start_tcp_server
+connect
+send_message msg="Yeah this is a nice long message that will show off my cool game"
+connect
+con
+connect
+start_tcp_server
+connect host=107.140.218.204:48000
+send_message msg="woohoo I have harnessed the power of the internet"
+connect
+start_tcp_server
+connect
+start_tcp_server
+stop_tcp_server
+start_tcp_server
+stop_tcp_server
+connect
+send_message msg="ksdnlfkjanslkdjfnalskjdnflkasndlkjfnalsjdnflkasjndklfansldnfalskjdnflkasdnlfnakslndfj"
+start_tcp_server 48001
+connect :48001
+connect localhost:48001
+connect host=:48001
+send_message msg="Hello server!"
+disconnect
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+start_tcp_server
+start_tcp_server 48001
+connect host=:48001
+send_message msg="Hello server!"
+disconnect
+connect host=:48001
+send_message msg="Doomenstein rules"
+connect
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+start_tcp_server
+send_message msg="Hello client!"
+stop_tcp_server
+open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="hello"
+close_udp_port bindPort=48001
+send_udp_message msg="hello"
+open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+open_udp_port
+send_udp_message msg="try this"
+open_udp_port
+send_udp_message msg="try this"
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="hello"
+send_udp_message msg="try this"
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="try this"
+send_udp_message msg="try this oh yeah buddy"
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="try this oh yeah buddy"
+open_udp_port
+send_udp_message msg="try this oh yeah buddy"
+open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="try this oh yeah buddy"
+close_udp_port
+open_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="try this oh yeah buddy"
+close_udp_port
+open_udp_port
+close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="Hello from udp"
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="Hello from udp"
+close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="Hello from udp"
+open_udp_port bindPort=48001 sendToPort=48000
+close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="hey"
+send_udp_message msg="hey there is this okay"
+send_udp_message msg="hey there is this okay uhhhhhh what is going on now"
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="come on man!"
+send_udp_message msg="hey there is this okay uhhhhhh what is going on now"
+send_udp_message msg="hi"
+close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_udp_message msg="hello from udp!"
+close_udp_port
+open_udp_port bindPort=48001 sendToPort=48000
+send_message msg="Hi udp, nice to meet you!"
+open_udp_port bindPort=48001 sendToPort=48000
+send_message msg="Hello from udp!"
+open_udp_port
+send_udp_message msg="hello from udp"
+send_udp_message msg="sdfnsldkjfn"
+open_udp_port
+send_udp_message msg="good to meet you udp"
+close_udp_port
