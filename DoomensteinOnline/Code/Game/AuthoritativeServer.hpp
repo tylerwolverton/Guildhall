@@ -9,7 +9,7 @@ public:
 	AuthoritativeServer() = default;
 	~AuthoritativeServer() = default;
 
-	virtual void Startup() override;
+	virtual void Startup( eAppMode appMode ) override;
 	virtual void Shutdown() override;
 
 	virtual void Update() override;

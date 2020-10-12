@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include "Game/GameCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -8,16 +9,6 @@ class Camera;
 class RenderContext;
 class Game;
 enum class eWindowMode;
-
-
-//-----------------------------------------------------------------------------------------------
-enum class eAppMode
-{
-	SINGLE_PLAYER,
-	MULTIPLAYER_SERVER,
-	MULTIPLAYER_CLIENT,
-	HEADLESS_SERVER,
-};
 
 
 //-----------------------------------------------------------------------------------------------

@@ -33,25 +33,26 @@ public:
 	Game();
 	~Game();
 
-	void		Startup();
-	void		Update();
-	void		Render() const;
-	void		DebugRender() const;
-	void		Shutdown();
+	virtual void	Startup();
+	virtual void	Update();
+	virtual void	Render() const;
+	virtual void	DebugRender() const;
+	virtual void	Shutdown();
 
-	void		RestartGame();
+	virtual void	RestartGame();
 	
-	const Vec2	  GetMouseWorldPosition()													{ return m_mouseWorldPosition; }
-	const Camera* GetWorldCamera()															{ return m_worldCamera; }
+	const Vec2		GetMouseWorldPosition()														{ return m_mouseWorldPosition; }
+	const Camera*	GetWorldCamera()															{ return m_worldCamera; }
 
-	void		AddScreenShakeIntensity( float additionalIntensityFraction );
+	void			AddScreenShakeIntensity( float additionalIntensityFraction );
 
-	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
+	void			PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
 
-	void		SetCameraPositionAndYaw( const Vec2& pos, float yaw );
+	void			SetCameraPositionAndYaw( const Vec2& pos, float yaw );
 	
-	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
+	void			WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
+	// Events
 	static bool SetMouseSensitivity( EventArgs* args );
 	static bool SetAmbientLightColor( EventArgs* args );
 	

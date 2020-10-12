@@ -208,11 +208,13 @@
     <ClCompile Include="MapData.cpp" />
     <ClCompile Include="MapMaterialTypeDefinition.cpp" />
     <ClCompile Include="MapRegionTypeDefinition.cpp" />
+    <ClCompile Include="MultiplayerGame.cpp" />
     <ClCompile Include="PlayerClient.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RemoteClient.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="SinglePlayerGame.cpp" />
     <ClCompile Include="SpriteAnimationSetDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
@@ -235,11 +237,13 @@
     <ClInclude Include="MapData.hpp" />
     <ClInclude Include="MapMaterialTypeDefinition.hpp" />
     <ClInclude Include="MapRegionTypeDefinition.hpp" />
+    <ClInclude Include="MultiplayerGame.hpp" />
     <ClInclude Include="PlayerClient.hpp" />
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="Projectile.hpp" />
     <ClInclude Include="RemoteClient.hpp" />
     <ClInclude Include="Server.hpp" />
+    <ClInclude Include="SinglePlayerGame.hpp" />
     <ClInclude Include="SpriteAnimationSetDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />

@@ -19,7 +19,6 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Engine/Time/Clock.hpp"
-#include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/AuthoritativeServer.hpp"
 #include "Game/Client.hpp"
@@ -90,7 +89,7 @@ void App::Startup( eAppMode appMode )
 		case eAppMode::SINGLE_PLAYER:
 		{
 			g_server = new AuthoritativeServer();
-			g_server->Startup();
+			g_server->Startup( appMode );
 
 			g_client = new Client();
 			g_client->Startup();
@@ -99,7 +98,11 @@ void App::Startup( eAppMode appMode )
 
 		case eAppMode::MULTIPLAYER_SERVER:
 		{
+			g_server = new AuthoritativeServer();
+			g_server->Startup( appMode );
 
+			g_client = new Client();
+			g_client->Startup();
 		}
 		break;
 

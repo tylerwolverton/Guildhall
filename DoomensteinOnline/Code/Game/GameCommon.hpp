@@ -35,6 +35,16 @@ extern Client* g_client;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eAppMode
+{
+	SINGLE_PLAYER,
+	MULTIPLAYER_SERVER,
+	MULTIPLAYER_CLIENT,
+	HEADLESS_SERVER,
+};
+
+
+//-----------------------------------------------------------------------------------------------
 // Global Tile Sheets
 //-----------------------------------------------------------------------------------------------
 extern SpriteSheet* g_tileSpriteSheet;
