@@ -97,6 +97,9 @@
     <ClCompile Include="MultiplayerGame.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="RemoteServer.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -178,6 +181,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="MultiplayerGame.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteServer.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,7 +10,7 @@ public:
 	virtual ~Server() = default;
 
 	virtual void Startup( eAppMode appMode ) = 0;
-	virtual void Shutdown() = 0;
+	virtual void Shutdown();
 
 	virtual void Update() = 0;
 };

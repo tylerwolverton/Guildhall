@@ -31,7 +31,7 @@ extern RenderContext* g_renderer;
 extern NetworkingSystem* g_networkingSystem;
 extern Game* g_game;
 extern Server* g_server;
-extern Client* g_client;
+extern Client* g_playerClient;
 
 
 //-----------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::Startup()
 {
-
+	// Probably do something to hook up to RemoteServer if in MULTIPLAYER_CLIENT mode
 }
 
 

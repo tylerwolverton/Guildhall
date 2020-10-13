@@ -1,7 +1,4 @@
 #pragma once
-//-----------------------------------------------------------------------------------------------
-class PlayerClient;
-class RemoteClient;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -14,9 +11,5 @@ public:
 	virtual void Startup();
 	virtual void Shutdown();
 
-	void Render() const;
-
-private:
-	PlayerClient* m_playerClient = nullptr;
-	RemoteClient* m_remoteClient = nullptr;
+	virtual void Render() const;
 };

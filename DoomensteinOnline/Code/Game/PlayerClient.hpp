@@ -1,5 +1,9 @@
 #pragma once
-class PlayerClient
+#include "Game/Client.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+class PlayerClient : public Client
 {
 public:
 	PlayerClient() = default;
@@ -8,8 +12,5 @@ public:
 	virtual void Startup();
 	virtual void Shutdown();
 
-	void Render() const;
-
-private:
-
+	virtual void Render() const override;
 };

@@ -1,30 +1,35 @@
-#include "Game/AuthoritativeServer.hpp"
+#include "Game/RemoteServer.hpp"
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::Startup( eAppMode appMode )
+void RemoteServer::Startup( eAppMode appMode )
 {
 	switch ( appMode )
 	{
 		case eAppMode::SINGLE_PLAYER:
 		{
-			g_game = new SinglePlayerGame();
+			ERROR_AND_DIE( "Cannot start a Remote server in a single player game" );
 		}
 		break;
 
 		case eAppMode::MULTIPLAYER_SERVER:
+		{
+			ERROR_AND_DIE( "Cannot start a Remote server as the main server in multiplayer mode" );
+		}
+		break;
+
 		case eAppMode::HEADLESS_SERVER:
 		{
-			g_game = new MultiplayerGame();
+			ERROR_AND_DIE( "Cannot start a Remote server in headless mode" );
 		}
 		break;
 
 		case eAppMode::MULTIPLAYER_CLIENT:
 		{
-			ERROR_AND_DIE( "Cannot start an Authoritative server as a MultiplayerClient" );
+			g_game = new MultiplayerGame();
 		}
 		break;
 	}
@@ -34,14 +39,14 @@ void AuthoritativeServer::Startup( eAppMode appMode )
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::Shutdown()
+void RemoteServer::Shutdown()
 {
 	Server::Shutdown();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::Update()
+void RemoteServer::Update()
 {
-	g_game->Update();
+	// Copy state of AuthoritativeServer to game
 }

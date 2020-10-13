@@ -15,7 +15,7 @@ InputSystem*		g_inputSystem = nullptr;		// Owned by the App
 AudioSystem*		g_audioSystem = nullptr;		// Owned by the App
 Game*				g_game = nullptr;				// Owned by the App
 Server*				g_server = nullptr;				// Owned by the App
-Client*				g_client = nullptr;				// Owned by the App
+Client*				g_playerClient = nullptr;		// Owned by the App
 
 
 //-----------------------------------------------------------------------------------------------

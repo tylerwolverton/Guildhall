@@ -21,7 +21,8 @@
 #include "Engine/Time/Clock.hpp"
 #include "Game/Game.hpp"
 #include "Game/AuthoritativeServer.hpp"
-#include "Game/Client.hpp"
+#include "Game/RemoteServer.hpp"
+#include "Game/PlayerClient.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -87,34 +88,30 @@ void App::Startup( eAppMode appMode )
 	switch ( appMode )
 	{
 		case eAppMode::SINGLE_PLAYER:
-		{
-			g_server = new AuthoritativeServer();
-			g_server->Startup( appMode );
-
-			g_client = new Client();
-			g_client->Startup();
-		}
-		break;
-
 		case eAppMode::MULTIPLAYER_SERVER:
 		{
 			g_server = new AuthoritativeServer();
 			g_server->Startup( appMode );
 
-			g_client = new Client();
-			g_client->Startup();
+			g_playerClient = new PlayerClient();
+			g_playerClient->Startup();
 		}
 		break;
-
+		
 		case eAppMode::MULTIPLAYER_CLIENT:
 		{
+			g_server = new RemoteServer();
+			g_server->Startup( appMode );
 
+			g_playerClient = new PlayerClient();
+			g_playerClient->Startup();
 		}
 		break;
 
 		case eAppMode::HEADLESS_SERVER:
 		{
-
+			g_server = new AuthoritativeServer();
+			g_server->Startup( appMode );
 		}
 		break;
 	}
@@ -129,30 +126,15 @@ void App::Shutdown()
 	switch ( m_appMode )
 	{
 		case eAppMode::SINGLE_PLAYER:
-		{
-			g_client->Shutdown();
-			g_server->Shutdown();
-		}
-		break;
-
 		case eAppMode::MULTIPLAYER_SERVER:
-		{
-
-		}
-		break;
-
 		case eAppMode::MULTIPLAYER_CLIENT:
 		{
-
-		}
-		break;
-
-		case eAppMode::HEADLESS_SERVER:
-		{
-
+			g_playerClient->Shutdown();
 		}
 		break;
 	}
+
+	g_server->Shutdown();
 
 	if ( m_appMode != eAppMode::HEADLESS_SERVER )
 	{
@@ -168,7 +150,7 @@ void App::Shutdown()
 	g_jobSystem->Shutdown();
 	g_eventSystem->Shutdown();
 
-	PTR_SAFE_DELETE( g_client );
+	PTR_SAFE_DELETE( g_playerClient );
 	PTR_SAFE_DELETE( g_server );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_renderer );
@@ -308,7 +290,7 @@ void App::Render() const
 {
 	if ( m_appMode != eAppMode::HEADLESS_SERVER )
 	{
-		g_client->Render();
+		g_playerClient->Render();
 		g_devConsole->Render();
 	}
 }

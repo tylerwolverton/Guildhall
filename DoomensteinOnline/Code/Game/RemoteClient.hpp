@@ -1,5 +1,9 @@
 #pragma once
-class RemoteClient
+#include "Game/Client.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+class RemoteClient : public Client
 {
 public:
 	RemoteClient() = default;
@@ -7,8 +11,4 @@ public:
 
 	virtual void Startup();
 	virtual void Shutdown();
-
-
-private:
-
 };
