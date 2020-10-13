@@ -633,5 +633,6 @@
     <ClInclude Include="Networking\NetworkingJobs.hpp" />
     <ClInclude Include="Core\SynchronizedBlockingQueue.hpp" />
     <ClInclude Include="Core\SynchronizedNonBlockingQueue.hpp" />
+    <ClInclude Include="Input\InputCommon.hpp" />
   </ItemGroup>
 </Project>

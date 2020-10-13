@@ -13,4 +13,6 @@ public:
 	virtual void Shutdown() override;
 
 	virtual void Update() override;
+
+	virtual void ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos ) override;
 };

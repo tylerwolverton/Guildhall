@@ -50,3 +50,12 @@ void RemoteServer::Update()
 {
 	// Copy state of AuthoritativeServer to game
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void RemoteServer::ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
+{
+	UNUSED( keyStates );
+	UNUSED( mouseDeltaPos );
+}
+

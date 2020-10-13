@@ -11,5 +11,6 @@ public:
 	virtual void Startup();
 	virtual void Shutdown();
 
+	virtual void BeginFrame();
 	virtual void Render() const;
 };

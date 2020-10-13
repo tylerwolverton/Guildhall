@@ -15,6 +15,7 @@
 struct AABB2;
 class Clock;
 class Entity;
+class KeyButtonState;
 class RandomNumberGenerator;
 class Camera;
 class GPUMesh;
@@ -34,7 +35,7 @@ public:
 	~Game();
 
 	virtual void	Startup();
-	virtual void	Update();
+	virtual void	Update( const KeyButtonState* keyStates = nullptr, const Vec2& mouseDeltaPos = Vec2::ZERO );
 	virtual void	Render() const;
 	virtual void	DebugRender() const;
 	virtual void	Shutdown();
@@ -71,13 +72,12 @@ private:
 	void ChangeMap( const std::string& mapName );
 
 	void InitializeCameras();
-	void InitializeMeshes();
 
 	void BuildUIHud();
 
-	void UpdateFromKeyboard();
-	void UpdateMovementFromKeyboard();
-	void UpdateCameraTransformToMatchPlayer();
+	void UpdateFromKeyboard( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos );
+	void UpdateMovementFromKeyboard( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos );
+	void UpdateCameraTransformToMatchPlayer( const Vec2& mouseDeltaPos );
 	void UpdateFramesPerSecond();
 
 	void RenderDebugUI() const;
@@ -103,7 +103,6 @@ private:
 	bool m_isDebugRendering = false;
 
 	// UI
-	//UIPanel* m_rootUIPanel = nullptr;
 	UISystem* m_uiSystem = nullptr;
 	UIPanel* m_hudUIPanel = nullptr;
 	UIPanel* m_worldUIPanel = nullptr;
@@ -120,17 +119,7 @@ private:
 
 	World* m_world = nullptr;
 	std::string m_curMapStr;
-
-	// Meshes
-	GPUMesh* m_cubeMesh = nullptr;
-	GPUMesh* m_quadMesh = nullptr;
-	GPUMesh* m_sphereMesh = nullptr;
-
-	std::vector<Transform> m_cubeMeshTransforms;
-
-	// Materials
-	Material* m_testMaterial = nullptr;
-		
+			
 	// Sounds
 	SoundID m_testSound;
 

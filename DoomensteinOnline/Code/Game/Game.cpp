@@ -27,7 +27,8 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
 #include "Engine/Core/EventSystem.hpp"
-#include "Engine/Input/InputSystem.hpp"
+#include "Engine/Input/InputCommon.hpp"
+#include "Engine/Input/KeyButtonState.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
@@ -72,9 +73,7 @@ void Game::Startup()
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 	g_eventSystem->RegisterMethodEvent( "warp", "Usage: warp <map=string> <pos=float,float> <yaw=float>", eUsageLocation::DEV_CONSOLE, this, &Game::WarpMapCommand );
-
-	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
-		
+			
 	m_rng = new RandomNumberGenerator();
 
 	m_gameClock = new Clock();
@@ -90,7 +89,6 @@ void Game::Startup()
 	EnableDebugRendering();
 
 	InitializeCameras();
-	InitializeMeshes();
 	
 	LoadAssets();
 
@@ -131,45 +129,6 @@ void Game::InitializeCameras()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::InitializeMeshes()
-{
-	// Cube
-	std::vector<Vertex_PCUTBN> vertices;
-	std::vector<uint> indices;
-	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
-
-	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	Transform cubeTransform;
-	cubeTransform.SetPosition( Vec3( 2.5f, 0.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 2.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 0.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-	
-	// Quad
-	vertices.clear();
-	indices.clear();
-	AppendVertsAndIndicesForQuad( vertices, indices, AABB2( -1.f, -1.f, 1.f, 1.f ), Rgba8::WHITE );
-
-	m_quadMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	// Spheres
-	vertices.clear();
-	indices.clear();
-	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 64, Rgba8::WHITE );
-
-	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	// Initialize materials
-	m_testMaterial = new Material( g_renderer, "Data/Materials/Test.material" );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Game::BuildUIHud()
 {
 	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
@@ -199,17 +158,11 @@ void Game::BuildUIHud()
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
-	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
-
 	TileDefinition::s_definitions.clear();
 	
 	m_uiSystem->Shutdown();
 
 	// Clean up member variables
-	PTR_SAFE_DELETE( m_testMaterial );
-	PTR_SAFE_DELETE( m_quadMesh );
-	PTR_SAFE_DELETE( m_cubeMesh );
-	PTR_SAFE_DELETE( m_sphereMesh );
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
@@ -228,39 +181,40 @@ void Game::RestartGame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::Update()
+void Game::Update( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
 {
 	UpdateFramesPerSecond();
 
-	if ( !g_devConsole->IsOpen() ) 
+	if ( !g_devConsole->IsOpen() 
+		 && keyStates != nullptr ) 
 	{
-		UpdateFromKeyboard();
+		UpdateFromKeyboard( keyStates, mouseDeltaPos );
 	}
 
 	m_uiSystem->Update();
 
 	m_world->Update();
 
-	UpdateCameraTransformToMatchPlayer();
+	UpdateCameraTransformToMatchPlayer( mouseDeltaPos );
 
 	//g_jobSystem->ClaimAndDeleteAllCompletedJobs();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateFromKeyboard()
+void Game::UpdateFromKeyboard( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
 {	
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+	if ( keyStates[KEY_F1].WasJustPressed() )
 	{
 		m_isDebugRendering = !m_isDebugRendering;
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
+	if ( keyStates[KEY_F2].WasJustPressed() )
 	{
 		g_raytraceFollowCamera = !g_raytraceFollowCamera;
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
+	if ( keyStates[KEY_F3].WasJustPressed() )
 	{
 		if ( m_player == nullptr )
 		{
@@ -273,59 +227,59 @@ void Game::UpdateFromKeyboard()
 		}
 	}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
+	if ( keyStates[KEY_F4].WasJustPressed() )
 	{
 		g_renderer->ReloadShaders();
 	}
 
-	UpdateMovementFromKeyboard();
+	UpdateMovementFromKeyboard( keyStates, mouseDeltaPos );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMovementFromKeyboard()
+void Game::UpdateMovementFromKeyboard( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
 {
 	Vec3 movementTranslation;
-	if ( g_inputSystem->IsKeyPressed( 'D' ) )
+	if ( keyStates['D'].IsPressed() )
 	{
 		movementTranslation.y += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'A' ) )
+	if ( keyStates['A'].IsPressed() )
 	{
 		movementTranslation.y -= 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'W' ) )
+	if ( keyStates['W'].IsPressed() )
 	{
 		movementTranslation.x += 1.f;
 	}
 
-	if ( g_inputSystem->IsKeyPressed( 'S' ) )
+	if ( keyStates['S'].IsPressed() )
 	{
 		movementTranslation.x -= 1.f;
 	}
 
 	if ( m_player == nullptr )
 	{
-		if ( g_inputSystem->IsKeyPressed( 'E' ) )
+		if ( keyStates['E'].IsPressed() )
 		{
 			movementTranslation.z += 1.f;
 		}
 
-		if ( g_inputSystem->IsKeyPressed( 'Q' ) )
+		if ( keyStates['Q'].IsPressed() )
 		{
 			movementTranslation.z -= 1.f;
 		}
 
-		if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
+		if ( keyStates[KEY_SHIFT].IsPressed() )
 		{
 			movementTranslation *= 10.f;
 		}
 	}
 
 	// Rotation
-	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
+	Vec2 mousePosition = mouseDeltaPos;
 	float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
 	float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
 	yawDegrees *= .009f;
@@ -363,13 +317,12 @@ void Game::UpdateMovementFromKeyboard()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateCameraTransformToMatchPlayer()
+void Game::UpdateCameraTransformToMatchPlayer( const Vec2& mouseDeltaPos )
 {
 	if ( m_player != nullptr )
 	{
 		// Rotation
-		Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
-		float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
+		float pitchDegrees = mouseDeltaPos.y * s_mouseSensitivityMultiplier;
 		pitchDegrees *= .009f;
 
 		m_worldCamera->SetPosition( Vec3( m_player->GetPosition(), m_player->GetEyeHeight() ) );

@@ -43,5 +43,14 @@ void AuthoritativeServer::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::Update()
 {
-	g_game->Update();
+	g_game->Update( m_lastKeyStates, m_lastMouseDeltaPos );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
+{
+	m_lastKeyStates = keyStates;
+	m_lastMouseDeltaPos = mouseDeltaPos;
+}
+

@@ -247,6 +247,9 @@ void App::BeginFrame()
 		DebugRenderBeginFrame();
 		g_devConsole->BeginFrame();
 	}
+
+	g_server->BeginFrame();
+	g_playerClient->BeginFrame();
 }
 
 
@@ -256,10 +259,11 @@ void App::Update()
 	if ( m_appMode != eAppMode::HEADLESS_SERVER )
 	{
 		g_devConsole->Update();
-		g_server->Update();
 
 		UpdateFromKeyboard();
 	}
+
+	g_server->Update();
 }
 
 
@@ -290,9 +294,14 @@ void App::Render() const
 {
 	if ( m_appMode != eAppMode::HEADLESS_SERVER )
 	{
-		g_playerClient->Render();
 		g_devConsole->Render();
 	}
+
+	if ( g_playerClient != nullptr )
+	{
+		g_playerClient->Render();
+	}
+
 }
 
 
