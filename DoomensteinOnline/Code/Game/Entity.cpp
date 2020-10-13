@@ -14,6 +14,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/PlayerClient.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
 
 
@@ -45,7 +46,8 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	if ( m_isPossessed )
+	if ( m_isPossessed
+		 || g_playerClient == nullptr )
 	{
 		return;
 	}
@@ -55,12 +57,12 @@ void Entity::Render() const
 
 	switch ( m_entityDef.m_billboardStyle )
 	{
-		case eBillboardStyle::CAMERA_FACING_XY:		BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );	 break;
-		case eBillboardStyle::CAMERA_OPPOSING_XY:	BillboardSpriteCameraOpposingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );	 break;
-		case eBillboardStyle::CAMERA_FACING_XYZ:	BillboardSpriteCameraFacingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );	 break;
-		case eBillboardStyle::CAMERA_OPPOSING_XYZ:	BillboardSpriteCameraOpposingXYZ( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners ); break;
+		case eBillboardStyle::CAMERA_FACING_XY:		BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_playerClient->GetWorldCamera(), corners );	 break;
+		case eBillboardStyle::CAMERA_OPPOSING_XY:	BillboardSpriteCameraOpposingXY( m_position, m_entityDef.GetVisualSize(), *g_playerClient->GetWorldCamera(), corners );	 break;
+		case eBillboardStyle::CAMERA_FACING_XYZ:	BillboardSpriteCameraFacingXYZ( m_position, m_entityDef.GetVisualSize(), *g_playerClient->GetWorldCamera(), corners );	 break;
+		case eBillboardStyle::CAMERA_OPPOSING_XYZ:	BillboardSpriteCameraOpposingXYZ( m_position, m_entityDef.GetVisualSize(), *g_playerClient->GetWorldCamera(), corners ); break;
 		
-		default: BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners ); break;
+		default: BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_playerClient->GetWorldCamera(), corners ); break;
 	}
 	
 	Vec2 mins, maxs;
@@ -68,7 +70,7 @@ void Entity::Render() const
 	SpriteAnimDefinition* walkAnimDef = nullptr;
 	if ( walkAnimSetDef != nullptr )
 	{
-		walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_game->GetWorldCamera() );
+		walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_playerClient->GetWorldCamera() );
 	}
 
 	if ( walkAnimDef == nullptr )
@@ -126,7 +128,7 @@ void Entity::TakeDamage( int damage )
 		Die();
 	}
 	
-	g_game->AddScreenShakeIntensity(.05f);
+	g_playerClient->AddScreenShakeIntensity(.05f);
 }
 
 

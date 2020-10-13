@@ -299,7 +299,7 @@ void App::Render() const
 
 	if ( g_playerClient != nullptr )
 	{
-		g_playerClient->Render();
+		g_playerClient->Render( g_game->GetWorld() );
 	}
 
 }

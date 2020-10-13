@@ -25,6 +25,14 @@ void Client::BeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-void Client::Render() const
+void Client::Update()
 {
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Client::Render( const World* gameWorld ) const
+{
+	UNUSED( gameWorld );
 }

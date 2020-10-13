@@ -46,8 +46,8 @@
 
 
 //-----------------------------------------------------------------------------------------------
-static float s_mouseSensitivityMultiplier = 1.f;
-static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
+//static float s_mouseSensitivityMultiplier = 1.f;
+//static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 
 
 //-----------------------------------------------------------------------------------------------
@@ -70,31 +70,31 @@ void Game::Startup()
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateXRotationDegrees( 90.f ) );
 
-	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
-	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
+	/*g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
+	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );*/
 	g_eventSystem->RegisterMethodEvent( "warp", "Usage: warp <map=string> <pos=float,float> <yaw=float>", eUsageLocation::DEV_CONSOLE, this, &Game::WarpMapCommand );
 			
 	m_rng = new RandomNumberGenerator();
 
 	m_gameClock = new Clock();
-	g_renderer->Setup( m_gameClock );
+	//g_renderer->Setup( m_gameClock );
 
 	m_world = new World( m_gameClock );
 
-	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
+	/*for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
 	{
 		m_fpsHistory[frameNum] = 60.f;
-	}
+	}*/
 
-	EnableDebugRendering();
+	//EnableDebugRendering();
 
-	InitializeCameras();
+	//InitializeCameras();
 	
 	LoadAssets();
 
-	m_uiSystem = new UISystem();
+	/*m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
-	BuildUIHud();
+	BuildUIHud();*/
 
 	m_curMapStr = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapStr );
 	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapStr.c_str() ) );
@@ -103,72 +103,72 @@ void Game::Startup()
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::InitializeCameras()
-{
-	m_worldCamera = new Camera();
-	Texture* depthTexture = g_renderer->GetOrCreateDepthStencil( g_renderer->GetDefaultBackBufferSize() );
-	m_worldCamera->SetDepthStencilTarget( depthTexture );
-
-	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
-	m_worldCamera->SetProjectionPerspective( 60.f, -.05f, -100.f );
-	m_worldCamera->Translate( Vec3( 0.f, 0.f, .5f ) );
-
-	Rgba8 backgroundColor( 10, 10, 10, 255 );
-	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
-
-	Vec2 windowDimensions = g_window->GetDimensions();
-
-	m_uiCamera = new Camera();
-	m_uiCamera->SetOutputSize( windowDimensions );
-	m_uiCamera->SetType( eCameraType::UI );
-	m_uiCamera->SetPosition( Vec3( windowDimensions * .5f, 0.f ) );
-	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::BuildUIHud()
-{
-	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
-	
-	UIAlignedPositionData panelPosData;
-	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .13f );
-	panelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
-	m_hudUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData, hudBaseTexture );
-
-	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .87f );
-	panelPosData.alignmentWithinParentElement = ALIGN_TOP_CENTER;
-	m_worldUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData );
-	
-	// Add gun sprite
-	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheetByName( "ViewModels" );
-	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
-	Vec2 uvsAtMins, uvsAtMaxs;
-	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
-
-	UIAlignedPositionData gunPanelPosData;
-	gunPanelPosData.fractionOfParentDimensions = Vec2( .5f, 1.f );
-	gunPanelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
-	m_worldUIPanel->AddChildPanel( gunPanelPosData,	texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
-}
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::InitializeCameras()
+//{
+//	m_worldCamera = new Camera();
+//	Texture* depthTexture = g_renderer->GetOrCreateDepthStencil( g_renderer->GetDefaultBackBufferSize() );
+//	m_worldCamera->SetDepthStencilTarget( depthTexture );
+//
+//	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
+//	m_worldCamera->SetProjectionPerspective( 60.f, -.05f, -100.f );
+//	m_worldCamera->Translate( Vec3( 0.f, 0.f, .5f ) );
+//
+//	Rgba8 backgroundColor( 10, 10, 10, 255 );
+//	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT | CLEAR_DEPTH_BIT, backgroundColor );
+//
+//	Vec2 windowDimensions = g_window->GetDimensions();
+//
+//	m_uiCamera = new Camera();
+//	m_uiCamera->SetOutputSize( windowDimensions );
+//	m_uiCamera->SetType( eCameraType::UI );
+//	m_uiCamera->SetPosition( Vec3( windowDimensions * .5f, 0.f ) );
+//	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::BuildUIHud()
+//{
+//	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
+//	
+//	UIAlignedPositionData panelPosData;
+//	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .13f );
+//	panelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
+//	m_hudUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData, hudBaseTexture );
+//
+//	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .87f );
+//	panelPosData.alignmentWithinParentElement = ALIGN_TOP_CENTER;
+//	m_worldUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData );
+//	
+//	// Add gun sprite
+//	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheetByName( "ViewModels" );
+//	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
+//	Vec2 uvsAtMins, uvsAtMaxs;
+//	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
+//
+//	UIAlignedPositionData gunPanelPosData;
+//	gunPanelPosData.fractionOfParentDimensions = Vec2( .5f, 1.f );
+//	gunPanelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
+//	m_worldUIPanel->AddChildPanel( gunPanelPosData,	texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
+//}
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
 	TileDefinition::s_definitions.clear();
-	
-	m_uiSystem->Shutdown();
+	/*
+	m_uiSystem->Shutdown();*/
 
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
-	PTR_SAFE_DELETE( m_debugInfoTextBox );
+	/*PTR_SAFE_DELETE( m_debugInfoTextBox );
 	PTR_SAFE_DELETE( m_worldCamera );
-	PTR_SAFE_DELETE( m_uiCamera );
+	PTR_SAFE_DELETE( m_uiCamera );*/
 }
 
 
@@ -183,28 +183,28 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::Update( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
 {
-	UpdateFramesPerSecond();
+	//UpdateFramesPerSecond();
 
 	if ( !g_devConsole->IsOpen() 
 		 && keyStates != nullptr ) 
 	{
-		UpdateFromKeyboard( keyStates, mouseDeltaPos );
+		UpdatePlayerFromInput( keyStates, mouseDeltaPos );
 	}
 
-	m_uiSystem->Update();
+	//m_uiSystem->Update();
 
 	m_world->Update();
 
-	UpdateCameraTransformToMatchPlayer( mouseDeltaPos );
+	//UpdateCameraTransformToMatchPlayer( mouseDeltaPos );
 
 	//g_jobSystem->ClaimAndDeleteAllCompletedJobs();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateFromKeyboard( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
+void Game::UpdatePlayerFromInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
 {	
-	if ( keyStates[KEY_F1].WasJustPressed() )
+	/*if ( keyStates[KEY_F1].WasJustPressed() )
 	{
 		m_isDebugRendering = !m_isDebugRendering;
 	}
@@ -212,7 +212,7 @@ void Game::UpdateFromKeyboard( const KeyButtonState* keyStates, const Vec2& mous
 	if ( keyStates[KEY_F2].WasJustPressed() )
 	{
 		g_raytraceFollowCamera = !g_raytraceFollowCamera;
-	}
+	}*/
 
 	if ( keyStates[KEY_F3].WasJustPressed() )
 	{
@@ -232,12 +232,12 @@ void Game::UpdateFromKeyboard( const KeyButtonState* keyStates, const Vec2& mous
 		g_renderer->ReloadShaders();
 	}
 
-	UpdateMovementFromKeyboard( keyStates, mouseDeltaPos );
+	UpdatePlayerMovementFromInput( keyStates, mouseDeltaPos );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateMovementFromKeyboard( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
+void Game::UpdatePlayerMovementFromInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
 {
 	Vec3 movementTranslation;
 	if ( keyStates['D'].IsPressed() )
@@ -280,8 +280,8 @@ void Game::UpdateMovementFromKeyboard( const KeyButtonState* keyStates, const Ve
 
 	// Rotation
 	Vec2 mousePosition = mouseDeltaPos;
-	float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
-	float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
+	float yawDegrees = -mousePosition.x;// *s_mouseSensitivityMultiplier;
+	float pitchDegrees = mousePosition.y;// *s_mouseSensitivityMultiplier;
 	yawDegrees *= .009f;
 	pitchDegrees *= .009f;
 
@@ -305,236 +305,236 @@ void Game::UpdateMovementFromKeyboard( const KeyButtonState* keyStates, const Ve
 		m_player->Translate( translationXY * deltaSeconds );
 	}
 	// No entity possessed, move the camera directly
-	else
-	{
-		Transform transform = m_worldCamera->GetTransform();
-		m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
+	//else
+	//{
+	//	Transform transform = m_worldCamera->GetTransform();
+	//	m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
 
-		// Translation
-		TranslateCameraFPS( movementTranslation * deltaSeconds );
-	}
+	//	// Translation
+	//	TranslateCameraFPS( movementTranslation * deltaSeconds );
+	//}
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateCameraTransformToMatchPlayer( const Vec2& mouseDeltaPos )
-{
-	if ( m_player != nullptr )
-	{
-		// Rotation
-		float pitchDegrees = mouseDeltaPos.y * s_mouseSensitivityMultiplier;
-		pitchDegrees *= .009f;
-
-		m_worldCamera->SetPosition( Vec3( m_player->GetPosition(), m_player->GetEyeHeight() ) );
-		m_worldCamera->SetYawOrientationDegrees( m_player->GetOrientationDegrees() );
-		m_worldCamera->RotateYawPitchRoll( 0.f, pitchDegrees, 0.f );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateFramesPerSecond()
-{
-	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
-	{
-		m_fpsHistory[frameNum] = m_fpsHistory[frameNum + 1];
-	}
-
-	m_fpsHistory[FRAME_HISTORY_COUNT - 1] = 1.f / (float)m_gameClock->GetLastDeltaSeconds();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateCameras()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
-{
-	Vec2 forwardVec = Vec2::MakeFromPolarDegrees( m_worldCamera->GetTransform().GetYawDegrees() );
-	Vec2 rightVec = forwardVec.GetRotatedMinus90Degrees();
-
-	Vec2 translationXY( relativeTranslation.x * forwardVec  
-						+ relativeTranslation.y * rightVec );
-	
-	Vec3 absoluteTranslation( translationXY, relativeTranslation.z );
-
-	m_worldCamera->Translate( absoluteTranslation );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-float Game::GetAverageFPS() const
-{
-	/*if constexpr ( FRAME_HISTORY_COUNT < 1 )
-	{
-		ERROR_AND_DIE( "FRAME_HISTORY_COUNT must be configured to be larger than 0" );
-	}*/
-
-	float cummulativeFPS = 0.f;
-	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT; ++frameNum )
-	{
-		cummulativeFPS += m_fpsHistory[frameNum];
-	}
-
-	return cummulativeFPS / (float)FRAME_HISTORY_COUNT;
-}
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::UpdateCameraTransformToMatchPlayer( const Vec2& mouseDeltaPos )
+//{
+//	if ( m_player != nullptr )
+//	{
+//		// Rotation
+//		float pitchDegrees = mouseDeltaPos.y * s_mouseSensitivityMultiplier;
+//		pitchDegrees *= .009f;
+//
+//		m_worldCamera->SetPosition( Vec3( m_player->GetPosition(), m_player->GetEyeHeight() ) );
+//		m_worldCamera->SetYawOrientationDegrees( m_player->GetOrientationDegrees() );
+//		m_worldCamera->RotateYawPitchRoll( 0.f, pitchDegrees, 0.f );
+//	}
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::UpdateFramesPerSecond()
+//{
+//	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
+//	{
+//		m_fpsHistory[frameNum] = m_fpsHistory[frameNum + 1];
+//	}
+//
+//	m_fpsHistory[FRAME_HISTORY_COUNT - 1] = 1.f / (float)m_gameClock->GetLastDeltaSeconds();
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::UpdateCameras()
+//{
+//
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
+//{
+//	Vec2 forwardVec = Vec2::MakeFromPolarDegrees( m_worldCamera->GetTransform().GetYawDegrees() );
+//	Vec2 rightVec = forwardVec.GetRotatedMinus90Degrees();
+//
+//	Vec2 translationXY( relativeTranslation.x * forwardVec  
+//						+ relativeTranslation.y * rightVec );
+//	
+//	Vec3 absoluteTranslation( translationXY, relativeTranslation.z );
+//
+//	m_worldCamera->Translate( absoluteTranslation );
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//float Game::GetAverageFPS() const
+//{
+//	/*if constexpr ( FRAME_HISTORY_COUNT < 1 )
+//	{
+//		ERROR_AND_DIE( "FRAME_HISTORY_COUNT must be configured to be larger than 0" );
+//	}*/
+//
+//	float cummulativeFPS = 0.f;
+//	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT; ++frameNum )
+//	{
+//		cummulativeFPS += m_fpsHistory[frameNum];
+//	}
+//
+//	return cummulativeFPS / (float)FRAME_HISTORY_COUNT;
+//}
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::PossesNearestEntity()
 {
-	Transform cameraTransform = m_worldCamera->GetTransform();
+	//Transform cameraTransform = m_worldCamera->GetTransform();
 
-	Entity* entity = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
-	if ( entity == nullptr )
-	{
-		return;
-	}
+	//Entity* entity = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
+	//if ( entity == nullptr )
+	//{
+	//	return;
+	//}
 
-	if ( GetDistance3D( cameraTransform.GetPosition(), Vec3( entity->GetPosition(), entity->GetHeight() * .5f ) ) < 2.f )
-	{
-		m_player = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
-		m_worldCamera->SetPitchRollYawOrientationDegrees( 0.f, 0.f, m_player->GetOrientationDegrees() );
+	//if ( GetDistance3D( cameraTransform.GetPosition(), Vec3( entity->GetPosition(), entity->GetHeight() * .5f ) ) < 2.f )
+	//{
+	//	m_player = m_world->GetClosestEntityInSector( cameraTransform.GetPosition().XY(), cameraTransform.GetYawDegrees(), 90.f, 2.f );
+	//	m_worldCamera->SetPitchRollYawOrientationDegrees( 0.f, 0.f, m_player->GetOrientationDegrees() );
 
-		m_player->Possess();
-	}
+	//	m_player->Possess();
+	//}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	RenderFPSCounter();
+	//RenderFPSCounter();
 
-	Texture* backbuffer = g_renderer->GetBackBuffer();
-	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	//Texture* backbuffer = g_renderer->GetBackBuffer();
+	//Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 
-	m_worldCamera->SetColorTarget( 0, colorTarget );
+	//m_worldCamera->SetColorTarget( 0, colorTarget );
 
-	g_renderer->BeginCamera( *m_worldCamera );
+	//g_renderer->BeginCamera( *m_worldCamera );
 
-	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
+	//g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
-	g_renderer->DisableAllLights();
-	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
-	g_renderer->SetGamma( m_gamma );
+	//g_renderer->DisableAllLights();
+	//g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
+	//g_renderer->SetGamma( m_gamma );
 
-	m_world->Render();
-	
-	g_renderer->EndCamera( *m_worldCamera );
+	//m_world->Render();
+	//
+	//g_renderer->EndCamera( *m_worldCamera );
 
-	// Copy rendered data to backbuffer and set on camera
-	g_renderer->CopyTexture( backbuffer, colorTarget );
-	m_worldCamera->SetColorTarget( backbuffer );
+	//// Copy rendered data to backbuffer and set on camera
+	//g_renderer->CopyTexture( backbuffer, colorTarget );
+	//m_worldCamera->SetColorTarget( backbuffer );
 
-	g_renderer->ReleaseRenderTarget( colorTarget );
+	//g_renderer->ReleaseRenderTarget( colorTarget );
 
-	// Debug rendering
-	if ( m_isDebugRendering )
-	{
-		DebugRender();
-	}
+	//// Debug rendering
+	//if ( m_isDebugRendering )
+	//{
+	//	DebugRender();
+	//}
 
-	DebugRenderWorldToCamera( m_worldCamera );
+	//DebugRenderWorldToCamera( m_worldCamera );
 
-	m_uiCamera->SetColorTarget( 0, backbuffer );
-	g_renderer->BeginCamera( *m_uiCamera );
+	//m_uiCamera->SetColorTarget( 0, backbuffer );
+	//g_renderer->BeginCamera( *m_uiCamera );
 
-	m_uiSystem->Render();
-	if ( m_isDebugRendering )
-	{
-		m_uiSystem->DebugRender();
-	}
+	//m_uiSystem->Render();
+	//if ( m_isDebugRendering )
+	//{
+	//	m_uiSystem->DebugRender();
+	//}
 
-	g_renderer->EndCamera( *m_uiCamera );
+	//g_renderer->EndCamera( *m_uiCamera );
 
-	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
+	//DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::DebugRender() const
-{
-	RenderDebugUI();
-
-	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
-
-	Mat44 compassMatrix = Mat44::CreateTranslation3D( m_worldCamera->GetTransform().GetPosition() + .1f * m_worldCamera->GetTransform().GetForwardVector() );
-	DebugAddWorldBasis( compassMatrix, .01f, 0.f, Rgba8::WHITE, Rgba8::WHITE, DEBUG_RENDER_ALWAYS );
-
-	m_world->DebugRender();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::RenderDebugUI() const
-{
-	// Camera position and orientation
-	Transform cameraTransform = m_worldCamera->GetTransform();
-
-	std::string cameraOrientationStr = Stringf( "Yaw: %.2f, Pitch: %.2f, Roll: %.2f",
-												cameraTransform.GetYawDegrees(),
-												cameraTransform.GetPitchDegrees(),
-												cameraTransform.GetRollDegrees() );
-
-	std::string cameraPositionStr = Stringf( "xyz=( %.2f, %.2f, %.2f )",
-											 cameraTransform.GetPosition().x,
-											 cameraTransform.GetPosition().y,
-											 cameraTransform.GetPosition().z );
-
-	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::YELLOW, 0.f,
-						 "Camera - %s     %s",
-						 cameraOrientationStr.c_str(),
-						 cameraPositionStr.c_str() );
-
-	// Basis text
-	Mat44 cameraOrientationMatrix = cameraTransform.GetOrientationAsMatrix();
-	DebugAddScreenTextf( Vec4( 0.f, .94f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::RED, 0.f,
-						 "iBasis ( forward +x world east when identity  )  ( %.2f, %.2f, %.2f )",
-						 cameraOrientationMatrix.GetIBasis3D().x,
-						 cameraOrientationMatrix.GetIBasis3D().y,
-						 cameraOrientationMatrix.GetIBasis3D().z );
-
-	DebugAddScreenTextf( Vec4( 0.f, .91f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::GREEN, 0.f,
-						 "jBasis ( left    +y world north when identity )  ( %.2f, %.2f, %.2f )",
-						 cameraOrientationMatrix.GetJBasis3D().x,
-						 cameraOrientationMatrix.GetJBasis3D().y,
-						 cameraOrientationMatrix.GetJBasis3D().z );
-
-	DebugAddScreenTextf( Vec4( 0.f, .88f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::BLUE, 0.f,
-						 "kBasis ( up      +z world up when identity    )  ( %.2f, %.2f, %.2f )",
-						 cameraOrientationMatrix.GetKBasis3D().x,
-						 cameraOrientationMatrix.GetKBasis3D().y,
-						 cameraOrientationMatrix.GetKBasis3D().z );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::RenderFPSCounter() const
-{
-	float fps = GetAverageFPS();
-
-	Rgba8 fpsCountercolor = Rgba8::GREEN;
-
-	if ( fps < 30.f )
-	{
-		fpsCountercolor = Rgba8::RED;
-	}
-	if ( fps < 55.f )
-	{
-		fpsCountercolor = Rgba8::YELLOW;
-	}
-
-	float frameTime = (float)m_gameClock->GetLastDeltaSeconds() * 1000.f;
-
-	DebugAddScreenTextf( Vec4( 0.75f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, fpsCountercolor, 0.f,
-						 "FPS: %.2f ( %.2f ms/frame )",
-						 fps, frameTime );
-}
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::DebugRender() const
+//{
+//	RenderDebugUI();
+//
+//	DebugAddWorldBasis( Mat44::IDENTITY, 0.f, DEBUG_RENDER_ALWAYS );
+//
+//	Mat44 compassMatrix = Mat44::CreateTranslation3D( m_worldCamera->GetTransform().GetPosition() + .1f * m_worldCamera->GetTransform().GetForwardVector() );
+//	DebugAddWorldBasis( compassMatrix, .01f, 0.f, Rgba8::WHITE, Rgba8::WHITE, DEBUG_RENDER_ALWAYS );
+//
+//	m_world->DebugRender();
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::RenderDebugUI() const
+//{
+//	// Camera position and orientation
+//	Transform cameraTransform = m_worldCamera->GetTransform();
+//
+//	std::string cameraOrientationStr = Stringf( "Yaw: %.2f, Pitch: %.2f, Roll: %.2f",
+//												cameraTransform.GetYawDegrees(),
+//												cameraTransform.GetPitchDegrees(),
+//												cameraTransform.GetRollDegrees() );
+//
+//	std::string cameraPositionStr = Stringf( "xyz=( %.2f, %.2f, %.2f )",
+//											 cameraTransform.GetPosition().x,
+//											 cameraTransform.GetPosition().y,
+//											 cameraTransform.GetPosition().z );
+//
+//	DebugAddScreenTextf( Vec4( 0.f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::YELLOW, 0.f,
+//						 "Camera - %s     %s",
+//						 cameraOrientationStr.c_str(),
+//						 cameraPositionStr.c_str() );
+//
+//	// Basis text
+//	Mat44 cameraOrientationMatrix = cameraTransform.GetOrientationAsMatrix();
+//	DebugAddScreenTextf( Vec4( 0.f, .94f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::RED, 0.f,
+//						 "iBasis ( forward +x world east when identity  )  ( %.2f, %.2f, %.2f )",
+//						 cameraOrientationMatrix.GetIBasis3D().x,
+//						 cameraOrientationMatrix.GetIBasis3D().y,
+//						 cameraOrientationMatrix.GetIBasis3D().z );
+//
+//	DebugAddScreenTextf( Vec4( 0.f, .91f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::GREEN, 0.f,
+//						 "jBasis ( left    +y world north when identity )  ( %.2f, %.2f, %.2f )",
+//						 cameraOrientationMatrix.GetJBasis3D().x,
+//						 cameraOrientationMatrix.GetJBasis3D().y,
+//						 cameraOrientationMatrix.GetJBasis3D().z );
+//
+//	DebugAddScreenTextf( Vec4( 0.f, .88f, 0.f, 0.f ), Vec2::ZERO, 15.f, Rgba8::BLUE, 0.f,
+//						 "kBasis ( up      +z world up when identity    )  ( %.2f, %.2f, %.2f )",
+//						 cameraOrientationMatrix.GetKBasis3D().x,
+//						 cameraOrientationMatrix.GetKBasis3D().y,
+//						 cameraOrientationMatrix.GetKBasis3D().z );
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::RenderFPSCounter() const
+//{
+//	float fps = GetAverageFPS();
+//
+//	Rgba8 fpsCountercolor = Rgba8::GREEN;
+//
+//	if ( fps < 30.f )
+//	{
+//		fpsCountercolor = Rgba8::RED;
+//	}
+//	if ( fps < 55.f )
+//	{
+//		fpsCountercolor = Rgba8::YELLOW;
+//	}
+//
+//	float frameTime = (float)m_gameClock->GetLastDeltaSeconds() * 1000.f;
+//
+//	DebugAddScreenTextf( Vec4( 0.75f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, fpsCountercolor, 0.f,
+//						 "FPS: %.2f ( %.2f ms/frame )",
+//						 fps, frameTime );
+//}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -818,39 +818,39 @@ void Game::ChangeMap( const std::string& mapName )
 }
 
 
-//-----------------------------------------------------------------------------------------------
-void Game::AddScreenShakeIntensity(float intensity)
-{
-	m_screenShakeIntensity += intensity;
-}
+////-----------------------------------------------------------------------------------------------
+//void Game::AddScreenShakeIntensity(float intensity)
+//{
+//	m_screenShakeIntensity += intensity;
+//}
 
 
-//-----------------------------------------------------------------------------------------------
-void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines )
-{
-	if ( (int)textLines.size() == 0 )
-	{
-		return;
-	}
+////-----------------------------------------------------------------------------------------------
+//void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines )
+//{
+//	if ( (int)textLines.size() == 0 )
+//	{
+//		return;
+//	}
+//
+//	m_debugInfoTextBox->SetText( textLines[0], color );
+//
+//	for ( int textLineIndex = 1; textLineIndex < (int)textLines.size(); ++textLineIndex )
+//	{
+//		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
+//	}
+//}
 
-	m_debugInfoTextBox->SetText( textLines[0], color );
 
-	for ( int textLineIndex = 1; textLineIndex < (int)textLines.size(); ++textLineIndex )
-	{
-		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::SetCameraPositionAndYaw( const Vec2& pos, float yaw )
-{
-	Transform newTransform = m_worldCamera->GetTransform();
-	newTransform.SetPosition( Vec3( pos, 0.5f ) );
-	newTransform.SetOrientationFromPitchRollYawDegrees( 0.f, 0.f, yaw );
-
-	m_worldCamera->SetTransform( newTransform );
-}
+////-----------------------------------------------------------------------------------------------
+//void Game::SetCameraPositionAndYaw( const Vec2& pos, float yaw )
+//{
+//	Transform newTransform = m_worldCamera->GetTransform();
+//	newTransform.SetPosition( Vec3( pos, 0.5f ) );
+//	newTransform.SetOrientationFromPitchRollYawDegrees( 0.f, 0.f, yaw );
+//
+//	m_worldCamera->SetTransform( newTransform );
+//}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -864,7 +864,7 @@ void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, cons
 			m_world->ChangeMap( destMapName );
 		}
 
-		SetCameraPositionAndYaw( newPos, newYawDegrees );
+		//SetCameraPositionAndYaw( newPos, newYawDegrees );
 
 		return;
 	}
@@ -905,26 +905,26 @@ void Game::WarpMapCommand( EventArgs* args )
 		m_world->ChangeMap( mapStr );
 	}
 
-	Vec2 newPos = args->GetValue( "pos", m_worldCamera->GetTransform().GetPosition().XY() );
+	/*Vec2 newPos = args->GetValue( "pos", m_worldCamera->GetTransform().GetPosition().XY() );
 	float newYawDegrees = args->GetValue( "yaw", m_worldCamera->GetTransform().GetYawDegrees() );
 
-	SetCameraPositionAndYaw( newPos, newYawDegrees );
+	SetCameraPositionAndYaw( newPos, newYawDegrees );*/
 }
 
 
-//-----------------------------------------------------------------------------------------------
-bool Game::SetMouseSensitivity( EventArgs* args )
-{
-	s_mouseSensitivityMultiplier = args->GetValue( "multiplier", 1.f );
+////-----------------------------------------------------------------------------------------------
+//bool Game::SetMouseSensitivity( EventArgs* args )
+//{
+//	s_mouseSensitivityMultiplier = args->GetValue( "multiplier", 1.f );
+//
+//	return false;
+//}
 
-	return false;
-}
 
-
-//-----------------------------------------------------------------------------------------------
-bool Game::SetAmbientLightColor( EventArgs* args )
-{
-	s_ambientLightColor = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
-
-	return false;
-}
+////-----------------------------------------------------------------------------------------------
+//bool Game::SetAmbientLightColor( EventArgs* args )
+//{
+//	s_ambientLightColor = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
+//
+//	return false;
+//}

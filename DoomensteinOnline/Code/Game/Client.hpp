@@ -2,6 +2,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class World;
+
+
+//-----------------------------------------------------------------------------------------------
 class Client
 {
 public:
@@ -12,5 +16,7 @@ public:
 	virtual void Shutdown();
 
 	virtual void BeginFrame();
-	virtual void Render() const;
+
+	virtual void Update();
+	virtual void Render( const World* gameWorld ) const;
 };

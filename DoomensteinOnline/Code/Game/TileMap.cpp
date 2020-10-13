@@ -16,6 +16,7 @@
 #include "Game/MapData.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
+#include "Game/PlayerClient.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -47,7 +48,12 @@ void TileMap::Load()
 
 	//g_audioSystem->PlaySound( g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" ), false, volume, balance, speed );
 
-	g_game->SetCameraPositionAndYaw( m_playerStartPos, m_playerStartYaw );
+	if ( g_playerClient == nullptr )
+	{
+		return;
+	}
+
+	g_playerClient->SetCameraPositionAndYaw( m_playerStartPos, m_playerStartYaw );
 }
 
 
@@ -65,9 +71,9 @@ void TileMap::Update( float deltaSeconds )
 
 	ResolveEntityVsWallCollisions();
 
-	if ( g_game->g_raytraceFollowCamera )
+	if ( g_playerClient->g_raytraceFollowCamera )
 	{
-		m_raytraceTransform = g_game->GetWorldCamera()->GetTransform();
+		m_raytraceTransform = g_playerClient->GetWorldCamera()->GetTransform();
 	}
 }
 
@@ -206,7 +212,7 @@ void TileMap::DebugRender() const
 		DebugAddWorldPoint( result.impactPos, Rgba8::PURPLE );
 		DebugAddWorldArrow( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::ORANGE );
 
-		if ( !g_game->g_raytraceFollowCamera )
+		if ( !g_playerClient->g_raytraceFollowCamera )
 		{
 			DebugAddWorldArrow( m_raytraceTransform.GetPosition(), result.impactPos, Rgba8::MAGENTA );
 		}
