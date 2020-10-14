@@ -23,6 +23,5 @@ StateMachine
 	{	
 		FireEvent( PrintDebugText( text = msg )  );
 	}
-
 }
 

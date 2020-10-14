@@ -119,6 +119,18 @@ void EventSystem::RegisterMethodEvent( const std::string& eventName,
 	newSub.m_eventHelpText = eventHelpText;
 	newSub.m_usageMode = usageMode;
 	
+	// Try to subscribe to existing delegate before making new one
+	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_delegateEventSubscriptions.size(); ++subscriptionIndex )
+	{
+		DelegateEventSubscription& sub = m_delegateEventSubscriptions[subscriptionIndex];
+		if ( !_strcmpi( sub.m_eventName.c_str(), eventName.c_str() )
+			 && sub.m_usageMode & usageMode )
+		{
+			sub.m_delegate.SubscribeMethod( obj, callbackMethod );
+			return;
+		}
+	}
+
 	newSub.m_delegate.SubscribeMethod( obj, callbackMethod );
 
 	m_delegateEventSubscriptions.push_back( newSub );

@@ -1,8 +1,5 @@
 StateMachine
 {
-	Number testToggle = 1;
-	String msg = "Hello"; 
-
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
 	OnEvent( Spawn )
 	{
@@ -14,33 +11,24 @@ StateMachine
 		FireEvent( EnemyDied() );
 	}
 
-	State TestState
+	State Wander
 	{	
 		OnEvent( TestEvent )
 		{		
-			ChangeState( NoDebug );
+			ChangeState( Chase );
 		}
 
-		String msg = "Goodbye";
-		if ( msg == "Hello" )
-		{
-			FireEvent( PrintDebugText( text = "Hello" )  );
-		}
-		else
-		{
-			FireEvent( PrintDebugText( text = "Goodbye" )  );
-		}
-		
+		FireEvent( PrintDebugText( text = "Wander" ) );
 	}
 
-	State NoDebug
-	{	
-		//OnEvent( TestEvent )
-		//{		
-		//	ChangeState( TestState );
-		//}
+	State Chase
+	{
+		OnEvent( TestEvent )
+		{		
+			ChangeState( Wander );
+		}
 
-		FireEvent( PrintDebugText( text = "No debug text in this state, pal" ) );
+		FireEvent( PrintDebugText( text = "Chase" ) );
 	}
 }
 
