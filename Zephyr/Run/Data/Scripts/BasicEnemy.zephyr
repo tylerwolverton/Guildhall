@@ -1,5 +1,12 @@
 StateMachine
 {
+	//Vec2 position;
+	Number posX;
+	Number posY;
+		
+	Number targetPosX;
+	Number targetPosY;
+
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
 	OnEvent( Spawn )
 	{
@@ -11,14 +18,40 @@ StateMachine
 		FireEvent( EnemyDied() );
 	}
 
+	// TODO: Make this not terrible
+	Number newPosX;
+	Number newPosY;
+	OnEvent( UpdateEntityPosition )
+	{
+		posX = newPosX;
+		posY = newPosY;
+	}
+
+	OnEvent( UpdateTargetPosition )
+	{
+		targetPosX = newPosX;
+		targetPosY = newPosY;
+	}
+
 	State Wander
 	{	
 		OnEvent( TestEvent )
 		{		
-			ChangeState( Chase );
+			//ChangeState( Chase );
+			FireEvent( GetNewWanderTargetPosition() );
 		}
 
 		FireEvent( PrintDebugText( text = "Wander" ) );
+
+		FireEvent( MoveToLocation( x=targetPosX, y=targetPosY ) );
+
+		if( posX == targetPosX )
+		{
+			if( posY == targetPosY )
+			{
+				FireEvent( GetNewWanderTargetPosition() );
+			}
+		}
 	}
 
 	State Chase

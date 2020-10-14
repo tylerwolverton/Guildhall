@@ -67,6 +67,8 @@ public:
 	void		DecrementEnemyCount();
 	void		CheckForVictory();
 
+	float		GetLastDeltaSecondsf();
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 

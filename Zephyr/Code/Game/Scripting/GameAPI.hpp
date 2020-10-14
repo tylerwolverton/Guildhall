@@ -27,6 +27,10 @@ private:
 	void UpdateEnemyCount( EventArgs* args );
 	void WinGame( EventArgs* args );
 
+	// AI
+	void MoveToLocation( EventArgs* args );
+	void GetNewWanderTargetPosition( EventArgs* args );
+
 private:
 	std::unordered_set<std::string> m_registeredMethods;
 };

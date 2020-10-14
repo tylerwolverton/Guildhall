@@ -938,6 +938,13 @@ void Game::CheckForVictory()
 
 
 //-----------------------------------------------------------------------------------------------
+float Game::GetLastDeltaSecondsf()
+{
+	return (float)m_gameClock->GetLastDeltaSeconds();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ChangeGameState( const eGameState& newGameState )
 {
 	switch ( newGameState )

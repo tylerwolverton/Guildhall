@@ -79,6 +79,8 @@ public:
 	void			TakeDamage( int damage );
 	//void			ApplyFriction();
 
+	void			MoveWithPhysics( float speed, const Vec2& direction );
+
 protected:
 	void			RegisterUserEvents();
 	void			FireCorrespondingEvent( EventArgs* args );

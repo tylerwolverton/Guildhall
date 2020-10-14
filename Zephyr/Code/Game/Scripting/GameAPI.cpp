@@ -1,9 +1,10 @@
 #include "Game/Scripting/GameAPI.hpp"
 #include "Engine/Math/Mat44.hpp"
-#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec4.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 
 #include "Game/GameCommon.hpp"
@@ -24,6 +25,9 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( DestroyEntity );
 	REGISTER_EVENT( WinGame );
+
+	REGISTER_EVENT( MoveToLocation );
+	REGISTER_EVENT( GetNewWanderTargetPosition );
 }
 
 
@@ -103,4 +107,38 @@ void GameAPI::WinGame( EventArgs* args )
 	UNUSED( args );
 
 	g_game->ChangeGameState( eGameState::VICTORY );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::MoveToLocation( EventArgs* args )
+{
+	Vec2 targetPos( args->GetValue( "x", 0.f ), args->GetValue( "y", 0.f ) );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	Vec2 moveDirection = targetPos - entity->GetPosition();
+	moveDirection.Normalize();
+
+	float moveSpeed = entity->GetWalkSpeed() * g_game->GetLastDeltaSecondsf();
+
+	entity->MoveWithPhysics( moveSpeed, moveDirection );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
+{
+	float newX = g_game->m_rng->RollRandomFloatInRange( 0.f, 10.f );
+	float newY = g_game->m_rng->RollRandomFloatInRange( 0.f, 10.f );
+
+	EventArgs targetArgs;
+	targetArgs.SetValue( "newPosX", newX);
+	targetArgs.SetValue( "newPosY", newY );
+
+	g_eventSystem->FireEvent( "UpdateTargetPosition", &targetArgs );
 }

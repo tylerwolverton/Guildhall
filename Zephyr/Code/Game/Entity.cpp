@@ -158,6 +158,12 @@ void Entity::SetPosition( const Vec2& position )
 	if ( m_rigidbody2D != nullptr )
 	{
 		m_rigidbody2D->SetPosition( position );
+
+		EventArgs args;
+		args.SetValue( "newPosX", m_rigidbody2D->GetPosition().x );
+		args.SetValue( "newPosY", m_rigidbody2D->GetPosition().y );
+
+		g_eventSystem->FireEvent( "UpdateEntityPosition", &args );
 	}
 }
 
@@ -250,6 +256,22 @@ void Entity::TakeDamage( int damage )
 	}
 	
 	g_game->AddScreenShakeIntensity(.05f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::MoveWithPhysics( float speed, const Vec2& direction )
+{
+	if ( m_rigidbody2D != nullptr )
+	{
+		m_rigidbody2D->ApplyImpulseAt( speed * direction, GetPosition() );
+
+		EventArgs args;
+		args.SetValue( "newPosX", m_rigidbody2D->GetPosition().x );
+		args.SetValue( "newPosY", m_rigidbody2D->GetPosition().y );
+
+		g_eventSystem->FireEvent( "UpdateEntityPosition", &args );
+	}
 }
 
 
