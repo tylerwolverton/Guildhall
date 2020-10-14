@@ -20,9 +20,10 @@
     <Entity name="Level1Manager"/>
     <Entity name="ClosedDoorVertical" pos="8.5,9.5"/>
 		<PlayerStart pos="1.5,1.5" yaw="0"/>
-		<Actor name ="Blob" pos="5.5,5.5" yaw="0"/>
-		<Actor name ="Blob" pos="7.5,5.5" yaw="0"/>
-		<Actor name ="Blob" pos="9.5,5.5" yaw="0"/>
+		<!--<Actor name ="Blob" pos="5.5,5.5" yaw="0"/>-->
+		<!--<Actor name ="Blob" pos="7.5,3.5" yaw="0"/>-->
+		<!--<Actor name ="Blob" pos="9.5,5.5" yaw="0"/>-->
+		<Actor name ="SuperBlob" pos="10.5,7.5" yaw="0"/>
 		<!--<Actor name ="SuperBlob" pos="5.5,8.5" yaw="0"/>-->
     <Portal name="InvisibleTeleporter" pos="8.5,9.5" yaw="0" destMap="Level2" destPos="3.5,1.5" destYawOffset="0"/>
 	</Entities>

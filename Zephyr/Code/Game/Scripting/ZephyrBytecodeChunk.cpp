@@ -4,8 +4,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrBytecodeChunk::ZephyrBytecodeChunk( const std::string& name )
+ZephyrBytecodeChunk::ZephyrBytecodeChunk( const std::string& name, ZephyrBytecodeChunk* parent )
 	: m_name( name )
+	, m_parentChunk( parent )
 {
 }
 
@@ -14,13 +15,18 @@ ZephyrBytecodeChunk::ZephyrBytecodeChunk( const std::string& name )
 bool ZephyrBytecodeChunk::TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const
 {
 	auto variableEntry = m_variables.find( identifier );
-	if ( variableEntry == m_variables.end() )
+	if ( variableEntry != m_variables.end() )
 	{
-		return false;
+		out_value = variableEntry->second;
+		return true;
 	}
 
-	out_value = variableEntry->second;
-	return true;
+	if ( m_parentChunk != nullptr )
+	{
+		return m_parentChunk->TryToGetVariable( identifier, out_value );
+	}
+
+	return false;
 }
 
 

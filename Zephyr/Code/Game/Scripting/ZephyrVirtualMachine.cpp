@@ -28,12 +28,26 @@ void ZephyrVirtualMachine::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity, EventArgs* eventArgs )
+void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk,
+												   ZephyrValueMap* globalVariables,
+												   Entity* parentEntity,
+												   EventArgs* eventArgs,
+												   ZephyrValueMap* stateVariables )
 {
 	ClearConstantStack();
-	std::map<std::string, ZephyrValue> localVariables = *globalVariables;
+	ResetVariableMaps();
 
-	AddEventArgsToLocalVariables( eventArgs, localVariables );
+	m_globalVariables = globalVariables;
+	m_stateVariables = stateVariables;
+	CopyEventArgVariables( eventArgs );
+
+	// Event variables don't need to be persisted after this call, so save a copy as local variables
+	// TODO: Account for scopes inside if statements, etc.?
+	std::map<std::string, ZephyrValue> localVariables;
+	if ( bytecodeChunk.GetType() == eBytecodeChunkType::EVENT )
+	{
+		localVariables = bytecodeChunk.GetVariables();
+	}
 
 	int byteIdx = 0;
 	while ( byteIdx < bytecodeChunk.GetNumBytes() )
@@ -60,14 +74,15 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::GET_VARIABLE_VALUE:
 			{
 				ZephyrValue constant = PopConstant();
-				PushConstant( localVariables[constant.GetAsString()] );
+				PushConstant( GetVariableValue( constant.GetAsString(), localVariables ) );
 			}
 			break;
 
 			case eOpCode::ASSIGNMENT:
 			{
-				ZephyrValue constant = PopConstant(); 
-				localVariables[constant.GetAsString()] = PeekConstant();
+				ZephyrValue variableName = PopConstant(); 
+				ZephyrValue constantValue = PeekConstant();
+				AssignToVariable( variableName.GetAsString(), constantValue, localVariables );
 			}
 			break;
 
@@ -153,7 +168,6 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				g_eventSystem->FireEvent( "ChangeZephyrScriptState", &args, EVERYWHERE );
 				
 				// Bail out of this chunk to avoid trying to execute bytecode in the wrong update chunk
-				UpdateGlobalVariables( *globalVariables, localVariables );
 				return;
 			}
 			break;
@@ -164,13 +178,32 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			break;
 		}
 	}
+}
 
-	UpdateGlobalVariables( *globalVariables, localVariables );
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
+														ZephyrValueMap* globalVariables, 
+														Entity* parentEntity )
+{
+	InterpretBytecodeChunk( bytecodeChunk, globalVariables, parentEntity, nullptr, nullptr );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::AddEventArgsToLocalVariables( EventArgs* eventArgs, ZephyrValueMap& localVariables )
+void ZephyrVirtualMachine::InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
+														ZephyrValueMap* globalVariables, 
+														Entity* parentEntity, 
+														EventArgs* eventArgs, 
+														ZephyrValueMap* stateVariables )
+{
+	InterpretBytecodeChunk( bytecodeChunk, globalVariables, parentEntity, eventArgs, stateVariables );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs )
 {
 	if ( eventArgs == nullptr )
 	{
@@ -184,24 +217,24 @@ void ZephyrVirtualMachine::AddEventArgsToLocalVariables( EventArgs* eventArgs, Z
 	{
 		if ( keyValuePair.second->Is<float>() )
 		{
-			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, 0.f ) );
+			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, 0.f ) );
 		}
 		else if ( keyValuePair.second->Is<int>() )
 		{
-			localVariables[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0 ) );
+			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0 ) );
 		}
 		else if ( keyValuePair.second->Is<double>() )
 		{
-			localVariables[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0.0 ) );
+			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0.0 ) );
 		}
 		else if ( keyValuePair.second->Is<bool>() )
 		{
-			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, false ) );
+			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, false ) );
 		}
 		else if ( keyValuePair.second->Is<std::string>() 
 				  || keyValuePair.second->Is<char*>() )
 		{
-			localVariables[keyValuePair.first] = ZephyrValue( keyValuePair.second->GetAsString() );
+			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( keyValuePair.second->GetAsString() );
 		}
 
 		// Any other variables will be ignored since they have no ZephyrType equivalent
@@ -368,12 +401,77 @@ void ZephyrVirtualMachine::PushStringBinaryOp( const std::string& a, const std::
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::UpdateGlobalVariables( ZephyrValueMap& globalVariables, const ZephyrValueMap& localVariables )
+ZephyrValue ZephyrVirtualMachine::GetVariableValue( const std::string& variableName, const ZephyrValueMap& localVariables )
 {
-	for ( auto& globalVarEntry : globalVariables )
+	// Try to find in local variables first
+	auto localIter = localVariables.find( variableName );
+	if ( localIter != localVariables.end() )
 	{
-		auto localVarIter = localVariables.find( globalVarEntry.first );
-		globalVariables[globalVarEntry.first] = localVarIter->second;
+		return localIter->second;
+	}
+
+	// Check event args
+	if ( !m_eventsVariablesCopy.empty() )
+	{
+		auto eventIter = m_eventsVariablesCopy.find( variableName );
+		if ( eventIter != m_eventsVariablesCopy.end() )
+		{
+			return eventIter->second;
+		}
+	}
+
+	// Check state variables
+	if ( m_stateVariables != nullptr )
+	{
+		auto stateIter = m_stateVariables->find( variableName );
+		if ( stateIter != m_stateVariables->end() )
+		{
+			return stateIter->second;
+		}
+	}
+
+	// Check global variables
+	if ( m_globalVariables != nullptr )
+	{
+		auto globalIter = m_globalVariables->find( variableName );
+		if ( globalIter != m_globalVariables->end() )
+		{
+			return globalIter->second;
+		}
+	}
+
+	return ZephyrValue( 0.f );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables )
+{
+	// Try to find in local variables first
+	auto localIter = localVariables.find( variableName );
+	if ( localIter != localVariables.end() )
+	{
+		localVariables[variableName] = value;
+	}
+
+	// Check state variables
+	if ( m_stateVariables != nullptr )
+	{
+		auto stateIter = m_stateVariables->find( variableName );
+		if ( stateIter != m_stateVariables->end() )
+		{
+			( *m_stateVariables )[variableName] = value;
+		}
+	}
+
+	// Check global variables
+	if ( m_globalVariables != nullptr )
+	{
+		auto globalIter = m_globalVariables->find( variableName );
+		if ( globalIter != m_globalVariables->end() )
+		{
+			( *m_globalVariables )[variableName] = value;
+		}
 	}
 }
 
@@ -385,4 +483,13 @@ void ZephyrVirtualMachine::ClearConstantStack()
 	{
 		m_constantStack.pop();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::ResetVariableMaps()
+{
+	m_globalVariables = nullptr;
+	m_stateVariables = nullptr;
+	m_eventsVariablesCopy.clear();
 }

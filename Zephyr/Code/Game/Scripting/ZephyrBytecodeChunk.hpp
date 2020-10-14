@@ -18,7 +18,7 @@ enum class eBytecodeChunkType
 class ZephyrBytecodeChunk
 {
 public:
-	ZephyrBytecodeChunk( const std::string& name );
+	ZephyrBytecodeChunk( const std::string& name, ZephyrBytecodeChunk* parent = nullptr );
 
 	// Accessors
 	std::string						GetName() const									{ return m_name; }
@@ -53,6 +53,7 @@ private:
 	std::string m_name;
 	bool m_isInitialState = false;
 	eBytecodeChunkType m_type = eBytecodeChunkType::NONE;
+	ZephyrBytecodeChunk* m_parentChunk = nullptr;
 	std::vector<byte> m_bytes;
 	std::vector<ZephyrValue> m_constants;
 	ZephyrValueMap m_variables;

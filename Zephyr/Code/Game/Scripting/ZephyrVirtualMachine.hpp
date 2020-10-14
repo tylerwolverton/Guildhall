@@ -18,10 +18,24 @@ public:
 	void Startup();
 	void Shutdown();
 
-	void InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, ZephyrValueMap* globalVariables, Entity* parentEntity = nullptr, EventArgs* eventArgs = nullptr );
+	void InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
+									  ZephyrValueMap* globalVariables, 
+									  Entity* parentEntity = nullptr );
+
+	void InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
+									  ZephyrValueMap* globalVariables, 
+									  Entity* parentEntity = nullptr, 
+									  EventArgs* eventArgs = nullptr, 
+									  ZephyrValueMap* stateVariables = nullptr );
 
 private:
-	void		AddEventArgsToLocalVariables( EventArgs* eventArgs, ZephyrValueMap& localVariables );
+	void		InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
+										ZephyrValueMap* globalVariables, 
+										Entity* parentEntity = nullptr, 
+										EventArgs* eventArgs = nullptr, 
+										ZephyrValueMap* stateVariables = nullptr );
+
+	void		CopyEventArgVariables( EventArgs* eventArgs );
 
 	void		PushConstant( const ZephyrValue& number );
 	ZephyrValue PopConstant();
@@ -31,9 +45,18 @@ private:
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
 	void PushStringBinaryOp( const std::string& a, const std::string& b, eOpCode opCode );
 
-	void UpdateGlobalVariables( ZephyrValueMap& globalVariables, const ZephyrValueMap& localVariables );
+	ZephyrValue GetVariableValue( const std::string& variableName, const ZephyrValueMap& localVariables );
+	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );
+
 	void ClearConstantStack();
+	void ResetVariableMaps();
 
 private:
 	std::stack<ZephyrValue> m_constantStack;
+
+	//std::map<std::string, ZephyrValue> m_globalVariablesCopy;
+	ZephyrValueMap* m_globalVariables;
+	//std::map<std::string, ZephyrValue> m_globalVariablesCopy;
+	ZephyrValueMap* m_stateVariables;
+	ZephyrValueMap m_eventsVariablesCopy;
 };

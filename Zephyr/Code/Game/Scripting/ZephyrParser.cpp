@@ -117,12 +117,12 @@ bool ZephyrParser::CreateBytecodeChunk( const std::string& chunkName, const eByt
 	}
 
 	// This is a valid chunk definition, create with current chunk as parent scope
-	ZephyrBytecodeChunk* newChunk = new ZephyrBytecodeChunk( chunkName );
+	ZephyrBytecodeChunk* newChunk = new ZephyrBytecodeChunk( chunkName, m_curBytecodeChunk );
 	
-	for ( auto globalVar : m_curBytecodeChunk->GetVariables() )
+	/*for ( auto globalVar : m_curBytecodeChunk->GetVariables() )
 	{
 		newChunk->SetVariable( globalVar.first, globalVar.second );
-	}
+	}*/
 
 	newChunk->SetType( type );
 
@@ -416,6 +416,9 @@ bool ZephyrParser::ParseNumberDeclaration()
 			{
 				return false;
 			}
+
+			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
 		}
 		break;
 
@@ -431,8 +434,8 @@ bool ZephyrParser::ParseNumberDeclaration()
 		break;
 	}
 
-	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
+	/*WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );*/
 
 	return true;
 }
@@ -468,6 +471,9 @@ bool ZephyrParser::ParseStringDeclaration()
 			{
 				return false;
 			}
+
+			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
 		}
 		break;
 
@@ -483,8 +489,8 @@ bool ZephyrParser::ParseStringDeclaration()
 		break;
 	}
 
-	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );
+	/*WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );*/
 
 	return true;
 }

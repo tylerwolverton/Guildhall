@@ -35,10 +35,10 @@ StateMachine
 
 	State NoDebug
 	{	
-		OnEvent( TestEvent )
-		{		
-			ChangeState( TestState );
-		}
+		//OnEvent( TestEvent )
+		//{		
+		//	ChangeState( TestState );
+		//}
 
 		FireEvent( PrintDebugText( text = "No debug text in this state, pal" ) );
 	}
