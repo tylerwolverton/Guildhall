@@ -296,16 +296,15 @@ void App::UpdateFromKeyboard()
 //-----------------------------------------------------------------------------------------------
 void App::Render() const
 {
-	if ( m_appMode != eAppMode::HEADLESS_SERVER )
-	{
-		g_devConsole->Render();
-	}
-
 	if ( g_playerClient != nullptr )
 	{
 		g_playerClient->Render( g_game->GetWorld() );
 	}
 
+	if ( m_appMode != eAppMode::HEADLESS_SERVER )
+	{
+		g_devConsole->Render();
+	}
 }
 
 

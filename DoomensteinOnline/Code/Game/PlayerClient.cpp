@@ -36,11 +36,6 @@ static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::Startup()
 {
-	/*Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::ZYX;
-
-	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
-	Transform::s_identityOrientation.PushTransform( Mat44::CreateXRotationDegrees( 90.f ) );*/
-
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 
@@ -274,6 +269,8 @@ void PlayerClient::Update()
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::Render( const World* gameWorld ) const
 {
+	g_devConsole->Render();
+
 	RenderFPSCounter();
 
 	Texture* backbuffer = g_renderer->GetBackBuffer();
