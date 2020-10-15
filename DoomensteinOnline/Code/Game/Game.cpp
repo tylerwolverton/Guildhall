@@ -87,8 +87,14 @@ void Game::Startup()
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
-	TileDefinition::s_definitions.clear();
+	Transform::s_identityOrientation = Mat44::IDENTITY;
 
+	SpriteSheet::s_definitions.clear();
+	TileDefinition::s_definitions.clear();
+	EntityDefinition::s_definitions.clear();
+	MapMaterialTypeDefinition::s_definitions.clear();
+	MapRegionTypeDefinition::s_definitions.clear();
+	
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_gameClock );

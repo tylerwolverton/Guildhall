@@ -85,60 +85,19 @@ void App::Startup( eAppMode appMode )
 		g_devConsole->SetBitmapFont( g_renderer->GetSystemFont() );
 	}
 
-	switch ( appMode )
-	{
-		case eAppMode::SINGLE_PLAYER:
-		case eAppMode::MULTIPLAYER_SERVER:
-		{
-			g_server = new AuthoritativeServer();
-			g_server->Startup( appMode );
-
-			g_playerClient = new PlayerClient();
-			g_playerClient->Startup();
-
-			g_server->SetPlayerClient( g_playerClient );
-		}
-		break;
-		
-		case eAppMode::MULTIPLAYER_CLIENT:
-		{
-			g_server = new RemoteServer();
-			g_server->Startup( appMode );
-
-			g_playerClient = new PlayerClient();
-			g_playerClient->Startup();
-
-			g_server->SetPlayerClient( g_playerClient );
-		}
-		break;
-
-		case eAppMode::HEADLESS_SERVER:
-		{
-			g_server = new AuthoritativeServer();
-			g_server->Startup( appMode );
-		}
-		break;
-	}
+	InitializeServerAndClient( appMode );
 
 	g_eventSystem->RegisterEvent( "quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
+	g_eventSystem->RegisterEvent( "start_multiplayer_server", "Usage: start_multiplayer_server port=<port number>. Start a multiplayer server communicating on given port.", eUsageLocation::DEV_CONSOLE, StartMultiplayerServerCommand );
+	g_eventSystem->RegisterEvent( "connect_to_multiplayer_server", "Usage: connect_to_multiplayer_server ip=<\"ip address\"> port=<port number>. Connect to a multiplayer server at given address and port.", eUsageLocation::DEV_CONSOLE, ConnectToMultiplayerServerCommand );
+
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void App::Shutdown()
 {
-	switch ( m_appMode )
-	{
-		case eAppMode::SINGLE_PLAYER:
-		case eAppMode::MULTIPLAYER_SERVER:
-		case eAppMode::MULTIPLAYER_CLIENT:
-		{
-			g_playerClient->Shutdown();
-		}
-		break;
-	}
-
-	g_server->Shutdown();
+	DeallocateServerAndClient( m_appMode );
 
 	if ( m_appMode != eAppMode::HEADLESS_SERVER )
 	{
@@ -154,8 +113,6 @@ void App::Shutdown()
 	g_jobSystem->Shutdown();
 	g_eventSystem->Shutdown();
 
-	PTR_SAFE_DELETE( g_playerClient );
-	PTR_SAFE_DELETE( g_server );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_renderer );
 	PTR_SAFE_DELETE( g_audioSystem );
@@ -187,13 +144,72 @@ bool App::HandleQuitRequested()
 
 
 //-----------------------------------------------------------------------------------------------
-void App::RestartGame()
+void App::RestartApp( eAppMode appMode )
 {
-	g_game->Shutdown();
-	delete g_game;
+	DeallocateServerAndClient( m_appMode );
+	InitializeServerAndClient( appMode );
+	m_appMode = appMode;
+}
 
-	g_game = new Game();
-	g_game->Startup();
+
+//-----------------------------------------------------------------------------------------------
+void App::InitializeServerAndClient( eAppMode appMode )
+{
+	switch ( appMode )
+	{
+		case eAppMode::SINGLE_PLAYER:
+		case eAppMode::MULTIPLAYER_SERVER:
+		{
+			g_server = new AuthoritativeServer();
+			g_server->Startup( appMode );
+
+			g_playerClient = new PlayerClient();
+			g_playerClient->Startup();
+
+			g_server->SetPlayerClient( g_playerClient );
+		}
+		break;
+
+		case eAppMode::MULTIPLAYER_CLIENT:
+		{
+			g_server = new RemoteServer();
+			g_server->Startup( appMode );
+
+			g_playerClient = new PlayerClient();
+			g_playerClient->Startup();
+
+			g_server->SetPlayerClient( g_playerClient );
+		}
+		break;
+
+		case eAppMode::HEADLESS_SERVER:
+		{
+			g_server = new AuthoritativeServer();
+			g_server->Startup( appMode );
+		}
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void App::DeallocateServerAndClient( eAppMode appMode )
+{
+	switch ( appMode )
+	{
+		case eAppMode::SINGLE_PLAYER:
+		case eAppMode::MULTIPLAYER_SERVER:
+		case eAppMode::MULTIPLAYER_CLIENT:
+		{
+			g_playerClient->Shutdown();
+		}
+		break;
+	}
+
+	g_server->Shutdown();
+
+	PTR_SAFE_DELETE( g_playerClient );
+	PTR_SAFE_DELETE( g_server );
 }
 
 
@@ -332,6 +348,33 @@ bool App::QuitGame( EventArgs* args )
 {
 	UNUSED( args );
 	g_app->HandleQuitRequested();
+
+	return 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool App::StartMultiplayerServerCommand( EventArgs* args )
+{
+	// Placeholder argument parsing
+	UNUSED( args );
+	//int port = args->GetValue( "port", 48000 );
+
+	g_app->RestartApp( eAppMode::MULTIPLAYER_SERVER );
+
+	return 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool App::ConnectToMultiplayerServerCommand( EventArgs* args )
+{
+	// Placeholder argument parsing
+	UNUSED( args );
+	//std::string ipAddress = args->GetValue( "ip", "127.0.0.1" );
+	//int port = args->GetValue( "port", 48000 );
+
+	g_app->RestartApp( eAppMode::MULTIPLAYER_CLIENT );
 
 	return 0;
 }

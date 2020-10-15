@@ -24,7 +24,6 @@ public:
 	bool IsQuitting()										{ return m_isQuitting; }
 	
 	bool HandleQuitRequested();
-	void RestartGame();
 	
 private:
 	void PopulateGameConfig();
@@ -35,7 +34,14 @@ private:
 	void Render() const;
 	void EndFrame();
 
+	void RestartApp( eAppMode appMode = eAppMode::SINGLE_PLAYER );
+	void InitializeServerAndClient( eAppMode appMode = eAppMode::SINGLE_PLAYER );
+	void DeallocateServerAndClient( eAppMode appMode = eAppMode::SINGLE_PLAYER );
+
+	// Events
 	static bool QuitGame( EventArgs* args );
+	static bool StartMultiplayerServerCommand( EventArgs* args );
+	static bool ConnectToMultiplayerServerCommand( EventArgs* args );
 
 private:
 	bool m_isQuitting = false;

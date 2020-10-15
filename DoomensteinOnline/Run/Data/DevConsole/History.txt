@@ -264,3 +264,7 @@ send_udp_message msg="sdfnsldkjfn"
 open_udp_port
 send_udp_message msg="good to meet you udp"
 close_udp_port
+start_multiplayer_server
+connect_to_multiplayer_server
+start_multiplayer_server
+connect_to_multiplayer_server

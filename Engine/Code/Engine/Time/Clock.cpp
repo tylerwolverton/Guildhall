@@ -52,6 +52,8 @@ Clock::~Clock()
 	if ( m_parentClock != nullptr )
 	{
 
+		m_parentClock->RemoveChild( this );
+
 		m_parentClock = nullptr;
 	}
 }

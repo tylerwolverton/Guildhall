@@ -245,7 +245,7 @@ void PlayerClient::BuildUIHud()
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::Shutdown()
 {
-	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+	g_inputSystem->PopMouseOptions();
 
 	m_uiSystem->Shutdown();
 
