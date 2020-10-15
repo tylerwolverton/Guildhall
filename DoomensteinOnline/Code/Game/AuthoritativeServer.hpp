@@ -1,6 +1,11 @@
 #pragma once
 #include "Game/Server.hpp"
+#include "Game/GameCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+struct ClientRequest;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -15,9 +20,8 @@ public:
 
 	virtual void Update() override;
 
-	virtual void ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos ) override;
+	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) override;
 
 private:
-	const KeyButtonState* m_lastKeyStates = nullptr;
-	Vec2 m_lastMouseDeltaPos = Vec2::ZERO;
+	const std::vector<ClientRequest*> m_clientRequests;
 };

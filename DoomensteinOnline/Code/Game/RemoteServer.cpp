@@ -53,9 +53,8 @@ void RemoteServer::Update()
 
 
 //-----------------------------------------------------------------------------------------------
-void RemoteServer::ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
+void RemoteServer::ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests )
 {
-	UNUSED( keyStates );
-	UNUSED( mouseDeltaPos );
+	UNUSED( clientRequests );
 }
 

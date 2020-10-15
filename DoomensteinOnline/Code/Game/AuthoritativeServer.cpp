@@ -1,6 +1,8 @@
 #include "Game/AuthoritativeServer.hpp"
+#include "Game/GameEvents.hpp"
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
+#include "Game/PlayerClient.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 
 
@@ -43,14 +45,33 @@ void AuthoritativeServer::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::Update()
 {
-	g_game->Update( m_lastKeyStates, m_lastMouseDeltaPos );
+	g_game->Update();
+
+	m_playerClient->Update();
+
+	// Update all remote clients
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos )
+void AuthoritativeServer::ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests )
 {
-	m_lastKeyStates = keyStates;
-	m_lastMouseDeltaPos = mouseDeltaPos;
+	for ( int reqIdx = 0; reqIdx < (int)clientRequests.size(); ++reqIdx )
+	{
+		ClientRequest* const & req = clientRequests[reqIdx];
+
+		if ( req == nullptr )
+		{
+			continue;
+		}
+
+		switch ( req->functionType )
+		{
+			case eClientFunctionType::POSSESS_ENTITY:				g_game->PossessEntity( req->player, ( (PossessEntityRequest*)req )->cameraTransform ); break;
+			case eClientFunctionType::UNPOSSESS_ENTITY:				g_game->UnpossessEntity( req->player ); break;
+			case eClientFunctionType::SET_PLAYER_ORIENTATION:		g_game->SetPlayerOrientation( req->player, ( (SetPlayerOrientationRequest*)req )->yawOrientationDegrees ); break;
+			case eClientFunctionType::MOVE_PLAYER:					g_game->MovePlayer( req->player, ((MovePlayerRequest*)req)->translationVec ); break;
+		}
+	}
 }
 

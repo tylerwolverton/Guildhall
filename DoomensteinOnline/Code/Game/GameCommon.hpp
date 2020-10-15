@@ -3,6 +3,7 @@
 
 class Window;
 class App;
+class Entity;
 class InputSystem;
 class AudioSystem;
 class RenderContext;

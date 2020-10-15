@@ -14,5 +14,5 @@ public:
 
 	virtual void Update() override;
 
-	virtual void ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos ) override;
+	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) override;
 };

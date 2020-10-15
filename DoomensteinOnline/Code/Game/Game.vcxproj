@@ -232,6 +232,7 @@
     <ClInclude Include="EntityDefinition.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
+    <ClInclude Include="GameEvents.hpp" />
     <ClInclude Include="GameJobs.hpp" />
     <ClInclude Include="GameMeshUtils.hpp" />
     <ClInclude Include="Map.hpp" />

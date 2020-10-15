@@ -23,6 +23,7 @@
 
 #include "Game/Entity.hpp"
 #include "Game/Game.hpp"
+#include "Game/GameEvents.hpp"
 #include "Game/Server.hpp"
 #include "Game/World.hpp"
 
@@ -35,6 +36,11 @@ static Vec3 s_ambientLightColor = Vec3( 1.f, 1.f, 1.f );
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::Startup()
 {
+	/*Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::ZYX;
+
+	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
+	Transform::s_identityOrientation.PushTransform( Mat44::CreateXRotationDegrees( 90.f ) );*/
+
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 
@@ -56,6 +62,137 @@ void PlayerClient::Startup()
 	m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
 	BuildUIHud();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void PlayerClient::BeginFrame()
+{
+	std::vector<ClientRequest*> clientRequests = ProcessInputAndConvertToClientRequests();
+	g_server->ReceiveClientRequests( clientRequests );	
+
+	PTR_VECTOR_SAFE_DELETE( clientRequests );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests()
+{
+	std::vector<ClientRequest*> requests;
+
+	if ( g_devConsole->IsOpen() )
+	{
+		return requests;
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+	{
+		m_isDebugRendering = !m_isDebugRendering;
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
+	{
+		g_raytraceFollowCamera = !g_raytraceFollowCamera;
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F3 ) )
+	{
+		if ( m_player == nullptr )
+		{
+			requests.push_back( new PossessEntityRequest( m_player, m_worldCamera->GetTransform() ) );
+			//PossesNearestEntity();
+		}
+		else
+		{
+			requests.push_back( new UnPossessEntityRequest( m_player ) );
+			//m_player->Unpossess();
+			//m_player = nullptr;
+		}
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
+	{
+		g_renderer->ReloadShaders();
+	}
+
+	Vec3 movementTranslation;
+	if ( g_inputSystem->IsKeyPressed( 'D' ) )
+	{
+		movementTranslation.y += 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'A' ) )
+	{
+		movementTranslation.y -= 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'W' ) )
+	{
+		movementTranslation.x += 1.f;
+	}
+
+	if ( g_inputSystem->IsKeyPressed( 'S' ) )
+	{
+		movementTranslation.x -= 1.f;
+	}
+
+	if ( m_player == nullptr )
+	{
+		if ( g_inputSystem->IsKeyPressed( 'E' ) )
+		{
+			movementTranslation.z += 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( 'Q' ) )
+		{
+			movementTranslation.z -= 1.f;
+		}
+
+		if ( g_inputSystem->IsKeyPressed( KEY_SHIFT ) )
+		{
+			movementTranslation *= 10.f;
+		}
+	}
+
+	// Rotation
+	Vec2 mousePosition = g_inputSystem->GetMouseDeltaPosition();
+	float yawDegrees = -mousePosition.x * s_mouseSensitivityMultiplier;
+	float pitchDegrees = mousePosition.y * s_mouseSensitivityMultiplier;
+	yawDegrees *= .009f;
+	pitchDegrees *= .009f;
+
+	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+
+	// An entity is possessed
+	if ( m_player != nullptr )
+	{
+		// Rotation (only consider yaw so the forward vector is always in XY space)
+		//m_player->SetOrientationDegrees( m_player->GetOrientationDegrees() + yawDegrees );
+		requests.push_back( new SetPlayerOrientationRequest( m_player, m_player->GetOrientationDegrees() + yawDegrees ) );
+
+		Vec2 forwardVec = m_player->GetForwardVector();
+		Vec2 rightVec = forwardVec.GetRotatedMinus90Degrees();
+
+		Vec2 translationXY( movementTranslation.x * forwardVec
+							+ movementTranslation.y * rightVec );
+
+		translationXY *= m_player->GetWalkSpeed();
+
+		//m_player->AddVelocity( translationXY );
+		//m_player->Translate( translationXY * deltaSeconds );
+		requests.push_back( new MovePlayerRequest( m_player, translationXY * deltaSeconds ) );
+	}
+	// No entity possessed, move the camera directly
+	else
+	{
+		Transform transform = m_worldCamera->GetTransform();
+		m_worldCamera->RotateYawPitchRoll( yawDegrees, pitchDegrees, 0.f );
+
+		// Translation
+		TranslateCameraFPS( movementTranslation * deltaSeconds );
+	}
+
+	return requests;
 }
 
 
@@ -116,26 +253,10 @@ void PlayerClient::Shutdown()
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
 	m_uiSystem->Shutdown();
-}
 
-
-//-----------------------------------------------------------------------------------------------
-void PlayerClient::BeginFrame()
-{
-	const KeyButtonState* keyStates = g_inputSystem->GetKeyStates();
-	Vec2 mouseDeltaPos = g_inputSystem->GetMouseDeltaPosition();
-
-	g_server->ReceiveInput( keyStates, mouseDeltaPos );
-
-	if ( keyStates[KEY_F1].WasJustPressed() )
-	{
-		m_isDebugRendering = !m_isDebugRendering;
-	}
-
-	if ( keyStates[KEY_F2].WasJustPressed() )
-	{
-		g_raytraceFollowCamera = !g_raytraceFollowCamera;
-	}
+	PTR_SAFE_DELETE( m_gameClock );
+	PTR_SAFE_DELETE( m_worldCamera );
+	PTR_SAFE_DELETE( m_uiCamera );
 }
 
 
@@ -364,11 +485,6 @@ void PlayerClient::TranslateCameraFPS( const Vec3& relativeTranslation )
 //-----------------------------------------------------------------------------------------------
 float PlayerClient::GetAverageFPS() const
 {
-	/*if constexpr ( FRAME_HISTORY_COUNT < 1 )
-	{
-		ERROR_AND_DIE( "FRAME_HISTORY_COUNT must be configured to be larger than 0" );
-	}*/
-
 	float cummulativeFPS = 0.f;
 	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT; ++frameNum )
 	{

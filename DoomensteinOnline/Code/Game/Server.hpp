@@ -1,9 +1,13 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
+#include <vector>
+
 
 //-----------------------------------------------------------------------------------------------
-class KeyButtonState;
+struct ClientRequest;
+class PlayerClient;
+class RemoteClient;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -19,5 +23,12 @@ public:
 	virtual void BeginFrame();
 	virtual void Update() = 0;
 
-	virtual void ReceiveInput( const KeyButtonState* keyStates, const Vec2& mouseDeltaPos ) = 0;
+	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) = 0;
+
+	// Change this to have the server own this client and the app doesn't access it?
+	void SetPlayerClient( PlayerClient* playerClient )							{ m_playerClient = playerClient; }
+
+protected:
+	PlayerClient* m_playerClient = nullptr;
+	std::vector<RemoteClient*> m_remoteClients;
 };

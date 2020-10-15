@@ -95,6 +95,8 @@ void App::Startup( eAppMode appMode )
 
 			g_playerClient = new PlayerClient();
 			g_playerClient->Startup();
+
+			g_server->SetPlayerClient( g_playerClient );
 		}
 		break;
 		
@@ -105,6 +107,8 @@ void App::Startup( eAppMode appMode )
 
 			g_playerClient = new PlayerClient();
 			g_playerClient->Startup();
+
+			g_server->SetPlayerClient( g_playerClient );
 		}
 		break;
 

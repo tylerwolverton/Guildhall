@@ -5,6 +5,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+struct ClientRequest;
 class Camera;
 class Clock;
 class Entity;
@@ -41,13 +42,15 @@ public:
 	static bool SetAmbientLightColor( EventArgs* args );
 
 private:
+	std::vector<ClientRequest*> ProcessInputAndConvertToClientRequests();
+
 	void InitializeCameras();
 
 	void BuildUIHud();
 
 	void UpdateCameraTransformToMatchPlayer( const Vec2& mouseDeltaPos );
 	void UpdateFramesPerSecond();
-
+	
 	void DebugRender( const World* gameWorld ) const;
 	void RenderDebugUI() const;
 	void RenderFPSCounter() const;
