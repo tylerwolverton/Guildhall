@@ -133,12 +133,19 @@ void GameAPI::MoveToLocation( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 {
-	float newX = g_game->m_rng->RollRandomFloatInRange( 0.f, 10.f );
-	float newY = g_game->m_rng->RollRandomFloatInRange( 0.f, 10.f );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	if ( entity == nullptr )
+	{
+		return;
+	}
 
+	float newX = g_game->m_rng->RollRandomFloatInRange( 2.f, 10.f );
+	float newY = g_game->m_rng->RollRandomFloatInRange( 2.f, 7.f );
+	
 	EventArgs targetArgs;
 	targetArgs.SetValue( "newPosX", newX);
 	targetArgs.SetValue( "newPosY", newY );
 
-	g_eventSystem->FireEvent( "UpdateTargetPosition", &targetArgs );
+	entity->FireScriptEvent( "UpdateTargetPosition", &targetArgs );
+	//g_eventSystem->FireEvent( "UpdateTargetPosition", &targetArgs );
 }

@@ -21,6 +21,7 @@ public:
 	void Update();
 	void UnloadScript();
 
+	void FireEvent( const std::string& eventName, EventArgs* args );
 	void FireSpawnEvent();
 	void FireDieEvent();
 
@@ -39,6 +40,7 @@ private:
 	Entity* m_parentEntity = nullptr;
 
 	const ZephyrScriptDefinition& m_scriptDef;
+	ZephyrBytecodeChunk* m_globalBytecodeChunk = nullptr;
 	ZephyrBytecodeChunk* m_curStateBytecodeChunk = nullptr;
 	ZephyrBytecodeChunkMap m_stateBytecodeChunks; 
 };

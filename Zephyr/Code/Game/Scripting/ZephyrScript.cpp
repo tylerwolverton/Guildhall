@@ -21,15 +21,15 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 		return;
 	}
 
-	ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
-	GUARANTEE_OR_DIE( globalBytecodeChunk != nullptr, "Global Bytecode Chunk was null" );
+	m_globalBytecodeChunk = new ZephyrBytecodeChunk( *m_scriptDef.GetGlobalBytecodeChunk() );
+	GUARANTEE_OR_DIE( m_globalBytecodeChunk != nullptr, "Global Bytecode Chunk was null" );
 
-	g_zephyrVM->InterpretStateBytecodeChunk( *globalBytecodeChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+	g_zephyrVM->InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 
 	m_curStateBytecodeChunk = m_scriptDef.GetFirstStateBytecodeChunk();
 	m_stateBytecodeChunks = m_scriptDef.GetAllStateBytecodeChunks();
 
-	RegisterScriptEvents( globalBytecodeChunk );
+	RegisterScriptEvents( m_globalBytecodeChunk );
 	RegisterScriptEvents( m_curStateBytecodeChunk );
 }
 
@@ -38,6 +38,8 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 ZephyrScript::~ZephyrScript()
 {
 	g_eventSystem->DeRegisterObject( this );
+
+	PTR_SAFE_DELETE( m_globalBytecodeChunk );
 }
 
 
@@ -57,8 +59,8 @@ void ZephyrScript::Update()
 
 	if ( m_curStateBytecodeChunk != nullptr )
 	{
-		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
-		g_zephyrVM->InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		g_zephyrVM->InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
 
@@ -77,6 +79,29 @@ void ZephyrScript::UnloadScript()
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
+{
+	if ( !m_scriptDef.IsValid() )
+	{
+		return;
+	}
+
+	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( eventName );
+	if ( eventChunk != nullptr )
+	{
+		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		ZephyrValueMap* stateVariables = nullptr;
+		if ( m_curStateBytecodeChunk != nullptr )
+		{
+			stateVariables = m_curStateBytecodeChunk->GetUpdateableVariables();
+		}
+
+		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::FireSpawnEvent()
 {
 	if ( !m_scriptDef.IsValid() )
@@ -87,8 +112,8 @@ void ZephyrScript::FireSpawnEvent()
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Spawn" );
 	if ( eventChunk != nullptr )
 	{
-		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
-		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
 
@@ -104,8 +129,8 @@ void ZephyrScript::FireDieEvent()
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Die" );
 	if ( eventChunk != nullptr )
 	{
-		ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
-		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
 
@@ -178,7 +203,7 @@ void ZephyrScript::OnEvent( EventArgs* args )
 			stateVariables = m_curStateBytecodeChunk->GetUpdateableVariables();
 		}
 
-		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_scriptDef.GetGlobalBytecodeChunk()->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
+		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
 	}
 }
 
@@ -210,10 +235,10 @@ ZephyrBytecodeChunk* ZephyrScript::GetEventBytecodeChunk( const std::string& eve
 		}
 	}
 
-	ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
-	ZephyrBytecodeChunkMap::const_iterator mapIter = globalBytecodeChunk->GetEventBytecodeChunks().find( eventName );
+	//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
+	ZephyrBytecodeChunkMap::const_iterator mapIter = m_globalBytecodeChunk->GetEventBytecodeChunks().find( eventName );
 
-	if ( mapIter != globalBytecodeChunk->GetEventBytecodeChunks().cend() )
+	if ( mapIter != m_globalBytecodeChunk->GetEventBytecodeChunks().cend() )
 	{
 		return mapIter->second;
 	}

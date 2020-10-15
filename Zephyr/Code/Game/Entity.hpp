@@ -71,6 +71,7 @@ public:
 	bool			IsInInventory( Entity* item );
 
 	void			FireSpawnEvent();
+	void			FireScriptEvent( const std::string& eventName, EventArgs* args );
 
 	bool			IsDead() const											{ return m_isDead; }
 	bool			IsGarbage() const										{ return m_isGarbage; }

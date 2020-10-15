@@ -163,7 +163,7 @@ void Entity::SetPosition( const Vec2& position )
 		args.SetValue( "newPosX", m_rigidbody2D->GetPosition().x );
 		args.SetValue( "newPosY", m_rigidbody2D->GetPosition().y );
 
-		g_eventSystem->FireEvent( "UpdateEntityPosition", &args );
+		FireScriptEvent( "UpdateEntityPosition", &args );
 	}
 }
 
@@ -242,6 +242,18 @@ void Entity::FireSpawnEvent()
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return;
+	}
+
+	m_scriptObj->FireEvent( eventName, args );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::TakeDamage( int damage )
 {
 	if ( IsDead() )
@@ -270,7 +282,7 @@ void Entity::MoveWithPhysics( float speed, const Vec2& direction )
 		args.SetValue( "newPosX", m_rigidbody2D->GetPosition().x );
 		args.SetValue( "newPosY", m_rigidbody2D->GetPosition().y );
 
-		g_eventSystem->FireEvent( "UpdateEntityPosition", &args );
+		FireScriptEvent( "UpdateEntityPosition", &args );
 	}
 }
 
