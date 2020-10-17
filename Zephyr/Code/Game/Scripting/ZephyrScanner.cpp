@@ -250,6 +250,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	if ( curIdentifier == "StateMachine" )			{ AddToken( eTokenType::STATE_MACHINE ); }
 	else if ( curIdentifier == "State" )			{ AddToken( eTokenType::STATE ); }
 	else if ( curIdentifier == "Number" )			{ AddToken( eTokenType::NUMBER ); }
+	else if ( curIdentifier == "Vec2" )				{ AddToken( eTokenType::VEC2 ); }
 	else if ( curIdentifier == "String" )			{ AddToken( eTokenType::STRING ); }
 	else if ( curIdentifier == "FireEvent" )		{ AddToken( eTokenType::FIRE_EVENT ); }
 	else if ( curIdentifier == "OnEvent" )			{ AddToken( eTokenType::ON_EVENT ); }

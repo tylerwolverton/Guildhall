@@ -113,7 +113,7 @@ void GameAPI::WinGame( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::MoveToLocation( EventArgs* args )
 {
-	Vec2 targetPos( args->GetValue( "x", 0.f ), args->GetValue( "y", 0.f ) );
+	Vec2 targetPos = args->GetValue( "pos", Vec2::ZERO );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr )
@@ -143,9 +143,9 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 	float newY = g_game->m_rng->RollRandomFloatInRange( 2.f, 7.f );
 	
 	EventArgs targetArgs;
+	targetArgs.SetValue( "newPos", Vec2( newX, newY ) );
 	targetArgs.SetValue( "newPosX", newX);
 	targetArgs.SetValue( "newPosY", newY );
 
 	entity->FireScriptEvent( "UpdateTargetPosition", &targetArgs );
-	//g_eventSystem->FireEvent( "UpdateTargetPosition", &targetArgs );
 }

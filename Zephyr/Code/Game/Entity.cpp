@@ -160,8 +160,7 @@ void Entity::SetPosition( const Vec2& position )
 		m_rigidbody2D->SetPosition( position );
 
 		EventArgs args;
-		args.SetValue( "newPosX", m_rigidbody2D->GetPosition().x );
-		args.SetValue( "newPosY", m_rigidbody2D->GetPosition().y );
+		args.SetValue( "newPos", m_rigidbody2D->GetPosition() );
 
 		FireScriptEvent( "UpdateEntityPosition", &args );
 	}
@@ -279,8 +278,7 @@ void Entity::MoveWithPhysics( float speed, const Vec2& direction )
 		m_rigidbody2D->ApplyImpulseAt( speed * direction, GetPosition() );
 
 		EventArgs args;
-		args.SetValue( "newPosX", m_rigidbody2D->GetPosition().x );
-		args.SetValue( "newPosY", m_rigidbody2D->GetPosition().y );
+		args.SetValue( "newPos", m_rigidbody2D->GetPosition() );
 
 		FireScriptEvent( "UpdateEntityPosition", &args );
 	}

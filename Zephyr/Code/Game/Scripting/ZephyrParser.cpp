@@ -332,6 +332,15 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::VEC2:
+		{
+			if ( !ParseVec2Declaration() )
+			{
+				return false;
+			}
+		}
+		break;
+
 		case eTokenType::STRING:
 		{
 			if ( !ParseStringDeclaration() )
@@ -434,8 +443,69 @@ bool ZephyrParser::ParseNumberDeclaration()
 		break;
 	}
 
-	/*WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );*/
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseVec2Declaration()
+{
+	ZephyrToken identifier = ConsumeNextToken();
+	if ( !DoesTokenMatchType( identifier, eTokenType::IDENTIFIER ) )
+	{
+		ReportError( "Expected variable name after 'Vec2'" );
+		return false;
+	}
+
+	DeclareVariable( identifier, eValueType::VEC2 );
+
+	ZephyrToken curToken = GetCurToken();
+	switch ( curToken.GetType() )
+	{
+		case eTokenType::SEMICOLON:
+		{
+			WriteConstantToCurChunk( ZephyrValue( Vec2::ZERO ) );
+		}
+		break;
+
+		case eTokenType::EQUAL:
+		{
+			AdvanceToNextToken();
+
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )	{ return false; }
+
+			// Parse x value
+			if ( !ParseExpression( eValueType::NUMBER ) )
+			{
+				return false;
+			}
+
+			if ( !ConsumeExpectedNextToken( eTokenType::COMMA ) )				{ return false; }
+
+			// Parse y value
+			if ( !ParseExpression( eValueType::NUMBER ) )
+			{
+				return false;
+			}
+
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )	{ return false; }
+
+			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT_VEC2 );
+		}
+		break;
+
+		default:
+		{
+			std::string errorMsg( "Unexpected '" );
+			errorMsg += curToken.GetDebugName();
+			errorMsg += "' seen, expected ';' or '=' after Vec2 declaration";
+
+			ReportError( errorMsg );
+			return false;
+		}
+		break;
+	}
 
 	return true;
 }
@@ -467,7 +537,6 @@ bool ZephyrParser::ParseStringDeclaration()
 			AdvanceToNextToken();
 
 			if ( !ParseExpression( eValueType::STRING ) )
-			//if ( !ParseStringExpression() )
 			{
 				return false;
 			}
@@ -488,9 +557,6 @@ bool ZephyrParser::ParseStringDeclaration()
 		}
 		break;
 	}
-
-	/*WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-	WriteOpCodeToCurChunk( eOpCode::DEFINE_VARIABLE );*/
 
 	return true;
 }
@@ -706,8 +772,16 @@ bool ZephyrParser::ParseAssignment()
 		return false;
 	}
 	
-	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-	WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
+	/*if ( value.GetType() == eValueType::VEC2 )
+	{
+		WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+		WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT_VEC2 );
+	}
+	else*/
+	//{
+		WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+		WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
+	//}
 
 	return true;
 }
@@ -819,6 +893,21 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::GREATER_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::GREATER_EQUAL );
 				case eTokenType::LESS:			return WriteOpCodeToCurChunk( eOpCode::LESS );
 				case eTokenType::LESS_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::LESS_EQUAL );
+				default: ReportError( Stringf( "Invalid operation '%s' for Number variables", ToString( curToken.GetType() ) ) ); return false;
+			}
+		}
+		break;
+
+		case eValueType::VEC2:
+		{
+			switch ( curToken.GetType() )
+			{
+				case eTokenType::PLUS:			return WriteOpCodeToCurChunk( eOpCode::ADD );
+				case eTokenType::MINUS:			return WriteOpCodeToCurChunk( eOpCode::SUBTRACT );
+				case eTokenType::STAR:			return WriteOpCodeToCurChunk( eOpCode::MULTIPLY );
+				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
+				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
+				default: ReportError( Stringf( "Invalid operation '%s' for Vec2 variables", ToString( curToken.GetType() ) ) ); return false;
 			}
 		}
 		break;
@@ -830,6 +919,7 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::PLUS:			return WriteOpCodeToCurChunk( eOpCode::ADD );
 				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
 				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
+				default: ReportError( Stringf( "Invalid operation '%s' for String variables", ToString( curToken.GetType() ) ) ); return false;
 			}
 		}
 		break;
@@ -845,6 +935,13 @@ bool ZephyrParser::ParseNumberExpression()
 	ZephyrToken curToken = ConsumeNextToken();
 
 	return WriteConstantToCurChunk( (NUMBER_TYPE)atof( curToken.GetData().c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseVec2Expression()
+{
+	return false;
 }
 
 
@@ -896,6 +993,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token, const eValueTyp
 		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup( expectedType );
 		// do type checking here
 		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression();
+		case eTokenType::CONSTANT_VEC2:		return ParseVec2Expression();
 		case eTokenType::CONSTANT_STRING:	return ParseStringExpression();
 		case eTokenType::MINUS:				return ParseUnaryExpression( expectedType );
 		case eTokenType::BANG:				return ParseUnaryExpression( expectedType );
@@ -982,8 +1080,9 @@ eValueType ZephyrParser::GetNextValueTypeInExpression()
 	{
 		switch ( curToken.GetType() )
 		{
-			case eTokenType::CONSTANT_NUMBER: return eValueType::NUMBER;
-			case eTokenType::CONSTANT_STRING: return eValueType::STRING;
+			case eTokenType::CONSTANT_NUMBER:	return eValueType::NUMBER;
+			case eTokenType::CONSTANT_VEC2:		return eValueType::VEC2;
+			case eTokenType::CONSTANT_STRING:	return eValueType::STRING;
 			case eTokenType::IDENTIFIER:
 			{
 				ZephyrValue value;
@@ -1113,6 +1212,7 @@ void ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueT
 	switch ( varType )
 	{
 		case eValueType::NUMBER: value = ZephyrValue( 0.f ); break;
+		case eValueType::VEC2:	 value = ZephyrValue( Vec2::ZERO ); break;
 		case eValueType::STRING: value = ZephyrValue( std::string("") ); break;
 		case eValueType::BOOL:	 value = ZephyrValue( false ); break;
 	}

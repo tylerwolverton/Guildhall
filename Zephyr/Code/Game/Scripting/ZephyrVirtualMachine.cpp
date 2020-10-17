@@ -86,6 +86,20 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::ASSIGNMENT_VEC2:
+			{
+				// Maybe push Vec2 back onto constant stack for if statements?
+				ZephyrValue variableName = PopConstant();
+				ZephyrValue yValue = PopConstant();
+				ZephyrValue xValue = PopConstant();
+
+				ZephyrValue value ( Vec2( xValue.GetAsNumber(), yValue.GetAsNumber() ) );
+				AssignToVariable( variableName.GetAsString(), value, localVariables );
+
+				PushConstant( value );
+			}
+			break;
+
 			case eOpCode::IF:
 			{
 				ZephyrValue expression = PopConstant();
@@ -150,7 +164,9 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 					{
 						case eValueType::BOOL:		args.SetValue( param.GetAsString(), value.GetAsBool() ); break;
 						case eValueType::NUMBER:	args.SetValue( param.GetAsString(), value.GetAsNumber() ); break;
+						case eValueType::VEC2:		args.SetValue( param.GetAsString(), value.GetAsVec2() ); break;
 						case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
+						default: ERROR_AND_DIE( Stringf( " Unimplemented event arg type '%s'", ToString( value.GetType() ) ) );
 					}					
 				}
 
@@ -231,6 +247,10 @@ void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs )
 		{
 			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, false ) );
 		}
+		else if ( keyValuePair.second->Is<Vec2>() )
+		{
+			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, Vec2::ZERO ) );
+		}
 		else if ( keyValuePair.second->Is<std::string>() 
 				  || keyValuePair.second->Is<char*>() )
 		{
@@ -273,6 +293,11 @@ void ZephyrVirtualMachine::PushBinaryOp( const ZephyrValue& a, const ZephyrValue
 		 && b.GetType() == eValueType::NUMBER )
 	{
 		PushNumberBinaryOp( a.GetAsNumber(), b.GetAsNumber(), opCode );
+	}
+	else if ( a.GetType() == eValueType::VEC2
+			  && b.GetType() == eValueType::VEC2 )
+	{
+		PushVec2BinaryOp( a.GetAsVec2(), b.GetAsVec2(), opCode );
 	}
 	else if ( a.GetType() == eValueType::STRING
 			  && b.GetType() == eValueType::STRING )
@@ -353,6 +378,54 @@ void ZephyrVirtualMachine::PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOp
 		case eOpCode::LESS_EQUAL:
 		{
 			bool result = a <= b;
+			PushConstant( result );
+		}
+		break;
+
+		default:
+		{
+
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushVec2BinaryOp( const Vec2& a, const Vec2& b, eOpCode opCode )
+{
+	switch ( opCode )
+	{
+		case eOpCode::ADD:
+		{
+			Vec2 result = a + b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::SUBTRACT:
+		{
+			Vec2 result = a - b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::MULTIPLY:
+		{
+			Vec2 result = a * b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::NOT_EQUAL:
+		{
+			bool result = !IsNearlyEqual( a, b );
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::EQUAL:
+		{
+			bool result = IsNearlyEqual( a, b );
 			PushConstant( result );
 		}
 		break;

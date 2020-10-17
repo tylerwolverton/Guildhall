@@ -14,6 +14,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::STATE_MACHINE:		return "StateMachine";
 		case eTokenType::STATE:				return "State";
 		case eTokenType::NUMBER:			return "Number";
+		case eTokenType::VEC2:				return "Vec2";
 		case eTokenType::STRING:			return "String";
 		case eTokenType::FIRE_EVENT:		return "FireEvent";
 		case eTokenType::ON_EVENT:			return "OnEvent";
@@ -21,8 +22,9 @@ std::string ToString( eTokenType type )
 		case eTokenType::IF:				return "if";
 		case eTokenType::ELSE:				return "else";
 		case eTokenType::IDENTIFIER:		return "Identifier";
-		case eTokenType::CONSTANT_NUMBER:	return "Constant number";
-		case eTokenType::CONSTANT_STRING:	return "Constant string";
+		case eTokenType::CONSTANT_NUMBER:	return "Constant Number";
+		case eTokenType::CONSTANT_VEC2:		return "Constant Vec2";
+		case eTokenType::CONSTANT_STRING:	return "Constant String";
 		case eTokenType::PLUS:				return "+";
 		case eTokenType::MINUS:				return "-";
 		case eTokenType::STAR:				return "*";
@@ -56,6 +58,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::STATE_MACHINE:		return "STATE_MACHINE";
 		case eTokenType::STATE:				return "STATE";
 		case eTokenType::NUMBER:			return "NUMBER";
+		case eTokenType::VEC2:				return "VEC2";
 		case eTokenType::STRING:			return "STRING";
 		case eTokenType::FIRE_EVENT:		return "FIRE_EVENT";
 		case eTokenType::ON_EVENT:			return "ON_EVENT";
@@ -64,6 +67,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::ELSE:				return "ELSE";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
+		case eTokenType::CONSTANT_VEC2:		return "CONSTANT_VEC2";
 		case eTokenType::CONSTANT_STRING:	return "CONSTANT_STRING";
 		case eTokenType::PLUS:				return "PLUS";
 		case eTokenType::MINUS:				return "MINUS";
@@ -105,6 +109,7 @@ std::string ToString( eValueType valueType )
 	switch ( valueType )
 	{
 		case eValueType::NUMBER:	return "Number";
+		case eValueType::VEC2:		return "Vec2";
 		case eValueType::BOOL:		return "Bool";
 		case eValueType::STRING:	return "String";
 
@@ -127,6 +132,14 @@ ZephyrValue::ZephyrValue( NUMBER_TYPE value )
 {
 	m_type = eValueType::NUMBER;
 	numberData = value;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue( const Vec2& value )
+{
+	m_type = eValueType::VEC2;
+	vec2Data = value;
 }
 
 
@@ -158,6 +171,7 @@ ZephyrValue::ZephyrValue( ZephyrValue const& other )
 	{
 		case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
 		case eValueType::NUMBER: this->numberData = other.numberData;	break;
+		case eValueType::VEC2: this->vec2Data = other.vec2Data;	break;
 		case eValueType::BOOL: this->boolData = other.boolData;	break;
 	}
 
@@ -194,6 +208,7 @@ bool ZephyrValue::IsTrue() const
 	switch ( m_type )
 	{
 		case eValueType::STRING: 	return *strData != std::string( "" );
+		case eValueType::VEC2: 		return !IsNearlyEqual( vec2Data, Vec2::ZERO );			
 		case eValueType::NUMBER: 	return !IsNearlyEqual( numberData, 0.f );			
 		case eValueType::BOOL:		return boolData;					
 	}
@@ -214,6 +229,7 @@ ZephyrValue& ZephyrValue::operator=( ZephyrValue const& other )
 	{
 		case eValueType::STRING: this->strData = new std::string( *other.strData );	break;
 		case eValueType::NUMBER: this->numberData = other.numberData;	break;
+		case eValueType::VEC2: this->vec2Data = other.vec2Data;	break;
 		case eValueType::BOOL: this->boolData = other.boolData;	break;
 	}
 

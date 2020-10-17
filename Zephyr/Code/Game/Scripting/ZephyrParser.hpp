@@ -58,6 +58,7 @@ private:
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseNumberDeclaration();
+	bool ParseVec2Declaration();
 	bool ParseStringDeclaration();
 	bool ParseFireEvent();
 	bool ParseEventArgs();
@@ -70,6 +71,7 @@ private:
 	bool ParseUnaryExpression( const eValueType& expressionType );
 	bool ParseBinaryExpression( const eValueType& expressionType );
 	bool ParseNumberExpression();
+	bool ParseVec2Expression();
 	bool ParseStringExpression();
 	bool ParseIdentifierExpressionOfType( eValueType expectedType );
 

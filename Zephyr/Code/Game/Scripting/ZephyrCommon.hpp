@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/Vec2.hpp"
 
 #include <string>
 
@@ -26,6 +27,7 @@ enum class eTokenType
 	STATE_MACHINE,
 	STATE,
 	NUMBER,
+	VEC2,
 	STRING,
 	FIRE_EVENT,
 	ON_EVENT,
@@ -41,6 +43,7 @@ enum class eTokenType
 	IDENTIFIER,
 
 	CONSTANT_NUMBER,
+	CONSTANT_VEC2,
 	CONSTANT_STRING,
 
 	// Operators
@@ -85,6 +88,7 @@ enum class eOpCode : byte
 	DEFINE_VARIABLE,
 	GET_VARIABLE_VALUE,
 	ASSIGNMENT,
+	ASSIGNMENT_VEC2,
 
 	// Arithmetic
 	ADD,
@@ -118,6 +122,7 @@ enum class eValueType
 {
 	NONE,
 	NUMBER,
+	VEC2,
 	BOOL,
 	STRING,
 };
@@ -131,6 +136,7 @@ class ZephyrValue
 public:
 	ZephyrValue();
 	ZephyrValue( NUMBER_TYPE value );
+	ZephyrValue( const Vec2& value );
 	ZephyrValue( bool value );
 	ZephyrValue( const std::string& value );
 	ZephyrValue( ZephyrValue const& other );
@@ -141,6 +147,7 @@ public:
 	eValueType	GetType() const			{ return m_type; }
 
 	float		GetAsNumber() const		{ return numberData; }
+	Vec2		GetAsVec2() const		{ return vec2Data; }
 	bool		GetAsBool() const		{ return boolData; }
 	std::string GetAsString() const;
 	
@@ -152,6 +159,7 @@ private:
 	union
 	{
 		NUMBER_TYPE numberData;
+		Vec2 vec2Data;
 		bool boolData;
 		std::string* strData = nullptr;
 	};
