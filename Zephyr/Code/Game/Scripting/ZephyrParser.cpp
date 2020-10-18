@@ -976,6 +976,8 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::GREATER_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::GREATER_EQUAL );
 				case eTokenType::LESS:			return WriteOpCodeToCurChunk( eOpCode::LESS );
 				case eTokenType::LESS_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::LESS_EQUAL );
+				case eTokenType::AND:			return WriteOpCodeToCurChunk( eOpCode::AND );
+				case eTokenType::OR:			return WriteOpCodeToCurChunk( eOpCode::OR );
 				default: ReportError( Stringf( "Invalid operation '%s' for Number variables", ToString( curToken.GetType() ).c_str() ) ); return false;
 			}
 		}
@@ -990,6 +992,8 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::STAR:			return WriteOpCodeToCurChunk( eOpCode::MULTIPLY );
 				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
 				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
+				case eTokenType::AND:			return WriteOpCodeToCurChunk( eOpCode::AND );
+				case eTokenType::OR:			return WriteOpCodeToCurChunk( eOpCode::OR );
 				default: ReportError( Stringf( "Invalid operation '%s' for Vec2 variables", ToString( curToken.GetType() ).c_str() ) ); return false;
 			}
 		}
@@ -1002,6 +1006,8 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::PLUS:			return WriteOpCodeToCurChunk( eOpCode::ADD );
 				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
 				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
+				case eTokenType::AND:			return WriteOpCodeToCurChunk( eOpCode::AND );
+				case eTokenType::OR:			return WriteOpCodeToCurChunk( eOpCode::OR );
 				default: ReportError( Stringf( "Invalid operation '%s' for String variables", ToString( curToken.GetType() ).c_str() ) ); return false;
 			}
 		}
@@ -1137,6 +1143,8 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token, const eValueType
 		case eTokenType::GREATER_EQUAL:
 		case eTokenType::LESS:
 		case eTokenType::LESS_EQUAL:
+		case eTokenType::AND:
+		case eTokenType::OR:
 		{
 			return ParseBinaryExpression( expectedType );
 		}
@@ -1163,6 +1171,8 @@ eOpPrecedenceLevel ZephyrParser::GetPrecedenceLevel( const ZephyrToken& token )
 		case eTokenType::GREATER_EQUAL:		return eOpPrecedenceLevel::COMPARISON;
 		case eTokenType::LESS:				return eOpPrecedenceLevel::COMPARISON;
 		case eTokenType::LESS_EQUAL:		return eOpPrecedenceLevel::COMPARISON;
+		case eTokenType::AND:				return eOpPrecedenceLevel::AND;
+		case eTokenType::OR:				return eOpPrecedenceLevel::OR;
 		default:							return eOpPrecedenceLevel::NONE;
 	}
 }

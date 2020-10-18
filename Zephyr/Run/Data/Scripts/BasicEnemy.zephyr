@@ -30,21 +30,16 @@ StateMachine
 	{	
 		OnEvent( TestEvent )
 		{		
-			//ChangeState( Chase );
 			FireEvent( GetNewWanderTargetPosition() );
 		}
 
 		FireEvent( PrintDebugText( text = "Wander" ) );
-		//FireEvent( PrintDebugText( text = position.x ) );
 		
 		FireEvent( MoveToLocation( pos=targetPosition  ) );
 
 		if( position == targetPosition )
 		{
-			//ChangeState( Chase );
-			//FireEvent( GetNewWanderTargetPosition() );
-			Number location = targetPosition.x * 3;
-			FireEvent( PrintDebugText( text = location ) );
+			ChangeState( Chase );
 		}
 	}
 

@@ -103,7 +103,7 @@ StateMachine
 	{
 		OnEvent( TestEvent )
 		{		
-			ChangeState( NoPrint );
+			ChangeState( LogicalOperatorTest );
 		}
 
 		Number testNum = -(1 + 2 * 3 - 4 / 2);
@@ -114,6 +114,41 @@ StateMachine
 		else
 		{
 			FireEvent( PrintDebugText( text = "OperatorTest: Success" ) );
+		}
+	}
+
+	State LogicalOperatorTest
+	{
+		OnEvent( TestEvent )
+		{		
+			ChangeState( NoPrint );
+		}
+
+		if( 1 == 1 
+			&& 2 == 2 )
+		{
+			if( 3 == 1 
+				|| 2 == 2 )
+			{
+				if( ( 1 == 1 || 6 == 7 )
+					&& 2 == 2 
+					|| "yes" == "no" )
+				{
+					FireEvent( PrintDebugText( text = "LogicalOperatorTest: Success" ) );
+				}
+				else
+				{
+					FireEvent( PrintDebugText( text = "LogicalOperatorTest: Failed combination" ) );
+				}
+			}
+			else
+			{
+				FireEvent( PrintDebugText( text = "LogicalOperatorTest: Failed or" ) );
+			}
+		}
+		else
+		{
+			FireEvent( PrintDebugText( text = "LogicalOperatorTest: Failed and" ) );
 		}
 	}
 }

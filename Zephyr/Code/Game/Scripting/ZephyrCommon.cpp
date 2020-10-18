@@ -29,6 +29,8 @@ std::string ToString( eTokenType type )
 		case eTokenType::MINUS:				return "-";
 		case eTokenType::STAR:				return "*";
 		case eTokenType::SLASH:				return "/";
+		case eTokenType::AND:				return "&&";
+		case eTokenType::OR:				return "||";
 		case eTokenType::EQUAL:				return "=";
 		case eTokenType::EQUAL_EQUAL:		return "==";
 		case eTokenType::BANG:				return "!";
@@ -74,6 +76,8 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::MINUS:				return "MINUS";
 		case eTokenType::STAR:				return "STAR";
 		case eTokenType::SLASH:				return "SLASH";
+		case eTokenType::AND:				return "AND";
+		case eTokenType::OR:				return "OR";
 		case eTokenType::EQUAL:				return "EQUAL";
 		case eTokenType::EQUAL_EQUAL:		return "EQUAL_EQUAL";
 		case eTokenType::BANG:				return "BANG";

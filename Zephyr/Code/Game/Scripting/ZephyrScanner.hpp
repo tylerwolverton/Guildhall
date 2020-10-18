@@ -24,6 +24,7 @@ private:
 
 	void SkipWhitespaceAndComments();
 	void TokenizeComparator( char curChar );
+	void TokenizeLogicalOperator( char curChar );
 	void TokenizeNumberConstant();
 	void TokenizeStringConstant();
 	void TokenizeIdentifier();

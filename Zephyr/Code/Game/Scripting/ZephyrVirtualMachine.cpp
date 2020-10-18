@@ -143,12 +143,50 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::AND:
+			{
+				ZephyrValue rightVal = PopConstant();
+				ZephyrValue leftVal = PopConstant();
+
+				if ( !leftVal.IsTrue() 
+					 || !rightVal.IsTrue() )
+				{
+					PushConstant( ZephyrValue( false ) );
+				}
+				else
+				{
+					PushConstant( ZephyrValue( true ) );
+				}
+			}
+			break;
+
+			case eOpCode::OR:
+			{
+				ZephyrValue rightVal = PopConstant();
+				ZephyrValue leftVal = PopConstant();
+
+				if ( !leftVal.IsTrue()
+					 && !rightVal.IsTrue() )
+				{
+					PushConstant( ZephyrValue( false ) );
+				}
+				else
+				{
+					PushConstant( ZephyrValue( true ) );
+				}
+			}
+			break;
+
 			case eOpCode::NEGATE:
 			{
 				ZephyrValue a = PopConstant();
 				if ( a.GetType() == eValueType::NUMBER )
 				{
 					PushConstant( -a.GetAsNumber() );
+				}
+				else if ( a.GetType() == eValueType::VEC2 )
+				{
+					PushConstant( -a.GetAsVec2() );
 				}
 			}
 			break;

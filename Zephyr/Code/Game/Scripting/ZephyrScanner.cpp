@@ -51,6 +51,8 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 			case '>':
 			case '<': TokenizeComparator( nextChar );															 break;
 			case '"': TokenizeStringConstant();																	 break;
+			case '|':
+			case '&': TokenizeLogicalOperator( nextChar );														 break;
 			case EOF: 																							 break;
 			
 			default:
@@ -73,7 +75,6 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 		}
 	}
 
-	//ParseAndAddToTokenList( tokens, curWord, curLineNum );
 	AddToken( eTokenType::END_OF_FILE );
 
 	return m_tokens;
@@ -201,6 +202,27 @@ void ZephyrScanner::TokenizeComparator( char curChar )
 			}
 		}
 		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScanner::TokenizeLogicalOperator( char curChar )
+{
+	char nextChar = ReadAndAdvanceSrcPos();
+	if ( curChar == '|' 
+		 && nextChar == '|' ) 
+	{ 
+		AddToken( eTokenType::OR ); 
+	}
+	else if ( curChar == '&'
+			  && nextChar == '&' )
+	{ 
+		AddToken( eTokenType::AND ); 
+	}
+	else
+	{
+		AddToken( eTokenType::UNKNOWN );
 	}
 }
 

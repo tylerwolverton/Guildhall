@@ -53,6 +53,10 @@ enum class eTokenType
 	SLASH,
 	EQUAL,
 	
+	// Logical Operators
+	AND,
+	OR,
+
 	// Comparators
 	EQUAL_EQUAL,
 	BANG,
@@ -111,8 +115,9 @@ enum class eOpCode : byte
 	CHANGE_STATE,
 
 	IF,
-
 	JUMP,
+	AND,
+	OR,
 
 	LAST_VAL,
 };
