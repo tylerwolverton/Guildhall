@@ -40,6 +40,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::SEMICOLON:			return ";";
 		case eTokenType::COMMA:				return ",";
 		case eTokenType::QUOTE:				return "\"";
+		case eTokenType::PERIOD:			return ".";
 		case eTokenType::END_OF_FILE:		return "End of File";
 		default:							return "Unknown";
 	}
@@ -84,6 +85,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::SEMICOLON:			return "SEMICOLON";
 		case eTokenType::COMMA: 			return "COMMA";
 		case eTokenType::QUOTE: 			return "QUOTE";
+		case eTokenType::PERIOD: 			return "PERIOD";
 		case eTokenType::END_OF_FILE:		return "END_OF_FILE";
 		default:							return "UNKNOWN";
 	}

@@ -1,7 +1,7 @@
 StateMachine
 {
 	Vec2 position;		
-	Vec2 targetPosition= (5,5);
+	Vec2 targetPosition = (5,5);
 
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
 	OnEvent( Spawn )
@@ -34,14 +34,17 @@ StateMachine
 			FireEvent( GetNewWanderTargetPosition() );
 		}
 
-		FireEvent( PrintDebugText( text = "Wander" ) );
-
+		//FireEvent( PrintDebugText( text = "Wander" ) );
+		FireEvent( PrintDebugText( text = position.x ) );
+		
 		FireEvent( MoveToLocation( pos=targetPosition  ) );
 
 		if( position == targetPosition )
 		{
 			//ChangeState( Chase );
-			FireEvent( GetNewWanderTargetPosition() );
+			//FireEvent( GetNewWanderTargetPosition() );
+			Number location = targetPosition.x * 3;
+			FireEvent( PrintDebugText( text = location ) );
 		}
 	}
 

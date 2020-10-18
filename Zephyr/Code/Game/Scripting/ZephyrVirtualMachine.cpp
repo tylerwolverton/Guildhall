@@ -78,11 +78,33 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::GET_MEMBER_VARIABLE_VALUE:
+			{ 
+				ZephyrValue memberName = PopConstant();
+				ZephyrValue objectName = PopConstant();
+
+				ZephyrValue objectVal = GetVariableValue( objectName.GetAsString(), localVariables );
+				
+				// TODO: Generalize this for more object types
+				if ( memberName.GetAsString() == "x" ) { PushConstant( objectVal.GetAsVec2().x ); }
+				else if ( memberName.GetAsString() == "y" ) { PushConstant( objectVal.GetAsVec2().y ); }
+			}
+			break;
+
 			case eOpCode::ASSIGNMENT:
 			{
 				ZephyrValue variableName = PopConstant(); 
 				ZephyrValue constantValue = PeekConstant();
 				AssignToVariable( variableName.GetAsString(), constantValue, localVariables );
+			}
+			break;
+
+			case eOpCode::MEMBER_ASSIGNMENT:
+			{
+				ZephyrValue memberName = PopConstant();
+				ZephyrValue variableName = PopConstant();
+				ZephyrValue constantValue = PeekConstant();
+				AssignToMemberVariable( variableName.GetAsString(), memberName.GetAsString(), constantValue, localVariables );
 			}
 			break;
 
@@ -166,7 +188,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 						case eValueType::NUMBER:	args.SetValue( param.GetAsString(), value.GetAsNumber() ); break;
 						case eValueType::VEC2:		args.SetValue( param.GetAsString(), value.GetAsVec2() ); break;
 						case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
-						default: ERROR_AND_DIE( Stringf( " Unimplemented event arg type '%s'", ToString( value.GetType() ) ) );
+						default: ERROR_AND_DIE( Stringf( " Unimplemented event arg type '%s'", ToString( value.GetType() ).c_str() ) );
 					}					
 				}
 
@@ -544,6 +566,51 @@ void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, co
 		if ( globalIter != m_globalVariables->end() )
 		{
 			( *m_globalVariables )[variableName] = value;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// TODO: Find a more general way to set member variables
+void ZephyrVirtualMachine::AssignToMemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables )
+{
+	// Try to find in local variables first
+	auto localIter = localVariables.find( variableName );
+	if ( localIter != localVariables.end() )
+	{
+		Vec2 vecValue = localIter->second.GetAsVec2();
+		if		( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+		else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
+
+		localVariables[variableName] = ZephyrValue( vecValue );
+	}
+
+	// Check state variables
+	if ( m_stateVariables != nullptr )
+	{
+		auto stateIter = m_stateVariables->find( variableName );
+		if ( stateIter != m_stateVariables->end() )
+		{
+			Vec2 vecValue = stateIter->second.GetAsVec2();
+			if ( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+			else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
+
+			( *m_stateVariables )[variableName] = ZephyrValue( vecValue );
+		}
+	}
+
+	// Check global variables
+	if ( m_globalVariables != nullptr )
+	{
+		auto globalIter = m_globalVariables->find( variableName );
+		if ( globalIter != m_globalVariables->end() )
+		{
+			Vec2 vecValue = globalIter->second.GetAsVec2();
+			if ( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+			else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
+
+			( *m_globalVariables )[variableName] = ZephyrValue( vecValue );
 		}
 	}
 }

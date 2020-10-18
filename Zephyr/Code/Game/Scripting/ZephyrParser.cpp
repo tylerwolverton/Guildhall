@@ -617,20 +617,39 @@ bool ZephyrParser::ParseEventArgs()
 
 	while ( identifier.GetType() == eTokenType::IDENTIFIER )
 	{
-		
 		if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
 		{
 			ReportError( "Parameter to event must be in the form, var = value" );
 			return false;
 		}
 
-		ZephyrToken valueToken = ConsumeNextToken();
+		ZephyrToken valueToken = GetCurToken();
 		switch ( valueToken.GetType() )
 		{
 			case eTokenType::CONSTANT_NUMBER:
+			{
+				if ( !ParseExpression( eValueType::NUMBER ) )
+				{
+					return false;
+				}
+			}
+			break;
+
+			case eTokenType::CONSTANT_VEC2:
+			{
+				if ( !ParseExpression( eValueType::VEC2 ) )
+				{
+					return false;
+				}
+			}
+			break;
+
 			case eTokenType::CONSTANT_STRING:
 			{
-				WriteConstantToCurChunk( valueToken.GetData() );
+				if ( !ParseExpression( eValueType::STRING ) )
+				{
+					return false;
+				}
 			}
 			break;
 
@@ -643,8 +662,10 @@ bool ZephyrParser::ParseEventArgs()
 					return false;
 				}
 
-				WriteConstantToCurChunk( ZephyrValue( valueToken.GetData() ) );
-				WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
+				if ( !ParseExpression( value.GetType() ) )
+				{
+					return false;
+				}
 			}
 			break;
 
@@ -754,34 +775,87 @@ bool ZephyrParser::ParseAssignment()
 	ZephyrToken identifier = GetLastToken();
 	ZephyrToken curToken = ConsumeNextToken();
 
-	if ( curToken.GetType() != eTokenType::EQUAL )
+	ZephyrValue value;
+	switch ( curToken.GetType() )
+	{
+		case eTokenType::EQUAL:
+		{
+			if ( !TryToGetVariable( identifier.GetData(), value ) )
+			{
+				ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+				return false;
+			}
+
+			if ( !ParseExpression( value.GetType() ) )
+			{
+				return false;
+			}
+
+			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
+		}
+		break;
+
+		case eTokenType::PERIOD:
+		{
+			if ( !TryToGetVariable( identifier.GetData(), value ) )
+			{
+				ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+				return false;
+			}
+
+			if ( value.GetType() != eValueType::VEC2 )
+			{
+				ReportError( Stringf( "Cannot assign to a member variable in a '%s' variable, '%s'", ToString( value.GetType() ).c_str(), identifier.GetData().c_str() ) );
+				return false;
+			}
+
+			ZephyrToken member = ConsumeNextToken();
+
+			if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
+			{
+				ReportError( Stringf( "Assignment to variable '%s.%s' expected a '=' sign after the variable name", identifier.GetData().c_str(), member.GetData().c_str() ) );
+				return false;
+			}
+
+			if ( !ParseExpression( eValueType::NUMBER ) )
+			//if ( !ParseExpression( value.GetType() ) )
+			{
+				return false;
+			}
+
+			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			WriteConstantToCurChunk( ZephyrValue( member.GetData() ) );
+			WriteOpCodeToCurChunk( eOpCode::MEMBER_ASSIGNMENT );
+		}
+		break;
+
+		default:
+		{
+			ReportError( Stringf( "Assignment to variable '%s' expected a '=' sign after the variable name", identifier.GetData().c_str() ) );
+			return false;
+		}
+	}
+	/*if ( curToken.GetType() != eTokenType::EQUAL )
 	{
 		ReportError( Stringf( "Assignment to variable '%s' expected a '=' sign after the variable name", identifier.GetData().c_str() ) );
 		return false;
-	}
+	}*/
 
-	ZephyrValue value;
+	/*ZephyrValue value;
 	if ( !TryToGetVariable( identifier.GetData(), value ) )
 	{
 		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
 		return false;
-	}
+	}*/
 
-	if ( !ParseExpression( value.GetType() ) )
+	/*if ( !ParseExpression( value.GetType() ) )
 	{
 		return false;
 	}
 	
-	/*if ( value.GetType() == eValueType::VEC2 )
-	{
-		WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-		WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT_VEC2 );
-	}
-	else*/
-	//{
-		WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-		WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
-	//}
+	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );*/
 
 	return true;
 }
@@ -852,6 +926,15 @@ bool ZephyrParser::ParseUnaryExpression( const eValueType& expressionType )
 		}
 		break;
 
+		case eValueType::VEC2:
+		{
+			switch ( curToken.GetType() )
+			{
+				case eTokenType::MINUS:			return WriteOpCodeToCurChunk( eOpCode::NEGATE );
+			}
+		}
+		break;
+
 		case eValueType::STRING:
 		{
 			switch ( curToken.GetType() )
@@ -893,7 +976,7 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::GREATER_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::GREATER_EQUAL );
 				case eTokenType::LESS:			return WriteOpCodeToCurChunk( eOpCode::LESS );
 				case eTokenType::LESS_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::LESS_EQUAL );
-				default: ReportError( Stringf( "Invalid operation '%s' for Number variables", ToString( curToken.GetType() ) ) ); return false;
+				default: ReportError( Stringf( "Invalid operation '%s' for Number variables", ToString( curToken.GetType() ).c_str() ) ); return false;
 			}
 		}
 		break;
@@ -907,7 +990,7 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::STAR:			return WriteOpCodeToCurChunk( eOpCode::MULTIPLY );
 				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
 				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
-				default: ReportError( Stringf( "Invalid operation '%s' for Vec2 variables", ToString( curToken.GetType() ) ) ); return false;
+				default: ReportError( Stringf( "Invalid operation '%s' for Vec2 variables", ToString( curToken.GetType() ).c_str() ) ); return false;
 			}
 		}
 		break;
@@ -919,7 +1002,7 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 				case eTokenType::PLUS:			return WriteOpCodeToCurChunk( eOpCode::ADD );
 				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
 				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
-				default: ReportError( Stringf( "Invalid operation '%s' for String variables", ToString( curToken.GetType() ) ) ); return false;
+				default: ReportError( Stringf( "Invalid operation '%s' for String variables", ToString( curToken.GetType() ).c_str() ) ); return false;
 			}
 		}
 		break;
@@ -974,6 +1057,31 @@ bool ZephyrParser::ParseIdentifierExpressionOfType( eValueType expectedType )
 
 	if ( value.GetType() != expectedType )
 	{
+		// Check if this could be a vec2 member accessor
+		if ( expectedType == eValueType::NUMBER
+			 && value.GetType() == eValueType::VEC2 )
+		{
+			if( ConsumeExpectedNextToken( eTokenType::PERIOD ) )
+			{
+				ZephyrToken memberName = ConsumeNextToken();
+				if ( memberName.GetData() == "x" 
+					 || memberName.GetData() == "y" )
+				{
+					WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
+					WriteConstantToCurChunk( ZephyrValue( memberName.GetData() ) );
+					WriteOpCodeToCurChunk( eOpCode::GET_MEMBER_VARIABLE_VALUE );
+
+					return true;
+				}
+				else
+				{
+					ReportError( Stringf( "'%s' is not a member of Vec2", curToken.GetData().c_str() ) );
+					return false;
+				}
+			}
+		}
+
+
 		ReportError( Stringf( "Type mismatch, expected '%s' to be '%s', but instead it was '%s'", curToken.GetData().c_str(), ToString( expectedType ).c_str(), ToString( value.GetType() ).c_str() ) );
 		return false;
 	}
@@ -1111,7 +1219,7 @@ void ZephyrParser::ReportError( const std::string& errorMsg )
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrToken ZephyrParser::PeekNextToken()
+ZephyrToken ZephyrParser::PeekNextToken() const
 {
 	if ( IsAtEnd() )
 	{
@@ -1119,6 +1227,19 @@ ZephyrToken ZephyrParser::PeekNextToken()
 	}
 
 	return m_tokens[m_curTokenIdx + 1];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrToken ZephyrParser::PeekNextNextToken() const
+{
+	if ( IsAtEnd() 
+		 || ( m_curTokenIdx + 2 ) > (int)m_tokens.size() - 1 )
+	{
+		return m_tokens[m_tokens.size() - 1];
+	}
+
+	return m_tokens[m_curTokenIdx + 2];
 }
 
 
@@ -1172,7 +1293,7 @@ bool ZephyrParser::ConsumeExpectedNextToken( eTokenType expectedType )
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrToken ZephyrParser::GetLastToken()
+ZephyrToken ZephyrParser::GetLastToken() const
 {
 	return m_tokens[m_curTokenIdx - 1];
 }
@@ -1222,43 +1343,68 @@ void ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueT
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const
+bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue& out_value )
 {
-	if ( !m_curBytecodeChunk->TryToGetVariable( identifier, out_value )
+	bool foundValue = m_curBytecodeChunk->TryToGetVariable( identifier, out_value );
+
+	if ( !foundValue
 		 && m_curBytecodeChunk != m_stateMachineBytecodeChunk )
 	{
-		return m_stateMachineBytecodeChunk->TryToGetVariable( identifier, out_value );
+		foundValue = m_stateMachineBytecodeChunk->TryToGetVariable( identifier, out_value );
 	}
 
-	return true;
+	// Check for member accessor
+	if ( foundValue && out_value.GetType() == eValueType::VEC2 )
+	{
+		ZephyrToken nextToken = PeekNextToken();
+		if ( nextToken.GetType() == eTokenType::PERIOD )
+		{
+			ZephyrToken member = PeekNextNextToken();
+
+			if ( member.GetData() == "x" ) 
+			{
+				out_value = ZephyrValue( out_value.GetAsVec2().x );
+			}
+			else if ( member.GetData() == "y" ) 
+			{ 
+				out_value = ZephyrValue( out_value.GetAsVec2().x );
+			}
+			else
+			{
+				ReportError( Stringf( "%s is not a member of Vec2", member.GetData().c_str() ) );
+				return false;
+			}
+		}
+
+	}
+
+	return foundValue;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::IsAtEnd()
+bool ZephyrParser::IsAtEnd() const
 {
 	return m_curTokenIdx >= (int)m_tokens.size();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrToken ZephyrParser::GetCurToken()
+ZephyrToken ZephyrParser::GetCurToken() const
 {
 	return m_tokens[m_curTokenIdx];
 }
 
 
 //-----------------------------------------------------------------------------------------------
-eTokenType ZephyrParser::GetCurTokenType()
+eTokenType ZephyrParser::GetCurTokenType() const
 {
 	return m_tokens[m_curTokenIdx].GetType();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-int ZephyrParser::GetCurTokenLineNum()
+int ZephyrParser::GetCurTokenLineNum() const
 {
 	return m_tokens[m_curTokenIdx].GetLineNum();
 }
-
-

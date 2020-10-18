@@ -65,6 +65,7 @@ enum class eTokenType
 	SEMICOLON,
 	COMMA,
 	QUOTE,
+	PERIOD,
 
 	END_OF_FILE,
 
@@ -87,7 +88,9 @@ enum class eOpCode : byte
 
 	DEFINE_VARIABLE,
 	GET_VARIABLE_VALUE,
+	GET_MEMBER_VARIABLE_VALUE,
 	ASSIGNMENT,
+	MEMBER_ASSIGNMENT,
 	ASSIGNMENT_VEC2,
 
 	// Arithmetic

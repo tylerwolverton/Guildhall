@@ -48,6 +48,7 @@ private:
 
 	ZephyrValue GetVariableValue( const std::string& variableName, const ZephyrValueMap& localVariables );
 	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );
+	void		AssignToMemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 
 	void ClearConstantStack();
 	void ResetVariableMaps();

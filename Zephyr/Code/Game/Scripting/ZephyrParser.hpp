@@ -53,7 +53,7 @@ private:
 	bool DoesTokenMatchType( const ZephyrToken& token, const eTokenType& type );
 
 	void DeclareVariable( const ZephyrToken& identifier, const eValueType& varType );
-	bool TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const;
+	bool TryToGetVariable( const std::string& identifier, ZephyrValue& out_value );
 
 	bool ParseBlock();
 	bool ParseStatement();
@@ -84,18 +84,19 @@ private:
 
 	void ReportError( const std::string& errorMsg );
 
-	ZephyrToken PeekNextToken();
 	ZephyrToken ConsumeNextToken();
 	void AdvanceToNextToken();
 	void AdvanceToNextTokenIfTypeMatches( eTokenType expectedType );
 	bool ConsumeExpectedNextToken( eTokenType expectedType );
-	ZephyrToken GetLastToken();
-	bool IsAtEnd();
 
-	ZephyrToken GetCurToken();
-	eTokenType GetCurTokenType();
-	int GetCurTokenLineNum();
+	ZephyrToken PeekNextToken() const;
+	ZephyrToken PeekNextNextToken() const;
+	ZephyrToken GetCurToken() const;
+	ZephyrToken GetLastToken() const;
+	eTokenType GetCurTokenType() const;
+	int GetCurTokenLineNum() const;
 
+	bool IsAtEnd() const;
 
 private:
 	std::string m_filename;
