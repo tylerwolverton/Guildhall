@@ -125,6 +125,11 @@ void ZephyrScanner::SkipWhitespaceAndComments()
 				{
 					parsingComment = true;
 				}
+				else
+				{
+					// This is a division slash
+					return;
+				}
 			}
 			break;
 

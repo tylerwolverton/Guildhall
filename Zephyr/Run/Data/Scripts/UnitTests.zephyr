@@ -1,0 +1,120 @@
+StateMachine
+{
+	Number testNum; 
+	Number testNumInit = 12; 
+	Vec2 testVec2;		
+	Vec2 testVec2Init = (5,5);
+	String testStr;
+	String testStrInit = "Hello";
+
+	// Error cases to comment in to test parser
+	State NoPrint
+	{	
+		OnEvent( TestEvent )
+		{		
+			ChangeState( GlobalAssignmentTest );
+
+			// OnEvent( SubEvent ) {}
+		}
+
+		// unknownVar = 6;
+		testVec2.z = 27;
+		// State SubState {}
+		// testStr = testVec2;
+		// testVec2 + testStr;
+		//testNum = testVec2 + testStr;
+		
+		if( 1 == 1 )
+		{
+			Number transitiveTestNum = 10;
+		}
+		transitiveTestNum = 2;
+
+	}
+
+	State GlobalAssignmentTest
+	{
+		OnEvent( TestEvent )
+		{		
+			ChangeState( ScopeAssignmentTest );
+		}
+		
+		testNum = testNumInit;
+		if( testNum == testNumInit )
+		{
+			testVec2 = testVec2Init;
+			if( testVec2 == testVec2Init )
+			{
+				testStr = testStrInit;
+				if( testStr = testStrInit )
+				{
+					FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Success" ) );
+				}
+				else
+				{
+					FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Failed" ) );
+				}
+			}
+			else
+			{	
+				FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Failed" ) );
+			}	
+		}
+		else
+		{
+			FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Failed" ) );
+		}
+	}
+
+	State ScopeAssignmentTest
+	{
+		OnEvent( TestEvent )
+		{		
+			ChangeState( OperatorTest );
+		}
+		
+		Number localTestNum = 1;
+		if( localTestNum == 1 )
+		{
+			localTestNum = 2;
+		}
+		else
+		{
+			FireEvent( PrintDebugText( text = "ScopeAssignmentTest: Failed to initialize local variable" ) );
+		}
+
+		if( localTestNum == 2 )
+		{
+			Number localTestNum;
+			localTestNum = 12;
+		}
+		else
+		{
+			FireEvent( PrintDebugText( text = "ScopeAssignmentTest: Failed to set var in if statement" ) );
+		}
+
+		if( localTestNum == 12 )
+		{
+			FireEvent( PrintDebugText( text = "ScopeAssignmentTest: Failed to hide scope of local var" ) );
+		}
+	}
+
+	State OperatorTest
+	{
+		OnEvent( TestEvent )
+		{		
+			ChangeState( NoPrint );
+		}
+
+		Number testNum = -(1 + 2 * 3 - 4 / 2);
+		if( testNum != -5 )
+		{
+			FireEvent( PrintDebugText( text = "OperatorTest: Failed" ) );
+		}
+		else
+		{
+			FireEvent( PrintDebugText( text = "OperatorTest: Success" ) );
+		}
+	}
+}
+

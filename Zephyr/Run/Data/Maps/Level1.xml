@@ -18,6 +18,7 @@
 	</MapRows>
 	<Entities>
     <Entity name="Level1Manager"/>
+    <Entity name="UnitTester" pos="6.5,6.5"/>
     <Entity name="ClosedDoorVertical" pos="8.5,9.5"/>
 		<PlayerStart pos="1.5,1.5" yaw="0"/>
 		<Actor name ="Blob" pos="5.5,5.5" yaw="0"/>

@@ -44,7 +44,8 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 	// Event variables don't need to be persisted after this call, so save a copy as local variables
 	// TODO: Account for scopes inside if statements, etc.?
 	std::map<std::string, ZephyrValue> localVariables;
-	if ( bytecodeChunk.GetType() == eBytecodeChunkType::EVENT )
+	if ( bytecodeChunk.GetType() == eBytecodeChunkType::STATE 
+		||  bytecodeChunk.GetType() == eBytecodeChunkType::EVENT )
 	{
 		localVariables = bytecodeChunk.GetVariables();
 	}

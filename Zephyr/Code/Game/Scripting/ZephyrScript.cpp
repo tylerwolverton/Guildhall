@@ -59,7 +59,6 @@ void ZephyrScript::Update()
 
 	if ( m_curStateBytecodeChunk != nullptr )
 	{
-		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
 		g_zephyrVM->InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }

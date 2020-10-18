@@ -22,7 +22,6 @@ public:
 
 	ZephyrBytecodeChunk* GetGlobalBytecodeChunk() const										{ return m_stateMachineBytecodeChunk; }
 	ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& name ) const;
-	// TODO: IS this enough or do we need a variable in StateMachine for the initial state?
 	ZephyrBytecodeChunk* GetFirstStateBytecodeChunk() const;
 	ZephyrBytecodeChunkMap GetAllStateBytecodeChunks() const;
 	ZephyrBytecodeChunkMap GetAllEventBytecodeChunks() const;
@@ -39,6 +38,6 @@ public:
 private:
 	bool m_isValid = false;
 
-	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;
-	ZephyrBytecodeChunkMap m_bytecodeChunks;
+	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;					// Owned by ZephyrScriptDefinition
+	ZephyrBytecodeChunkMap m_bytecodeChunks;									// Owned by ZephyrScriptDefinition
 };

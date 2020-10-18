@@ -31,6 +31,10 @@
     <Script name="AdvancedEnemy.zephyr"/>
   </Actor>
 
+  <Entity name="UnitTester">
+    <Script name="UnitTests.zephyr"/>
+  </Entity>
+
   <Entity name="GameManager">
     <Script name="GameManager.zephyr"/>
   </Entity>

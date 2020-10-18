@@ -104,8 +104,8 @@ private:
 	int m_curTokenIdx = 0;
 	
 	bool m_isFirstStateDef = true;
-	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;
+	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;				// Owned by ZephyrScriptDefinition
 	std::stack<ZephyrBytecodeChunk*> m_curBytecodeChunksStack;
-	ZephyrBytecodeChunkMap m_bytecodeChunks;
+	ZephyrBytecodeChunkMap m_bytecodeChunks;								// Owned by ZephyrScriptDefinition
 	ZephyrBytecodeChunk* m_curBytecodeChunk = nullptr;
 };

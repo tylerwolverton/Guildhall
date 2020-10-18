@@ -22,6 +22,7 @@ ZephyrScriptDefinition::ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachin
 ZephyrScriptDefinition::~ZephyrScriptDefinition()
 {
 	PTR_MAP_SAFE_DELETE( m_bytecodeChunks );
+	//PTR_SAFE_DELETE( m_stateMachineBytecodeChunk );
 }
 
 
