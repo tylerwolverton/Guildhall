@@ -64,12 +64,12 @@ void Clock::Update( double deltaSeconds )
 {
 	deltaSeconds = ClampMinMax( deltaSeconds, 0.0, m_maxFrameTime );
 
-	double minDeltaDiff = m_minFrameTime - deltaSeconds;
+	/*double minDeltaDiff = m_minFrameTime - deltaSeconds;
 	if ( minDeltaDiff > 0.f )
 	{
 		deltaSeconds = m_minFrameTime;
-		Sleep( DWORD(minDeltaDiff * 1000.0) );
-	}
+		Sleep( DWORD( minDeltaDiff * 500.0 ) );
+	}*/
 
 	if ( m_isPaused )
 	{

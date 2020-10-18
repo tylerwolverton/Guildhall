@@ -34,8 +34,8 @@ StateMachine
 			FireEvent( GetNewWanderTargetPosition() );
 		}
 
-		//FireEvent( PrintDebugText( text = "Wander" ) );
-		FireEvent( PrintDebugText( text = position.x ) );
+		FireEvent( PrintDebugText( text = "Wander" ) );
+		//FireEvent( PrintDebugText( text = position.x ) );
 		
 		FireEvent( MoveToLocation( pos=targetPosition  ) );
 
