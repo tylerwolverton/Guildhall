@@ -69,6 +69,8 @@ public:
 
 	float		GetLastDeltaSecondsf();
 
+	Entity*		GetEntityById( const std::string& id );
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 

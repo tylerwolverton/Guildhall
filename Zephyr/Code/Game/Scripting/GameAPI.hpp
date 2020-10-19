@@ -30,7 +30,10 @@ private:
 
 	// AI
 	void MoveToLocation( EventArgs* args );
+	void ChaseTargetEntity( EventArgs* args );
 	void GetNewWanderTargetPosition( EventArgs* args );
+	void CheckForTarget( EventArgs* args );
+	void GetDistanceToTarget( EventArgs* args );
 
 private:
 	std::unordered_set<std::string> m_registeredMethods;

@@ -2,6 +2,7 @@ StateMachine
 {
 	Vec2 position;		
 	Vec2 targetPosition = (5,5);
+	String targetId = "player";
 
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
 	OnEvent( Spawn )
@@ -33,13 +34,19 @@ StateMachine
 			FireEvent( GetNewWanderTargetPosition() );
 		}
 
+		OnEvent( TargetFound )
+		{		
+			ChangeState( Chase );
+		}
+
 		FireEvent( PrintDebugText( text = "Wander" ) );
 		
-		FireEvent( MoveToLocation( pos=targetPosition  ) );
+		FireEvent( CheckForTarget( id = targetId, maxDist = 3 ) );
+		FireEvent( MoveToLocation( pos=targetPosition ) );
 
 		if( position == targetPosition )
 		{
-			ChangeState( Chase );
+			FireEvent( GetNewWanderTargetPosition() );
 		}
 	}
 
@@ -50,8 +57,21 @@ StateMachine
 			FireEvent( GetNewWanderTargetPosition() );
 			ChangeState( Wander );
 		}
+		
+		Number distance;
+		OnEvent( UpdateDistanceToTarget )
+		{		
+			if( distance > 3 )
+			{
+				ChangeState( Wander );
+			}
+		}
 
 		FireEvent( PrintDebugText( text = "Chase" ) );
+
+		FireEvent( GetDistanceToTarget( id = targetId ) );
+
+		FireEvent( ChaseTargetEntity( id = targetId ) );
 	}
 }
 

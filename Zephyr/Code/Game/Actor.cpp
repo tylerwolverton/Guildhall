@@ -80,6 +80,7 @@ void Actor::SetAsPlayer()
 	m_controllerID = 0;
 	m_isPlayer = true;
 
+	m_id = "player";
 	m_faction = eFaction::GOOD;
 	m_rigidbody2D->SetLayer( eCollisionLayer::PLAYER );
 

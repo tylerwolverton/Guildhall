@@ -940,6 +940,13 @@ float Game::GetLastDeltaSecondsf()
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* Game::GetEntityById( const std::string& id )
+{
+	return m_world->GetEntityById( id );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ChangeGameState( const eGameState& newGameState )
 {
 	switch ( newGameState )

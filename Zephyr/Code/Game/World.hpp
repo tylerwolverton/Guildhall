@@ -33,6 +33,9 @@ public:
 
 	void ClearMaps();
 
+	Entity* GetEntityById( const std::string& id );
+	Entity* GetEntityByIdInCurMap( const std::string& id );
+
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
 

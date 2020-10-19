@@ -60,6 +60,8 @@ public:
 
 	void WarpEntityInMap( Entity* entity, Portal* portal );
 
+	Entity* GetEntityById( const std::string& id );
+
 private:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 	

@@ -445,3 +445,26 @@ void Map::WarpEntityInMap( Entity* entity, Portal* portal )
 {
 	g_game->WarpToMap( entity, portal->GetDestinationMap(), portal->GetDestinationPosition(), entity->GetOrientationDegrees() + portal->GetDestinationYawOffset() );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::GetEntityById( const std::string& id )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr
+			 || entity->IsDead() )
+		{
+			continue;
+		}
+		
+		if ( entity->GetId() == id )
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}
+
