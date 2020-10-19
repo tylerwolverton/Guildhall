@@ -12,7 +12,7 @@ StateMachine
 	{	
 		OnEvent( TestEvent )
 		{		
-			ChangeState( GlobalAssignmentTest );
+			//ChangeState( GlobalAssignmentTest );
 
 			// OnEvent( SubEvent ) {}
 		}
@@ -30,15 +30,13 @@ StateMachine
 		}
 		transitiveTestNum = 2;
 
+		FireEvent( PrintToConsole( text = "Running unit tests..." ) ); 
+
+		ChangeState( GlobalAssignmentTest );
 	}
 
 	State GlobalAssignmentTest
-	{
-		OnEvent( TestEvent )
-		{		
-			ChangeState( ScopeAssignmentTest );
-		}
-		
+	{		
 		testNum = testNumInit;
 		if( testNum == testNumInit )
 		{
@@ -53,36 +51,33 @@ StateMachine
 					Vec2 actualVec = ( 1, 2 );
 					if( testVec2 = actualVec )
 					{
-						FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Success" ) );
+						FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Success", color = "green" ) );
 					}
 					else
 					{
-						FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Failed" ) );
+						FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
 					}
 				}
 				else
 				{
-					FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Failed" ) );
+					FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
 				}
 			}
 			else
 			{	
-				FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Failed" ) );
+				FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
 			}	
 		}
 		else
 		{
-			FireEvent( PrintDebugText( text = "GlobalAssignmentTest: Failed" ) );
+			FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
 		}
+
+		ChangeState( ScopeAssignmentTest );
 	}
 
 	State ScopeAssignmentTest
-	{
-		OnEvent( TestEvent )
-		{		
-			ChangeState( OperatorTest );
-		}
-		
+	{		
 		Number localTestNum = 1;
 		if( localTestNum == 1 )
 		{
@@ -90,7 +85,7 @@ StateMachine
 		}
 		else
 		{
-			FireEvent( PrintDebugText( text = "ScopeAssignmentTest: Failed to initialize local variable" ) );
+			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to initialize local variable", color = "red" ) );
 		}
 
 		if( localTestNum == 2 )
@@ -100,40 +95,36 @@ StateMachine
 		}
 		else
 		{
-			FireEvent( PrintDebugText( text = "ScopeAssignmentTest: Failed to set var in if statement" ) );
+			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to set var in if statement", color = "red" ) );
 		}
 
 		if( localTestNum == 12 )
 		{
-			FireEvent( PrintDebugText( text = "ScopeAssignmentTest: Failed to hide scope of local var" ) );
+			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to hide scope of local var", color = "red" ) );
 		}
+
+		FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Success", color = "green" ) );
+
+		ChangeState( OperatorTest );
 	}
 
 	State OperatorTest
 	{
-		OnEvent( TestEvent )
-		{		
-			ChangeState( LogicalOperatorTest );
-		}
-
 		Number testNum = -(1 + 2 * 3 - 4 / 2);
 		if( testNum != -5 )
 		{
-			FireEvent( PrintDebugText( text = "OperatorTest: Failed" ) );
+			FireEvent( PrintToConsole( text = "OperatorTest: Failed", color = "red" ) );
 		}
 		else
 		{
-			FireEvent( PrintDebugText( text = "OperatorTest: Success" ) );
+			FireEvent( PrintToConsole( text = "OperatorTest: Success", color = "green" ) );
 		}
+
+		ChangeState( LogicalOperatorTest );
 	}
 
 	State LogicalOperatorTest
 	{
-		OnEvent( TestEvent )
-		{		
-			ChangeState( NoPrint );
-		}
-
 		if( 1 == 1 
 			&& 2 == 2 )
 		{
@@ -144,22 +135,28 @@ StateMachine
 					&& 2 == 2 
 					|| "yes" == "no" )
 				{
-					FireEvent( PrintDebugText( text = "LogicalOperatorTest: Success" ) );
+					FireEvent( PrintToConsole( text = "LogicalOperatorTest: Success", color = "green" ) );
 				}
 				else
 				{
-					FireEvent( PrintDebugText( text = "LogicalOperatorTest: Failed combination" ) );
+					FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed combination", color = "red" ) );
 				}
 			}
 			else
 			{
-				FireEvent( PrintDebugText( text = "LogicalOperatorTest: Failed or" ) );
+				FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed or", color = "red" ) );
 			}
 		}
 		else
 		{
-			FireEvent( PrintDebugText( text = "LogicalOperatorTest: Failed and" ) );
+			FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed and", color = "red" ) );
 		}
+
+		ChangeState( End );
+	}
+
+	State End
+	{
 	}
 }
 

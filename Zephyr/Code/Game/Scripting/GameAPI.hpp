@@ -21,6 +21,7 @@ public:
 private:
 	void ChangeZephyrScriptState( EventArgs* args );
 	void PrintDebugText( EventArgs* args );
+	void PrintToConsole( EventArgs* args );
 
 	// Game events
 	void DestroyEntity( EventArgs* args );

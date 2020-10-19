@@ -22,6 +22,7 @@ GameAPI::GameAPI()
 {
 	REGISTER_EVENT( ChangeZephyrScriptState );
 	REGISTER_EVENT( PrintDebugText );
+	REGISTER_EVENT( PrintToConsole );
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( DestroyEntity );
 	REGISTER_EVENT( WinGame );
@@ -98,6 +99,22 @@ void GameAPI::PrintDebugText( EventArgs* args )
 	}
 	
 	DebugAddWorldText( textLocation, Vec2::HALF, color, color, duration, .1f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::PrintToConsole( EventArgs* args )
+{
+	std::string text = args->GetValue( "text", "TestPrint" );
+	std::string colorStr = args->GetValue( "color", "white" );
+
+	Rgba8 color = Rgba8::WHITE;
+	if		( colorStr == "white" ) { color = Rgba8::WHITE; }
+	else if ( colorStr == "red" )	{ color = Rgba8::RED; }
+	else if ( colorStr == "green" )	{ color = Rgba8::GREEN; }
+	else if ( colorStr == "blue" )	{ color = Rgba8::BLUE; }
+	
+	g_devConsole->PrintString( text.c_str(), color );
 }
 
 
