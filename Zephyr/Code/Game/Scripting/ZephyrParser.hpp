@@ -64,6 +64,7 @@ private:
 	bool ParseEventArgs();
 	bool ParseChangeStateStatement();
 	bool ParseIfStatement();
+	bool GenerateIfStatementBytecode( std::vector<ZephyrValue>& byteJumpCounts  );
 	bool ParseAssignment();
 	bool ParseExpression( const eValueType& expressionType );
 	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel, const eValueType& expressionType );

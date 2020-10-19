@@ -770,6 +770,42 @@ bool ZephyrParser::ParseIfStatement()
 
 
 //-----------------------------------------------------------------------------------------------
+bool ZephyrParser::GenerateIfStatementBytecode( std::vector<ZephyrValue>& byteJumpCounts )
+{
+	// Write a placeholder for how many bytes the if block is so we can update it with the length later
+	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
+	int ifInstructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
+	m_curBytecodeChunk->WriteByte( ifInstructionCountIdx );
+
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) return false;
+
+	if ( !ParseExpression( GetNextValueTypeInExpression() ) ) return false;
+
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) return false;
+
+	WriteOpCodeToCurChunk( eOpCode::IF );
+
+	int preIfBlockByteCount = (int)m_curBytecodeChunk->GetCode().size();
+
+	if ( !ParseBlock() ) return false;
+
+	// Set the number of bytes to jump to be the size of the if block plus 3 bytes
+	// 2 for the constant declaration and 1 for the JUMP op to jump over the else statement
+	byteJumpCounts.push_back( ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preIfBlockByteCount ) + 3.f ) );
+	//m_curBytecodeChunk->SetConstantAtIdx( ifInstructionCountIdx, ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preIfBlockByteCount ) + 3.f ) );
+
+	// Write a placeholder for the jump over the else block
+	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
+	int elseInstructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
+	m_curBytecodeChunk->WriteByte( elseInstructionCountIdx );
+
+	WriteOpCodeToCurChunk( eOpCode::JUMP );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseAssignment()
 {
 	// Start at the identifier for TryToGetVariable to work properly
