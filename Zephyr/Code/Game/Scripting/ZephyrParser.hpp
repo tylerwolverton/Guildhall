@@ -86,6 +86,7 @@ private:
 
 	ZephyrToken ConsumeNextToken();
 	void AdvanceToNextToken();
+	void BackupToLastToken();
 	void AdvanceToNextTokenIfTypeMatches( eTokenType expectedType );
 	bool ConsumeExpectedNextToken( eTokenType expectedType );
 
