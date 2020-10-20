@@ -29,6 +29,8 @@ GameAPI::GameAPI()
 
 	REGISTER_EVENT( MoveToLocation );
 	REGISTER_EVENT( ChaseTargetEntity );
+	REGISTER_EVENT( FleeTargetEntity );
+	REGISTER_EVENT( GetEntityLocation );
 	REGISTER_EVENT( CheckForTarget );
 	REGISTER_EVENT( GetNewWanderTargetPosition );
 	REGISTER_EVENT( GetDistanceToTarget );
@@ -173,6 +175,48 @@ void GameAPI::ChaseTargetEntity( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void GameAPI::FleeTargetEntity( EventArgs* args )
+{
+	std::string targetId = args->GetValue( "id", "" );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity == nullptr
+		 || targetEntity == nullptr )
+	{
+		return;
+	}
+
+	Vec2 moveDirection = targetEntity->GetPosition() - entity->GetPosition();
+	moveDirection.Normalize();
+
+	float moveSpeed = entity->GetWalkSpeed() * g_game->GetLastDeltaSecondsf();
+
+	entity->MoveWithPhysics( moveSpeed, -moveDirection );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::GetEntityLocation( EventArgs* args )
+{
+	std::string targetId = args->GetValue( "id", "" );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity == nullptr
+		 || targetEntity == nullptr )
+	{
+		return;
+	}
+
+	EventArgs targetArgs;
+	targetArgs.SetValue( "entityPos", targetEntity->GetPosition() );
+
+	entity->FireScriptEvent( "UpdateEntityLocation", &targetArgs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
@@ -186,8 +230,6 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 	
 	EventArgs targetArgs;
 	targetArgs.SetValue( "newPos", Vec2( newX, newY ) );
-	targetArgs.SetValue( "newPosX", newX);
-	targetArgs.SetValue( "newPosY", newY );
 
 	entity->FireScriptEvent( "UpdateTargetPosition", &targetArgs );
 }

@@ -3,11 +3,23 @@ StateMachine
 	Vec2 position;		
 	Vec2 targetPosition = (5,5);
 	String targetId = "player";
+	Number health;
 
+	// -----------------------------------------------------------------------------------------
+	// Global events
+	// -----------------------------------------------------------------------------------------
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
+	Number maxHealth;
 	OnEvent( Spawn )
 	{
+		health = maxHealth;
 		FireEvent( EnemySpawned() );
+	}
+
+	Number newHealth;
+	OnEvent( HealthUpdated )
+	{
+		health = newHealth;
 	}
 
 	OnEvent( Die )
@@ -27,6 +39,11 @@ StateMachine
 		targetPosition = newPos;
 	}
 
+	FireEvent( GetNewWanderTargetPosition() );
+
+	// -----------------------------------------------------------------------------------------
+	// Wander
+	// -----------------------------------------------------------------------------------------
 	State Wander
 	{	
 		OnEvent( TestEvent )
@@ -36,7 +53,14 @@ StateMachine
 
 		OnEvent( TargetFound )
 		{		
-			ChangeState( Chase );
+			if( health == 1 )
+			{
+				ChangeState( Flee );
+			}
+			else
+			{
+				ChangeState( Chase );
+			}
 		}
 
 		FireEvent( PrintDebugText( text = "Wander" ) );
@@ -50,6 +74,9 @@ StateMachine
 		}
 	}
 
+	// -----------------------------------------------------------------------------------------
+	// Chase
+	// -----------------------------------------------------------------------------------------
 	State Chase
 	{
 		OnEvent( TestEvent )
@@ -69,9 +96,41 @@ StateMachine
 
 		FireEvent( PrintDebugText( text = "Chase" ) );
 
+		if( health == 1 )
+		{
+			ChangeState( Flee );
+		}
+
 		FireEvent( GetDistanceToTarget( id = targetId ) );
 
 		FireEvent( ChaseTargetEntity( id = targetId ) );
+	}
+
+	// -----------------------------------------------------------------------------------------
+	// Flee
+	// -----------------------------------------------------------------------------------------
+	State Flee
+	{
+		OnEvent( TestEvent )
+		{		
+			FireEvent( GetNewWanderTargetPosition() );
+			ChangeState( Wander );
+		}
+		
+		Number distance;
+		OnEvent( UpdateDistanceToTarget )
+		{		
+			if( distance > 5 )
+			{
+				ChangeState( Wander );
+			}
+		}
+
+		FireEvent( PrintDebugText( text = "Flee" ) );
+
+		FireEvent( GetDistanceToTarget( id = targetId ) );
+
+		FireEvent( FleeTargetEntity( id = targetId ) );
 	}
 }
 

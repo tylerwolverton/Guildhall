@@ -12,7 +12,7 @@
   </Actor>
   ​
   <Actor name="Blob">
-    <Physics radius="0.5" walkSpeed="25.0" collisionLayer="Enemy"/>
+    <Physics radius="0.5" walkSpeed="75.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
       <Walk up="30,31"/>
     </Appearance>

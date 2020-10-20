@@ -235,7 +235,10 @@ void Entity::FireSpawnEvent()
 {
 	if ( m_scriptObj != nullptr )
 	{
-		m_scriptObj->FireSpawnEvent();
+		EventArgs args;
+		args.SetValue( "maxHealth", m_entityDef.GetMaxHealth() );
+
+		m_scriptObj->FireEvent( "Spawn", &args );
 	}
 }
 
@@ -267,6 +270,14 @@ void Entity::TakeDamage( int damage )
 	}
 	
 	g_game->AddScreenShakeIntensity(.05f);
+
+	if ( m_scriptObj != nullptr )
+	{
+		EventArgs args;
+		args.SetValue( "newHealth", m_curHealth );
+
+		m_scriptObj->FireEvent( "HealthUpdated", &args );
+	}
 }
 
 

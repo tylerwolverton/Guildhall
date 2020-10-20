@@ -88,7 +88,6 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( eventName );
 	if ( eventChunk != nullptr )
 	{
-		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
 		ZephyrValueMap* stateVariables = nullptr;
 		if ( m_curStateBytecodeChunk != nullptr )
 		{
@@ -111,7 +110,6 @@ void ZephyrScript::FireSpawnEvent()
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Spawn" );
 	if ( eventChunk != nullptr )
 	{
-		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
 		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
