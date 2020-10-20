@@ -346,6 +346,16 @@ void Entity::ReloadZephyrScript()
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::InitializeScriptValues( const ZephyrValueMap& initialValues )
+{
+	if ( m_scriptObj != nullptr )
+	{
+		m_scriptObj->InitializeGlobalVariables( initialValues );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::RegisterUserEvents()
 {
 	std::map<std::string, std::string>const& registeredEvents = m_entityDef.GetRegisteredEvents();

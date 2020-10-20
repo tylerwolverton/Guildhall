@@ -2,6 +2,8 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 
+#include "Game/Scripting/ZephyrCommon.hpp"
+
 #include <string>
 #include <map>
 
@@ -20,6 +22,8 @@ struct MapEntityDefinition
 	std::string id;
 	Vec2 position = Vec2::ZERO;
 	float yawDegrees = 0.f;
+
+	ZephyrValueMap zephyrScriptInitialValues;
 
 	// Portal specific variables
 	// TODO: Move this to sub struct?
@@ -55,4 +59,5 @@ private:
 	bool ParseLegendNode( const XmlElement& mapDefElem, std::map<char, TileDefinition*>& legend, const std::string& defaultRegionName );
 	bool ParseMapRowsNode( const XmlElement& mapDefElem, const std::map<char, TileDefinition*>& legend, const std::string& defaultRegionName );
 	bool ParseEntitiesNode( const XmlElement& mapDefElem );
+	void CreateMapEntityDefFromNode( const XmlElement& entityElem, const std::string& expectedType );
 };

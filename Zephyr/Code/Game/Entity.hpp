@@ -5,6 +5,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Game/EntityDefinition.hpp"
+#include "Game/Scripting/ZephyrCommon.hpp"
 
 #include <string>
 #include <vector>
@@ -47,6 +48,7 @@ public:
 	void			ChangeZephyrScriptState( const std::string& targetState );
 	void			UnloadZephyrScript();
 	void			ReloadZephyrScript();
+	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
 
 	const Vec2		GetForwardVector() const;
 	const Vec2		GetPosition() const;

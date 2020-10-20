@@ -158,6 +158,34 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScript::InitializeGlobalVariables( const ZephyrValueMap& intialValues )
+{
+	if ( m_globalBytecodeChunk == nullptr )
+	{
+		return;
+	}
+
+	ZephyrValueMap* globalVariables = m_globalBytecodeChunk->GetUpdateableVariables();
+	if ( globalVariables == nullptr )
+	{
+		return;
+	}
+
+	for ( auto initialValue : intialValues )
+	{
+		auto globalVarIter = globalVariables->find( initialValue.first );
+		if ( globalVarIter == globalVariables->end() )
+		{
+			g_devConsole->PrintError( Stringf( "Cannot initialize nonexistent variable '%s' in script '%s'", initialValue.first.c_str(), m_name.c_str() ) );
+			continue;
+		}
+
+		(*globalVariables)[initialValue.first] = initialValue.second;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk )
 {
 	if ( bytecodeChunk == nullptr )

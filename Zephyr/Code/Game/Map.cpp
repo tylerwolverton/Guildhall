@@ -334,6 +334,7 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 			portal->SetDestinationYawOffset( mapEntityDef.portalDestYawOffset );
 		}
 
+		newEntity->InitializeScriptValues( mapEntityDef.zephyrScriptInitialValues );
 		newEntity->FireSpawnEvent();
 	}
 

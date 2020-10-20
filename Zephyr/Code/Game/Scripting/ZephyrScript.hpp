@@ -27,6 +27,8 @@ public:
 
 	void ChangeState( const std::string& targetState );
 
+	void InitializeGlobalVariables( const ZephyrValueMap& intialValues );
+
 private:
 	void RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
 	void UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );

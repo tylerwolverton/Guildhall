@@ -210,120 +210,12 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 
 			hasParsedPlayerStart = true;
 		}
-		else if ( !strcmp( entityElem->Value(), "Entity" ) )
+		else if ( !strcmp( entityElem->Value(), "Entity" )
+				  || !strcmp( entityElem->Value(), "Actor" ) 
+				  || !strcmp( entityElem->Value(), "Portal" ) 
+				  || !strcmp( entityElem->Value(), "Pickup" ) )
 		{
-			MapEntityDefinition mapEntityDef;
-
-			std::string entityName = ParseXmlAttribute( *entityElem, "name", "" );
-			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
-			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
-			if ( mapEntityDef.entityDef == nullptr )
-			{
-				g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), entityName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::ENTITY )
-			{
-				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Entity in map '%s'", entityName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
-												   mapName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			mapEntityDef.position = ParseXmlAttribute( *entityElem, "pos", Vec2::ZERO );
-			mapEntityDef.yawDegrees = ParseXmlAttribute( *entityElem, "yaw", 0.f );
-
-			mapEntityDefs.push_back( mapEntityDef );
-		}
-		else if ( !strcmp( entityElem->Value(), "Actor" ) )
-		{
-			MapEntityDefinition mapEntityDef;
-
-			std::string actorName = ParseXmlAttribute( *entityElem, "name", "" );
-			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
-			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( actorName );
-			if ( mapEntityDef.entityDef == nullptr )
-			{
-				g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), actorName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::ACTOR )
-			{
-				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Actor in map '%s'", actorName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
-												   mapName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			mapEntityDef.position = ParseXmlAttribute( *entityElem, "pos", Vec2::ZERO );
-			mapEntityDef.yawDegrees = ParseXmlAttribute( *entityElem, "yaw", 0.f );
-
-			mapEntityDefs.push_back( mapEntityDef );
-		}
-		else if ( !strcmp( entityElem->Value(), "Portal" ) )
-		{
-			MapEntityDefinition mapEntityDef;
-
-			std::string portalName = ParseXmlAttribute( *entityElem, "name", "" );
-			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
-			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( portalName );
-			if ( mapEntityDef.entityDef == nullptr )
-			{
-				g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), portalName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::PORTAL )
-			{
-				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Portal in map '%s'", portalName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
-												   mapName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			mapEntityDef.position = ParseXmlAttribute( *entityElem, "pos", Vec2::ZERO );
-			mapEntityDef.yawDegrees = ParseXmlAttribute( *entityElem, "yaw", 0.f );
-			mapEntityDef.portalDestMap = ParseXmlAttribute( *entityElem, "destMap", "" );
-			mapEntityDef.portalDestPos = ParseXmlAttribute( *entityElem, "destPos", Vec2::ZERO );
-			mapEntityDef.portalDestYawOffset = ParseXmlAttribute( *entityElem, "destYawOffset", 0.f );
-
-			mapEntityDefs.push_back( mapEntityDef );
-		}
-		else if ( !strcmp( entityElem->Value(), "Pickup" ) )
-		{
-			MapEntityDefinition mapEntityDef;
-
-			std::string entityName = ParseXmlAttribute( *entityElem, "name", "" );
-			mapEntityDef.id = ParseXmlAttribute( *entityElem, "id", "" );
-			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
-			if ( mapEntityDef.entityDef == nullptr )
-			{
-				g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), entityName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::PICKUP )
-			{
-				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Pickup in map '%s'", entityName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
-												   mapName.c_str() ) );
-				entityElem = entityElem->NextSiblingElement();
-				continue;
-			}
-
-			mapEntityDef.position = ParseXmlAttribute( *entityElem, "pos", Vec2::ZERO );
-			mapEntityDef.yawDegrees = ParseXmlAttribute( *entityElem, "yaw", 0.f );
-
-			mapEntityDefs.push_back( mapEntityDef );
+			CreateMapEntityDefFromNode( *entityElem, entityElem->Value() );
 		}
 		else
 		{
@@ -341,3 +233,84 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 
 	return true;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const std::string& expectedType )
+{
+	MapEntityDefinition mapEntityDef;
+
+	std::string entityName = ParseXmlAttribute( entityElem, "name", "" );
+	mapEntityDef.id = ParseXmlAttribute( entityElem, "id", "" );
+	mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
+	if ( mapEntityDef.entityDef == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), entityName.c_str() ) );
+		return;
+	}
+
+	if ( GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ) != expectedType )
+	{
+		g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Entity in map '%s'", entityName.c_str(),
+										   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
+										   expectedType.c_str() ) );
+		return;
+	}
+
+	mapEntityDef.position = ParseXmlAttribute( entityElem, "pos", Vec2::ZERO );
+	mapEntityDef.yawDegrees = ParseXmlAttribute( entityElem, "yaw", 0.f );
+
+	if ( mapEntityDef.entityDef->GetType() == eEntityType::PORTAL )
+	{
+		mapEntityDef.portalDestMap = ParseXmlAttribute( entityElem, "destMap", "" );
+		mapEntityDef.portalDestPos = ParseXmlAttribute( entityElem, "destPos", Vec2::ZERO );
+		mapEntityDef.portalDestYawOffset = ParseXmlAttribute( entityElem, "destYawOffset", 0.f );
+	}
+
+	const XmlElement* scriptVarInitElem = entityElem.FirstChildElement( "ScriptVarInit" );
+	while ( scriptVarInitElem != nullptr )
+	{
+		std::string typeName = ParseXmlAttribute( *scriptVarInitElem, "type", "" );
+		std::string varName = ParseXmlAttribute( *scriptVarInitElem, "var", "" );
+		std::string valueStr = ParseXmlAttribute( *scriptVarInitElem, "value", "" );
+		if ( typeName.empty() )
+		{
+			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit is missing a variable type", mapName.c_str() ) );
+			break;
+		}
+		if ( varName.empty() )
+		{
+			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit is missing a variable name", mapName.c_str() ) );
+			break;
+		}
+		if ( valueStr.empty() )
+		{
+			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit is missing a variable value", mapName.c_str() ) );
+			break;
+		}
+
+		// Convert value to correct type and store in map
+		if ( !_strcmpi( typeName.c_str(), "string" ) )
+		{
+			mapEntityDef.zephyrScriptInitialValues[varName] = ZephyrValue( valueStr );
+		}
+		else if ( !_strcmpi( typeName.c_str(), "number" ) )
+		{
+			mapEntityDef.zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, 0.f ) );
+		}
+		else if ( !_strcmpi( typeName.c_str(), "vec2" ) )
+		{
+			mapEntityDef.zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, Vec2::ZERO ) );
+		}
+		else
+		{
+			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit '%s' has unsupported type '%s'", mapName.c_str(), varName.c_str(), typeName.c_str() ) );
+			break;
+		}
+
+		scriptVarInitElem = scriptVarInitElem->NextSiblingElement( "ScriptVarInit" );
+	}
+
+	mapEntityDefs.push_back( mapEntityDef );
+}
+
