@@ -1277,7 +1277,16 @@ ZephyrToken ZephyrParser::ConsumeNextToken()
 		return m_tokens[m_tokens.size() - 1] ;
 	}
 
-	return m_tokens[m_curTokenIdx++];
+	int tokenIdx = m_curTokenIdx;
+	++m_curTokenIdx;
+
+	if ( !IsAtEnd()
+		 && m_tokens[m_curTokenIdx].GetType() == eTokenType::ERROR_TOKEN )
+	{
+		ReportError( m_tokens[m_curTokenIdx].GetData() );
+	}
+
+	return m_tokens[tokenIdx];
 }
 
 
@@ -1290,6 +1299,12 @@ void ZephyrParser::AdvanceToNextToken()
 	}
 
 	++m_curTokenIdx;
+
+	if ( !IsAtEnd()
+		 && m_tokens[m_curTokenIdx].GetType() == eTokenType::ERROR_TOKEN )
+	{
+		ReportError( m_tokens[m_curTokenIdx].GetData() );
+	}
 }
 
 

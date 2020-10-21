@@ -2,6 +2,7 @@ StateMachine
 {
 	Number testNum; 
 	Number testNumInit = 12; 
+	Number testNum2 = 2.5;  
 	Vec2 testVec2;		
 	Vec2 testVec2Init = (5,5);
 	String testStr;
@@ -22,7 +23,9 @@ StateMachine
 		// State SubState {}
 		// testStr = testVec2;
 		// testVec2 + testStr;
-		//testNum = testVec2 + testStr;
+		// testNum = testVec2 + testStr;
+		// testNum2 = 2.5.4.4.34;  
+
 		
 		if( 1 == 1 )
 		{
@@ -98,10 +101,11 @@ StateMachine
 			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to set var in if statement", color = "red" ) );
 		}
 
-		if( localTestNum == 12 )
-		{
-			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to hide scope of local var", color = "red" ) );
-		}
+		// This should be a parsing error probably
+		//if( localTestNum == 12 )
+		//{
+		//	FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to hide scope of local var", color = "red" ) );
+		//}
 
 		FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Success", color = "green" ) );
 

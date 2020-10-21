@@ -17,7 +17,10 @@
 		<MapRow tiles="################"/>
 	</MapRows>
 	<Entities>
-    <Entity name="Level1Manager"/>
+    <Entity name="GameManager"/>
+    <Entity name="Level1Manager">
+      <ScriptVarInit type="string" var="roomId" value="Level1"/>
+    </Entity>
     <Entity name="UnitTester" pos="6.5,6.5"/>
     <Entity name="ClosedDoorVertical" pos="8.5,9.5"/>
 		<PlayerStart pos="1.5,1.5" yaw="0"/>

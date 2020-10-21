@@ -1,7 +1,11 @@
 StateMachine
 {
+	String questId;
 	OnEvent( QuestComplete )
 	{
-		FireEvent( GameComplete() );
+		if( questId == "Level1" )
+		{
+			FireEvent( OpenDoor() );
+		}
 	}
 }

@@ -5,6 +5,7 @@
 		<Tile glyph="." tileType="BlueDungeonFloor"/>
 	</Legend>
 	<MapRows>
+		<!--<MapRow tiles="#######.#.######"/>-->
 		<MapRow tiles="#######.########"/>
 		<MapRow tiles="#..............#"/>
 		<MapRow tiles="#..............#"/>
@@ -17,12 +18,17 @@
 		<MapRow tiles="###.############"/>
 	</MapRows>
 	<Entities>
+		<PlayerStart pos="3.5,1.5" yaw="0"/>
     <Entity name="LockedDoorVertical" pos="7.5,9.5">
       <ScriptVarInit type="string" var="keyId" value="key1"/>
     </Entity>
     <Portal name="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
-		<PlayerStart pos="3.5,1.5" yaw="0"/>
     <Pickup name="Key" id="key1" pos="5.5,7.5" />
+    <!--<Entity name="LockedDoorVertical" pos="9.5,9.5">
+      <ScriptVarInit type="string" var="keyId" value="key2"/>
+    </Entity>
+    <Portal name="InvisibleTeleporter" pos="9.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
+    <Pickup name="Key" id="key2" pos="9.5,8.5" />-->
     <Portal name="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
 	</Entities>
 

@@ -3,7 +3,6 @@ StateMachine
 	String keyId;
 
 	// Event arguments to reference
-	// TODO: Make this definition more intuitive
 	String itemId;
 	OnEvent( PickupItem )
 	{

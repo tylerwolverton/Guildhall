@@ -1,5 +1,6 @@
 StateMachine
 {
+	String roomId;
 	Number enemiesInLevel;
 
 	// TODO: Add parameters to scripts so this can query the map for enemy count
@@ -7,15 +8,15 @@ StateMachine
 	OnEvent( EnemySpawned )
 	{
 		enemiesInLevel = enemiesInLevel + 1;
-
-		FireEvent( UpdateEnemyCount( enemyCount = enemiesInLevel ) );
 	}
 
 	OnEvent( EnemyDied )
 	{
 		enemiesInLevel = enemiesInLevel - 1;
 
-		FireEvent( UpdateEnemyCount( enemyCount = enemiesInLevel ) );
+		if( enemiesInLevel <= 0 )
+		{
+			FireEvent( QuestComplete( questId = roomId ) );
+		}
 	}
-
 }

@@ -479,14 +479,14 @@ void ZephyrVirtualMachine::PushVec2BinaryOp( const Vec2& a, const Vec2& b, eOpCo
 
 		case eOpCode::NOT_EQUAL:
 		{
-			bool result = !IsNearlyEqual( a, b );
+			bool result = !IsNearlyEqual( a, b, .001f );
 			PushConstant( result );
 		}
 		break;
 
 		case eOpCode::EQUAL:
 		{
-			bool result = IsNearlyEqual( a, b );
+			bool result = IsNearlyEqual( a, b, .001f );
 			PushConstant( result );
 		}
 		break;

@@ -45,7 +45,18 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 			case '/': AddToken( eTokenType::SLASH );															 break;
 			case ';': AddToken( eTokenType::SEMICOLON );														 break;
 			case ',': AddToken( eTokenType::COMMA );															 break;
-			case '.': AddToken( eTokenType::PERIOD );															 break;
+			case '.': 
+			{
+				if ( IsNumber( PeekNextChar() ) )
+				{
+					TokenizeNumberConstant();
+				}
+				else
+				{
+					AddToken( eTokenType::PERIOD );
+				}
+			}
+			break;
 			case '=': 
 			case '!':
 			case '>':
@@ -230,11 +241,35 @@ void ZephyrScanner::TokenizeLogicalOperator( char curChar )
 //-----------------------------------------------------------------------------------------------
 void ZephyrScanner::TokenizeNumberConstant()
 {
-	while ( IsNumber( Peek() ) )
+	bool periodSeen = false;
+	bool errorNumber = false;
+
+	while ( IsNumber( Peek() )
+			|| Peek() == '.' )
 	{
+		if ( Peek() == '.' )
+		{
+			if ( periodSeen == false )
+			{
+				periodSeen = true;
+			}
+			else
+			{
+				errorNumber = true;
+			}
+		}
 		ReadAndAdvanceSrcPos();
 	}
 
+	if ( errorNumber )
+	{
+		int stringLength = m_curSrcPos - m_startSrcPos;
+		std::string errorMsg = m_scriptSource.substr( m_startSrcPos, stringLength );
+		errorMsg += " is an invalid number";
+		AddToken( eTokenType::ERROR_TOKEN, errorMsg );
+		return;
+	}
+	
 	int stringLength = m_curSrcPos - m_startSrcPos;
 	std::string numberConstant = m_scriptSource.substr( m_startSrcPos, stringLength );
 

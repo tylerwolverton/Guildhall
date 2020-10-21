@@ -20,8 +20,11 @@ Supported features
 - StateMachine
 - State
 - Number variables
-- Arithmetic operators
 - String variables
-- if statements (no else)
+- Vec2 variables
+- Arithmetic operators
+- Logical operators
+- ChangeState(<targetState>) function
+- if statements
 - FireEvent(<parameters>)
 - OnEvent(<event name>)
