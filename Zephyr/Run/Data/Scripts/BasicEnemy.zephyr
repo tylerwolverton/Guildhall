@@ -51,19 +51,12 @@ StateMachine
 	{	
 		OnEvent( TargetFound )
 		{		
-			if( health == 1 )
-			{
-				ChangeState( Flee );
-			}
-			else
-			{
-				ChangeState( Chase );
-			}
+			ChangeState( Chase );
 		}
 		
 		FireEvent( PrintDebugText( text = "Wander" ) );
 		
-		FireEvent( CheckForTarget( id = targetId, maxDist = 3 ) );
+		//FireEvent( CheckForTarget( id = targetId, maxDist = 3 ) );
 		FireEvent( MoveToLocation( pos=targetPosition ) );
 
 		if( position == targetPosition )
@@ -104,7 +97,7 @@ StateMachine
 
 		if( health == 1 )
 		{
-			ChangeState( Flee );
+			//ChangeState( Flee );
 		}
 
 		FireEvent( PrintDebugText( text = "Chase" ) );
