@@ -129,7 +129,7 @@ void Delegate<ARGS...>::UnsubscribeAllMethodsFromObject( OBJ_TYPE* obj )
 
 	for ( int deletedSubIdx = (int)subIdxsToDelete.size() - 1; deletedSubIdx >= 0; --deletedSubIdx )
 	{
-		m_subscriptions.erase( m_subscriptions.begin() + deletedSubIdx );
+		m_subscriptions.erase( m_subscriptions.begin() +  subIdxsToDelete[deletedSubIdx] );
 	}
 }
 

@@ -126,7 +126,6 @@ void ZephyrScript::FireDieEvent()
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Die" );
 	if ( eventChunk != nullptr )
 	{
-		//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
 		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
@@ -221,7 +220,6 @@ void ZephyrScript::OnEvent( EventArgs* args )
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( eventName );
 	if ( eventChunk != nullptr )
 	{
-		//ZephyrBytecodeChunk* curBytecodeChunk = m_curStateBytecodeChunk;
 		ZephyrValueMap* stateVariables = nullptr;
 		if ( m_curStateBytecodeChunk != nullptr )
 		{
@@ -260,7 +258,6 @@ ZephyrBytecodeChunk* ZephyrScript::GetEventBytecodeChunk( const std::string& eve
 		}
 	}
 
-	//ZephyrBytecodeChunk* globalBytecodeChunk = m_scriptDef.GetGlobalBytecodeChunk();
 	ZephyrBytecodeChunkMap::const_iterator mapIter = m_globalBytecodeChunk->GetEventBytecodeChunks().find( eventName );
 
 	if ( mapIter != m_globalBytecodeChunk->GetEventBytecodeChunks().cend() )
