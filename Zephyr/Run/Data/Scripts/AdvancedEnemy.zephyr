@@ -1,5 +1,6 @@
 StateMachine
 {
+	Number test = 13 + 7 - 9;
 	String msg = "Hello";
 	
 	OnEvent( TestEvent )

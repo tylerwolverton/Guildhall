@@ -7,6 +7,12 @@
 		},
 		{
 			"include": "#strings"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#comments"
 		}
 	],
 	"repository": {
@@ -21,12 +27,44 @@
 				"match": "\\b(StateMachine|State)\\b"
 			},
 			{
+				"name": "keyword.operator.arithmetic.zephyr",
+				"match": "\\+|\\-|\\*|\\\\"
+			},
+			{
+				"name": "keyword.operator.comparison.zephyr",
+				"match": "<\\=|>\\=|\\=\\=|<|>|\\!\\="
+			},
+			{
 				"name": "keyword.events.zephyr",
 				"match": "\\b(FireEvent|OnEvent)\\b"
 			},
 			{
+				"name": "keyword.operator.assignment.zephyr",
+				"match": "\\="
+			},
+			{
 				"name": "storage.type.zephyr",
 				"match": "\\b(Number|String|Vec2)\\b"
+			}
+		]
+		},
+		"constants": {
+			"patterns": [
+			{
+				"name": "constant.numeric.float.zephyr",
+				"match": "\\b(?i:(\\d+\\.\\d*(e[\\-\\+]?\\d+)?))(?=[^a-zA-Z_])"
+			},
+			{
+				"name": "constant.numeric.integer.decimal.zephyr",
+				"match": "\\b([1-9]+[0-9]*|0)"
+			}
+		]
+		},
+		"comments": {
+			"patterns": [
+			{
+				"name": "comment.line.zephyr",
+				"match": "//.*"
 			}
 		]
 		},
