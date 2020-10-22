@@ -18,7 +18,7 @@ StateMachine
 	{
 		FireEvent( EnemyDied() );
 	}
-
+	
 	State TestState
 	{	
 		FireEvent( PrintDebugText( text = msg )  );

@@ -1,0 +1,25 @@
+{
+    "name": "zephyr-lang",
+    "displayName": "Zephyr Lang",
+    "description": "Syntax highlighting for zephyr-lang",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.50.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "zephyr",
+            "aliases": ["Zephyr", "zephyr"],
+            "extensions": [".zephyr"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "zephyr",
+            "scopeName": "source.zephyr",
+            "path": "./syntaxes/zephyr.tmLanguage.json"
+        }]
+    }
+}
