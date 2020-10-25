@@ -12,7 +12,6 @@
 Pickup::Pickup( const EntityDefinition& entityDef, Map* map )
 	: Entity( entityDef, map )
 {
-	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 	m_rigidbody2D->SetLayer( eCollisionLayer::PICKUP );
 }
 

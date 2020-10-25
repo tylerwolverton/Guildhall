@@ -24,7 +24,6 @@ Actor::Actor( const EntityDefinition& entityDef, Map* map )
 {
 	m_faction = eFaction::EVIL;
 
-	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 	m_rigidbody2D->SetDrag( 5.f );
 	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY );
 }

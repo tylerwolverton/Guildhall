@@ -16,9 +16,7 @@ public:
 
 	virtual void Load() override;
 
-	virtual void Update( float deltaSeconds );
-	virtual void Render() const;
-	virtual void Die();
+	virtual void Update( float deltaSeconds ) override;
 
 private:
 	void EnterCollisionEvent( Collision2D collision );

@@ -40,7 +40,7 @@ public:
 
 	bool			IsValid() const																{ return m_isValid; }
 	std::string		GetName() const																{ return m_name; }
-	int				GetMaxHealth() const														{ return m_maxHealth; }
+	float			GetMaxHealth() const														{ return m_maxHealth; }
 	eEntityType		GetType() const																{ return m_type; }
 	
 	float			GetWalkSpeed() const														{ return m_walkSpeed; }
@@ -49,12 +49,12 @@ public:
 
 	FloatRange		GetDamageRange() const														{ return m_damageRange; }
 	
-	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
+	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const			{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
-	std::map<std::string, std::string> GetRegisteredEvents() const							{ return m_receivedEventsToResponseEvents; }
+	std::map<std::string, std::string> GetRegisteredEvents() const								{ return m_receivedEventsToResponseEvents; }
 
-	ZephyrScriptDefinition* GetZephyrScriptDefinition() const								{ return m_zephyrScriptDef; }
+	ZephyrScriptDefinition* GetZephyrScriptDefinition() const									{ return m_zephyrScriptDef; }
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
@@ -66,13 +66,13 @@ protected:
 	std::string		m_name;
 	eEntityType		m_type = eEntityType::UNKNOWN;
 	eCollisionLayer	m_collisionLayer = eCollisionLayer::NONE;
-	int				m_maxHealth = 1;
+	float			m_maxHealth = 1.f;
 	float			m_physicsRadius = 0.f;
 	float			m_mass = 1.f;
 	float			m_walkSpeed = 0.f;
 	float			m_speed = 0.f;
 
-	FloatRange		m_damageRange;
+	FloatRange		m_damageRange = FloatRange( 0.f );
 
 	AABB2			m_localDrawBounds;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;

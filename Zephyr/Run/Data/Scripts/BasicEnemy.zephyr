@@ -57,7 +57,7 @@ StateMachine
 		
 		FireEvent( PrintDebugText( text = "Wander" ) );
 		
-		//FireEvent( CheckForTarget( id = targetId, maxDist = 3 ) );
+		FireEvent( CheckForTarget( id = targetId, maxDist = 3 ) );
 		FireEvent( MoveToLocation( pos=targetPosition ) );
 
 		if( position == targetPosition )
@@ -86,7 +86,15 @@ StateMachine
 	// -----------------------------------------------------------------------------------------
 	State Chase
 	{
+		if( health == 1 )
+		{
+			//ChangeState( Flee );
+		}
+		
+		FireEvent( PrintDebugText( text = "Chase" ) );
+
 		Number distance;
+		FireEvent( GetDistanceToTarget( id = targetId ) );
 		OnEvent( UpdateDistanceToTarget )
 		{		
 			if( distance > 3 )
@@ -95,15 +103,6 @@ StateMachine
 				ChangeState( Wander );
 			}
 		}
-
-		if( health == 1 )
-		{
-			//ChangeState( Flee );
-		}
-
-		FireEvent( PrintDebugText( text = "Chase" ) );
-
-		FireEvent( GetDistanceToTarget( id = targetId ) );
 
 		FireEvent( ChaseTargetEntity( id = targetId ) );
 	}

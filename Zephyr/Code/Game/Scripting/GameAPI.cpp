@@ -23,8 +23,10 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( ChangeZephyrScriptState );
 	REGISTER_EVENT( PrintDebugText );
 	REGISTER_EVENT( PrintToConsole );
+
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( DestroyEntity );
+	REGISTER_EVENT( DamageEntity );
 	REGISTER_EVENT( WinGame );
 
 	REGISTER_EVENT( MoveToLocation );
@@ -34,6 +36,8 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( CheckForTarget );
 	REGISTER_EVENT( GetNewWanderTargetPosition );
 	REGISTER_EVENT( GetDistanceToTarget );
+
+	REGISTER_EVENT( AddScreenShake );
 }
 
 
@@ -70,6 +74,21 @@ void GameAPI::DestroyEntity( EventArgs* args )
 	if ( entity != nullptr )
 	{
 		entity->Die();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::DamageEntity( EventArgs* args )
+{
+	std::string entityId = args->GetValue( "id", "" );
+	float damage = args->GetValue( "damage", 0.f );
+
+	Entity* entityToDamage = g_game->GetEntityById( entityId );
+
+	if ( entityToDamage != nullptr )
+	{
+		entityToDamage->TakeDamage( damage );
 	}
 }
 
@@ -280,4 +299,13 @@ void GameAPI::GetDistanceToTarget( EventArgs* args )
 	targetArgs.SetValue( "distance", displacementToTarget.GetLength() );
 
 	entity->FireScriptEvent( "UpdateDistanceToTarget", &targetArgs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::AddScreenShake( EventArgs* args )
+{
+	float intensity = args->GetValue( "intensity", 0.f );
+
+	g_game->AddScreenShakeIntensity( intensity );
 }

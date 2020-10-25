@@ -73,6 +73,7 @@
       <Walk up="20"/>
     </Appearance>
     <Gameplay damage="1~1" maxHealth="1"/>
+    <Script name="BasicProjectile.zephyr"/>
   </Projectile>
   ​
   <Portal name="InvisibleTeleporter">

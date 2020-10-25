@@ -7,6 +7,7 @@
 #include "Engine/Physics/Rigidbody2D.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/Scripting/ZephyrScript.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -15,9 +16,15 @@ Projectile::Projectile( const EntityDefinition& entityDef, Map* map )
 {
 	m_damage = entityDef.GetDamageRange().GetRandomInRange( g_game->m_rng );
 
-	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
 	m_rigidbody2D->SetDrag( 0.f );
 	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY_PROJECTILE );
+
+	if ( m_scriptObj != nullptr )
+	{
+		ZephyrValueMap globalValues;
+		globalValues["attackDamage"] = m_damage;
+		m_scriptObj->InitializeGlobalVariables( globalValues );
+	}
 }
 
 
@@ -39,23 +46,8 @@ void Projectile::Load()
 void Projectile::Update( float deltaSeconds )
 {
 	m_rigidbody2D->SetVelocity( GetForwardVector() * m_entityDef.GetSpeed() );
-	//m_velocity = GetForwardVector() * m_entityDef.GetSpeed();
 
 	Entity::Update( deltaSeconds );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Projectile::Render() const
-{
-	Entity::Render();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Projectile::Die()
-{
-	Entity::Die();
 }
 
 
@@ -65,13 +57,20 @@ void Projectile::EnterCollisionEvent( Collision2D collision )
 	if ( !IsDead() )
 	{
 		Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
-		
-		if ( theirEntity != nullptr )
+
+		if ( m_scriptObj != nullptr )
 		{
-			theirEntity->TakeDamage( (int)m_damage );
+			EventArgs args;
+			if ( theirEntity != nullptr )
+			{
+				//theirEntity->TakeDamage( (int)m_damage );
+				args.SetValue( "otherId", theirEntity->GetId() );
+			}
+
+			m_scriptObj->FireEvent( "Collision", &args );
 		}
 
-		Die();
+		//Die();
 	}
 }
 

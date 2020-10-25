@@ -19,12 +19,14 @@ public:
 	bool IsMethodRegistered( const std::string& methodName );
 
 private:
+	// Debug Events
 	void ChangeZephyrScriptState( EventArgs* args );
 	void PrintDebugText( EventArgs* args );
 	void PrintToConsole( EventArgs* args );
 
-	// Game events
+	// Game Events
 	void DestroyEntity( EventArgs* args );
+	void DamageEntity( EventArgs* args );
 	void UpdateEnemyCount( EventArgs* args );
 	void WinGame( EventArgs* args );
 
@@ -36,6 +38,9 @@ private:
 	void GetNewWanderTargetPosition( EventArgs* args );
 	void CheckForTarget( EventArgs* args );
 	void GetDistanceToTarget( EventArgs* args );
+
+	// Audio/Visual Effects
+	void AddScreenShake( EventArgs* args );
 
 private:
 	std::unordered_set<std::string> m_registeredMethods;

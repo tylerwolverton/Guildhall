@@ -37,6 +37,10 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	{
 		m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_STATIC );
 	}
+	else
+	{
+		m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+	}
 
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
 
@@ -256,7 +260,7 @@ void Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::TakeDamage( int damage )
+void Entity::TakeDamage( float damage )
 {
 	if ( IsDead() )
 	{
@@ -269,7 +273,7 @@ void Entity::TakeDamage( int damage )
 		Die();
 	}
 	
-	g_game->AddScreenShakeIntensity(.05f);
+	//g_game->AddScreenShakeIntensity(.05f);
 
 	if ( m_scriptObj != nullptr )
 	{
@@ -399,17 +403,3 @@ void Entity::FireCorrespondingEvent( EventArgs* args )
 	g_devConsole->PrintString( Stringf( "Firing event '%s' from '%s'", iter->second.c_str(), m_entityDef.GetName().c_str() ) );
 	g_eventSystem->FireEvent( iter->second );
 }
-
-
-//-----------------------------------------------------------------------------------------------
-//void Entity::ApplyFriction()
-//{
-//	if ( m_velocity.GetLength() > PHYSICS_FRICTION_FRACTION )
-//	{
-//		m_velocity -= m_velocity * PHYSICS_FRICTION_FRACTION;
-//	}
-//	else
-//	{
-//		m_velocity = Vec2( 0.f, 0.f );
-//	}
-//}

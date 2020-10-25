@@ -1,0 +1,18 @@
+StateMachine
+{
+    Number attackDamage;
+
+    String otherId;
+    String otherId2;
+    OnEvent( Collision )
+    {
+        otherId2 = otherId;
+        if ( otherId != "" )
+        {
+            FireEvent( DamageEntity( id = otherId, damage = attackDamage ) );
+            FireEvent( AddScreenShake( intensity = .05 ) );
+        }
+        
+        FireEvent( DestroyEntity() );
+    }
+}

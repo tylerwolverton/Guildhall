@@ -79,7 +79,7 @@ public:
 	bool			IsGarbage() const										{ return m_isGarbage; }
 	bool			IsPlayer() const										{ return m_isPlayer; }
 				 
-	void			TakeDamage( int damage );
+	void			TakeDamage( float damage );
 	//void			ApplyFriction();
 
 	void			MoveWithPhysics( float speed, const Vec2& direction );
@@ -95,7 +95,7 @@ protected:
 	const EntityDefinition& m_entityDef;
 	std::string				m_id;
 	eFaction				m_faction = eFaction::NEUTRAL;
-	int						m_curHealth = 1;								// how much health is currently remaining on entity
+	float					m_curHealth = 1.f;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
 	bool					m_isPlayer = false;
