@@ -47,7 +47,7 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 			case ',': AddToken( eTokenType::COMMA );															 break;
 			case '.': 
 			{
-				if ( IsNumber( PeekNextChar() ) )
+				if ( IsNumber( Peek() ) )
 				{
 					TokenizeNumberConstant();
 				}
@@ -258,6 +258,7 @@ void ZephyrScanner::TokenizeNumberConstant()
 				errorNumber = true;
 			}
 		}
+
 		ReadAndAdvanceSrcPos();
 	}
 
