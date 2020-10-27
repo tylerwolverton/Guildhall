@@ -171,7 +171,6 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		{
 			Projectile* projectile = new Projectile( entityDef, this );
 			AddToEntityList( projectile );
-			AddToProjectileList( projectile );
 			return projectile;
 		}
 		break;
@@ -180,7 +179,6 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		{
 			Portal* portal = new Portal( entityDef, this );
 			AddToEntityList( portal );
-			AddToPortalList( portal );
 			return portal;
 		}
 		break;
@@ -358,66 +356,6 @@ void Map::AddToEntityList( Entity* entity )
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::AddToProjectileList( Projectile* projectile )
-{
-	for ( int projectileIdx = 0; projectileIdx < (int)m_projectiles.size(); ++projectileIdx )
-	{
-		if ( m_projectiles[projectileIdx] == nullptr )
-		{
-			m_projectiles[projectileIdx] = projectile;
-			return;
-		}
-	}
-
-	m_projectiles.push_back( projectile );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::AddToPortalList( Portal* portal )
-{
-	for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
-	{
-		if ( m_portals[portalIdx] == nullptr )
-		{
-			m_portals[portalIdx] = portal;
-			return;
-		}
-	}
-
-	m_portals.push_back( portal );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::RemoveFromProjectileList( Projectile* projectile )
-{
-	for ( int projectileIdx = 0; projectileIdx < (int)m_projectiles.size(); ++projectileIdx )
-	{
-		if ( projectile == m_projectiles[projectileIdx] )
-		{
-			m_projectiles[projectileIdx] = nullptr;
-			return;
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Map::RemoveFromPortalList( Portal* portal )
-{
-	for ( int portalIdx = 0; portalIdx < (int)m_portals.size(); ++portalIdx )
-	{
-		if ( portal == m_portals[portalIdx] )
-		{
-			m_portals[portalIdx] = nullptr;
-			return;
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Map::DeleteDeadEntities()
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
@@ -428,13 +366,7 @@ void Map::DeleteDeadEntities()
 		{
 			continue;
 		}
-
-		switch( entity->GetClass() )
-		{
-			case eEntityClass::PROJECTILE: RemoveFromProjectileList( (Projectile*)entity ); break;
-			case eEntityClass::PORTAL: RemoveFromPortalList( (Portal*)entity ); break;
-		}
-
+		
 		delete( m_entities[entityIdx] );
 		m_entities[entityIdx] = nullptr;
 	}
@@ -449,7 +381,7 @@ void Map::WarpEntityInMap( Entity* entity, Portal* portal )
 
 
 //-----------------------------------------------------------------------------------------------
-Entity* Map::GetEntityById( const std::string& id )
+Entity* Map::GetEntityByName( const std::string& name )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
@@ -460,7 +392,7 @@ Entity* Map::GetEntityById( const std::string& id )
 			continue;
 		}
 		
-		if ( entity->GetName() == id )
+		if ( entity->GetName() == name )
 		{
 			return entity;
 		}
@@ -468,4 +400,27 @@ Entity* Map::GetEntityById( const std::string& id )
 
 	return nullptr;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::GetEntityById( EntityId id )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr
+			 || entity->IsDead() )
+		{
+			continue;
+		}
+
+		if ( entity->GetId() == id )
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}
+
 

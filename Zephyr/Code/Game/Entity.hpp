@@ -60,6 +60,8 @@ public:
 	const float		GetMass() const											{ return m_entityDef.m_mass; }
 	const float		GetOrientationDegrees() const							{ return m_orientationDegrees; }
 	void			SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
+
+	EntityId		GetId()													{ return m_id; }
 	std::string		GetType() const											{ return m_entityDef.m_type; }
 	std::string		GetName() const											{ return m_name; }
 	void			SetName( const std::string& name ) 						{ m_name = name; }
@@ -95,6 +97,7 @@ protected:
 	// Game state
 	const EntityDefinition& m_entityDef;
 	std::string				m_name;
+	EntityId				m_id;
 	eFaction				m_faction = eFaction::NEUTRAL;
 	float					m_curHealth = 1.f;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
@@ -111,6 +114,9 @@ protected:
 	float					m_cumulativeTime = 0.f;
 	std::vector<Vertex_PCU> m_vertices;
 	SpriteAnimDefinition*	m_curAnimDef = nullptr;
+
+	// Statics
+	static EntityId s_nextEntityId;
 };
 
 

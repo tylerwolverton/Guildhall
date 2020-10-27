@@ -24,10 +24,15 @@
 
 
 //-----------------------------------------------------------------------------------------------
+EntityId Entity::s_nextEntityId = 0;
+
+
+//-----------------------------------------------------------------------------------------------
 Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	: m_entityDef( entityDef )
 	, m_map( map )
 {
+	m_id = s_nextEntityId++;
 	m_curHealth = m_entityDef.GetMaxHealth();
 
 	m_rigidbody2D = g_physicsSystem2D->CreateRigidbody();
@@ -196,7 +201,7 @@ void Entity::AddItemToInventory( Entity* item )
 	m_inventory.push_back( item );
 
 	EventArgs args;
-	args.SetValue( "itemId", item->GetName() );
+	args.SetValue( "itemName", item->GetName() );
 
 	g_eventSystem->FireEvent( "PickupItem", &args );
 }

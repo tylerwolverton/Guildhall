@@ -940,9 +940,16 @@ float Game::GetLastDeltaSecondsf()
 
 
 //-----------------------------------------------------------------------------------------------
-Entity* Game::GetEntityById( const std::string& id )
+Entity* Game::GetEntityById( EntityId id )
 {
 	return m_world->GetEntityById( id );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Game::GetEntityByName( const std::string& name )
+{
+	return m_world->GetEntityByName( name );
 }
 
 

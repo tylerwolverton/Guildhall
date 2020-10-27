@@ -2,6 +2,6 @@ StateMachine
 {
 	OnEvent( OpenDoor )
 	{
-		FireEvent( DestroyEntity() );
+		FireEvent( DestroySelf() );
 	}
 }

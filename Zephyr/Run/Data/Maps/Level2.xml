@@ -20,7 +20,7 @@
 	<Entities>
 		<PlayerStart pos="3.5,1.5" yaw="0"/>
     <Entity type="LockedDoorVertical" name="door1" pos="7.5,9.5">
-      <ScriptVarInit type="string" var="keyId" value="key1"/>
+      <ScriptVarInit type="string" var="keyName" value="key1"/>
     </Entity>
     <Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
     <Pickup type="Key" name="key1" pos="5.5,7.5" />

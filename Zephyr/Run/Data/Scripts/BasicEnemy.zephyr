@@ -2,7 +2,7 @@ StateMachine
 {
 	Vec2 position;		
 	Vec2 targetPosition;
-	String targetId = "player";
+	String targetName = "player";
 	Number health;
 
 	Vec2 lastPosition;
@@ -57,7 +57,7 @@ StateMachine
 		
 		FireEvent( PrintDebugText( text = "Wander" ) );
 		
-		FireEvent( CheckForTarget( id = targetId, maxDist = 3 ) );
+		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
 		FireEvent( MoveToLocation( pos=targetPosition ) );
 
 		if( position == targetPosition )
@@ -94,7 +94,7 @@ StateMachine
 		FireEvent( PrintDebugText( text = "Chase" ) );
 
 		Number distance;
-		FireEvent( GetDistanceToTarget( id = targetId ) );
+		FireEvent( GetDistanceToTarget( id = targetName ) );
 		OnEvent( UpdateDistanceToTarget )
 		{		
 			if( distance > 3 )
@@ -104,7 +104,7 @@ StateMachine
 			}
 		}
 
-		FireEvent( ChaseTargetEntity( id = targetId ) );
+		FireEvent( ChaseTargetEntity( id = targetName ) );
 	}
 
 	// -----------------------------------------------------------------------------------------
@@ -124,8 +124,8 @@ StateMachine
 
 		FireEvent( PrintDebugText( text = "Flee" ) );
 
-		FireEvent( GetDistanceToTarget( id = targetId ) );
+		FireEvent( GetDistanceToTarget( id = targetName ) );
 
-		FireEvent( FleeTargetEntity( id = targetId ) );
+		FireEvent( FleeTargetEntity( id = targetName ) );
 	}
 }

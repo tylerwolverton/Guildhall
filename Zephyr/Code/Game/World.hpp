@@ -1,6 +1,9 @@
 #pragma once
+#include "Game/GameCommon.hpp"
+
 #include <string>
 #include <map>
+#include <unordered_map>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -33,8 +36,10 @@ public:
 
 	void ClearMaps();
 
-	Entity* GetEntityById( const std::string& id );
-	Entity* GetEntityByIdInCurMap( const std::string& id );
+	Entity* GetEntityById( EntityId id );
+	Entity* GetEntityByIdInCurMap( EntityId id );
+	Entity* GetEntityByName( const std::string& name );
+	Entity* GetEntityByNameInCurMap( const std::string& name );
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
@@ -44,4 +49,6 @@ private:
 	Clock* m_worldClock = nullptr;
 
 	std::map<std::string, Map*> m_loadedMaps;
+
+	std::unordered_map<std::string, Entity*> m_entitiesByName;
 };

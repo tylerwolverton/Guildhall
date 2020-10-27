@@ -1,13 +1,13 @@
 #pragma once
 #include "Game/Tile.hpp"
 #include "Game/Entity.hpp"
+#include "Game/GameCommon.hpp"
 
 #include <string>
 #include <vector>
 
 
 //-----------------------------------------------------------------------------------------------
-class Entity;
 class Projectile;
 class Portal;
 struct MapData;
@@ -60,16 +60,13 @@ public:
 
 	void WarpEntityInMap( Entity* entity, Portal* portal );
 
-	Entity* GetEntityById( const std::string& id );
+	Entity* GetEntityByName( const std::string& name );
+	Entity* GetEntityById( EntityId id );
 
 private:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 	
 	void AddToEntityList( Entity* entity );
-	void AddToProjectileList( Projectile* projectile );
-	void AddToPortalList( Portal* portal );
-	void RemoveFromProjectileList( Projectile* projectile );
-	void RemoveFromPortalList( Portal* portal );
 
 	void DeleteDeadEntities();
 
@@ -84,6 +81,4 @@ protected:
 
 	Entity*						m_player = nullptr;
 	std::vector<Entity*>		m_entities;
-	std::vector<Projectile*>	m_projectiles;
-	std::vector<Portal*>		m_portals;
 };

@@ -1,14 +1,14 @@
 StateMachine
 {
-	String keyId;
+	String keyName;
 
 	// Event arguments to reference
-	String itemId;
+	String itemName;
 	OnEvent( PickupItem )
 	{
-		if( itemId == keyId )
+		if( itemName == keyName )
 		{
-			FireEvent( DestroyEntity() );
+			FireEvent( DestroySelf() );
 		}
 	}
 }

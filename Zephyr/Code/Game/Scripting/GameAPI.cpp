@@ -25,7 +25,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( PrintToConsole );
 
 	REGISTER_EVENT( UpdateEnemyCount );
-	REGISTER_EVENT( DestroyEntity );
+	REGISTER_EVENT( DestroySelf );
 	REGISTER_EVENT( DamageEntity );
 	REGISTER_EVENT( WinGame );
 
@@ -67,7 +67,7 @@ void GameAPI::UpdateEnemyCount( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::DestroyEntity( EventArgs* args )
+void GameAPI::DestroySelf( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
@@ -81,7 +81,7 @@ void GameAPI::DestroyEntity( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::DamageEntity( EventArgs* args )
 {
-	std::string entityId = args->GetValue( "id", "" );
+	EntityId entityId = (EntityId)args->GetValue( "id", 0.f );
 	float damage = args->GetValue( "damage", 0.f );
 
 	Entity* entityToDamage = g_game->GetEntityById( entityId );
@@ -175,7 +175,7 @@ void GameAPI::MoveToLocation( EventArgs* args )
 void GameAPI::ChaseTargetEntity( EventArgs* args )
 {
 	std::string targetId = args->GetValue( "id", "" );
-	Entity* targetEntity = g_game->GetEntityById( targetId );
+	Entity* targetEntity = g_game->GetEntityByName( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr 
@@ -197,7 +197,7 @@ void GameAPI::ChaseTargetEntity( EventArgs* args )
 void GameAPI::FleeTargetEntity( EventArgs* args )
 {
 	std::string targetId = args->GetValue( "id", "" );
-	Entity* targetEntity = g_game->GetEntityById( targetId );
+	Entity* targetEntity = g_game->GetEntityByName( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
@@ -219,7 +219,7 @@ void GameAPI::FleeTargetEntity( EventArgs* args )
 void GameAPI::GetEntityLocation( EventArgs* args )
 {
 	std::string targetId = args->GetValue( "id", "" );
-	Entity* targetEntity = g_game->GetEntityById( targetId );
+	Entity* targetEntity = g_game->GetEntityByName( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
@@ -259,7 +259,7 @@ void GameAPI::CheckForTarget( EventArgs* args )
 {
 	std::string targetId = args->GetValue( "id", "" );
 	float maxDist = args->GetValue( "maxDist", 0.f );
-	Entity* targetEntity = g_game->GetEntityById( targetId );
+	Entity* targetEntity = g_game->GetEntityByName( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
@@ -284,7 +284,7 @@ void GameAPI::CheckForTarget( EventArgs* args )
 void GameAPI::GetDistanceToTarget( EventArgs* args )
 {
 	std::string targetId = args->GetValue( "id", "" );
-	Entity* targetEntity = g_game->GetEntityById( targetId );
+	Entity* targetEntity = g_game->GetEntityByName( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr

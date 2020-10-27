@@ -156,7 +156,7 @@ void World::ClearMaps()
 
 
 //-----------------------------------------------------------------------------------------------
-Entity* World::GetEntityById( const std::string& id )
+Entity* World::GetEntityById( EntityId id )
 {
 	// Look in this map first
 	Entity* entity = GetEntityByIdInCurMap( id );
@@ -184,9 +184,44 @@ Entity* World::GetEntityById( const std::string& id )
 
 
 //-----------------------------------------------------------------------------------------------
-Entity* World::GetEntityByIdInCurMap( const std::string& id )
+Entity* World::GetEntityByIdInCurMap( EntityId id )
 {
 	return m_curMap->GetEntityById( id );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* World::GetEntityByName( const std::string& name )
+{
+	// Look in this map first
+	Entity* entity = GetEntityByNameInCurMap( name );
+	if ( entity != nullptr )
+	{
+		return entity;
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		if ( map.second == m_curMap )
+		{
+			continue;
+		}
+
+		entity = map.second->GetEntityByName( name );
+		if ( entity != nullptr )
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* World::GetEntityByNameInCurMap( const std::string& name )
+{
+	return m_curMap->GetEntityByName( name );
 }
 
 
