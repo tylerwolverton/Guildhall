@@ -29,7 +29,7 @@ enum class eCardinalDirection
 class TileMap : public Map
 {
 public:
-	TileMap( const MapData& mapData );
+	TileMap( const MapData& mapData, World* world );
 	virtual ~TileMap();
 
 	virtual void Load( Entity* player ) override;

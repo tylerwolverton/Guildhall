@@ -10,6 +10,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/World.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Projectile.hpp"
@@ -20,10 +21,11 @@
 
 
 //-----------------------------------------------------------------------------------------------
-Map::Map( const MapData& mapData )
+Map::Map( const MapData& mapData, World* world )
 	: m_name( mapData.mapName )
 	, m_playerStartPos( mapData.playerStartPos )
 	, m_playerStartYaw( mapData.playerStartYaw )
+	, m_world( world )
 {
 	LoadEntities( mapData.mapEntityDefs );
 }
@@ -334,6 +336,8 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 
 		newEntity->InitializeScriptValues( mapEntityDef.zephyrScriptInitialValues );
 		newEntity->FireSpawnEvent();
+
+		m_world->SaveEntityByName( newEntity );
 	}
 
 }

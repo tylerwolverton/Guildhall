@@ -68,6 +68,7 @@ public:
 	eEntityClass	GetClass() const										{ return m_entityDef.m_class; }
 	const eFaction	GetFaction() const										{ return m_faction; }
 	void			SetFaction( const eFaction& faction )					{ m_faction = faction; }
+	Map*			GetMap()												{ return m_map; }
 	void			SetMap( Map* map )										{ m_map = map; }
 		
 	void			AddItemToInventory( Entity* item );

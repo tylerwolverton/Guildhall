@@ -552,6 +552,7 @@ void Game::LoadEntitiesFromXml()
 
 	m_player = new Actor( *playerDef, nullptr );
 	m_player->SetAsPlayer();
+	m_world->SaveEntityByName( m_player );
 
 	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }
@@ -588,6 +589,7 @@ void Game::LoadAndCompileZephyrScripts()
 void Game::ReloadGame()
 {
 	m_world->UnloadAllEntityScripts();
+	m_world->ClearEntities();
 	m_world->ClearMaps();
 
 	PopulateGameConfig();

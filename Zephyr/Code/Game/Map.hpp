@@ -8,8 +8,8 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class Projectile;
 class Portal;
+class World;
 struct MapData;
 struct MapEntityDefinition;
 
@@ -33,7 +33,7 @@ struct RaycastResult
 class Map
 {
 public:
-	Map( const MapData& mapData );
+	Map( const MapData& mapData, World* world );
 	virtual ~Map();
 
 	virtual void Load( Entity* player );
@@ -52,6 +52,7 @@ public:
 	void			ReloadAllEntityScripts();
 
 	Vec2 GetPlayerStartPos() const										{ return m_playerStartPos; }
+	std::string GetName() const											{ return m_name; }
 
 	void RemoveOwnershipOfEntity( Entity* entityToRemove );
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
@@ -74,6 +75,7 @@ private:
 
 protected:
 	std::string					m_name;
+	World*						m_world = nullptr;
 
 	// Multiplayer TODO: Make this into an array
 	Vec2						m_playerStartPos = Vec2::ZERO;

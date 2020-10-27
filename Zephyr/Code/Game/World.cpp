@@ -66,7 +66,7 @@ void World::AddNewMap( const MapData& mapData )
 {
 	if ( mapData.type == "TileMap" )
 	{
-		TileMap* tileMap = new TileMap( mapData );
+		TileMap* tileMap = new TileMap( mapData, this );
 		m_loadedMaps[mapData.mapName] = tileMap;
 	}
 }
@@ -156,6 +156,13 @@ void World::ClearMaps()
 
 
 //-----------------------------------------------------------------------------------------------
+void World::ClearEntities()
+{
+	m_entitiesByName.clear();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Entity* World::GetEntityById( EntityId id )
 {
 	// Look in this map first
@@ -193,8 +200,16 @@ Entity* World::GetEntityByIdInCurMap( EntityId id )
 //-----------------------------------------------------------------------------------------------
 Entity* World::GetEntityByName( const std::string& name )
 {
+	auto entityIter = m_entitiesByName.find( name );
+	if ( entityIter != m_entitiesByName.end() )
+	{
+		return entityIter->second;
+	}
+
+	return nullptr;
+
 	// Look in this map first
-	Entity* entity = GetEntityByNameInCurMap( name );
+	/*Entity* entity = GetEntityByNameInCurMap( name );
 	if ( entity != nullptr )
 	{
 		return entity;
@@ -214,7 +229,7 @@ Entity* World::GetEntityByName( const std::string& name )
 		}
 	}
 
-	return nullptr;
+	return nullptr;*/
 }
 
 
@@ -222,6 +237,29 @@ Entity* World::GetEntityByName( const std::string& name )
 Entity* World::GetEntityByNameInCurMap( const std::string& name )
 {
 	return m_curMap->GetEntityByName( name );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::SaveEntityByName( Entity* entity )
+{
+	if ( entity == nullptr 
+		 || entity->GetName().empty() )
+	{
+		return;
+	}
+
+	auto entityIter = m_entitiesByName.find( entity->GetName() );
+	if ( entityIter != m_entitiesByName.end() )
+	{
+		g_devConsole->PrintError( Stringf( "Tried to save an entity with name '%s' in map '%s', but an entity with that name was already defined in map '%s'", 
+										   entity->GetName().c_str(), 
+										   entity->GetMap()->GetName().c_str(),
+										   entityIter->second->GetMap()->GetName().c_str() ) );
+		return;
+	}
+
+	m_entitiesByName[entity->GetName()] = entity;
 }
 
 

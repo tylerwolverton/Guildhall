@@ -35,11 +35,14 @@ public:
 	void ReloadAllEntityScripts();
 
 	void ClearMaps();
+	void ClearEntities();
 
 	Entity* GetEntityById( EntityId id );
 	Entity* GetEntityByIdInCurMap( EntityId id );
 	Entity* GetEntityByName( const std::string& name );
 	Entity* GetEntityByNameInCurMap( const std::string& name );
+
+	void	SaveEntityByName( Entity* entity );
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
