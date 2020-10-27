@@ -17,7 +17,6 @@ Projectile::Projectile( const EntityDefinition& entityDef, Map* map )
 	m_damage = entityDef.GetDamageRange().GetRandomInRange( g_game->m_rng );
 
 	m_rigidbody2D->SetDrag( 0.f );
-	m_rigidbody2D->SetLayer( eCollisionLayer::ENEMY_PROJECTILE );
 
 	if ( m_scriptObj != nullptr )
 	{
@@ -35,41 +34,10 @@ Projectile::~Projectile()
 
 
 //-----------------------------------------------------------------------------------------------
-void Projectile::Load()
-{
-	Entity::Load();
-	m_rigidbody2D->GetCollider()->m_onOverlapEnterDelegate.SubscribeMethod( this, &Projectile::EnterCollisionEvent );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Projectile::Update( float deltaSeconds )
 {
 	m_rigidbody2D->SetVelocity( GetForwardVector() * m_entityDef.GetSpeed() );
 
 	Entity::Update( deltaSeconds );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Projectile::EnterCollisionEvent( Collision2D collision )
-{
-	if ( !IsDead() )
-	{
-		Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
-
-		if ( m_scriptObj != nullptr )
-		{
-			EventArgs args;
-			EntityId otherId = -1;
-			if ( theirEntity != nullptr )
-			{
-				otherId = theirEntity->GetId();
-			}
-
-			args.SetValue( "otherId", otherId );
-			m_scriptObj->FireEvent( "EnterCollision", &args );
-		}
-	}
 }
 

@@ -3,6 +3,7 @@ StateMachine
 	Number testNum; 
 	Number testNumInit = 12; 
 	Number testNum2 = 2.5;  
+	//Number testNum3 = .7;
 	Vec2 testVec2;		
 	Vec2 testVec2Init = (5,5);
 	String testStr;

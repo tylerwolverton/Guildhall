@@ -13,6 +13,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class Map;
+class Collision2D;
 class Rigidbody2D;
 class SpriteAnimDefinition;
 class ZephyrScript;
@@ -91,6 +92,14 @@ public:
 protected:
 	void			RegisterUserEvents();
 	void			FireCorrespondingEvent( EventArgs* args );
+
+	void			EnterCollisionEvent( Collision2D collision );
+	void			StayCollisionEvent( Collision2D collision );
+	void			ExitCollisionEvent( Collision2D collision );
+	void			EnterTriggerEvent( Collision2D collision );
+	void			StayTriggerEvent( Collision2D collision );
+	void			ExitTriggerEvent( Collision2D collision );
+	void			SendPhysicsEventToScript( Collision2D collision, const std::string& eventName );
 
 protected:
 	ZephyrScript*			m_scriptObj = nullptr;

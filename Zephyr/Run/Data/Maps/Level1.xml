@@ -29,6 +29,7 @@
 		<Actor type="Blob" name="blob3" pos="9.5,5.5" yaw="0"/>
 		<Actor type="SuperBlob" name="superBlob1" pos="10.5,7.5" yaw="0"/>
     <Portal type="InvisibleTeleporter" pos="8.5,9.5" yaw="0" destMap="Level2" destPos="3.5,1.5" destYawOffset="0"/>
+		<Entity type="ScreenShakeTrigger" pos="9.5,1.5" yaw="0"/>
 	</Entities>
 
 </MapDefinition>

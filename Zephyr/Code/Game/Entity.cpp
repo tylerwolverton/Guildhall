@@ -278,8 +278,6 @@ void Entity::TakeDamage( float damage )
 		Die();
 	}
 	
-	//g_game->AddScreenShakeIntensity(.05f);
-
 	if ( m_scriptObj != nullptr )
 	{
 		EventArgs args;
@@ -310,8 +308,26 @@ void Entity::Load()
 {
 	m_rigidbody2D->Enable();
 
-	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, GetPhysicsRadius() );
-	m_rigidbody2D->TakeCollider( discCollider );
+	if ( m_entityDef.IsTrigger() )
+	{
+		DiscCollider2D* discTrigger = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
+		
+		discTrigger->m_onTriggerEnterDelegate.SubscribeMethod( this, &Entity::EnterTriggerEvent );
+		discTrigger->m_onTriggerStayDelegate.SubscribeMethod( this, &Entity::StayTriggerEvent );
+		discTrigger->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Entity::ExitTriggerEvent );
+
+		m_rigidbody2D->TakeCollider( discTrigger );
+	}
+	else
+	{
+		DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, GetPhysicsRadius() );
+
+		discCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Entity::EnterCollisionEvent );
+		discCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Entity::StayCollisionEvent );
+		discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Entity::ExitCollisionEvent );
+
+		m_rigidbody2D->TakeCollider( discCollider );
+	}
 }
 
 
@@ -408,3 +424,70 @@ void Entity::FireCorrespondingEvent( EventArgs* args )
 	g_devConsole->PrintString( Stringf( "Firing event '%s' from '%s'", iter->second.c_str(), m_entityDef.GetType().c_str() ) );
 	g_eventSystem->FireEvent( iter->second );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::EnterCollisionEvent( Collision2D collision )
+{
+	SendPhysicsEventToScript( collision, "EnterCollision" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::StayCollisionEvent( Collision2D collision )
+{
+	SendPhysicsEventToScript( collision, "StayCollision" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::ExitCollisionEvent( Collision2D collision )
+{
+	SendPhysicsEventToScript( collision, "ExitCollision" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::EnterTriggerEvent( Collision2D collision )
+{
+	SendPhysicsEventToScript( collision, "EnterTrigger" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::StayTriggerEvent( Collision2D collision )
+{
+	SendPhysicsEventToScript( collision, "StayTrigger" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::ExitTriggerEvent( Collision2D collision )
+{
+	SendPhysicsEventToScript( collision, "ExitTrigger" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string& eventName )
+{
+	if ( !IsDead() )
+	{
+		Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
+
+		if ( m_scriptObj != nullptr )
+		{
+			EventArgs args;
+			EntityId otherId = -1;
+			if ( theirEntity != nullptr )
+			{
+				otherId = theirEntity->GetId();
+			}
+
+			args.SetValue( "otherId", otherId );
+			m_scriptObj->FireEvent( eventName, &args );
+		}
+	}
+}
+
+

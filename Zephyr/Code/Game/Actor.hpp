@@ -18,7 +18,6 @@ public:
 	~Actor();
 
 	virtual void Update( float deltaSeconds );
-	virtual void Render() const;
 	virtual void Die();
 
 	void SetAsPlayer();

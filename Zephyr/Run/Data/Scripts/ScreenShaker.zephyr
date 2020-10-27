@@ -1,0 +1,17 @@
+StateMachine
+{
+    OnEvent( EnterTrigger )
+    {
+        FireEvent( AddScreenShake( intensity = .07 ) );
+    }
+
+    OnEvent( StayTrigger )
+    {
+        FireEvent( AddScreenShake( intensity = .005 ) );
+    }
+
+    OnEvent( ExitTrigger )
+    {
+        FireEvent( AddScreenShake( intensity = .20 ) );
+    }
+}

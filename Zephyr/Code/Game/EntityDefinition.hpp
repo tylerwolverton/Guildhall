@@ -46,6 +46,7 @@ public:
 	float			GetWalkSpeed() const														{ return m_walkSpeed; }
 	float			GetSpeed() const															{ return m_speed; }
 	eCollisionLayer	GetCollisionLayer() const													{ return m_collisionLayer; }
+	bool			IsTrigger() const															{ return m_isTrigger; }
 
 	FloatRange		GetDamageRange() const														{ return m_damageRange; }
 	
@@ -66,6 +67,7 @@ protected:
 	std::string		m_type;
 	eEntityClass	m_class = eEntityClass::UNKNOWN;
 	eCollisionLayer	m_collisionLayer = eCollisionLayer::NONE;
+	bool			m_isTrigger = false;
 	float			m_maxHealth = 1.f;
 	float			m_physicsRadius = 0.f;
 	float			m_mass = 1.f;

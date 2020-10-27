@@ -77,14 +77,19 @@
   </Projectile>
   ​
   <Portal name="InvisibleTeleporter">
-    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal"/>
+    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal" isTrigger="true"/>
   </Portal>
   ​
   <Pickup name="Key">
-    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Pickup"/>
+    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Pickup" isTrigger="true"/>
     <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
       <Walk up="120"/>
     </Appearance>
   </Pickup>
 
+  <Entity name="ScreenShakeTrigger">
+    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal" isTrigger="true"/>
+    <Script name="ScreenShaker.zephyr"/>
+  </Entity>
+  
 </EntityTypes>

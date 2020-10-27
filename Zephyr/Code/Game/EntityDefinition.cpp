@@ -94,6 +94,8 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 		std::string collisionLayerStr = ParseXmlAttribute( *physicsElem, "collisionLayer", "" );
 		m_collisionLayer = GetCollisionLayerFromString( collisionLayerStr );
+
+		m_isTrigger = ParseXmlAttribute( *physicsElem, "isTrigger", false );
 	}
 
 	// Appearance
