@@ -9,6 +9,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/Map.hpp"
 #include "Game/Entity.hpp"
 
 
@@ -24,9 +25,10 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( PrintDebugText );
 	REGISTER_EVENT( PrintToConsole );
 
-	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( DestroySelf );
+	REGISTER_EVENT( SpawnEntity );
 	REGISTER_EVENT( DamageEntity );
+	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( WinGame );
 
 	REGISTER_EVENT( MoveToLocation );
@@ -139,6 +141,29 @@ void GameAPI::PrintToConsole( EventArgs* args )
 	else if ( colorStr == "blue" )	{ color = Rgba8::BLUE; }
 	
 	g_devConsole->PrintString( text.c_str(), color );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::SpawnEntity( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	std::string entityType = args->GetValue( "type", "" );
+	std::string mapName = args->GetValue( "map", "" );
+	Vec2 position = args->GetValue( "position", entity->GetPosition() );
+
+	Map* mapToSpawnIn = entity->GetMap();
+	if ( !mapName.empty() )
+	{
+		// Find map by name and spawn there
+	}
+
+	mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
 }
 
 

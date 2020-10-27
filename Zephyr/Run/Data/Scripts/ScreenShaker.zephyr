@@ -1,8 +1,14 @@
 StateMachine
 {
+    String otherName;
     OnEvent( EnterTrigger )
     {
         FireEvent( AddScreenShake( intensity = .07 ) );
+
+        if( otherName == "player" )
+        {
+            FireEvent( SpawnEntity( type = "Blob" ) );
+        }
     }
 
     OnEvent( StayTrigger )
@@ -12,6 +18,6 @@ StateMachine
 
     OnEvent( ExitTrigger )
     {
-        FireEvent( AddScreenShake( intensity = .20 ) );
+        FireEvent( AddScreenShake( intensity = .1 ) );
     }
 }

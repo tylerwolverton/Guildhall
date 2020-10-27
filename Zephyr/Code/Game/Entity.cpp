@@ -479,15 +479,17 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 		{
 			EventArgs args;
 			EntityId otherId = -1;
-			if ( theirEntity != nullptr )
+			std::string otherName;
+			if ( theirEntity != nullptr
+				 && !theirEntity->IsDead() )
 			{
 				otherId = theirEntity->GetId();
+				otherName = theirEntity->GetName();
 			}
 
 			args.SetValue( "otherId", otherId );
+			args.SetValue( "otherName", otherName );
 			m_scriptObj->FireEvent( eventName, &args );
 		}
 	}
 }
-
-

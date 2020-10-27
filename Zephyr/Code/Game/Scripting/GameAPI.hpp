@@ -25,6 +25,7 @@ private:
 	void PrintToConsole( EventArgs* args );
 
 	// Game Events
+	void SpawnEntity( EventArgs* args );
 	void DestroySelf( EventArgs* args );
 	void DamageEntity( EventArgs* args );
 	void UpdateEnemyCount( EventArgs* args );
