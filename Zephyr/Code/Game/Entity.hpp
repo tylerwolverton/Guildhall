@@ -60,16 +60,17 @@ public:
 	const float		GetMass() const											{ return m_entityDef.m_mass; }
 	const float		GetOrientationDegrees() const							{ return m_orientationDegrees; }
 	void			SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
-	std::string		GetName() const											{ return m_entityDef.m_name; }
-	std::string		GetId() const											{ return m_id; }
-	void			SetId( const std::string& id ) 							{ m_id = id; }
-	eEntityType		GetType() const											{ return m_entityDef.m_type; }
+	std::string		GetType() const											{ return m_entityDef.m_type; }
+	std::string		GetName() const											{ return m_name; }
+	void			SetName( const std::string& name ) 						{ m_name = name; }
+	eEntityClass	GetClass() const										{ return m_entityDef.m_class; }
 	const eFaction	GetFaction() const										{ return m_faction; }
 	void			SetFaction( const eFaction& faction )					{ m_faction = faction; }
 	void			SetMap( Map* map )										{ m_map = map; }
 		
 	void			AddItemToInventory( Entity* item );
-	bool			IsInInventory( const std::string& itemId );
+	bool			IsInInventory( const std::string& itemName );
+	//bool			IsInInventory( const std::string& itemId );
 	bool			IsInInventory( Entity* item );
 
 	void			FireSpawnEvent();
@@ -93,7 +94,7 @@ protected:
 
 	// Game state
 	const EntityDefinition& m_entityDef;
-	std::string				m_id;
+	std::string				m_name;
 	eFaction				m_faction = eFaction::NEUTRAL;
 	float					m_curHealth = 1.f;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic

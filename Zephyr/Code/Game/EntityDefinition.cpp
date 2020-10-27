@@ -46,8 +46,8 @@ EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName 
 //-----------------------------------------------------------------------------------------------
 EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spriteSheet )
 {
-	m_name = ParseXmlAttribute( entityDefElem, "name", "" );
-	if ( m_name == "" )
+	m_type = ParseXmlAttribute( entityDefElem, "name", "" );
+	if ( m_type == "" )
 	{
 		g_devConsole->PrintError( "EntityTypes.xml: EntityType is missing a name attribute" );
 		return;
@@ -56,23 +56,23 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	std::string typeStr = entityDefElem.Name();
 	if ( typeStr == "Entity" )
 	{
-		m_type = eEntityType::ENTITY;
+		m_class = eEntityClass::ENTITY;
 	}
 	else if ( typeStr == "Actor" )
 	{
-		m_type = eEntityType::ACTOR;
+		m_class = eEntityClass::ACTOR;
 	}
 	else if ( typeStr == "Projectile" )
 	{
-		m_type = eEntityType::PROJECTILE;
+		m_class = eEntityClass::PROJECTILE;
 	}
 	else if ( typeStr == "Portal" )
 	{
-		m_type = eEntityType::PORTAL;
+		m_class = eEntityClass::PORTAL;
 	}
 	else if ( typeStr == "Pickup" )
 	{
-		m_type = eEntityType::PICKUP;
+		m_class = eEntityClass::PICKUP;
 	}
 	else
 	{
@@ -86,10 +86,10 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	{
 		m_physicsRadius = ParseXmlAttribute( *physicsElem, "radius", m_physicsRadius );
 
-		switch ( m_type )
+		switch ( m_class )
 		{
-			case eEntityType::ACTOR: m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed ); break;
-			case eEntityType::PROJECTILE: m_speed = ParseXmlAttribute( *physicsElem, "speed", m_speed ); break;
+			case eEntityClass::ACTOR: m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed ); break;
+			case eEntityClass::PROJECTILE: m_speed = ParseXmlAttribute( *physicsElem, "speed", m_speed ); break;
 		}
 
 		std::string collisionLayerStr = ParseXmlAttribute( *physicsElem, "collisionLayer", "" );
@@ -126,7 +126,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 			if ( !g_gameAPI->IsMethodRegistered( m_birthEventName ) )
 			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - Birth event '%s' has not been registered", m_name.c_str(), m_birthEventName.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - Birth event '%s' has not been registered", m_type.c_str(), m_birthEventName.c_str() ) );
 			}
 		}
 
@@ -137,7 +137,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 			if ( !g_gameAPI->IsMethodRegistered( m_deathEventName ) )
 			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - Death event '%s' has not been registered", m_name.c_str(), m_deathEventName.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - Death event '%s' has not been registered", m_type.c_str(), m_deathEventName.c_str() ) );
 			}
 		}
 
@@ -147,7 +147,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 			std::string receivedEventName = ParseXmlAttribute( *onEventReceivedElem, "eventName", "" );
 			if ( receivedEventName.empty() )
 			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing eventName attribute in OnEventReceived node", m_name.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing eventName attribute in OnEventReceived node", m_type.c_str() ) );
 
 				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
 				continue;
@@ -156,7 +156,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 			std::string fireEventName = ParseXmlAttribute( *onEventReceivedElem, "fireEvent", "" );
 			if ( fireEventName.empty() )
 			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing fireEvent attribute in OnEventReceived node", m_name.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing fireEvent attribute in OnEventReceived node", m_type.c_str() ) );
 
 				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
 				continue;
@@ -164,7 +164,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 			if ( !g_gameAPI->IsMethodRegistered( fireEventName ) )
 			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - fireEvent '%s' has not been registered", m_name.c_str(), fireEventName.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity: '%s' - fireEvent '%s' has not been registered", m_type.c_str(), fireEventName.c_str() ) );
 
 				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
 				continue;
@@ -210,15 +210,15 @@ void EntityDefinition::ReloadZephyrScriptDefinition()
 
 
 //-----------------------------------------------------------------------------------------------
-std::string GetEntityTypeAsString( eEntityType entityType )
+std::string GetEntityClassAsString( eEntityClass entityClass )
 {
-	switch ( entityType )
+	switch ( entityClass )
 	{
-		case eEntityType::ACTOR: return "Actor";
-		case eEntityType::PROJECTILE: return "Projectile";
-		case eEntityType::PORTAL: return "Portal";
-		case eEntityType::PICKUP: return "Pickup";
-		case eEntityType::ENTITY: return "Entity";
+		case eEntityClass::ACTOR: return "Actor";
+		case eEntityClass::PROJECTILE: return "Projectile";
+		case eEntityClass::PORTAL: return "Portal";
+		case eEntityClass::PICKUP: return "Pickup";
+		case eEntityClass::ENTITY: return "Entity";
 		default: return "Unknown";
 	}
 }

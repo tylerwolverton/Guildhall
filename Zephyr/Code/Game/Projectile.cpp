@@ -63,14 +63,11 @@ void Projectile::EnterCollisionEvent( Collision2D collision )
 			EventArgs args;
 			if ( theirEntity != nullptr )
 			{
-				//theirEntity->TakeDamage( (int)m_damage );
-				args.SetValue( "otherId", theirEntity->GetId() );
+				args.SetValue( "otherId", theirEntity->GetName() );
 			}
 
-			m_scriptObj->FireEvent( "Collision", &args );
+			m_scriptObj->FireEvent( "EnterCollision", &args );
 		}
-
-		//Die();
 	}
 }
 

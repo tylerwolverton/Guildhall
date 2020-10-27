@@ -14,7 +14,7 @@ class ZephyrScriptDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class eEntityType
+enum class eEntityClass
 {
 	UNKNOWN = -1,
 	ENTITY,
@@ -24,7 +24,7 @@ enum class eEntityType
 	PICKUP,
 };
 
-std::string GetEntityTypeAsString( eEntityType entityType );
+std::string GetEntityClassAsString( eEntityClass entityClass );
 
 
 //-----------------------------------------------------------------------------------------------
@@ -39,9 +39,9 @@ public:
 	void			ReloadZephyrScriptDefinition();
 
 	bool			IsValid() const																{ return m_isValid; }
-	std::string		GetName() const																{ return m_name; }
+	std::string		GetType() const																{ return m_type; }
 	float			GetMaxHealth() const														{ return m_maxHealth; }
-	eEntityType		GetType() const																{ return m_type; }
+	eEntityClass	GetClass() const															{ return m_class; }
 	
 	float			GetWalkSpeed() const														{ return m_walkSpeed; }
 	float			GetSpeed() const															{ return m_speed; }
@@ -63,8 +63,8 @@ public:
 
 protected:
 	bool			m_isValid = false;
-	std::string		m_name;
-	eEntityType		m_type = eEntityType::UNKNOWN;
+	std::string		m_type;
+	eEntityClass	m_class = eEntityClass::UNKNOWN;
 	eCollisionLayer	m_collisionLayer = eCollisionLayer::NONE;
 	float			m_maxHealth = 1.f;
 	float			m_physicsRadius = 0.f;

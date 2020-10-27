@@ -19,17 +19,17 @@
 	</MapRows>
 	<Entities>
 		<PlayerStart pos="3.5,1.5" yaw="0"/>
-    <Entity name="LockedDoorVertical" id="door1" pos="7.5,9.5">
+    <Entity type="LockedDoorVertical" name="door1" pos="7.5,9.5">
       <ScriptVarInit type="string" var="keyId" value="key1"/>
     </Entity>
-    <Portal name="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
-    <Pickup name="Key" id="key1" pos="5.5,7.5" />
-    <!--<Entity name="LockedDoorVertical" id="door2" pos="9.5,9.5">
+    <Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
+    <Pickup type="Key" name="key1" pos="5.5,7.5" />
+    <!--<Entity type="LockedDoorVertical" id="door2" pos="9.5,9.5">
       <ScriptVarInit type="string" var="keyId" value="key2"/>
     </Entity>
-    <Portal name="InvisibleTeleporter" pos="9.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
-    <Pickup name="Key" id="key2" pos="9.5,8.5" />-->
-    <Portal name="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
+    <Portal type="InvisibleTeleporter" pos="9.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
+    <Pickup type="Key" name="key2" pos="9.5,8.5" />-->
+    <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
 	</Entities>
 
 </MapDefinition>

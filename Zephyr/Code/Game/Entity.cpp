@@ -196,19 +196,19 @@ void Entity::AddItemToInventory( Entity* item )
 	m_inventory.push_back( item );
 
 	EventArgs args;
-	args.SetValue( "itemId", item->GetId() );
+	args.SetValue( "itemId", item->GetName() );
 
 	g_eventSystem->FireEvent( "PickupItem", &args );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool Entity::IsInInventory( const std::string& itemId )
+bool Entity::IsInInventory( const std::string& itemName )
 {
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
 		if ( m_inventory[itemIdx] != nullptr
-			&& m_inventory[itemIdx]->GetId() == itemId )
+			&& m_inventory[itemIdx]->GetName() == itemName )
 		{
 			return true;
 		}
@@ -324,7 +324,7 @@ void Entity::ChangeZephyrScriptState( const std::string& targetState )
 {
 	if ( m_scriptObj == nullptr )
 	{
-		g_devConsole->PrintWarning( Stringf( "Tried to change state of entity: %s to %s, but it doesn't have a script", m_id.c_str(), targetState.c_str() ) );
+		g_devConsole->PrintWarning( Stringf( "Tried to change state of entity: %s to %s, but it doesn't have a script", m_name.c_str(), targetState.c_str() ) );
 		return;
 	}
 
@@ -400,6 +400,6 @@ void Entity::FireCorrespondingEvent( EventArgs* args )
 		return;
 	}
 
-	g_devConsole->PrintString( Stringf( "Firing event '%s' from '%s'", iter->second.c_str(), m_entityDef.GetName().c_str() ) );
+	g_devConsole->PrintString( Stringf( "Firing event '%s' from '%s'", iter->second.c_str(), m_entityDef.GetType().c_str() ) );
 	g_eventSystem->FireEvent( iter->second );
 }

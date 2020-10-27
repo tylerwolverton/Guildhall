@@ -240,19 +240,19 @@ void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const st
 {
 	MapEntityDefinition mapEntityDef;
 
-	std::string entityName = ParseXmlAttribute( entityElem, "name", "" );
-	mapEntityDef.id = ParseXmlAttribute( entityElem, "id", "" );
-	mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
+	std::string entityType = ParseXmlAttribute( entityElem, "type", "" );
+	mapEntityDef.name = ParseXmlAttribute( entityElem, "name", "" );
+	mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityType );
 	if ( mapEntityDef.entityDef == nullptr )
 	{
-		g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), entityName.c_str() ) );
+		g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), entityType.c_str() ) );
 		return;
 	}
 
-	if ( GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ) != expectedType )
+	if ( GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ) != expectedType )
 	{
-		g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Entity in map '%s'", entityName.c_str(),
-										   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
+		g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Entity in map '%s'", entityType.c_str(),
+										   GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ).c_str(),
 										   expectedType.c_str() ) );
 		return;
 	}
@@ -260,7 +260,7 @@ void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const st
 	mapEntityDef.position = ParseXmlAttribute( entityElem, "pos", Vec2::ZERO );
 	mapEntityDef.yawDegrees = ParseXmlAttribute( entityElem, "yaw", 0.f );
 
-	if ( mapEntityDef.entityDef->GetType() == eEntityType::PORTAL )
+	if ( mapEntityDef.entityDef->GetClass() == eEntityClass::PORTAL )
 	{
 		mapEntityDef.portalDestMap = ParseXmlAttribute( entityElem, "destMap", "" );
 		mapEntityDef.portalDestPos = ParseXmlAttribute( entityElem, "destPos", Vec2::ZERO );

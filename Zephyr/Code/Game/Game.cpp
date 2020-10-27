@@ -525,7 +525,7 @@ void Game::LoadEntitiesFromXml()
 			EntityDefinition* entityTypeDef = new EntityDefinition( *element, spriteSheet );
 			if ( entityTypeDef->IsValid() )
 			{
-				EntityDefinition::s_definitions[entityTypeDef->GetName()] = entityTypeDef;
+				EntityDefinition::s_definitions[entityTypeDef->GetType()] = entityTypeDef;
 			}
 		}
 		else

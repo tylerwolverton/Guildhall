@@ -157,9 +157,9 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 //-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 {
-	switch ( entityDef.GetType() )
+	switch ( entityDef.GetClass() )
 	{
-		case eEntityType::ACTOR:
+		case eEntityClass::ACTOR:
 		{
 			Actor* actor = new Actor( entityDef, this );
 			AddToEntityList( actor );
@@ -167,7 +167,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		}
 		break;
 
-		case eEntityType::PROJECTILE:
+		case eEntityClass::PROJECTILE:
 		{
 			Projectile* projectile = new Projectile( entityDef, this );
 			AddToEntityList( projectile );
@@ -176,7 +176,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		}
 		break;
 
-		case eEntityType::PORTAL:
+		case eEntityClass::PORTAL:
 		{
 			Portal* portal = new Portal( entityDef, this );
 			AddToEntityList( portal );
@@ -185,7 +185,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		}
 		break;
 
-		case eEntityType::PICKUP:
+		case eEntityClass::PICKUP:
 		{
 			Pickup* pickup = new Pickup( entityDef, this );
 			AddToEntityList( pickup );
@@ -193,7 +193,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		}
 		break;
 
-		case eEntityType::ENTITY:
+		case eEntityClass::ENTITY:
 		{
 			Entity* entity = new Entity( entityDef, this );
 			AddToEntityList( entity );
@@ -203,7 +203,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 
 		default:
 		{
-			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
+			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetType().c_str() ) );
 			return nullptr;
 		}
 	}
@@ -322,11 +322,11 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 			continue;
 		}
 
-		newEntity->SetId( mapEntityDef.id );
+		newEntity->SetName( mapEntityDef.name );
 		newEntity->SetPosition( mapEntityDef.position );
 		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
 
-		if ( mapEntityDef.entityDef->GetType() == eEntityType::PORTAL )
+		if ( mapEntityDef.entityDef->GetClass() == eEntityClass::PORTAL )
 		{
 			Portal* portal = (Portal*)newEntity;
 			portal->SetDestinationMap( mapEntityDef.portalDestMap );
@@ -429,10 +429,10 @@ void Map::DeleteDeadEntities()
 			continue;
 		}
 
-		switch( entity->GetType() )
+		switch( entity->GetClass() )
 		{
-			case eEntityType::PROJECTILE: RemoveFromProjectileList( (Projectile*)entity ); break;
-			case eEntityType::PORTAL: RemoveFromPortalList( (Portal*)entity ); break;
+			case eEntityClass::PROJECTILE: RemoveFromProjectileList( (Projectile*)entity ); break;
+			case eEntityClass::PORTAL: RemoveFromPortalList( (Portal*)entity ); break;
 		}
 
 		delete( m_entities[entityIdx] );
@@ -460,7 +460,7 @@ Entity* Map::GetEntityById( const std::string& id )
 			continue;
 		}
 		
-		if ( entity->GetId() == id )
+		if ( entity->GetName() == id )
 		{
 			return entity;
 		}

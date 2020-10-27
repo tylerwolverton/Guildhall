@@ -17,7 +17,7 @@
 		<MapRow tiles="################"/>
 	</MapRows>
 	<Entities>
-    <Entity name="VictoryTrigger" pos="7.5,9.5"/>
+    <Entity type="VictoryTrigger" pos="7.5,9.5"/>
     <PlayerStart pos="3.5,1.5" yaw="0"/>
 	</Entities>
 

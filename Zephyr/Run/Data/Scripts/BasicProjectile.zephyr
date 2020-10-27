@@ -4,7 +4,7 @@ StateMachine
 
     String otherId;
     String otherId2;
-    OnEvent( Collision )
+    OnEvent( EnterCollision )
     {
         otherId2 = otherId;
         if ( otherId != "" )

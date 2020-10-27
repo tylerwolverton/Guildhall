@@ -10,6 +10,10 @@ class Entity;
 //-----------------------------------------------------------------------------------------------
 enum class eClientFunctionType
 {
+	// CreateEntity
+	// UpdateEntity
+	// PlayerInput
+
 	NONE,
 	MOVE_PLAYER,
 	SET_PLAYER_ORIENTATION,
@@ -62,6 +66,7 @@ public:
 };
 
 
+// TODO: Combine movement and orientation into one entity update struct
 //-----------------------------------------------------------------------------------------------
 struct MovePlayerRequest : ClientRequest
 {

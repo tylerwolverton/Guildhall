@@ -19,7 +19,7 @@ class Map;
 struct MapEntityDefinition
 {
 	EntityDefinition* entityDef = nullptr;
-	std::string id;
+	std::string name;
 	Vec2 position = Vec2::ZERO;
 	float yawDegrees = 0.f;
 
