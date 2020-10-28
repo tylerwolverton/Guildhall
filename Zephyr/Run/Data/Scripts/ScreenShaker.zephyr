@@ -3,7 +3,7 @@ StateMachine
     String otherName;
     OnEvent( EnterTrigger )
     {
-        FireEvent( AddScreenShake( intensity = .07 ) );
+        //FireEvent( AddScreenShake( intensity = .07 ) );
 
         if( otherName == "player" )
         {
@@ -13,11 +13,11 @@ StateMachine
 
     OnEvent( StayTrigger )
     {
-        FireEvent( AddScreenShake( intensity = .005 ) );
+        //FireEvent( AddScreenShake( intensity = .005 ) );
     }
 
     OnEvent( ExitTrigger )
     {
-        FireEvent( AddScreenShake( intensity = .1 ) );
+        //FireEvent( AddScreenShake( intensity = .1 ) );
     }
 }

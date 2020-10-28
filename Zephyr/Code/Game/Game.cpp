@@ -956,6 +956,25 @@ Entity* Game::GetEntityByName( const std::string& name )
 
 
 //-----------------------------------------------------------------------------------------------
+Map* Game::GetMapByName( const std::string& name )
+{
+	return m_world->GetMapByName( name );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Map* Game::GetCurrentMap()
+{
+	if ( m_world == nullptr )
+	{
+		return nullptr;
+	}
+
+	return m_world->GetCurrentMap();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ChangeGameState( const eGameState& newGameState )
 {
 	switch ( newGameState )

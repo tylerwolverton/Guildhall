@@ -98,6 +98,20 @@ void World::ChangeMap( const std::string& mapName, Entity* player )
 
 
 //-----------------------------------------------------------------------------------------------
+Map* World::GetMapByName( const std::string& name )
+{
+	return GetLoadedMapByName( name );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Map* World::GetCurrentMap()
+{
+	return m_curMap;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void World::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees )
 {
 	Map* destMap = GetLoadedMapByName( destMapName );

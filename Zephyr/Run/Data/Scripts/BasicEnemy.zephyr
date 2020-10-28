@@ -55,7 +55,7 @@ StateMachine
 			ChangeState( Chase );
 		}
 		
-		FireEvent( PrintDebugText( text = "Wander" ) );
+		//FireEvent( PrintDebugText( text = "Wander" ) );
 		
 		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
 		FireEvent( MoveToLocation( pos=targetPosition ) );
@@ -91,7 +91,7 @@ StateMachine
 			ChangeState( Flee );
 		}
 		
-		FireEvent( PrintDebugText( text = "Chase" ) );
+		//FireEvent( PrintDebugText( text = "Chase" ) );
 
 		Number distance;
 		FireEvent( GetDistanceToTarget( id = targetName ) );
@@ -122,7 +122,7 @@ StateMachine
 			}
 		}
 
-		FireEvent( PrintDebugText( text = "Flee" ) );
+		//FireEvent( PrintDebugText( text = "Flee" ) );
 
 		FireEvent( GetDistanceToTarget( id = targetName ) );
 

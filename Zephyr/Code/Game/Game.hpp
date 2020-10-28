@@ -14,6 +14,7 @@ struct AABB2;
 struct Rgba8;
 class Actor;
 class Entity;
+class Map;
 class RandomNumberGenerator;
 class Clock;
 class Camera;
@@ -71,6 +72,8 @@ public:
 
 	Entity*		GetEntityById( EntityId id );
 	Entity*		GetEntityByName( const std::string& name );
+	Map*		GetMapByName( const std::string& name );
+	Map*		GetCurrentMap();
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;

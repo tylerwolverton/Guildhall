@@ -160,10 +160,19 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	Map* mapToSpawnIn = entity->GetMap();
 	if ( !mapName.empty() )
 	{
-		// Find map by name and spawn there
+		mapToSpawnIn = g_game->GetMapByName( mapName );
+		if ( mapToSpawnIn == nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "Can't spawn entity in nonexistent map '%s'", mapName.c_str() ) );
+			return;
+		}
 	}
 
-	mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
+	Entity* newEntity = mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
+	if ( mapToSpawnIn == g_game->GetCurrentMap() )
+	{
+		newEntity->Load();
+	}
 }
 
 
