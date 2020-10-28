@@ -29,6 +29,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( SpawnEntity );
 	REGISTER_EVENT( DamageEntity );
 	REGISTER_EVENT( StartDialogue );
+	REGISTER_EVENT( EndDialogue );
 	REGISTER_EVENT( AddLineOfDialogueText );
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( WinGame );
@@ -103,6 +104,15 @@ void GameAPI::StartDialogue( EventArgs* args )
 	UNUSED( args );
 
 	g_game->ChangeGameState( eGameState::DIALOGUE );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::EndDialogue( EventArgs* args )
+{
+	UNUSED( args );
+
+	g_game->ChangeGameState( eGameState::PLAYING );
 }
 
 

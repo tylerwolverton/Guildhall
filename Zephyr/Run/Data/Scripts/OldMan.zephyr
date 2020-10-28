@@ -1,18 +1,26 @@
 StateMachine
 {
-    OnEvent( PlayerInteract )
-    {
-        FireEvent( AddLineOfDialogueText( text = "I'm old" ) );
-        FireEvent( StartDialogue() );
-    }
-
     State Waiting
     {
-
+        OnEvent( PlayerInteract )
+        {
+            FireEvent( StartDialogue() );
+    
+            ChangeState( Intro );
+        }
     }
 
     State Intro
     {
+        OnEvent( PlayerInteract )
+        {
+            FireEvent( EndDialogue() );
 
+            ChangeState( Waiting );
+        }
+        
+        FireEvent( AddLineOfDialogueText( text = "I'm old" ) );
+
+        // AddDialogueChoice( "", Choice1 );
     }
 }

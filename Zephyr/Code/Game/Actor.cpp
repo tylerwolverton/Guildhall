@@ -160,11 +160,11 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 				 || g_inputSystem->ConsumeAllKeyPresses( KEY_SPACEBAR ) )
 			{
 				Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .1f );
-				Entity* entity = m_map->GetEntityAtPosition( testPoint );
-				if ( entity != nullptr )
+				m_dialoguePartner = m_map->GetEntityAtPosition( testPoint );
+				if ( m_dialoguePartner != nullptr )
 				{
 					EventArgs args;
-					entity->FireScriptEvent( "PlayerInteract", &args );
+					m_dialoguePartner->FireScriptEvent( "PlayerInteract", &args );
 				}
 			}
 		}
@@ -175,7 +175,18 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ENTER )
 				 || g_inputSystem->ConsumeAllKeyPresses( KEY_SPACEBAR ) )
 			{
-				g_game->ChangeGameState( eGameState::PLAYING );
+				if ( m_dialoguePartner != nullptr )
+				{
+					EventArgs args;
+					m_dialoguePartner->FireScriptEvent( "PlayerInteract", &args );
+					m_dialoguePartner = nullptr;
+				}
+				else
+				{
+					// Return to playing state to avoid being trapped in dialogue
+					g_devConsole->PrintWarning( "Game was in dialogue state but player had no dialogue partner" );
+					g_game->ChangeGameState( eGameState::PLAYING );
+				}
 			}
 		}
 		break;

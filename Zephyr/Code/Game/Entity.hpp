@@ -116,6 +116,8 @@ protected:
 	Map*					m_map = nullptr;
 	std::vector<Entity*>	m_inventory;									// entity owns all items in inventory
 
+	Entity*					m_dialoguePartner = nullptr;
+
 	// Physics
 	Rigidbody2D*			m_rigidbody2D = nullptr;
 	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees

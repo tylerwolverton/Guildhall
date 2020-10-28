@@ -1040,7 +1040,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::VICTORY:
 				{
 					//g_audioSystem->StopSound( m_victoryMusicID );
-									
+					
 					ReloadGame();
 				}
 				break;
