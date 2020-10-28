@@ -169,6 +169,7 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	}
 
 	Entity* newEntity = mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
+	newEntity->FireSpawnEvent();
 	if ( mapToSpawnIn == g_game->GetCurrentMap() )
 	{
 		newEntity->Load();
