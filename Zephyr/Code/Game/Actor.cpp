@@ -88,80 +88,97 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 	{
 		return;
 	}
-
-	float impulseMagnitude = m_entityDef.GetWalkSpeed() * deltaSeconds;
-
-	if ( g_inputSystem->IsKeyPressed( 'W' ) )
-	{
-		m_forwardVector = Vec2( 0.f, 1.f );
-		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'A' ) )
-	{
-		m_forwardVector = Vec2( -1.f, 0.f );
-		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-	}
 	
-	if ( g_inputSystem->IsKeyPressed( 'D' ) )
+	switch ( g_game->GetGameState() )
 	{
-		m_forwardVector = Vec2( 1.f, 0.f );
-		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-	}
-
-	if ( g_inputSystem->IsKeyPressed( 'S' ) )
-	{
-		m_forwardVector = Vec2( 0.f, -1.f );
-		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-	}
-
-	bool spawnProj = false;
-	Vec2 projPosition = GetPosition();
-	float projOrientation = 0.f;
-	// Check for attack
-	if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
-	{
-		spawnProj = true;
-		projPosition += Vec2( 0.f, .6f );
-		projOrientation = 90.f;
-	}
-	else if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
-	{
-		spawnProj = true;
-		projPosition += Vec2( .6f, 0.f );
-		projOrientation = 0.f;
-	}
-	else if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
-	{
-		spawnProj = true;
-		projPosition += Vec2( -.6f, 0.f );
-		projOrientation = 180.f;
-	}
-	else if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
-	{
-		spawnProj = true;
-		projPosition += Vec2( 0.f, -.6f );
-		projOrientation = 270.f;
-	}
-
-	if( spawnProj )
-	{
-		Entity* entity = m_map->SpawnNewEntityOfTypeAtPosition( "Fireball", projPosition );
-		entity->Load();
-		entity->SetOrientationDegrees( projOrientation );
-		entity->SetCollisionLayer( eCollisionLayer::PLAYER_PROJECTILE );
-	}
-
-	if ( g_inputSystem->WasKeyJustPressed( KEY_ENTER )
-		 || g_inputSystem->WasKeyJustPressed( KEY_SPACEBAR ) )
-	{
-		Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .1f );
-		Entity* entity = m_map->GetEntityAtPosition( testPoint );
-		if ( entity != nullptr )
+		case eGameState::PLAYING:
 		{
-			EventArgs args;
-			entity->FireScriptEvent( "PlayerInteract", &args );
+			float impulseMagnitude = m_entityDef.GetWalkSpeed() * deltaSeconds;
+
+			if ( g_inputSystem->IsKeyPressed( 'W' ) )
+			{
+				m_forwardVector = Vec2( 0.f, 1.f );
+				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			}
+
+			if ( g_inputSystem->IsKeyPressed( 'A' ) )
+			{
+				m_forwardVector = Vec2( -1.f, 0.f );
+				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			}
+
+			if ( g_inputSystem->IsKeyPressed( 'D' ) )
+			{
+				m_forwardVector = Vec2( 1.f, 0.f );
+				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			}
+
+			if ( g_inputSystem->IsKeyPressed( 'S' ) )
+			{
+				m_forwardVector = Vec2( 0.f, -1.f );
+				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			}
+
+			bool spawnProj = false;
+			Vec2 projPosition = GetPosition();
+			float projOrientation = 0.f;
+			// Check for attack
+			if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+			{
+				spawnProj = true;
+				projPosition += Vec2( 0.f, .6f );
+				projOrientation = 90.f;
+			}
+			else if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
+			{
+				spawnProj = true;
+				projPosition += Vec2( .6f, 0.f );
+				projOrientation = 0.f;
+			}
+			else if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
+			{
+				spawnProj = true;
+				projPosition += Vec2( -.6f, 0.f );
+				projOrientation = 180.f;
+			}
+			else if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+			{
+				spawnProj = true;
+				projPosition += Vec2( 0.f, -.6f );
+				projOrientation = 270.f;
+			}
+
+			if ( spawnProj )
+			{
+				Entity* entity = m_map->SpawnNewEntityOfTypeAtPosition( "Fireball", projPosition );
+				entity->Load();
+				entity->SetOrientationDegrees( projOrientation );
+				entity->SetCollisionLayer( eCollisionLayer::PLAYER_PROJECTILE );
+			}
+
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ENTER )
+				 || g_inputSystem->ConsumeAllKeyPresses( KEY_SPACEBAR ) )
+			{
+				Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .1f );
+				Entity* entity = m_map->GetEntityAtPosition( testPoint );
+				if ( entity != nullptr )
+				{
+					EventArgs args;
+					entity->FireScriptEvent( "PlayerInteract", &args );
+				}
+			}
 		}
+		break;
+
+		case eGameState::DIALOGUE:
+		{
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ENTER )
+				 || g_inputSystem->ConsumeAllKeyPresses( KEY_SPACEBAR ) )
+			{
+				g_game->ChangeGameState( eGameState::PLAYING );
+			}
+		}
+		break;
 	}
 }
 

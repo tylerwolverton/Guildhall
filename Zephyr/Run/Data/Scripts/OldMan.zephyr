@@ -3,6 +3,7 @@ StateMachine
     OnEvent( PlayerInteract )
     {
         FireEvent( AddLineOfDialogueText( text = "I'm old" ) );
+        FireEvent( StartDialogue() );
     }
 
     State Waiting

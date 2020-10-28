@@ -30,6 +30,7 @@ enum class eGameState
 	LOADING,
 	ATTRACT,
 	PLAYING,
+	DIALOGUE,
 	GAME_OVER,
 	VICTORY,
 	PAUSED
@@ -54,6 +55,7 @@ public:
 	void		RestartGame();
 	
 	void		ChangeGameState( const eGameState& newGameState );
+	eGameState  GetGameState()															{ return m_gameState; }
 
 	const Vec2	GetMouseWorldPosition()													{ return m_mouseWorldPosition; }
 

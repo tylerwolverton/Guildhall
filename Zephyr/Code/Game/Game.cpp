@@ -173,6 +173,7 @@ void Game::Update()
 		break;
 
 		case eGameState::PLAYING:
+		case eGameState::DIALOGUE:
 		{
 			UpdateFromKeyboard();
 
@@ -200,6 +201,7 @@ void Game::Render() const
 	switch ( m_gameState )
 	{
 		case eGameState::PLAYING:
+		case eGameState::DIALOGUE:
 		case eGameState::PAUSED:
 		{
 			m_world->Render();
@@ -653,7 +655,7 @@ void Game::UpdateFromKeyboard()
 	{
 		case eGameState::ATTRACT:
 		{
-			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ESC ) )
 			{
 				g_eventSystem->FireEvent( "Quit" );
 			}
@@ -666,8 +668,9 @@ void Game::UpdateFromKeyboard()
 		break;
 
 		case eGameState::PLAYING:
+		case eGameState::DIALOGUE:
 		{
-			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ESC ) )
 			{
 				ChangeGameState( eGameState::PAUSED );
 			}
@@ -682,13 +685,13 @@ void Game::UpdateFromKeyboard()
 				g_eventSystem->FireEvent( "TestEvent" );
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F5 ) )
 			{
 				ReloadGame();
 				ChangeMap( m_startingMapName );
 			}
 
-			if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F6 ) )
 			{
 				ReloadScripts();
 			}
@@ -697,7 +700,7 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::PAUSED:
 		{
-			if ( g_inputSystem->ConsumeKeyPress( KEY_ESC ) )
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ESC ) )
 			{
 				ChangeGameState( eGameState::ATTRACT );
 			}
@@ -711,7 +714,7 @@ void Game::UpdateFromKeyboard()
 
 		case eGameState::VICTORY:
 		{
-			if ( g_inputSystem->ConsumeKeyPress( KEY_ENTER ) )
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ENTER ) )
 			{
 				ChangeGameState( eGameState::ATTRACT );
 			}
@@ -1021,7 +1024,13 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			{
 				case eGameState::PAUSED:
 				case eGameState::PLAYING:
+				case eGameState::DIALOGUE:
 				{
+					m_dialogueBoxPanel->ClearLabels();
+
+					m_dialogueBoxPanel->Deactivate();
+					m_dialogueBoxPanel->Hide();
+
 					g_audioSystem->StopSound( m_gameplayMusicID );
 
 					ReloadGame();
@@ -1073,7 +1082,23 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					ChangeMap( m_startingMapName );
 				}
 				break;
+
+				case eGameState::DIALOGUE:
+				{
+					m_dialogueBoxPanel->ClearLabels();
+
+					m_dialogueBoxPanel->Deactivate();
+					m_dialogueBoxPanel->Hide();
+				}
+				break;
 			}
+		}
+		break;
+
+		case eGameState::DIALOGUE:
+		{
+			m_dialogueBoxPanel->Show();
+			m_dialogueBoxPanel->Activate();
 		}
 		break;
 
