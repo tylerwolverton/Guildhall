@@ -28,6 +28,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( DestroySelf );
 	REGISTER_EVENT( SpawnEntity );
 	REGISTER_EVENT( DamageEntity );
+	REGISTER_EVENT( AddLineOfDialogueText );
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( WinGame );
 
@@ -92,6 +93,15 @@ void GameAPI::DamageEntity( EventArgs* args )
 	{
 		entityToDamage->TakeDamage( damage );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::AddLineOfDialogueText( EventArgs* args )
+{
+	std::string text = args->GetValue( "text", "" );
+
+	g_game->AddLineOfDialogueText( text );
 }
 
 

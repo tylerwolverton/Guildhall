@@ -2,6 +2,16 @@ StateMachine
 {
     OnEvent( PlayerInteract )
     {
-        FireEvent( PrintDebugText( text = "I'm old", duration = 4 ) );
+        FireEvent( AddLineOfDialogueText( text = "I'm old" ) );
+    }
+
+    State Waiting
+    {
+
+    }
+
+    State Intro
+    {
+
     }
 }

@@ -25,6 +25,7 @@
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Engine/UI/UISystem.hpp"
+#include "Engine/UI/UIPanel.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/Entity.hpp"
@@ -91,6 +92,8 @@ void Game::Startup()
 
 	m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
+
+	InitializeUI();
 
 	m_world = new World( m_gameClock );
 
@@ -779,6 +782,20 @@ void Game::InitializeFPSHistory()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::InitializeUI()
+{
+	UIAlignedPositionData posData;
+	posData.fractionOfParentDimensions = Vec2( .8f, .3f );
+	posData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
+	posData.positionOffsetFraction = Vec2( 0.f, .05f );
+
+	m_dialogueBoxPanel = m_uiSystem->GetRootPanel()->AddChildPanel( posData, g_renderer->GetDefaultWhiteTexture(), Rgba8::BLACK );
+	m_dialogueBoxPanel->Deactivate();
+	m_dialogueBoxPanel->Hide();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateFramesPerSecond()
 {
 	if ( m_gameClock->IsPaused() )
@@ -971,6 +988,18 @@ Map* Game::GetCurrentMap()
 	}
 
 	return m_world->GetCurrentMap();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::AddLineOfDialogueText( const std::string& text )
+{
+	UIAlignedPositionData posData;
+	posData.fractionOfParentDimensions = Vec2( .8f, .3f );
+	posData.positionOffsetFraction = Vec2( 0.f, -.05f );
+
+	m_dialogueBoxPanel->AddText( posData, text );
+	m_dialogueBoxPanel->Show();
 }
 
 

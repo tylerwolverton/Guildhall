@@ -20,6 +20,7 @@ class Clock;
 class Camera;
 class TextBox;
 class UISystem;
+class UIPanel;
 class World;
 
 
@@ -75,6 +76,8 @@ public:
 	Map*		GetMapByName( const std::string& name );
 	Map*		GetCurrentMap();
 
+	void		AddLineOfDialogueText( const std::string& text );
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
@@ -96,6 +99,7 @@ private:
 	void UpdateCameras();
 
 	void InitializeFPSHistory();
+	void InitializeUI();
 	void UpdateFramesPerSecond();
 	float GetAverageFPS() const;
 	void RenderFPSCounter() const;
@@ -113,6 +117,7 @@ private:
 
 	// HUD
 	UISystem* m_uiSystem = nullptr;
+	UIPanel* m_dialogueBoxPanel;
 
 	TextBox* m_debugInfoTextBox = nullptr;
 
