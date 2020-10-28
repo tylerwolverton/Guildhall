@@ -119,6 +119,7 @@ protected:
 	// Physics
 	Rigidbody2D*			m_rigidbody2D = nullptr;
 	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
+	Vec2					m_forwardVector = Vec2( 1.f, 0.f );
 	
 	// Visual
 	float					m_cumulativeTime = 0.f;

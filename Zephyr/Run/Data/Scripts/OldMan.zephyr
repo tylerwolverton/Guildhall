@@ -1,0 +1,7 @@
+StateMachine
+{
+    OnEvent( PlayerInteract )
+    {
+        FireEvent( PrintDebugText( text = "I'm old", duration = 4 ) );
+    }
+}

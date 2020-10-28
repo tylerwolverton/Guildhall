@@ -428,3 +428,23 @@ Entity* Map::GetEntityById( EntityId id )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+Entity* Map::GetEntityAtPosition( const Vec2& position )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr
+			 || entity->IsDead() )
+		{
+			continue;
+		}
+
+		if ( IsPointInsideDisc( position, entity->GetPosition(), entity->GetPhysicsRadius() ) )
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}

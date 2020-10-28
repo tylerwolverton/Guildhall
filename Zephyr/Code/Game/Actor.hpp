@@ -28,5 +28,5 @@ private:
 	//void UpdateAnimation();
 
 protected:
-	int						m_controllerID = -1;
+	int	 m_controllerID = -1;
 };

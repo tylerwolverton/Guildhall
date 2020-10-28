@@ -64,6 +64,8 @@ public:
 	Entity* GetEntityByName( const std::string& name );
 	Entity* GetEntityById( EntityId id );
 
+	Entity* GetEntityAtPosition( const Vec2& position );
+
 private:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 	

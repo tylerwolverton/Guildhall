@@ -11,6 +11,16 @@
     <Gameplay maxHealth="5"/>
   </Actor>
   ​
+  <Actor name="OldMan">
+    <Physics radius="0.5" walkSpeed="55.0" collisionLayer="NPC"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
+      <Walk up="90"/>
+    </Appearance>
+    <Gameplay maxHealth="20">
+    </Gameplay>
+    <Script name="OldMan.zephyr"/>
+  </Actor>
+  
   <Actor name="Blob">
     <Physics radius="0.5" walkSpeed="55.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">

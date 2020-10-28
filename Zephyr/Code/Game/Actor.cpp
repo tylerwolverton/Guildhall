@@ -93,22 +93,26 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->IsKeyPressed( 'W' ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, impulseMagnitude ), GetPosition() );
+		m_forwardVector = Vec2( 0.f, 1.f );
+		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'A' ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( -impulseMagnitude, 0.f ), GetPosition() );
+		m_forwardVector = Vec2( -1.f, 0.f );
+		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
 	}
 	
 	if ( g_inputSystem->IsKeyPressed( 'D' ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( impulseMagnitude, 0.f ), GetPosition() );
+		m_forwardVector = Vec2( 1.f, 0.f );
+		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
 	}
 
 	if ( g_inputSystem->IsKeyPressed( 'S' ) )
 	{
-		m_rigidbody2D->ApplyImpulseAt( Vec2( 0.f, -impulseMagnitude ), GetPosition() );
+		m_forwardVector = Vec2( 0.f, -1.f );
+		m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
 	}
 
 	bool spawnProj = false;
@@ -146,6 +150,18 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 		entity->Load();
 		entity->SetOrientationDegrees( projOrientation );
 		entity->SetCollisionLayer( eCollisionLayer::PLAYER_PROJECTILE );
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_ENTER )
+		 || g_inputSystem->WasKeyJustPressed( KEY_SPACEBAR ) )
+	{
+		Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .1f );
+		Entity* entity = m_map->GetEntityAtPosition( testPoint );
+		if ( entity != nullptr )
+		{
+			EventArgs args;
+			entity->FireScriptEvent( "PlayerInteract", &args );
+		}
 	}
 }
 
