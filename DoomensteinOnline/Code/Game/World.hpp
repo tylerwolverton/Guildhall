@@ -30,6 +30,8 @@ public:
 	void WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 	bool IsMapLoaded( const std::string& mapName );
 
+	Entity* CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees );
+
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
 

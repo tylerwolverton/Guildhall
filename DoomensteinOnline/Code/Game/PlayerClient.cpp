@@ -57,6 +57,13 @@ void PlayerClient::Startup()
 	m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
 	BuildUIHud();
+
+	std::vector<ClientRequest*> clientRequests;
+	clientRequests.push_back( new CreateEntityRequest( m_player, "player", Vec2( 1.f, 1.f ), 0.f ) );
+
+	g_server->ReceiveClientRequests( clientRequests );
+
+	PTR_VECTOR_SAFE_DELETE( clientRequests );
 }
 
 

@@ -28,6 +28,7 @@ public:
 	virtual void Die();
 	virtual void DebugRender() const;
 
+	EntityId	 GetId() const											{ return m_id; }
 	const Vec2	 GetForwardVector() const;
 	const Vec2	 GetPosition() const									{ return m_position; }
 	void		 SetPosition( const Vec2& position )					{ m_position = position; }
@@ -56,6 +57,7 @@ public:
 
 protected:
 	// Game state
+	EntityId				m_id;
 	const EntityDefinition& m_entityDef;
 	int						m_curHealth = 1;								// how much health is currently remaining on entity
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
@@ -76,6 +78,9 @@ protected:
 	float					m_cumulativeTime = 0.f;
 	std::vector<Vertex_PCU> m_vertices;
 	Texture*				m_texture = nullptr;
+
+	// Statics
+	static int				s_nextEntityId;
 };
 
 

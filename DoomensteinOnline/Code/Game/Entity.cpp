@@ -19,9 +19,14 @@
 
 
 //-----------------------------------------------------------------------------------------------
+EntityId Entity::s_nextEntityId = 0;
+
+
+//-----------------------------------------------------------------------------------------------
 Entity::Entity( const EntityDefinition& entityDef )
 	: m_entityDef( entityDef )
 {
+	m_id = s_nextEntityId++;
 }
 
 

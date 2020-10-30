@@ -1,5 +1,6 @@
 #include "Game/Map.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Transform.hpp"
@@ -82,8 +83,6 @@ void Map::DebugRender() const
 		}
 
 		entity->DebugRender();
-		/*DebugAddWorldWireCylinder( Vec3( entity->GetPosition(), 0.f ), Vec3( entity->GetPosition(), entity->GetHeight() ), 
-								   entity->GetPhysicsRadius(), Rgba8::CYAN );*/
 	}
 }
 
@@ -91,10 +90,17 @@ void Map::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 {
-	EntityDefinition* entityDef = EntityDefinition::GetEntityDefinition( entityDefName );
+	std::string entityTypeName = entityDefName;
+	// Special case to handle spawning a new player
+	if ( entityTypeName == "player" )
+	{
+		entityTypeName = g_gameConfigBlackboard.GetValue( "playerEntityType", "" );
+	}
+
+	EntityDefinition* entityDef = EntityDefinition::GetEntityDefinition( entityTypeName );
 	if ( entityDef == nullptr )
 	{
-		g_devConsole->PrintError( Stringf( "Tried to spawn unrecognized entity '%s'", entityDefName.c_str() ) );
+		g_devConsole->PrintError( Stringf( "Tried to spawn unrecognized entity '%s'", entityTypeName.c_str() ) );
 		return nullptr;
 	}
 

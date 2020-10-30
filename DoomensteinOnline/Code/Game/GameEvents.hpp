@@ -15,6 +15,7 @@ enum class eClientFunctionType
 	// PlayerInput
 
 	NONE,
+	CREATE_ENTITY,
 	MOVE_PLAYER,
 	SET_PLAYER_ORIENTATION,
 	POSSESS_ENTITY,
@@ -34,6 +35,25 @@ public:
 	ClientRequest( Entity*& playerIn, eClientFunctionType functionTypeIn )
 		: player( playerIn )
 		, functionType( functionTypeIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct CreateEntityRequest : ClientRequest
+{
+public:
+	std::string entityType;
+	Vec2 position = Vec2::ZERO;
+	float yawOrientationDegrees = 0.f;
+
+public:
+	CreateEntityRequest( Entity*& playerIn, const std::string& entityTypeIn, const Vec2& positionIn, float yawOrientationDegreesIn )
+		: ClientRequest( playerIn, eClientFunctionType::CREATE_ENTITY )
+		, entityType( entityTypeIn )
+		, position( positionIn )
+		, yawOrientationDegrees( yawOrientationDegreesIn )
 	{
 	}
 };

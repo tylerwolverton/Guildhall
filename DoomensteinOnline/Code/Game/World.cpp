@@ -145,6 +145,28 @@ bool World::IsMapLoaded( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* World::CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees )
+{
+	if ( m_curMap == nullptr )
+	{
+		g_devConsole->PrintWarning( Stringf( "Tried to spawn entity of type '%s' in nonexistent current map", entityType.c_str() ) );
+		return nullptr;
+	}
+
+	Entity* newEntiy = m_curMap->SpawnNewEntityOfType( entityType );
+	if ( newEntiy == nullptr )
+	{
+		return nullptr;
+	}
+
+	newEntiy->SetPosition( position );
+	newEntiy->SetOrientationDegrees( yawOrientationDegrees );
+
+	return newEntiy;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Map* World::GetLoadedMapByName( const std::string& mapName )
 {
 	auto mapIter = m_loadedMaps.find( mapName );

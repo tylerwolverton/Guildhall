@@ -3,6 +3,7 @@
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
 #include "Game/PlayerClient.hpp"
+#include "Game/Entity.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 
 
@@ -67,9 +68,22 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<ClientRequest
 
 		switch ( req->functionType )
 		{
-			case eClientFunctionType::POSSESS_ENTITY:				g_game->PossessEntity( req->player, ( (PossessEntityRequest*)req )->cameraTransform ); break;
+			case eClientFunctionType::CREATE_ENTITY:	
+			{
+				Entity* newEntity = g_game->CreateEntityInCurrentMap( ( (CreateEntityRequest*)req )->entityType, ( (CreateEntityRequest*)req )->position, ( (CreateEntityRequest*)req )->yawOrientationDegrees );
+				if ( newEntity != nullptr
+					 && ( (CreateEntityRequest*)req )->entityType == "player" )
+				{
+					// send player's id back to client and have client possess entity
+					req->player = newEntity;
+					newEntity->Possess();
+				}
+			}
+			break;
+
+			case eClientFunctionType::POSSESS_ENTITY:				g_game->PossessEntity( req->player, ((PossessEntityRequest*)req)->cameraTransform ); break;
 			case eClientFunctionType::UNPOSSESS_ENTITY:				g_game->UnpossessEntity( req->player ); break;
-			case eClientFunctionType::SET_PLAYER_ORIENTATION:		g_game->SetPlayerOrientation( req->player, ( (SetPlayerOrientationRequest*)req )->yawOrientationDegrees ); break;
+			case eClientFunctionType::SET_PLAYER_ORIENTATION:		g_game->SetPlayerOrientation( req->player, ((SetPlayerOrientationRequest*)req)->yawOrientationDegrees ); break;
 			case eClientFunctionType::MOVE_PLAYER:					g_game->MovePlayer( req->player, ((MovePlayerRequest*)req)->translationVec ); break;
 		}
 	}

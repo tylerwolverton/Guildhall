@@ -90,7 +90,6 @@ void App::Startup( eAppMode appMode )
 	g_eventSystem->RegisterEvent( "quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
 	g_eventSystem->RegisterEvent( "start_multiplayer_server", "Usage: start_multiplayer_server port=<port number>. Start a multiplayer server communicating on given port.", eUsageLocation::DEV_CONSOLE, StartMultiplayerServerCommand );
 	g_eventSystem->RegisterEvent( "connect_to_multiplayer_server", "Usage: connect_to_multiplayer_server ip=<\"ip address\"> port=<port number>. Connect to a multiplayer server at given address and port.", eUsageLocation::DEV_CONSOLE, ConnectToMultiplayerServerCommand );
-
 }
 
 
@@ -356,11 +355,12 @@ bool App::QuitGame( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 bool App::StartMultiplayerServerCommand( EventArgs* args )
 {
-	// Placeholder argument parsing
-	UNUSED( args );
+	// Forward args to start server command in NetworkingSystem
 	//int port = args->GetValue( "port", 48000 );
 
 	g_app->RestartApp( eAppMode::MULTIPLAYER_SERVER );
+
+	g_eventSystem->FireEvent( "start_tcp_server", args, eUsageLocation::DEV_CONSOLE );
 
 	return 0;
 }
