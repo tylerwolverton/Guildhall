@@ -195,6 +195,7 @@
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="DialogueBox.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityDefinition.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -225,6 +226,7 @@
   <ItemGroup>
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="DialogueBox.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="EntityDefinition.hpp" />

@@ -119,10 +119,10 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
 			}
 
+			// Check for attack
 			bool spawnProj = false;
 			Vec2 projPosition = GetPosition();
 			float projOrientation = 0.f;
-			// Check for attack
 			if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
 			{
 				spawnProj = true;

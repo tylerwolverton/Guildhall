@@ -5,7 +5,9 @@ StateMachine
         OnEvent( PlayerInteract )
         {
             FireEvent( StartDialogue() );
-    
+            FireEvent( AddLineOfDialogueText( text = "Hello, I hope this really really" ) );
+            FireEvent( AddLineOfDialogueText( text = "long line of text makes it into the text box alright." ) );
+
             ChangeState( Intro );
         }
     }
@@ -15,12 +17,12 @@ StateMachine
         OnEvent( PlayerInteract )
         {
             FireEvent( EndDialogue() );
+            FireEvent( EndDialogue() );
 
             ChangeState( Waiting );
         }
         
-        FireEvent( AddLineOfDialogueText( text = "I'm old" ) );
-
+        
         // AddDialogueChoice( "", Choice1 );
     }
 }

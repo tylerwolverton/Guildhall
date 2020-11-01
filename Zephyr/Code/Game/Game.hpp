@@ -2,6 +2,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/UI/UISystem.hpp"
 
 #include "Game/GameCommon.hpp"
 
@@ -18,6 +19,7 @@ class Map;
 class RandomNumberGenerator;
 class Clock;
 class Camera;
+class DialogueBox;
 class TextBox;
 class UISystem;
 class UIPanel;
@@ -119,7 +121,7 @@ private:
 
 	// HUD
 	UISystem* m_uiSystem = nullptr;
-	UIPanel* m_dialogueBoxPanel;
+	DialogueBox* m_dialogueBox;
 
 	TextBox* m_debugInfoTextBox = nullptr;
 

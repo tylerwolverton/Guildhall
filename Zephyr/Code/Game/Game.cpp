@@ -24,11 +24,11 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
-#include "Engine/UI/UISystem.hpp"
 #include "Engine/UI/UIPanel.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/Entity.hpp"
+#include "Game/DialogueBox.hpp"
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapData.hpp"
@@ -114,6 +114,8 @@ void Game::BeginFrame()
 void Game::Shutdown()
 {
 	TileDefinition::s_definitions.clear();
+
+	PTR_SAFE_DELETE( m_dialogueBox );
 
 	m_uiSystem->Shutdown();
 
@@ -792,9 +794,7 @@ void Game::InitializeUI()
 	posData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
 	posData.positionOffsetFraction = Vec2( 0.f, .05f );
 
-	m_dialogueBoxPanel = m_uiSystem->GetRootPanel()->AddChildPanel( posData, g_renderer->GetDefaultWhiteTexture(), Rgba8::BLACK );
-	m_dialogueBoxPanel->Deactivate();
-	m_dialogueBoxPanel->Hide();
+	m_dialogueBox = new DialogueBox( *m_uiSystem, posData );
 }
 
 
@@ -997,12 +997,7 @@ Map* Game::GetCurrentMap()
 //-----------------------------------------------------------------------------------------------
 void Game::AddLineOfDialogueText( const std::string& text )
 {
-	UIAlignedPositionData posData;
-	posData.fractionOfParentDimensions = Vec2( .8f, .3f );
-	posData.positionOffsetFraction = Vec2( 0.f, -.05f );
-
-	m_dialogueBoxPanel->AddText( posData, text );
-	m_dialogueBoxPanel->Show();
+	m_dialogueBox->AddLineOfText( text );
 }
 
 
@@ -1026,10 +1021,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::PLAYING:
 				case eGameState::DIALOGUE:
 				{
-					m_dialogueBoxPanel->ClearLabels();
-
-					m_dialogueBoxPanel->Deactivate();
-					m_dialogueBoxPanel->Hide();
+					m_dialogueBox->Reset();
 
 					g_audioSystem->StopSound( m_gameplayMusicID );
 
@@ -1085,10 +1077,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 				case eGameState::DIALOGUE:
 				{
-					m_dialogueBoxPanel->ClearLabels();
-
-					m_dialogueBoxPanel->Deactivate();
-					m_dialogueBoxPanel->Hide();
+					m_dialogueBox->Reset();
 				}
 				break;
 			}
@@ -1097,8 +1086,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::DIALOGUE:
 		{
-			m_dialogueBoxPanel->Show();
-			m_dialogueBoxPanel->Activate();
+			m_dialogueBox->Show();
 		}
 		break;
 

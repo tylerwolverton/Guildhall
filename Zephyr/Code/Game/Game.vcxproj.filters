@@ -103,6 +103,9 @@
     <ClCompile Include="Pickup.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="DialogueBox.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -187,6 +190,9 @@
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Pickup.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogueBox.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
