@@ -1,5 +1,6 @@
 #include "Game/DialogueBox.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/UI/UIPanel.hpp"
 #include "Engine/UI/UILabel.hpp"
@@ -29,7 +30,30 @@ DialogueBox::DialogueBox( UISystem& uiSystem, const UIAlignedPositionData& posit
 //-----------------------------------------------------------------------------------------------
 void DialogueBox::Update()
 {
+	if ( !m_dialogueRootPanel->IsActive() )
+	{
+		return;
+	}
 
+	if ( g_inputSystem->WasKeyJustPressed( 'W' )
+		 || g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+	{
+		--m_curChoiceIdx;
+		if ( m_curChoiceIdx < 0 )
+		{
+			m_curChoiceIdx = (int)m_choicePositions.size() - 1;
+		}
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( 'S' )
+		 || g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+	{
+		++m_curChoiceIdx;
+		if ( m_curChoiceIdx > (int)m_choicePositions.size() - 1 )
+		{
+			m_curChoiceIdx = 0;
+		}
+	}
 }
 
 
@@ -51,6 +75,11 @@ void DialogueBox::Render() const
 	if ( m_choicePositions.size() == 0 )
 	{
 		Vertex_PCU::TransformVertexArray( vertexCopy, 3, 20.f, -90.f, Vec3( dialogueBounds.maxs.x - 30.f, dialogueBounds.mins.y + 25.f, 0.f ) );
+	}
+	else
+	{
+		Vec3 translation = Vec3( m_choicePositions[m_curChoiceIdx], 0.f );
+		Vertex_PCU::TransformVertexArray( vertexCopy, 3, 20.f, 0.f, translation );
 	}
 
 	g_renderer->BindTexture( 0, nullptr );
@@ -85,6 +114,23 @@ void DialogueBox::Hide()
 
 
 //-----------------------------------------------------------------------------------------------
+void DialogueBox::Clear()
+{
+	if ( m_dialogueRootPanel == nullptr )
+	{
+		return;
+	}
+
+	m_dialogueRootPanel->ClearLabels();
+	m_curLinePosData = m_firstLinePosData;
+
+	m_choicePositions.clear();
+	m_choiceNames.clear();
+	m_curChoiceIdx = 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void DialogueBox::Reset()
 {
 	if ( m_dialogueRootPanel == nullptr )
@@ -96,6 +142,22 @@ void DialogueBox::Reset()
 
 	m_dialogueRootPanel->ClearLabels();
 	m_curLinePosData = m_firstLinePosData;
+
+	m_choicePositions.clear();
+	m_choiceNames.clear();
+	m_curChoiceIdx = 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string DialogueBox::GetCurrentChoiceName() const
+{
+	if ( m_choiceNames.size() == 0 )
+	{
+		return "";
+	}
+
+	return m_choiceNames[m_curChoiceIdx];
 }
 
 
@@ -114,7 +176,27 @@ void DialogueBox::AddLineOfText( const std::string& text )
 
 
 //-----------------------------------------------------------------------------------------------
-void DialogueBox::AddChoice( const std::string& text )
+void DialogueBox::AddChoice( const std::string& name, const std::string& text )
 {
+	if ( m_dialogueRootPanel == nullptr )
+	{
+		return;
+	}
 
+	// Add blank line between text and choices
+	if ( m_choicePositions.size() == 0 )
+	{
+		m_curLinePosData.positionOffsetFraction += Vec2( .01f, -.1f );
+	}
+
+	UILabel* choice = m_dialogueRootPanel->AddText( m_curLinePosData, text, 20.f, ALIGN_TOP_LEFT );
+	
+	m_choiceNames.push_back( name );
+
+	// Save position to the left of choice to use with selector
+	AABB2 choiceBounds = choice->GetBounds();
+	Vec2 choiceEdge( choiceBounds.mins.x - 25.f, choiceBounds.maxs.y - 19.f );
+	m_choicePositions.push_back( choiceEdge );
+
+	m_curLinePosData.positionOffsetFraction += Vec2( .0f, -.09f );
 }

@@ -31,6 +31,7 @@ private:
 	void StartDialogue( EventArgs* args );
 	void EndDialogue( EventArgs* args );
 	void AddLineOfDialogueText( EventArgs* args );
+	void AddDialogueChoice( EventArgs* args );
 	void UpdateEnemyCount( EventArgs* args );
 	void WinGame( EventArgs* args );
 

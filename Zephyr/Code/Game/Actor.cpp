@@ -177,8 +177,7 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 			{
 				if ( m_dialoguePartner != nullptr )
 				{
-					EventArgs args;
-					m_dialoguePartner->FireScriptEvent( "PlayerInteract", &args );
+					g_game->SelectInDialogue( m_dialoguePartner );
 					m_dialoguePartner = nullptr;
 				}
 				else

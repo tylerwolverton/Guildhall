@@ -18,10 +18,10 @@ public:
 	UILabel( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData );
 	virtual ~UILabel() {}
 
-
 	virtual void Render() const = 0;
 	virtual void DebugRender() const;
 
+	virtual AABB2 GetBounds() const											{ return m_boundingBox; }
 	virtual void SetTint( const Rgba8& tint )								{ m_tint = tint; }
 
 protected:

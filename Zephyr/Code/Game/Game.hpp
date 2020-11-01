@@ -81,6 +81,8 @@ public:
 	Map*		GetCurrentMap();
 
 	void		AddLineOfDialogueText( const std::string& text );
+	void		AddDialogueChoice( const std::string& name, const std::string& text );
+	void		SelectInDialogue( Entity* dialoguePartner );
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;

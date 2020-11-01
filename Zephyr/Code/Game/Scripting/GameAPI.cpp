@@ -31,6 +31,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( StartDialogue );
 	REGISTER_EVENT( EndDialogue );
 	REGISTER_EVENT( AddLineOfDialogueText );
+	REGISTER_EVENT( AddDialogueChoice );
 	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( WinGame );
 
@@ -122,6 +123,16 @@ void GameAPI::AddLineOfDialogueText( EventArgs* args )
 	std::string text = args->GetValue( "text", "" );
 
 	g_game->AddLineOfDialogueText( text );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::AddDialogueChoice( EventArgs* args )
+{
+	std::string name = args->GetValue( "name", "missing name" );
+	std::string text = args->GetValue( "text", "" );
+
+	g_game->AddDialogueChoice( name, text );
 }
 
 

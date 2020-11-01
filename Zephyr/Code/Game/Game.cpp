@@ -181,7 +181,6 @@ void Game::Update()
 
 			m_world->Update();
 
-
 			g_physicsSystem2D->Update();
 		}
 		break;
@@ -672,7 +671,6 @@ void Game::UpdateFromKeyboard()
 		break;
 
 		case eGameState::PLAYING:
-		case eGameState::DIALOGUE:
 		{
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ESC ) )
 			{
@@ -699,6 +697,38 @@ void Game::UpdateFromKeyboard()
 			{
 				ReloadScripts();
 			}
+		}
+		break;
+
+		case eGameState::DIALOGUE:
+		{
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ESC ) )
+			{
+				ChangeGameState( eGameState::PLAYING );
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+			{
+				m_isDebugRendering = !m_isDebugRendering;
+			}
+
+			if ( g_inputSystem->WasKeyJustPressed( KEY_F2 ) )
+			{
+				g_eventSystem->FireEvent( "TestEvent" );
+			}
+
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F5 ) )
+			{
+				ReloadGame();
+				ChangeMap( m_startingMapName );
+			}
+
+			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F6 ) )
+			{
+				ReloadScripts();
+			}
+
+			m_dialogueBox->Update();
 		}
 		break;
 
@@ -999,7 +1029,44 @@ Map* Game::GetCurrentMap()
 //-----------------------------------------------------------------------------------------------
 void Game::AddLineOfDialogueText( const std::string& text )
 {
+	if ( m_dialogueBox == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to add dialogue line of text but dialogue box is null" );
+		return;
+	}
+
 	m_dialogueBox->AddLineOfText( text );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::AddDialogueChoice( const std::string& name, const std::string& text )
+{
+	if ( m_dialogueBox == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to add dialogue choice but dialogue box is null" );
+		return;
+	}
+
+	m_dialogueBox->AddChoice( name, text );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SelectInDialogue( Entity* dialoguePartner )
+{
+	if ( m_dialogueBox == nullptr )
+	{
+		g_devConsole->PrintError( "Tried to select dialogue choice but dialogue box is null" );
+		return;
+	}
+
+	std::string choiceName = m_dialogueBox->GetCurrentChoiceName();
+	m_dialogueBox->Clear();
+
+	EventArgs args;
+	args.SetValue( "choiceName", choiceName );
+	dialoguePartner->FireScriptEvent( "PlayerInteract", &args );
 }
 
 

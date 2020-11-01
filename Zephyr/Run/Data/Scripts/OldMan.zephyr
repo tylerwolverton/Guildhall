@@ -7,6 +7,9 @@ StateMachine
             FireEvent( StartDialogue() );
             FireEvent( AddLineOfDialogueText( text = "Hello, I hope this really really" ) );
             FireEvent( AddLineOfDialogueText( text = "long line of text makes it into the text box alright." ) );
+            
+            FireEvent( AddDialogueChoice( name = "choice1", text = "Choice!" ) );
+            FireEvent( AddDialogueChoice( name = "choice2", text = "Another Choice!" ) );
 
             ChangeState( Intro );
         }
@@ -14,15 +17,43 @@ StateMachine
 
     State Intro
     {
+        String choiceName;
         OnEvent( PlayerInteract )
         {
+            if( choiceName == "choice1" )
+            {
+                FireEvent( AddLineOfDialogueText( text = "Ah, choice 1 it is." ) );
+                ChangeState( Choice1 );
+            }
+
+            if( choiceName == "choice2" )
+            {
+                FireEvent( AddLineOfDialogueText( text = "Choice 2, eh?" ) );
+                ChangeState( Choice2 );
+            }
+
             FireEvent( EndDialogue() );
+            ChangeState( Waiting );
+        }
+    }
+
+    State Choice1
+    {
+        OnEvent( PlayerInteract )
+        {
             FireEvent( EndDialogue() );
 
             ChangeState( Waiting );
         }
-        
-        
-        // AddDialogueChoice( "", Choice1 );
+    }
+
+    State Choice2
+    {
+        OnEvent( PlayerInteract )
+        {
+            FireEvent( EndDialogue() );
+
+            ChangeState( Waiting );
+        }
     }
 }
