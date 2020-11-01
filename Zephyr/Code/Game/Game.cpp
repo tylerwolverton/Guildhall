@@ -275,6 +275,8 @@ void Game::Render() const
 		m_uiSystem->DebugRender();
 	}
 
+	m_dialogueBox->Render();
+
 	RenderFPSCounter();
 
 	g_renderer->EndCamera( *m_uiCamera );

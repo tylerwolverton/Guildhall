@@ -28,6 +28,9 @@ public:
 	virtual void Deactivate()												{ m_isActive = false; }
 	virtual void Hide()														{ m_isVisible = false; }
 	virtual void Show()														{ m_isVisible = true; }
+	bool		 IsVisible() const											{ return m_isVisible; }
+	bool		 IsActive() const											{ return m_isActive; }
+
 
 	uint GetId() const														{ return m_id; }
 	void SetBackgroundTexture( Texture* backgroundTexture )					{ m_backgroundTexture = backgroundTexture; }
