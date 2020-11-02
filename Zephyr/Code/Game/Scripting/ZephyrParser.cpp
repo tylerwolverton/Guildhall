@@ -308,6 +308,26 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::ON_ENTER:
+		case eTokenType::ON_EXIT:
+		{
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) { return false; }
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) {	return false; }
+
+			bool succeeded = CreateBytecodeChunk( ToString( curToken.GetType() ), eBytecodeChunkType::EVENT );
+			if ( !succeeded )
+			{
+				return false;
+			}
+
+			succeeded = ParseBlock();
+
+			FinalizeCurBytecodeChunk();
+
+			return succeeded;
+		}
+		break;
+
 		case eTokenType::CHANGE_STATE:
 		{
 			if ( !ParseChangeStateStatement() )

@@ -31,6 +31,8 @@ enum class eTokenType
 	STRING,
 	FIRE_EVENT,
 	ON_EVENT,
+	ON_ENTER,
+	ON_EXIT,
 	CHANGE_STATE,
 	IF,
 	ELSE,

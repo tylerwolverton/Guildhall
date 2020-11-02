@@ -146,11 +146,16 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 		return;
 	}
 
+	EventArgs args;
+	FireEvent( "OnExit", &args );
+
 	UnRegisterScriptEvents( m_curStateBytecodeChunk );
 
 	m_curStateBytecodeChunk = targetStateBytecodeChunk;
 
 	RegisterScriptEvents( m_curStateBytecodeChunk );
+
+	FireEvent( "OnEnter", &args );
 }
 
 
