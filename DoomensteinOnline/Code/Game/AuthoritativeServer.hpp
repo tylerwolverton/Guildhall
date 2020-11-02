@@ -12,7 +12,7 @@ struct ClientRequest;
 class AuthoritativeServer : public Server
 {
 public:
-	AuthoritativeServer() = default;
+	AuthoritativeServer( EventArgs* args );
 	~AuthoritativeServer() = default;
 
 	virtual void Startup( eAppMode appMode ) override;
@@ -21,6 +21,12 @@ public:
 	virtual void Update() override;
 
 	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) override;
+
+protected:
+	virtual void StartGame( eAppMode appMode ) override;
+
+private:
+	void StartTCPServer();
 
 private:
 	const std::vector<ClientRequest*> m_clientRequests;

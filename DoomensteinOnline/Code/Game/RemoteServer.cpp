@@ -1,11 +1,35 @@
 #include "Game/RemoteServer.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
-#include "Engine/Core/ErrorWarningAssert.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+RemoteServer::RemoteServer( EventArgs* args )
+	: Server( args )
+{
+}
 
 
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::Startup( eAppMode appMode )
+{
+	NegotiateUDPConnection();
+
+	StartGame( appMode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RemoteServer::Shutdown()
+{
+	Server::Shutdown();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RemoteServer::StartGame( eAppMode appMode )
 {
 	switch ( appMode )
 	{
@@ -39,9 +63,11 @@ void RemoteServer::Startup( eAppMode appMode )
 
 
 //-----------------------------------------------------------------------------------------------
-void RemoteServer::Shutdown()
+void RemoteServer::NegotiateUDPConnection()
 {
-	Server::Shutdown();
+	EventArgs args;
+	args.SetValue( "host", m_ipAddress + ":" + ToString( m_tcpPort ) );
+	g_eventSystem->FireEvent( "connect", &args, eUsageLocation::DEV_CONSOLE );
 }
 
 

@@ -6,7 +6,7 @@
 class RemoteServer : public Server
 {
 public:
-	RemoteServer() = default;
+	RemoteServer( EventArgs* args );
 	~RemoteServer() = default;
 
 	virtual void Startup( eAppMode appMode ) override;
@@ -15,4 +15,10 @@ public:
 	virtual void Update() override;
 
 	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) override;
+
+protected:
+	virtual void StartGame( eAppMode appMode ) override;
+
+private:
+	void NegotiateUDPConnection();
 };

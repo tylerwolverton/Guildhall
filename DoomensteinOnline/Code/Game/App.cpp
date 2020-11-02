@@ -143,23 +143,23 @@ bool App::HandleQuitRequested()
 
 
 //-----------------------------------------------------------------------------------------------
-void App::RestartApp( eAppMode appMode )
+void App::RestartApp( eAppMode appMode, EventArgs* args )
 {
 	DeallocateServerAndClient( m_appMode );
-	InitializeServerAndClient( appMode );
+	InitializeServerAndClient( appMode, args );
 	m_appMode = appMode;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void App::InitializeServerAndClient( eAppMode appMode )
+void App::InitializeServerAndClient( eAppMode appMode, EventArgs* args )
 {
 	switch ( appMode )
 	{
 		case eAppMode::SINGLE_PLAYER:
 		case eAppMode::MULTIPLAYER_SERVER:
 		{
-			g_server = new AuthoritativeServer();
+			g_server = new AuthoritativeServer( args );
 			g_server->Startup( appMode );
 
 			g_playerClient = new PlayerClient();
@@ -171,7 +171,7 @@ void App::InitializeServerAndClient( eAppMode appMode )
 
 		case eAppMode::MULTIPLAYER_CLIENT:
 		{
-			g_server = new RemoteServer();
+			g_server = new RemoteServer( args );
 			g_server->Startup( appMode );
 
 			g_playerClient = new PlayerClient();
@@ -183,7 +183,7 @@ void App::InitializeServerAndClient( eAppMode appMode )
 
 		case eAppMode::HEADLESS_SERVER:
 		{
-			g_server = new AuthoritativeServer();
+			g_server = new AuthoritativeServer( args );
 			g_server->Startup( appMode );
 		}
 		break;
@@ -358,9 +358,9 @@ bool App::StartMultiplayerServerCommand( EventArgs* args )
 	// Forward args to start server command in NetworkingSystem
 	//int port = args->GetValue( "port", 48000 );
 
-	g_app->RestartApp( eAppMode::MULTIPLAYER_SERVER );
+	g_app->RestartApp( eAppMode::MULTIPLAYER_SERVER, args );
 
-	g_eventSystem->FireEvent( "start_tcp_server", args, eUsageLocation::DEV_CONSOLE );
+	//g_eventSystem->FireEvent( "start_tcp_server", args, eUsageLocation::DEV_CONSOLE );
 
 	return 0;
 }
@@ -369,12 +369,13 @@ bool App::StartMultiplayerServerCommand( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 bool App::ConnectToMultiplayerServerCommand( EventArgs* args )
 {
-	// Placeholder argument parsing
-	UNUSED( args );
+	// Forward args to connect command in NetworkingSystem
 	//std::string ipAddress = args->GetValue( "ip", "127.0.0.1" );
 	//int port = args->GetValue( "port", 48000 );
 
-	g_app->RestartApp( eAppMode::MULTIPLAYER_CLIENT );
+	g_app->RestartApp( eAppMode::MULTIPLAYER_CLIENT, args );
+
+	//g_eventSystem->FireEvent( "connect", args, eUsageLocation::DEV_CONSOLE );
 
 	return 0;
 }

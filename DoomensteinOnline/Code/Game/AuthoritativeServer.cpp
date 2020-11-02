@@ -1,14 +1,36 @@
 #include "Game/AuthoritativeServer.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Game/GameEvents.hpp"
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
 #include "Game/PlayerClient.hpp"
 #include "Game/Entity.hpp"
-#include "Engine/Core/ErrorWarningAssert.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+AuthoritativeServer::AuthoritativeServer( EventArgs* args )
+	: Server( args )
+{
+}
 
 
 //-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::Startup( eAppMode appMode )
+{
+	StartGame( appMode );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::Shutdown()
+{
+	Server::Shutdown();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::StartGame( eAppMode appMode )
 {
 	switch ( appMode )
 	{
@@ -22,6 +44,8 @@ void AuthoritativeServer::Startup( eAppMode appMode )
 		case eAppMode::HEADLESS_SERVER:
 		{
 			g_game = new MultiplayerGame();
+			
+			StartTCPServer();
 		}
 		break;
 
@@ -37,9 +61,11 @@ void AuthoritativeServer::Startup( eAppMode appMode )
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::Shutdown()
+void AuthoritativeServer::StartTCPServer()
 {
-	Server::Shutdown();
+	EventArgs args;
+	args.SetValue( "port", m_tcpPort );
+	g_eventSystem->FireEvent( "start_tcp_server", &args, eUsageLocation::DEV_CONSOLE );
 }
 
 

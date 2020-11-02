@@ -34,8 +34,8 @@ private:
 	void Render() const;
 	void EndFrame();
 
-	void RestartApp( eAppMode appMode = eAppMode::SINGLE_PLAYER );
-	void InitializeServerAndClient( eAppMode appMode = eAppMode::SINGLE_PLAYER );
+	void RestartApp( eAppMode appMode = eAppMode::SINGLE_PLAYER, EventArgs* args = nullptr );
+	void InitializeServerAndClient( eAppMode appMode = eAppMode::SINGLE_PLAYER, EventArgs* args = nullptr );
 	void DeallocateServerAndClient( eAppMode appMode = eAppMode::SINGLE_PLAYER );
 
 	// Events

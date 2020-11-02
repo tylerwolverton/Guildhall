@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/GameCommon.hpp"
 
 #include <vector>
@@ -14,7 +15,7 @@ class RemoteClient;
 class Server
 {
 public:
-	Server() = default;
+	Server( EventArgs* args );
 	virtual ~Server() = default;
 
 	virtual void Startup( eAppMode appMode ) = 0;
@@ -29,6 +30,12 @@ public:
 	void SetPlayerClient( PlayerClient* playerClient )							{ m_playerClient = playerClient; }
 
 protected:
+	virtual void StartGame( eAppMode appMode ) = 0;
+
+protected:
 	PlayerClient* m_playerClient = nullptr;
 	std::vector<RemoteClient*> m_remoteClients;
+
+	std::string m_ipAddress;
+	int m_tcpPort = -1;
 };
