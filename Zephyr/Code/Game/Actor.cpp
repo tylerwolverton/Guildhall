@@ -160,11 +160,11 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 				 || g_inputSystem->ConsumeAllKeyPresses( KEY_SPACEBAR ) )
 			{
 				Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .1f );
-				m_dialoguePartner = m_map->GetEntityAtPosition( testPoint );
-				if ( m_dialoguePartner != nullptr )
+				Entity* targetEntity = m_map->GetEntityAtPosition( testPoint );
+				if ( targetEntity != nullptr )
 				{
 					EventArgs args;
-					m_dialoguePartner->FireScriptEvent( "PlayerInteract", &args );
+					targetEntity->FireScriptEvent( "PlayerInteract", &args );
 				}
 			}
 		}
@@ -175,10 +175,11 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ENTER )
 				 || g_inputSystem->ConsumeAllKeyPresses( KEY_SPACEBAR ) )
 			{
-				if ( m_dialoguePartner != nullptr )
+				Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .1f );
+				Entity* targetEntity = m_map->GetEntityAtPosition( testPoint );
+				if ( targetEntity != nullptr )
 				{
-					g_game->SelectInDialogue( m_dialoguePartner );
-					m_dialoguePartner = nullptr;
+					g_game->SelectInDialogue( targetEntity );
 				}
 				else
 				{
