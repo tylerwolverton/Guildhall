@@ -10,6 +10,7 @@
 struct Vec2;
 class Clock;
 class Entity;
+class EntityDefinition;
 class Map;
 struct MapData;
 
@@ -39,6 +40,8 @@ public:
 	void ClearMaps();
 	void ClearEntities();
 
+	void AddEntityFromDefinition( const EntityDefinition& entityDef );
+
 	Entity* GetEntityById( EntityId id );
 	Entity* GetEntityByIdInCurMap( EntityId id );
 	Entity* GetEntityByName( const std::string& name );
@@ -55,5 +58,6 @@ private:
 
 	std::map<std::string, Map*> m_loadedMaps;
 
+	std::vector<Entity*> m_worldEntities;
 	std::unordered_map<std::string, Entity*> m_entitiesByName;
 };

@@ -259,6 +259,7 @@
     <Xml Include="..\..\Run\Data\Gameplay\EntityTypes.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileMaterialDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\WorldDef.xml" />
     <Xml Include="..\..\Run\Data\Maps\Level1.xml" />
     <Xml Include="..\..\Run\Data\Maps\Level2.xml" />
     <Xml Include="..\..\Run\Data\Maps\VictoryLevel.xml" />

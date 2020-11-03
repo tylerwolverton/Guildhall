@@ -218,5 +218,8 @@
     <Xml Include="..\..\Run\Data\Maps\VictoryLevel.xml">
       <Filter>Data\Maps</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\WorldDef.xml">
+      <Filter>Data\Gameplay</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

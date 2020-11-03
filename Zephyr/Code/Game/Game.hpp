@@ -93,6 +93,7 @@ private:
 	void LoadTilesFromXml();
 	void LoadMapsFromXml();
 	void LoadEntitiesFromXml();
+	void LoadWorldDefinitionFromXml();
 	void LoadAndCompileZephyrScripts();
 	void ReloadGame();
 	void ReloadScripts();

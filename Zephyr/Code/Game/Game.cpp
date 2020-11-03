@@ -305,6 +305,7 @@ void Game::LoadAssets()
 
 	LoadAndCompileZephyrScripts();
 	LoadEntitiesFromXml();
+	LoadWorldDefinitionFromXml();
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
 	LoadMapsFromXml();
@@ -567,6 +568,67 @@ void Game::LoadEntitiesFromXml()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::LoadWorldDefinitionFromXml()
+{
+	g_devConsole->PrintString( "Loading World Definition..." );
+
+	const char* filePath = "Data/Gameplay/WorldDef.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		g_devConsole->PrintError( Stringf( "The world xml file '%s' could not be opened.", filePath ) );
+		return;
+	}
+
+	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "WorldDefinition" ) )
+	{
+		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be WorldDefinition", filePath ) );
+		return;
+	}
+
+	// Parse entities node
+	XmlElement* entitiesElement = root->FirstChildElement( "Entities" );
+	XmlElement* entityElement = entitiesElement->FirstChildElement();
+	while ( entityElement )
+	{
+		if ( !strcmp( entityElement->Name(), "Actor" )
+			 || !strcmp( entityElement->Name(), "Entity" )
+			 || !strcmp( entityElement->Name(), "Projectile" )
+			 || !strcmp( entityElement->Name(), "Portal" )
+			 || !strcmp( entityElement->Name(), "Pickup" ) )
+		{
+			std::string entityTypeStr = ParseXmlAttribute( *entityElement, "type", "" );
+			if ( entityTypeStr.empty() )
+			{
+				g_devConsole->PrintError( Stringf( "'%s': %s is missing a type attribute", filePath, entityElement->Name() ) );
+				return;
+			}
+
+			EntityDefinition* entityTypeDef = EntityDefinition::GetEntityDefinition( entityTypeStr );
+			if ( entityTypeDef == nullptr )
+			{
+				g_devConsole->PrintError( Stringf( "'%s': Entity type '%s' was not defined in EntityTypes.xml", filePath, entityTypeStr.c_str() ) );
+				return;
+			}
+
+			m_world->AddEntityFromDefinition( *entityTypeDef );
+		}
+		else
+		{
+			g_devConsole->PrintError( Stringf( "WorldDef.xml: Unsupported node '%s'", entityElement->Name() ) );
+		}
+
+		entityElement = entityElement->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "World Definition Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::LoadAndCompileZephyrScripts()
 {
 	g_devConsole->PrintString( "Loading Zephyr Scripts..." );
@@ -615,6 +677,7 @@ void Game::ReloadGame()
 
 	LoadAndCompileZephyrScripts();
 	LoadEntitiesFromXml();
+	LoadWorldDefinitionFromXml();
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
 	LoadMapsFromXml();

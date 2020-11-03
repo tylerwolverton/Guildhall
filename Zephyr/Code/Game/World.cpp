@@ -8,6 +8,10 @@
 #include "Game/GameCommon.hpp"
 #include "Game/MapData.hpp"
 #include "Game/TileMap.hpp"
+#include "Game/Actor.hpp"
+#include "Game/Projectile.hpp"
+#include "Game/Portal.hpp"
+#include "Game/Pickup.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -143,6 +147,11 @@ bool World::IsMapLoaded( const std::string& mapName )
 //-----------------------------------------------------------------------------------------------
 void World::UnloadAllEntityScripts()
 {
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->UnloadZephyrScript();
+	}
+
 	for ( auto& map : m_loadedMaps )
 	{
 		map.second->UnloadAllEntityScripts();
@@ -153,6 +162,11 @@ void World::UnloadAllEntityScripts()
 //-----------------------------------------------------------------------------------------------
 void World::ReloadAllEntityScripts()
 {
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->ReloadZephyrScript();
+	}
+
 	for ( auto& map : m_loadedMaps )
 	{
 		map.second->ReloadAllEntityScripts();
@@ -173,6 +187,32 @@ void World::ClearMaps()
 void World::ClearEntities()
 {
 	m_entitiesByName.clear();
+
+	PTR_VECTOR_SAFE_DELETE( m_worldEntities );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::AddEntityFromDefinition( const EntityDefinition& entityDef )
+{
+	Entity* newEntity = nullptr;
+	switch ( entityDef.GetClass() )
+	{
+		case eEntityClass::ACTOR:		{ newEntity = new Actor( entityDef, nullptr ); }		break;
+		case eEntityClass::PROJECTILE:	{ newEntity = new Projectile( entityDef, nullptr );	}	break;
+		case eEntityClass::PORTAL:		{ newEntity = new Portal( entityDef, nullptr );	}		break;
+		case eEntityClass::PICKUP:		{ newEntity = new Pickup( entityDef, nullptr );	}		break;
+		case eEntityClass::ENTITY:		{ newEntity = new Entity( entityDef, nullptr );	}		break;
+
+		default:
+		{
+			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetType().c_str() ) );
+			return;
+		}
+	}
+
+	m_worldEntities.push_back( newEntity );
+	m_entitiesByName[newEntity->GetName()] = newEntity;
 }
 
 
@@ -200,6 +240,15 @@ Entity* World::GetEntityById( EntityId id )
 		}
 	}
 
+	for ( auto& worldEntity : m_worldEntities )
+	{
+		if ( worldEntity != nullptr
+			 && worldEntity->GetId() == id )
+		{
+			return worldEntity;
+		}
+	}
+
 	return nullptr;
 }
 
@@ -221,29 +270,6 @@ Entity* World::GetEntityByName( const std::string& name )
 	}
 
 	return nullptr;
-
-	// Look in this map first
-	/*Entity* entity = GetEntityByNameInCurMap( name );
-	if ( entity != nullptr )
-	{
-		return entity;
-	}
-
-	for ( auto& map : m_loadedMaps )
-	{
-		if ( map.second == m_curMap )
-		{
-			continue;
-		}
-
-		entity = map.second->GetEntityByName( name );
-		if ( entity != nullptr )
-		{
-			return entity;
-		}
-	}
-
-	return nullptr;*/
 }
 
 
