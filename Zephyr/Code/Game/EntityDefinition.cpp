@@ -85,6 +85,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	if ( physicsElem != nullptr )
 	{
 		m_physicsRadius = ParseXmlAttribute( *physicsElem, "radius", m_physicsRadius );
+		m_mass = ParseXmlAttribute( *physicsElem, "mass", m_mass );
 
 		switch ( m_class )
 		{

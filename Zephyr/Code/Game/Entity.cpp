@@ -36,15 +36,15 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	m_curHealth = m_entityDef.GetMaxHealth();
 
 	m_rigidbody2D = g_physicsSystem2D->CreateRigidbody();
+	m_rigidbody2D->SetMass( m_entityDef.GetMass() );
 	
 	m_rigidbody2D->SetLayer( m_entityDef.GetCollisionLayer() );
-	if( m_entityDef.GetCollisionLayer() == eCollisionLayer::STATIC_ENVIRONMENT )
+	
+	switch( m_entityDef.GetCollisionLayer() )
 	{
-		m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_STATIC );
-	}
-	else
-	{
-		m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+		case eCollisionLayer::STATIC_ENVIRONMENT: m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_STATIC ); break;
+		case eCollisionLayer::NPC: m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_KINEMATIC ); break;
+		default: m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC ); break;
 	}
 
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );

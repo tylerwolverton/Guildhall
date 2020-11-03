@@ -45,6 +45,7 @@ public:
 	
 	float			GetWalkSpeed() const														{ return m_walkSpeed; }
 	float			GetSpeed() const															{ return m_speed; }
+	float			GetMass() const																{ return m_mass; }
 	eCollisionLayer	GetCollisionLayer() const													{ return m_collisionLayer; }
 	bool			IsTrigger() const															{ return m_isTrigger; }
 
@@ -70,7 +71,7 @@ protected:
 	bool			m_isTrigger = false;
 	float			m_maxHealth = 1.f;
 	float			m_physicsRadius = 0.f;
-	float			m_mass = 1.f;
+	float			m_mass = 10.f;
 	float			m_walkSpeed = 0.f;
 	float			m_speed = 0.f;
 

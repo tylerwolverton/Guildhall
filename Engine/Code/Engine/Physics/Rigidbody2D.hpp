@@ -55,6 +55,7 @@ public:
 	void SetAngularVelocity( float newAngularVelocity );
 
 	float GetMass() const															{ return m_mass; }
+	void SetMass( float mass )														{ m_mass = mass; }
 	void ChangeMass( float deltaMass );
 	float GetInverseMass() const													{ return m_inverseMass; }
 
