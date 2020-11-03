@@ -23,6 +23,7 @@ GameAPI::GameAPI()
 {
 	REGISTER_EVENT( ChangeZephyrScriptState );
 	REGISTER_EVENT( PrintDebugText );
+	REGISTER_EVENT( PrintDebugScreenText );
 	REGISTER_EVENT( PrintToConsole );
 
 	REGISTER_EVENT( DestroySelf );
@@ -155,8 +156,15 @@ void GameAPI::PrintDebugText( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "TestPrint" );
 	float duration = args->GetValue( "duration", 0.f );
-	Rgba8 color = args->GetValue( "color", Rgba8::WHITE );
 	Entity* entity = (Entity*)args->GetValue( "entity", (void*)nullptr );
+
+	std::string colorStr = args->GetValue( "color", "white" );
+
+	Rgba8 color = Rgba8::WHITE;
+	if ( colorStr == "white" )		{ color = Rgba8::WHITE; }
+	else if ( colorStr == "red" )	{ color = Rgba8::RED; }
+	else if ( colorStr == "green" ) { color = Rgba8::GREEN; }
+	else if ( colorStr == "blue" )	{ color = Rgba8::BLUE; }
 
 	Mat44 textLocation;
 
@@ -166,6 +174,27 @@ void GameAPI::PrintDebugText( EventArgs* args )
 	}
 	
 	DebugAddWorldText( textLocation, Vec2::HALF, color, color, duration, .1f, eDebugRenderMode::DEBUG_RENDER_ALWAYS, text.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::PrintDebugScreenText( EventArgs* args )
+{
+	std::string text = args->GetValue( "text", "" );
+	float duration = args->GetValue( "duration", 0.f );
+	float fontSize = args->GetValue( "fontSize", 24.f );
+	Vec2 locationRatio = args->GetValue( "locationRatio", Vec2::ZERO );
+	Vec2 padding = args->GetValue( "padding", Vec2::ZERO );
+
+	std::string colorStr = args->GetValue( "color", "white" );
+
+	Rgba8 color = Rgba8::WHITE;
+	if ( colorStr == "white" )		{ color = Rgba8::WHITE; }
+	else if ( colorStr == "red" )	{ color = Rgba8::RED; }
+	else if ( colorStr == "green" ) { color = Rgba8::GREEN; }
+	else if ( colorStr == "blue" )	{ color = Rgba8::BLUE; }
+	
+	DebugAddScreenText( Vec4( locationRatio, padding ), Vec2::ZERO, fontSize, color, color, duration, text.c_str() );
 }
 
 

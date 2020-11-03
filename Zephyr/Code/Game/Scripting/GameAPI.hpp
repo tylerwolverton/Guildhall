@@ -22,6 +22,7 @@ private:
 	// Debug Events
 	void ChangeZephyrScriptState( EventArgs* args );
 	void PrintDebugText( EventArgs* args );
+	void PrintDebugScreenText( EventArgs* args );
 	void PrintToConsole( EventArgs* args );
 
 	// Game Events

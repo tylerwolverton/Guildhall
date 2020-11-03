@@ -5,7 +5,14 @@ StateMachine
 	{
 		if( questId == "Level1" )
 		{
-			FireEvent( OpenDoor() );
+			Vec2 screenLocationRatio = ( 0, 1 );
+			Vec2 screenPadding = ( 3, -30 );
+			FireEvent( PrintDebugScreenText( text = "Level 1 Complete"
+											 duration = 10
+											 fontSize = 12
+											 locationRatio = screenLocationRatio
+											 padding = screenPadding 
+											 color = "green" ) );
 		}
 	}
 }

@@ -50,7 +50,7 @@
   </Entity>
 
   <Entity name="Level1Manager">
-    <Script name="KillEverythingQuest.zephyr"/>
+    <Script name="Level1Manager.zephyr"/>
   </Entity>
 
   <Entity name="VictoryTrigger">

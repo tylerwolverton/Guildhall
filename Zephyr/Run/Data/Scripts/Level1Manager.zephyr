@@ -1,0 +1,21 @@
+StateMachine
+{
+    String roomId;
+	Number enemiesInLevel;
+
+	OnEvent( EnemySpawned )
+	{
+		enemiesInLevel = enemiesInLevel + 1;
+	}
+
+	OnEvent( EnemyDied )
+	{
+		enemiesInLevel = enemiesInLevel - 1;
+
+		if( enemiesInLevel <= 0 )
+		{
+            FireEvent( QuestComplete( questId = roomId ) );
+            FireEvent( OpenDoor() );
+		}
+	}
+}

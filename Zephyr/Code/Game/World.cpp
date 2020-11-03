@@ -32,6 +32,14 @@ World::~World()
 //-----------------------------------------------------------------------------------------------
 void World::Update()
 {
+	for ( Entity* entity : m_worldEntities )
+	{
+		if ( entity != nullptr )
+		{
+			entity->Update( (float)m_worldClock->GetLastDeltaSeconds() );
+		}
+	}
+
 	if ( m_curMap == nullptr )
 	{
 		return;
@@ -44,6 +52,14 @@ void World::Update()
 //-----------------------------------------------------------------------------------------------
 void World::Render() const
 {
+	for ( Entity* entity : m_worldEntities )
+	{
+		if ( entity != nullptr )
+		{
+			entity->Render();
+		}
+	}
+
 	if ( m_curMap == nullptr )
 	{
 		return;
