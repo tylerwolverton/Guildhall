@@ -1,20 +1,17 @@
-<MapDefinition type="TileMap" version="1" dimensions="16,10">
+<MapDefinition type="TileMap" version="1" dimensions="10,7">
 
 	<Legend>
 		<Tile glyph="#" tileType="BlueDungeonBlock"/>
 		<Tile glyph="." tileType="BlueDungeonFloor"/>
 	</Legend>
 	<MapRows>
-		<MapRow tiles="################"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="...............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="################"/>
+		<MapRow tiles="##########"/>
+		<MapRow tiles="#........#"/>
+		<MapRow tiles="#........#"/>
+		<MapRow tiles=".........#"/>
+		<MapRow tiles="#........#"/>
+		<MapRow tiles="#........#"/>
+		<MapRow tiles="##########"/>
 	</MapRows>
 	<Entities>
     <Entity type="Level3Manager">

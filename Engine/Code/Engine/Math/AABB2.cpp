@@ -420,22 +420,38 @@ void AABB2::SetDimensions( const Vec2& dimensions )
 //-----------------------------------------------------------------------------------------------
 void AABB2::FitWithinBounds( const AABB2& boundingBox )
 {
-	if ( mins.x < boundingBox.mins.x )
+	// Center horizontally in bounds if bounds are smaller
+	if ( boundingBox.GetWidth() < GetWidth() )
 	{
-		Translate( Vec2( boundingBox.mins.x - mins.x, 0.f ) );
+		SetCenter( Vec2( boundingBox.GetCenter().x, GetCenter().y ) );
 	}
-	if ( maxs.x > boundingBox.maxs.x )
+	else
 	{
-		Translate( Vec2( boundingBox.maxs.x - maxs.x, 0.f ) );
+		if ( mins.x < boundingBox.mins.x )
+		{
+			Translate( Vec2( boundingBox.mins.x - mins.x, 0.f ) );
+		}
+		if ( maxs.x > boundingBox.maxs.x )
+		{
+			Translate( Vec2( boundingBox.maxs.x - maxs.x, 0.f ) );
+		}
 	}
 
-	if ( mins.y < boundingBox.mins.y )
+	// Center vertically in bounds if bounds are smaller
+	if ( boundingBox.GetHeight() < GetHeight() )
 	{
-		Translate( Vec2( 0.f, boundingBox.mins.y - mins.y ) );
+		SetCenter( Vec2( GetCenter().x, boundingBox.GetCenter().y ) );
 	}
-	if ( maxs.y > boundingBox.maxs.y )
+	else
 	{
-		Translate( Vec2( 0.f, boundingBox.maxs.y - maxs.y ) );
+		if ( mins.y < boundingBox.mins.y )
+		{
+			Translate( Vec2( 0.f, boundingBox.mins.y - mins.y ) );
+		}
+		if ( maxs.y > boundingBox.maxs.y )
+		{
+			Translate( Vec2( 0.f, boundingBox.maxs.y - maxs.y ) );
+		}
 	}
 }
 

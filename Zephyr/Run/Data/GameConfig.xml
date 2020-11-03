@@ -1,5 +1,5 @@
 <GameConfig
-	startMap="Level1"
+	startMap="Level3"
   playerActorName="Link"
 	windowAspect="1.777"
   windowTitle="Zephyr Test"
