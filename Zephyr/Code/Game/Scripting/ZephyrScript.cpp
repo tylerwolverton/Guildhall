@@ -8,7 +8,7 @@
 #include "Game/Map.hpp"
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
-#include "Game/Scripting/ZephyrVirtualMachine.hpp"
+#include "Game/Scripting/ZephyrInterpreter.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 	m_globalBytecodeChunk = new ZephyrBytecodeChunk( *m_scriptDef.GetGlobalBytecodeChunk() );
 	GUARANTEE_OR_DIE( m_globalBytecodeChunk != nullptr, "Global Bytecode Chunk was null" );
 
-	g_zephyrVM->InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 
 	m_curStateBytecodeChunk = m_scriptDef.GetFirstStateBytecodeChunk();
 	m_stateBytecodeChunks = m_scriptDef.GetAllStateBytecodeChunks();
@@ -60,7 +60,7 @@ void ZephyrScript::Update()
 
 	if ( m_curStateBytecodeChunk != nullptr )
 	{
-		g_zephyrVM->InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+		ZephyrInterpreter::InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
 
@@ -101,7 +101,7 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 			args->SetValue( "mapName", parentMap->GetName() );
 		}
 
-		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
+		ZephyrInterpreter::InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
 	}
 }
 
@@ -206,7 +206,7 @@ void ZephyrScript::OnEvent( EventArgs* args )
 			stateVariables = m_curStateBytecodeChunk->GetUpdateableVariables();
 		}
 
-		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
+		ZephyrInterpreter::InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
 	}
 }
 

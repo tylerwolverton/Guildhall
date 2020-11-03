@@ -1,18 +1,31 @@
 StateMachine
 {
+	Number totalQuestCount = 3;
+    Number completedQuests = 0;
+
 	String questId;
 	OnEvent( QuestComplete )
 	{
-		if( questId == "Level1" )
+		if ( questId == "Level1" )
 		{
-			Vec2 screenLocationRatio = ( 0, 1 );
-			Vec2 screenPadding = ( 3, -30 );
-			FireEvent( PrintDebugScreenText( text = "Level 1 Complete"
-											 duration = 10
-											 fontSize = 12
-											 locationRatio = screenLocationRatio
-											 padding = screenPadding 
-											 color = "green" ) );
+			FireEvent( OpenDoor( doorName = "Level3Door" ) );
+			completedQuests = completedQuests + 1;
+		}
+		
+		if ( questId == "Level2" )
+		{
+			completedQuests = completedQuests + 1;
+		}
+
+		if ( questId == "Level3" )
+		{
+			FireEvent( OpenDoor( doorName = "Level2Door" ) );
+			completedQuests = completedQuests + 1;
+		}
+
+		if( completedQuests >= totalQuestCount )
+		{
+			FireEvent( WinGame() );
 		}
 	}
 }

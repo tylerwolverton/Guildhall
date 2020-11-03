@@ -2,6 +2,7 @@ StateMachine
 {
     String roomId;
 	Number enemiesInLevel;
+    String questStatusText = "Clear All Enemies";
 
     String mapName;
 	OnEvent( EnemySpawned )
@@ -21,8 +22,18 @@ StateMachine
             if( enemiesInLevel <= 0 )
             {
                 FireEvent( QuestComplete( questId = roomId ) );
-                FireEvent( OpenDoor( doorName = "Level3Door" ) );
+                questStatusText = "Room Complete";
             }
         }
+    }
+
+    State Default
+    {
+        Vec2 screenLocationRatio = ( 0, 1 );
+        Vec2 screenPadding = ( 3, -30 );
+        FireEvent( PrintDebugScreenText( text = questStatusText,
+                                            fontSize = 12,
+                                            locationRatio = screenLocationRatio,
+                                            padding = screenPadding ) );
     }
 }

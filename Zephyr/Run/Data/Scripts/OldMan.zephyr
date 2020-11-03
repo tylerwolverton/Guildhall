@@ -42,7 +42,7 @@ StateMachine
         OnEnter()
         {
             FireEvent( AddLineOfDialogueText( text = "Sure, it should be open now" ) );
-            FireEvent( OpenDoor( doorName = "Level2Door" ) );
+            FireEvent( Level3DialogueSolved() );
         }
 
         OnEvent( PlayerInteract )

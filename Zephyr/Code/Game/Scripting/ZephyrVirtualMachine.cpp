@@ -14,20 +14,6 @@ ZephyrVirtualMachine::ZephyrVirtualMachine()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::Startup()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::Shutdown()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk,
 												   ZephyrValueMap* globalVariables,
 												   Entity* parentEntity,

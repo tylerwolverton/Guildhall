@@ -12,12 +12,11 @@ class Entity;
 //-----------------------------------------------------------------------------------------------
 class ZephyrVirtualMachine
 {
-public:
+	friend class ZephyrInterpreter;
+
+private:
 	ZephyrVirtualMachine();
-
-	void Startup();
-	void Shutdown();
-
+	
 	void InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
 									  ZephyrValueMap* globalVariables, 
 									  Entity* parentEntity = nullptr );
@@ -28,7 +27,6 @@ public:
 									  EventArgs* eventArgs = nullptr, 
 									  ZephyrValueMap* stateVariables = nullptr );
 
-private:
 	void		InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
 										ZephyrValueMap* globalVariables, 
 										Entity* parentEntity = nullptr, 
@@ -56,9 +54,7 @@ private:
 private:
 	std::stack<ZephyrValue> m_constantStack;
 
-	//std::map<std::string, ZephyrValue> m_globalVariablesCopy;
 	ZephyrValueMap* m_globalVariables;
-	//std::map<std::string, ZephyrValue> m_globalVariablesCopy;
 	ZephyrValueMap* m_stateVariables;
 	ZephyrValueMap m_eventsVariablesCopy;
 };
