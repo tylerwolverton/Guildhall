@@ -262,6 +262,8 @@
     <Xml Include="..\..\Run\Data\Gameplay\WorldDef.xml" />
     <Xml Include="..\..\Run\Data\Maps\Level1.xml" />
     <Xml Include="..\..\Run\Data\Maps\Level2.xml" />
+    <Xml Include="..\..\Run\Data\Maps\Level3.xml" />
+    <Xml Include="..\..\Run\Data\Maps\Level4.xml" />
     <Xml Include="..\..\Run\Data\Maps\VictoryLevel.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

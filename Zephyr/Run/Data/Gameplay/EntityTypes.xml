@@ -53,6 +53,10 @@
     <Script name="Level1Manager.zephyr"/>
   </Entity>
 
+  <Entity name="Level3Manager">
+    <Script name="Level3Manager.zephyr"/>
+  </Entity>
+
   <Entity name="VictoryTrigger">
     <Gameplay maxHealth="1">
     </Gameplay>
