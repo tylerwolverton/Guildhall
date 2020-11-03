@@ -14,10 +14,11 @@ StateMachine
 	// -----------------------------------------------------------------------------------------
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
 	Number maxHealth;
+	String mapName;
 	OnEvent( Spawn )
 	{
 		health = maxHealth;
-		FireEvent( EnemySpawned() );
+		FireEvent( EnemySpawned( mapName = mapName ) );
 		FireEvent( GetNewWanderTargetPosition() );
 	}
 
@@ -29,7 +30,7 @@ StateMachine
 
 	OnEvent( Die )
 	{
-		FireEvent( EnemyDied() );
+		FireEvent( EnemyDied( mapName = mapName ) );
 	}
 
 	// TODO: Make this more intuitive

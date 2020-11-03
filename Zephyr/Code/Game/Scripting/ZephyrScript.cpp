@@ -5,6 +5,7 @@
 #include "Engine/Core/StringUtils.hpp"
 
 #include "Game/GameCommon.hpp"
+#include "Game/Map.hpp"
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
 #include "Game/Scripting/ZephyrVirtualMachine.hpp"
@@ -94,39 +95,13 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 			stateVariables = m_curStateBytecodeChunk->GetUpdateableVariables();
 		}
 
+		Map* parentMap = m_parentEntity->GetMap();
+		if ( parentMap != nullptr )
+		{
+			args->SetValue( "mapName", parentMap->GetName() );
+		}
+
 		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrScript::FireSpawnEvent()
-{
-	if ( !m_scriptDef.IsValid() )
-	{
-		return;
-	}
-
-	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Spawn" );
-	if ( eventChunk != nullptr )
-	{
-		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrScript::FireDieEvent()
-{
-	if ( !m_scriptDef.IsValid() )
-	{
-		return;
-	}
-
-	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( "Die" );
-	if ( eventChunk != nullptr )
-	{
-		g_zephyrVM->InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 	}
 }
 

@@ -128,7 +128,8 @@ void Entity::Die()
 
 	if ( m_scriptObj != nullptr )
 	{
-		m_scriptObj->FireDieEvent();
+		EventArgs args;
+		m_scriptObj->FireEvent( "Die", &args );
 	}
 }
 

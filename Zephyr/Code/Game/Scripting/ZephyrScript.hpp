@@ -22,8 +22,6 @@ public:
 	void UnloadScript();
 
 	void FireEvent( const std::string& eventName, EventArgs* args );
-	void FireSpawnEvent();
-	void FireDieEvent();
 
 	void ChangeState( const std::string& targetState );
 
