@@ -124,6 +124,7 @@ private:
 
 	// HUD
 	UISystem* m_uiSystem = nullptr;
+	UIPanel* m_uiInfoPanel = nullptr;
 	DialogueBox* m_dialogueBox;
 
 	TextBox* m_debugInfoTextBox = nullptr;

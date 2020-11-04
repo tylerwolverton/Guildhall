@@ -13,6 +13,9 @@
 		},
 		{
 			"include": "#comments"
+		},
+		{
+			"include": "#variables"
 		}
 	],
 	"repository": {
@@ -24,7 +27,7 @@
 			},
 			{
 				"name": "keyword.states.zephyr",
-				"match": "\\b(StateMachine|State)\\b"
+				"match": "\\b(StateMachine|State|ChangeState)\\b"
 			},
 			{
 				"name": "keyword.operator.arithmetic.zephyr",
@@ -36,7 +39,7 @@
 			},
 			{
 				"name": "keyword.events.zephyr",
-				"match": "\\b(FireEvent|OnEvent)\\b"
+				"match": "\\b(FireEvent|OnEvent|OnEnter|OnExit)\\b"
 			},
 			{
 				"name": "keyword.operator.assignment.zephyr",
@@ -45,6 +48,14 @@
 			{
 				"name": "storage.type.zephyr",
 				"match": "\\b(Number|String|Vec2)\\b"
+			}
+		]
+		},
+		"variables": {
+			"patterns": [
+			{
+				"name": "variable.language.gameapi.zephyr",
+				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|DestroySelf|SpawnEntity|DamageEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|WinGame|MoveToLocation|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|CheckForTarget|GetNewWanderTargetPosition|GetDistanceToTarget|AddScreenShake)\\b"
 			}
 		]
 		},

@@ -32,8 +32,9 @@ StateMachine
         Vec2 screenLocationRatio = ( 0, 1 );
         Vec2 screenPadding = ( 3, -30 );
         FireEvent( PrintDebugScreenText( text = questStatusText,
-                                            fontSize = 12,
+                                            fontSize = 20,
                                             locationRatio = screenLocationRatio,
-                                            padding = screenPadding ) );
+                                            padding = screenPadding,
+                                            color = "white" ) );
     }
 }

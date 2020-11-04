@@ -164,7 +164,8 @@ void GameAPI::PrintDebugText( EventArgs* args )
 	if ( colorStr == "white" )		{ color = Rgba8::WHITE; }
 	else if ( colorStr == "red" )	{ color = Rgba8::RED; }
 	else if ( colorStr == "green" ) { color = Rgba8::GREEN; }
-	else if ( colorStr == "blue" )	{ color = Rgba8::BLUE; }
+	else if ( colorStr == "blue" )  { color = Rgba8::BLUE; }
+	else if ( colorStr == "black" ) { color = Rgba8::BLACK; }
 
 	Mat44 textLocation;
 
@@ -193,6 +194,7 @@ void GameAPI::PrintDebugScreenText( EventArgs* args )
 	else if ( colorStr == "red" )	{ color = Rgba8::RED; }
 	else if ( colorStr == "green" ) { color = Rgba8::GREEN; }
 	else if ( colorStr == "blue" )	{ color = Rgba8::BLUE; }
+	else if ( colorStr == "black" )	{ color = Rgba8::BLACK; }
 	
 	DebugAddScreenText( Vec4( locationRatio, padding ), Vec2::ZERO, fontSize, color, color, duration, text.c_str() );
 }
@@ -209,6 +211,7 @@ void GameAPI::PrintToConsole( EventArgs* args )
 	else if ( colorStr == "red" )	{ color = Rgba8::RED; }
 	else if ( colorStr == "green" )	{ color = Rgba8::GREEN; }
 	else if ( colorStr == "blue" )	{ color = Rgba8::BLUE; }
+	else if ( colorStr == "black" ) { color = Rgba8::BLACK; }
 	
 	g_devConsole->PrintString( text.c_str(), color );
 }

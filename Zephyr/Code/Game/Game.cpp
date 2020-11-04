@@ -884,6 +884,12 @@ void Game::InitializeFPSHistory()
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeUI()
 {
+	UIAlignedPositionData infoPos;
+	infoPos.fractionOfParentDimensions = Vec2( 1.f, .035f );
+	infoPos.alignmentWithinParentElement = ALIGN_TOP_LEFT;
+
+	m_uiInfoPanel = m_uiSystem->GetRootPanel()->AddChildPanel( infoPos, g_renderer->GetDefaultWhiteTexture(), Rgba8::BLACK );
+
 	UIAlignedPositionData posData;
 	posData.fractionOfParentDimensions = Vec2( .8f, .3f );
 	posData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
