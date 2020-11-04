@@ -68,11 +68,6 @@ public:
 
 	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
-	void		UpdateEnemyCount( int enemyCount );
-	void		IncrementEnemyCount()													{ ++m_enemiesLeftAlive; }
-	void		DecrementEnemyCount();
-	void		CheckForVictory();
-
 	float		GetLastDeltaSecondsf();
 
 	Entity*		GetEntityById( EntityId id );
@@ -112,8 +107,6 @@ private:
 	void RenderFPSCounter() const;
 
 private:
-	int m_enemiesLeftAlive = 0;
-
 	Clock* m_gameClock = nullptr;
 	float m_fpsHistory[FRAME_HISTORY_COUNT];
 	int m_fpsNextIdx = 0;

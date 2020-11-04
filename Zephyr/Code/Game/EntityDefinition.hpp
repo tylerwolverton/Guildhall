@@ -50,11 +50,11 @@ public:
 	bool			IsTrigger() const															{ return m_isTrigger; }
 
 	FloatRange		GetDamageRange() const														{ return m_damageRange; }
+
 	
+	SpriteAnimationSetDefinition* GetDefaultSpriteAnimSetDef() const							{ return m_defaultSpriteAnimSetDef; }
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const			{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
-
-	std::map<std::string, std::string> GetRegisteredEvents() const								{ return m_receivedEventsToResponseEvents; }
 
 	ZephyrScriptDefinition* GetZephyrScriptDefinition() const									{ return m_zephyrScriptDef; }
 
@@ -80,14 +80,10 @@ protected:
 	AABB2			m_localDrawBounds;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
 
-	// Events
-	std::string		m_birthEventName;
-	std::string		m_deathEventName;
-	std::map<std::string, std::string> m_receivedEventsToResponseEvents;
-
 	// Scripts
 	std::string				m_zephyrScriptName;
 	ZephyrScriptDefinition* m_zephyrScriptDef = nullptr;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
+	SpriteAnimationSetDefinition* m_defaultSpriteAnimSetDef = nullptr;
 };

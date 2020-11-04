@@ -106,10 +106,18 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 		m_localDrawBounds = ParseXmlAttribute( *appearanceElem, "localDrawBounds", m_localDrawBounds );
 		float defaultFPS = ParseXmlAttribute( *appearanceElem, "fps", 1.f );
 
+		bool isFirstAnim = true;
+
 		const XmlElement* animationSetElem = appearanceElem->FirstChildElement();
 		while ( animationSetElem != nullptr )
 		{
 			m_spriteAnimSetDefs[animationSetElem->Name()] = new SpriteAnimationSetDefinition( spriteSheet, *animationSetElem, defaultFPS );
+
+			if ( isFirstAnim )
+			{
+				isFirstAnim = false;
+				m_defaultSpriteAnimSetDef = m_spriteAnimSetDefs[animationSetElem->Name()];
+			}
 
 			animationSetElem = animationSetElem->NextSiblingElement();
 		}
@@ -121,63 +129,6 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	{
 		m_maxHealth = ParseXmlAttribute( *gameplayElem, "maxHealth", m_maxHealth );
 		m_damageRange = ParseXmlAttribute( *gameplayElem, "damage", m_damageRange );
-
-		const XmlElement* onBirthElem = gameplayElem->FirstChildElement( "OnBirth" );
-		if ( onBirthElem != nullptr )
-		{
-			m_birthEventName = ParseXmlAttribute( *onBirthElem, "fireEvent", m_birthEventName );
-
-			if ( !g_gameAPI->IsMethodRegistered( m_birthEventName ) )
-			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - Birth event '%s' has not been registered", m_type.c_str(), m_birthEventName.c_str() ) );
-			}
-		}
-
-		const XmlElement* onDeathElem = gameplayElem->FirstChildElement( "OnDeath" );
-		if ( onDeathElem != nullptr )
-		{
-			m_deathEventName = ParseXmlAttribute( *onDeathElem, "fireEvent", m_deathEventName );
-
-			if ( !g_gameAPI->IsMethodRegistered( m_deathEventName ) )
-			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - Death event '%s' has not been registered", m_type.c_str(), m_deathEventName.c_str() ) );
-			}
-		}
-
-		const XmlElement* onEventReceivedElem = gameplayElem->FirstChildElement( "OnEventReceived" );
-		while ( onEventReceivedElem != nullptr )
-		{
-			std::string receivedEventName = ParseXmlAttribute( *onEventReceivedElem, "eventName", "" );
-			if ( receivedEventName.empty() )
-			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing eventName attribute in OnEventReceived node", m_type.c_str() ) );
-
-				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
-				continue;
-			}
-
-			std::string fireEventName = ParseXmlAttribute( *onEventReceivedElem, "fireEvent", "" );
-			if ( fireEventName.empty() )
-			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - missing fireEvent attribute in OnEventReceived node", m_type.c_str() ) );
-
-				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
-				continue;
-			}
-
-			if ( !g_gameAPI->IsMethodRegistered( fireEventName ) )
-			{
-				g_devConsole->PrintError( Stringf( "Entity: '%s' - fireEvent '%s' has not been registered", m_type.c_str(), fireEventName.c_str() ) );
-
-				onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
-				continue;
-			}
-
-			// We have valid events
-			m_receivedEventsToResponseEvents[receivedEventName] = fireEventName;
-
-			onEventReceivedElem = onEventReceivedElem->NextSiblingElement( "OnEventReceived" );
-		}
 	}
 
 	const XmlElement* scriptElem = entityDefElem.FirstChildElement( "Script" );

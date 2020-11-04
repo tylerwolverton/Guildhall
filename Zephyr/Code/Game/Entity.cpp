@@ -49,13 +49,13 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
 
-	RegisterUserEvents();
-
 	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
 	if ( scriptDef != nullptr )
 	{
 		m_scriptObj = new ZephyrScript( *scriptDef, this );
 	}
+
+	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
 }
 
 
@@ -91,17 +91,16 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	SpriteAnimationSetDefinition* walkAnimSetDef = m_entityDef.GetSpriteAnimSetDef( "Walk" );
-	SpriteAnimDefinition* walkAnimDef = nullptr;
-	if ( walkAnimSetDef == nullptr 
+	SpriteAnimDefinition* animDef = nullptr;
+	if ( m_curSpriteAnimSetDef == nullptr
 		 || m_rigidbody2D == nullptr )
 	{
 		return;
 	}
 
-	walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_rigidbody2D->GetVelocity() );
+	animDef = m_curSpriteAnimSetDef->GetSpriteAnimationDefForDirection( m_rigidbody2D->GetVelocity() );
 	
-	const SpriteDefinition& spriteDef = walkAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+	const SpriteDefinition& spriteDef = animDef->GetSpriteDefAtTime( m_cumulativeTime );
 
 	Vec2 mins, maxs;
 	spriteDef.GetUVs( mins, maxs );
@@ -394,37 +393,17 @@ void Entity::InitializeScriptValues( const ZephyrValueMap& initialValues )
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::RegisterUserEvents()
+void Entity::ChangeSpriteAnimation( const std::string& spriteAnimDefSetName )
 {
-	std::map<std::string, std::string>const& registeredEvents = m_entityDef.GetRegisteredEvents();
+	SpriteAnimationSetDefinition* newSpriteAnimSetDef = m_entityDef.GetSpriteAnimSetDef( spriteAnimDefSetName );
 
-	for ( auto it = registeredEvents.begin(); it != registeredEvents.end(); ++it )
-	{ 
-		g_eventSystem->RegisterMethodEvent( it->first, "", GAME, this, &Entity::FireCorrespondingEvent );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::FireCorrespondingEvent( EventArgs* args )
-{
-	std::string eventName = args->GetValue( "eventName", "" );
-	if ( eventName.empty() )
+	if ( newSpriteAnimSetDef == nullptr )
 	{
+		g_devConsole->PrintError( Stringf( "Error: Failed to change animation for entity '%s' to undefined animation '%s'", m_name.c_str(), spriteAnimDefSetName.c_str() ) );
 		return;
 	}
 
-	std::map<std::string, std::string> registeredEvents = m_entityDef.GetRegisteredEvents();
-
-	auto iter = registeredEvents.find( eventName );
-	if ( iter == registeredEvents.end() )
-	{
-		g_devConsole->PrintWarning( Stringf( "Event: '%s' had no corresponding event to fire", eventName.c_str() ) );
-		return;
-	}
-
-	g_devConsole->PrintString( Stringf( "Firing event '%s' from '%s'", iter->second.c_str(), m_entityDef.GetType().c_str() ) );
-	g_eventSystem->FireEvent( iter->second );
+	m_curSpriteAnimSetDef = newSpriteAnimSetDef;
 }
 
 

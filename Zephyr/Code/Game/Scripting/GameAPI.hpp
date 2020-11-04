@@ -33,7 +33,6 @@ private:
 	void EndDialogue( EventArgs* args );
 	void AddLineOfDialogueText( EventArgs* args );
 	void AddDialogueChoice( EventArgs* args );
-	void UpdateEnemyCount( EventArgs* args );
 	void WinGame( EventArgs* args );
 
 	// AI
@@ -45,7 +44,8 @@ private:
 	void CheckForTarget( EventArgs* args );
 	void GetDistanceToTarget( EventArgs* args );
 
-	// Audio/Visual Effects
+	// Audio/Visual
+	void ChangeSpriteAnimation( EventArgs* args );
 	void AddScreenShake( EventArgs* args );
 
 private:

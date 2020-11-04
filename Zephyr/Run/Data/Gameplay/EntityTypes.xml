@@ -3,6 +3,7 @@
   <Actor name="Link">
     <Physics radius="0.5" walkSpeed="150.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="5">
+      <!--First anim is defaulted as initial animation-->
       <Walk up="6,7" left="4,5" down="0,1" right="2,3" fps="2"/>
       <Attack up="0"/>
       <Pain up="0"/>
@@ -25,6 +26,7 @@
     <Physics radius="0.5" walkSpeed="55.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
       <Walk up="30,31"/>
+      <LowHealth up ="32,33" fps="3"/>
     </Appearance>
     <Gameplay maxHealth="3">
     </Gameplay>

@@ -26,6 +26,11 @@ StateMachine
 	OnEvent( HealthUpdated )
 	{
 		health = newHealth;
+
+		if( health == 1 )
+		{
+			FireEvent( ChangeSpriteAnimation( newAnim = "LowHealth" ) );
+		}
 	}
 
 	OnEvent( Die )

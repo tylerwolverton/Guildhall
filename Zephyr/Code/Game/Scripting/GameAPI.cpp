@@ -33,7 +33,6 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( EndDialogue );
 	REGISTER_EVENT( AddLineOfDialogueText );
 	REGISTER_EVENT( AddDialogueChoice );
-	REGISTER_EVENT( UpdateEnemyCount );
 	REGISTER_EVENT( WinGame );
 
 	REGISTER_EVENT( MoveToLocation );
@@ -44,6 +43,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( GetNewWanderTargetPosition );
 	REGISTER_EVENT( GetDistanceToTarget );
 
+	REGISTER_EVENT( ChangeSpriteAnimation );
 	REGISTER_EVENT( AddScreenShake );
 }
 
@@ -61,15 +61,6 @@ bool GameAPI::IsMethodRegistered( const std::string& methodName )
 	auto iter = m_registeredMethods.find( methodName );
 	
 	return iter != m_registeredMethods.end();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameAPI::UpdateEnemyCount( EventArgs* args )
-{
-	float enemyCount = args->GetValue( "enemyCount", 0.f );
-
-	g_game->UpdateEnemyCount( (int)enemyCount );
 }
 
 
@@ -407,6 +398,23 @@ void GameAPI::GetDistanceToTarget( EventArgs* args )
 	targetArgs.SetValue( "distance", displacementToTarget.GetLength() );
 
 	entity->FireScriptEvent( "UpdateDistanceToTarget", &targetArgs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::ChangeSpriteAnimation( EventArgs* args )
+{
+	std::string newAnim = args->GetValue( "newAnim", "" );
+	//Entity* targetEntity = g_game->GetEntityByName( targetId );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity == nullptr
+		 || newAnim.empty() )
+	{
+		return;
+	}
+
+	entity->ChangeSpriteAnimation( newAnim );
 }
 
 

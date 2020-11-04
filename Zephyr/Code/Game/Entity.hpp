@@ -51,6 +51,8 @@ public:
 	void			ReloadZephyrScript();
 	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
 
+	void			ChangeSpriteAnimation( const std::string& spriteAnimDefSetName );
+
 	const Vec2		GetForwardVector() const;
 	const Vec2		GetPosition() const;
 	void			SetPosition( const Vec2& position );
@@ -90,9 +92,6 @@ public:
 	void			MoveWithPhysics( float speed, const Vec2& direction );
 
 protected:
-	void			RegisterUserEvents();
-	void			FireCorrespondingEvent( EventArgs* args );
-
 	void			EnterCollisionEvent( Collision2D collision );
 	void			StayCollisionEvent( Collision2D collision );
 	void			ExitCollisionEvent( Collision2D collision );
@@ -102,34 +101,34 @@ protected:
 	void			SendPhysicsEventToScript( Collision2D collision, const std::string& eventName );
 
 protected:
-	ZephyrScript*			m_scriptObj = nullptr;
+	ZephyrScript*					m_scriptObj = nullptr;
 
 	// Game state
-	const EntityDefinition& m_entityDef;
-	std::string				m_name;
-	EntityId				m_id;
-	eFaction				m_faction = eFaction::NEUTRAL;
-	float					m_curHealth = 1.f;								// how much health is currently remaining on entity
-	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
-	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
-	bool					m_isPlayer = false;
-	Map*					m_map = nullptr;
-	std::vector<Entity*>	m_inventory;									// entity owns all items in inventory
+	const EntityDefinition&			m_entityDef;
+	std::string						m_name;
+	EntityId						m_id;
+	eFaction						m_faction = eFaction::NEUTRAL;
+	float							m_curHealth = 1.f;								// how much health is currently remaining on entity
+	bool							m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
+	bool							m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
+	bool							m_isPlayer = false;
+	Map*							m_map = nullptr;
+	std::vector<Entity*>			m_inventory;									// entity owns all items in inventory
 
-	Entity*					m_dialoguePartner = nullptr;
+	Entity*							m_dialoguePartner = nullptr;
 
 	// Physics
-	Rigidbody2D*			m_rigidbody2D = nullptr;
-	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
-	Vec2					m_forwardVector = Vec2( 1.f, 0.f );
+	Rigidbody2D*					m_rigidbody2D = nullptr;
+	float							m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
+	Vec2							m_forwardVector = Vec2( 1.f, 0.f );
 	
 	// Visual
-	float					m_cumulativeTime = 0.f;
-	std::vector<Vertex_PCU> m_vertices;
-	SpriteAnimDefinition*	m_curAnimDef = nullptr;
+	float							m_cumulativeTime = 0.f;
+	std::vector<Vertex_PCU>			m_vertices;
+	SpriteAnimationSetDefinition*	m_curSpriteAnimSetDef = nullptr;
 
 	// Statics
-	static EntityId s_nextEntityId;
+	static EntityId					s_nextEntityId;
 };
 
 

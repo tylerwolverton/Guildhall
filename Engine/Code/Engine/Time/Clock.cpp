@@ -8,6 +8,8 @@
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 
 static Clock* s_masterClock = nullptr;
+double Clock::s_timeThisFrameStarted = 0.0;
+double Clock::s_minFrameTime = 0.0;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -64,12 +66,12 @@ void Clock::Update( double deltaSeconds )
 {
 	deltaSeconds = ClampMinMax( deltaSeconds, 0.0, m_maxFrameTime );
 
-	/*double minDeltaDiff = m_minFrameTime - deltaSeconds;
+	double minDeltaDiff = m_minFrameTime - deltaSeconds;
 	if ( minDeltaDiff > 0.f )
 	{
 		deltaSeconds = m_minFrameTime;
-		Sleep( DWORD( minDeltaDiff * 500.0 ) );
-	}*/
+		Sleep( DWORD( minDeltaDiff * 1000.0 ) );
+	}
 
 	if ( m_isPaused )
 	{
@@ -97,6 +99,20 @@ void Clock::Update( double deltaSeconds )
 void Clock::Reset()
 {
 	m_totalElapsedSeconds = 0.0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Clock::BeginFrame()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Clock::EndFrame()
+{
+
 }
 
 
@@ -147,11 +163,31 @@ void Clock::MasterShutdown()
 void Clock::MasterBeginFrame()
 {
 	static double timeLastFrameStarted = GetCurrentTimeSeconds(); // Runs once only!	
-	double timeThisFrameStarted = GetCurrentTimeSeconds();
-	double deltaSeconds = timeThisFrameStarted - timeLastFrameStarted;
-	timeLastFrameStarted = timeThisFrameStarted;
+	s_timeThisFrameStarted = GetCurrentTimeSeconds();
+	double deltaSeconds = s_timeThisFrameStarted - timeLastFrameStarted;
+	timeLastFrameStarted = s_timeThisFrameStarted;
 
 	s_masterClock->Update( deltaSeconds );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Clock::MasterEndFrame()
+{
+	double frameTime = GetCurrentTimeSeconds() - s_timeThisFrameStarted;
+	if ( frameTime < s_minFrameTime )
+	{
+		Sleep( DWORD( ( s_minFrameTime - frameTime ) * 1000.0 ) );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Clock::SetMasterFrameLimits( double minTime, double maxTime )
+{
+	UNUSED( maxTime );
+
+	s_minFrameTime = minTime;
 }
 
 

@@ -72,7 +72,8 @@ void Game::Startup()
 	m_rng = new RandomNumberGenerator();
 
 	m_gameClock = new Clock();
-	//m_gameClock->SetFrameLimits( 1.0 / 120.0, .1 );
+	//m_gameClock->SetFrameLimits( 1.0 / 40.0, .1 );
+	//Clock::SetMasterFrameLimits( 1.0 / 60.0, .1 );
 
 	g_renderer->Setup( m_gameClock );
 	g_physicsSystem2D->Startup( m_gameClock );
@@ -1024,34 +1025,6 @@ void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, cons
 	}
 
 	m_world->WarpEntityToMap( entityToWarp, destMapName, newPos, newYawDegrees );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateEnemyCount( int enemyCount )
-{
-	m_enemiesLeftAlive = enemyCount;
-
-	CheckForVictory();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::DecrementEnemyCount()
-{
-	--m_enemiesLeftAlive; 
-	
-	CheckForVictory();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::CheckForVictory()
-{
-	if ( m_enemiesLeftAlive == 0 )
-	{
-		g_eventSystem->FireEvent( "OpenDoor" );
-	}
 }
 
 

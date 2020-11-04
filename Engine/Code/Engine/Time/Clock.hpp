@@ -13,6 +13,9 @@ public:
 	void Update( double deltaSeconds );		 // usually do not need to call unless you create a new root clock
 	void Reset();							 // set total time back to 0.0, does not reset children
 
+	void BeginFrame();
+	void EndFrame();
+
 	// Controls
 	void Pause();
 	void Resume();
@@ -30,6 +33,8 @@ public:
 	static void MasterStartup();  // create/reset master clock
 	static void MasterShutdown();
 	static void MasterBeginFrame();     // advance master clock (which immediately propagates to children)
+	static void MasterEndFrame();       // account for frame limits
+	static void SetMasterFrameLimits( double minTime, double maxTime );
 
 	static Clock* GetMaster();
 
@@ -41,6 +46,9 @@ public:
 
 private:
 	//static Clock* s_masterClock;
+	//static double s_timeLastFrameStarted;
+	static double s_timeThisFrameStarted;
+	static double s_minFrameTime;
 
 	double m_totalElapsedSeconds = 0.0;
 	double m_deltaTimeSeconds = 0.0;
