@@ -1,5 +1,7 @@
 StateMachine
 {
+    Number hasOpenedDoor = 0;
+
     State Waiting
     {
         OnEvent( PlayerInteract )
@@ -14,6 +16,7 @@ StateMachine
         {
             FireEvent( StartDialogue() );
             FireEvent( AddLineOfDialogueText( text = "Hello, traveler! Can I help you?" ) );
+            
             
             FireEvent( AddDialogueChoice( name = "choice1", text = "Could you open the door in the other room?" ) );
             FireEvent( AddDialogueChoice( name = "choice2", text = "Nevermind" ) );
@@ -41,8 +44,17 @@ StateMachine
     {
         OnEnter()
         {
-            FireEvent( AddLineOfDialogueText( text = "Sure, it should be open now" ) );
-            FireEvent( Level3DialogueSolved() );
+            if( hasOpenedDoor == 0 )
+            {
+                hasOpenedDoor = 1;
+
+                FireEvent( AddLineOfDialogueText( text = "Sure, it should be open now" ) );
+                FireEvent( Level3DialogueSolved() );
+            }
+            else
+            {
+                FireEvent( AddLineOfDialogueText( text = "It's already open" ) );
+            }
         }
 
         OnEvent( PlayerInteract )
