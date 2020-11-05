@@ -8,8 +8,6 @@
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 
 static Clock* s_masterClock = nullptr;
-double Clock::s_timeThisFrameStarted = 0.0;
-double Clock::s_minFrameTime = 0.0;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -103,20 +101,6 @@ void Clock::Reset()
 
 
 //-----------------------------------------------------------------------------------------------
-void Clock::BeginFrame()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Clock::EndFrame()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Clock::Pause()
 {
 	m_isPaused = true;
@@ -163,31 +147,11 @@ void Clock::MasterShutdown()
 void Clock::MasterBeginFrame()
 {
 	static double timeLastFrameStarted = GetCurrentTimeSeconds(); // Runs once only!	
-	s_timeThisFrameStarted = GetCurrentTimeSeconds();
-	double deltaSeconds = s_timeThisFrameStarted - timeLastFrameStarted;
-	timeLastFrameStarted = s_timeThisFrameStarted;
+	double timeThisFrameStarted = GetCurrentTimeSeconds();
+	double deltaSeconds = timeThisFrameStarted - timeLastFrameStarted;
+	timeLastFrameStarted = timeThisFrameStarted;
 
 	s_masterClock->Update( deltaSeconds );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Clock::MasterEndFrame()
-{
-	double frameTime = GetCurrentTimeSeconds() - s_timeThisFrameStarted;
-	if ( frameTime < s_minFrameTime )
-	{
-		Sleep( DWORD( ( s_minFrameTime - frameTime ) * 1000.0 ) );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Clock::SetMasterFrameLimits( double minTime, double maxTime )
-{
-	UNUSED( maxTime );
-
-	s_minFrameTime = minTime;
 }
 
 

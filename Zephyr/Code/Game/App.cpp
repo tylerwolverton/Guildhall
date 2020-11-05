@@ -208,8 +208,6 @@ void App::EndFrame()
 	g_devConsole->EndFrame();
 	g_eventSystem->EndFrame();
 	g_window->EndFrame();
-
-	Clock::MasterEndFrame();
 }
 
 
