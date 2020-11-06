@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------------------
 class Entity;
 class Portal;
+class World;
 struct MapData;
 struct MapEntityDefinition;
 
@@ -32,7 +33,7 @@ struct RaycastResult
 class Map
 {
 public:
-	Map( const MapData& mapData );
+	Map( const MapData& mapData, World* world );
 	virtual ~Map();
 
 	virtual void Load() = 0;
@@ -62,6 +63,7 @@ protected:
 	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 
 protected:
+	World*				 m_world;
 	std::string			 m_name;
 
 	// Multiplayer TODO: Make this into an array

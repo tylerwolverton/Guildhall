@@ -33,6 +33,7 @@ public:
 
 	Entity* CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees );
 
+	void AddEntity( Entity* entity );
 	Entity* GetEntityById( EntityId entityId );
 
 private:
@@ -43,4 +44,5 @@ private:
 	Clock* m_worldClock = nullptr;
 
 	std::map<std::string, Map*> m_loadedMaps;
+	std::map<EntityId, Entity*> m_entities;
 };

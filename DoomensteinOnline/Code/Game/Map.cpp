@@ -16,11 +16,13 @@
 #include "Game/Portal.hpp"
 #include "Game/EntityDefinition.hpp"
 #include "Game/MapData.hpp"
+#include "Game/World.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Map::Map( const MapData& mapData )
-	: m_name( mapData.mapName )
+Map::Map( const MapData& mapData, World* world )
+	: m_world( world )
+	, m_name( mapData.mapName )
 	, m_playerStartPos( mapData.playerStartPos )
 	, m_playerStartYaw( mapData.playerStartYaw )
 {
@@ -111,47 +113,51 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 //-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 {
+	Entity* newEntity = nullptr;
+
 	switch ( entityDef.GetType() )
 	{
 		case eEntityType::ACTOR:
 		{
-			Actor* actor = new Actor( entityDef );
-			m_entities.emplace_back( actor );
-			return actor;
+			newEntity = new Actor( entityDef );
+			m_entities.push_back( newEntity );
 		}
 		break;
 
 		case eEntityType::PROJECTILE:
 		{
-			Projectile* projectile = new Projectile( entityDef );
-			m_entities.emplace_back( projectile );
-			return projectile;
+			newEntity = new Projectile( entityDef );
+			m_entities.push_back( newEntity );
 		}
 		break;
 
 		case eEntityType::PORTAL:
 		{
-			Portal* portal = new Portal( entityDef );
-			m_entities.emplace_back( portal );
-			m_portals.emplace_back( portal );
-			return portal;
+			newEntity = new Portal( entityDef );
+			m_entities.push_back( newEntity );
+			m_portals.push_back( (Portal*)newEntity );
 		}
 		break;
 
 		case eEntityType::ENTITY:
 		{
-			Entity* entity = new Entity( entityDef );
-			m_entities.emplace_back( entity );
-			return entity;
+			newEntity = new Entity( entityDef );
+			m_entities.push_back( newEntity );
 		}
 		break;
 
 		default:
 		{
 			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
-			return nullptr;
 		}
 	}
+
+	if ( m_world != nullptr )
+	{
+		m_world->AddEntity( newEntity );
+	}
+	
+	return newEntity;
 }
 
 

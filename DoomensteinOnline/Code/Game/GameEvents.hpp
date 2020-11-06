@@ -39,6 +39,13 @@ public:
 		, functionType( functionTypeIn )
 	{
 	}
+
+	ClientRequest( Entity*& playerIn, EntityId playerId, eClientFunctionType functionTypeIn )
+		: player( playerIn )
+		, playerClientId( playerId )
+		, functionType( functionTypeIn )
+	{
+	}
 };
 
 
@@ -96,8 +103,8 @@ public:
 	Vec2 translationVec = Vec2::ZERO;
 
 public:
-	MovePlayerRequest( Entity*& playerIn, const Vec2& translationVecIn )
-		: ClientRequest( playerIn, eClientFunctionType::MOVE_PLAYER )
+	MovePlayerRequest( Entity*& playerIn, EntityId playerId, const Vec2& translationVecIn )
+		: ClientRequest( playerIn, playerId, eClientFunctionType::MOVE_PLAYER )
 		, translationVec( translationVecIn )
 	{
 	}

@@ -182,7 +182,8 @@ std::vector<ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests
 
 		//m_player->AddVelocity( translationXY );
 		//m_player->Translate( translationXY * deltaSeconds );
-		requests.push_back( new MovePlayerRequest( m_player, translationXY * deltaSeconds ) );
+		//requests.push_back( new MovePlayerRequest( m_player, translationXY * deltaSeconds ) );
+		requests.push_back( new MovePlayerRequest( m_player, m_player->GetId(), translationXY * deltaSeconds ) );
 	}
 	// No entity possessed, move the camera directly
 	else

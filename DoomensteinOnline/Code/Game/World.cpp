@@ -72,7 +72,7 @@ void World::AddNewMap( const MapData& mapData )
 {
 	if ( mapData.type == "TileMap" )
 	{
-		TileMap* tileMap = new TileMap( mapData );
+		TileMap* tileMap = new TileMap( mapData, this );
 		m_loadedMaps[mapData.mapName] = tileMap;
 	}
 }
@@ -166,9 +166,27 @@ Entity* World::CreateEntityInCurrentMap( const std::string& entityType, const Ve
 
 
 //-----------------------------------------------------------------------------------------------
+void World::AddEntity( Entity* entity )
+{
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	m_entities[entity->GetId()] = entity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Entity* World::GetEntityById( EntityId entityId )
 {
-	return nullptr;
+	auto entityIter = m_entities.find( entityId );
+	if ( entityIter == m_entities.end() )
+	{
+		return nullptr;
+	}
+
+	return entityIter->second;
 }
 
 

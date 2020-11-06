@@ -20,8 +20,8 @@
 
 
 //-----------------------------------------------------------------------------------------------
-TileMap::TileMap( const MapData& mapData )
-	: Map( mapData )
+TileMap::TileMap( const MapData& mapData, World* world )
+	: Map( mapData, world )
 {
 	m_dimensions = mapData.dimensions;
 
