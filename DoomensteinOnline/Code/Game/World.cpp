@@ -5,7 +5,6 @@
 #include "Engine/Time/Clock.hpp"
 
 #include "Game/TileMap.hpp"
-#include "Game/GameCommon.hpp"
 #include "Game/MapData.hpp"
 
 
@@ -163,6 +162,13 @@ Entity* World::CreateEntityInCurrentMap( const std::string& entityType, const Ve
 	newEntiy->SetOrientationDegrees( yawOrientationDegrees );
 
 	return newEntiy;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* World::GetEntityById( EntityId entityId )
+{
+	return nullptr;
 }
 
 

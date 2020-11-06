@@ -271,3 +271,6 @@ connect_to_multiplayer_server
 start_multiplayer_server
 start_tcp_server
 start_multiplayer_server
+connect_to_multiplayer_server
+send_message msg="hi server"
+disconnect

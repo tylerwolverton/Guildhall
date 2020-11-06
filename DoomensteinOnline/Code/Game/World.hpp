@@ -1,4 +1,5 @@
 #pragma once
+#include "Game/GameCommon.hpp"
 
 #include <string>
 #include <map>
@@ -31,6 +32,8 @@ public:
 	bool IsMapLoaded( const std::string& mapName );
 
 	Entity* CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees );
+
+	Entity* GetEntityById( EntityId entityId );
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );

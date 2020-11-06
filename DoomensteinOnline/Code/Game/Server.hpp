@@ -31,6 +31,7 @@ public:
 
 protected:
 	virtual void StartGame( eAppMode appMode ) = 0;
+	virtual void ProcessNetworkMessages() = 0;
 
 protected:
 	PlayerClient* m_playerClient = nullptr;

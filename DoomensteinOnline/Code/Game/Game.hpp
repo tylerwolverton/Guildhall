@@ -47,6 +47,7 @@ public:
 
 	Entity* CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees );
 	void MovePlayer( Entity* player, const Vec2& translationVec );
+	void MoveEntity( EntityId entityId, const Vec2& translationVec );
 	void SetPlayerOrientation( Entity* player, float yawOrientationDegrees );
 	void PossessEntity( Entity*& player, const Transform& cameraTransform );
 	void PossessEntity( Entity* player );

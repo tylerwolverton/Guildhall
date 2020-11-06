@@ -61,6 +61,13 @@ void AuthoritativeServer::StartGame( eAppMode appMode )
 
 
 //-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::ProcessNetworkMessages()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::StartTCPServer()
 {
 	EventArgs args;

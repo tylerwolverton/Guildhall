@@ -443,6 +443,20 @@ void Game::MovePlayer( Entity* player, const Vec2& translationVec )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::MoveEntity( EntityId entityId, const Vec2& translationVec )
+{
+	Entity* entity = m_world->GetEntityById( entityId );
+
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	entity->Translate( translationVec );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::SetPlayerOrientation( Entity* player, float yawOrientationDegrees )
 {
 	if ( player == nullptr )

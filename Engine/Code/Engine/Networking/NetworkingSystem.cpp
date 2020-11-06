@@ -107,6 +107,27 @@ void NetworkingSystem::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
+TCPSocket* NetworkingSystem::ConnectTCPClientToServer( const std::string& host, int port )
+{
+	TCPSocket* newSocket = m_tcpClient->ConnectAndCreateSocket( host, port );
+
+	if ( newSocket != nullptr 
+		 && newSocket->IsValid() )
+	{
+		std::string hostName( host );
+		if ( hostName.empty() )
+		{
+			hostName = "localhost";
+		}
+
+		g_devConsole->PrintString( Stringf( "Connected to server '%s:%i'", hostName.c_str(), port ) );
+	}
+
+	return newSocket;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::ProcessTCPCommunication()
 {
 	// Check if we are a server that's listening

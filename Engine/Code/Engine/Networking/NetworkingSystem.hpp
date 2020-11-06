@@ -30,6 +30,8 @@ public:
 	void EndFrame();
 	void Shutdown();
 	
+	TCPSocket* ConnectTCPClientToServer( const std::string& host, int port );
+
 private:
 	// TCP
 	void ProcessTCPCommunication();

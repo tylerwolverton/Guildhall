@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
+#include "Game/GameCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -29,6 +30,7 @@ struct ClientRequest
 {
 public:
 	Entity*& player;
+	EntityId playerClientId = -1;
 	eClientFunctionType functionType = eClientFunctionType::NONE;
 
 public:

@@ -17,6 +17,7 @@ public:
 	~TCPClient() = default;
 
 	TCPSocket Connect( const std::string& host, int port );
+	TCPSocket* ConnectAndCreateSocket( const std::string& host, int port );
 	void Disconnect();
 
 private:
