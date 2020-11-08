@@ -2,6 +2,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Entity;
 class World;
 
 
@@ -19,4 +20,10 @@ public:
 
 	virtual void Update();
 	virtual void Render( const World* gameWorld ) const;
+
+	virtual void SetClientId( int id )							{ m_clientId = id; }
+	virtual void SetPlayer( Entity* entity );
+
+protected:
+	int m_clientId = -1;
 };

@@ -4,6 +4,7 @@
 #include "Game/GameEvents.hpp"
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
+#include "Game/Client.hpp"
 #include "Game/PlayerClient.hpp"
 #include "Game/Entity.hpp"
 
@@ -81,9 +82,11 @@ void AuthoritativeServer::Update()
 {
 	g_game->Update();
 
-	m_playerClient->Update();
-
-	// Update all remote clients
+	// This server's player client will always be first
+	for ( Client* client : m_clients )
+	{
+		client->Update();
+	}
 }
 
 
@@ -109,7 +112,8 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<ClientRequest
 				{
 					// send player's id back to client and have client possess entity
 					//req->player = newEntity;
-					//newEntity->Possess();
+					m_clients[req->clientId]->SetPlayer( newEntity );
+					newEntity->Possess();
 				}
 			}
 			break;
@@ -125,4 +129,16 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<ClientRequest
 		}
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::RegisterNewClient( Client* client )
+{
+	int nextClientId = (int)m_clients.size();
+
+	m_clients.push_back( client );
+
+	client->SetClientId( nextClientId );
+}
+
 

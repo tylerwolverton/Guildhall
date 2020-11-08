@@ -7,8 +7,7 @@
 
 //-----------------------------------------------------------------------------------------------
 struct ClientRequest;
-class PlayerClient;
-class RemoteClient;
+class Client;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -25,18 +24,16 @@ public:
 	virtual void Update() = 0;
 
 	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) = 0;
-
-	// Change this to have the server own this client and the app doesn't access it?
-	void SetPlayerClient( PlayerClient* playerClient )							{ m_playerClient = playerClient; }
+	
+	virtual void RegisterNewClient( Client* client ) = 0;
 
 protected:
 	virtual void StartGame( eAppMode appMode ) = 0;
 	virtual void ProcessNetworkMessages() = 0;
 
 protected:
-	PlayerClient* m_playerClient = nullptr;
-	std::vector<RemoteClient*> m_remoteClients;
+	std::vector<Client*>	m_clients;
 
-	std::string m_ipAddress;
-	int m_tcpPort = -1;
+	std::string				m_ipAddress;
+	int						m_tcpPort = -1;
 };

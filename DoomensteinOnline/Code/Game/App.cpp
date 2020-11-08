@@ -163,9 +163,9 @@ void App::InitializeServerAndClient( eAppMode appMode, EventArgs* args )
 			g_server->Startup( appMode );
 
 			g_playerClient = new PlayerClient();
-			g_playerClient->Startup();
+			g_server->RegisterNewClient( g_playerClient );
 
-			g_server->SetPlayerClient( g_playerClient );
+			g_playerClient->Startup();
 		}
 		break;
 
@@ -175,9 +175,9 @@ void App::InitializeServerAndClient( eAppMode appMode, EventArgs* args )
 			g_server->Startup( appMode );
 
 			g_playerClient = new PlayerClient();
+			g_server->RegisterNewClient( g_playerClient );
+			
 			g_playerClient->Startup();
-
-			g_server->SetPlayerClient( g_playerClient );
 		}
 		break;
 

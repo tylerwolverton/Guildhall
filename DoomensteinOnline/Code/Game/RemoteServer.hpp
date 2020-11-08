@@ -21,6 +21,8 @@ public:
 
 	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) override;
 
+	virtual void RegisterNewClient( Client* client ) override;
+
 protected:
 	virtual void StartGame( eAppMode appMode ) override;
 	virtual void ProcessNetworkMessages() override;
@@ -31,5 +33,7 @@ private:
 	void NegotiateUDPConnection();
 
 private:
+	Client* m_playerClient = nullptr;
+
 	TCPSocket* m_tcpClientSocket = nullptr;
 };

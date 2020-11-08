@@ -59,7 +59,7 @@ void PlayerClient::Startup()
 	BuildUIHud();
 
 	std::vector<ClientRequest*> clientRequests;
-	clientRequests.push_back( new CreateEntityRequest( -1, eEntityType::PLAYER, Vec2( 1.f, 1.f ), 0.f ) );
+	clientRequests.push_back( new CreateEntityRequest( m_clientId, -1, eEntityType::PLAYER, Vec2( 1.f, 1.f ), 0.f ) );
 
 	g_server->ReceiveClientRequests( clientRequests );
 
@@ -176,7 +176,7 @@ std::vector<ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests
 
 		translationXY *= m_player->GetWalkSpeed();
 
-		requests.push_back( new UpdateEntityRequest( m_player->GetId(), translationXY * deltaSeconds, m_player->GetOrientationDegrees() + yawDegrees ) );
+		requests.push_back( new UpdateEntityRequest( m_clientId, m_player->GetId(), translationXY * deltaSeconds, m_player->GetOrientationDegrees() + yawDegrees ) );
 	}
 	// No entity possessed, move the camera directly
 	else

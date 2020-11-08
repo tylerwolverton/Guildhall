@@ -37,6 +37,8 @@ public:
 	
 	void			SetCameraPositionAndYaw( const Vec2& pos, float yaw );
 
+	void			SetPlayer( Entity* playerEntity )									{ m_player = playerEntity; }
+
 	// Events
 	static bool SetMouseSensitivity( EventArgs* args );
 	static bool SetAmbientLightColor( EventArgs* args );

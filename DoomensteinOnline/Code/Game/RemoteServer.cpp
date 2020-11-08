@@ -147,3 +147,11 @@ void RemoteServer::ReceiveClientRequests( const std::vector<ClientRequest*> clie
 	UNUSED( clientRequests );
 }
 
+
+//-----------------------------------------------------------------------------------------------
+void RemoteServer::RegisterNewClient( Client* client )
+{
+	m_playerClient = client;
+}
+
+
