@@ -88,49 +88,49 @@ void RemoteServer::ProcessNetworkMessages()
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::ProcessTCPMessages()
 {
-	if ( m_tcpClientSocket == nullptr )
-	{
-		return;
-	}
+	//if ( m_tcpClientSocket == nullptr )
+	//{
+	//	return;
+	//}
 
-	TCPData data = m_tcpClientSocket->Receive();
-	if ( data.GetData() == nullptr )
-	{
-		return;
-	}
+	//TCPData data = m_tcpClientSocket->Receive();
+	//if ( data.GetData() == nullptr )
+	//{
+	//	return;
+	//}
 
-	// Process message
-	const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
-	switch ( header->id )
-	{
-		case (uint16_t)eMessasgeProtocolIds::SERVER_LISTENING:
-		{
-			const char* dataStr = data.GetData() + 4;
+	//// Process message
+	//const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
+	//switch ( header->id )
+	//{
+	//	case (uint16_t)eMessasgeProtocolIds::SERVER_LISTENING:
+	//	{
+	//		const char* dataStr = data.GetData() + 4;
 
-			g_devConsole->PrintString( Stringf( "Connected to game: %s", dataStr ) );
-		}
-		break;
+	//		g_devConsole->PrintString( Stringf( "Connected to game: %s", dataStr ) );
+	//	}
+	//	break;
 
-		case (uint16_t)eMessasgeProtocolIds::TEXT:
-		{
-			const char* dataStr = data.GetData() + 4;
-			g_devConsole->PrintString( Stringf( "Received from Auth server: %s", dataStr ) );
-		}
-		break;
+	//	case (uint16_t)eMessasgeProtocolIds::TEXT:
+	//	{
+	//		const char* dataStr = data.GetData() + 4;
+	//		g_devConsole->PrintString( Stringf( "Received from Auth server: %s", dataStr ) );
+	//	}
+	//	break;
 
-		case (uint16_t)eMessasgeProtocolIds::DATA:
-		{
-			
-		}
-		break;
+	//	case (uint16_t)eMessasgeProtocolIds::DATA:
+	//	{
+	//		
+	//	}
+	//	break;
 
-		default:
-		{
-			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
-			return;
-		}
-		break;
-	}
+	//	default:
+	//	{
+	//		g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
+	//		return;
+	//	}
+	//	break;
+	//}
 }
 
 
@@ -144,7 +144,12 @@ void RemoteServer::ProcessUDPMessages()
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::RequestUDPConnection()
 {
-	m_tcpClientSocket = g_networkingSystem->ConnectTCPClientToServer( m_ipAddress, m_tcpPort );
+	g_networkingSystem->ConnectTCPClient( m_ipAddress, m_tcpPort );
+
+	RequestConnectionRequest req( -1 );
+	g_networkingSystem->SendTCPMessage( &req, sizeof( req ) );
+
+	/*m_tcpClientSocket = g_networkingSystem->ConnectTCPClientToServer( m_ipAddress, m_tcpPort );
 
 	if ( m_tcpClientSocket->IsValid() )
 	{
@@ -156,7 +161,7 @@ void RemoteServer::RequestUDPConnection()
 		m_tcpClientSocket->Send( &buffer[0], sizeof( *req ) );
 
 		delete req;
-	}
+	}*/
 }
 
 

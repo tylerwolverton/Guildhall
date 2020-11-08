@@ -282,3 +282,5 @@ send_message msg="hi client"
 start_multiplayer_server
 connect_to_multiplayer_server
 start_tcp_server
+start_multiplayer_server
+connect_to_multiplayer_server

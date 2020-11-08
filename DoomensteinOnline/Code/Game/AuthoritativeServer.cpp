@@ -1,4 +1,5 @@
 #include "Game/AuthoritativeServer.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Networking/NetworkingSystem.hpp"
@@ -49,7 +50,8 @@ void AuthoritativeServer::StartGame( eAppMode appMode )
 		{
 			g_game = new MultiplayerGame();
 			
-			StartTCPServer();
+			g_networkingSystem->StartTCPServer( m_tcpPort );
+			//StartTCPServer();
 		}
 		break;
 
@@ -74,41 +76,25 @@ void AuthoritativeServer::ProcessNetworkMessages()
 //-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::ProcessTCPMessages()
 {
-	//if ( m_tcpClientSocket == nullptr )
-	//{
-	//	return;
-	//}
+	std::vector<TCPData> newMessages = g_networkingSystem->ReceiveTCPMessages();
 
-	//TCPData data = m_tcpClientSocket->Receive();
-	//if ( data.GetData() == nullptr )
-	//{
-	//	return;
-	//}
+	for ( TCPData& data : newMessages )
+	{
+		if ( data.GetData() == nullptr )
+		{
+			continue;
+		}
 
-	//// Process message
-	//const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
-	//switch ( header->id )
-	//{
-	//	case (uint16_t)eMessasgeProtocolIds::TEXT:
-	//	{
-	//		const char* dataStr = data.GetData() + 4;
-	//		g_devConsole->PrintString( Stringf( "Received from remote server: %s", dataStr ) );
-	//	}
-	//	break;
-
-	//	case (uint16_t)eMessasgeProtocolIds::DATA:
-	//	{
-
-	//	}
-	//	break;
-
-	//	default:
-	//	{
-	//		g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
-	//		return;
-	//	}
-	//	break;
-	//}
+		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetData() + sizeof(MessageHeader) );
+		switch ( req->functionType )
+		{
+			case eClientFunctionType::REQUEST_CONNECTION:
+			{
+				g_devConsole->PrintString( "Somebody wants to connect" );
+			}
+			break;
+		}
+	}
 }
 
 

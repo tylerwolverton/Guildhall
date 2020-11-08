@@ -218,6 +218,12 @@ void NetworkingSystem::ReceiveMessageFromTCPServer()
 		}
 		break;
 
+		case (uint16_t)eMessasgeProtocolIds::DATA:
+		{
+			m_tcpReceivedMessages.push_back( data );
+		}
+		break;
+
 		default:
 		{
 			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
@@ -253,6 +259,12 @@ void NetworkingSystem::ReceiveMessageFromTCPClient()
 			m_clientSocket.Close();
 			m_serverSocket.Close();
 			g_devConsole->PrintString( Stringf( "Client disconnected" ) );
+		}
+		break;
+
+		case (uint16_t)eMessasgeProtocolIds::DATA:
+		{
+			m_tcpReceivedMessages.push_back( data );
 		}
 		break;
 
@@ -457,7 +469,7 @@ void NetworkingSystem::SendTCPMessage( void* data, size_t dataSize )
 	std::array<char, 256> buffer;
 	MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
 
-	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
+	msgHeader->id = (uint16_t)eMessasgeProtocolIds::DATA;
 	msgHeader->size = (uint16_t)dataSize;
 
 	memcpy( &buffer[4], data, msgHeader->size );
@@ -502,6 +514,17 @@ void NetworkingSystem::SendTCPTextMessage( const std::string& text )
 
 
 //-----------------------------------------------------------------------------------------------
+std::vector<TCPData> NetworkingSystem::ReceiveTCPMessages()
+{
+	std::vector<TCPData> newMessages = m_tcpReceivedMessages;
+
+	m_tcpReceivedMessages.clear();
+
+	return newMessages;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::SendMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
@@ -528,9 +551,10 @@ void NetworkingSystem::OpenUDPPort( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::OpenUDPPort()
+void NetworkingSystem::OpenUDPPort( int localBindPort, int distantSendToPort )
 {
-
+	m_udpSocket = new UDPSocket( "", distantSendToPort );
+	m_udpSocket->Bind( localBindPort );
 }
 
 
@@ -550,9 +574,9 @@ void NetworkingSystem::CloseUDPPort( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::CloseUDPPort()
+void NetworkingSystem::CloseUDPPort( int localBindPort )
 {
-
+	
 }
 
 
@@ -561,12 +585,12 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
 
-	SendUDPTextMessage( msg );
+	SendUDPTextMessage( -1, msg );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::SendUDPMessage( void* data, size_t dataSize )
+void NetworkingSystem::SendUDPMessage( int localBindPort, void* data, size_t dataSize )
 {
 	std::array<char, 512> buffer = {};
 	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
@@ -584,7 +608,7 @@ void NetworkingSystem::SendUDPMessage( void* data, size_t dataSize )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::SendUDPTextMessage( const std::string& text )
+void NetworkingSystem::SendUDPTextMessage( int localBindPort, const std::string& text )
 {
 	std::array<char, 512> buffer = {};
 	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );

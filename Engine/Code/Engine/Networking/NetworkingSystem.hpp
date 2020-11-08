@@ -32,6 +32,7 @@ public:
 	
 	TCPSocket* ConnectTCPClientToServer( const std::string& host, int port );
 
+	// TCP
 	void StartTCPServer( int listenPort );
 	void StopTCPServer();
 	void ConnectTCPClient( const std::string& host, int port );
@@ -40,10 +41,13 @@ public:
 	void SendTCPMessage( void* data, size_t dataSize );
 	void SendTCPTextMessage( const std::string& text );
 
-	void OpenUDPPort();
-	void CloseUDPPort();
-	void SendUDPMessage( void* data, size_t dataSize );
-	void SendUDPTextMessage( const std::string& text );
+	std::vector<TCPData> ReceiveTCPMessages();
+
+	// UDP
+	void OpenUDPPort( int localBindPort, int distantSendToPort );
+	void CloseUDPPort( int localBindPort );
+	void SendUDPMessage( int localBindPort, void* data, size_t dataSize );
+	void SendUDPTextMessage( int localBindPort, const std::string& text );
 
 private:
 	// TCP
@@ -74,6 +78,9 @@ private:
 	TCPClient* m_tcpClient = nullptr;
 	TCPSocket m_serverSocket;
 	TCPSocket m_clientSocket;
+
+	std::vector<TCPData> m_tcpReceivedMessages;
+
 
 	std::map<int, UDPSocket*> m_udpSockets;
 	UDPSocket* m_udpSocket = nullptr;
