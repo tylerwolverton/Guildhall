@@ -50,6 +50,8 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		return;
 	}
 	
+	m_nameEnum = GetEnumFromEntityName( m_name );
+
 	std::string typeStr = entityDefElem.Name();
 	if ( typeStr == "Entity" )
 	{
@@ -148,10 +150,42 @@ std::string GetEntityTypeAsString( eEntityType entityType )
 {
 	switch ( entityType )
 	{
-		case eEntityType::ACTOR: return "Actor";
-		case eEntityType::PROJECTILE: return "Projectile";
-		case eEntityType::PORTAL: return "Portal";
-		case eEntityType::ENTITY: return "Entity";
-		default: return "Unknown";
+		case eEntityType::ACTOR:		return "Actor";
+		case eEntityType::PROJECTILE:	return "Projectile";
+		case eEntityType::PORTAL:		return "Portal";
+		case eEntityType::ENTITY:		return "Entity";
+		default:						return "Unknown";
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eEntityName GetEnumFromEntityName( const std::string& name )
+{
+	if ( name == "Player" )					return eEntityName::PLAYER;
+	else if ( name == "Pinky" )				return eEntityName::PINKY;
+	else if ( name == "Marine" )			return eEntityName::MARINE;
+	else if ( name == "Energy Teleporter" ) return eEntityName::ENERGY_TELEPORTER;
+	else if ( name == "Imp" )				return eEntityName::IMP;
+	else if ( name == "Lamp" )				return eEntityName::LAMP;
+	else if ( name == "Plasma Bolt" )		return eEntityName::PLASMA_BOLT;
+
+	return eEntityName::NONE;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string GetEntityNameEnumAsString( eEntityName entityNameEnum )
+{
+	switch ( entityNameEnum )
+	{
+		case eEntityName::PLAYER:				return "Player";
+		case eEntityName::PINKY:				return "Pinky";
+		case eEntityName::MARINE:				return "Marine";
+		case eEntityName::ENERGY_TELEPORTER:	return "Energy Teleporter";
+		case eEntityName::IMP:					return "Imp";
+		case eEntityName::LAMP:					return "Lamp";
+		case eEntityName::PLASMA_BOLT:			return "Plasma Bolt";
+		default:								return "Unknown";
 	}
 }

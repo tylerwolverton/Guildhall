@@ -23,6 +23,27 @@ enum eEntityType
 
 std::string GetEntityTypeAsString( eEntityType entityType );
 
+
+//-----------------------------------------------------------------------------------------------
+enum eEntityName
+{
+	NONE = -1,
+
+	PLAYER,
+	PINKY,
+	MARINE,
+	ENERGY_TELEPORTER,
+	IMP,
+	LAMP,
+	PLASMA_BOLT,
+
+	NUM_ENTITY_NAMES
+};
+
+eEntityName GetEnumFromEntityName( const std::string& name );
+std::string GetEntityNameEnumAsString( eEntityName entityNameEnum );
+
+
 //-----------------------------------------------------------------------------------------------
 class EntityDefinition
 {
@@ -34,6 +55,7 @@ public:
 
 	bool		IsValid() const																{ return m_isValid; }
 	std::string GetName() const																{ return m_name; }
+	eEntityName GetNameAsEnum() const														{ return m_nameEnum; }
 	eEntityType GetType() const																{ return m_type; }
 	float		GetWalkSpeed() const														{ return m_walkSpeed; }
 	Vec2		GetVisualSize() const														{ return m_visualSize; }
@@ -48,6 +70,7 @@ public:
 protected:
 	bool			m_isValid = false;
 	std::string		m_name;
+	eEntityName		m_nameEnum;
 	eEntityType		m_type = eEntityType::UNKNOWN;
 	//std::string		m_type;
 	float			m_physicsRadius = 0.f;
