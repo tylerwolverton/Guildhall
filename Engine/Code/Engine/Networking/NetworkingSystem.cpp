@@ -315,13 +315,21 @@ void NetworkingSystem::UDPWriterThreadMain()
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::StartTCPServer( EventArgs* args )
 {
+	int listenPort = args->GetValue( "port", 48000 );
+
+	StartTCPServer( listenPort );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::StartTCPServer( int listenPort )
+{
 	if ( m_tcpServer == nullptr )
 	{
 		g_devConsole->PrintError( Stringf( "No TCPServer exists to start" ) );
 		return;
 	}
 
-	int listenPort = args->GetValue( "port", 48000 );
 	m_tcpServer->Bind( listenPort );
 
 	m_tcpServer->StartListening();
@@ -335,6 +343,13 @@ void NetworkingSystem::StopTCPServer( EventArgs* args )
 {
 	UNUSED( args );
 
+	StopTCPServer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::StopTCPServer()
+{
 	if ( m_tcpServer == nullptr )
 	{
 		g_devConsole->PrintError( Stringf( "No TCPServer exists to stop" ) );
@@ -362,17 +377,24 @@ void NetworkingSystem::ConnectTCPClient( EventArgs* args )
 		return;
 	}
 
-	m_clientSocket = m_tcpClient->Connect( connectionComponents[0], atoi( connectionComponents[1].c_str() ) );
+	ConnectTCPClient( connectionComponents[0], atoi( connectionComponents[1].c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::ConnectTCPClient( const std::string& host, int port )
+{
+	m_clientSocket = m_tcpClient->Connect( host, port );
 
 	if ( m_clientSocket.IsValid() )
 	{
-		std::string hostName( connectionComponents[0] );
+		std::string hostName( host );
 		if ( hostName.empty() )
 		{
 			hostName = "localhost";
 		}
 
-		g_devConsole->PrintString( Stringf( "Connected to server '%s:%s'", hostName.c_str(), connectionComponents[1].c_str() ) );
+		g_devConsole->PrintString( Stringf( "Connected to server '%s:%i'", hostName.c_str(), port ) );
 	}
 }
 
@@ -382,6 +404,13 @@ void NetworkingSystem::DisconnectTCPClient( EventArgs* args )
 {
 	UNUSED( args );
 
+	DisconnectTCPClient();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::DisconnectTCPClient()
+{
 	if ( m_clientSocket.IsValid() )
 	{
 		ClientDisconnectingMsg msg;
@@ -402,6 +431,13 @@ void NetworkingSystem::DisconnectTCPServer( EventArgs* args )
 {
 	UNUSED( args );
 
+	DisconnectTCPServer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::DisconnectTCPServer()
+{
 	if ( m_serverSocket.IsValid() )
 	{
 		ServerDisconnectingMsg msg;
@@ -410,23 +446,21 @@ void NetworkingSystem::DisconnectTCPServer( EventArgs* args )
 
 		m_serverSocket.Send( reinterpret_cast<char*>( &msg ), msg.GetSize() );
 	}
-	
+
 	m_serverSocket.Close();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::SendMessage( EventArgs* args )
+void NetworkingSystem::SendTCPMessage( void* data, size_t dataSize )
 {
-	std::string msg = args->GetValue( "msg", "" );
-	
 	std::array<char, 256> buffer;
 	MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
 
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
-	msgHeader->size = (uint16_t)msg.size();
+	msgHeader->size = (uint16_t)dataSize;
 
-	memcpy( &buffer[4], msg.c_str(), msgHeader->size );
+	memcpy( &buffer[4], data, msgHeader->size );
 
 	// Send from server to clients
 	if ( m_serverSocket.IsValid() )
@@ -439,6 +473,40 @@ void NetworkingSystem::SendMessage( EventArgs* args )
 	{
 		m_clientSocket.Send( &buffer[0], msgHeader->size + 4 );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::SendTCPTextMessage( const std::string& text )
+{
+	std::array<char, 256> buffer;
+	MessageHeader* msgHeader = reinterpret_cast<MessageHeader*>( &buffer[0] );
+
+	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
+	msgHeader->size = (uint16_t)text.size();
+
+	memcpy( &buffer[4], text.c_str(), msgHeader->size );
+
+	// Send from server to clients
+	if ( m_serverSocket.IsValid() )
+	{
+		m_serverSocket.Send( &buffer[0], msgHeader->size + 4 );
+	}
+
+	// Send from client to servers
+	else if ( m_clientSocket.IsValid() )
+	{
+		m_clientSocket.Send( &buffer[0], msgHeader->size + 4 );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::SendMessage( EventArgs* args )
+{
+	std::string msg = args->GetValue( "msg", "" );
+	
+	SendTCPTextMessage( msg );
 }
 
 
@@ -460,6 +528,13 @@ void NetworkingSystem::OpenUDPPort( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void NetworkingSystem::OpenUDPPort()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::CloseUDPPort( EventArgs* args )
 {
 	int bindPort = args->GetValue( "bindPort", 48000 );
@@ -475,18 +550,50 @@ void NetworkingSystem::CloseUDPPort( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void NetworkingSystem::CloseUDPPort()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::SendUDPMessage( EventArgs* args )
 {
 	std::string msg = args->GetValue( "msg", "" );
 
+	SendUDPTextMessage( msg );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::SendUDPMessage( void* data, size_t dataSize )
+{
+	std::array<char, 512> buffer = {};
+	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
+
+	msgHeader->id = (uint16_t)eMessasgeProtocolIds::DATA;
+	msgHeader->size = (uint16_t)dataSize;
+	msgHeader->sequenceNum = (uint16_t)0;
+
+	memcpy( &buffer[sizeof( UDPMessageHeader )], data, msgHeader->size );
+
+	buffer[sizeof( UDPMessageHeader ) + msgHeader->size] = '\0';
+
+	m_outgoingMessages.Push( buffer );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::SendUDPTextMessage( const std::string& text )
+{
 	std::array<char, 512> buffer = {};
 	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
 
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
-	msgHeader->size = (uint16_t)msg.size();
+	msgHeader->size = (uint16_t)text.size();
 	msgHeader->sequenceNum = (uint16_t)0;
 
-	memcpy( &buffer[sizeof( UDPMessageHeader )], msg.c_str(), msgHeader->size );
+	memcpy( &buffer[sizeof( UDPMessageHeader )], text.c_str(), msgHeader->size );
 
 	buffer[sizeof( UDPMessageHeader ) + msgHeader->size] = '\0';
 

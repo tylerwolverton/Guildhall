@@ -32,6 +32,19 @@ public:
 	
 	TCPSocket* ConnectTCPClientToServer( const std::string& host, int port );
 
+	void StartTCPServer( int listenPort );
+	void StopTCPServer();
+	void ConnectTCPClient( const std::string& host, int port );
+	void DisconnectTCPClient();
+	void DisconnectTCPServer();
+	void SendTCPMessage( void* data, size_t dataSize );
+	void SendTCPTextMessage( const std::string& text );
+
+	void OpenUDPPort();
+	void CloseUDPPort();
+	void SendUDPMessage( void* data, size_t dataSize );
+	void SendUDPTextMessage( const std::string& text );
+
 private:
 	// TCP
 	void ProcessTCPCommunication();
