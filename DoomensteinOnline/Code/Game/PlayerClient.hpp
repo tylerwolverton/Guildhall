@@ -37,7 +37,9 @@ public:
 	
 	void			SetCameraPositionAndYaw( const Vec2& pos, float yaw );
 
-	void			SetPlayer( Entity* playerEntity )									{ m_player = playerEntity; }
+	virtual void SetClientId( int id ) override												{ m_clientId = id; }
+
+	virtual void SetPlayer( Entity* playerEntity ) override									{ m_player = playerEntity; }
 
 	// Events
 	static bool SetMouseSensitivity( EventArgs* args );

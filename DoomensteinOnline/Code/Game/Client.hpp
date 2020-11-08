@@ -21,8 +21,8 @@ public:
 	virtual void Update();
 	virtual void Render( const World* gameWorld ) const;
 
-	virtual void SetClientId( int id )							{ m_clientId = id; }
-	virtual void SetPlayer( Entity* entity );
+	virtual void SetClientId( int id ) = 0; 
+	virtual void SetPlayer( Entity* entity ) = 0;
 
 protected:
 	int m_clientId = -1;
