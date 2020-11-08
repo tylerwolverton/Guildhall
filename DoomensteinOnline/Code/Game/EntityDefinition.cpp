@@ -50,28 +50,28 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		return;
 	}
 	
-	m_nameEnum = GetEnumFromEntityName( m_name );
+	m_type = GetEnumFromEntityType( m_name );
 
-	std::string typeStr = entityDefElem.Name();
-	if ( typeStr == "Entity" )
+	std::string classStr = entityDefElem.Name();
+	if ( classStr == "Entity" )
 	{
-		m_type = eEntityType::ENTITY;
+		m_class = eEntityClass::ENTITY;
 	}
-	else if ( typeStr == "Actor" )
+	else if ( classStr == "Actor" )
 	{
-		m_type = eEntityType::ACTOR;
+		m_class = eEntityClass::ACTOR;
 	}
-	else if ( typeStr == "Projectile" )
+	else if ( classStr == "Projectile" )
 	{
-		m_type = eEntityType::PROJECTILE;
+		m_class = eEntityClass::PROJECTILE;
 	}
-	else if ( typeStr == "Portal" )
+	else if ( classStr == "Portal" )
 	{
-		m_type = eEntityType::PORTAL;
+		m_class = eEntityClass::PORTAL;
 	}
 	else
 	{
-		g_devConsole->PrintError( Stringf( "EntityTypes.xml: Unsupported entity type seen, '%s'", typeStr.c_str() ) );
+		g_devConsole->PrintError( Stringf( "EntityTypes.xml: Unsupported entity class type seen, '%s'", classStr.c_str() ) );
 		return;
 	}
 
@@ -146,46 +146,46 @@ EntityDefinition::~EntityDefinition()
 
 
 //-----------------------------------------------------------------------------------------------
-std::string GetEntityTypeAsString( eEntityType entityType )
+std::string GetEntityClassAsString( eEntityClass entityClass )
 {
-	switch ( entityType )
+	switch ( entityClass )
 	{
-		case eEntityType::ACTOR:		return "Actor";
-		case eEntityType::PROJECTILE:	return "Projectile";
-		case eEntityType::PORTAL:		return "Portal";
-		case eEntityType::ENTITY:		return "Entity";
+		case eEntityClass::ACTOR:		return "Actor";
+		case eEntityClass::PROJECTILE:	return "Projectile";
+		case eEntityClass::PORTAL:		return "Portal";
+		case eEntityClass::ENTITY:		return "Entity";
 		default:						return "Unknown";
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-eEntityName GetEnumFromEntityName( const std::string& name )
+eEntityType GetEnumFromEntityType( const std::string& name )
 {
-	if ( name == "Player" )					return eEntityName::PLAYER;
-	else if ( name == "Pinky" )				return eEntityName::PINKY;
-	else if ( name == "Marine" )			return eEntityName::MARINE;
-	else if ( name == "Energy Teleporter" ) return eEntityName::ENERGY_TELEPORTER;
-	else if ( name == "Imp" )				return eEntityName::IMP;
-	else if ( name == "Lamp" )				return eEntityName::LAMP;
-	else if ( name == "Plasma Bolt" )		return eEntityName::PLASMA_BOLT;
+	if ( name == "Player" )					return eEntityType::PLAYER;
+	else if ( name == "Pinky" )				return eEntityType::PINKY;
+	else if ( name == "Marine" )			return eEntityType::MARINE;
+	else if ( name == "Energy Teleporter" ) return eEntityType::ENERGY_TELEPORTER;
+	else if ( name == "Imp" )				return eEntityType::IMP;
+	else if ( name == "Lamp" )				return eEntityType::LAMP;
+	else if ( name == "Plasma Bolt" )		return eEntityType::PLASMA_BOLT;
 
-	return eEntityName::NONE;
+	return eEntityType::NONE;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-std::string GetEntityNameEnumAsString( eEntityName entityNameEnum )
+std::string GetEntityTypeAsString( eEntityType type )
 {
-	switch ( entityNameEnum )
+	switch ( type )
 	{
-		case eEntityName::PLAYER:				return "Player";
-		case eEntityName::PINKY:				return "Pinky";
-		case eEntityName::MARINE:				return "Marine";
-		case eEntityName::ENERGY_TELEPORTER:	return "Energy Teleporter";
-		case eEntityName::IMP:					return "Imp";
-		case eEntityName::LAMP:					return "Lamp";
-		case eEntityName::PLASMA_BOLT:			return "Plasma Bolt";
+		case eEntityType::PLAYER:				return "Player";
+		case eEntityType::PINKY:				return "Pinky";
+		case eEntityType::MARINE:				return "Marine";
+		case eEntityType::ENERGY_TELEPORTER:	return "Energy Teleporter";
+		case eEntityType::IMP:					return "Imp";
+		case eEntityType::LAMP:					return "Lamp";
+		case eEntityType::PLASMA_BOLT:			return "Plasma Bolt";
 		default:								return "Unknown";
 	}
 }

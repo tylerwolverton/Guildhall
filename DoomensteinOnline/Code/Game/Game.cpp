@@ -424,7 +424,7 @@ void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, cons
 
 
 //-----------------------------------------------------------------------------------------------
-Entity* Game::CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees )
+Entity* Game::CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees )
 {
 	return m_world->CreateEntityInCurrentMap( entityType, position, yawOrientationDegrees );
 }
@@ -457,14 +457,16 @@ void Game::MoveEntity( EntityId entityId, const Vec2& translationVec )
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::SetPlayerOrientation( Entity* player, float yawOrientationDegrees )
+void Game::SetEntityOrientation( EntityId entityId, float yawOrientationDegrees )
 {
-	if ( player == nullptr )
+	Entity* entity = m_world->GetEntityById( entityId );
+
+	if ( entity == nullptr )
 	{
 		return;
 	}
-
-	player->SetOrientationDegrees( yawOrientationDegrees );
+	
+	entity->SetOrientationDegrees( yawOrientationDegrees );
 }
 
 

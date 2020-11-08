@@ -59,7 +59,7 @@ void PlayerClient::Startup()
 	BuildUIHud();
 
 	std::vector<ClientRequest*> clientRequests;
-	clientRequests.push_back( new CreateEntityRequest( m_player, "player", Vec2( 1.f, 1.f ), 0.f ) );
+	clientRequests.push_back( new CreateEntityRequest( -1, eEntityType::PLAYER, Vec2( 1.f, 1.f ), 0.f ) );
 
 	g_server->ReceiveClientRequests( clientRequests );
 
@@ -101,12 +101,12 @@ std::vector<ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests
 	{
 		if ( m_player == nullptr )
 		{
-			requests.push_back( new PossessEntityRequest( m_player, m_worldCamera->GetTransform() ) );
+			//requests.push_back( new PossessEntityRequest( m_player, m_worldCamera->GetTransform() ) );
 			//PossesNearestEntity();
 		}
 		else
 		{
-			requests.push_back( new UnPossessEntityRequest( m_player ) );
+			//requests.push_back( new UnPossessEntityRequest( m_player ) );
 			//m_player->Unpossess();
 			//m_player = nullptr;
 		}
@@ -168,10 +168,6 @@ std::vector<ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests
 	// An entity is possessed
 	if ( m_player != nullptr )
 	{
-		// Rotation (only consider yaw so the forward vector is always in XY space)
-		//m_player->SetOrientationDegrees( m_player->GetOrientationDegrees() + yawDegrees );
-		requests.push_back( new SetPlayerOrientationRequest( m_player, m_player->GetOrientationDegrees() + yawDegrees ) );
-
 		Vec2 forwardVec = m_player->GetForwardVector();
 		Vec2 rightVec = forwardVec.GetRotatedMinus90Degrees();
 
@@ -180,10 +176,7 @@ std::vector<ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests
 
 		translationXY *= m_player->GetWalkSpeed();
 
-		//m_player->AddVelocity( translationXY );
-		//m_player->Translate( translationXY * deltaSeconds );
-		//requests.push_back( new MovePlayerRequest( m_player, translationXY * deltaSeconds ) );
-		requests.push_back( new MovePlayerRequest( m_player, m_player->GetId(), translationXY * deltaSeconds ) );
+		requests.push_back( new UpdateEntityRequest( m_player->GetId(), translationXY * deltaSeconds, m_player->GetOrientationDegrees() + yawDegrees ) );
 	}
 	// No entity possessed, move the camera directly
 	else

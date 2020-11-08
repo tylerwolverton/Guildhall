@@ -223,10 +223,10 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 				continue;
 			}
 
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::ACTOR )
+			if ( mapEntityDef.entityDef->GetClass() != eEntityClass::ACTOR )
 			{
 				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Actor in map '%s'", actorName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
+												   GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ).c_str(),
 												   mapName.c_str() ) );
 				entityElem = entityElem->NextSiblingElement();
 				continue;
@@ -250,10 +250,10 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 				continue;
 			}
 
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::PORTAL )
+			if ( mapEntityDef.entityDef->GetClass() != eEntityClass::PORTAL )
 			{
 				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Portal in map '%s'", portalName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
+												   GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ).c_str(),
 												   mapName.c_str() ) );
 				entityElem = entityElem->NextSiblingElement();
 				continue;

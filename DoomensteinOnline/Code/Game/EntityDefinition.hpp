@@ -12,7 +12,7 @@ class SpriteAnimationSetDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
-enum eEntityType
+enum eEntityClass
 {
 	UNKNOWN = -1,
 	ENTITY,
@@ -21,11 +21,11 @@ enum eEntityType
 	PORTAL,
 };
 
-std::string GetEntityTypeAsString( eEntityType entityType );
+std::string GetEntityClassAsString( eEntityClass entityClass );
 
 
 //-----------------------------------------------------------------------------------------------
-enum eEntityName
+enum eEntityType
 {
 	NONE = -1,
 
@@ -40,8 +40,8 @@ enum eEntityName
 	NUM_ENTITY_NAMES
 };
 
-eEntityName GetEnumFromEntityName( const std::string& name );
-std::string GetEntityNameEnumAsString( eEntityName entityNameEnum );
+eEntityType GetEnumFromEntityType( const std::string& type );
+std::string GetEntityTypeAsString( eEntityType entityType );
 
 
 //-----------------------------------------------------------------------------------------------
@@ -55,8 +55,8 @@ public:
 
 	bool		IsValid() const																{ return m_isValid; }
 	std::string GetName() const																{ return m_name; }
-	eEntityName GetNameAsEnum() const														{ return m_nameEnum; }
 	eEntityType GetType() const																{ return m_type; }
+	eEntityClass GetClass() const															{ return m_class; }
 	float		GetWalkSpeed() const														{ return m_walkSpeed; }
 	Vec2		GetVisualSize() const														{ return m_visualSize; }
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
@@ -70,8 +70,8 @@ public:
 protected:
 	bool			m_isValid = false;
 	std::string		m_name;
-	eEntityName		m_nameEnum;
-	eEntityType		m_type = eEntityType::UNKNOWN;
+	eEntityType		m_type;
+	eEntityClass	m_class = eEntityClass::UNKNOWN;
 	//std::string		m_type;
 	float			m_physicsRadius = 0.f;
 	float			m_height = 0.f;

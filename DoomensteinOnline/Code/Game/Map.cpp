@@ -94,7 +94,7 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 {
 	std::string entityTypeName = entityDefName;
 	// Special case to handle spawning a new player
-	if ( entityTypeName == "player" )
+	if ( entityTypeName == "Player" )
 	{
 		entityTypeName = g_gameConfigBlackboard.GetValue( "playerEntityType", "" );
 	}
@@ -115,23 +115,23 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 {
 	Entity* newEntity = nullptr;
 
-	switch ( entityDef.GetType() )
+	switch ( entityDef.GetClass() )
 	{
-		case eEntityType::ACTOR:
+		case eEntityClass::ACTOR:
 		{
 			newEntity = new Actor( entityDef );
 			m_entities.push_back( newEntity );
 		}
 		break;
 
-		case eEntityType::PROJECTILE:
+		case eEntityClass::PROJECTILE:
 		{
 			newEntity = new Projectile( entityDef );
 			m_entities.push_back( newEntity );
 		}
 		break;
 
-		case eEntityType::PORTAL:
+		case eEntityClass::PORTAL:
 		{
 			newEntity = new Portal( entityDef );
 			m_entities.push_back( newEntity );
@@ -139,7 +139,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		}
 		break;
 
-		case eEntityType::ENTITY:
+		case eEntityClass::ENTITY:
 		{
 			newEntity = new Entity( entityDef );
 			m_entities.push_back( newEntity );
@@ -242,7 +242,7 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 		newEntity->SetPosition( mapEntityDef.position );
 		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
 
-		if ( mapEntityDef.entityDef->GetType() == eEntityType::PORTAL )
+		if ( mapEntityDef.entityDef->GetClass() == eEntityClass::PORTAL )
 		{
 			Portal* portal = (Portal*)newEntity;
 			portal->SetDestinationMap( mapEntityDef.portalDestMap );
@@ -359,7 +359,7 @@ void Map::ResolveEntityVsPortalCollisions()
 		{
 			Portal* const& portal = m_portals[portalIdx];
 			if ( portal == nullptr 
-				 || entity->GetType() == eEntityType::PORTAL )
+				 || entity->GetClass() == eEntityClass::PORTAL )
 			{
 				continue;
 			}

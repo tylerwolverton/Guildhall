@@ -12,6 +12,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+enum eEntityType : int;
 struct AABB2;
 class Clock;
 class Entity;
@@ -45,10 +46,10 @@ public:
 		
 	void			WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
-	Entity* CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees );
+	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
 	void MovePlayer( Entity* player, const Vec2& translationVec );
 	void MoveEntity( EntityId entityId, const Vec2& translationVec );
-	void SetPlayerOrientation( Entity* player, float yawOrientationDegrees );
+	void SetEntityOrientation( EntityId entityId, float yawOrientationDegrees );
 	void PossessEntity( Entity*& player, const Transform& cameraTransform );
 	void PossessEntity( Entity* player );
 	void UnpossessEntity( Entity*& player );

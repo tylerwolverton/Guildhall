@@ -2,6 +2,7 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/EntityDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -9,18 +10,20 @@ class Entity;
 
 
 //-----------------------------------------------------------------------------------------------
-enum class eClientFunctionType
+enum eClientFunctionType
 {
 	// CreateEntity
 	// UpdateEntity
 	// PlayerInput
 
-	NONE,
+	INVALID = -1,
+
 	CREATE_ENTITY,
-	MOVE_PLAYER,
-	SET_PLAYER_ORIENTATION,
+	UPDATE_ENTITY,
 	POSSESS_ENTITY,
 	UNPOSSESS_ENTITY,
+
+	NUM_TYPES
 };
 
 
@@ -29,20 +32,12 @@ enum class eClientFunctionType
 struct ClientRequest
 {
 public:
-	Entity*& player;
-	EntityId playerClientId = -1;
-	eClientFunctionType functionType = eClientFunctionType::NONE;
+	EntityId entityId = -1;
+	eClientFunctionType functionType = eClientFunctionType::INVALID;
 
 public:
-	ClientRequest( Entity*& playerIn, eClientFunctionType functionTypeIn )
-		: player( playerIn )
-		, functionType( functionTypeIn )
-	{
-	}
-
-	ClientRequest( Entity*& playerIn, EntityId playerId, eClientFunctionType functionTypeIn )
-		: player( playerIn )
-		, playerClientId( playerId )
+	ClientRequest( EntityId entityIdIn, eClientFunctionType functionTypeIn )
+		: entityId( entityIdIn )
 		, functionType( functionTypeIn )
 	{
 	}
@@ -53,13 +48,13 @@ public:
 struct CreateEntityRequest : ClientRequest
 {
 public:
-	std::string entityType;
-	Vec2 position = Vec2::ZERO;
+	eEntityType entityType;
 	float yawOrientationDegrees = 0.f;
+	Vec2 position = Vec2::ZERO;
 
 public:
-	CreateEntityRequest( Entity*& playerIn, const std::string& entityTypeIn, const Vec2& positionIn, float yawOrientationDegreesIn )
-		: ClientRequest( playerIn, eClientFunctionType::CREATE_ENTITY )
+	CreateEntityRequest( EntityId entityIdIn, eEntityType entityTypeIn, const Vec2& positionIn, float yawOrientationDegreesIn )
+		: ClientRequest( entityIdIn, eClientFunctionType::CREATE_ENTITY )
 		, entityType( entityTypeIn )
 		, position( positionIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )
@@ -75,8 +70,8 @@ public:
 	Transform cameraTransform;
 
 public:
-	PossessEntityRequest( Entity*& playerIn, const Transform& cameraTransformIn )
-		: ClientRequest( playerIn, eClientFunctionType::POSSESS_ENTITY )
+	PossessEntityRequest( EntityId entityIdIn, const Transform& cameraTransformIn )
+		: ClientRequest( entityIdIn, eClientFunctionType::POSSESS_ENTITY )
 		, cameraTransform( cameraTransformIn )
 	{
 	}
@@ -88,38 +83,24 @@ struct UnPossessEntityRequest : ClientRequest
 {
 
 public:
-	UnPossessEntityRequest( Entity*& playerIn )
-		: ClientRequest( playerIn, eClientFunctionType::UNPOSSESS_ENTITY )
-	{
-	}
-};
-
-
-// TODO: Combine movement and orientation into one entity update struct
-//-----------------------------------------------------------------------------------------------
-struct MovePlayerRequest : ClientRequest
-{
-public:
-	Vec2 translationVec = Vec2::ZERO;
-
-public:
-	MovePlayerRequest( Entity*& playerIn, EntityId playerId, const Vec2& translationVecIn )
-		: ClientRequest( playerIn, playerId, eClientFunctionType::MOVE_PLAYER )
-		, translationVec( translationVecIn )
+	UnPossessEntityRequest( EntityId entityIdIn )
+		: ClientRequest( entityIdIn, eClientFunctionType::UNPOSSESS_ENTITY )
 	{
 	}
 };
 
 
 //-----------------------------------------------------------------------------------------------
-struct SetPlayerOrientationRequest : ClientRequest
+struct UpdateEntityRequest : ClientRequest
 {
 public:
 	float yawOrientationDegrees = 0.f;
+	Vec2 translationVec = Vec2::ZERO;
 
 public:
-	SetPlayerOrientationRequest( Entity*& playerIn, float yawOrientationDegreesIn )
-		: ClientRequest( playerIn, eClientFunctionType::SET_PLAYER_ORIENTATION )
+	UpdateEntityRequest( EntityId entityIdIn, const Vec2& translationVecIn, float yawOrientationDegreesIn )
+		: ClientRequest( entityIdIn, eClientFunctionType::UPDATE_ENTITY )
+		, translationVec( translationVecIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )
 	{
 	}

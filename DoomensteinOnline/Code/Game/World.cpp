@@ -6,6 +6,7 @@
 
 #include "Game/TileMap.hpp"
 #include "Game/MapData.hpp"
+#include "Game/EntityDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -144,15 +145,17 @@ bool World::IsMapLoaded( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
-Entity* World::CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees )
+Entity* World::CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees )
 {
+	std::string typeStr = GetEntityTypeAsString( entityType );
+
 	if ( m_curMap == nullptr )
 	{
-		g_devConsole->PrintWarning( Stringf( "Tried to spawn entity of type '%s' in nonexistent current map", entityType.c_str() ) );
+		g_devConsole->PrintWarning( Stringf( "Tried to spawn entity of type '%s' in nonexistent current map", typeStr.c_str() ) );
 		return nullptr;
 	}
 
-	Entity* newEntiy = m_curMap->SpawnNewEntityOfType( entityType );
+	Entity* newEntiy = m_curMap->SpawnNewEntityOfType( typeStr );
 	if ( newEntiy == nullptr )
 	{
 		return nullptr;

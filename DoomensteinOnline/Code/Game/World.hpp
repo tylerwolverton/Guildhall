@@ -6,11 +6,13 @@
 
 
 //-----------------------------------------------------------------------------------------------
+enum eEntityType : int;
 struct Vec2;
 class Clock;
 class Entity;
 class Map;
 struct MapData;
+
 
 //-----------------------------------------------------------------------------------------------
 class World
@@ -31,7 +33,7 @@ public:
 	void WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 	bool IsMapLoaded( const std::string& mapName );
 
-	Entity* CreateEntityInCurrentMap( const std::string& entityType, const Vec2& position, float yawOrientationDegrees );
+	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
 
 	void AddEntity( Entity* entity );
 	Entity* GetEntityById( EntityId entityId );
