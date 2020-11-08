@@ -1,6 +1,9 @@
 #include "Game/AuthoritativeServer.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Networking/NetworkingSystem.hpp"
+#include "Engine/Networking/TCPSocket.hpp"
+#include "Engine/Networking/UDPSocket.hpp"
 #include "Game/GameEvents.hpp"
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
@@ -64,7 +67,48 @@ void AuthoritativeServer::StartGame( eAppMode appMode )
 //-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::ProcessNetworkMessages()
 {
+	ProcessTCPMessages();
+}
 
+
+//-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::ProcessTCPMessages()
+{
+	//if ( m_tcpClientSocket == nullptr )
+	//{
+	//	return;
+	//}
+
+	//TCPData data = m_tcpClientSocket->Receive();
+	//if ( data.GetData() == nullptr )
+	//{
+	//	return;
+	//}
+
+	//// Process message
+	//const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
+	//switch ( header->id )
+	//{
+	//	case (uint16_t)eMessasgeProtocolIds::TEXT:
+	//	{
+	//		const char* dataStr = data.GetData() + 4;
+	//		g_devConsole->PrintString( Stringf( "Received from remote server: %s", dataStr ) );
+	//	}
+	//	break;
+
+	//	case (uint16_t)eMessasgeProtocolIds::DATA:
+	//	{
+
+	//	}
+	//	break;
+
+	//	default:
+	//	{
+	//		g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
+	//		return;
+	//	}
+	//	break;
+	//}
 }
 
 
@@ -106,12 +150,12 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<ClientRequest
 		{
 			case eClientFunctionType::CREATE_ENTITY:	
 			{
-				Entity* newEntity = g_game->CreateEntityInCurrentMap( ( (CreateEntityRequest*)req )->entityType, ( (CreateEntityRequest*)req )->position, ( (CreateEntityRequest*)req )->yawOrientationDegrees );
+				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
+				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
 				if ( newEntity != nullptr
-					 && ( (CreateEntityRequest*)req )->entityType == eEntityType::PLAYER )
+					 && createEntityReq->entityType == eEntityType::PLAYER )
 				{
 					// send player's id back to client and have client possess entity
-					//req->player = newEntity;
 					m_clients[req->clientId]->SetPlayer( newEntity );
 					newEntity->Possess();
 				}
@@ -122,8 +166,9 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<ClientRequest
 			case eClientFunctionType::UNPOSSESS_ENTITY:				g_game->UnpossessEntity( req->player ); break;*/
 			case eClientFunctionType::UPDATE_ENTITY:				
 			{
-				g_game->MoveEntity( req->entityId, ( (UpdateEntityRequest*)req )->translationVec );
-				g_game->SetEntityOrientation( req->entityId, ( (UpdateEntityRequest*)req )->yawOrientationDegrees ); 
+				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
+				g_game->MoveEntity( updateEntityReq->entityId, updateEntityReq->translationVec );
+				g_game->SetEntityOrientation( updateEntityReq->entityId, updateEntityReq->yawOrientationDegrees );
 			}
 			break;
 		}

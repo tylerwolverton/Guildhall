@@ -274,3 +274,10 @@ start_multiplayer_server
 connect_to_multiplayer_server
 send_message msg="hi server"
 disconnect
+start_multiplayer_server
+connect_to_multiplayer_server
+send_message msg="hi server"
+start_multiplayer_server
+send_message msg="hi client"
+start_multiplayer_server
+connect_to_multiplayer_server

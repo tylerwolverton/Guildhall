@@ -28,6 +28,7 @@ public:
 protected:
 	virtual void StartGame( eAppMode appMode ) override;
 	virtual void ProcessNetworkMessages() override;
+	void ProcessTCPMessages();
 
 private:
 	void StartTCPServer();

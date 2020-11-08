@@ -30,7 +30,7 @@ protected:
 	void ProcessUDPMessages();
 
 private:
-	void NegotiateUDPConnection();
+	void RequestUDPConnection();
 
 private:
 	Client* m_playerClient = nullptr;

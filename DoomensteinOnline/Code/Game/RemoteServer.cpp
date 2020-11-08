@@ -9,6 +9,7 @@
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/GameEvents.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -21,7 +22,7 @@ RemoteServer::RemoteServer( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::Startup( eAppMode appMode )
 {
-	NegotiateUDPConnection();
+	RequestUDPConnection();
 
 	StartGame( appMode );
 }
@@ -39,7 +40,7 @@ void RemoteServer::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::BeginFrame()
 {
-	// ProcessNetworkMessages();
+	 ProcessNetworkMessages();
 }
 
 
@@ -80,7 +81,7 @@ void RemoteServer::StartGame( eAppMode appMode )
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::ProcessNetworkMessages()
 {
-	
+	ProcessTCPMessages();
 }
 
 
@@ -110,6 +111,19 @@ void RemoteServer::ProcessTCPMessages()
 		}
 		break;
 
+		case (uint16_t)eMessasgeProtocolIds::TEXT:
+		{
+			const char* dataStr = data.GetData() + 4;
+			g_devConsole->PrintString( Stringf( "Received from Auth server: %s", dataStr ) );
+		}
+		break;
+
+		case (uint16_t)eMessasgeProtocolIds::DATA:
+		{
+			
+		}
+		break;
+
 		default:
 		{
 			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
@@ -128,9 +142,21 @@ void RemoteServer::ProcessUDPMessages()
 
 
 //-----------------------------------------------------------------------------------------------
-void RemoteServer::NegotiateUDPConnection()
+void RemoteServer::RequestUDPConnection()
 {
 	m_tcpClientSocket = g_networkingSystem->ConnectTCPClientToServer( m_ipAddress, m_tcpPort );
+
+	if ( m_tcpClientSocket->IsValid() )
+	{
+		std::array<char, 256> buffer;
+		RequestConnectionRequest* req = new RequestConnectionRequest( -1 );
+		
+		memcpy( &buffer[0], (void*)req, sizeof(*req) );
+
+		m_tcpClientSocket->Send( &buffer[0], sizeof( *req ) );
+
+		delete req;
+	}
 }
 
 

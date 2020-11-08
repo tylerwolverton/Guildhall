@@ -26,5 +26,5 @@ void Server::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void Server::BeginFrame()
 {
-
+	ProcessNetworkMessages();
 }

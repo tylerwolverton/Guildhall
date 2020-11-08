@@ -23,24 +23,53 @@ enum eClientFunctionType
 	POSSESS_ENTITY,
 	UNPOSSESS_ENTITY,
 
+	REQUEST_CONNECTION,
+	RESPONSE_TO_CONNECTION_REQUEST,
+
 	NUM_TYPES
 };
 
 
 //-----------------------------------------------------------------------------------------------
-// TODO: This will become a message over the network later
 struct ClientRequest
 {
 public:
+	int key = -1;
 	int clientId = -1;
-	EntityId entityId = -1;
 	eClientFunctionType functionType = eClientFunctionType::INVALID;
 
 public:
-	ClientRequest( int clientIdIn, EntityId entityIdIn, eClientFunctionType functionTypeIn )
+	ClientRequest( int clientIdIn, eClientFunctionType functionTypeIn )
 		: clientId( clientIdIn )
-		, entityId( entityIdIn )
 		, functionType( functionTypeIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct RequestConnectionRequest : ClientRequest
+{
+public:
+
+public:
+	RequestConnectionRequest( int clientIdIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::REQUEST_CONNECTION )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct ResponseToConnectionRequest : ClientRequest
+{
+public:
+	int port = - 1;
+	uint16_t size = 0;
+
+public:
+	ResponseToConnectionRequest( int clientIdIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::RESPONSE_TO_CONNECTION_REQUEST )
 	{
 	}
 };
@@ -50,13 +79,15 @@ public:
 struct CreateEntityRequest : ClientRequest
 {
 public:
+	EntityId entityId = -1;
 	eEntityType entityType;
 	float yawOrientationDegrees = 0.f;
 	Vec2 position = Vec2::ZERO;
 
 public:
 	CreateEntityRequest( int clientIdIn, EntityId entityIdIn, eEntityType entityTypeIn, const Vec2& positionIn, float yawOrientationDegreesIn )
-		: ClientRequest( clientIdIn, entityIdIn, eClientFunctionType::CREATE_ENTITY )
+		: ClientRequest( clientIdIn, eClientFunctionType::CREATE_ENTITY )
+		, entityId( entityIdIn )
 		, entityType( entityTypeIn )
 		, position( positionIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )
@@ -69,11 +100,13 @@ public:
 struct PossessEntityRequest : ClientRequest
 {
 public:
+	EntityId entityId = -1;
 	Transform cameraTransform;
 
 public:
 	PossessEntityRequest( int clientIdIn, EntityId entityIdIn, const Transform& cameraTransformIn )
-		: ClientRequest( clientIdIn, entityIdIn, eClientFunctionType::POSSESS_ENTITY )
+		: ClientRequest( clientIdIn, eClientFunctionType::POSSESS_ENTITY )
+		, entityId( entityIdIn )
 		, cameraTransform( cameraTransformIn )
 	{
 	}
@@ -83,10 +116,13 @@ public:
 //-----------------------------------------------------------------------------------------------
 struct UnPossessEntityRequest : ClientRequest
 {
+public:
+	EntityId entityId = -1;
 
 public:
 	UnPossessEntityRequest( int clientIdIn, EntityId entityIdIn )
-		: ClientRequest( clientIdIn, entityIdIn, eClientFunctionType::UNPOSSESS_ENTITY )
+		: ClientRequest( clientIdIn, eClientFunctionType::UNPOSSESS_ENTITY )
+		, entityId( entityIdIn )
 	{
 	}
 };
@@ -96,12 +132,14 @@ public:
 struct UpdateEntityRequest : ClientRequest
 {
 public:
+	EntityId entityId = -1;
 	float yawOrientationDegrees = 0.f;
 	Vec2 translationVec = Vec2::ZERO;
 
 public:
 	UpdateEntityRequest( int clientIdIn, EntityId entityIdIn, const Vec2& translationVecIn, float yawOrientationDegreesIn )
-		: ClientRequest( clientIdIn, entityIdIn, eClientFunctionType::UPDATE_ENTITY )
+		: ClientRequest( clientIdIn, eClientFunctionType::UPDATE_ENTITY )
+		, entityId( entityIdIn )
 		, translationVec( translationVecIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )
 	{
