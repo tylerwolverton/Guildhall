@@ -44,17 +44,6 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
-struct TextMsg
-{
-	MessageHeader header;
-	std::string msg;
-
-public:
-	size_t GetSize()				{ return sizeof( header ) + msg.size(); }
-};
-
-
-//-----------------------------------------------------------------------------------------------
 struct ClientDisconnectingMsg
 {
 	MessageHeader header;

@@ -107,18 +107,18 @@ TCPData TCPSocket::Receive()
 		int errorCode = WSAGetLastError();
 		if ( errorCode == WSAEWOULDBLOCK && m_blockingMode == eBlockingMode::NONBLOCKING )
 		{
-			return TCPData( 9999999, nullptr );
+			return TCPData( 9999999, nullptr, "" );
 		}
 		else
 		{
 			g_devConsole->PrintError( Stringf( "Networking System: recv failed with '%i'", errorCode ) );
 			closesocket( m_socket );
-			return TCPData( 9999999, nullptr );
+			return TCPData( 9999999, nullptr, "" );
 		}
 	}
 
 	m_buffer[iResult] = '\0';
-	return TCPData( size_t( iResult ), m_buffer );
+	return TCPData( size_t( iResult ), m_buffer, GetAddress() );
 }
 
 
@@ -151,4 +151,32 @@ bool TCPSocket::IsDataAvailable()
 		g_devConsole->PrintError( Stringf( "Function isDataAvailable is only valid in non-blocking mode" ) );
 		return false;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string TCPData::GetFromIPAddress() const
+{
+	Strings connectionInfo = SplitStringOnDelimiter( m_fromAddress, ':' ); 
+	
+	if ( connectionInfo.size() != 2 )
+	{
+		return "";
+	}
+
+	return connectionInfo[0];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int TCPData::GetFromPort() const
+{
+	Strings connectionInfo = SplitStringOnDelimiter( m_fromAddress, ':' ); 
+	
+	if ( connectionInfo.size() != 2 )
+	{
+		return -1;
+	}
+	
+	return atoi( connectionInfo[1].c_str() );
 }

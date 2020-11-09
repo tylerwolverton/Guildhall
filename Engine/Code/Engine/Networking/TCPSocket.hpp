@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Networking/NetworkingCommon.hpp"
+#include "Engine/Networking/MessageProtocols.hpp"
 
 #include <string>
 
@@ -10,21 +11,29 @@ class TCPData
 public:
 	TCPData() 
 		: m_length( 0 ), m_data( NULL ) {}
-	TCPData( size_t length, char* dataPtr ) 
+	TCPData( size_t length, char* dataPtr, const std::string& fromAddress  ) 
 		: m_length( length )
 		, m_data( dataPtr )
+		, m_fromAddress( fromAddress )
 	{}
 
 	~TCPData() = default;
 
 	size_t		GetLength() const				{ return m_length; }
 	const char* GetData() const					{ return m_data; }
+	const char* GetPayload() const				{ return m_data + sizeof( MessageHeader ); }
+
+	std::string GetFromAddress() const			{ return m_fromAddress; }
+	std::string GetFromIPAddress() const;
+	int			GetFromPort() const;
 	
 	std::string GetDataAsString() const			{ return std::string( m_data, m_length ); }
 
 private:
 	size_t m_length;
 	char* m_data;
+
+	std::string m_fromAddress;
 };
 
 

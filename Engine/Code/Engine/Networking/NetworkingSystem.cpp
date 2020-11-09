@@ -430,6 +430,8 @@ void NetworkingSystem::DisconnectTCPClient()
 		msg.header.size = 0;
 
 		m_clientSocket.Send( reinterpret_cast<char*>( &msg ), msg.GetSize() );
+
+		//Sleep( 1000 );
 	}
 
 	m_tcpClient->Disconnect();

@@ -88,49 +88,33 @@ void RemoteServer::ProcessNetworkMessages()
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::ProcessTCPMessages()
 {
-	//if ( m_tcpClientSocket == nullptr )
-	//{
-	//	return;
-	//}
+	std::vector<TCPData> newMessages = g_networkingSystem->ReceiveTCPMessages();
 
-	//TCPData data = m_tcpClientSocket->Receive();
-	//if ( data.GetData() == nullptr )
-	//{
-	//	return;
-	//}
+	for ( TCPData& data : newMessages )
+	{
+		if ( data.GetData() == nullptr )
+		{
+			continue;
+		}
 
-	//// Process message
-	//const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
-	//switch ( header->id )
-	//{
-	//	case (uint16_t)eMessasgeProtocolIds::SERVER_LISTENING:
-	//	{
-	//		const char* dataStr = data.GetData() + 4;
+		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetPayload() );
+		switch ( req->functionType )
+		{
+			case eClientFunctionType::RESPONSE_TO_CONNECTION_REQUEST:
+			{
+				const ResponseToConnectionRequest* responseReq = reinterpret_cast<const ResponseToConnectionRequest*>( data.GetPayload() );
+				const char* dataStr = data.GetPayload() + sizeof( ResponseToConnectionRequest );
+				std::string ipAddress( dataStr );
+				ipAddress[responseReq->size] = '\0';
 
-	//		g_devConsole->PrintString( Stringf( "Connected to game: %s", dataStr ) );
-	//	}
-	//	break;
+				g_devConsole->PrintString( Stringf( "Response: key = '%i', port '%i', ip = '%s'", responseReq->connectKey, responseReq->port, ipAddress.c_str() ) );
 
-	//	case (uint16_t)eMessasgeProtocolIds::TEXT:
-	//	{
-	//		const char* dataStr = data.GetData() + 4;
-	//		g_devConsole->PrintString( Stringf( "Received from Auth server: %s", dataStr ) );
-	//	}
-	//	break;
-
-	//	case (uint16_t)eMessasgeProtocolIds::DATA:
-	//	{
-	//		
-	//	}
-	//	break;
-
-	//	default:
-	//	{
-	//		g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
-	//		return;
-	//	}
-	//	break;
-	//}
+				g_networkingSystem->OpenUDPPort( 4820, responseReq->port );
+				g_networkingSystem->DisconnectTCPClient();
+			}
+			break;
+		}
+	}
 }
 
 

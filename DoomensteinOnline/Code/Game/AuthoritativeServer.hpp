@@ -10,6 +10,21 @@ struct ClientRequest;
 
 
 //-----------------------------------------------------------------------------------------------
+struct ConnectionInfo
+{
+public:
+	int key = -1;
+	std::string ipAddress;
+
+public:
+	ConnectionInfo( int keyIn, const std::string& ipAddressIn )
+		: key( keyIn )
+		, ipAddress( ipAddressIn )
+	{}
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class AuthoritativeServer : public Server
 {
 public:
@@ -31,8 +46,9 @@ protected:
 	void ProcessTCPMessages();
 
 private:
-	void StartTCPServer();
 
 private:
 	const std::vector<ClientRequest*>	m_clientRequests;
+
+	std::vector<ConnectionInfo> m_clientConnectionInfo;
 };

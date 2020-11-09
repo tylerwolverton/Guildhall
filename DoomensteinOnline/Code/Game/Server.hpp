@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Game/GameCommon.hpp"
 
 #include <vector>
@@ -36,4 +37,9 @@ protected:
 
 	std::string				m_ipAddress;
 	int						m_tcpPort = -1;
+
+	int						m_tcpId = -1;
+	int						m_udpId = -1;
+
+	RandomNumberGenerator	m_rng;
 };

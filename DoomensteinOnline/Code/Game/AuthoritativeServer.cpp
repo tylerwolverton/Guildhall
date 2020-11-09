@@ -2,10 +2,13 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/MAth/RandomNumberGenerator.hpp"
 #include "Engine/Networking/NetworkingSystem.hpp"
 #include "Engine/Networking/TCPSocket.hpp"
 #include "Engine/Networking/UDPSocket.hpp"
 #include "Game/GameEvents.hpp"
+#include "Game/GameCommon.hpp"
+#include "Game/Game.hpp"
 #include "Game/SinglePlayerGame.hpp"
 #include "Game/MultiplayerGame.hpp"
 #include "Game/Client.hpp"
@@ -51,7 +54,6 @@ void AuthoritativeServer::StartGame( eAppMode appMode )
 			g_game = new MultiplayerGame();
 			
 			g_networkingSystem->StartTCPServer( m_tcpPort );
-			//StartTCPServer();
 		}
 		break;
 
@@ -85,25 +87,32 @@ void AuthoritativeServer::ProcessTCPMessages()
 			continue;
 		}
 
-		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetData() + sizeof(MessageHeader) );
+		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetPayload() );
 		switch ( req->functionType )
 		{
 			case eClientFunctionType::REQUEST_CONNECTION:
 			{
-				g_devConsole->PrintString( "Somebody wants to connect" );
+				int clientKey = m_rng.RollRandomIntInRange( 0, INT_MAX );
+				int udpPort = m_rng.RollRandomIntInRange( 4850, 4950 );
+
+				ResponseToConnectionRequest response( -1, clientKey, udpPort, (uint16_t)data.GetFromIPAddress().size() );
+				 
+				std::array<char, 256> buffer;
+				
+				memcpy( &buffer[0], &response, sizeof( response ) );
+				memcpy( &buffer[sizeof( response )], data.GetFromIPAddress().c_str(), response.size );
+
+				ConnectionInfo info( clientKey, data.GetFromIPAddress() );
+
+				g_devConsole->PrintString( Stringf( "Client wants to connect from '%s'", data.GetFromIPAddress().c_str() ) );
+
+				g_networkingSystem->SendTCPMessage( &buffer, sizeof( response ) + response.size );
+
+				g_networkingSystem->OpenUDPPort( udpPort, 4825 );
 			}
 			break;
 		}
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::StartTCPServer()
-{
-	EventArgs args;
-	args.SetValue( "port", m_tcpPort );
-	g_eventSystem->FireEvent( "start_tcp_server", &args, eUsageLocation::DEV_CONSOLE );
 }
 
 
