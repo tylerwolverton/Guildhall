@@ -24,7 +24,7 @@ public:
 	virtual void BeginFrame();
 	virtual void Update() = 0;
 
-	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) = 0;
+	virtual void ReceiveClientRequests( const std::vector<const ClientRequest*> clientRequests ) = 0;
 	
 	virtual void RegisterNewClient( Client* client ) = 0;
 

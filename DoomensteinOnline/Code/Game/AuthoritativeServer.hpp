@@ -36,7 +36,7 @@ public:
 
 	virtual void Update() override;
 
-	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) override;
+	virtual void ReceiveClientRequests( const std::vector<const ClientRequest*> clientRequests ) override;
 
 	virtual void RegisterNewClient( Client* client ) override;
 
@@ -44,6 +44,7 @@ protected:
 	virtual void StartGame( eAppMode appMode ) override;
 	virtual void ProcessNetworkMessages() override;
 	void ProcessTCPMessages();
+	void ProcessUDPMessages();
 
 private:
 

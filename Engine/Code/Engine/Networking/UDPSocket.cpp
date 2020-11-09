@@ -121,3 +121,31 @@ UDPData UDPSocket::Receive()
 	
 	return UDPData( iResult, &m_receiveBuffer[6], fromAddressStr );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+std::string UDPData::GetFromIPAddress() const
+{
+	Strings connectionInfo = SplitStringOnDelimiter( m_fromAddress, ':' );
+
+	if ( connectionInfo.size() != 2 )
+	{
+		return "";
+	}
+
+	return connectionInfo[0];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int UDPData::GetFromPort() const
+{
+	Strings connectionInfo = SplitStringOnDelimiter( m_fromAddress, ':' );
+
+	if ( connectionInfo.size() != 2 )
+	{
+		return -1;
+	}
+
+	return atoi( connectionInfo[1].c_str() );
+}

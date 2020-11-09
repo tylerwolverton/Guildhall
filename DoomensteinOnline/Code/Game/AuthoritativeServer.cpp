@@ -13,6 +13,7 @@
 #include "Game/MultiplayerGame.hpp"
 #include "Game/Client.hpp"
 #include "Game/PlayerClient.hpp"
+#include "Game/RemoteClient.hpp"
 #include "Game/Entity.hpp"
 
 
@@ -72,6 +73,7 @@ void AuthoritativeServer::StartGame( eAppMode appMode )
 void AuthoritativeServer::ProcessNetworkMessages()
 {
 	ProcessTCPMessages();
+	ProcessUDPMessages();
 }
 
 
@@ -117,6 +119,53 @@ void AuthoritativeServer::ProcessTCPMessages()
 
 
 //-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::ProcessUDPMessages()
+{
+	std::vector<UDPData> newMessages = g_networkingSystem->ReceiveUDPMessages();
+
+	for ( UDPData& data : newMessages )
+	{
+		if ( data.GetData() == nullptr )
+		{
+			continue;
+		}
+
+		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetPayload() );
+		switch ( req->functionType )
+		{
+			case eClientFunctionType::KEY_VERIFICATION:
+			{
+				const KeyVerificationRequest* keyVerifyReq = reinterpret_cast<const KeyVerificationRequest*>( data.GetPayload() );
+				
+				int foundIdx = -1;
+				for ( int connectionIdx = 0; connectionIdx < (int)m_clientConnectionInfo.size(); ++connectionIdx )
+				{
+					ConnectionInfo& info = m_clientConnectionInfo[connectionIdx];
+
+					if ( info.key == keyVerifyReq->connectKey 
+						 && info.ipAddress == data.GetFromIPAddress() )
+					{
+						RemoteClient* client = new RemoteClient();
+						RegisterNewClient( client );
+						client->Startup();
+
+						foundIdx = connectionIdx;
+						break;
+					}
+				}
+
+				if ( foundIdx >= 0 )
+				{
+					m_clientConnectionInfo.erase( m_clientConnectionInfo.begin() + foundIdx );
+				}
+			}
+			break;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::Update()
 {
 	g_game->Update();
@@ -130,11 +179,11 @@ void AuthoritativeServer::Update()
 
 
 //-----------------------------------------------------------------------------------------------
-void AuthoritativeServer::ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests )
+void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientRequest*> clientRequests )
 {
 	for ( int reqIdx = 0; reqIdx < (int)clientRequests.size(); ++reqIdx )
 	{
-		ClientRequest* const & req = clientRequests[reqIdx];
+		const ClientRequest* const & req = clientRequests[reqIdx];
 
 		if ( req == nullptr )
 		{

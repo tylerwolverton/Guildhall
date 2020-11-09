@@ -54,15 +54,7 @@ void NetworkingSystem::Startup()
 void NetworkingSystem::BeginFrame()
 {
 	ProcessTCPCommunication();
-
-	UDPData data;
-	if ( !m_incomingMessages.Pop( data )
-		 || data.GetLength() <= 0 )
-	{
-		return;
-	}
-
-	g_devConsole->PrintString( Stringf( "Received message from '%s:%i': %s", data.GetFromAddress().c_str(), m_udpSocket->GetReceivePort(), data.GetData() ) );
+	ProcessUDPCommunication();
 }
 
 
@@ -274,6 +266,42 @@ void NetworkingSystem::ReceiveMessageFromTCPClient()
 			return;
 		}
 		break;	
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::ProcessUDPCommunication()
+{
+	UDPData data;
+	if ( !m_incomingMessages.Pop( data )
+		 || data.GetLength() <= 0 )
+	{
+		return;
+	}
+
+	// Process message
+	const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
+	switch ( header->id )
+	{
+		case (uint16_t)eMessasgeProtocolIds::TEXT:
+		{
+			g_devConsole->PrintString( Stringf( "Received message from '%s:%i': %s", data.GetFromAddress().c_str(), m_udpSocket->GetReceivePort(), data.GetData() ) );
+		}
+		break;
+		
+		case (uint16_t)eMessasgeProtocolIds::DATA:
+		{
+			m_udpReceivedMessages.push_back( data );
+		}
+		break;
+
+		default:
+		{
+			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
+			return;
+		}
+		break;
 	}
 }
 
@@ -521,6 +549,17 @@ std::vector<TCPData> NetworkingSystem::ReceiveTCPMessages()
 	std::vector<TCPData> newMessages = m_tcpReceivedMessages;
 
 	m_tcpReceivedMessages.clear();
+
+	return newMessages;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<UDPData> NetworkingSystem::ReceiveUDPMessages()
+{
+	std::vector<UDPData> newMessages = m_udpReceivedMessages;
+
+	//m_udpReceivedMessages.clear();
 
 	return newMessages;
 }

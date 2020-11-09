@@ -14,4 +14,7 @@ public:
 
 	virtual void SetClientId( int id ) override;
 	virtual void SetPlayer( Entity* entity ) override;
+
+private:
+	void ProcessUDPMessages();
 };

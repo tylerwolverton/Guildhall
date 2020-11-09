@@ -32,8 +32,6 @@ void RemoteServer::Startup( eAppMode appMode )
 void RemoteServer::Shutdown()
 {
 	Server::Shutdown();
-
-	PTR_SAFE_DELETE( m_tcpClientSocket );
 }
 
 
@@ -82,6 +80,7 @@ void RemoteServer::StartGame( eAppMode appMode )
 void RemoteServer::ProcessNetworkMessages()
 {
 	ProcessTCPMessages();
+	ProcessUDPMessages();
 }
 
 
@@ -109,8 +108,12 @@ void RemoteServer::ProcessTCPMessages()
 
 				g_devConsole->PrintString( Stringf( "Response: key = '%i', port '%i', ip = '%s'", responseReq->connectKey, responseReq->port, ipAddress.c_str() ) );
 
-				g_networkingSystem->OpenUDPPort( 4820, responseReq->port );
 				g_networkingSystem->DisconnectTCPClient();
+
+				KeyVerificationRequest keyVerifyReq( m_remoteClientId, responseReq->connectKey );
+
+				g_networkingSystem->OpenUDPPort( 4820, responseReq->port );
+				g_networkingSystem->SendUDPMessage( 4820, &keyVerifyReq, sizeof( keyVerifyReq ) );
 			}
 			break;
 		}
@@ -121,7 +124,25 @@ void RemoteServer::ProcessTCPMessages()
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::ProcessUDPMessages()
 {
+	std::vector<UDPData> newMessages = g_networkingSystem->ReceiveUDPMessages();
 
+	for ( UDPData& data : newMessages )
+	{
+		if ( data.GetData() == nullptr )
+		{
+			continue;
+		}
+
+		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetPayload() );
+		switch ( req->functionType )
+		{
+			case eClientFunctionType::REMOTE_CLIENT_REGISTRATION:
+			{
+				m_remoteClientId = req->clientId;
+			}
+			break;
+		}
+	}
 }
 
 
@@ -130,7 +151,7 @@ void RemoteServer::RequestUDPConnection()
 {
 	g_networkingSystem->ConnectTCPClient( m_ipAddress, m_tcpPort );
 
-	RequestConnectionRequest req( -1 );
+	RequestConnectionRequest req( m_remoteClientId );
 	g_networkingSystem->SendTCPMessage( &req, sizeof( req ) );
 
 	/*m_tcpClientSocket = g_networkingSystem->ConnectTCPClientToServer( m_ipAddress, m_tcpPort );
@@ -157,9 +178,20 @@ void RemoteServer::Update()
 
 
 //-----------------------------------------------------------------------------------------------
-void RemoteServer::ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests )
+void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*> clientRequests )
 {
-	UNUSED( clientRequests );
+	for ( int reqIdx = 0; reqIdx < (int)clientRequests.size(); ++reqIdx )
+	{
+		if ( clientRequests[reqIdx] == nullptr )
+		{
+			continue;
+		}
+
+		ClientRequest req = *(clientRequests[reqIdx]);
+		req.clientId = m_remoteClientId;
+
+		g_networkingSystem->SendUDPMessage( 4820, &req, sizeof( req ) );
+	}
 }
 
 
@@ -168,5 +200,3 @@ void RemoteServer::RegisterNewClient( Client* client )
 {
 	m_playerClient = client;
 }
-
-

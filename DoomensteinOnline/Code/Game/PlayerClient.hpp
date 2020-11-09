@@ -46,7 +46,7 @@ public:
 	static bool SetAmbientLightColor( EventArgs* args );
 
 private:
-	std::vector<ClientRequest*> ProcessInputAndConvertToClientRequests();
+	std::vector<const ClientRequest*> ProcessInputAndConvertToClientRequests();
 
 	void InitializeCameras();
 

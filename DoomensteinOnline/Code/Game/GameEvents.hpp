@@ -25,6 +25,8 @@ enum eClientFunctionType
 
 	REQUEST_CONNECTION,
 	RESPONSE_TO_CONNECTION_REQUEST,
+	KEY_VERIFICATION,
+	REMOTE_CLIENT_REGISTRATION,
 
 	NUM_TYPES
 };
@@ -74,6 +76,34 @@ public:
 		, connectKey( keyIn )
 		, port( portIn )
 		, size( sizeIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct KeyVerificationRequest : ClientRequest
+{
+public:
+	int connectKey = -1;
+
+public:
+	KeyVerificationRequest( int clientIdIn, int keyIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::KEY_VERIFICATION )
+		, connectKey( keyIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct RemoteClientRegistrationRequest : ClientRequest
+{
+public:
+
+public:
+	RemoteClientRegistrationRequest( int clientIdIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::REMOTE_CLIENT_REGISTRATION )
 	{
 	}
 };

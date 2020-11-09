@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Networking/NetworkingCommon.hpp"
+#include "Engine/Networking/MessageProtocols.hpp"
 
 #include <array>
 #include <string>
@@ -25,7 +26,11 @@ public:
 
 	size_t		GetLength() const				{ return m_length; }
 	char*		GetData() const					{ return m_data; }
+	const char* GetPayload() const				{ return m_data + sizeof( MessageHeader ); }
+
 	std::string GetFromAddress() const			{ return m_fromAddress; }
+	std::string GetFromIPAddress() const;
+	int			GetFromPort() const;
 
 private:
 	size_t m_length = 0;

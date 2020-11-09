@@ -42,6 +42,7 @@ public:
 	void SendTCPTextMessage( const std::string& text );
 
 	std::vector<TCPData> ReceiveTCPMessages();
+	std::vector<UDPData> ReceiveUDPMessages();
 
 	// UDP
 	void OpenUDPPort( int localBindPort, int distantSendToPort );
@@ -57,6 +58,7 @@ private:
 	void ReceiveMessageFromTCPClient();
 
 	// UDP
+	void ProcessUDPCommunication();
 	void UDPReaderThreadMain();
 	void UDPWriterThreadMain();
 
@@ -80,6 +82,7 @@ private:
 	TCPSocket m_clientSocket;
 
 	std::vector<TCPData> m_tcpReceivedMessages;
+	std::vector<UDPData> m_udpReceivedMessages;
 
 
 	std::map<int, UDPSocket*> m_udpSockets;

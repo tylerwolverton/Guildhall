@@ -19,7 +19,7 @@ public:
 	virtual void BeginFrame() override;
 	virtual void Update() override;
 
-	virtual void ReceiveClientRequests( const std::vector<ClientRequest*> clientRequests ) override;
+	virtual void ReceiveClientRequests( const std::vector<const ClientRequest*> clientRequests ) override;
 
 	virtual void RegisterNewClient( Client* client ) override;
 
@@ -35,5 +35,5 @@ private:
 private:
 	Client* m_playerClient = nullptr;
 
-	TCPSocket* m_tcpClientSocket = nullptr;
+	int m_remoteClientId = -1;
 };

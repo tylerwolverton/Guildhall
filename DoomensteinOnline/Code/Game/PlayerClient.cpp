@@ -58,7 +58,7 @@ void PlayerClient::Startup()
 	m_uiSystem->Startup( g_window, g_renderer );
 	BuildUIHud();
 
-	std::vector<ClientRequest*> clientRequests;
+	std::vector<const ClientRequest*> clientRequests;
 	clientRequests.push_back( new CreateEntityRequest( m_clientId, -1, eEntityType::PLAYER, Vec2( 1.f, 1.f ), 0.f ) );
 
 	g_server->ReceiveClientRequests( clientRequests );
@@ -70,7 +70,7 @@ void PlayerClient::Startup()
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::BeginFrame()
 {
-	std::vector<ClientRequest*> clientRequests = ProcessInputAndConvertToClientRequests();
+	std::vector<const ClientRequest*> clientRequests = ProcessInputAndConvertToClientRequests();
 	g_server->ReceiveClientRequests( clientRequests );	
 
 	PTR_VECTOR_SAFE_DELETE( clientRequests );
@@ -78,9 +78,9 @@ void PlayerClient::BeginFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests()
+std::vector<const ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRequests()
 {
-	std::vector<ClientRequest*> requests;
+	std::vector<const ClientRequest*> requests;
 
 	if ( g_devConsole->IsOpen() )
 	{
