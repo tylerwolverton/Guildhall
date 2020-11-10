@@ -49,7 +49,7 @@ void RemoteClient::Update()
 
 		for ( Entity* entity : entities )
 		{
-			UpdateEntityRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
+			UpdateEntityOnRemoteServerRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
 			g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
 		}

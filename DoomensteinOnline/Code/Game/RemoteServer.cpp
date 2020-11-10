@@ -185,14 +185,14 @@ void RemoteServer::ProcessUDPMessages()
 			}
 			break;
 
-			case eClientFunctionType::UPDATE_ENTITY:
+			case eClientFunctionType::UPDATE_ENTITY_ON_REMOTE_SERVER:
 			{
 				if ( g_game == nullptr )
 				{
 					break;
 				}
 
-				const UpdateEntityRequest* updateEntityReq = reinterpret_cast<const UpdateEntityRequest*>( data.GetPayload() );
+				const UpdateEntityOnRemoteServerRequest* updateEntityReq = reinterpret_cast<const UpdateEntityOnRemoteServerRequest*>( data.GetPayload() );
 				g_game->SetEntityPosition( updateEntityReq->entityId, updateEntityReq->positionVec );
 				g_game->SetEntityOrientation( updateEntityReq->entityId, updateEntityReq->yawOrientationDegrees );
 

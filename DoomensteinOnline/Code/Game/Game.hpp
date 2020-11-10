@@ -51,6 +51,7 @@ public:
 
 	void MovePlayer( Entity* player, const Vec2& translationVec );
 	void MoveEntity( EntityId entityId, const Vec2& translationVec );
+	void RotateEntity( EntityId entityId, float yawRotationDegrees );
 	void SetEntityPosition( EntityId entityId, const Vec2& newPosition );
 	void SetEntityOrientation( EntityId entityId, float yawOrientationDegrees );
 	void PossessEntity( Entity*& player, const Transform& cameraTransform );

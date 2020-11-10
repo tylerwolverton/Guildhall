@@ -20,6 +20,7 @@ enum eClientFunctionType
 
 	CREATE_ENTITY,
 	UPDATE_ENTITY,
+	UPDATE_ENTITY_ON_REMOTE_SERVER,
 	POSSESS_ENTITY,
 	UNPOSSESS_ENTITY,
 	SET_PLAYER_ID,
@@ -168,12 +169,31 @@ struct UpdateEntityRequest : ClientRequest
 {
 public:
 	EntityId entityId = -1;
+	float yawRotationDegrees = 0.f;
+	Vec2 translationVec = Vec2::ZERO;
+
+public:
+	UpdateEntityRequest( int clientIdIn, EntityId entityIdIn, const Vec2& translationVecIn, float yawRotationDegreesIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::UPDATE_ENTITY )
+		, entityId( entityIdIn )
+		, translationVec( translationVecIn )
+		, yawRotationDegrees( yawRotationDegreesIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct UpdateEntityOnRemoteServerRequest : ClientRequest
+{
+public:
+	EntityId entityId = -1;
 	float yawOrientationDegrees = 0.f;
 	Vec2 positionVec = Vec2::ZERO;
 
 public:
-	UpdateEntityRequest( int clientIdIn, EntityId entityIdIn, const Vec2& positionVecIn, float yawOrientationDegreesIn )
-		: ClientRequest( clientIdIn, eClientFunctionType::UPDATE_ENTITY )
+	UpdateEntityOnRemoteServerRequest( int clientIdIn, EntityId entityIdIn, const Vec2& positionVecIn, float yawOrientationDegreesIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::UPDATE_ENTITY_ON_REMOTE_SERVER )
 		, entityId( entityIdIn )
 		, positionVec( positionVecIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )

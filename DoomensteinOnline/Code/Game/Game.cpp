@@ -464,6 +464,20 @@ void Game::MoveEntity( EntityId entityId, const Vec2& translationVec )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::RotateEntity( EntityId entityId, float yawRotationDegrees )
+{
+	Entity* entity = m_world->GetEntityById( entityId );
+
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	entity->RotateYawDegrees( yawRotationDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::SetEntityPosition( EntityId entityId, const Vec2& newPosition )
 {
 	Entity* entity = m_world->GetEntityById( entityId );

@@ -46,6 +46,7 @@ public:
 				 
 	void		 AddVelocity( const Vec2& deltaVelocity )				{ m_velocity += deltaVelocity; }
 	void		 Translate( const Vec2& translation )					{ m_position += translation; }
+	void		 RotateYawDegrees( float yawRotation )					{ m_orientationDegrees += yawRotation; }
 
 	bool		 IsDead() const											{ return m_isDead; }
 	bool		 IsGarbage() const										{ return m_isGarbage; }

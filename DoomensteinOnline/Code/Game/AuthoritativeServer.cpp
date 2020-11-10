@@ -212,8 +212,8 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientR
 			case eClientFunctionType::UPDATE_ENTITY:				
 			{
 				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
-				g_game->SetEntityPosition( updateEntityReq->entityId, updateEntityReq->positionVec );
-				g_game->SetEntityOrientation( updateEntityReq->entityId, updateEntityReq->yawOrientationDegrees );
+				g_game->MoveEntity( updateEntityReq->entityId, updateEntityReq->translationVec );
+				g_game->RotateEntity( updateEntityReq->entityId, updateEntityReq->yawRotationDegrees );
 			}
 			break;
 		}
