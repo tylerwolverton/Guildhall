@@ -29,6 +29,7 @@ public:
 	virtual void DebugRender() const;
 
 	EntityId	 GetId() const											{ return m_id; }
+	void		 SetId( EntityId id )									{ m_id = id; }
 	const Vec2	 GetForwardVector() const;
 	const Vec2	 GetPosition() const									{ return m_position; }
 	void		 SetPosition( const Vec2& position )					{ m_position = position; }

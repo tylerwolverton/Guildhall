@@ -22,6 +22,7 @@ enum eClientFunctionType
 	UPDATE_ENTITY,
 	POSSESS_ENTITY,
 	UNPOSSESS_ENTITY,
+	SET_PLAYER_ID,
 
 	REQUEST_CONNECTION,
 	RESPONSE_TO_CONNECTION_REQUEST,
@@ -176,6 +177,21 @@ public:
 		, entityId( entityIdIn )
 		, translationVec( translationVecIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct SetPlayerIdRequest : ClientRequest
+{
+public:
+	EntityId playerId = -1;
+
+public:
+	SetPlayerIdRequest( int clientIdIn, EntityId playerIdIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::SET_PLAYER_ID )
+		, playerId( playerIdIn )
 	{
 	}
 };

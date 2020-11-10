@@ -3,7 +3,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class TCPSocket;
+class PlayerClient;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ private:
 	void RequestUDPConnection();
 
 private:
-	Client* m_playerClient = nullptr;
+	PlayerClient* m_playerClient = nullptr;
 
 	int m_remoteClientId = -1;
 };

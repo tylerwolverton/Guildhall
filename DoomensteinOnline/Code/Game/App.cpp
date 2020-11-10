@@ -148,6 +148,7 @@ void App::RestartApp( eAppMode appMode, EventArgs* args )
 	DeallocateServerAndClient( m_appMode );
 	InitializeServerAndClient( appMode, args );
 	m_appMode = appMode;
+	g_devConsole->Close();
 }
 
 

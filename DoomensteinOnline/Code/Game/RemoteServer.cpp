@@ -150,6 +150,14 @@ void RemoteServer::ProcessUDPMessages()
 				data.Process();
 			}
 			break;
+
+			case eClientFunctionType::SET_PLAYER_ID:
+			{
+				const SetPlayerIdRequest* setPlayerIdReq = reinterpret_cast<const SetPlayerIdRequest*>( data.GetPayload() );
+
+				m_playerClient->SetPlayerId( setPlayerIdReq->playerId );
+			}
+			break;
 		}
 	}
 }
@@ -196,10 +204,28 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			continue;
 		}
 
-		ClientRequest req = *(clientRequests[reqIdx]);
-		req.clientId = m_remoteClientId;
+		const ClientRequest* req = clientRequests[reqIdx];
 
-		g_networkingSystem->SendUDPMessage( 4820, &req, sizeof( req ) );
+		switch ( req->functionType )
+		{
+			case eClientFunctionType::CREATE_ENTITY:
+			{
+				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
+				createEntityReq->clientId = m_remoteClientId;
+				g_networkingSystem->SendUDPMessage( 4820, createEntityReq, sizeof( *createEntityReq ) );
+
+			}
+			break;
+
+			case eClientFunctionType::UPDATE_ENTITY:
+			{
+				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
+				updateEntityReq->clientId = m_remoteClientId;
+				g_networkingSystem->SendUDPMessage( 4820, updateEntityReq, sizeof( *updateEntityReq ) );
+			}
+			break;
+		}
+
 	}
 }
 
@@ -207,5 +233,5 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::RegisterNewClient( Client* client )
 {
-	m_playerClient = client;
+	m_playerClient = (PlayerClient*)client;
 }

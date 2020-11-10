@@ -4,6 +4,7 @@
 #include "Game/Server.hpp"
 #include "Game/GameEvents.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/Entity.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -44,9 +45,9 @@ void RemoteClient::SetClientId( int id )
 //-----------------------------------------------------------------------------------------------
 void RemoteClient::SetPlayer( Entity* entity )
 {
-	UNUSED( entity );
+	SetPlayerIdRequest req( m_clientId, entity->GetId() );
 
-	g_devConsole->PrintError( "Cannot set player on a non player client" );
+	g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
 }
 
 
@@ -65,7 +66,23 @@ void RemoteClient::ProcessUDPMessages()
 		}
 
 		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetPayload() );
-		gameRequests.push_back( req );
+		switch ( req->functionType )
+		{
+			case eClientFunctionType::CREATE_ENTITY:
+			{
+				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
+				gameRequests.push_back( createEntityReq );
+				
+			}
+			break;
+
+			case eClientFunctionType::UPDATE_ENTITY:
+			{
+				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
+				gameRequests.push_back( updateEntityReq );
+			}
+			break;
+		}
 
 		data.Process();
 	}

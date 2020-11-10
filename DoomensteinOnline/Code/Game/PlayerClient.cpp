@@ -59,7 +59,10 @@ void PlayerClient::Startup()
 	BuildUIHud();
 
 	std::vector<const ClientRequest*> clientRequests;
-	clientRequests.push_back( new CreateEntityRequest( m_clientId, -1, eEntityType::PLAYER, Vec2( 1.f, 1.f ), 0.f ) );
+	clientRequests.push_back( new CreateEntityRequest( m_clientId, -1, eEntityType::PLAYER, Vec2( 5.5f, 4.f ), 0.f ) );
+
+	/*m_player = g_game->CreateEntityInCurrentMap( eEntityType::PLAYER, Vec2( 5.5f, 4.f ), 0.f );
+	m_player->Possess();*/
 
 	g_server->ReceiveClientRequests( clientRequests );
 
@@ -490,6 +493,19 @@ float PlayerClient::GetAverageFPS() const
 	}
 
 	return cummulativeFPS / (float)FRAME_HISTORY_COUNT;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void PlayerClient::SetPlayerId( EntityId playerId )
+{
+	if ( m_player == nullptr )
+	{
+		m_player = g_game->CreateEntityInCurrentMap( eEntityType::PLAYER, Vec2( 5.5f, 4.f ), 0.f );
+		m_player->Possess();
+	}
+
+	m_player->SetId( playerId );
 }
 
 

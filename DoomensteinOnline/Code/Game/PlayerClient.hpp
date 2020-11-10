@@ -2,13 +2,13 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Game/Client.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/Entity.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 struct ClientRequest;
 class Camera;
 class Clock;
-class Entity;
 class KeyButtonState;
 class UISystem;
 class UIPanel;
@@ -37,9 +37,10 @@ public:
 	
 	void			SetCameraPositionAndYaw( const Vec2& pos, float yaw );
 
-	virtual void SetClientId( int id ) override												{ m_clientId = id; }
+	virtual void	SetClientId( int id ) override												{ m_clientId = id; }
 
-	virtual void SetPlayer( Entity* playerEntity ) override									{ m_player = playerEntity; }
+	virtual void	SetPlayer( Entity* playerEntity ) override									{ m_player = playerEntity; }
+	void			SetPlayerId( EntityId playerId );
 
 	// Events
 	static bool SetMouseSensitivity( EventArgs* args );

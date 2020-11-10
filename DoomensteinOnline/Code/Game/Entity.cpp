@@ -51,8 +51,8 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	if ( m_isPossessed
-		 || g_playerClient == nullptr )
+	if ( //m_isPossessed
+		  g_playerClient == nullptr )
 	{
 		return;
 	}
