@@ -26,16 +26,20 @@ public:
 
 	size_t		GetLength() const				{ return m_length; }
 	char*		GetData() const					{ return m_data; }
-	const char* GetPayload() const				{ return m_data + sizeof( MessageHeader ); }
+	const char* GetPayload() const				{ return m_data + sizeof( UDPMessageHeader ); }
 
 	std::string GetFromAddress() const			{ return m_fromAddress; }
 	std::string GetFromIPAddress() const;
 	int			GetFromPort() const;
 
+	bool		HasBeenProcessed()				{ return m_hasBeenProcessed; }
+	void		Process()						{ m_hasBeenProcessed = true; }
+
 private:
 	size_t m_length = 0;
 	char* m_data = nullptr;
 	std::string m_fromAddress;
+	bool m_hasBeenProcessed = false;
 };
 
 

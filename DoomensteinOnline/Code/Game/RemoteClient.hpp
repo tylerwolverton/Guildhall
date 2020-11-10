@@ -12,6 +12,8 @@ public:
 	virtual void Startup();
 	virtual void Shutdown();
 
+	virtual void Update() override;
+
 	virtual void SetClientId( int id ) override;
 	virtual void SetPlayer( Entity* entity ) override;
 

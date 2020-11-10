@@ -119,7 +119,7 @@ UDPData UDPSocket::Receive()
 
 	std::string fromAddressStr = std::string( inet_ntoa( fromAddress.sin_addr ) );
 	
-	return UDPData( iResult, &m_receiveBuffer[6], fromAddressStr );
+	return UDPData( iResult, &m_receiveBuffer[0], fromAddressStr );
 }
 
 

@@ -173,11 +173,8 @@ void App::InitializeServerAndClient( eAppMode appMode, EventArgs* args )
 		{
 			g_server = new RemoteServer( args );
 			g_server->Startup( appMode );
-
-			g_playerClient = new PlayerClient();
-			g_server->RegisterNewClient( g_playerClient );
-			
-			g_playerClient->Startup();
+						
+			//g_playerClient->Startup();
 		}
 		break;
 
@@ -200,7 +197,10 @@ void App::DeallocateServerAndClient( eAppMode appMode )
 		case eAppMode::MULTIPLAYER_SERVER:
 		case eAppMode::MULTIPLAYER_CLIENT:
 		{
-			g_playerClient->Shutdown();
+			if ( g_playerClient != nullptr )
+			{
+				g_playerClient->Shutdown();
+			}
 		}
 		break;
 	}
@@ -268,7 +268,10 @@ void App::BeginFrame()
 	}
 
 	g_server->BeginFrame();
-	g_playerClient->BeginFrame();
+	if ( g_playerClient != nullptr )
+	{
+		g_playerClient->BeginFrame();
+	}
 }
 
 

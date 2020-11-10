@@ -21,7 +21,10 @@ Server::Server( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Server::Shutdown()
 {
-	g_game->Shutdown();
+	if ( g_game != nullptr )
+	{
+		g_game->Shutdown();
+	}
 
 	PTR_SAFE_DELETE( g_game );
 }

@@ -24,13 +24,20 @@ void RemoteClient::Shutdown()
 
 
 //-----------------------------------------------------------------------------------------------
+void RemoteClient::Update()
+{
+	ProcessUDPMessages();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RemoteClient::SetClientId( int id )
 {
 	m_clientId = id;
 	// Send a message to RemoteServer to set player client's id
 	RemoteClientRegistrationRequest req( m_clientId );
 
-	g_networkingSystem->SendUDPMessage( 4820, &req, sizeof( req ) );
+	g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
 }
 
 
@@ -48,7 +55,7 @@ void RemoteClient::ProcessUDPMessages()
 {
 	std::vector<const ClientRequest*> gameRequests;
 
-	std::vector<UDPData> newMessages = g_networkingSystem->ReceiveUDPMessages();
+	std::vector<UDPData>& newMessages = g_networkingSystem->ReceiveUDPMessages();
 
 	for ( UDPData& data : newMessages )
 	{
@@ -59,6 +66,8 @@ void RemoteClient::ProcessUDPMessages()
 
 		const ClientRequest* req = reinterpret_cast<const ClientRequest*>( data.GetPayload() );
 		gameRequests.push_back( req );
+
+		data.Process();
 	}
 
 	g_server->ReceiveClientRequests( gameRequests );

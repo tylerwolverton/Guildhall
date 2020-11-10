@@ -55,6 +55,7 @@ void NetworkingSystem::BeginFrame()
 {
 	ProcessTCPCommunication();
 	ProcessUDPCommunication();
+	ClearProcessedUDPMessages();
 }
 
 
@@ -353,6 +354,26 @@ void NetworkingSystem::UDPWriterThreadMain()
 
 
 //-----------------------------------------------------------------------------------------------
+void NetworkingSystem::ClearProcessedUDPMessages()
+{
+	std::vector<int> indicesToDelete;
+
+	for ( int udpMsgIdx = m_udpReceivedMessages.size() - 1; udpMsgIdx >= 0; --udpMsgIdx )
+	{
+		if ( m_udpReceivedMessages[udpMsgIdx].HasBeenProcessed() )
+		{
+			indicesToDelete.push_back( udpMsgIdx );
+		}
+	}
+
+	for ( int idx : indicesToDelete )
+	{
+		m_udpReceivedMessages.erase( m_udpReceivedMessages.begin() + idx );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::StartTCPServer( EventArgs* args )
 {
 	int listenPort = args->GetValue( "port", 48000 );
@@ -555,13 +576,15 @@ std::vector<TCPData> NetworkingSystem::ReceiveTCPMessages()
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<UDPData> NetworkingSystem::ReceiveUDPMessages()
+std::vector<UDPData>& NetworkingSystem::ReceiveUDPMessages()
 {
-	std::vector<UDPData> newMessages = m_udpReceivedMessages;
+	/*std::vector<UDPData> newMessages = m_udpReceivedMessages;
 
-	//m_udpReceivedMessages.clear();
+	m_udpReceivedMessages.clear();
 
-	return newMessages;
+	return newMessages;*/
+
+	return m_udpReceivedMessages;
 }
 
 

@@ -10,6 +10,7 @@
 #include "Game/MultiplayerGame.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/GameEvents.hpp"
+#include "Game/PlayerClient.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -24,7 +25,7 @@ void RemoteServer::Startup( eAppMode appMode )
 {
 	RequestUDPConnection();
 
-	StartGame( appMode );
+	//StartGame( appMode );
 }
 
 
@@ -124,7 +125,7 @@ void RemoteServer::ProcessTCPMessages()
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::ProcessUDPMessages()
 {
-	std::vector<UDPData> newMessages = g_networkingSystem->ReceiveUDPMessages();
+	std::vector<UDPData>& newMessages = g_networkingSystem->ReceiveUDPMessages();
 
 	for ( UDPData& data : newMessages )
 	{
@@ -139,6 +140,14 @@ void RemoteServer::ProcessUDPMessages()
 			case eClientFunctionType::REMOTE_CLIENT_REGISTRATION:
 			{
 				m_remoteClientId = req->clientId;
+
+				StartGame( eAppMode::MULTIPLAYER_CLIENT );
+
+				g_playerClient = new PlayerClient();
+				g_server->RegisterNewClient( g_playerClient );
+				g_playerClient->Startup();
+
+				data.Process();
 			}
 			break;
 		}
