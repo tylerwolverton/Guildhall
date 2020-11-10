@@ -51,6 +51,7 @@ public:
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
 
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
+	std::vector<Entity*> GetAllEntities();
 
 protected:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );

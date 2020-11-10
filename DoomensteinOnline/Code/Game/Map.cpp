@@ -223,6 +223,13 @@ Entity* Map::GetClosestEntityInSector( const Vec2& observerPos, float forwardDeg
 
 
 //-----------------------------------------------------------------------------------------------
+std::vector<Entity*> Map::GetAllEntities()
+{
+	return m_entities;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 {
 	for ( int mapEntityIdx = 0; mapEntityIdx < (int)mapEntityDefs.size(); ++mapEntityIdx )

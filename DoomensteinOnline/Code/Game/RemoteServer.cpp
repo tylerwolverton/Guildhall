@@ -23,6 +23,8 @@ RemoteServer::RemoteServer( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::Startup( eAppMode appMode )
 {
+	UNUSED( appMode );
+
 	RequestUDPConnection();
 
 	//StartGame( appMode );
@@ -156,6 +158,45 @@ void RemoteServer::ProcessUDPMessages()
 				const SetPlayerIdRequest* setPlayerIdReq = reinterpret_cast<const SetPlayerIdRequest*>( data.GetPayload() );
 
 				m_playerClient->SetPlayerId( setPlayerIdReq->playerId );
+
+				data.Process();
+			}
+			break;
+
+			case eClientFunctionType::CREATE_ENTITY:
+			{
+				if ( g_game == nullptr )
+				{
+					break;
+				}
+
+				const CreateEntityRequest* createEntityReq = reinterpret_cast<const CreateEntityRequest*>( data.GetPayload() );
+				g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
+				//Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
+				//if ( newEntity != nullptr
+				//	 && createEntityReq->entityType == eEntityType::PLAYER )
+				//{
+				//	// send player's id back to client and have client possess entity
+				//	m_clients[req->clientId]->SetPlayer( newEntity );
+				//	newEntity->Possess();
+				//}
+
+				data.Process();
+			}
+			break;
+
+			case eClientFunctionType::UPDATE_ENTITY:
+			{
+				if ( g_game == nullptr )
+				{
+					break;
+				}
+
+				const UpdateEntityRequest* updateEntityReq = reinterpret_cast<const UpdateEntityRequest*>( data.GetPayload() );
+				g_game->SetEntityPosition( updateEntityReq->entityId, updateEntityReq->positionVec );
+				g_game->SetEntityOrientation( updateEntityReq->entityId, updateEntityReq->yawOrientationDegrees );
+
+				data.Process();
 			}
 			break;
 		}
@@ -191,6 +232,15 @@ void RemoteServer::RequestUDPConnection()
 void RemoteServer::Update()
 {
 	// Copy state of AuthoritativeServer to game
+	if ( g_game != nullptr )
+	{
+		//g_game->Update();
+	}
+
+	if ( m_playerClient != nullptr )
+	{
+		m_playerClient->Update();
+	}
 }
 
 

@@ -179,7 +179,7 @@ std::vector<const ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRe
 
 		translationXY *= m_player->GetWalkSpeed();
 
-		requests.push_back( new UpdateEntityRequest( m_clientId, m_player->GetId(), translationXY * deltaSeconds, m_player->GetOrientationDegrees() + yawDegrees ) );
+		requests.push_back( new UpdateEntityRequest( m_clientId, m_player->GetId(), m_player->GetPosition() + ( translationXY * deltaSeconds ), m_player->GetOrientationDegrees() + yawDegrees ) );
 	}
 	// No entity possessed, move the camera directly
 	else

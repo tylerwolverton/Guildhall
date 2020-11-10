@@ -169,6 +169,19 @@ Entity* World::CreateEntityInCurrentMap( eEntityType entityType, const Vec2& pos
 
 
 //-----------------------------------------------------------------------------------------------
+std::vector<Entity*> World::GetEntitiesInCurrentMap()
+{
+	if ( m_curMap == nullptr )
+	{
+		g_devConsole->PrintWarning( Stringf( "Tried to request entities in nonexistent current map" ) );
+		return std::vector<Entity*>();
+	}
+
+	return m_curMap->GetAllEntities();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void World::AddEntity( Entity* entity )
 {
 	if ( entity == nullptr )

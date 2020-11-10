@@ -2,6 +2,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Networking/NetworkingSystem.hpp"
 #include "Game/Server.hpp"
+#include "Game/Game.hpp"
 #include "Game/GameEvents.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -28,6 +29,31 @@ void RemoteClient::Shutdown()
 void RemoteClient::Update()
 {
 	ProcessUDPMessages();
+
+	if ( !m_hasSentInitialState )
+	{
+		std::vector<Entity*> entities = g_game->GetEntitiesInCurrentMap();
+
+		for ( Entity* entity : entities )
+		{
+			CreateEntityRequest req( m_clientId, entity->GetId(), entity->GetType(), entity->GetPosition(), entity->GetOrientationDegrees() );
+
+			g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+		}
+
+		m_hasSentInitialState = true;
+	}
+	else
+	{
+		std::vector<Entity*> entities = g_game->GetEntitiesInCurrentMap();
+
+		for ( Entity* entity : entities )
+		{
+			UpdateEntityRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
+
+			g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+		}
+	}
 }
 
 

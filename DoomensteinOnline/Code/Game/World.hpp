@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -34,6 +35,7 @@ public:
 	bool IsMapLoaded( const std::string& mapName );
 
 	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
+	std::vector<Entity*> GetEntitiesInCurrentMap();
 
 	void AddEntity( Entity* entity );
 	Entity* GetEntityById( EntityId entityId );

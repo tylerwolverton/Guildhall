@@ -431,6 +431,13 @@ Entity* Game::CreateEntityInCurrentMap( eEntityType entityType, const Vec2& posi
 
 
 //-----------------------------------------------------------------------------------------------
+std::vector<Entity*> Game::GetEntitiesInCurrentMap()
+{
+	return m_world->GetEntitiesInCurrentMap();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::MovePlayer( Entity* player, const Vec2& translationVec )
 {
 	if ( player == nullptr )
@@ -453,6 +460,20 @@ void Game::MoveEntity( EntityId entityId, const Vec2& translationVec )
 	}
 
 	entity->Translate( translationVec );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetEntityPosition( EntityId entityId, const Vec2& newPosition )
+{
+	Entity* entity = m_world->GetEntityById( entityId );
+
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	entity->SetPosition( newPosition );
 }
 
 

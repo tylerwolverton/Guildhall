@@ -169,13 +169,13 @@ struct UpdateEntityRequest : ClientRequest
 public:
 	EntityId entityId = -1;
 	float yawOrientationDegrees = 0.f;
-	Vec2 translationVec = Vec2::ZERO;
+	Vec2 positionVec = Vec2::ZERO;
 
 public:
-	UpdateEntityRequest( int clientIdIn, EntityId entityIdIn, const Vec2& translationVecIn, float yawOrientationDegreesIn )
+	UpdateEntityRequest( int clientIdIn, EntityId entityIdIn, const Vec2& positionVecIn, float yawOrientationDegreesIn )
 		: ClientRequest( clientIdIn, eClientFunctionType::UPDATE_ENTITY )
 		, entityId( entityIdIn )
-		, translationVec( translationVecIn )
+		, positionVec( positionVecIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )
 	{
 	}

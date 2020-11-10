@@ -42,6 +42,7 @@ public:
 	void		 SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 	std::string  GetName() const										{ return m_entityDef.m_name; }
 	eEntityClass GetClass() const										{ return m_entityDef.m_class; }
+	eEntityType  GetType() const										{ return m_entityDef.m_type; }
 				 
 	void		 AddVelocity( const Vec2& deltaVelocity )				{ m_velocity += deltaVelocity; }
 	void		 Translate( const Vec2& translation )					{ m_position += translation; }

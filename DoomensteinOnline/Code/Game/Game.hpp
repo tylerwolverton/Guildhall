@@ -47,11 +47,13 @@ public:
 	void			WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
 	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
+	std::vector<Entity*> GetEntitiesInCurrentMap();
+
 	void MovePlayer( Entity* player, const Vec2& translationVec );
 	void MoveEntity( EntityId entityId, const Vec2& translationVec );
+	void SetEntityPosition( EntityId entityId, const Vec2& newPosition );
 	void SetEntityOrientation( EntityId entityId, float yawOrientationDegrees );
 	void PossessEntity( Entity*& player, const Transform& cameraTransform );
-	void PossessEntity( Entity* player );
 	void UnpossessEntity( Entity*& player );
 	
 public:

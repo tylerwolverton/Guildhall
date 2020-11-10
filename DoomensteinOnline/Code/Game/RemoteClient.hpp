@@ -19,4 +19,6 @@ public:
 
 private:
 	void ProcessUDPMessages();
+
+	bool m_hasSentInitialState = false;
 };
