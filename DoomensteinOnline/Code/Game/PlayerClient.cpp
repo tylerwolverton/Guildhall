@@ -497,6 +497,18 @@ float PlayerClient::GetAverageFPS() const
 
 
 //-----------------------------------------------------------------------------------------------
+EntityId PlayerClient::GetPlayerId() const
+{
+	if ( m_player == nullptr )
+	{
+		return -1;
+	}
+
+	return m_player->GetId();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void PlayerClient::SetPlayerId( EntityId playerId )
 {
 	if ( m_player == nullptr )

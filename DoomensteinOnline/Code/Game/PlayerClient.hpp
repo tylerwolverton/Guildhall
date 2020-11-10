@@ -40,6 +40,7 @@ public:
 	virtual void	SetClientId( int id ) override												{ m_clientId = id; }
 
 	virtual void	SetPlayer( Entity* playerEntity ) override									{ m_player = playerEntity; }
+	EntityId		GetPlayerId() const;
 	void			SetPlayerId( EntityId playerId );
 
 	// Events

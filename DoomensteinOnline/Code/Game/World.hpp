@@ -23,6 +23,7 @@ public:
 	~World();
 
 	void Update();
+	void UpdateMesh();
 	void Render() const;
 	void DebugRender() const;
 

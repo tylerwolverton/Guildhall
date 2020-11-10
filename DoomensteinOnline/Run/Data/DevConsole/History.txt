@@ -308,3 +308,9 @@ start_multiplayer_server
 connect_to_multiplayer_server
 start_multiplayer_server
 connect_to_multiplayer_server
+start_multiplayer_server
+stop_tcp_server
+close_udp_port
+start_multiplayer_server
+connect_to_multiplayer_server
+start_multiplayer_server

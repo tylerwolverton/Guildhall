@@ -37,6 +37,7 @@ public:
 
 	virtual void	Startup();
 	virtual void	Update();
+	virtual void	UpdateWorldMesh();
 	virtual void	Render() const;
 	virtual void	Shutdown();
 

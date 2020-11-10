@@ -156,7 +156,7 @@ void RemoteServer::ProcessUDPMessages()
 			case eClientFunctionType::SET_PLAYER_ID:
 			{
 				const SetPlayerIdRequest* setPlayerIdReq = reinterpret_cast<const SetPlayerIdRequest*>( data.GetPayload() );
-
+				
 				m_playerClient->SetPlayerId( setPlayerIdReq->playerId );
 
 				data.Process();
@@ -167,19 +167,21 @@ void RemoteServer::ProcessUDPMessages()
 			{
 				if ( g_game == nullptr )
 				{
+					data.Process();
 					break;
 				}
 
 				const CreateEntityRequest* createEntityReq = reinterpret_cast<const CreateEntityRequest*>( data.GetPayload() );
-				g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
-				//Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
-				//if ( newEntity != nullptr
-				//	 && createEntityReq->entityType == eEntityType::PLAYER )
-				//{
-				//	// send player's id back to client and have client possess entity
-				//	m_clients[req->clientId]->SetPlayer( newEntity );
-				//	newEntity->Possess();
-				//}
+				//g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
+				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
+				if ( newEntity != nullptr
+					 && createEntityReq->entityType == eEntityType::PLAYER
+					 && createEntityReq->entityId == m_playerClient->GetPlayerId() )
+				{
+					// send player's id back to client and have client possess entity
+					m_playerClient->SetPlayer( newEntity );
+					newEntity->Possess();
+				}
 
 				data.Process();
 			}
@@ -189,6 +191,7 @@ void RemoteServer::ProcessUDPMessages()
 			{
 				if ( g_game == nullptr )
 				{
+					data.Process();
 					break;
 				}
 
@@ -234,7 +237,7 @@ void RemoteServer::Update()
 	// Copy state of AuthoritativeServer to game
 	if ( g_game != nullptr )
 	{
-		//g_game->Update();
+		g_game->UpdateWorldMesh();
 	}
 
 	if ( m_playerClient != nullptr )
