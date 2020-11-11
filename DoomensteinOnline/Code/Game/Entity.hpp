@@ -18,6 +18,7 @@ class Entity
 {
 	friend class Map;
 	friend class TileMap;
+	friend class Game;
 	
 public:
 	Entity( const EntityDefinition& entityDef );

@@ -214,6 +214,18 @@ Entity* World::GetEntityById( EntityId entityId )
 
 
 //-----------------------------------------------------------------------------------------------
+void World::DeleteAllEntities()
+{
+	for ( auto& mapIter : m_loadedMaps )
+	{
+		mapIter.second->DeleteAllEntities();
+	}
+
+	m_entities.clear();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Map* World::GetLoadedMapByName( const std::string& mapName )
 {
 	auto mapIter = m_loadedMaps.find( mapName );

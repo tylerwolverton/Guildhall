@@ -91,10 +91,10 @@ void RemoteClient::SetClientId( int id )
 //-----------------------------------------------------------------------------------------------
 void RemoteClient::SetPlayer( Entity* entity )
 {
-	//m_playerId = entity->GetId();
+	m_playerId = entity->GetId();
 
-	//SetPlayerIdRequest req( m_clientId, m_playerId );
-	SetPlayerIdRequest req( m_clientId, entity->GetId() );
+	SetPlayerIdRequest req( m_clientId, m_playerId );
+	//SetPlayerIdRequest req( m_clientId, entity->GetId() );
 	g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
 
 	m_remoteServerInitState = eInitializationState::ACKED;

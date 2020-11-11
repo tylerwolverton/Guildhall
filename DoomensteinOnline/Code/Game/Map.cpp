@@ -230,6 +230,13 @@ std::vector<Entity*> Map::GetAllEntities()
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::DeleteAllEntities()
+{
+	PTR_VECTOR_SAFE_DELETE( m_entities );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 {
 	for ( int mapEntityIdx = 0; mapEntityIdx < (int)mapEntityDefs.size(); ++mapEntityIdx )

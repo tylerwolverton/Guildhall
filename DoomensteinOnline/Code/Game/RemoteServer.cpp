@@ -76,6 +76,7 @@ void RemoteServer::StartGame( eAppMode appMode )
 	}
 
 	g_game->Startup();
+	g_game->DeleteAllEntities();
 }
 
 
@@ -184,7 +185,7 @@ void RemoteServer::ProcessUDPMessages()
 				//g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
 				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
 				if ( newEntity != nullptr
-					 && createEntityReq->entityType == eEntityType::PLAYER
+					 //&& createEntityReq->entityType == eEntityType::PLAYER
 					 && createEntityReq->entityId == m_playerClient->GetPlayerId() )
 				{
 					// send player's id back to client and have client possess entity
@@ -230,7 +231,6 @@ void RemoteServer::RequestUDPConnection()
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::Update()
 {
-	// Copy state of AuthoritativeServer to game
 	if ( g_game != nullptr )
 	{
 		g_game->UpdateWorldMesh();

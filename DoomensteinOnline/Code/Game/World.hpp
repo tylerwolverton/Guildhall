@@ -41,6 +41,8 @@ public:
 	void AddEntity( Entity* entity );
 	Entity* GetEntityById( EntityId entityId );
 
+	void DeleteAllEntities();
+
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
 

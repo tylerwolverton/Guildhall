@@ -49,6 +49,7 @@ public:
 
 	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
 	std::vector<Entity*> GetEntitiesInCurrentMap();
+	void DeleteAllEntities();
 
 	void MovePlayer( Entity* player, const Vec2& translationVec );
 	void MoveEntity( EntityId entityId, const Vec2& translationVec );

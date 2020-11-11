@@ -52,6 +52,7 @@ public:
 
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 	std::vector<Entity*> GetAllEntities();
+	void DeleteAllEntities();
 
 protected:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );

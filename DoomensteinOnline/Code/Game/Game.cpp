@@ -55,6 +55,7 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
+	Entity::s_nextEntityId = 0;
 }
 
 
@@ -447,6 +448,13 @@ Entity* Game::CreateEntityInCurrentMap( eEntityType entityType, const Vec2& posi
 std::vector<Entity*> Game::GetEntitiesInCurrentMap()
 {
 	return m_world->GetEntitiesInCurrentMap();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::DeleteAllEntities()
+{
+	m_world->DeleteAllEntities();
 }
 
 
