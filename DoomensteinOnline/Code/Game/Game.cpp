@@ -445,6 +445,13 @@ Entity* Game::CreateEntityInCurrentMap( eEntityType entityType, const Vec2& posi
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* Game::CreateEntityInCurrentMap( EntityId id, eEntityType entityType, const Vec2& position, float yawOrientationDegrees )
+{
+	return m_world->CreateEntityInCurrentMap( id, entityType, position, yawOrientationDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::vector<Entity*> Game::GetEntitiesInCurrentMap()
 {
 	return m_world->GetEntitiesInCurrentMap();

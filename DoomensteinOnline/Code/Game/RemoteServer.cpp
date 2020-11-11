@@ -183,13 +183,18 @@ void RemoteServer::ProcessUDPMessages()
 
 				const CreateEntityRequest* createEntityReq = reinterpret_cast<const CreateEntityRequest*>( data.GetPayload() );
 				//g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
-				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
-				if ( newEntity != nullptr
-					 //&& createEntityReq->entityType == eEntityType::PLAYER
-					 && createEntityReq->entityId == m_playerClient->GetPlayerId() )
+				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityId, createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
+				if ( newEntity == nullptr )
+				{
+					data.Process();
+					break;
+				}
+				
+				//newEntity->SetId( createEntityReq->entityId );
+				//&& createEntityReq->entityType == eEntityType::PLAYER
+				if( createEntityReq->entityId == m_playerClient->GetPlayerId() )
 				{
 					// send player's id back to client and have client possess entity
-					newEntity->SetId( createEntityReq->entityId );
 					m_playerClient->SetPlayer( newEntity );
 					newEntity->Possess();
 				}

@@ -48,6 +48,7 @@ public:
 	void			WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
 	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
+	Entity* CreateEntityInCurrentMap( EntityId id, eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
 	std::vector<Entity*> GetEntitiesInCurrentMap();
 	void DeleteAllEntities();
 

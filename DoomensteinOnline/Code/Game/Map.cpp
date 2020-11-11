@@ -162,6 +162,83 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* Map::SpawnNewEntityOfType( EntityId id, const std::string& entityDefName )
+{
+	std::string entityTypeName = entityDefName;
+	// Special case to handle spawning a new player
+	if ( entityTypeName == "Player" )
+	{
+		entityTypeName = g_gameConfigBlackboard.GetValue( "playerEntityType", "" );
+	}
+
+	EntityDefinition* entityDef = EntityDefinition::GetEntityDefinition( entityTypeName );
+	if ( entityDef == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "Tried to spawn unrecognized entity '%s'", entityTypeName.c_str() ) );
+		return nullptr;
+	}
+
+	return SpawnNewEntityOfType( id, *entityDef );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::SpawnNewEntityOfType( EntityId id, const EntityDefinition& entityDef )
+{
+	Entity* newEntity = nullptr;
+
+	switch ( entityDef.GetClass() )
+	{
+		case eEntityClass::ACTOR:
+		{
+			newEntity = new Actor( entityDef );
+			m_entities.push_back( newEntity );
+		}
+		break;
+
+		case eEntityClass::PROJECTILE:
+		{
+			newEntity = new Projectile( entityDef );
+			m_entities.push_back( newEntity );
+		}
+		break;
+
+		case eEntityClass::PORTAL:
+		{
+			newEntity = new Portal( entityDef );
+			m_entities.push_back( newEntity );
+			m_portals.push_back( (Portal*)newEntity );
+		}
+		break;
+
+		case eEntityClass::ENTITY:
+		{
+			newEntity = new Entity( entityDef );
+			m_entities.push_back( newEntity );
+		}
+		break;
+
+		default:
+		{
+			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
+		}
+	}
+
+	if ( newEntity != nullptr )
+	{
+		newEntity->SetId( id );
+	}
+
+	if ( m_world != nullptr )
+	{
+		m_world->AddEntity( newEntity );
+	}
+
+	return newEntity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )

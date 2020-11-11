@@ -45,7 +45,9 @@ public:
 	virtual void DebugRender() const;
 
 	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
+	virtual Entity* SpawnNewEntityOfType( EntityId id, const std::string& entityDefName );
 	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
+	virtual Entity* SpawnNewEntityOfType( EntityId id, const EntityDefinition& entityDef );
 
 	void RemoveOwnershipOfEntity( Entity* entityToRemove );
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
