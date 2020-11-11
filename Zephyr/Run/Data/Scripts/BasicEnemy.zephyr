@@ -51,6 +51,18 @@ StateMachine
 		targetPosition = newPos;
 	}
 	
+	// Damage
+    Number attackDamage = 1;
+	Number otherId;
+    OnEvent( EnterCollision )
+    {
+        if( otherId != -1 )
+        {
+            FireEvent( DamageEntity( id = otherId, damage = attackDamage ) );
+            //FireEvent( AddScreenShake( intensity = .05 ) );
+        }
+    }
+
 	// -----------------------------------------------------------------------------------------
 	// Wander
 	// -----------------------------------------------------------------------------------------

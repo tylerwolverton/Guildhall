@@ -33,6 +33,7 @@ private:
 	void EndDialogue( EventArgs* args );
 	void AddLineOfDialogueText( EventArgs* args );
 	void AddDialogueChoice( EventArgs* args );
+	void StartInvincibility( EventArgs* args );
 	void WinGame( EventArgs* args );
 
 	// AI

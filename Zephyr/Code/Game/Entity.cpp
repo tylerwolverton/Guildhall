@@ -85,6 +85,13 @@ void Entity::Update( float deltaSeconds )
 	{
 		m_scriptObj->Update();
 	}
+
+	if ( m_invincibilityTimer.IsRunning()
+		 && m_invincibilityTimer.HasElapsed() )
+	{
+		m_isInvincible = false;
+		m_invincibilityTimer.Stop();
+	}
 }
 
 
@@ -266,9 +273,19 @@ void Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::StartInvincibility( float durationSeconds )
+{
+	m_isInvincible = true;
+	m_invincibilityTimer.Reset();
+	m_invincibilityTimer.SetSeconds( (double)durationSeconds );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::TakeDamage( float damage )
 {
-	if ( IsDead() )
+	if ( IsDead() 
+		 || IsInvincible() )
 	{
 		return;
 	}
@@ -285,6 +302,11 @@ void Entity::TakeDamage( float damage )
 		args.SetValue( "newHealth", m_curHealth );
 
 		m_scriptObj->FireEvent( "HealthUpdated", &args );
+	}
+
+	if ( m_isPlayer )
+	{
+		StartInvincibility( 2.f );
 	}
 }
 

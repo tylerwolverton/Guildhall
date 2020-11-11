@@ -70,7 +70,7 @@ public:
 protected:
 	bool			m_isValid = false;
 	std::string		m_name;
-	eEntityType		m_type;
+	eEntityType		m_type = eEntityType::NONE;
 	eEntityClass	m_class = eEntityClass::UNKNOWN;
 	//std::string		m_type;
 	float			m_physicsRadius = 0.f;

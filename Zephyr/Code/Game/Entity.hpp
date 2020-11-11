@@ -4,6 +4,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Time/Timer.hpp"
 #include "Game/EntityDefinition.hpp"
 #include "Game/Scripting/ZephyrCommon.hpp"
 
@@ -82,9 +83,12 @@ public:
 	void			FireSpawnEvent();
 	void			FireScriptEvent( const std::string& eventName, EventArgs* args );
 
+	void			StartInvincibility( float durationSeconds );
+
 	bool			IsDead() const											{ return m_isDead; }
 	bool			IsGarbage() const										{ return m_isGarbage; }
 	bool			IsPlayer() const										{ return m_isPlayer; }
+	bool			IsInvincible() const									{ return m_isInvincible; }
 				 
 	void			TakeDamage( float damage );
 	//void			ApplyFriction();
@@ -114,6 +118,9 @@ protected:
 	bool							m_isPlayer = false;
 	Map*							m_map = nullptr;
 	std::vector<Entity*>			m_inventory;									// entity owns all items in inventory
+	
+	bool							m_isInvincible = false;
+	Timer							m_invincibilityTimer;
 
 	Entity*							m_dialoguePartner = nullptr;
 

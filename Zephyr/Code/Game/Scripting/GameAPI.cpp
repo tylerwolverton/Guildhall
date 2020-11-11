@@ -33,6 +33,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( EndDialogue );
 	REGISTER_EVENT( AddLineOfDialogueText );
 	REGISTER_EVENT( AddDialogueChoice );
+	REGISTER_EVENT( StartInvincibility );
 	REGISTER_EVENT( WinGame );
 
 	REGISTER_EVENT( MoveToLocation );
@@ -125,6 +126,13 @@ void GameAPI::AddDialogueChoice( EventArgs* args )
 	std::string text = args->GetValue( "text", "" );
 
 	g_game->AddDialogueChoice( name, text );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::StartInvincibility( EventArgs* args )
+{
+
 }
 
 
