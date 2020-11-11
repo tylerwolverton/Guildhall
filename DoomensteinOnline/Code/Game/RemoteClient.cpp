@@ -57,6 +57,7 @@ void RemoteClient::Update()
 				CreateEntityRequest req( m_clientId, entity->GetId(), entity->GetType(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
 				g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+				Sleep( 10 );
 			}
 
 			m_hasSentInitialState = true;

@@ -117,9 +117,9 @@ struct CreateEntityRequest : ClientRequest
 {
 public:
 	EntityId entityId = -1;
-	eEntityType entityType = eEntityType::NONE;
 	float yawOrientationDegrees = 0.f;
 	Vec2 position = Vec2::ZERO;
+	eEntityType entityType = eEntityType::NONE;
 
 public:
 	CreateEntityRequest( int clientIdIn, EntityId entityIdIn, eEntityType entityTypeIn, const Vec2& positionIn, float yawOrientationDegreesIn )
