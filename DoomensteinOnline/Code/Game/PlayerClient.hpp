@@ -75,6 +75,7 @@ private:
 	float m_fpsHistory[FRAME_HISTORY_COUNT];
 
 	Entity* m_player = nullptr;
+	EntityId m_playerId = -1;
 
 	bool m_isPaused = false;
 	bool m_isDebugRendering = false;

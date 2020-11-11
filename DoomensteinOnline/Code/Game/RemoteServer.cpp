@@ -141,13 +141,16 @@ void RemoteServer::ProcessUDPMessages()
 		{
 			case eClientFunctionType::REMOTE_CLIENT_REGISTRATION:
 			{
-				m_remoteClientId = req->clientId;
+				if ( m_remoteClientId == -1 )
+				{
+					m_remoteClientId = req->clientId;
 
-				StartGame( eAppMode::MULTIPLAYER_CLIENT );
+					StartGame( eAppMode::MULTIPLAYER_CLIENT );
 
-				g_playerClient = new PlayerClient();
-				g_server->RegisterNewClient( g_playerClient );
-				g_playerClient->Startup();
+					g_playerClient = new PlayerClient();
+					g_server->RegisterNewClient( g_playerClient );
+					g_playerClient->Startup();
+				}
 
 				data.Process();
 			}
@@ -157,7 +160,13 @@ void RemoteServer::ProcessUDPMessages()
 			{
 				const SetPlayerIdRequest* setPlayerIdReq = reinterpret_cast<const SetPlayerIdRequest*>( data.GetPayload() );
 				
-				m_playerClient->SetPlayerId( setPlayerIdReq->playerId );
+				if ( m_playerClient->GetPlayerId() == -1 )
+				{
+					m_playerClient->SetPlayerId( setPlayerIdReq->playerId );
+				}
+
+				SetPlayerIdAckRequest ackReq( m_remoteClientId );
+				g_networkingSystem->SendUDPMessage( 4820, &ackReq, sizeof( ackReq ) );
 
 				data.Process();
 			}
@@ -179,6 +188,7 @@ void RemoteServer::ProcessUDPMessages()
 					 && createEntityReq->entityId == m_playerClient->GetPlayerId() )
 				{
 					// send player's id back to client and have client possess entity
+					newEntity->SetId( createEntityReq->entityId );
 					m_playerClient->SetPlayer( newEntity );
 					newEntity->Possess();
 				}
@@ -214,20 +224,6 @@ void RemoteServer::RequestUDPConnection()
 
 	RequestConnectionRequest req( m_remoteClientId );
 	g_networkingSystem->SendTCPMessage( &req, sizeof( req ) );
-
-	/*m_tcpClientSocket = g_networkingSystem->ConnectTCPClientToServer( m_ipAddress, m_tcpPort );
-
-	if ( m_tcpClientSocket->IsValid() )
-	{
-		std::array<char, 256> buffer;
-		RequestConnectionRequest* req = new RequestConnectionRequest( -1 );
-		
-		memcpy( &buffer[0], (void*)req, sizeof(*req) );
-
-		m_tcpClientSocket->Send( &buffer[0], sizeof( *req ) );
-
-		delete req;
-	}*/
 }
 
 

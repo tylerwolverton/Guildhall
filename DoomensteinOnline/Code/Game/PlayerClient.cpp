@@ -48,6 +48,7 @@ void PlayerClient::Startup()
 	}
 	
 	m_gameClock = new Clock();
+
 	g_renderer->Setup( m_gameClock );
 
 	EnableDebugRendering();
@@ -499,25 +500,18 @@ float PlayerClient::GetAverageFPS() const
 //-----------------------------------------------------------------------------------------------
 EntityId PlayerClient::GetPlayerId() const
 {
-	if ( m_player == nullptr )
-	{
-		return -1;
-	}
-
-	return m_player->GetId();
+	return m_playerId;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::SetPlayerId( EntityId playerId )
 {
-	if ( m_player == nullptr )
+	m_playerId = playerId;
+	if ( m_player != nullptr )
 	{
-		m_player = g_game->CreateEntityInCurrentMap( eEntityType::PLAYER, Vec2( 5.5f, 4.f ), 0.f );
-		m_player->Possess();
+		m_player->SetId( playerId );
 	}
-
-	m_player->SetId( playerId );
 }
 
 

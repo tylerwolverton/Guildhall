@@ -1,5 +1,15 @@
 #pragma once
 #include "Game/Client.hpp"
+#include "Game/GameCommon.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+enum eInitializationState
+{
+	NOT_SENT,
+	SENT,
+	ACKED
+};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -21,4 +31,8 @@ private:
 	void ProcessUDPMessages();
 
 	bool m_hasSentInitialState = false;
+
+	EntityId m_playerId = -1;
+	eInitializationState m_remoteServerInitState = eInitializationState::NOT_SENT;
+	eInitializationState m_remoteServerPlayerIdInitState = eInitializationState::NOT_SENT;
 };

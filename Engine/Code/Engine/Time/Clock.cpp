@@ -68,7 +68,8 @@ void Clock::Update( double deltaSeconds )
 	if ( minDeltaDiff > 0.f )
 	{
 		deltaSeconds = m_minFrameTime;
-		Sleep( DWORD( minDeltaDiff * 1000.0 ) );
+		DWORD sleepTime = DWORD( minDeltaDiff * 1000.0 );
+		Sleep( sleepTime );
 	}
 
 	if ( m_isPaused )

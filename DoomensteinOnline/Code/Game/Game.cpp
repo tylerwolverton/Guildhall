@@ -61,6 +61,11 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	if ( m_isGameStarted )
+	{
+		return;
+	}
+
 	Transform::s_axisOrientation.m_axisYawPitchRollOrder = eAxisYawPitchRollOrder::ZYX;
 
 	Transform::s_identityOrientation.PushTransform( Mat44::CreateZRotationDegrees( -90.f ) );
@@ -81,6 +86,7 @@ void Game::Startup()
 	m_world->ChangeMap( m_curMapStr );
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
+	m_isGameStarted = true;
 }
 
 

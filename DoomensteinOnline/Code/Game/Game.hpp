@@ -73,6 +73,8 @@ private:
 	void WarpMapCommand( EventArgs* args );
 
 private:
+	bool m_isGameStarted = false;
+
 	Clock* m_gameClock = nullptr;
 
 	World* m_world = nullptr;

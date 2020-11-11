@@ -191,6 +191,7 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	inputStringBounds.mins.y = inputCursorBounds.maxs.y;
 
 	std::vector<Vertex_PCU> vertices;
+	vertices.reserve( 2000 );
 	
 	RenderBackground( bounds );
 	AppendVertsForLatestLogMessages( vertices, logMessageBounds, lineHeight );
@@ -267,7 +268,7 @@ void DevConsole::AppendVertsForLatestLogMessages( std::vector<Vertex_PCU>& verti
 	{
 		numLinesToRender = m_latestLogMessageToPrint;
 	}
-	
+
 	float curLineY = 1;
 	int latestMessageIndex = m_latestLogMessageToPrint;
 

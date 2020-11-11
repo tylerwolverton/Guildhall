@@ -24,6 +24,7 @@ enum eClientFunctionType
 	POSSESS_ENTITY,
 	UNPOSSESS_ENTITY,
 	SET_PLAYER_ID,
+	SET_PLAYER_ID_ACK,
 
 	REQUEST_CONNECTION,
 	RESPONSE_TO_CONNECTION_REQUEST,
@@ -212,6 +213,19 @@ public:
 	SetPlayerIdRequest( int clientIdIn, EntityId playerIdIn )
 		: ClientRequest( clientIdIn, eClientFunctionType::SET_PLAYER_ID )
 		, playerId( playerIdIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct SetPlayerIdAckRequest : ClientRequest
+{
+public:
+
+public:
+	SetPlayerIdAckRequest( int clientIdIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::SET_PLAYER_ID_ACK )
 	{
 	}
 };

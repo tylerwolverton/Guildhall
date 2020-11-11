@@ -30,18 +30,37 @@ void RemoteClient::Update()
 {
 	ProcessUDPMessages();
 
+	// Retry initial message if not acked yet
+	if ( m_remoteServerInitState == eInitializationState::SENT )
+	{
+		RemoteClientRegistrationRequest req( m_clientId );
+		g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+	}
+
+	// Retry set player id message if not acked yet
+	if ( m_remoteServerPlayerIdInitState == eInitializationState::SENT )
+	{
+		SetPlayerIdRequest req( m_clientId, m_playerId );
+		g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+	}
+
+	// Send initial state if everything is acked and it hasn't been sent yet
 	if ( !m_hasSentInitialState )
 	{
-		std::vector<Entity*> entities = g_game->GetEntitiesInCurrentMap();
-
-		for ( Entity* entity : entities )
+		if ( m_remoteServerInitState == eInitializationState::ACKED
+			 && m_remoteServerPlayerIdInitState == eInitializationState::ACKED )
 		{
-			CreateEntityRequest req( m_clientId, entity->GetId(), entity->GetType(), entity->GetPosition(), entity->GetOrientationDegrees() );
+			std::vector<Entity*> entities = g_game->GetEntitiesInCurrentMap();
 
-			g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+			for ( Entity* entity : entities )
+			{
+				CreateEntityRequest req( m_clientId, entity->GetId(), entity->GetType(), entity->GetPosition(), entity->GetOrientationDegrees() );
+
+				g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+			}
+
+			m_hasSentInitialState = true;
 		}
-
-		m_hasSentInitialState = true;
 	}
 	else
 	{
@@ -63,17 +82,23 @@ void RemoteClient::SetClientId( int id )
 	m_clientId = id;
 	// Send a message to RemoteServer to set player client's id
 	RemoteClientRegistrationRequest req( m_clientId );
-
 	g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+
+	m_remoteServerInitState = eInitializationState::SENT;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void RemoteClient::SetPlayer( Entity* entity )
 {
-	SetPlayerIdRequest req( m_clientId, entity->GetId() );
+	//m_playerId = entity->GetId();
 
+	//SetPlayerIdRequest req( m_clientId, m_playerId );
+	SetPlayerIdRequest req( m_clientId, entity->GetId() );
 	g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+
+	m_remoteServerInitState = eInitializationState::ACKED;
+	m_remoteServerPlayerIdInitState = eInitializationState::SENT;
 }
 
 
@@ -106,6 +131,12 @@ void RemoteClient::ProcessUDPMessages()
 			{
 				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
 				gameRequests.push_back( updateEntityReq );
+			}
+			break;
+
+			case eClientFunctionType::SET_PLAYER_ID_ACK:
+			{
+				m_remoteServerPlayerIdInitState = eInitializationState::ACKED;
 			}
 			break;
 		}
