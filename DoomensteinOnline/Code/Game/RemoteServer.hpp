@@ -36,4 +36,6 @@ private:
 	PlayerClient* m_playerClient = nullptr;
 
 	int m_remoteClientId = -1;
+
+	int m_udpBindPort = 4800;
 };

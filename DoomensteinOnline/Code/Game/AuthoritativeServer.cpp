@@ -95,9 +95,10 @@ void AuthoritativeServer::ProcessTCPMessages()
 			case eClientFunctionType::REQUEST_CONNECTION:
 			{
 				int clientKey = m_rng.RollRandomIntInRange( 0, INT_MAX );
-				int udpPort = m_rng.RollRandomIntInRange( 4850, 4950 );
+				int udpPort = m_rng.RollRandomIntInRange( 4850, 4920 );
+				int udpBindPort = m_rng.RollRandomIntInRange( 4921, 4970 );
 
-				ResponseToConnectionRequest response( -1, clientKey, udpPort, (uint16_t)data.GetFromIPAddress().size() );
+				ResponseToConnectionRequest response( -1, clientKey, udpPort, udpBindPort, (uint16_t)data.GetFromIPAddress().size() );
 				 
 				std::array<char, 256> buffer;
 				
@@ -111,7 +112,7 @@ void AuthoritativeServer::ProcessTCPMessages()
 
 				g_networkingSystem->SendTCPMessage( &buffer, sizeof( response ) + response.size );
 
-				g_networkingSystem->OpenUDPPort( udpPort, 4820 );
+				g_networkingSystem->OpenUDPPort( udpBindPort, udpPort );
 			}
 			break;
 		}
