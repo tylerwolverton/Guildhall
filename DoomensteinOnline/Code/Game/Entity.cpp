@@ -2,6 +2,7 @@
 #include "Game/EntityDefinition.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/EngineCommon.hpp"
@@ -27,6 +28,11 @@ Entity::Entity( const EntityDefinition& entityDef )
 	: m_entityDef( entityDef )
 {
 	m_id = s_nextEntityId++;
+
+	if ( entityDef.m_type == eEntityType::PINKY )
+	{
+		GetNewWanderDestination();
+	}
 }
 
 
@@ -34,6 +40,16 @@ Entity::Entity( const EntityDefinition& entityDef )
 void Entity::Update( float deltaSeconds )
 {
 	m_cumulativeTime += deltaSeconds;
+
+	if ( m_entityDef.GetType() == eEntityType::PINKY )
+	{
+		if ( m_wanderTimer.HasElapsed() )
+		{
+			GetNewWanderDestination();
+		}
+
+		m_velocity = m_entityDef.GetWalkSpeed() * GetForwardVector();
+	}
 
 	// vel += acceleration * dt;
 	m_velocity += m_linearAcceleration * deltaSeconds;
@@ -114,6 +130,17 @@ void Entity::DebugRender() const
 	}
 
 	DebugAddWorldWireCylinder( Vec3( m_position, 0.f ), Vec3( m_position, m_entityDef.m_height ), m_entityDef.m_physicsRadius, Rgba8::CYAN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::GetNewWanderDestination()
+{
+	Vec2 newWanderDestination = Vec2( g_game->m_rng->RollRandomFloatInRange( 0.f, 10.f ), g_game->m_rng->RollRandomFloatInRange( 0.f, 10.f ) );
+	m_wanderDirection = ( newWanderDestination - m_position ).GetNormalized();
+	m_orientationDegrees = m_wanderDirection.GetOrientationDegrees();
+	m_wanderTimer.SetSeconds( m_wanderSeconds );
+	m_wanderTimer.Reset();
 }
 
 

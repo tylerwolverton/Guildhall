@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Time/Timer.hpp"
 #include "Game/EntityDefinition.hpp"
 
 #include <string>
@@ -28,6 +29,8 @@ public:
 	virtual void Render() const;
 	virtual void Die();
 	virtual void DebugRender() const;
+
+	void		 GetNewWanderDestination();
 
 	EntityId	 GetId() const											{ return m_id; }
 	void		 SetId( EntityId id )									{ m_id = id; }
@@ -77,6 +80,11 @@ protected:
 	bool					m_canBePushedByWalls = false;
 	bool					m_canBePushedByEntities = false;
 	bool					m_canPushEntities = false;
+
+	// AI
+	Vec2					m_wanderDirection;
+	float					m_wanderSeconds = 2.f;
+	Timer					m_wanderTimer;
 
 	// Visual
 	float					m_cumulativeTime = 0.f;

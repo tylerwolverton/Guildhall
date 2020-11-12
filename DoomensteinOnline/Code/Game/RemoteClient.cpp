@@ -73,7 +73,7 @@ void RemoteClient::Update()
 
 			g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
 
-			std::this_thread::sleep_for( std::chrono::microseconds( 5 ) );
+			std::this_thread::sleep_for( std::chrono::microseconds( 2 ) );
 		}
 	}
 }
