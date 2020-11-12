@@ -9,6 +9,15 @@
 
 
 //-----------------------------------------------------------------------------------------------
+RemoteClient::RemoteClient( const ConnectionInfo& connectionInfo )
+	: Client()
+	, m_connectionInfo( connectionInfo )
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RemoteClient::Startup()
 {
 	// Some config to talk to server
@@ -34,14 +43,14 @@ void RemoteClient::Update()
 	if ( m_remoteServerInitState == eInitializationState::SENT )
 	{
 		RemoteClientRegistrationRequest req( m_clientId );
-		g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+		g_networkingSystem->SendUDPMessage( m_connectionInfo.bindPort, &req, sizeof( req ) );
 	}
 
 	// Retry set player id message if not acked yet
 	if ( m_remoteServerPlayerIdInitState == eInitializationState::SENT )
 	{
 		SetPlayerIdRequest req( m_clientId, m_playerId );
-		g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+		g_networkingSystem->SendUDPMessage( m_connectionInfo.bindPort, &req, sizeof( req ) );
 	}
 
 	// Send initial state if everything is acked and it hasn't been sent yet
@@ -56,7 +65,7 @@ void RemoteClient::Update()
 			{
 				CreateEntityRequest req( m_clientId, entity->GetId(), entity->GetType(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
-				g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+				g_networkingSystem->SendUDPMessage( m_connectionInfo.bindPort, &req, sizeof( req ) );
 				Sleep( 10 );
 			}
 
@@ -71,7 +80,7 @@ void RemoteClient::Update()
 		{
 			UpdateEntityOnRemoteServerRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
-			g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.bindPort, &req, sizeof( req ) );
 
 			std::this_thread::sleep_for( std::chrono::microseconds( 2 ) );
 		}
@@ -85,7 +94,7 @@ void RemoteClient::SetClientId( int id )
 	m_clientId = id;
 	// Send a message to RemoteServer to set player client's id
 	RemoteClientRegistrationRequest req( m_clientId );
-	g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.bindPort, &req, sizeof( req ) );
 
 	m_remoteServerInitState = eInitializationState::SENT;
 }
@@ -98,7 +107,7 @@ void RemoteClient::SetPlayer( Entity* entity )
 
 	SetPlayerIdRequest req( m_clientId, m_playerId );
 	//SetPlayerIdRequest req( m_clientId, entity->GetId() );
-	g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.bindPort, &req, sizeof( req ) );
 
 	m_remoteServerInitState = eInitializationState::ACKED;
 	m_remoteServerPlayerIdInitState = eInitializationState::SENT;

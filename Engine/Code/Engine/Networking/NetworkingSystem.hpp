@@ -19,6 +19,23 @@ class TCPServer;
 
 
 //-----------------------------------------------------------------------------------------------
+struct UDPMessage
+{
+	int bindPort = -1;
+	std::array<char, 512> data;
+
+public:
+	UDPMessage() = default;
+
+	UDPMessage( int bindPortIn, std::array<char, 512> dataIn )
+		: bindPort( bindPortIn )
+		, data( dataIn )
+	{}
+
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class NetworkingSystem
 {
 public:
@@ -87,10 +104,10 @@ private:
 
 
 	std::map<int, UDPSocket*> m_udpSockets;
-	UDPSocket* m_udpSocket = nullptr;
+	//UDPSocket* m_udpSocket = nullptr;
 
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
-	SynchronizedBlockingQueue<std::array<char, 512>> m_outgoingMessages;
+	SynchronizedBlockingQueue<UDPMessage> m_outgoingMessages;
 
 	bool m_isQuitting = false;
 	std::thread* m_udpReaderThread = nullptr;

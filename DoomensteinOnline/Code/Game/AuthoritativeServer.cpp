@@ -105,7 +105,7 @@ void AuthoritativeServer::ProcessTCPMessages()
 				memcpy( &buffer[0], &response, sizeof( response ) );
 				memcpy( &buffer[sizeof( response )], data.GetFromIPAddress().c_str(), response.size );
 
-				ConnectionInfo info( clientKey, data.GetFromIPAddress() );
+				ConnectionInfo info( clientKey, data.GetFromIPAddress(), udpBindPort, udpPort );
 				m_clientConnectionInfo.push_back( info );
 
 				g_devConsole->PrintString( Stringf( "Client wants to connect from '%s'", data.GetFromIPAddress().c_str() ) );
@@ -147,7 +147,7 @@ void AuthoritativeServer::ProcessUDPMessages()
 					if ( info.key == keyVerifyReq->connectKey )
 						// && info.ipAddress == data.GetFromIPAddress() )
 					{
-						RemoteClient* client = new RemoteClient();
+						RemoteClient* client = new RemoteClient( info );
 						RegisterNewClient( client );
 						client->Startup();
 

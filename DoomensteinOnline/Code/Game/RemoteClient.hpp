@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Client.hpp"
+#include "Game/AuthoritativeServer.hpp"
 #include "Game/GameCommon.hpp"
 
 
@@ -16,7 +17,7 @@ enum eInitializationState
 class RemoteClient : public Client
 {
 public:
-	RemoteClient() = default;
+	RemoteClient( const ConnectionInfo& connectionInfo );
 	~RemoteClient() = default;
 
 	virtual void Startup();
@@ -30,6 +31,8 @@ public:
 private:
 	void ProcessUDPMessages();
 
+private:
+	const ConnectionInfo& m_connectionInfo;
 	bool m_hasSentInitialState = false;
 
 	EntityId m_playerId = -1;
