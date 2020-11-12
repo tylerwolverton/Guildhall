@@ -95,8 +95,8 @@ void AuthoritativeServer::ProcessTCPMessages()
 			case eClientFunctionType::REQUEST_CONNECTION:
 			{
 				int clientKey = m_rng.RollRandomIntInRange( 0, INT_MAX );
-				int udpPort = m_rng.RollRandomIntInRange( 4850, 4920 );
-				int udpBindPort = m_rng.RollRandomIntInRange( 4921, 4970 );
+				int udpPort = m_rng.RollRandomIntInRange( 48500, 49200 );
+				int udpBindPort = 48490; //m_rng.RollRandomIntInRange( 49210, 49700 );
 
 				ResponseToConnectionRequest response( -1, clientKey, udpPort, udpBindPort, (uint16_t)data.GetFromIPAddress().size() );
 				 

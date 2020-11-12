@@ -15,10 +15,11 @@ class UDPData
 {
 public:
 	UDPData() = default;
-	UDPData( size_t length, char* dataPtr, const std::string& fromAddress )
+	UDPData( size_t length, char* dataPtr, const std::string& fromAddress, int fromPort )
 		: m_length( length )
 		, m_data( dataPtr )
 		, m_fromAddress( fromAddress )
+		, m_fromPort( fromPort )
 	{
 	}
 
@@ -29,8 +30,8 @@ public:
 	const char* GetPayload() const				{ return m_data + sizeof( UDPMessageHeader ); }
 
 	std::string GetFromAddress() const			{ return m_fromAddress; }
-	std::string GetFromIPAddress() const;
-	int			GetFromPort() const;
+	std::string GetFromIPAddress() const		{ return m_fromAddress; }
+	int			GetFromPort() const				{ return m_fromPort; }
 
 	bool		HasBeenProcessed()				{ return m_hasBeenProcessed; }
 	void		Process()						{ m_hasBeenProcessed = true; }
@@ -39,6 +40,7 @@ private:
 	size_t m_length = 0;
 	char* m_data = nullptr;
 	std::string m_fromAddress;
+	int m_fromPort = -1;
 	bool m_hasBeenProcessed = false;
 };
 

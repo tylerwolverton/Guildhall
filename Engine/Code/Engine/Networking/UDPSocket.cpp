@@ -116,36 +116,8 @@ UDPData UDPSocket::Receive()
 	{
 		m_receiveBuffer[iResult] = '\0';
 	}
-
+	
 	std::string fromAddressStr = std::string( inet_ntoa( fromAddress.sin_addr ) );
 	
-	return UDPData( iResult, &m_receiveBuffer[0], fromAddressStr );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-std::string UDPData::GetFromIPAddress() const
-{
-	Strings connectionInfo = SplitStringOnDelimiter( m_fromAddress, ':' );
-
-	if ( connectionInfo.size() != 2 )
-	{
-		return "";
-	}
-
-	return connectionInfo[0];
-}
-
-
-//-----------------------------------------------------------------------------------------------
-int UDPData::GetFromPort() const
-{
-	Strings connectionInfo = SplitStringOnDelimiter( m_fromAddress, ':' );
-
-	if ( connectionInfo.size() != 2 )
-	{
-		return -1;
-	}
-
-	return atoi( connectionInfo[1].c_str() );
+	return UDPData( iResult, &m_receiveBuffer[0], fromAddressStr, (int)ntohs( fromAddress.sin_port ) );
 }

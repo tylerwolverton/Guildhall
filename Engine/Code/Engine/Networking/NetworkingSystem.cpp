@@ -88,11 +88,10 @@ void NetworkingSystem::Shutdown()
 		}
 	}
 
-	PTR_MAP_SAFE_DELETE( m_udpSockets );
-
 	m_udpReaderThread->join();
 	m_udpWriterThread->join();
 
+	PTR_MAP_SAFE_DELETE( m_udpSockets );
 	PTR_SAFE_DELETE( m_udpReaderThread );
 	PTR_SAFE_DELETE( m_udpWriterThread );
 
@@ -699,6 +698,7 @@ void NetworkingSystem::CloseUDPPort( int localBindPort )
 	}
 	UDPSocket* udpSocket = udpSocketIter->second;
 
+	udpSocket->Close();
 	PTR_SAFE_DELETE( udpSocket );
 
 	m_udpSockets.erase( localBindPort );

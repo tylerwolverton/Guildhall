@@ -123,7 +123,8 @@ void RemoteClient::ProcessUDPMessages()
 
 	for ( UDPData& data : newMessages )
 	{
-		if ( data.GetData() == nullptr )
+		if ( data.GetData() == nullptr 
+			 || data.GetFromPort() != m_connectionInfo.listenPort )
 		{
 			continue;
 		}
