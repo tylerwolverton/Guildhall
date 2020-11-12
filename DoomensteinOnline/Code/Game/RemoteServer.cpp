@@ -110,15 +110,16 @@ void RemoteServer::ProcessTCPMessages()
 				std::string ipAddress( dataStr );
 				ipAddress[responseReq->size] = '\0';
 
-				g_devConsole->PrintString( Stringf( "Response: key = '%i', port '%i', ip = '%s'", responseReq->connectKey, responseReq->bindPort, ipAddress.c_str() ) );
+				g_devConsole->PrintString( Stringf( "Response: key = '%i', distantBindPort '%i', localSendToPort '%i', ip = '%s'", responseReq->connectKey, responseReq->distantBindPort, responseReq->localSendToPort, ipAddress.c_str() ) );
 
 				g_networkingSystem->DisconnectTCPClient();
 
-				m_udpBindPort = responseReq->bindPort;
-				g_networkingSystem->OpenUDPPort( responseReq->bindPort, responseReq->listenPort );
+				m_udpSendToPort = responseReq->localSendToPort;
+				g_networkingSystem->OpenAndBindUDPPort( responseReq->distantBindPort, responseReq->localSendToPort );
+				g_networkingSystem->CreateAndRegisterUDPSocket( responseReq->localSendToPort );
 
 				KeyVerificationRequest keyVerifyReq( m_remoteClientId, responseReq->connectKey );
-				g_networkingSystem->SendUDPMessage( m_udpBindPort, &keyVerifyReq, sizeof( keyVerifyReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &keyVerifyReq, sizeof( keyVerifyReq ) );
 			}
 			break;
 		}
@@ -168,7 +169,7 @@ void RemoteServer::ProcessUDPMessages()
 				}
 
 				SetPlayerIdAckRequest ackReq( m_remoteClientId );
-				g_networkingSystem->SendUDPMessage( m_udpBindPort, &ackReq, sizeof( ackReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ) );
 
 				data.Process();
 			}
@@ -267,7 +268,7 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			{
 				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
 				createEntityReq->clientId = m_remoteClientId;
-				g_networkingSystem->SendUDPMessage( m_udpBindPort, createEntityReq, sizeof( *createEntityReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, createEntityReq, sizeof( *createEntityReq ) );
 
 			}
 			break;
@@ -276,7 +277,7 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			{
 				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
 				updateEntityReq->clientId = m_remoteClientId;
-				g_networkingSystem->SendUDPMessage( m_udpBindPort, updateEntityReq, sizeof( *updateEntityReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, updateEntityReq, sizeof( *updateEntityReq ) );
 			}
 			break;
 		}

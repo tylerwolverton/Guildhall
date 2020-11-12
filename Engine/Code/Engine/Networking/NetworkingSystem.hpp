@@ -21,14 +21,14 @@ class TCPServer;
 //-----------------------------------------------------------------------------------------------
 struct UDPMessage
 {
-	int bindPort = -1;
+	int sendToPort = -1;
 	std::array<char, 512> data;
 
 public:
 	UDPMessage() = default;
 
-	UDPMessage( int bindPortIn, std::array<char, 512> dataIn )
-		: bindPort( bindPortIn )
+	UDPMessage( int sendToPortIn, std::array<char, 512> dataIn )
+		: sendToPort( sendToPortIn )
 		, data( dataIn )
 	{}
 
@@ -62,9 +62,10 @@ public:
 	std::vector<UDPData>& ReceiveUDPMessages();
 
 	// UDP
-	void OpenUDPPort( int localBindPort, int distantSendToPort );
+	void OpenAndBindUDPPort( int localBindPort, int distantSendToPort );
+	void CreateAndRegisterUDPSocket( int distantSendToPort );
 	void CloseUDPPort( int localBindPort );
-	void SendUDPMessage( int localBindPort, void* data, size_t dataSize );
+	void SendUDPMessage( int distantSendToPort, void* data, size_t dataSize );
 	void SendUDPTextMessage( int localBindPort, const std::string& text );
 
 private:
@@ -88,7 +89,7 @@ private:
 	void DisconnectTCPServer( EventArgs* args );
 	void SendMessage( EventArgs* args );
 
-	void OpenUDPPort( EventArgs* args );
+	void OpenAndBindUDPPort( EventArgs* args );
 	void CloseUDPPort( EventArgs* args );
 	void SendUDPMessage( EventArgs* args );
 
@@ -104,7 +105,7 @@ private:
 
 
 	std::map<int, UDPSocket*> m_udpSockets;
-	//UDPSocket* m_udpSocket = nullptr;
+	UDPSocket* m_localBoundUDPSocket = nullptr;
 
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
 	SynchronizedBlockingQueue<UDPMessage> m_outgoingMessages;

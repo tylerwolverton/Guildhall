@@ -49,11 +49,11 @@ private:
 class UDPSocket
 {
 public:
-	UDPSocket( const std::string& host, int port );
+	UDPSocket( const std::string& host, int distantSendToPort );
 	UDPSocket();
 	~UDPSocket();
 
-	void Bind( int port );
+	void Bind( int localBindPort );
 	void Close();
 	int Send( size_t length );
 	//int Send( const char* data, size_t length );

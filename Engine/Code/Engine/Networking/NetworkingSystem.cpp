@@ -29,7 +29,7 @@ void NetworkingSystem::Startup()
 	g_eventSystem->RegisterMethodEvent( "send_message",		"Send a message, msg=\"<message text>\"", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendMessage );
 	
 	// udp commands
-	g_eventSystem->RegisterMethodEvent( "open_udp_port",	"Open a UDP port and specify target port, bindPort=<port number> sendToPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::OpenUDPPort );
+	g_eventSystem->RegisterMethodEvent( "open_udp_port",	"Open a UDP port and specify target port, bindPort=<port number> sendToPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::OpenAndBindUDPPort );
 	g_eventSystem->RegisterMethodEvent( "close_udp_port",	"Close a UDP port, bindPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::CloseUDPPort );
 	g_eventSystem->RegisterMethodEvent( "send_udp_message", "Send a message, msg=\"<message text>\"", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendUDPMessage );
 
@@ -86,6 +86,12 @@ void NetworkingSystem::Shutdown()
 			udpSocket.second->Close();
 			//PTR_SAFE_DELETE( m_udpSocket );
 		}
+	}
+
+	if ( m_localBoundUDPSocket != nullptr )
+	{
+		m_localBoundUDPSocket->Close();
+		PTR_SAFE_DELETE( m_localBoundUDPSocket );
 	}
 
 	m_udpReaderThread->join();
@@ -316,18 +322,18 @@ void NetworkingSystem::UDPReaderThreadMain()
 {
 	while( !m_isQuitting )
 	{
-		/*if ( m_udpSocket == nullptr )
+		if ( m_localBoundUDPSocket == nullptr )
 		{
 			continue;
 		}
 
-		UDPData data = m_udpSocket->Receive();
+		UDPData data = m_localBoundUDPSocket->Receive();
 		if ( data.GetLength() > 0 )
 		{
 			m_incomingMessages.Push( data );
-		}	*/	
+		}		
 		
-		for ( auto& udpSocket : m_udpSockets )
+		/*for ( auto& udpSocket : m_udpSockets )
 		{
 			if ( udpSocket.second == nullptr )
 			{
@@ -339,7 +345,7 @@ void NetworkingSystem::UDPReaderThreadMain()
 			{
 				m_incomingMessages.Push( data );
 			}
-		}
+		}*/
 	}
 }
 
@@ -376,7 +382,7 @@ void NetworkingSystem::UDPWriterThreadMain()
 
 		while ( msgHeader->size > 0 )
 		{
-			auto udpSocketIter = m_udpSockets.find( message.bindPort );
+			auto udpSocketIter = m_udpSockets.find( message.sendToPort );
 			if ( udpSocketIter == m_udpSockets.end() )
 			{
 				message = m_outgoingMessages.Pop();
@@ -643,12 +649,12 @@ void NetworkingSystem::SendMessage( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::OpenUDPPort( EventArgs* args )
+void NetworkingSystem::OpenAndBindUDPPort( EventArgs* args )
 {
 	int bindPort = args->GetValue( "bindPort", 48000 );
 	int sendToPort = args->GetValue( "sendToPort", 48001 );
 	
-	OpenUDPPort( bindPort, sendToPort );
+	OpenAndBindUDPPort( bindPort, sendToPort );
 
 	/*if ( m_udpSocket != nullptr )
 	{
@@ -662,12 +668,22 @@ void NetworkingSystem::OpenUDPPort( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::OpenUDPPort( int localBindPort, int distantSendToPort )
+void NetworkingSystem::OpenAndBindUDPPort( int localBindPort, int distantSendToPort )
 {
-	m_udpSockets[localBindPort] = new UDPSocket( "", distantSendToPort );
-	m_udpSockets[localBindPort]->Bind( localBindPort );
+	UNUSED( distantSendToPort );
+	//m_udpSockets[distantSendToPort] = new UDPSocket( "", distantSendToPort );
+	//m_udpSockets[distantSendToPort]->Bind( localBindPort );
+
+	m_localBoundUDPSocket = new UDPSocket( "", -1 );
 	//m_udpSocket = new UDPSocket( "", distantSendToPort );
-	//m_udpSocket->Bind( localBindPort );
+	m_localBoundUDPSocket->Bind( localBindPort );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::CreateAndRegisterUDPSocket( int distantSendToPort )
+{
+	m_udpSockets[distantSendToPort] = new UDPSocket( "", distantSendToPort );
 }
 
 
@@ -715,7 +731,7 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::SendUDPMessage( int localBindPort, void* data, size_t dataSize )
+void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t dataSize )
 {
 	std::array<char, 512> buffer = {};
 	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
@@ -728,7 +744,7 @@ void NetworkingSystem::SendUDPMessage( int localBindPort, void* data, size_t dat
 
 	buffer[sizeof( UDPMessageHeader ) + msgHeader->size] = '\0';
 
-	m_outgoingMessages.Push( UDPMessage( localBindPort, buffer ) );
+	m_outgoingMessages.Push( UDPMessage( distantSendToPort, buffer ) );
 }
 
 

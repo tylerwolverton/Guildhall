@@ -37,5 +37,5 @@ private:
 
 	int m_remoteClientId = -1;
 
-	int m_udpBindPort = 4800;
+	int m_udpSendToPort = 4800;
 };

@@ -70,16 +70,16 @@ struct ResponseToConnectionRequest : ClientRequest
 {
 public:
 	int connectKey = -1;
-	int bindPort = - 1;
-	int listenPort = - 1;
+	int distantBindPort = - 1;
+	int localSendToPort = - 1;
 	uint16_t size = 0;
 
 public:
 	ResponseToConnectionRequest( int clientIdIn, int keyIn, int portIn, int listenPortIn, uint16_t sizeIn )
 		: ClientRequest( clientIdIn, eClientFunctionType::RESPONSE_TO_CONNECTION_REQUEST )
 		, connectKey( keyIn )
-		, bindPort( portIn )
-		, listenPort( listenPortIn )
+		, distantBindPort( portIn )
+		, localSendToPort( listenPortIn )
 		, size( sizeIn )
 	{
 	}

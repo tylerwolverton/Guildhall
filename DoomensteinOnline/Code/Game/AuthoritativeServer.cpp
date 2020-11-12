@@ -95,24 +95,34 @@ void AuthoritativeServer::ProcessTCPMessages()
 			case eClientFunctionType::REQUEST_CONNECTION:
 			{
 				int clientKey = m_rng.RollRandomIntInRange( 0, INT_MAX );
-				int udpPort = m_rng.RollRandomIntInRange( 48500, 49200 );
-				int udpBindPort = 48490; //m_rng.RollRandomIntInRange( 49210, 49700 );
+				//int udpPort = 48490;// m_rng.RollRandomIntInRange( 48500, 49200 );
+				int udpDistantSendToPort = m_rng.RollRandomIntInRange( 48500, 49200 );
+				int udpLocalBindPort = 49210;
+				//int udpLocalBindPort = m_rng.RollRandomIntInRange( 49210, 49700 );
 
-				ResponseToConnectionRequest response( -1, clientKey, udpPort, udpBindPort, (uint16_t)data.GetFromIPAddress().size() );
+				ResponseToConnectionRequest response( -1, clientKey, udpDistantSendToPort, udpLocalBindPort, (uint16_t)data.GetFromIPAddress().size() );
 				 
 				std::array<char, 256> buffer;
 				
 				memcpy( &buffer[0], &response, sizeof( response ) );
 				memcpy( &buffer[sizeof( response )], data.GetFromIPAddress().c_str(), response.size );
 
-				ConnectionInfo info( clientKey, data.GetFromIPAddress(), udpBindPort, udpPort );
+				ConnectionInfo info( clientKey, data.GetFromIPAddress(), udpLocalBindPort, udpDistantSendToPort );
 				m_clientConnectionInfo.push_back( info );
 
-				g_devConsole->PrintString( Stringf( "Client wants to connect from '%s'", data.GetFromIPAddress().c_str() ) );
+				g_devConsole->PrintString( Stringf( "Sending connection info: distantSendToPort '%i', localBindPort '%i'", udpDistantSendToPort, udpLocalBindPort ) );
 
 				g_networkingSystem->SendTCPMessage( &buffer, sizeof( response ) + response.size );
 
-				g_networkingSystem->OpenUDPPort( udpBindPort, udpPort );
+				if ( m_clients.size() < 2 )
+				{
+					g_networkingSystem->OpenAndBindUDPPort( udpLocalBindPort, udpDistantSendToPort );
+					g_networkingSystem->CreateAndRegisterUDPSocket( udpDistantSendToPort );
+				}
+				else
+				{
+					g_networkingSystem->CreateAndRegisterUDPSocket( udpDistantSendToPort );
+				}
 			}
 			break;
 		}

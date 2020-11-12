@@ -15,15 +15,15 @@ struct ConnectionInfo
 public:
 	int key = -1;
 	std::string ipAddress;
-	int bindPort;
-	int listenPort;
+	int localBindPort;
+	int distantSendToPort;
 
 public:
-	ConnectionInfo( int keyIn, const std::string& ipAddressIn, int bindPortIn, int listenPortIn )
+	ConnectionInfo( int keyIn, const std::string& ipAddressIn, int localBindPortIn, int distantSendToPortIn )
 		: key( keyIn )
 		, ipAddress( ipAddressIn )
-		, bindPort( bindPortIn )
-		, listenPort( listenPortIn )
+		, localBindPort( localBindPortIn )
+		, distantSendToPort( distantSendToPortIn )
 	{}
 };
 

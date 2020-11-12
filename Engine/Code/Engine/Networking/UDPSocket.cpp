@@ -5,7 +5,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-UDPSocket::UDPSocket( const std::string& host, int port )
+UDPSocket::UDPSocket( const std::string& host, int distantSendToPort )
 {
 	std::string hostAddr( host );
 	if ( hostAddr.empty() )
@@ -14,7 +14,7 @@ UDPSocket::UDPSocket( const std::string& host, int port )
 	}
 
 	m_toAddress.sin_family = AF_INET;
-	m_toAddress.sin_port = htons((u_short)port);
+	m_toAddress.sin_port = htons((u_short)distantSendToPort);
 	m_toAddress.sin_addr.s_addr = inet_addr( hostAddr.c_str() );
 
 	m_socket = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
@@ -41,12 +41,12 @@ UDPSocket::~UDPSocket()
 
 
 //-----------------------------------------------------------------------------------------------
-void UDPSocket::Bind( int port )
+void UDPSocket::Bind( int localBindPort )
 {
-	m_bindPort = port;
+	m_bindPort = localBindPort;
 
 	m_bindAddress.sin_family = AF_INET;
-	m_bindAddress.sin_port = htons( (u_short)port );
+	m_bindAddress.sin_port = htons( (u_short)localBindPort );
 	m_bindAddress.sin_addr.s_addr = htonl( INADDR_ANY );
 
 	int result = bind( m_socket, (SOCKADDR*)&m_bindAddress, sizeof( m_bindAddress ) );
