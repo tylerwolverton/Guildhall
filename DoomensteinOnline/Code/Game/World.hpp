@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/GameCommon.hpp"
 
 #include <string>
@@ -46,6 +47,9 @@ public:
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
+
+	// Events
+	void OnCreateEntityInCurrentMap( EventArgs* args );
 
 private:
 	Map* m_curMap = nullptr;

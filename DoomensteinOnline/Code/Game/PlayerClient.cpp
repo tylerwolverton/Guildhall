@@ -328,6 +328,13 @@ void PlayerClient::Render( const World* gameWorld ) const
 
 
 //-----------------------------------------------------------------------------------------------
+void PlayerClient::SendMessageToDistantClient( ClientRequest* message )
+{
+	UNUSED( message );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void PlayerClient::DebugRender( const World* gameWorld ) const
 {
 	RenderDebugUI();

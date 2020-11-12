@@ -30,6 +30,8 @@ public:
 	virtual void Update() override;
 	virtual void Render( const World* gameWorld ) const override;
 
+	virtual void SendMessageToDistantClient( ClientRequest* message ) override;
+
 	const Vec2		GetMouseWorldPosition() { return m_mouseWorldPosition; }
 	const Camera*	GetWorldCamera() { return m_worldCamera; }
 

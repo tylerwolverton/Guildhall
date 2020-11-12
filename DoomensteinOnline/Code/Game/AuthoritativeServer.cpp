@@ -216,6 +216,15 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientR
 					m_clients[req->clientId]->SetPlayer( newEntity );
 					newEntity->Possess();
 				}
+
+				// If create was requested, send the new message out to all clients aside from the one requesting it
+				for ( auto& client : m_clients )
+				{
+					if ( client->GetClientId() != req->clientId )
+					{
+						client->SendMessageToDistantClient( createEntityReq );
+					}
+				}
 			}
 			break;
 

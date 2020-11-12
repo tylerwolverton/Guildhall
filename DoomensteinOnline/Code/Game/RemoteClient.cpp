@@ -89,6 +89,22 @@ void RemoteClient::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
+{
+	switch ( message->functionType )
+	{
+		case eClientFunctionType::CREATE_ENTITY:
+		{
+			CreateEntityRequest* createEntityReq = (CreateEntityRequest*)message;
+
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, createEntityReq, sizeof( *createEntityReq ) );
+		}
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RemoteClient::SetClientId( int id )
 {
 	m_clientId = id;

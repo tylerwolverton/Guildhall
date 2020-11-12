@@ -1,6 +1,7 @@
 #include "Game/World.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Time/Clock.hpp"
 
@@ -259,4 +260,31 @@ Map* World::GetLoadedMapByName( const std::string& mapName )
 	}
 
 	return mapIter->second;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::OnCreateEntityInCurrentMap( EventArgs* args )
+{
+	EntityId id = (EntityId)args->GetValue( "id", (int)-1 );
+	eEntityType entityType = (eEntityType)args->GetValue( "type", (int)eEntityType::NONE );
+	Vec2 position = args->GetValue( "position", Vec2::ZERO );
+	float yawOrientationDegrees = args->GetValue( "yawOrientationDegrees", 0.f );
+
+	std::string typeStr = GetEntityTypeAsString( entityType );
+
+	if ( m_curMap == nullptr )
+	{
+		g_devConsole->PrintWarning( Stringf( "Tried to spawn entity of type '%s' in nonexistent current map", typeStr.c_str() ) );
+		return;
+	}
+
+	Entity* newEntiy = m_curMap->SpawnNewEntityOfType( id, typeStr );
+	if ( newEntiy == nullptr )
+	{
+		return;
+	}
+
+	newEntiy->SetPosition( position );
+	newEntiy->SetOrientationDegrees( yawOrientationDegrees );
 }

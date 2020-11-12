@@ -14,6 +14,10 @@ enum eInitializationState
 
 
 //-----------------------------------------------------------------------------------------------
+struct ClientRequest;
+
+
+//-----------------------------------------------------------------------------------------------
 class RemoteClient : public Client
 {
 public:
@@ -24,6 +28,8 @@ public:
 	virtual void Shutdown();
 
 	virtual void Update() override;
+
+	virtual void SendMessageToDistantClient( ClientRequest* message ) override;
 
 	virtual void SetClientId( int id ) override;
 	virtual void SetPlayer( Entity* entity ) override;
