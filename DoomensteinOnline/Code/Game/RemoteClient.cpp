@@ -72,6 +72,8 @@ void RemoteClient::Update()
 			UpdateEntityOnRemoteServerRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
 			g_networkingSystem->SendUDPMessage( 4908, &req, sizeof( req ) );
+
+			std::this_thread::sleep_for( std::chrono::microseconds( 5 ) );
 		}
 	}
 }

@@ -176,7 +176,8 @@ void DevConsole::Render( const Camera& camera, float lineHeight ) const
 void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 {
 	if ( !m_isOpen 
-		 || m_renderer == nullptr )
+		 || m_renderer == nullptr 
+		 || lineHeight == 0.f )
 	{
 		return;
 	}
@@ -191,7 +192,9 @@ void DevConsole::Render( const AABB2& bounds, float lineHeight ) const
 	inputStringBounds.mins.y = inputCursorBounds.maxs.y;
 
 	std::vector<Vertex_PCU> vertices;
-	vertices.reserve( 2000 );
+	float maxLinesOnScreen = bounds.GetHeight() / lineHeight;
+	float maxCharsPerLine = bounds.GetWidth() / ( lineHeight * .56f );
+	vertices.reserve( int( maxLinesOnScreen * maxCharsPerLine * 6.f ) );
 	
 	RenderBackground( bounds );
 	AppendVertsForLatestLogMessages( vertices, logMessageBounds, lineHeight );
