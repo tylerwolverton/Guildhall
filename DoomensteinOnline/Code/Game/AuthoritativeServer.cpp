@@ -152,7 +152,8 @@ void AuthoritativeServer::ProcessUDPMessages()
 				int foundIdx = -1;
 				for ( int connectionIdx = 0; connectionIdx < (int)m_clientConnectionInfo.size(); ++connectionIdx )
 				{
-					ConnectionInfo& info = m_clientConnectionInfo[connectionIdx];
+					ConnectionInfo info = m_clientConnectionInfo[connectionIdx];
+					info.localBindPort = data.GetFromPort();
 
 					if ( info.key == keyVerifyReq->connectKey )
 						// && info.ipAddress == data.GetFromIPAddress() )

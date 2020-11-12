@@ -17,7 +17,7 @@ enum eInitializationState
 class RemoteClient : public Client
 {
 public:
-	RemoteClient( const ConnectionInfo& connectionInfo );
+	RemoteClient( ConnectionInfo connectionInfo );
 	~RemoteClient() = default;
 
 	virtual void Startup();
@@ -32,7 +32,7 @@ private:
 	void ProcessUDPMessages();
 
 private:
-	const ConnectionInfo& m_connectionInfo;
+	ConnectionInfo m_connectionInfo;
 	bool m_hasSentInitialState = false;
 
 	EntityId m_playerId = -1;

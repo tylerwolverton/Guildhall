@@ -9,7 +9,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-RemoteClient::RemoteClient( const ConnectionInfo& connectionInfo )
+RemoteClient::RemoteClient( ConnectionInfo connectionInfo )
 	: Client()
 	, m_connectionInfo( connectionInfo )
 {
@@ -123,8 +123,8 @@ void RemoteClient::ProcessUDPMessages()
 
 	for ( UDPData& data : newMessages )
 	{
-		if ( data.GetData() == nullptr )
-			 //|| data.GetFromPort() != m_connectionInfo.distantSendToPort )
+		if ( data.GetData() == nullptr 
+			 || data.GetFromPort() != m_connectionInfo.localBindPort )
 		{
 			continue;
 		}
