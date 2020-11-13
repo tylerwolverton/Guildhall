@@ -1,6 +1,7 @@
 #include "Game/RemoteClient.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Networking/NetworkingSystem.hpp"
+#include "Engine/Time/Time.hpp"
 #include "Game/Server.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameEvents.hpp"
@@ -24,6 +25,8 @@ void RemoteClient::Startup()
 	/*RemoteClientRegistrationRequest req( m_clientId );
 
 	g_networkingSystem->SendUDPMessage( 4820, &req, sizeof( req ) );*/
+
+	m_lastUpdateTime = GetCurrentTimeSeconds();
 }
 
 
@@ -84,6 +87,8 @@ void RemoteClient::Update()
 
 			std::this_thread::sleep_for( std::chrono::microseconds( 2 ) );
 		}
+
+		m_lastUpdateTime = GetCurrentTimeSeconds();
 	}
 }
 
@@ -158,7 +163,18 @@ void RemoteClient::ProcessUDPMessages()
 
 			case eClientFunctionType::UPDATE_ENTITY:
 			{
+				// TEMP HACK for prediction like movement
+				double roughRoundTripTime = ( GetCurrentTimeSeconds() - m_lastUpdateTime ) * 2.0;
+
+				float multiplier = 200.f;
+				if ( roughRoundTripTime < .01 )
+				{
+					multiplier *= 50.f;
+				}
+
 				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
+				updateEntityReq->translationVec *= ( multiplier * (float)roughRoundTripTime );
+				updateEntityReq->yawRotationDegrees *= ( multiplier * (float)roughRoundTripTime );
 				gameRequests.push_back( updateEntityReq );
 			}
 			break;

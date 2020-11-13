@@ -44,4 +44,6 @@ private:
 	EntityId m_playerId = -1;
 	eInitializationState m_remoteServerInitState = eInitializationState::NOT_SENT;
 	eInitializationState m_remoteServerPlayerIdInitState = eInitializationState::NOT_SENT;
+
+	double m_lastUpdateTime = 1.f;
 };
