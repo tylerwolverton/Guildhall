@@ -27,6 +27,9 @@ private:
 
 	// Game Events
 	void SpawnEntity( EventArgs* args );
+	/**
+	 * Destroys the entity who called this event.
+	 */
 	void DestroySelf( EventArgs* args );
 	void DamageEntity( EventArgs* args );
 	void StartDialogue( EventArgs* args );
