@@ -36,6 +36,7 @@ enum class eTokenType
 	CHANGE_STATE,
 	IF,
 	ELSE,
+	RETURN,
 
 	BRACE_LEFT,
 	BRACE_RIGHT,
@@ -115,6 +116,8 @@ enum class eOpCode : byte
 
 	FIRE_EVENT,
 	CHANGE_STATE,
+
+	RETURN,
 
 	IF,
 	JUMP,

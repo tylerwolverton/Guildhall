@@ -343,6 +343,12 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::RETURN:
+		{
+			m_curBytecodeChunk->WriteByte( eOpCode::RETURN );
+		}
+		break;
+
 		case eTokenType::NUMBER:			
 		{
 			if ( !ParseNumberDeclaration() )

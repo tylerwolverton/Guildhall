@@ -23,6 +23,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::CHANGE_STATE:		return "ChangeState";
 		case eTokenType::IF:				return "if";
 		case eTokenType::ELSE:				return "else";
+		case eTokenType::RETURN:			return "return";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant Number";
 		case eTokenType::CONSTANT_VEC2:		return "Constant Vec2";
@@ -72,6 +73,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::CHANGE_STATE:		return "CHANGE_STATE";
 		case eTokenType::IF:				return "IF";
 		case eTokenType::ELSE:				return "ELSE";
+		case eTokenType::RETURN:			return "RETURN";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
 		case eTokenType::CONSTANT_VEC2:		return "CONSTANT_VEC2";

@@ -323,6 +323,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "ChangeState" )		{ AddToken( eTokenType::CHANGE_STATE ); }
 	else if ( curIdentifier == "if" )				{ AddToken( eTokenType::IF ); }
 	else if ( curIdentifier == "else" )				{ AddToken( eTokenType::ELSE ); }
+	else if ( curIdentifier == "return" )			{ AddToken( eTokenType::RETURN ); }
 	// Must be a variable name
 	else
 	{

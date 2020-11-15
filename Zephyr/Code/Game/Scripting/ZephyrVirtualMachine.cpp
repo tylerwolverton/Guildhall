@@ -109,6 +109,13 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::RETURN:
+			{
+				// Stop processing this bytecode chunk
+				return;
+			}
+			break;
+
 			case eOpCode::IF:
 			{
 				ZephyrValue expression = PopConstant();
