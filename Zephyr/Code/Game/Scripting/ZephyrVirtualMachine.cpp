@@ -184,6 +184,38 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::NOT:
+			{
+				ZephyrValue a = PopConstant();
+				if ( a.GetType() == eValueType::NUMBER )
+				{
+					if ( IsNearlyEqual( a.GetAsNumber(), 0.f, .00001f ) )
+					{
+						PushConstant( ZephyrValue( true ) );
+					}
+					else
+					{
+						PushConstant( ZephyrValue( false ) );
+					}
+				}
+				else if ( a.GetType() == eValueType::BOOL )
+				{
+					PushConstant( !a.GetAsBool() );
+				}
+				else if ( a.GetType() == eValueType::STRING )
+				{
+					if ( a.GetAsString().empty() )
+					{
+						PushConstant( ZephyrValue( true ) );
+					}
+					else
+					{
+						PushConstant( ZephyrValue( false ) );
+					}
+				}
+			}
+			break;
+
 			case eOpCode::ADD:
 			case eOpCode::SUBTRACT:
 			case eOpCode::MULTIPLY:
@@ -353,6 +385,11 @@ void ZephyrVirtualMachine::PushBinaryOp( const ZephyrValue& a, const ZephyrValue
 	{
 		PushVec2BinaryOp( a.GetAsVec2(), b.GetAsVec2(), opCode );
 	}
+	else if ( a.GetType() == eValueType::BOOL
+			  && b.GetType() == eValueType::BOOL )
+	{
+		PushBoolBinaryOp( a.GetAsBool(), b.GetAsBool(), opCode );
+	}
 	else if ( a.GetType() == eValueType::STRING
 			  && b.GetType() == eValueType::STRING )
 	{
@@ -488,6 +525,28 @@ void ZephyrVirtualMachine::PushVec2BinaryOp( const Vec2& a, const Vec2& b, eOpCo
 		{
 
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushBoolBinaryOp( bool a, bool b, eOpCode opCode )
+{
+	switch ( opCode )
+	{
+		case eOpCode::NOT_EQUAL:
+		{
+			bool result = a != b;
+			PushConstant( result );
+		}
+		break;
+
+		case eOpCode::EQUAL:
+		{
+			bool result = a == b;
+			PushConstant( result );
+		}
+		break;
 	}
 }
 

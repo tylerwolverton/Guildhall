@@ -315,6 +315,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "State" )			{ AddToken( eTokenType::STATE ); }
 	else if ( curIdentifier == "Number" )			{ AddToken( eTokenType::NUMBER ); }
 	else if ( curIdentifier == "Vec2" )				{ AddToken( eTokenType::VEC2 ); }
+	else if ( curIdentifier == "Bool" )				{ AddToken( eTokenType::BOOL ); }
 	else if ( curIdentifier == "String" )			{ AddToken( eTokenType::STRING ); }
 	else if ( curIdentifier == "FireEvent" )		{ AddToken( eTokenType::FIRE_EVENT ); }
 	else if ( curIdentifier == "OnEvent" )			{ AddToken( eTokenType::ON_EVENT ); }
@@ -324,6 +325,8 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "if" )				{ AddToken( eTokenType::IF ); }
 	else if ( curIdentifier == "else" )				{ AddToken( eTokenType::ELSE ); }
 	else if ( curIdentifier == "return" )			{ AddToken( eTokenType::RETURN ); }
+	else if ( curIdentifier == "true" )				{ AddToken( eTokenType::TRUE ); }
+	else if ( curIdentifier == "false" )			{ AddToken( eTokenType::FALSE ); }
 	// Must be a variable name
 	else
 	{
@@ -383,7 +386,6 @@ bool ZephyrScanner::IsSrcPosAtEnd()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrScanner::IsNumber( char c )
 {
-	// TODO: Can a number start with '.'?
 	return c >= '0' && c <= '9';
 }
 

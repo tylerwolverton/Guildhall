@@ -15,6 +15,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::STATE:				return "State";
 		case eTokenType::NUMBER:			return "Number";
 		case eTokenType::VEC2:				return "Vec2";
+		case eTokenType::BOOL:				return "Bool";
 		case eTokenType::STRING:			return "String";
 		case eTokenType::FIRE_EVENT:		return "FireEvent";
 		case eTokenType::ON_EVENT:			return "OnEvent";
@@ -24,6 +25,8 @@ std::string ToString( eTokenType type )
 		case eTokenType::IF:				return "if";
 		case eTokenType::ELSE:				return "else";
 		case eTokenType::RETURN:			return "return";
+		case eTokenType::TRUE:				return "true";
+		case eTokenType::FALSE:				return "false";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant Number";
 		case eTokenType::CONSTANT_VEC2:		return "Constant Vec2";
@@ -65,6 +68,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::STATE:				return "STATE";
 		case eTokenType::NUMBER:			return "NUMBER";
 		case eTokenType::VEC2:				return "VEC2";
+		case eTokenType::BOOL:				return "BOOL";
 		case eTokenType::STRING:			return "STRING";
 		case eTokenType::FIRE_EVENT:		return "FIRE_EVENT";
 		case eTokenType::ON_EVENT:			return "ON_EVENT";
@@ -74,6 +78,8 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::IF:				return "IF";
 		case eTokenType::ELSE:				return "ELSE";
 		case eTokenType::RETURN:			return "RETURN";
+		case eTokenType::TRUE:				return "TRUE";
+		case eTokenType::FALSE:				return "FALSE";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
 		case eTokenType::CONSTANT_VEC2:		return "CONSTANT_VEC2";

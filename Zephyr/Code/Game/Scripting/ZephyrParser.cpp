@@ -351,7 +351,7 @@ bool ZephyrParser::ParseStatement()
 
 		case eTokenType::NUMBER:			
 		{
-			if ( !ParseNumberDeclaration() )
+			if ( !ParseVariableDeclaration( eValueType::NUMBER ) )
 			{
 				return false;
 			}
@@ -367,9 +367,18 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::BOOL:
+		{
+			if ( !ParseVariableDeclaration( eValueType::BOOL ) )
+			{
+				return false;
+			}
+		}
+		break;
+
 		case eTokenType::STRING:
 		{
-			if ( !ParseStringDeclaration() )
+			if ( !ParseVariableDeclaration( eValueType::STRING ) )
 			{
 				return false;
 			}
@@ -423,31 +432,36 @@ bool ZephyrParser::ParseStatement()
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseNumberDeclaration()
+bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 {
 	ZephyrToken identifier = ConsumeNextToken();
 	if ( !DoesTokenMatchType( identifier, eTokenType::IDENTIFIER ) )
 	{
-		ReportError( "Expected variable name after 'Number'" );
+		ReportError( Stringf( "Expected variable name after '%s'", ToString( varType ).c_str() ) );
 		return false;
 	}
-	
-	DeclareVariable( identifier, eValueType::NUMBER );
+
+	DeclareVariable( identifier, varType );
 
 	ZephyrToken curToken = GetCurToken();
-	switch( curToken.GetType() )
+	switch ( curToken.GetType() )
 	{
-		case eTokenType::SEMICOLON: 
+		case eTokenType::SEMICOLON:
 		{
-			WriteConstantToCurChunk( ZephyrValue( 0.f ) );
+			switch ( varType )
+			{
+				case eValueType::NUMBER: WriteConstantToCurChunk( ZephyrValue( 0.f ) ); break;
+				case eValueType::BOOL:	 WriteConstantToCurChunk( ZephyrValue( false ) ); break;
+				case eValueType::STRING: WriteConstantToCurChunk( ZephyrValue( "" ) ); break;
+			}
 		}
 		break;
-		
-		case eTokenType::EQUAL:		
+
+		case eTokenType::EQUAL:
 		{
 			AdvanceToNextToken();
 
-			if ( !ParseExpression( eValueType::NUMBER ) )
+			if ( !ParseExpression( varType ) )
 			{
 				return false;
 			}
@@ -461,7 +475,9 @@ bool ZephyrParser::ParseNumberDeclaration()
 		{
 			std::string errorMsg( "Unexpected '" );
 			errorMsg += curToken.GetDebugName();
-			errorMsg += "' seen, expected ';' or '=' after Number declaration";
+			errorMsg += "' seen, expected ';' or '=' after '";
+			errorMsg +=	ToString( varType );
+			errorMsg +=	" declaration";
 
 			ReportError( errorMsg );
 			return false;
@@ -526,57 +542,6 @@ bool ZephyrParser::ParseVec2Declaration()
 			std::string errorMsg( "Unexpected '" );
 			errorMsg += curToken.GetDebugName();
 			errorMsg += "' seen, expected ';' or '=' after Vec2 declaration";
-
-			ReportError( errorMsg );
-			return false;
-		}
-		break;
-	}
-
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseStringDeclaration()
-{
-	ZephyrToken identifier = ConsumeNextToken();
-	if ( !DoesTokenMatchType( identifier, eTokenType::IDENTIFIER ) )
-	{
-		ReportError( "Expected variable name after 'String'" );
-		return false;
-	}
-
-	DeclareVariable( identifier, eValueType::STRING );
-
-	ZephyrToken curToken = GetCurToken();
-	switch ( curToken.GetType() )
-	{
-		case eTokenType::SEMICOLON:
-		{
-			WriteConstantToCurChunk( ZephyrValue( std::string( "" ) ) );
-		}
-		break;
-
-		case eTokenType::EQUAL:
-		{
-			AdvanceToNextToken();
-
-			if ( !ParseExpression( eValueType::STRING ) )
-			{
-				return false;
-			}
-
-			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
-		}
-		break;
-
-		default:
-		{
-			std::string errorMsg( "Unexpected '" );
-			errorMsg += curToken.GetDebugName();
-			errorMsg += "' seen, expected ';' or '=' after String declaration";
 
 			ReportError( errorMsg );
 			return false;
@@ -976,7 +941,8 @@ bool ZephyrParser::ParseUnaryExpression( const eValueType& expressionType )
 			}
 		}
 		break;
-
+		
+		case eValueType::BOOL:
 		case eValueType::STRING:
 		{
 			switch ( curToken.GetType() )
@@ -1041,6 +1007,19 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 		}
 		break;
 
+		case eValueType::BOOL:
+		{
+			switch ( curToken.GetType() )
+			{
+				case eTokenType::BANG_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::NOT_EQUAL );
+				case eTokenType::EQUAL_EQUAL:	return WriteOpCodeToCurChunk( eOpCode::EQUAL );
+				case eTokenType::AND:			return WriteOpCodeToCurChunk( eOpCode::AND );
+				case eTokenType::OR:			return WriteOpCodeToCurChunk( eOpCode::OR );
+				default: ReportError( Stringf( "Invalid operation '%s' for Bool variables", ToString( curToken.GetType() ).c_str() ) ); return false;
+			}
+		}
+		break;
+
 		case eValueType::STRING:
 		{
 			switch ( curToken.GetType() )
@@ -1073,6 +1052,15 @@ bool ZephyrParser::ParseNumberExpression()
 bool ZephyrParser::ParseVec2Expression()
 {
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseBoolExpression( bool value )
+{
+	ZephyrToken curToken = ConsumeNextToken();
+
+	return WriteConstantToCurChunk( value );
 }
 
 
@@ -1147,12 +1135,48 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token, const eValueTyp
 	switch ( token.GetType() )
 	{
 		case eTokenType::PARENTHESIS_LEFT:	return ParseParenthesesGroup( expectedType );
-		// do type checking here
-		case eTokenType::CONSTANT_NUMBER:	return ParseNumberExpression();
-		case eTokenType::CONSTANT_VEC2:		return ParseVec2Expression();
-		case eTokenType::CONSTANT_STRING:	return ParseStringExpression();
 		case eTokenType::MINUS:				return ParseUnaryExpression( expectedType );
 		case eTokenType::BANG:				return ParseUnaryExpression( expectedType );
+
+		// TODO: do type checking here without breaking mixed type and/or statements
+		case eTokenType::CONSTANT_NUMBER:	
+		{
+			//if ( expectedType == eValueType::NUMBER )
+			//{
+				return ParseNumberExpression();
+			//}
+
+			//ReportError( Stringf( "Expected variable of type '%s' but found type 'Number'", ToString(expectedType).c_str() ) );
+			//return false;
+		}
+		break;
+
+		case eTokenType::CONSTANT_VEC2:		
+		{
+			//if ( expectedType == eValueType::VEC2 )
+			//{
+				return ParseVec2Expression();
+			//}
+
+			//ReportError( Stringf( "Expected variable of type '%s' but found type 'Vec2'", ToString( expectedType ).c_str() ) );
+			//return false;
+		}
+		break;
+
+		case eTokenType::TRUE:	return ParseBoolExpression( true );
+		case eTokenType::FALSE:	return ParseBoolExpression( false );
+
+		case eTokenType::CONSTANT_STRING:	
+		{
+			//if ( expectedType == eValueType::STRING )
+			//{
+				return ParseStringExpression();
+			//}
+
+			//ReportError( Stringf( "Expected variable of type '%s' but found type 'String'", ToString( expectedType ).c_str() ) );
+			//return false;
+		}
+
 		case eTokenType::IDENTIFIER:		
 		{
 			if ( PeekNextToken().GetType() == eTokenType::EQUAL )
@@ -1191,7 +1215,6 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token, const eValueType
 			return ParseBinaryExpression( expectedType );
 		}
 		break;
-
 	}
 
 	return false;
@@ -1242,6 +1265,8 @@ eValueType ZephyrParser::GetNextValueTypeInExpression()
 		{
 			case eTokenType::CONSTANT_NUMBER:	return eValueType::NUMBER;
 			case eTokenType::CONSTANT_VEC2:		return eValueType::VEC2;
+			case eTokenType::TRUE:				return eValueType::BOOL;
+			case eTokenType::FALSE:				return eValueType::BOOL;
 			case eTokenType::CONSTANT_STRING:	return eValueType::STRING;
 			case eTokenType::IDENTIFIER:
 			{
@@ -1408,8 +1433,8 @@ void ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueT
 	{
 		case eValueType::NUMBER: value = ZephyrValue( 0.f ); break;
 		case eValueType::VEC2:	 value = ZephyrValue( Vec2::ZERO ); break;
-		case eValueType::STRING: value = ZephyrValue( std::string("") ); break;
 		case eValueType::BOOL:	 value = ZephyrValue( false ); break;
+		case eValueType::STRING: value = ZephyrValue( std::string("") ); break;
 	}
 
 	m_curBytecodeChunk->SetVariable( identifier.GetData(), value );

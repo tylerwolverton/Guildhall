@@ -57,14 +57,13 @@ private:
 
 	bool ParseBlock();
 	bool ParseStatement();
-	bool ParseNumberDeclaration();
+	bool ParseVariableDeclaration( const eValueType& varType );
 	bool ParseVec2Declaration();
-	bool ParseStringDeclaration();
 	bool ParseFireEvent();
 	bool ParseEventArgs();
 	bool ParseChangeStateStatement();
 	bool ParseIfStatement();
-	bool GenerateIfStatementBytecode( std::vector<ZephyrValue>& byteJumpCounts  );
+	bool GenerateIfStatementBytecode( std::vector<ZephyrValue>& byteJumpCounts );
 	bool ParseAssignment();
 	bool ParseExpression( const eValueType& expressionType );
 	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel, const eValueType& expressionType );
@@ -73,6 +72,7 @@ private:
 	bool ParseBinaryExpression( const eValueType& expressionType );
 	bool ParseNumberExpression();
 	bool ParseVec2Expression();
+	bool ParseBoolExpression( bool value );
 	bool ParseStringExpression();
 	bool ParseIdentifierExpressionOfType( eValueType expectedType );
 

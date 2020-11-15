@@ -28,6 +28,7 @@ enum class eTokenType
 	STATE,
 	NUMBER,
 	VEC2,
+	BOOL,
 	STRING,
 	FIRE_EVENT,
 	ON_EVENT,
@@ -37,6 +38,8 @@ enum class eTokenType
 	IF,
 	ELSE,
 	RETURN,
+	TRUE,
+	FALSE,
 
 	BRACE_LEFT,
 	BRACE_RIGHT,

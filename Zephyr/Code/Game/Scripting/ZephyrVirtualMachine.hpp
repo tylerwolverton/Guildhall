@@ -42,6 +42,7 @@ private:
 	void PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode );
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
 	void PushVec2BinaryOp( const Vec2& a, const Vec2& b, eOpCode opCode );
+	void PushBoolBinaryOp( bool a, bool b, eOpCode opCode );
 	void PushStringBinaryOp( const std::string& a, const std::string& b, eOpCode opCode );
 
 	ZephyrValue GetVariableValue( const std::string& variableName, const ZephyrValueMap& localVariables );

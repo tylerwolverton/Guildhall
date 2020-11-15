@@ -6,6 +6,9 @@ StateMachine
 	Number testNum3 = .7;
 	Vec2 testVec2;		
 	Vec2 testVec2Init = (5,5);
+	Bool testBool;
+	Bool testBool2 = true;
+	Bool testBool3 = false;
 	String testStr;
 	String testStrInit = "Hello";
 
@@ -155,6 +158,23 @@ StateMachine
 		else
 		{
 			FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed and", color = "red" ) );
+		}
+
+		ChangeState( BoolTest );
+	}
+
+	State BoolTest
+	{
+		Bool a;
+		Bool b = true;
+
+		if( !( a && b ) )
+		{
+			FireEvent( PrintToConsole( text = "BoolTest: Success", color = "green" ) );
+		}
+		else
+		{
+			FireEvent( PrintToConsole( text = "BoolTest: Failed", color = "red" ) );
 		}
 
 		ChangeState( End );

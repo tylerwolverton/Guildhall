@@ -8,7 +8,7 @@ StateMachine
 	Vec2 lastPosition;
 	Number numFramesInSameSpace;
 	
-	
+	Bool active = true;
 	// -----------------------------------------------------------------------------------------
 	// Global events
 	// -----------------------------------------------------------------------------------------
@@ -68,6 +68,11 @@ StateMachine
 	// -----------------------------------------------------------------------------------------
 	State Wander
 	{	
+		if( !active )
+		{
+			return;
+		}
+
 		OnEvent( TargetFound )
 		{		
 			ChangeState( Chase );
