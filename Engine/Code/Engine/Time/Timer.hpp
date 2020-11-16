@@ -14,6 +14,7 @@ public:
 
 	void Reset();                                   // reset the timer, but it keeps running
 
+	void Start( double timeToWait );                // sets duration and resets timer
 	void Stop();                                    // stops the timer
 
 	double GetElapsedSeconds() const;               // return amount of time accrued on this timer

@@ -37,6 +37,15 @@
 
 
 //-----------------------------------------------------------------------------------------------
+GameTimer::GameTimer( Clock* clock, const std::string& callbackName, const std::string& name )
+	: name( name )
+	, callbackName( callbackName )
+{
+	timer = Timer( clock );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Game::Game()
 {
 } 
@@ -90,6 +99,9 @@ void Game::Startup()
 	g_physicsSystem2D->EnableLayerInteraction( eCollisionLayer::PLAYER, eCollisionLayer::PICKUP );
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
+
+	// Seed the timer pool
+	m_timerPool = { GameTimer( m_gameClock ), GameTimer( m_gameClock ), GameTimer( m_gameClock ), GameTimer( m_gameClock ), GameTimer( m_gameClock ) };
 
 	m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
@@ -187,6 +199,7 @@ void Game::Update()
 		break;
 	}
 
+	UpdateTimers();
 	UpdateCameras();
 	UpdateMousePositions();
 	UpdateFramesPerSecond();
@@ -687,6 +700,8 @@ void Game::ReloadGame()
 	m_world->ClearEntities();
 	m_world->ClearMaps();
 
+	m_timerPool.clear();
+
 	PopulateGameConfig();
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
 
@@ -893,6 +908,28 @@ void Game::UpdateCameras()
 	//m_worldCamera->Translate2D( cameraShakeOffset );
 	m_worldCamera->SetPosition( m_focalPoint + Vec3( cameraShakeOffset, 0.f ) );
 	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateTimers()
+{
+	for ( int timerIdx = 0; timerIdx < (int)m_timerPool.size(); ++timerIdx )
+	{
+		GameTimer& gameTimer = m_timerPool[timerIdx];
+
+		if ( gameTimer.timer.HasElapsed() )
+		{
+			if ( !gameTimer.callbackName.empty() )
+			{
+				g_eventSystem->FireEvent( gameTimer.callbackName );
+			}
+
+			gameTimer.timer.Stop();
+			gameTimer.timer.Reset();
+		}
+	}
+
 }
 
 
@@ -1172,6 +1209,30 @@ void Game::ChangeMusic( const std::string& musicName, bool isLooped, float volum
 
 	m_curMusicName = musicName;
 	m_curMusicId = g_audioSystem->PlaySound( soundId, isLooped, volume, balance, speed, isPaused );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::StartNewTimer( const std::string& name, float durationSeconds, const std::string& onCompletedEventName )
+{
+	for ( int timerIdx = 0; timerIdx < (int)m_timerPool.size(); ++timerIdx )
+	{
+		GameTimer& gameTimer = m_timerPool[timerIdx];
+
+		if ( !gameTimer.timer.IsRunning() )
+		{
+			gameTimer.name = name;
+			gameTimer.timer.Start( (double)durationSeconds );
+			gameTimer.callbackName = onCompletedEventName;
+
+			return;
+		}
+	}
+
+	// No available timers, expand the pool
+	GameTimer newTimer( m_gameClock, onCompletedEventName, name );
+	newTimer.timer.SetSeconds( durationSeconds );
+	m_timerPool.push_back( newTimer );
 }
 
 

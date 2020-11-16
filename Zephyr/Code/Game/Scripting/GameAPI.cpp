@@ -33,7 +33,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( EndDialogue );
 	REGISTER_EVENT( AddLineOfDialogueText );
 	REGISTER_EVENT( AddDialogueChoice );
-	REGISTER_EVENT( StartInvincibility );
+	REGISTER_EVENT( StartNewTimer );
 	REGISTER_EVENT( WinGame );
 
 	REGISTER_EVENT( MoveToLocation );
@@ -132,9 +132,13 @@ void GameAPI::AddDialogueChoice( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::StartInvincibility( EventArgs* args )
+void GameAPI::StartNewTimer( EventArgs* args )
 {
+	std::string timerName = args->GetValue( "name", "" );
+	float durationSeconds = args->GetValue( "durationSeconds", 1.f );
+	std::string onCompletedEventName = args->GetValue( "onCompletedEvent", "" );
 
+	g_game->StartNewTimer( timerName, durationSeconds, onCompletedEventName );
 }
 
 

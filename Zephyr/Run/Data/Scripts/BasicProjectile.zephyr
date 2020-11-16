@@ -3,11 +3,9 @@ StateMachine
     Number attackDamage;
 
     Number otherId;
-    Number otherId2;
     OnEvent( EnterCollision )
     {
-        otherId2 = otherId;
-        if( otherId2 != -1 )
+        if( otherId != -1 )
         {
             FireEvent( DamageEntity( id = otherId, damage = attackDamage ) );
             FireEvent( AddScreenShake( intensity = .05 ) );
@@ -16,4 +14,12 @@ StateMachine
         FireEvent( PlaySound( soundName = "PlayerHit" ) );
         FireEvent( DestroySelf() );
     }
+
+    OnEvent( ProjectileLifeExpired )
+    {
+        FireEvent( PlaySound( soundName = "EnemyHit" ) );
+        FireEvent( DestroySelf() );
+    }
+
+    FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "ProjectileLifeExpired" ) );
 }

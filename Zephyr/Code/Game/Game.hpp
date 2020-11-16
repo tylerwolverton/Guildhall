@@ -2,6 +2,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Time/Timer.hpp"
 #include "Engine/UI/UISystem.hpp"
 
 #include "Game/GameCommon.hpp"
@@ -36,6 +37,19 @@ enum class eGameState
 	GAME_OVER,
 	VICTORY,
 	PAUSED
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct GameTimer
+{
+public:
+	Timer timer;
+	std::string name;
+	std::string callbackName;
+
+public:
+	GameTimer( Clock* clock, const std::string& callbackName = "", const std::string& name = "" );
 };
 
 
@@ -82,6 +96,8 @@ public:
 	void		PlaySoundByName( const std::string& soundName, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
 	void		ChangeMusic( const std::string& musicName, bool isLooped = true, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
 
+	void		StartNewTimer( const std::string& name, float durationSeconds, const std::string& onCompletedEventName );
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
@@ -103,6 +119,7 @@ private:
 	void UpdateMouseWorldPosition();
 	void UpdateMouseUIPosition();
 	void UpdateCameras();
+	void UpdateTimers();
 
 	void InitializeFPSHistory();
 	void InitializeUI();
@@ -154,4 +171,7 @@ private:
 	World* m_world = nullptr;
 	std::string m_curMapName;
 	std::string m_startingMapName;
+
+	// Timer management
+	std::vector<GameTimer> m_timerPool;
 };
