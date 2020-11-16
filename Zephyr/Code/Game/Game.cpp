@@ -299,10 +299,7 @@ void Game::LoadAssets()
 	g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 
 	// Music
-	g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/GameOver.mp3" );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
-	g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
+	LoadSounds();
 
 	LoadAndCompileZephyrScripts();
 	LoadEntitiesFromXml();
@@ -312,6 +309,28 @@ void Game::LoadAssets()
 	LoadMapsFromXml();
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadSounds()
+{
+	g_devConsole->PrintString( "Loading Audio..." );
+
+	std::string folderPath( "Data/Audio" );
+
+	Strings audioFiles = GetFileNamesInFolder( folderPath, "*.*" );
+	for ( int soundIdx = 0; soundIdx < (int)audioFiles.size(); ++soundIdx )
+	{
+		std::string soundName = GetFileNameWithoutExtension( audioFiles[soundIdx] );
+		std::string& soundNameWithExtension = audioFiles[soundIdx];
+
+		std::string soundFullPath( folderPath );
+		soundFullPath += "/";
+		soundFullPath += soundNameWithExtension;
+
+		m_loadedSoundIds[soundName] = g_audioSystem->CreateOrGetSound( soundFullPath );
+	}
 }
 
 
@@ -659,6 +678,11 @@ void Game::LoadAndCompileZephyrScripts()
 //-----------------------------------------------------------------------------------------------
 void Game::ReloadGame()
 {
+	if ( m_curMusicId != (SoundPlaybackID)-1 )
+	{
+		g_audioSystem->StopSound( m_curMusicId );
+	}
+
 	m_world->UnloadAllEntityScripts();
 	m_world->ClearEntities();
 	m_world->ClearMaps();
@@ -675,7 +699,9 @@ void Game::ReloadGame()
 	PTR_VECTOR_SAFE_DELETE( SpriteSheet::s_definitions );
 
 	g_physicsSystem2D->Reset();
+	m_loadedSoundIds.clear();
 
+	LoadSounds();
 	LoadAndCompileZephyrScripts();
 	LoadEntitiesFromXml();
 	LoadWorldDefinitionFromXml();
@@ -1113,6 +1139,43 @@ void Game::SelectInDialogue( Entity* dialoguePartner )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::PlaySoundByName( const std::string& soundName, bool isLooped, float volume, float balance, float speed, bool isPaused )
+{
+	auto iter = m_loadedSoundIds.find( soundName );
+	if ( iter == m_loadedSoundIds.end() )
+	{
+		g_devConsole->PrintError( Stringf( "Cannot play unregistered sound, '%s", soundName.c_str() ) );
+		return;
+	}
+
+	SoundID soundId = iter->second;
+
+	g_audioSystem->PlaySound( soundId, isLooped, volume, balance, speed, isPaused );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ChangeMusic( const std::string& musicName, bool isLooped, float volume, float balance, float speed, bool isPaused )
+{
+	auto iter = m_loadedSoundIds.find( musicName );
+	if ( iter == m_loadedSoundIds.end() )
+	{
+		g_devConsole->PrintError( Stringf( "Cannot play unregistered music, '%s", musicName.c_str() ) );
+		return;
+	}
+
+	SoundID soundId = iter->second;
+	if ( m_curMusicId != (SoundPlaybackID)-1 )
+	{
+		g_audioSystem->StopSound( m_curMusicId );
+	}
+
+	m_curMusicName = musicName;
+	m_curMusicId = g_audioSystem->PlaySound( soundId, isLooped, volume, balance, speed, isPaused );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ChangeGameState( const eGameState& newGameState )
 {
 	switch ( newGameState )
@@ -1134,7 +1197,10 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				{
 					m_dialogueBox->Reset();
 
-					g_audioSystem->StopSound( m_gameplayMusicID );
+					if ( m_curMusicId != (SoundPlaybackID)-1 )
+					{
+						g_audioSystem->StopSound( m_curMusicId );
+					}
 
 					ReloadGame();
 				}
@@ -1149,8 +1215,13 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				break;
 			}
 
+			if ( m_curMusicId != (SoundPlaybackID)-1 )
+			{
+				g_audioSystem->StopSound( m_curMusicId );
+			}
+
 			SoundID attractMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/AttractMusic.mp3" );
-			m_attractMusicID = g_audioSystem->PlaySound( attractMusic, true, .1f );
+			m_curMusicId = g_audioSystem->PlaySound( attractMusic, true, .1f );
 
 			m_gameClock->Resume();
 		}
@@ -1170,17 +1241,12 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					SoundID unpause = g_audioSystem->CreateOrGetSound( "Data/Audio/Unpause.mp3" );
 					g_audioSystem->PlaySound( unpause, false, .1f );
 
-					g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .1f );
+					g_audioSystem->SetSoundPlaybackVolume( m_curMusicId, .1f );
 				}
 				break;
 
 				case eGameState::ATTRACT:
-				{
-					g_audioSystem->StopSound( m_attractMusicID );
-
-					SoundID gameplayMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/GameplayMusic.mp3" );
-					m_gameplayMusicID = g_audioSystem->PlaySound( gameplayMusic, true, .1f );
-					
+				{					
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_startingMapName.c_str() ) );
 					ChangeMap( m_startingMapName );
 				}
@@ -1203,7 +1269,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 
 		case eGameState::PAUSED:
 		{
-			g_audioSystem->SetSoundPlaybackVolume( m_gameplayMusicID, .05f );
+			g_audioSystem->SetSoundPlaybackVolume( m_curMusicId, .05f );
 
 			SoundID pause = g_audioSystem->CreateOrGetSound( "Data/Audio/Pause.mp3" );
 			g_audioSystem->PlaySound( pause, false, .1f );
@@ -1215,9 +1281,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 		case eGameState::VICTORY:
 		{
 			//m_curVictoryScreenSeconds = 0.f;
-
-			g_audioSystem->StopSound( m_gameplayMusicID );
-
+			
 			m_gameClock->Pause();
 			/*SoundID victoryMusic = g_audioSystem->CreateOrGetSound( "Data/Audio/Victory.mp3" );
 			m_victoryMusicID = g_audioSystem->PlaySound( victoryMusic, true, .1f );*/

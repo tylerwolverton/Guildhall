@@ -79,11 +79,15 @@ public:
 	void		AddDialogueChoice( const std::string& name, const std::string& text );
 	void		SelectInDialogue( Entity* dialoguePartner );
 
+	void		PlaySoundByName( const std::string& soundName, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
+	void		ChangeMusic( const std::string& musicName, bool isLooped = true, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
 private:
 	void LoadAssets();
+	void LoadSounds();
 	void LoadTileMaterialsFromXml();
 	void LoadTilesFromXml();
 	void LoadMapsFromXml();
@@ -138,9 +142,10 @@ private:
 	std::string m_defaultTileMaterialName;
 
 	// Audio
-	SoundPlaybackID m_attractMusicID = (SoundPlaybackID)-1;
-	SoundPlaybackID m_gameplayMusicID = (SoundPlaybackID)-1;
-	SoundPlaybackID m_victoryMusicID = (SoundPlaybackID)-1;
+	std::string m_curMusicName;
+	SoundPlaybackID m_curMusicId = (SoundPlaybackID)-1;
+
+	std::map<std::string, SoundID> m_loadedSoundIds;
 
 	eGameState m_gameState = eGameState::LOADING;
 

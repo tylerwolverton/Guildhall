@@ -2,7 +2,9 @@ StateMachine
 {
 	Number totalQuestCount = 3;
     Number completedQuests = 0;
-
+	
+	FireEvent( ChangeMusic( musicName = "GameplayMusic" ) );
+	
 	String questId;
 	OnEvent( QuestComplete )
 	{

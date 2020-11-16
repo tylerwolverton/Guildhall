@@ -45,6 +45,8 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( GetDistanceToTarget );
 
 	REGISTER_EVENT( ChangeSpriteAnimation );
+	REGISTER_EVENT( PlaySound );
+	REGISTER_EVENT( ChangeMusic );
 	REGISTER_EVENT( AddScreenShake );
 }
 
@@ -423,6 +425,40 @@ void GameAPI::ChangeSpriteAnimation( EventArgs* args )
 	}
 
 	entity->ChangeSpriteAnimation( newAnim );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::PlaySound( EventArgs* args )
+{
+	std::string soundName = args->GetValue( "soundName", "" );
+	if ( soundName.empty() )
+	{
+		return;
+	}
+
+	float volume = args->GetValue( "volume", 1.f );
+	float balance = args->GetValue( "balance", 0.f );
+	float speed = args->GetValue( "speed", 1.f );
+
+	g_game->PlaySoundByName( soundName, false, volume, balance, speed );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::ChangeMusic( EventArgs* args )
+{
+	std::string musicName = args->GetValue( "musicName", "" );
+	if ( musicName.empty() )
+	{
+		return;
+	}
+
+	float volume = args->GetValue( "volume", 1.f );
+	float balance = args->GetValue( "balance", 0.f );
+	float speed = args->GetValue( "speed", 1.f );
+
+	g_game->ChangeMusic( musicName, true, volume, balance, speed );
 }
 
 

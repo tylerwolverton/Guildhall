@@ -36,6 +36,7 @@ enum eClientFunctionType
 
 
 //-----------------------------------------------------------------------------------------------
+// TODO: Virtualize destructors
 struct ClientRequest
 {
 public:
