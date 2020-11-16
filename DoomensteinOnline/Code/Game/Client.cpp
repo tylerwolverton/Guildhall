@@ -32,6 +32,13 @@ void Client::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+void Client::SendUpdatedGameWorldToServer()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Client::Render( const World* gameWorld ) const
 {
 	UNUSED( gameWorld );

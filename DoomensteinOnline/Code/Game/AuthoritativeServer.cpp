@@ -181,13 +181,21 @@ void AuthoritativeServer::ProcessUDPMessages()
 //-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::Update()
 {
-	g_game->Update();
 
 	// This server's player client will always be first
+	// Gather input from remote servers
 	for ( Client* client : m_clients )
 	{
 		client->Update();
 	}
+
+	g_game->Update();
+
+	// After the world has updated, send new state to servers
+	/*for ( Client* client : m_clients )
+	{
+		client->SendUpdatedGameWorldToServer();
+	}*/
 }
 
 
@@ -209,13 +217,19 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientR
 			{
 				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
 				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
-				if ( newEntity != nullptr
-					 && createEntityReq->entityType == eEntityType::PLAYER )
+				if ( newEntity == nullptr )
+				{
+					break;
+				}
+					  
+				if( createEntityReq->entityType == eEntityType::PLAYER )
 				{
 					// send player's id back to client and have client possess entity
 					m_clients[req->clientId]->SetPlayer( newEntity );
 					newEntity->Possess();
 				}
+
+				createEntityReq->entityId = newEntity->GetId();
 
 				// If create was requested, send the new message out to all clients aside from the one requesting it
 				for ( auto& client : m_clients )

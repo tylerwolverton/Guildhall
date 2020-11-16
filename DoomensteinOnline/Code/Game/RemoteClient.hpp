@@ -28,6 +28,7 @@ public:
 	virtual void Shutdown();
 
 	virtual void Update() override;
+	virtual void SendUpdatedGameWorldToServer() override;
 
 	virtual void SendMessageToDistantClient( ClientRequest* message ) override;
 

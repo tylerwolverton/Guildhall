@@ -20,6 +20,7 @@ public:
 	virtual void BeginFrame();
 
 	virtual void Update();
+	virtual void SendUpdatedGameWorldToServer();
 	virtual void Render( const World* gameWorld ) const;
 
 	virtual int  GetClientId()												{ return m_clientId; }
