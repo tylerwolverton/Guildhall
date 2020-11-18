@@ -5,7 +5,7 @@ StateMachine
 	
 	OnEvent( GameStarted )
 	{
-		FireEvent( ChangeMusic( musicName = "GameplayMusic", volume = .1 ) );
+		FireEvent( ChangeMusic( musicName = "FF6TheDecisiveBattle", volume = .1 ) );
 	}
 
 	String questId;
@@ -31,7 +31,7 @@ StateMachine
 		if( completedQuests >= totalQuestCount )
 		{
 			FireEvent( WinGame() );
-			FireEvent( ChangeMusic( musicName = "Victory" ) );
+			FireEvent( ChangeMusic( musicName = "LoZCredits", volume = .1 ) );
 		}
 	}
 }
