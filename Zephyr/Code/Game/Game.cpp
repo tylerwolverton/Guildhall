@@ -37,8 +37,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-GameTimer::GameTimer( Clock* clock, const std::string& callbackName, const std::string& name )
-	: name( name )
+GameTimer::GameTimer( Clock* clock, const EntityId& targetId, const std::string& callbackName, const std::string& name )
+	: targetId( targetId )
+	, name( name )
 	, callbackName( callbackName )
 {
 	timer = Timer( clock );
@@ -918,11 +919,24 @@ void Game::UpdateTimers()
 	{
 		GameTimer& gameTimer = m_timerPool[timerIdx];
 
-		if ( gameTimer.timer.HasElapsed() )
+		if ( gameTimer.timer.IsRunning()
+			&& gameTimer.timer.HasElapsed() )
 		{
 			if ( !gameTimer.callbackName.empty() )
 			{
-				g_eventSystem->FireEvent( gameTimer.callbackName );
+				if ( gameTimer.targetId == -1 )
+				{
+					g_eventSystem->FireEvent( gameTimer.callbackName );
+				}
+				else
+				{
+					Entity* targetEntity = GetEntityById( gameTimer.targetId );
+					if ( targetEntity != nullptr )
+					{
+						EventArgs args;
+						targetEntity->FireScriptEvent( gameTimer.callbackName, &args );
+					}
+				}
 			}
 
 			gameTimer.timer.Stop();
@@ -1213,7 +1227,7 @@ void Game::ChangeMusic( const std::string& musicName, bool isLooped, float volum
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::StartNewTimer( const std::string& name, float durationSeconds, const std::string& onCompletedEventName )
+void Game::StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName )
 {
 	for ( int timerIdx = 0; timerIdx < (int)m_timerPool.size(); ++timerIdx )
 	{
@@ -1224,15 +1238,31 @@ void Game::StartNewTimer( const std::string& name, float durationSeconds, const 
 			gameTimer.name = name;
 			gameTimer.timer.Start( (double)durationSeconds );
 			gameTimer.callbackName = onCompletedEventName;
+			gameTimer.targetId = targetId;
 
 			return;
 		}
 	}
 
 	// No available timers, expand the pool
-	GameTimer newTimer( m_gameClock, onCompletedEventName, name );
-	newTimer.timer.SetSeconds( durationSeconds );
+	GameTimer newTimer( m_gameClock, targetId, onCompletedEventName, name );
+	newTimer.timer.Start( (double)durationSeconds );
 	m_timerPool.push_back( newTimer );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName )
+{
+	Entity* target = m_world->GetEntityByName( targetName );
+
+	if ( target == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "Couldn't start a timer event with unknown target name '%s'", targetName.c_str() ) );
+		return;
+	}
+
+	StartNewTimer( target->GetId(), name, durationSeconds, onCompletedEventName );
 }
 
 

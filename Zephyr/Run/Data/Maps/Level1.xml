@@ -17,7 +17,7 @@
 		<MapRow tiles="################"/>
 	</MapRows>
   <Entities>
-    <Entity type="Level1Manager">
+    <Entity type="Level1Manager" name="Level1Manager">
       <ScriptVarInit type="string" var="roomId" value="Level1"/>
     </Entity>
     <Entity type="UnitTester" pos="6.5,6.5"/>

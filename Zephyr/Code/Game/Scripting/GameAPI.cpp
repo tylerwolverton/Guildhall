@@ -137,8 +137,32 @@ void GameAPI::StartNewTimer( EventArgs* args )
 	std::string timerName = args->GetValue( "name", "" );
 	float durationSeconds = args->GetValue( "durationSeconds", 1.f );
 	std::string onCompletedEventName = args->GetValue( "onCompletedEvent", "" );
+	bool broadcastEventToAll = args->GetValue( "broadcastEventToAll", false );
+	std::string targetName = args->GetValue( "targetName", "" );
 
-	g_game->StartNewTimer( timerName, durationSeconds, onCompletedEventName );
+	// Broadcast event to all takes precedence and broadcasts to all entities
+	if ( broadcastEventToAll )
+	{
+		g_game->StartNewTimer( -1, timerName, durationSeconds, onCompletedEventName );
+		return;
+	}
+
+	// Named target takes precedence over sending it to self
+	if ( !targetName.empty() )
+	{
+		g_game->StartNewTimer( targetName, timerName, durationSeconds, onCompletedEventName );
+		return;
+	}
+
+	// Send event to entity who fired it
+	EntityId targetId = -1;
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	if ( entity != nullptr )
+	{
+		targetId = entity->GetId();
+	}
+
+	g_game->StartNewTimer( targetId, timerName, durationSeconds, onCompletedEventName );
 }
 
 

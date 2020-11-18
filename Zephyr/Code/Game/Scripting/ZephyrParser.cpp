@@ -635,6 +635,16 @@ bool ZephyrParser::ParseEventArgs()
 			}
 			break;
 
+			case eTokenType::TRUE:
+			case eTokenType::FALSE:
+			{
+				if ( !ParseExpression( eValueType::BOOL ) )
+				{
+					return false;
+				}
+			}
+			break;
+
 			case eTokenType::CONSTANT_STRING:
 			{
 				if ( !ParseExpression( eValueType::STRING ) )
