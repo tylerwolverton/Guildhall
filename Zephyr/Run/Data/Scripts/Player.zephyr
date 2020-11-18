@@ -28,4 +28,9 @@ StateMachine
         FireEvent( DeactivateInvincibility() );
         FireEvent( ChangeSpriteAnimation( newAnim = "Walk" ) );
     }
+
+    OnEvent( InputReceived )
+    {
+        
+    }
 }
