@@ -112,7 +112,7 @@ void Game::Startup()
 	m_world = new World( m_gameClock );
 
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
-
+	
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -725,6 +725,8 @@ void Game::ReloadGame()
 	LoadTilesFromXml();
 	LoadMapsFromXml();
 
+	EventArgs args;
+	g_eventSystem->FireEvent( "GameStarted", &args );
 	g_devConsole->PrintString( "Data files reloaded", Rgba8::GREEN );
 }
 
@@ -1340,6 +1342,9 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				{					
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_startingMapName.c_str() ) );
 					ChangeMap( m_startingMapName );
+
+					EventArgs args;
+					g_eventSystem->FireEvent( "GameStarted", &args );
 				}
 				break;
 

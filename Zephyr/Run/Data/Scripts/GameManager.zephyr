@@ -3,8 +3,11 @@ StateMachine
 	Number totalQuestCount = 3;
     Number completedQuests = 0;
 	
-	FireEvent( ChangeMusic( musicName = "GameplayMusic" ) );
-	
+	OnEvent( GameStarted )
+	{
+		FireEvent( ChangeMusic( musicName = "GameplayMusic", volume = .1 ) );
+	}
+
 	String questId;
 	OnEvent( QuestComplete )
 	{
@@ -28,6 +31,7 @@ StateMachine
 		if( completedQuests >= totalQuestCount )
 		{
 			FireEvent( WinGame() );
+			FireEvent( ChangeMusic( musicName = "Victory" ) );
 		}
 	}
 }
