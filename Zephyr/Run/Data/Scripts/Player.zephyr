@@ -1,0 +1,31 @@
+StateMachine
+{
+    Number curHealth;
+
+    Number maxHealth;
+    OnEvent( Spawn )
+    {
+        curHealth = maxHealth;
+
+        FireEvent( AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 ) );
+    }
+
+    Number newHealth;
+	OnEvent( HealthUpdated )
+	{
+        if( newHealth < curHealth )
+        {
+            FireEvent( PrintDebugText(text = "Ouch", duration = 5) );
+            FireEvent( ActivateInvincibility() );
+            FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" ) );
+        }
+
+		curHealth = newHealth;
+    }
+
+    OnEvent( InvincibilityExpired )
+    {
+        FireEvent( PrintDebugText(text = "Vincible!", duration = 5) );
+        FireEvent( DeactivateInvincibility() );
+    }
+}

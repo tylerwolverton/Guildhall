@@ -30,6 +30,25 @@ enum class eFaction
 
 
 //-----------------------------------------------------------------------------------------------
+struct DamageMultiplier
+{
+public:
+	float defaultMultiplier = 1.f;
+	float curMultiplier = 1.f;
+
+public:
+	DamageMultiplier() = default;
+
+	DamageMultiplier( float defaultMultiplier )
+		: defaultMultiplier( defaultMultiplier )
+		, curMultiplier( defaultMultiplier )
+	{ }
+
+	void Reset()					{ curMultiplier = defaultMultiplier; }
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class Entity
 {
 	friend class Map;
@@ -83,14 +102,17 @@ public:
 	void			FireSpawnEvent();
 	void			FireScriptEvent( const std::string& eventName, EventArgs* args );
 
-	void			StartInvincibility( float durationSeconds );
+	void			MakeInvincibleToAllDamage();
+	void			ResetDamageMultipliers();
+	void			AddNewDamageMultiplier( const std::string& damageType, float newMultiplier );
+	void			ChangeDamageMultiplier( const std::string& damageType, float newMultiplier );
+	void			PermanentlyChangeDamageMultiplier( const std::string& damageType, float newDefaultMultiplier );
 
 	bool			IsDead() const											{ return m_isDead; }
 	bool			IsGarbage() const										{ return m_isGarbage; }
 	bool			IsPlayer() const										{ return m_isPlayer; }
-	bool			IsInvincible() const									{ return m_isInvincible; }
 				 
-	void			TakeDamage( float damage );
+	void			TakeDamage( float damage, const std::string& type = "normal" );
 	//void			ApplyFriction();
 
 	void			MoveWithPhysics( float speed, const Vec2& direction );
@@ -105,37 +127,36 @@ protected:
 	void			SendPhysicsEventToScript( Collision2D collision, const std::string& eventName );
 
 protected:
-	ZephyrScript*					m_scriptObj = nullptr;
+	ZephyrScript*							m_scriptObj = nullptr;
 
 	// Game state
-	const EntityDefinition&			m_entityDef;
-	std::string						m_name;
-	EntityId						m_id;
-	eFaction						m_faction = eFaction::NEUTRAL;
-	float							m_curHealth = 1.f;								// how much health is currently remaining on entity
-	bool							m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
-	bool							m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
-	bool							m_isPlayer = false;
-	Map*							m_map = nullptr;
-	std::vector<Entity*>			m_inventory;									// entity owns all items in inventory
-	
-	bool							m_isInvincible = false;
-	Timer							m_invincibilityTimer;
+	const EntityDefinition&					m_entityDef;
+	std::string								m_name;
+	EntityId								m_id;
+	eFaction								m_faction = eFaction::NEUTRAL;
+	float									m_curHealth = 1.f;								// how much health is currently remaining on entity
+	bool									m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
+	bool									m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
+	bool									m_isPlayer = false;
+	Map*									m_map = nullptr;
+	std::vector<Entity*>					m_inventory;									// entity owns all items in inventory
+	std::map<std::string, DamageMultiplier>	m_damageTypeMultipliers;
+	float									m_baseDamageMultiplier = 1.f;
 
-	Entity*							m_dialoguePartner = nullptr;
+	Entity*									m_dialoguePartner = nullptr;
 
 	// Physics
-	Rigidbody2D*					m_rigidbody2D = nullptr;
-	float							m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
-	Vec2							m_forwardVector = Vec2( 1.f, 0.f );
+	Rigidbody2D*							m_rigidbody2D = nullptr;
+	float									m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
+	Vec2									m_forwardVector = Vec2( 1.f, 0.f );
 	
 	// Visual
-	float							m_cumulativeTime = 0.f;
-	std::vector<Vertex_PCU>			m_vertices;
-	SpriteAnimationSetDefinition*	m_curSpriteAnimSetDef = nullptr;
+	float									m_cumulativeTime = 0.f;
+	std::vector<Vertex_PCU>					m_vertices;
+	SpriteAnimationSetDefinition*			m_curSpriteAnimSetDef = nullptr;
 
 	// Statics
-	static EntityId					s_nextEntityId;
+	static EntityId							s_nextEntityId;
 };
 
 

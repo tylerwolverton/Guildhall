@@ -58,7 +58,7 @@ StateMachine
     {
         if( otherId != -1 )
         {
-            FireEvent( DamageEntity( id = otherId, damage = attackDamage ) );
+            FireEvent( DamageEntity( id = otherId, damage = attackDamage, damageType = "normal" ) );
             //FireEvent( AddScreenShake( intensity = .05 ) );
         }
     }

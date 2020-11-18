@@ -27,17 +27,23 @@ private:
 
 	// Game Events
 	void SpawnEntity( EventArgs* args );
-	/**
-	 * Destroys the entity who called this event.
-	 */
-	void DestroySelf( EventArgs* args );
-	void DamageEntity( EventArgs* args );
 	void StartDialogue( EventArgs* args );
 	void EndDialogue( EventArgs* args );
 	void AddLineOfDialogueText( EventArgs* args );
 	void AddDialogueChoice( EventArgs* args );
 	void StartNewTimer( EventArgs* args );
 	void WinGame( EventArgs* args );
+
+	// Entity Events
+	/**
+	 * Destroys the entity who called this event.
+	 */
+	void DestroySelf( EventArgs* args );
+	void DamageEntity( EventArgs* args );
+	void ActivateInvincibility( EventArgs* args );
+	void DeactivateInvincibility( EventArgs* args );
+	void AddNewDamageTypeMultiplier( EventArgs* args );
+	void ChangeDamageTypeMultiplier( EventArgs* args );
 
 	// AI
 	void MoveToLocation( EventArgs* args );
@@ -53,6 +59,9 @@ private:
 	void PlaySound( EventArgs* args );
 	void ChangeMusic( EventArgs* args );
 	void AddScreenShake( EventArgs* args );
+
+private:
+	Entity* GetTargetEntityFromArgs( EventArgs* args );
 
 private:
 	std::unordered_set<std::string> m_registeredMethods;

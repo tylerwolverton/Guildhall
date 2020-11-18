@@ -10,6 +10,7 @@
       <Death up="0"/>
     </Appearance>
     <Gameplay maxHealth="5"/>
+    <Script name="Player.zephyr"/>
   </Actor>
   ​
   <Actor name="OldMan">
@@ -88,7 +89,7 @@
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
       <Walk up="20"/>
     </Appearance>
-    <Gameplay damage="1~1" maxHealth="1"/>
+    <Gameplay damage="1~1" maxHealth="3"/>
     <Script name="BasicProjectile.zephyr"/>
   </Projectile>
   ​

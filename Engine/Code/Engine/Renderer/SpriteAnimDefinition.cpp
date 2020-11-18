@@ -37,6 +37,7 @@ SpriteAnimDefinition::SpriteAnimDefinition( const SpriteSheet& sheet, std::vecto
 	m_durationSeconds = (float)m_spriteIndexes.size() / fps;
 }
 
+
 //-----------------------------------------------------------------------------------------------
 const SpriteDefinition& SpriteAnimDefinition::GetSpriteDefAtTime( float seconds ) const
 {

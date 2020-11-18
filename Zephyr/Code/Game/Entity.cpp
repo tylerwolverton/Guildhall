@@ -85,13 +85,6 @@ void Entity::Update( float deltaSeconds )
 	{
 		m_scriptObj->Update();
 	}
-
-	if ( m_invincibilityTimer.IsRunning()
-		 && m_invincibilityTimer.HasElapsed() )
-	{
-		m_isInvincible = false;
-		m_invincibilityTimer.Stop();
-	}
 }
 
 
@@ -273,24 +266,79 @@ void Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::StartInvincibility( float durationSeconds )
+void Entity::MakeInvincibleToAllDamage()
 {
-	m_isInvincible = true;
-	m_invincibilityTimer.Reset();
-	m_invincibilityTimer.SetSeconds( (double)durationSeconds );
+	m_baseDamageMultiplier = 0.f;
+	/*for ( auto& damageMultiplier : m_damageTypeMultipliers )
+	{
+		damageMultiplier.second.curMultiplier = 0.f;
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::TakeDamage( float damage )
+void Entity::ResetDamageMultipliers()
 {
-	if ( IsDead() 
-		 || IsInvincible() )
+	m_baseDamageMultiplier = 1.f;
+
+	for ( auto& damageMultiplier : m_damageTypeMultipliers )
+	{
+		damageMultiplier.second.curMultiplier = damageMultiplier.second.defaultMultiplier;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::AddNewDamageMultiplier( const std::string& damageType, float newMultiplier )
+{
+	m_damageTypeMultipliers[damageType] = DamageMultiplier( newMultiplier );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::ChangeDamageMultiplier( const std::string& damageType, float newMultiplier )
+{
+	auto damageIter = m_damageTypeMultipliers.find( damageType );
+	if ( damageIter == m_damageTypeMultipliers.end() )
+	{
+		g_devConsole->PrintError( Stringf( "Tried to change multiplier of unknown damage type '%s'", damageType.c_str() ) );
+	}
+
+	damageIter->second.curMultiplier = newMultiplier;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::PermanentlyChangeDamageMultiplier( const std::string& damageType, float newDefaultMultiplier )
+{
+	auto damageIter = m_damageTypeMultipliers.find( damageType );
+	if ( damageIter == m_damageTypeMultipliers.end() )
+	{
+		g_devConsole->PrintError( Stringf( "Tried to permanently change multiplier of unknown damage type '%s'", damageType.c_str() ) );
+	}
+
+	damageIter->second.defaultMultiplier = newDefaultMultiplier;
+	damageIter->second.curMultiplier = newDefaultMultiplier;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::TakeDamage( float damage, const std::string& type )
+{
+	if ( IsDead() )
 	{
 		return;
 	}
 
-	m_curHealth -= damage;
+	float damageMultiplier = 1.f;
+
+	auto damageIter = m_damageTypeMultipliers.find( type );
+	if ( damageIter != m_damageTypeMultipliers.end() )
+	{
+		damageMultiplier = damageIter->second.curMultiplier;
+	}
+
+	m_curHealth -= damage * damageMultiplier * m_baseDamageMultiplier;
 	if ( m_curHealth <= 0 )
 	{
 		Die();
@@ -302,11 +350,6 @@ void Entity::TakeDamage( float damage )
 		args.SetValue( "newHealth", m_curHealth );
 
 		m_scriptObj->FireEvent( "HealthUpdated", &args );
-	}
-
-	if ( m_isPlayer )
-	{
-		StartInvincibility( 2.f );
 	}
 }
 

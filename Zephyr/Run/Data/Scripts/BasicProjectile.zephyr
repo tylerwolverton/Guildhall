@@ -1,6 +1,6 @@
 StateMachine
 {
-    Number attackDamage;
+    Number attackDamage = 1;
 
     Number otherId;
     OnEvent( EnterCollision )

@@ -27,8 +27,6 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( PrintToConsole );
 
 	REGISTER_EVENT( DestroySelf );
-	REGISTER_EVENT( SpawnEntity );
-	REGISTER_EVENT( DamageEntity );
 	REGISTER_EVENT( StartDialogue );
 	REGISTER_EVENT( EndDialogue );
 	REGISTER_EVENT( AddLineOfDialogueText );
@@ -43,6 +41,13 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( CheckForTarget );
 	REGISTER_EVENT( GetNewWanderTargetPosition );
 	REGISTER_EVENT( GetDistanceToTarget );
+
+	REGISTER_EVENT( SpawnEntity );
+	REGISTER_EVENT( DamageEntity );
+	REGISTER_EVENT( ActivateInvincibility );
+	REGISTER_EVENT( DeactivateInvincibility );
+	REGISTER_EVENT( AddNewDamageTypeMultiplier );
+	REGISTER_EVENT( ChangeDamageTypeMultiplier );
 
 	REGISTER_EVENT( ChangeSpriteAnimation );
 	REGISTER_EVENT( PlaySound );
@@ -84,13 +89,80 @@ void GameAPI::DamageEntity( EventArgs* args )
 {
 	EntityId entityId = (EntityId)args->GetValue( "id", 0.f );
 	float damage = args->GetValue( "damage", 0.f );
+	std::string damageType = args->GetValue( "damageType", "normal" );
 
 	Entity* entityToDamage = g_game->GetEntityById( entityId );
 
 	if ( entityToDamage != nullptr )
 	{
-		entityToDamage->TakeDamage( damage );
+		entityToDamage->TakeDamage( damage, damageType );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::ActivateInvincibility( EventArgs* args )
+{
+	Entity* entity = GetTargetEntityFromArgs( args );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	entity->MakeInvincibleToAllDamage();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::DeactivateInvincibility( EventArgs* args )
+{
+	Entity* entity = GetTargetEntityFromArgs( args );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	entity->ResetDamageMultipliers();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::AddNewDamageTypeMultiplier( EventArgs* args )
+{
+	Entity* entity = GetTargetEntityFromArgs( args );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	float newDamageMultiplier = args->GetValue( "multiplier", 1.f );
+	std::string type = args->GetValue( "damageType", "" );
+	if ( type.empty() )
+	{
+		return;
+	}
+
+	entity->AddNewDamageMultiplier( type, newDamageMultiplier );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::ChangeDamageTypeMultiplier( EventArgs* args )
+{
+	Entity* entity = GetTargetEntityFromArgs( args );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	float newDamageMultiplier = args->GetValue( "multiplier", 1.f );
+	std::string type = args->GetValue( "damageType", "" );
+	if ( type.empty() )
+	{
+		return;
+	}
+
+	entity->ChangeDamageMultiplier( type, newDamageMultiplier );
 }
 
 
@@ -497,3 +569,37 @@ void GameAPI::AddScreenShake( EventArgs* args )
 
 	g_game->AddScreenShakeIntensity( intensity );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* GameAPI::GetTargetEntityFromArgs( EventArgs* args )
+{
+	EntityId targetId = (EntityId)args->GetValue( "targetId", -1.f );
+	std::string targetName = args->GetValue( "targetName", "" );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	// Named entities are returned first
+	if ( !targetName.empty() )
+	{
+		entity = g_game->GetEntityByName( targetName );
+		if ( entity == nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "Failed to find an entity with name '%s'", targetName.c_str() ) );
+			return nullptr;
+		}
+	}
+	// Id entities are tried next
+	else if ( targetId != -1 )
+	{
+		entity = g_game->GetEntityById( targetId );
+		if ( entity == nullptr )
+		{
+			g_devConsole->PrintWarning( Stringf( "Failed to find an entity with id '%i'", targetId ) );
+			return nullptr;
+		}
+	}
+
+	// If no name or id defined, send back the entity who called the method
+	return entity;
+}
+
