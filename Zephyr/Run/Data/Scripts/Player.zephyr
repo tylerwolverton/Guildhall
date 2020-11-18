@@ -15,8 +15,8 @@ StateMachine
 	{
         if( newHealth < curHealth )
         {
-            FireEvent( PrintDebugText(text = "Ouch", duration = 5) );
             FireEvent( ActivateInvincibility() );
+            FireEvent( ChangeSpriteAnimation( newAnim = "Damaged" ) );
             FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" ) );
         }
 
@@ -25,7 +25,7 @@ StateMachine
 
     OnEvent( InvincibilityExpired )
     {
-        FireEvent( PrintDebugText(text = "Vincible!", duration = 5) );
         FireEvent( DeactivateInvincibility() );
+        FireEvent( ChangeSpriteAnimation( newAnim = "Walk" ) );
     }
 }

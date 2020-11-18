@@ -87,13 +87,15 @@ void GameAPI::DestroySelf( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::DamageEntity( EventArgs* args )
 {
-	EntityId entityId = (EntityId)args->GetValue( "id", 0.f );
+	EntityId targetId = (EntityId)args->GetValue( "id", 0.f );
 	float damage = args->GetValue( "damage", 0.f );
 	std::string damageType = args->GetValue( "damageType", "normal" );
 
-	Entity* entityToDamage = g_game->GetEntityById( entityId );
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	Entity* entityToDamage = g_game->GetEntityById( targetId );
 
-	if ( entityToDamage != nullptr )
+	if ( entityToDamage != nullptr 
+		 && entityToDamage->GetFaction() != entity->GetFaction() )
 	{
 		entityToDamage->TakeDamage( damage, damageType );
 	}
