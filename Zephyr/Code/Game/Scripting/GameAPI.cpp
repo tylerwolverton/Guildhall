@@ -35,6 +35,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( WinGame );
 
 	REGISTER_EVENT( MoveToLocation );
+	REGISTER_EVENT( MoveInDirection );
 	REGISTER_EVENT( ChaseTargetEntity );
 	REGISTER_EVENT( FleeTargetEntity );
 	REGISTER_EVENT( GetEntityLocation );
@@ -48,6 +49,8 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( DeactivateInvincibility );
 	REGISTER_EVENT( AddNewDamageTypeMultiplier );
 	REGISTER_EVENT( ChangeDamageTypeMultiplier );
+
+	REGISTER_EVENT( RegisterKeyEvent );
 
 	REGISTER_EVENT( ChangeSpriteAnimation );
 	REGISTER_EVENT( PlaySound );
@@ -376,9 +379,32 @@ void GameAPI::MoveToLocation( EventArgs* args )
 	Vec2 moveDirection = targetPos - entity->GetPosition();
 	moveDirection.Normalize();
 
-	float moveSpeed = entity->GetWalkSpeed() * g_game->GetLastDeltaSecondsf();
+	float moveSpeed = entity->GetWalkSpeed();// *g_game->GetLastDeltaSecondsf();
 
 	entity->MoveWithPhysics( moveSpeed, moveDirection );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::MoveInDirection( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	Vec2 direction = args->GetValue( "direction", Vec2::ZERO );
+	if ( direction == Vec2::ZERO )
+	{
+		return;
+	}
+
+	direction.Normalize();
+
+	float speed = args->GetValue( "speed", entity->GetWalkSpeed() );
+
+	entity->MoveWithPhysics( speed, direction );
 }
 
 
@@ -510,6 +536,31 @@ void GameAPI::GetDistanceToTarget( EventArgs* args )
 	targetArgs.SetValue( "distance", displacementToTarget.GetLength() );
 
 	entity->FireScriptEvent( "UpdateDistanceToTarget", &targetArgs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::RegisterKeyEvent( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	std::string key = args->GetValue( "key", "" );
+	if ( key.empty() )
+	{
+		return;
+	}
+
+	std::string event = args->GetValue( "event", "" );
+	if ( event.empty() )
+	{
+		return;
+	}
+
+	entity->RegisterKeyEvent( key, event );
 }
 
 

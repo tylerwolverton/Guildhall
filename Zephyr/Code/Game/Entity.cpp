@@ -10,6 +10,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
@@ -80,6 +81,7 @@ Entity::~Entity()
 void Entity::Update( float deltaSeconds )
 {
 	m_cumulativeTime += deltaSeconds;
+	m_lastDeltaSeconds = deltaSeconds;
 
 	if ( m_scriptObj != nullptr )
 	{
@@ -359,12 +361,40 @@ void Entity::MoveWithPhysics( float speed, const Vec2& direction )
 {
 	if ( m_rigidbody2D != nullptr )
 	{
-		m_rigidbody2D->ApplyImpulseAt( speed * direction, GetPosition() );
+		m_rigidbody2D->ApplyImpulseAt( speed * direction * m_lastDeltaSeconds, GetPosition() );
 
 		EventArgs args;
 		args.SetValue( "newPos", m_rigidbody2D->GetPosition() );
 
 		FireScriptEvent( "UpdateEntityPosition", &args );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::RegisterKeyEvent( const std::string& keyCode, const std::string& eventName )
+{
+	if		( IsEqualIgnoreCase( keyCode, "space" ) )	{ m_registeredKeyEvents[KEY_SPACEBAR].push_back( eventName ); }
+	else if ( IsEqualIgnoreCase( keyCode, "enter" ) )	{ m_registeredKeyEvents[KEY_ENTER].push_back( eventName ); }
+	else if ( IsEqualIgnoreCase( keyCode, "shift" ) )	{ m_registeredKeyEvents[KEY_SHIFT].push_back( eventName ); }
+	else if ( IsEqualIgnoreCase( keyCode, "left" ) )	{ m_registeredKeyEvents[KEY_LEFTARROW].push_back( eventName ); }
+	else if ( IsEqualIgnoreCase( keyCode, "right" ) )	{ m_registeredKeyEvents[KEY_RIGHTARROW].push_back( eventName ); }
+	else if ( IsEqualIgnoreCase( keyCode, "up" ) )		{ m_registeredKeyEvents[KEY_UPARROW].push_back( eventName ); }
+	else if ( IsEqualIgnoreCase( keyCode, "down" ) )	{ m_registeredKeyEvents[KEY_DOWNARROW].push_back( eventName ); }
+	else
+	{
+		// Register letters and numbers
+		char key = keyCode[0];
+		if ( key >= 'a' && key <= 'z' )
+		{
+			key -= 32;
+		}
+
+		if ( ( key >= '0' && key <= '9' )
+			 || ( key >= 'A' && key <= 'Z' ) )
+		{
+			m_registeredKeyEvents[key].push_back( eventName );
+		}
 	}
 }
 

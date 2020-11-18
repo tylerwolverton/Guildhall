@@ -228,6 +228,34 @@ Floats ConvertStringsToFloats( const Strings& strings )
 
 
 //-----------------------------------------------------------------------------------------------
+bool IsEqualIgnoreCase( const std::string& a, const std::string& b )
+{
+	return !_stricmp( a.c_str(), b.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool IsEqualIgnoreCase( const char* a, const std::string& b )
+{
+	return !_stricmp( a, b.c_str() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool IsEqualIgnoreCase( const std::string& a, const char* b )
+{
+	return !_stricmp( a.c_str(), b );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool IsEqualIgnoreCase( const char* a, const char* b )
+{
+	return !_stricmp( a, b );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::string ToString( bool value )
 {
 	return value ? "true" : "false";

@@ -16,6 +16,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/Map.hpp"
+#include "Game/Scripting/ZephyrScript.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -93,13 +94,30 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 	{
 		case eGameState::PLAYING:
 		{
+			for ( auto& registeredKey : m_registeredKeyEvents )
+			{
+				if ( g_inputSystem->IsKeyPressed( registeredKey.first ) )
+				{
+					for ( auto& eventName : registeredKey.second )
+					{
+						EventArgs args;
+						FireScriptEvent( eventName, &args );
+					}
+				}
+			}
+
 			float impulseMagnitude = m_entityDef.GetWalkSpeed() * deltaSeconds;
 
-			if ( g_inputSystem->IsKeyPressed( 'W' ) )
-			{
-				m_forwardVector = Vec2( 0.f, 1.f );
-				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-			}
+			
+
+			//if ( g_inputSystem->IsKeyPressed( 'W' ) )
+			//{
+			//	EventArgs args;
+			//	args.SetValue( "key", "W" );
+			//	m_scriptObj->FireEvent( "KeyIsPressed", &args );
+			//	//m_forwardVector = Vec2( 0.f, 1.f );
+			//	//m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			//}
 
 			if ( g_inputSystem->IsKeyPressed( 'A' ) )
 			{

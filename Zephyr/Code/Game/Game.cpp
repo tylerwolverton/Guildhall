@@ -596,6 +596,7 @@ void Game::LoadEntitiesFromXml()
 	m_player = new Actor( *playerDef, nullptr );
 	m_player->SetAsPlayer();
 	m_world->SaveEntityByName( m_player );
+	m_player->FireSpawnEvent();
 
 	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }

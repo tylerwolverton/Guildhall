@@ -8,6 +8,8 @@ StateMachine
         curHealth = maxHealth;
 
         FireEvent( AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 ) );
+    
+        FireEvent( RegisterKeyEvent( key = "W", event = "MoveUp" ) );
     }
 
     Number newHealth;
@@ -29,8 +31,9 @@ StateMachine
         FireEvent( ChangeSpriteAnimation( newAnim = "Walk" ) );
     }
 
-    OnEvent( InputReceived )
+    OnEvent( MoveUp )
     {
-        
+        Vec2 dir = ( 0, 1 );
+        FireEvent( MoveInDirection( direction = dir ) );
     }
 }

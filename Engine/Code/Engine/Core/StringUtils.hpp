@@ -33,6 +33,12 @@ Ints ConvertStringsToInts( const Strings& strings );
 float ConvertStringToFloat( const std::string& string );
 Floats ConvertStringsToFloats( const Strings& strings );
 
+bool IsEqualIgnoreCase( const std::string& a, const std::string& b );
+bool IsEqualIgnoreCase( const char* a, const std::string& b );
+bool IsEqualIgnoreCase( const std::string& a, const char* b );
+bool IsEqualIgnoreCase( const char* a, const char* b );
+
+
 //-----------------------------------------------------------------------------------------------
 std::string ToString( bool value );
 std::string ToString( int value );

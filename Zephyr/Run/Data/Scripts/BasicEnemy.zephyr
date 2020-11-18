@@ -80,7 +80,7 @@ StateMachine
 		// FireEvent( PrintDebugText( text = "Wander" ) );
 		
 		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
-		FireEvent( MoveToLocation( pos=targetPosition ) );
+		FireEvent( MoveToLocation( pos = targetPosition ) );
 
 		if( position == targetPosition )
 		{

@@ -47,12 +47,16 @@ private:
 
 	// AI
 	void MoveToLocation( EventArgs* args );
+	void MoveInDirection( EventArgs* args );
 	void ChaseTargetEntity( EventArgs* args );
 	void FleeTargetEntity( EventArgs* args );
 	void GetEntityLocation( EventArgs* args );
 	void GetNewWanderTargetPosition( EventArgs* args );
 	void CheckForTarget( EventArgs* args );
 	void GetDistanceToTarget( EventArgs* args );
+
+	// Input
+	void RegisterKeyEvent( EventArgs* args );
 
 	// Audio/Visual
 	void ChangeSpriteAnimation( EventArgs* args );

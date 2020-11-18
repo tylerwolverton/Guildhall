@@ -117,6 +117,8 @@ public:
 
 	void			MoveWithPhysics( float speed, const Vec2& direction );
 
+	void			RegisterKeyEvent( const std::string& keyCode, const std::string& eventName );
+
 protected:
 	void			EnterCollisionEvent( Collision2D collision );
 	void			StayCollisionEvent( Collision2D collision );
@@ -146,6 +148,7 @@ protected:
 	Entity*									m_dialoguePartner = nullptr;
 
 	// Physics
+	float									m_lastDeltaSeconds = .0016f;
 	Rigidbody2D*							m_rigidbody2D = nullptr;
 	float									m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
 	Vec2									m_forwardVector = Vec2( 1.f, 0.f );
@@ -154,6 +157,9 @@ protected:
 	float									m_cumulativeTime = 0.f;
 	std::vector<Vertex_PCU>					m_vertices;
 	SpriteAnimationSetDefinition*			m_curSpriteAnimSetDef = nullptr;
+
+	// Input
+	std::map<char, std::vector<std::string>>				m_registeredKeyEvents;
 
 	// Statics
 	static EntityId							s_nextEntityId;
