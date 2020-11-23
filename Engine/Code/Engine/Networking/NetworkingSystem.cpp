@@ -19,6 +19,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
+UniqueMessageId NetworkingSystem::s_nextMessageId = 1;
+
+
+//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::Startup()
 {
 	// tcp commands
@@ -56,6 +60,7 @@ void NetworkingSystem::BeginFrame()
 	ProcessTCPCommunication();
 	ProcessUDPCommunication();
 	ClearProcessedUDPMessages();
+	RetryReliableUDPMessages();
 }
 
 
@@ -292,8 +297,8 @@ void NetworkingSystem::ProcessUDPCommunication()
 	}
 
 	// Process message
-	const MessageHeader* header = reinterpret_cast<const MessageHeader*>( data.GetData() );
-	switch ( header->id )
+	const UDPMessageHeader* udpHeader = reinterpret_cast<const UDPMessageHeader*>( data.GetData() );
+	switch ( udpHeader->id )
 	{
 		case (uint16_t)eMessasgeProtocolIds::TEXT:
 		{
@@ -304,12 +309,49 @@ void NetworkingSystem::ProcessUDPCommunication()
 		case (uint16_t)eMessasgeProtocolIds::DATA:
 		{
 			m_udpReceivedMessages.push_back( data );
+
+			// This is a reliable message if it has a valid uniqueId
+			if ( udpHeader->uniqueId > 0 )
+			{
+				// If this ack isn't already in the retry list, add it
+				auto retryIter = m_reliableUDPMessagesToRetry.find( udpHeader->uniqueId );
+				if ( retryIter != m_reliableUDPMessagesToRetry.end() )
+				{
+					break;
+				}
+				
+				UDPMessageHeader ackHeader;
+				ackHeader.id = (uint16_t)eMessasgeProtocolIds::ACK;
+				ackHeader.size = (uint16_t)1;
+				ackHeader.uniqueId = udpHeader->uniqueId;
+
+				std::array<char, 512> buffer;
+				memcpy( &buffer, &ackHeader, sizeof( UDPMessageHeader ) );
+
+				UDPMessage udpMessage( data.GetFromPort(), buffer );
+
+				m_reliableUDPMessagesToRetry[udpHeader->uniqueId] = ReliableUDPMessage( udpMessage );
+			}
+		}
+		break;
+
+		case (uint16_t)eMessasgeProtocolIds::ACK:
+		{
+			// Remove message from retry list once an ack is received for it			
+			UniqueMessageId ackId = udpHeader->uniqueId;
+
+			auto reliableMessageIter = m_reliableUDPMessagesToRetry.find( udpHeader->uniqueId );
+			if ( reliableMessageIter != m_reliableUDPMessagesToRetry.end() )
+			{
+				reliableMessageIter->second.hasBeenAcked = true;
+			}
+			//m_reliableUDPMessagesToRetry.erase( ackId );
 		}
 		break;
 
 		default:
 		{
-			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", header->id ) );
+			g_devConsole->PrintError( Stringf( "Received msg with unknown id: %i", udpHeader->id ) );
 			return;
 		}
 		break;
@@ -332,20 +374,6 @@ void NetworkingSystem::UDPReaderThreadMain()
 		{
 			m_incomingMessages.Push( data );
 		}		
-		
-		/*for ( auto& udpSocket : m_udpSockets )
-		{
-			if ( udpSocket.second == nullptr )
-			{
-				continue;
-			}
-
-			UDPData data = udpSocket.second->Receive();
-			if ( data.GetLength() > 0 )
-			{
-				m_incomingMessages.Push( data );
-			}
-		}*/
 	}
 }
 
@@ -353,28 +381,6 @@ void NetworkingSystem::UDPReaderThreadMain()
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::UDPWriterThreadMain()
 {
-	//while ( !m_isQuitting )
-	//{
-	//	if ( m_udpSocket == nullptr )
-	//	{
-	//		continue;
-	//	}
-
-	//	UDPMessage message = m_outgoingMessages.Pop();
-	//	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &message.data[0] );
-
-	//	while ( msgHeader->size > 0 )
-	//	{
-	//		// Copy the header and data into the buffer.
-	//		m_udpSocket->SendBuffer() = message.data;
-
-	//		m_udpSocket->Send( sizeof( UDPMessageHeader ) + msgHeader->size + 1 );
-
-	//		message = m_outgoingMessages.Pop();
-	//		msgHeader = reinterpret_cast<UDPMessageHeader*>( &message.data[0] );
-	//	}
-	//}
-
 	while ( !m_isQuitting )
 	{
 		UDPMessage message = m_outgoingMessages.Pop();
@@ -382,15 +388,29 @@ void NetworkingSystem::UDPWriterThreadMain()
 
 		while ( msgHeader->size > 0 )
 		{
+			UDPSocket* udpSocket = nullptr;
 			auto udpSocketIter = m_udpSockets.find( message.sendToPort );
 			if ( udpSocketIter == m_udpSockets.end() )
+			{
+				// This is on a client with only 1 connection, send back on that socket
+				if ( m_udpSockets.size() == 1 )
+				{
+					udpSocket = m_udpSockets.begin()->second;
+				}
+			}
+			else
+			{
+				udpSocket = udpSocketIter->second;
+			}
+
+			// Get next message and retry
+			if ( udpSocket == nullptr )
 			{
 				message = m_outgoingMessages.Pop();
 				msgHeader = reinterpret_cast<UDPMessageHeader*>( &message.data[0] );
 
 				continue;
 			}
-			UDPSocket* udpSocket = udpSocketIter->second;
 
 			// Copy the header and data into the buffer.
 			udpSocket->SendBuffer() = message.data;
@@ -420,6 +440,40 @@ void NetworkingSystem::ClearProcessedUDPMessages()
 	for ( int idx : indicesToDelete )
 	{
 		m_udpReceivedMessages.erase( m_udpReceivedMessages.begin() + idx );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void NetworkingSystem::RetryReliableUDPMessages()
+{
+	std::vector<UniqueMessageId> expiredMessages;
+
+	for ( auto& reliableMessage : m_reliableUDPMessagesToRetry )
+	{
+		if ( reliableMessage.second.hasBeenAcked )
+		{
+			continue;
+		}
+
+		++reliableMessage.second.retryCount;
+
+		// Only start retrying after the message has been sent once by the usual means
+		if ( reliableMessage.second.retryCount > 1 )
+		{
+			m_outgoingMessages.Push( reliableMessage.second.udpMessage );
+		}
+		
+		if ( reliableMessage.second.retryCount > 10000 )
+		{
+			expiredMessages.push_back( reliableMessage.first );
+		}
+	}
+
+	// Clean out old messages
+	for ( const auto& expiredMessageId : expiredMessages )
+	{
+		m_reliableUDPMessagesToRetry.erase( expiredMessageId );
 	}
 }
 
@@ -692,14 +746,6 @@ void NetworkingSystem::CloseUDPPort( EventArgs* args )
 {
 	int bindPort = args->GetValue( "bindPort", 48000 );
 
-	/*UNUSED( bindPort );
-
-	if ( m_udpSocket != nullptr )
-	{
-		m_udpSocket->Close();
-		PTR_SAFE_DELETE( m_udpSocket );
-	}*/
-
 	CloseUDPPort( bindPort );
 }
 
@@ -731,7 +777,7 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t dataSize )
+void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable )
 {
 	std::array<char, 512> buffer = {};
 	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
@@ -740,11 +786,29 @@ void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t
 	msgHeader->size = (uint16_t)dataSize;
 	msgHeader->sequenceNum = (uint16_t)0;
 
+	if ( isReliable )
+	{
+		msgHeader->uniqueId = GetNextUniqueMessageId();
+	}
+
 	memcpy( &buffer[sizeof( UDPMessageHeader )], data, msgHeader->size );
 
 	buffer[sizeof( UDPMessageHeader ) + msgHeader->size] = '\0';
 
-	m_outgoingMessages.Push( UDPMessage( distantSendToPort, buffer ) );
+	UDPMessage udpMessage( distantSendToPort, buffer );
+	if ( isReliable )
+	{
+		m_reliableUDPMessagesToRetry[msgHeader->uniqueId] = ReliableUDPMessage( udpMessage );
+	}
+
+	m_outgoingMessages.Push( udpMessage );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UniqueMessageId NetworkingSystem::GetNextUniqueMessageId()
+{
+	return s_nextMessageId++;
 }
 
 

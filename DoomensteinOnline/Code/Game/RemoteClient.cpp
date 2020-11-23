@@ -43,22 +43,22 @@ void RemoteClient::Update()
 	ProcessUDPMessages();
 
 	// Retry initial message if not acked yet
-	if ( m_remoteServerInitState == eInitializationState::SENT )
-	{
-		RemoteClientRegistrationRequest req( m_clientId );
-		g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
+	//if ( m_remoteServerInitState == eInitializationState::SENT )
+	//{
+	//	/*RemoteClientRegistrationRequest req( m_clientId );
+	//	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );*/
 
-		return;
-	}
+	//	return;
+	//}
 
-	// Retry set player id message if not acked yet
-	if ( m_remoteServerPlayerIdInitState == eInitializationState::SENT )
-	{
-		SetPlayerIdRequest req( m_clientId, m_playerId );
-		g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
+	//// Retry set player id message if not acked yet
+	//if ( m_remoteServerPlayerIdInitState == eInitializationState::SENT )
+	//{
+	//	/*SetPlayerIdRequest req( m_clientId, m_playerId );
+	//	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );*/
 
-		return;
-	}	
+	//	return;
+	//}	
 
 	SendUpdatedGameWorldToServer();
 }
@@ -129,7 +129,7 @@ void RemoteClient::SetClientId( int id )
 	m_clientId = id;
 	// Send a message to RemoteServer to set player client's id
 	RemoteClientRegistrationRequest req( m_clientId );
-	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true );
 
 	m_remoteServerInitState = eInitializationState::SENT;
 }
@@ -141,7 +141,7 @@ void RemoteClient::SetPlayer( Entity* entity )
 	m_playerId = entity->GetId();
 
 	SetPlayerIdRequest req( m_clientId, m_playerId );
-	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true );
 
 	m_remoteServerInitState = eInitializationState::ACKED;
 	m_remoteServerPlayerIdInitState = eInitializationState::SENT;

@@ -5,6 +5,10 @@
 
 
 //-----------------------------------------------------------------------------------------------
+typedef uint16_t UniqueMessageId;
+
+
+//-----------------------------------------------------------------------------------------------
 enum class eMessasgeProtocolIds : std::uint16_t
 {
 	SERVER_LISTENING = 1,
@@ -12,6 +16,7 @@ enum class eMessasgeProtocolIds : std::uint16_t
 	CLIENT_DISCONNECTING,
 	SERVER_DISCONNECTING,
 	DATA,
+	ACK,
 };
 
 
@@ -26,9 +31,10 @@ struct MessageHeader
 //-----------------------------------------------------------------------------------------------
 struct UDPMessageHeader
 {
-	uint16_t id;
-	uint16_t size;
-	uint16_t sequenceNum;
+	uint16_t id = 0;
+	uint16_t size = 0;
+	uint16_t sequenceNum = 0;
+	uint16_t uniqueId = 0;
 };
 
 

@@ -36,6 +36,24 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
+struct ReliableUDPMessage
+{
+public:
+	UDPMessage udpMessage;
+	int retryCount = 0;
+	bool hasBeenAcked = false;
+
+public:
+	ReliableUDPMessage() = default;
+
+	ReliableUDPMessage( UDPMessage udpMessage )
+		: udpMessage( udpMessage )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class NetworkingSystem
 {
 public:
@@ -65,7 +83,7 @@ public:
 	void OpenAndBindUDPPort( int localBindPort, int distantSendToPort );
 	void CreateAndRegisterUDPSocket( int distantSendToPort );
 	void CloseUDPPort( int localBindPort );
-	void SendUDPMessage( int distantSendToPort, void* data, size_t dataSize );
+	void SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable = false );
 	void SendUDPTextMessage( int localBindPort, const std::string& text );
 
 private:
@@ -80,6 +98,7 @@ private:
 	void UDPReaderThreadMain();
 	void UDPWriterThreadMain();
 	void ClearProcessedUDPMessages();
+	void RetryReliableUDPMessages();
 
 	// Console commands
 	void StartTCPServer( EventArgs* args );
@@ -93,6 +112,8 @@ private:
 	void CloseUDPPort( EventArgs* args );
 	void SendUDPMessage( EventArgs* args );
 
+	static UniqueMessageId GetNextUniqueMessageId();
+
 private:
 	// Just one server for now, can be array later
 	TCPServer* m_tcpServer = nullptr;
@@ -103,14 +124,17 @@ private:
 	std::vector<TCPData> m_tcpReceivedMessages;
 	std::vector<UDPData> m_udpReceivedMessages;
 
-
 	std::map<int, UDPSocket*> m_udpSockets;
 	UDPSocket* m_localBoundUDPSocket = nullptr;
 
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
 	SynchronizedBlockingQueue<UDPMessage> m_outgoingMessages;
 
+	std::map<UniqueMessageId, ReliableUDPMessage> m_reliableUDPMessagesToRetry;
+
 	bool m_isQuitting = false;
 	std::thread* m_udpReaderThread = nullptr;
 	std::thread* m_udpWriterThread = nullptr;
+
+	static UniqueMessageId s_nextMessageId;
 };

@@ -169,7 +169,7 @@ void RemoteServer::ProcessUDPMessages()
 				}
 
 				SetPlayerIdAckRequest ackReq( m_remoteClientId );
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ), true );
 
 				data.Process();
 			}
