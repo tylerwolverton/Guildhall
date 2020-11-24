@@ -95,10 +95,8 @@ void AuthoritativeServer::ProcessTCPMessages()
 			case eClientFunctionType::REQUEST_CONNECTION:
 			{
 				int clientKey = m_rng.RollRandomIntInRange( 0, INT_MAX );
-				//int udpPort = 48490;// m_rng.RollRandomIntInRange( 48500, 49200 );
-				int udpDistantSendToPort = m_rng.RollRandomIntInRange( 48500, 49200 );
+				int udpDistantSendToPort = m_rng.RollRandomIntInRange( 48500, 48550 );
 				int udpLocalBindPort = 49210;
-				//int udpLocalBindPort = m_rng.RollRandomIntInRange( 49210, 49700 );
 
 				ResponseToConnectionRequest response( -1, clientKey, udpDistantSendToPort, udpLocalBindPort, (uint16_t)data.GetFromIPAddress().size() );
 				 
@@ -181,7 +179,6 @@ void AuthoritativeServer::ProcessUDPMessages()
 //-----------------------------------------------------------------------------------------------
 void AuthoritativeServer::Update()
 {
-
 	// This server's player client will always be first
 	// Gather input from remote servers
 	for ( Client* client : m_clients )

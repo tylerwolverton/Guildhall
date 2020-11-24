@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/SynchronizedBlockingQueue.hpp"
 #include "Engine/Core/SynchronizedNonBlockingQueue.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Networking/MessageProtocols.hpp"
 #include "Engine/Networking/TCPSocket.hpp"
 #include "Engine/Networking/UDPSocket.hpp"
@@ -10,6 +11,7 @@
 #include <map>
 #include <string>
 #include <thread>
+#include <unordered_set>
 #include <vector>
 
 
@@ -48,6 +50,25 @@ public:
 
 	ReliableUDPMessage( UDPMessage udpMessage )
 		: udpMessage( udpMessage )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct ReceivedUDPMessageId
+{
+public:
+	UniqueMessageId uniqueId = 0;
+	int port = 0;
+
+public:
+	ReceivedUDPMessageId() = default;
+	~ReceivedUDPMessageId() = default;
+
+	ReceivedUDPMessageId( UniqueMessageId uniqueId, int port )
+		: uniqueId( uniqueId )
+		, port( port )
 	{
 	}
 };
@@ -112,7 +133,7 @@ private:
 	void CloseUDPPort( EventArgs* args );
 	void SendUDPMessage( EventArgs* args );
 
-	static UniqueMessageId GetNextUniqueMessageId();
+	UniqueMessageId GetNextUniqueMessageId();
 
 private:
 	// Just one server for now, can be array later
@@ -130,11 +151,12 @@ private:
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
 	SynchronizedBlockingQueue<UDPMessage> m_outgoingMessages;
 
+	std::map<int, std::unordered_set<UniqueMessageId>> m_receivedReliableMessages;
 	std::map<UniqueMessageId, ReliableUDPMessage> m_reliableUDPMessagesToRetry;
 
 	bool m_isQuitting = false;
 	std::thread* m_udpReaderThread = nullptr;
 	std::thread* m_udpWriterThread = nullptr;
 
-	static UniqueMessageId s_nextMessageId;
+	RandomNumberGenerator m_rng;
 };

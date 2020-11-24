@@ -19,10 +19,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-UniqueMessageId NetworkingSystem::s_nextMessageId = 1;
-
-
-//-----------------------------------------------------------------------------------------------
 void NetworkingSystem::Startup()
 {
 	// tcp commands
@@ -308,30 +304,66 @@ void NetworkingSystem::ProcessUDPCommunication()
 		
 		case (uint16_t)eMessasgeProtocolIds::DATA:
 		{
-			m_udpReceivedMessages.push_back( data );
-
 			// This is a reliable message if it has a valid uniqueId
-			if ( udpHeader->uniqueId > 0 )
+			UniqueMessageId uniqueMsgId = udpHeader->uniqueId;
+			int distantToPort = udpHeader->localBindPort;
+			if ( uniqueMsgId > 0 )
 			{
-				// If this ack isn't already in the retry list, add it
-				auto retryIter = m_reliableUDPMessagesToRetry.find( udpHeader->uniqueId );
+				// Break if we found the ack in our list, we don't need to process this message again
+				/*auto retryIter = m_reliableUDPMessagesToRetry.find( uniqueMsgId );
 				if ( retryIter != m_reliableUDPMessagesToRetry.end() )
 				{
 					break;
-				}
+				}*/
 				
+				// Send an ack for the reliable message
 				UDPMessageHeader ackHeader;
 				ackHeader.id = (uint16_t)eMessasgeProtocolIds::ACK;
 				ackHeader.size = (uint16_t)1;
-				ackHeader.uniqueId = udpHeader->uniqueId;
+				ackHeader.uniqueId = uniqueMsgId;
+				ackHeader.localBindPort = m_localBoundUDPSocket->GetReceivePort();
 
 				std::array<char, 512> buffer;
 				memcpy( &buffer, &ackHeader, sizeof( UDPMessageHeader ) );
+				buffer[sizeof( UDPMessageHeader ) + 1] = '\0';
 
 				UDPMessage udpMessage( data.GetFromPort(), buffer );
 
-				m_reliableUDPMessagesToRetry[udpHeader->uniqueId] = ReliableUDPMessage( udpMessage );
+				m_outgoingMessages.Push( udpMessage );
+				//m_reliableUDPMessagesToRetry[uniqueMsgId] = ReliableUDPMessage( udpMessage );
+
+				// If we have already received this message, break to avoid processing it again
+				/*ReceivedUDPMessageId recvMsgId( uniqueMsgId, data.GetFromPort() );
+				if ( m_receivedReliableMessages.find( recvMsgId ) != m_receivedReliableMessages.end() )
+				{
+					break;
+				}
+
+				m_receivedReliableMessages.insert( recvMsgId );*/
+
+				// If we have already received this message, break to avoid processing it again
+				const auto& receivedIter = m_receivedReliableMessages.find( distantToPort );
+				if ( receivedIter != m_receivedReliableMessages.end() )
+				{
+					// This port has an entry, look for message id
+					if ( receivedIter->second.find( uniqueMsgId ) != receivedIter->second.end() )
+					{
+						break;
+					}
+
+					// Add in new message id
+					receivedIter->second.insert( uniqueMsgId );
+				}
+				else
+				{
+					// We haven't seen any messages from this port, create a new set with id and add it to map
+					std::unordered_set<UniqueMessageId> uniqueIdSet = { uniqueMsgId };
+					m_receivedReliableMessages[distantToPort] = uniqueIdSet;
+				}
+
 			}
+
+			m_udpReceivedMessages.push_back( data );
 		}
 		break;
 
@@ -340,12 +372,12 @@ void NetworkingSystem::ProcessUDPCommunication()
 			// Remove message from retry list once an ack is received for it			
 			UniqueMessageId ackId = udpHeader->uniqueId;
 
-			auto reliableMessageIter = m_reliableUDPMessagesToRetry.find( udpHeader->uniqueId );
+			/*auto reliableMessageIter = m_reliableUDPMessagesToRetry.find( ackId );
 			if ( reliableMessageIter != m_reliableUDPMessagesToRetry.end() )
 			{
 				reliableMessageIter->second.hasBeenAcked = true;
-			}
-			//m_reliableUDPMessagesToRetry.erase( ackId );
+			}*/
+			m_reliableUDPMessagesToRetry.erase( ackId );
 		}
 		break;
 
@@ -451,12 +483,12 @@ void NetworkingSystem::RetryReliableUDPMessages()
 
 	for ( auto& reliableMessage : m_reliableUDPMessagesToRetry )
 	{
-		if ( reliableMessage.second.hasBeenAcked )
+		++reliableMessage.second.retryCount;
+
+		/*if ( reliableMessage.second.hasBeenAcked )
 		{
 			continue;
-		}
-
-		++reliableMessage.second.retryCount;
+		}*/
 
 		// Only start retrying after the message has been sent once by the usual means
 		if ( reliableMessage.second.retryCount > 1 )
@@ -464,7 +496,7 @@ void NetworkingSystem::RetryReliableUDPMessages()
 			m_outgoingMessages.Push( reliableMessage.second.udpMessage );
 		}
 		
-		if ( reliableMessage.second.retryCount > 10000 )
+		if ( reliableMessage.second.retryCount > 1000 )
 		{
 			expiredMessages.push_back( reliableMessage.first );
 		}
@@ -785,6 +817,7 @@ void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::DATA;
 	msgHeader->size = (uint16_t)dataSize;
 	msgHeader->sequenceNum = (uint16_t)0;
+	msgHeader->localBindPort = m_localBoundUDPSocket->GetReceivePort();
 
 	if ( isReliable )
 	{
@@ -808,7 +841,7 @@ void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t
 //-----------------------------------------------------------------------------------------------
 UniqueMessageId NetworkingSystem::GetNextUniqueMessageId()
 {
-	return s_nextMessageId++;
+	return (UniqueMessageId)m_rng.RollRandomIntInRange( 1, 65535 );
 }
 
 
@@ -821,6 +854,7 @@ void NetworkingSystem::SendUDPTextMessage( int localBindPort, const std::string&
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
 	msgHeader->size = (uint16_t)text.size();
 	msgHeader->sequenceNum = (uint16_t)0;
+	msgHeader->localBindPort = m_localBoundUDPSocket->GetReceivePort();
 
 	memcpy( &buffer[sizeof( UDPMessageHeader )], text.c_str(), msgHeader->size );
 

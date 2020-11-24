@@ -43,7 +43,7 @@ UDPSocket::~UDPSocket()
 //-----------------------------------------------------------------------------------------------
 void UDPSocket::Bind( int localBindPort )
 {
-	m_bindPort = localBindPort;
+	m_localBindPort = localBindPort;
 
 	m_bindAddress.sin_family = AF_INET;
 	m_bindAddress.sin_port = htons( (u_short)localBindPort );

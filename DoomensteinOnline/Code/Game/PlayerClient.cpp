@@ -40,7 +40,6 @@ void PlayerClient::Startup()
 	g_eventSystem->RegisterEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, SetAmbientLightColor );
 
 	g_inputSystem->PushMouseOptions( CURSOR_RELATIVE, false, true );
-	// Probably do something to hook up to RemoteServer if in MULTIPLAYER_CLIENT mode
 
 	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT - 1; ++frameNum )
 	{

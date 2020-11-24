@@ -62,7 +62,7 @@ public:
 	std::array<char, BUFFER_SIZE>& SendBuffer()			{ return m_sendBuffer; }
 	std::array<char, BUFFER_SIZE>& ReceiveBuffer()		{ return m_receiveBuffer; }
 
-	int			GetReceivePort() const					{ return m_bindPort; }
+	int			GetReceivePort() const					{ return m_localBindPort; }
 
 private:
 	std::array<char, BUFFER_SIZE> m_sendBuffer;
@@ -70,5 +70,5 @@ private:
 	sockaddr_in m_toAddress;
 	sockaddr_in m_bindAddress;
 	SOCKET m_socket = INVALID_SOCKET;
-	int m_bindPort = -1;
+	int m_localBindPort = -1;
 };

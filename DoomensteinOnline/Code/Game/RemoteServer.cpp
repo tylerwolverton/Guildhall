@@ -83,7 +83,11 @@ void RemoteServer::StartGame( eAppMode appMode )
 //-----------------------------------------------------------------------------------------------
 void RemoteServer::ProcessNetworkMessages()
 {
-	ProcessTCPMessages();
+	if ( !m_isTCPClientClosed )
+	{
+		ProcessTCPMessages();
+	}
+
 	ProcessUDPMessages();
 }
 
@@ -113,13 +117,14 @@ void RemoteServer::ProcessTCPMessages()
 				g_devConsole->PrintString( Stringf( "Response: key = '%i', distantBindPort '%i', localSendToPort '%i', ip = '%s'", responseReq->connectKey, responseReq->distantBindPort, responseReq->localSendToPort, ipAddress.c_str() ) );
 
 				g_networkingSystem->DisconnectTCPClient();
+				m_isTCPClientClosed = true;
 
 				m_udpSendToPort = responseReq->localSendToPort;
 				g_networkingSystem->OpenAndBindUDPPort( responseReq->distantBindPort, responseReq->localSendToPort );
 				g_networkingSystem->CreateAndRegisterUDPSocket( responseReq->localSendToPort );
 
 				KeyVerificationRequest keyVerifyReq( m_remoteClientId, responseReq->connectKey );
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &keyVerifyReq, sizeof( keyVerifyReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &keyVerifyReq, sizeof( keyVerifyReq ), true );
 			}
 			break;
 		}
@@ -266,7 +271,7 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			{
 				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
 				createEntityReq->clientId = m_remoteClientId;
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, createEntityReq, sizeof( *createEntityReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, createEntityReq, sizeof( *createEntityReq ), true );
 
 			}
 			break;

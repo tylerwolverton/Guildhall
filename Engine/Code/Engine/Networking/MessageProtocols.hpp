@@ -35,6 +35,7 @@ struct UDPMessageHeader
 	uint16_t size = 0;
 	uint16_t sequenceNum = 0;
 	uint16_t uniqueId = 0;
+	int localBindPort = 0;
 };
 
 

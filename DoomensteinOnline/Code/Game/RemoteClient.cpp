@@ -170,7 +170,6 @@ void RemoteClient::ProcessUDPMessages()
 			{
 				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
 				gameRequests.push_back( createEntityReq );
-				
 			}
 			break;
 

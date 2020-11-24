@@ -402,3 +402,17 @@ connect_to_multiplayer_server
 start_multiplayer_server
 connect_to_multiplayer_server
 start_multiplayer_server
+connect_to_multiplayer_server
+start_multiplayer_server
+connect_to_multiplayer_server
+start_multiplayer_server
+connect_to_multiplayer_server
+send_udp_message text="hi server"
+help
+send_udp_message msg="hi server"
+start_multiplayer_server
+connect_to_multiplayer_server
+start_multiplayer_server
+connect_to_multiplayer_server
+start_multiplayer_server
+connect_to_multiplayer_server

@@ -38,4 +38,6 @@ private:
 	int m_remoteClientId = -1;
 
 	int m_udpSendToPort = 4800;
+
+	bool m_isTCPClientClosed = false;
 };
