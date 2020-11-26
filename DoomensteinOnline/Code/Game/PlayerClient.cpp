@@ -166,7 +166,10 @@ std::vector<const ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRe
 	yawDegrees *= .009f;
 	pitchDegrees *= .009f;
 
-	float deltaSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	float deltaSeconds = g_game->GetLastDeltaSeconds();//(float)m_gameClock->GetLastDeltaSeconds();
+
+	/*yawDegrees *= 15.f * deltaSeconds;
+	pitchDegrees *= deltaSeconds;*/
 
 	// An entity is possessed
 	if ( m_player != nullptr )

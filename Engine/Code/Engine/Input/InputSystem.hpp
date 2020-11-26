@@ -52,7 +52,7 @@ public:
 	void UpdateMouse();
 	void UpdateMouseButtonState( bool leftButtonDown, bool rightButtonDown, bool middleButtonDown );
 	void AddMouseWheelScrollAmount( float scrollAmount );
-	float GetMouseWheelScrollAmountDelta() const									{ return m_mouseWheelScrollAmountDelta; }
+	float GetMouseWheelScrollAmountDelta() const																				{ return m_mouseWheelScrollAmountDelta; }
 	const Vec2 GetNormalizedMouseClientPos()																					{ return m_normalizedMouseClientPos; }
 	const Vec2 GetMouseDeltaPosition()																							{ return m_mouseMovementDelta; }
 	void HideSystemCursor();

@@ -564,6 +564,18 @@ void Game::UnpossessEntity( Entity*& player )
 
 
 //-----------------------------------------------------------------------------------------------
+float Game::GetLastDeltaSeconds() const
+{
+	if ( m_serverLastDeltaSeconds > 0.f )
+	{
+		return m_serverLastDeltaSeconds;
+	}
+
+	return (float)m_gameClock->GetLastDeltaSeconds();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::WarpMapCommand( EventArgs* args )
 {
 	std::string mapStr = args->GetValue( "map", "" );

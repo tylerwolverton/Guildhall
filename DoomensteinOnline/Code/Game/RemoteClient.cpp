@@ -91,18 +91,28 @@ void RemoteClient::SendUpdatedGameWorldToServer()
 	}
 	else
 	{
+		if ( GetCurrentTimeSeconds() - m_lastUpdateTime < .005f )
+		{
+			//return;
+		}
+
 		std::vector<Entity*> entities = g_game->GetEntitiesInCurrentMap();
 
 		for ( Entity* entity : entities )
 		{
 			UpdateEntityOnRemoteServerRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
+			//UpdateEntityRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
 			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
 
-			std::this_thread::sleep_for( std::chrono::microseconds( 2 ) );
+			//std::this_thread::sleep_for( std::chrono::microseconds( 2 ) );
 		}
 
 		m_lastUpdateTime = GetCurrentTimeSeconds();
+
+		// Update client's deltaSeconds
+		ServerLastDeltaSecondsRequest lastDeltaSecondsReq( m_clientId, g_game->GetLastDeltaSeconds() );
+		g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &lastDeltaSecondsReq, sizeof( lastDeltaSecondsReq ) );
 	}
 }
 
@@ -185,8 +195,8 @@ void RemoteClient::ProcessUDPMessages()
 				}
 
 				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
-				updateEntityReq->translationVec *= ( multiplier * (float)roughRoundTripTime );
-				updateEntityReq->yawRotationDegrees *= ( multiplier * (float)roughRoundTripTime );
+				//updateEntityReq->translationVec *= ( multiplier * (float)roughRoundTripTime );
+				updateEntityReq->yawRotationDegrees *= 500.f * g_game->GetLastDeltaSeconds();//( multiplier * (float)roughRoundTripTime );
 				gameRequests.push_back( updateEntityReq );
 			}
 			break;

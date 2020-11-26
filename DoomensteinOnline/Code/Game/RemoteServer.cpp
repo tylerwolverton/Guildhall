@@ -223,6 +223,21 @@ void RemoteServer::ProcessUDPMessages()
 				data.Process();
 			}
 			break;
+
+			case eClientFunctionType::SERVER_LAST_DELTA_SECONDS:
+			{
+				ServerLastDeltaSecondsRequest* serverLastDeltaSecondsReq = (ServerLastDeltaSecondsRequest*)req;
+				g_game->SetServerLastDeltaSeconds( serverLastDeltaSecondsReq->deltaSeconds );
+			}
+			break;
+
+			/*case eClientFunctionType::UPDATE_ENTITY:
+			{
+				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
+				g_game->MoveEntity( updateEntityReq->entityId, updateEntityReq->translationVec );
+				g_game->RotateEntity( updateEntityReq->entityId, updateEntityReq->yawRotationDegrees );
+			}
+			break;*/
 		}
 	}
 }

@@ -59,6 +59,9 @@ public:
 	void SetEntityOrientation( EntityId entityId, float yawOrientationDegrees );
 	void PossessEntity( Entity*& player, const Transform& cameraTransform );
 	void UnpossessEntity( Entity*& player );
+
+	float GetLastDeltaSeconds() const;
+	void SetServerLastDeltaSeconds( float deltaSeconds )									{ m_serverLastDeltaSeconds = deltaSeconds; }
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -78,6 +81,7 @@ private:
 	bool m_isGameStarted = false;
 
 	Clock* m_gameClock = nullptr;
+	float m_serverLastDeltaSeconds = -1.f;
 
 	World* m_world = nullptr;
 	std::string m_curMapStr;

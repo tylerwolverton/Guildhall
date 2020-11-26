@@ -31,6 +31,8 @@ enum eClientFunctionType
 	KEY_VERIFICATION,
 	REMOTE_CLIENT_REGISTRATION,
 
+	SERVER_LAST_DELTA_SECONDS,
+
 	NUM_TYPES
 };
 
@@ -110,6 +112,21 @@ public:
 public:
 	RemoteClientRegistrationRequest( int clientIdIn )
 		: ClientRequest( clientIdIn, eClientFunctionType::REMOTE_CLIENT_REGISTRATION )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct ServerLastDeltaSecondsRequest : ClientRequest
+{
+public:
+	float deltaSeconds = .01667f;
+
+public:
+	ServerLastDeltaSecondsRequest( int clientIdIn, float deltaSecondsIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::SERVER_LAST_DELTA_SECONDS )
+		, deltaSeconds( deltaSecondsIn )
 	{
 	}
 };
