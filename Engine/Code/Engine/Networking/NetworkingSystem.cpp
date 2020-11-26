@@ -309,13 +309,6 @@ void NetworkingSystem::ProcessUDPCommunication()
 			int distantToPort = udpHeader->localBindPort;
 			if ( uniqueMsgId > 0 )
 			{
-				// Break if we found the ack in our list, we don't need to process this message again
-				/*auto retryIter = m_reliableUDPMessagesToRetry.find( uniqueMsgId );
-				if ( retryIter != m_reliableUDPMessagesToRetry.end() )
-				{
-					break;
-				}*/
-				
 				// Send an ack for the reliable message
 				UDPMessageHeader ackHeader;
 				ackHeader.id = (uint16_t)eMessasgeProtocolIds::ACK;
@@ -330,16 +323,6 @@ void NetworkingSystem::ProcessUDPCommunication()
 				UDPMessage udpMessage( data.GetFromPort(), buffer );
 
 				m_outgoingMessages.Push( udpMessage );
-				//m_reliableUDPMessagesToRetry[uniqueMsgId] = ReliableUDPMessage( udpMessage );
-
-				// If we have already received this message, break to avoid processing it again
-				/*ReceivedUDPMessageId recvMsgId( uniqueMsgId, data.GetFromPort() );
-				if ( m_receivedReliableMessages.find( recvMsgId ) != m_receivedReliableMessages.end() )
-				{
-					break;
-				}
-
-				m_receivedReliableMessages.insert( recvMsgId );*/
 
 				// If we have already received this message, break to avoid processing it again
 				const auto& receivedIter = m_receivedReliableMessages.find( distantToPort );
@@ -372,11 +355,12 @@ void NetworkingSystem::ProcessUDPCommunication()
 			// Remove message from retry list once an ack is received for it			
 			UniqueMessageId ackId = udpHeader->uniqueId;
 
-			/*auto reliableMessageIter = m_reliableUDPMessagesToRetry.find( ackId );
+			auto reliableMessageIter = m_reliableUDPMessagesToRetry.find( ackId );
 			if ( reliableMessageIter != m_reliableUDPMessagesToRetry.end() )
 			{
+				g_devConsole->PrintString( Stringf( "Received ack from port %i after retrying %i times", reliableMessageIter->second.udpMessage.sendToPort, reliableMessageIter->second.retryCount ) );
 				reliableMessageIter->second.hasBeenAcked = true;
-			}*/
+			}
 			m_reliableUDPMessagesToRetry.erase( ackId );
 		}
 		break;
@@ -484,12 +468,7 @@ void NetworkingSystem::RetryReliableUDPMessages()
 	for ( auto& reliableMessage : m_reliableUDPMessagesToRetry )
 	{
 		++reliableMessage.second.retryCount;
-
-		/*if ( reliableMessage.second.hasBeenAcked )
-		{
-			continue;
-		}*/
-
+		
 		// Only start retrying after the message has been sent once by the usual means
 		if ( reliableMessage.second.retryCount > 1 )
 		{
@@ -498,6 +477,10 @@ void NetworkingSystem::RetryReliableUDPMessages()
 		
 		if ( reliableMessage.second.retryCount > 1000 )
 		{
+			if ( reliableMessage.second.hasBeenAcked == false )
+			{
+				g_devConsole->PrintString( Stringf( "Abandoning reliable message to port %i after 1000 retries", reliableMessage.second.udpMessage.sendToPort ) );
+			}
 			expiredMessages.push_back( reliableMessage.first );
 		}
 	}
