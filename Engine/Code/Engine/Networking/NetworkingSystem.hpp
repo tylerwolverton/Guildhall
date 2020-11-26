@@ -21,17 +21,15 @@ class TCPServer;
 
 
 //-----------------------------------------------------------------------------------------------
-struct UDPPacket
+struct UDPMessage
 {
 	int sendToPort = -1;
-	int numMessages = 0;
-	int curSize = 0;
 	std::array<char, 512> data;
 
 public:
-	UDPPacket() = default;
+	UDPMessage() = default;
 
-	UDPPacket( int sendToPortIn, std::array<char, 512> dataIn )
+	UDPMessage( int sendToPortIn, std::array<char, 512> dataIn )
 		: sendToPort( sendToPortIn )
 		, data( dataIn )
 	{}
@@ -40,38 +38,37 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
-struct UDPMessage
-{
-public:
-	std::array<char, 512> data;
-
-public:
-	UDPMessage() = default;
-
-	UDPMessage( std::array<char, 512> data )
-		: data( data )
-	{
-	}
-};
-
-
-//-----------------------------------------------------------------------------------------------
 struct ReliableUDPMessage
 {
 public:
 	UDPMessage udpMessage;
-	int sendToPort = -1;
-	int size = 0;
 	int retryCount = 0;
 	bool hasBeenAcked = false;
 
 public:
 	ReliableUDPMessage() = default;
 
-	ReliableUDPMessage( int sendToPort, UDPMessage udpMessage, int msgSize )
+	ReliableUDPMessage( UDPMessage udpMessage )
 		: udpMessage( udpMessage )
-		, sendToPort( sendToPort )
-		, size( msgSize )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct ReceivedUDPMessageId
+{
+public:
+	UniqueMessageId uniqueId = 0;
+	int port = 0;
+
+public:
+	ReceivedUDPMessageId() = default;
+	~ReceivedUDPMessageId() = default;
+
+	ReceivedUDPMessageId( UniqueMessageId uniqueId, int port )
+		: uniqueId( uniqueId )
+		, port( port )
 	{
 	}
 };
@@ -119,9 +116,6 @@ private:
 
 	// UDP
 	void ProcessUDPCommunication();
-	void ProcessIncomingUDPData( const UDPData& data );
-	void AddMessageToOutgoingPacket( int distantSendToPort, const UDPMessage& msg, int msgSize );
-	std::vector<UDPData> SplitUDPPacket( const UDPData& packet );
 	void UDPReaderThreadMain();
 	void UDPWriterThreadMain();
 	void ClearProcessedUDPMessages();
@@ -152,11 +146,10 @@ private:
 	std::vector<UDPData> m_udpReceivedMessages;
 
 	std::map<int, UDPSocket*> m_udpSockets;
-	std::map<int, UDPPacket> m_udpOutgoingPackets;
 	UDPSocket* m_localBoundUDPSocket = nullptr;
 
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
-	SynchronizedBlockingQueue<UDPPacket> m_outgoingPackets;
+	SynchronizedBlockingQueue<UDPMessage> m_outgoingMessages;
 
 	std::map<int, std::unordered_set<UniqueMessageId>> m_receivedReliableMessages;
 	std::map<UniqueMessageId, ReliableUDPMessage> m_reliableUDPMessagesToRetry;

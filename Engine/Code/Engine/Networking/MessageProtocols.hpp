@@ -29,16 +29,6 @@ struct MessageHeader
 
 
 //-----------------------------------------------------------------------------------------------
-struct UDPPacketHeader
-{
-	uint16_t id = 0;
-	uint16_t size = 0;
-	uint16_t msgCount = 0;
-	//int localBindPort = 0;
-};
-
-
-//-----------------------------------------------------------------------------------------------
 struct UDPMessageHeader
 {
 	uint16_t id = 0;
