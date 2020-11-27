@@ -1,26 +1,26 @@
-<MapDefinition type="TileMap" version="1" dimensions="16,10">
+<MapDefinition type="TileMap" version="1" dimensions="10,7">
 
-	<Legend>
-		<Tile glyph="#" tileType="BlueDungeonBlock"/>
-		<Tile glyph="." tileType="BlueDungeonFloor"/>
-	</Legend>
-	<MapRows>
-		<!--<MapRow tiles="#######.#.######"/>-->
-		<MapRow tiles="#######.########"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="###.############"/>
-	</MapRows>
-	<Entities>
-		<PlayerStart pos="3.5,1.5" yaw="0"/>
-	</Entities>
+  <Legend>
+    <Tile glyph="#" tileType="BlueDungeonBlock"/>
+    <Tile glyph="." tileType="BlueDungeonFloor"/>
+  </Legend>
+  <MapRows>
+    <MapRow tiles="##########"/>
+    <MapRow tiles="#........#"/>
+    <MapRow tiles="#........#"/>
+    <MapRow tiles="#........."/>
+    <MapRow tiles="#........#"/>
+    <MapRow tiles="#........#"/>
+    <MapRow tiles="##########"/>
+  </MapRows>
+  <Entities>
+    <!--<Entity type="Level4Manager">
+      <ScriptVarInit type="string" var="roomId" value="Level4"/>
+    </Entity>-->
+    <PlayerStart pos="8.5,1.5" yaw="0"/>
+    <Portal type="InvisibleTeleporter" pos="9.5,3.5" yaw="0" destMap="Level1" destPos="2.5,6.5" destYawOffset="0"/>
+    <Pickup type="Key" name="key1" pos="5.5,4.5" />
+  </Entities>
 
 </MapDefinition>
-
 

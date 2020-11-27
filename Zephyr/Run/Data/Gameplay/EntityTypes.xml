@@ -40,7 +40,7 @@
     <Appearance size="4.0,4.0" localDrawBounds="-2.0,-2.0,2.0,2.0" fps="1.25">
       <Walk up="30,31"/>
     </Appearance>
-    <Gameplay maxHealth="5">
+    <Gameplay maxHealth="3">
     </Gameplay>
     <Script name="SplittingBlob.zephyr">
       <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossMed"/>
@@ -52,7 +52,7 @@
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
       <Walk up="30,31"/>
     </Appearance>
-    <Gameplay maxHealth="3">
+    <Gameplay maxHealth="2">
     </Gameplay>
     <Script name="SplittingBlob.zephyr">
       <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossSmall"/>
@@ -69,16 +69,6 @@
     <Script name="SplittingBlob.zephyr"/>
   </Actor>
 
-  <Actor name="SuperBlob">
-    <Physics radius="0.5" walkSpeed="25.0" collisionLayer="Enemy"/>
-    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="3">
-      <Walk up="32,33"/>
-    </Appearance>
-    <Gameplay maxHealth="5">
-    </Gameplay>
-    <Script name="AdvancedEnemy.zephyr"/>
-  </Actor>
-
   <Entity name="UnitTester">
     <Script name="UnitTests.zephyr"/>
   </Entity>
@@ -90,7 +80,11 @@
   <Entity name="Level1Manager">
     <Script name="Level1Manager.zephyr"/>
   </Entity>
-
+  
+  <Entity name="Level2Manager">
+    <Script name="Level2Manager.zephyr"/>
+  </Entity>
+  
   <Entity name="Level3Manager">
     <Script name="Level3Manager.zephyr"/>
   </Entity>

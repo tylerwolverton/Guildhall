@@ -17,6 +17,9 @@ StateMachine
         FireEvent( RegisterKeyEvent( key = "S", event = "MoveDown" ) );
         FireEvent( RegisterKeyEvent( key = "D", event = "MoveRight" ) );
         FireEvent( RegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
+        FireEvent( RegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
+        FireEvent( RegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
+        FireEvent( RegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
     }
 
     Vec2 newPos;
@@ -76,7 +79,46 @@ StateMachine
         canShoot = true;
     }
 
+    Vec2 fireballOffset;
+    Number shotOrientation;
+    OnEvent( ShootFireball )
+    {
+        if( !canShoot )
+        {
+            return;
+        }
+
+        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset, orientation = shotOrientation ) );
+        FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
+
+        canShoot = false;
+    }
+
     OnEvent( ShootFireballUp )
+    {
+        Vec2 posOffset = ( 0, .6 );
+        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 90 ) );
+    }
+
+    OnEvent( ShootFireballLeft )
+    {
+        Vec2 posOffset = ( -.6, 0 );
+        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 180 ) );
+    }
+
+    OnEvent( ShootFireballDown )
+    {
+        Vec2 posOffset = ( 0, -.6 );
+        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 270 ) );
+    }
+
+    OnEvent( ShootFireballRight )
+    {
+        Vec2 posOffset = ( .6, 0 );
+        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 0 ) );
+    }
+
+    OnEvent( ShootTripleFireballUp )
     {
         if( !canShoot )
         {
@@ -85,6 +127,10 @@ StateMachine
 
         Vec2 posOffset = ( 0, .6 );
         FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + posOffset, orientation = 90 ) );
+        Vec2 posOffset = ( -.5, .6 );
+        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + posOffset, orientation = 135 ) );
+        Vec2 posOffset = ( .5, .6 );
+        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + posOffset, orientation = 45 ) );
         FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
 
         canShoot = false;

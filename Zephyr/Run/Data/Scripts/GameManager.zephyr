@@ -20,15 +20,17 @@ StateMachine
 		if ( questId == "Level2" )
 		{
 			completedQuests = completedQuests + 1;
+			FireEvent( OpenDoor( doorName = "VictoryDoor" ) );
+			FireEvent( OpenDoor( doorName = "Level2To1Door" ) );
 		}
 
 		if ( questId == "Level3" )
 		{
-			FireEvent( OpenDoor( doorName = "Level2Door" ) );
+			FireEvent( OpenDoor( doorName = "Level4Door" ) );
 			completedQuests = completedQuests + 1;
 		}
 
-		if( completedQuests >= totalQuestCount )
+		if( questId == "Victory" )
 		{
 			FireEvent( WinGame() );
 			FireEvent( ChangeMusic( musicName = "LoZCredits", volume = .1 ) );

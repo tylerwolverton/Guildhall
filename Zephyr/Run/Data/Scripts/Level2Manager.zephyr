@@ -1,0 +1,40 @@
+StateMachine
+{
+    String roomId;
+	Number enemiesInLevel;
+    String questStatusText = "Defeat the Boss";
+
+    String mapName;
+	OnEvent( EnemySpawned )
+	{
+        if( roomId == mapName )
+        {
+		    enemiesInLevel = enemiesInLevel + 1;
+        }
+    }
+
+	OnEvent( EnemyDied )
+	{
+        if( roomId == mapName )
+        {
+            enemiesInLevel = enemiesInLevel - 1;
+
+            if( enemiesInLevel <= 0 )
+            {
+                FireEvent( QuestComplete( questId = roomId ) );
+                questStatusText = "Room Complete";
+            }
+        }
+    }
+
+    State Default
+    {
+        Vec2 screenLocationRatio = ( 0, 1 );
+        Vec2 screenPadding = ( 3, -30 );
+        FireEvent( PrintDebugScreenText( text = questStatusText,
+                                            fontSize = 20,
+                                            locationRatio = screenLocationRatio,
+                                            padding = screenPadding,
+                                            color = "white" ) );
+    }
+}
