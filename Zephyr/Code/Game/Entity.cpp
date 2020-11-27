@@ -54,6 +54,7 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	if ( scriptDef != nullptr )
 	{
 		m_scriptObj = new ZephyrScript( *scriptDef, this );
+		m_scriptObj->InitializeGlobalVariables( entityDef.GetZephyrScriptInitialValues() );
 	}
 
 	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
@@ -495,7 +496,7 @@ void Entity::ChangeSpriteAnimation( const std::string& spriteAnimDefSetName )
 
 	if ( newSpriteAnimSetDef == nullptr )
 	{
-		g_devConsole->PrintError( Stringf( "Error: Failed to change animation for entity '%s' to undefined animation '%s'", m_name.c_str(), spriteAnimDefSetName.c_str() ) );
+		g_devConsole->PrintWarning( Stringf( "Warning: Failed to change animation for entity '%s' to undefined animation '%s'", m_name.c_str(), spriteAnimDefSetName.c_str() ) );
 		return;
 	}
 

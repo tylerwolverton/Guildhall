@@ -334,6 +334,8 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 			portal->SetDestinationYawOffset( mapEntityDef.portalDestYawOffset );
 		}
 
+		// Define initial script values defined in map file
+		// Note: These will override any initial values already defined in the EntityDefinition
 		newEntity->InitializeScriptValues( mapEntityDef.zephyrScriptInitialValues );
 		newEntity->FireSpawnEvent();
 

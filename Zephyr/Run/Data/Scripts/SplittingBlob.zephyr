@@ -1,0 +1,137 @@
+StateMachine
+{
+	Vec2 position;		
+	Vec2 targetPosition;
+	String targetName = "player";
+	Number health;
+
+    String minionSpawnType;
+
+	Vec2 lastPosition;
+	Number numFramesInSameSpace;
+	
+	Bool active = true;
+	// -----------------------------------------------------------------------------------------
+	// Global events
+	// -----------------------------------------------------------------------------------------
+	// TODO: reserve Spawn and Die as special events that the user can't fire 
+	Number maxHealth;
+	String mapName;
+	OnEvent( Spawn )
+	{
+		health = maxHealth;
+		FireEvent( EnemySpawned( mapName = mapName ) );
+		FireEvent( GetNewWanderTargetPosition() );
+	}
+
+	Number newHealth;
+	OnEvent( HealthUpdated )
+	{
+		health = newHealth;
+
+        // Spawn minions on damage
+        if( minionSpawnType != "" )
+        {
+            Vec2 posOffset = ( .25, 0 );
+            FireEvent( SpawnEntity( type = minionSpawnType, position = position + posOffset ) );
+            FireEvent( SpawnEntity( type = minionSpawnType, position = position - posOffset ) );
+        }
+
+		if( health == 1 )
+		{
+			FireEvent( ChangeSpriteAnimation( newAnim = "LowHealth" ) );
+		}
+	}
+
+	OnEvent( Die )
+	{
+		FireEvent( EnemyDied( mapName = mapName ) );
+	}
+
+	// TODO: Make this more intuitive
+	Vec2 newPos;
+	OnEvent( UpdateEntityPosition )
+	{
+		lastPosition = position;
+		position = newPos;
+	}
+
+	OnEvent( UpdateTargetPosition )
+	{
+		targetPosition = newPos;
+	}
+	
+	// Damage
+    Number attackDamage = 1;
+	Number otherId;
+    OnEvent( EnterCollision )
+    {
+        if( otherId != -1 )
+        {
+            FireEvent( DamageEntity( id = otherId, damage = attackDamage, damageType = "normal" ) );
+        }
+    }
+
+	// -----------------------------------------------------------------------------------------
+	// Wander
+	// -----------------------------------------------------------------------------------------
+	State Wander
+	{	
+		if( !active )
+		{
+			return;
+		}
+
+		OnEvent( TargetFound )
+		{		
+			ChangeState( Chase );
+		}
+		
+		// FireEvent( PrintDebugText( text = "Wander" ) );
+		
+		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
+		FireEvent( MoveToLocation( pos = targetPosition ) );
+
+		if( position == targetPosition )
+		{
+			FireEvent( GetNewWanderTargetPosition() );
+		}
+
+		// Check for stuck on wall, find new position if stuck for a second
+		if( lastPosition == position )
+		{
+			numFramesInSameSpace = numFramesInSameSpace + 1;
+
+			if( numFramesInSameSpace > 60 )
+			{
+				FireEvent( GetNewWanderTargetPosition() );
+			}
+		}
+		else
+		{
+			numFramesInSameSpace = 0;
+		}
+	}
+
+	// -----------------------------------------------------------------------------------------
+	// Chase
+	// -----------------------------------------------------------------------------------------
+	State Chase
+	{		
+		//FireEvent( PrintDebugText( text = "Chase" ) );
+
+		Number distance;
+		FireEvent( GetDistanceToTarget( id = targetName ) );
+		OnEvent( UpdateDistanceToTarget )
+		{		
+			if( distance > 3 )
+			{
+				FireEvent( GetNewWanderTargetPosition() );
+				ChangeState( Wander );
+			}
+		}
+
+		FireEvent( ChaseTargetEntity( id = targetName ) );
+	}
+
+}

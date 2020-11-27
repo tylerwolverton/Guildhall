@@ -22,7 +22,7 @@
     <Entity type="LockedDoorVertical" name="door1" pos="7.5,9.5">
       <ScriptVarInit type="string" var="keyName" value="key1"/>
     </Entity>
-    <Actor type="Blob" name="blob4" pos="5.5,5.5" yaw="0"/>
+    <Actor type="BlobBossBig" name="blobBossBig" pos="5.5,5.5" yaw="0"/>
     <Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
     <Pickup type="Key" name="key1" pos="5.5,7.5" />
     <!--<Entity type="LockedDoorVertical" id="door2" pos="9.5,9.5">

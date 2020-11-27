@@ -333,6 +333,11 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	}
 
 	std::string entityType = args->GetValue( "type", "" );
+	if ( entityType.empty() )
+	{
+		return;
+	}
+
 	std::string mapName = args->GetValue( "map", "" );
 	Vec2 position = args->GetValue( "position", entity->GetPosition() );
 	float orientation = args->GetValue( "orientation", entity->GetOrientationDegrees() );

@@ -35,6 +35,40 @@
     <Script name="BasicEnemy.zephyr"/>
   </Actor>
 
+  <Actor name="BlobBossBig">
+    <Physics radius="2.0" walkSpeed="30.0" collisionLayer="Enemy"/>
+    <Appearance size="4.0,4.0" localDrawBounds="-2.0,-2.0,2.0,2.0" fps="1.25">
+      <Walk up="30,31"/>
+    </Appearance>
+    <Gameplay maxHealth="5">
+    </Gameplay>
+    <Script name="SplittingBlob.zephyr">
+      <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossMed"/>
+    </Script>
+  </Actor>
+
+  <Actor name="BlobBossMed">
+    <Physics radius="0.5" walkSpeed="55.0" collisionLayer="Enemy"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
+      <Walk up="30,31"/>
+    </Appearance>
+    <Gameplay maxHealth="3">
+    </Gameplay>
+    <Script name="SplittingBlob.zephyr">
+      <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossSmall"/>
+    </Script>
+  </Actor>
+
+  <Actor name="BlobBossSmall">
+    <Physics radius="0.25" walkSpeed="75.0" collisionLayer="Enemy"/>
+    <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
+      <Walk up="30,31"/>
+    </Appearance>
+    <Gameplay maxHealth="1">
+    </Gameplay>
+    <Script name="SplittingBlob.zephyr"/>
+  </Actor>
+
   <Actor name="SuperBlob">
     <Physics radius="0.5" walkSpeed="25.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="3">

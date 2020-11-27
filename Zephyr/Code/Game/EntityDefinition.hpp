@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/Scripting/ZephyrCommon.hpp"
 
 #include <string>
 
@@ -57,6 +58,7 @@ public:
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
 	ZephyrScriptDefinition* GetZephyrScriptDefinition() const									{ return m_zephyrScriptDef; }
+	ZephyrValueMap GetZephyrScriptInitialValues() const											{ return m_zephyrScriptInitialValues; }
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
@@ -83,6 +85,7 @@ protected:
 	// Scripts
 	std::string				m_zephyrScriptName;
 	ZephyrScriptDefinition* m_zephyrScriptDef = nullptr;
+	ZephyrValueMap			m_zephyrScriptInitialValues;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 	SpriteAnimationSetDefinition* m_defaultSpriteAnimSetDef = nullptr;

@@ -131,6 +131,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 		m_damageRange = ParseXmlAttribute( *gameplayElem, "damage", m_damageRange );
 	}
 
+	// Script
 	const XmlElement* scriptElem = entityDefElem.FirstChildElement( "Script" );
 	if ( scriptElem != nullptr )
 	{
@@ -139,6 +140,51 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 		if ( !m_zephyrScriptName.empty() )
 		{
 			m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( m_zephyrScriptName );
+
+			// Parse initial values
+			const XmlElement* scriptVarInitElem = scriptElem->FirstChildElement( "ScriptVarInit" );
+			while ( scriptVarInitElem != nullptr )
+			{
+				std::string typeName = ParseXmlAttribute( *scriptVarInitElem, "type", "" );
+				std::string varName = ParseXmlAttribute( *scriptVarInitElem, "var", "" );
+				std::string valueStr = ParseXmlAttribute( *scriptVarInitElem, "value", "" );
+				if ( typeName.empty() )
+				{
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit is missing a variable type", m_type.c_str() ) );
+					break;
+				}
+				if ( varName.empty() )
+				{
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit is missing a variable name", m_type.c_str() ) );
+					break;
+				}
+				if ( valueStr.empty() )
+				{
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit is missing a variable value", m_type.c_str() ) );
+					break;
+				}
+
+				// Convert value to correct type and store in map
+				if ( !_strcmpi( typeName.c_str(), "string" ) )
+				{
+					m_zephyrScriptInitialValues[varName] = ZephyrValue( valueStr );
+				}
+				else if ( !_strcmpi( typeName.c_str(), "number" ) )
+				{
+					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, 0.f ) );
+				}
+				else if ( !_strcmpi( typeName.c_str(), "vec2" ) )
+				{
+					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, Vec2::ZERO ) );
+				}
+				else
+				{
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit '%s' has unsupported type '%s'", m_type.c_str(), varName.c_str(), typeName.c_str() ) );
+					break;
+				}
+
+				scriptVarInitElem = scriptVarInitElem->NextSiblingElement( "ScriptVarInit" );
+			}
 		}
 	}
 
