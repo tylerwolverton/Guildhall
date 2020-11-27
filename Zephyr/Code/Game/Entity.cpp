@@ -362,6 +362,7 @@ void Entity::MoveWithPhysics( float speed, const Vec2& direction )
 	if ( m_rigidbody2D != nullptr )
 	{
 		m_rigidbody2D->ApplyImpulseAt( speed * direction * m_lastDeltaSeconds, GetPosition() );
+		m_forwardVector = direction;
 
 		EventArgs args;
 		args.SetValue( "newPos", m_rigidbody2D->GetPosition() );

@@ -94,6 +94,15 @@
     <Script name="BasicProjectile.zephyr"/>
   </Projectile>
   ​
+  <Projectile name="PlayerFireball">
+    <Physics radius="0.25" speed="4" collisionLayer="PlayerProjectile"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
+      <Walk up="20"/>
+    </Appearance>
+    <Gameplay damage="1~1" maxHealth="3"/>
+    <Script name="BasicProjectile.zephyr"/>
+  </Projectile>
+
   <Portal name="InvisibleTeleporter">
     <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal" isTrigger="true"/>
   </Portal>

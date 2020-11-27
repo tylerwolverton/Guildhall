@@ -106,48 +106,48 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 				}
 			}
 
-			float impulseMagnitude = m_entityDef.GetWalkSpeed() * deltaSeconds;
+			//float impulseMagnitude = m_entityDef.GetWalkSpeed() * deltaSeconds;
 
 			
 
 			//if ( g_inputSystem->IsKeyPressed( 'W' ) )
 			//{
-			//	EventArgs args;
+			//	/*EventArgs args;
 			//	args.SetValue( "key", "W" );
-			//	m_scriptObj->FireEvent( "KeyIsPressed", &args );
-			//	//m_forwardVector = Vec2( 0.f, 1.f );
-			//	//m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			//	m_scriptObj->FireEvent( "KeyIsPressed", &args );*/
+			//	m_forwardVector = Vec2( 0.f, 1.f );
+			//	m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
 			//}
 
-			if ( g_inputSystem->IsKeyPressed( 'A' ) )
-			{
-				m_forwardVector = Vec2( -1.f, 0.f );
-				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-			}
+			//if ( g_inputSystem->IsKeyPressed( 'A' ) )
+			//{
+			//	m_forwardVector = Vec2( -1.f, 0.f );
+			//	m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			//}
 
-			if ( g_inputSystem->IsKeyPressed( 'D' ) )
-			{
-				m_forwardVector = Vec2( 1.f, 0.f );
-				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-			}
+			//if ( g_inputSystem->IsKeyPressed( 'D' ) )
+			//{
+			//	m_forwardVector = Vec2( 1.f, 0.f );
+			//	m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			//}
 
-			if ( g_inputSystem->IsKeyPressed( 'S' ) )
-			{
-				m_forwardVector = Vec2( 0.f, -1.f );
-				m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
-			}
+			//if ( g_inputSystem->IsKeyPressed( 'S' ) )
+			//{
+			//	m_forwardVector = Vec2( 0.f, -1.f );
+			//	m_rigidbody2D->ApplyImpulseAt( m_forwardVector * impulseMagnitude, GetPosition() );
+			//}
 
 			// Check for attack
 			bool spawnProj = false;
 			Vec2 projPosition = GetPosition();
 			float projOrientation = 0.f;
-			if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+			/*if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
 			{
 				spawnProj = true;
 				projPosition += Vec2( 0.f, .6f );
 				projOrientation = 90.f;
 			}
-			else if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
+			else*/ if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
 			{
 				spawnProj = true;
 				projPosition += Vec2( .6f, 0.f );
@@ -193,7 +193,7 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_ENTER )
 				 || g_inputSystem->ConsumeAllKeyPresses( KEY_SPACEBAR ) )
 			{
-				Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .1f );
+				Vec2 testPoint = GetPosition() + m_forwardVector * ( GetPhysicsRadius() + .15f );
 				Entity* targetEntity = m_map->GetEntityAtPosition( testPoint );
 				if ( targetEntity != nullptr )
 				{

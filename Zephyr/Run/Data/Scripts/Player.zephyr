@@ -1,6 +1,9 @@
 StateMachine
 {
     Number curHealth;
+    Vec2 curPosition;
+    Bool canShoot = true;
+    Number fireCooldown = .5;
 
     Number maxHealth;
     OnEvent( Spawn )
@@ -10,7 +13,17 @@ StateMachine
         FireEvent( AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 ) );
     
         FireEvent( RegisterKeyEvent( key = "W", event = "MoveUp" ) );
+        FireEvent( RegisterKeyEvent( key = "A", event = "MoveLeft" ) );
+        FireEvent( RegisterKeyEvent( key = "S", event = "MoveDown" ) );
+        FireEvent( RegisterKeyEvent( key = "D", event = "MoveRight" ) );
+        FireEvent( RegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
     }
+
+    Vec2 newPos;
+	OnEvent( UpdateEntityPosition )
+	{
+		curPosition = newPos;
+	}
 
     Number newHealth;
 	OnEvent( HealthUpdated )
@@ -31,9 +44,49 @@ StateMachine
         FireEvent( ChangeSpriteAnimation( newAnim = "Walk" ) );
     }
 
+    // Input Events
+    // TODO? Add parameter passing into key events to remove the need to make separate events for each direction
     OnEvent( MoveUp )
     {
         Vec2 dir = ( 0, 1 );
         FireEvent( MoveInDirection( direction = dir ) );
+    }
+
+    OnEvent( MoveDown )
+    {
+        Vec2 dir = ( 0, -1 );
+        FireEvent( MoveInDirection( direction = dir ) );
+    }
+
+    OnEvent( MoveLeft )
+    {
+        Vec2 dir = ( -1, 0 );
+        FireEvent( MoveInDirection( direction = dir ) );
+    }
+
+    OnEvent( MoveRight )
+    {
+        Vec2 dir = ( 1, 0 );
+        FireEvent( MoveInDirection( direction = dir ) );
+    }
+
+    // Attacks
+    OnEvent( ShotCooldownExpired )
+    {
+        canShoot = true;
+    }
+
+    OnEvent( ShootFireballUp )
+    {
+        if( !canShoot )
+        {
+            return;
+        }
+
+        Vec2 posOffset = ( 0, .6 );
+        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + posOffset, orientation = 90 ) );
+        FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
+
+        canShoot = false;
     }
 }

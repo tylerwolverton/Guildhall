@@ -335,6 +335,7 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	std::string entityType = args->GetValue( "type", "" );
 	std::string mapName = args->GetValue( "map", "" );
 	Vec2 position = args->GetValue( "position", entity->GetPosition() );
+	float orientation = args->GetValue( "orientation", entity->GetOrientationDegrees() );
 
 	Map* mapToSpawnIn = entity->GetMap();
 	if ( !mapName.empty() )
@@ -348,6 +349,7 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	}
 
 	Entity* newEntity = mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
+	newEntity->SetOrientationDegrees( orientation );
 	newEntity->FireSpawnEvent();
 	if ( mapToSpawnIn == g_game->GetCurrentMap() )
 	{
@@ -424,7 +426,7 @@ void GameAPI::ChaseTargetEntity( EventArgs* args )
 	Vec2 moveDirection = targetEntity->GetPosition() - entity->GetPosition();
 	moveDirection.Normalize();
 
-	float moveSpeed = entity->GetWalkSpeed() * g_game->GetLastDeltaSecondsf();
+	float moveSpeed = entity->GetWalkSpeed();
 
 	entity->MoveWithPhysics( moveSpeed, moveDirection );
 }
@@ -446,7 +448,7 @@ void GameAPI::FleeTargetEntity( EventArgs* args )
 	Vec2 moveDirection = targetEntity->GetPosition() - entity->GetPosition();
 	moveDirection.Normalize();
 
-	float moveSpeed = entity->GetWalkSpeed() * g_game->GetLastDeltaSecondsf();
+	float moveSpeed = entity->GetWalkSpeed();
 
 	entity->MoveWithPhysics( moveSpeed, -moveDirection );
 }
