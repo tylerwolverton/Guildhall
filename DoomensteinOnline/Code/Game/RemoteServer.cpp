@@ -231,6 +231,17 @@ void RemoteServer::ProcessUDPMessages()
 			}
 			break;
 
+			case eClientFunctionType::NOTIFY_ENTITY_DIED:
+			{
+				NotifyEntityDiedRequest* notifyDiedReq = (NotifyEntityDiedRequest*)req;
+				Entity* entity = g_game->GetEntityById( notifyDiedReq->entityId );
+				if ( entity != nullptr )
+				{
+					entity->Die();
+				}
+			}
+			break;
+
 			/*case eClientFunctionType::UPDATE_ENTITY:
 			{
 				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
@@ -259,6 +270,7 @@ void RemoteServer::Update()
 	if ( g_game != nullptr )
 	{
 		g_game->UpdateWorldMesh();
+		g_game->UpdateEntityAnimations();
 	}
 
 	if ( m_playerClient != nullptr )
@@ -298,6 +310,14 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 				g_networkingSystem->SendUDPMessage( m_udpSendToPort, updateEntityReq, sizeof( *updateEntityReq ) );
 			}
 			break;
+
+			case eClientFunctionType::SHOOT:
+			{
+				ShootRequest* shootReq = (ShootRequest*)req;
+				shootReq->clientId = m_remoteClientId;
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, shootReq, sizeof( *shootReq ) );
+			}
+			break;
 		}
 
 	}
@@ -308,4 +328,11 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 void RemoteServer::RegisterNewClient( Client* client )
 {
 	m_playerClient = (PlayerClient*)client;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RemoteServer::SendMessageToAllDistantClients( ClientRequest* clientRequest )
+{
+	UNUSED( clientRequest );
 }

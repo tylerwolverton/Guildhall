@@ -53,6 +53,13 @@ void World::UpdateMesh()
 
 
 //-----------------------------------------------------------------------------------------------
+void World::UpdateEntityAnimations()
+{
+	m_curMap->UpdateEntityAnimations();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void World::Render() const
 {
 	if ( m_curMap == nullptr )
@@ -211,6 +218,19 @@ std::vector<Entity*> World::GetEntitiesInCurrentMap()
 	}
 
 	return m_curMap->GetAllEntities();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<Entity*> World::GetLivingEntitiesInCurrentMap()
+{
+	if ( m_curMap == nullptr )
+	{
+		g_devConsole->PrintWarning( Stringf( "Tried to request entities in nonexistent current map" ) );
+		return std::vector<Entity*>();
+	}
+
+	return m_curMap->GetAllLivingEntities();
 }
 
 

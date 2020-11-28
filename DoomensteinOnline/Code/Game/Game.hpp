@@ -38,6 +38,7 @@ public:
 	virtual void	Startup();
 	virtual void	Update();
 	virtual void	UpdateWorldMesh();
+	virtual void	UpdateEntityAnimations();
 	virtual void	Render() const;
 	virtual void	Shutdown();
 
@@ -49,7 +50,9 @@ public:
 
 	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
 	Entity* CreateEntityInCurrentMap( EntityId id, eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
+	Entity* GetEntityById( EntityId id );
 	std::vector<Entity*> GetEntitiesInCurrentMap();
+	std::vector<Entity*> GetLivingEntitiesInCurrentMap();
 	void DeleteAllEntities();
 
 	void MovePlayer( Entity* player, const Vec2& translationVec );

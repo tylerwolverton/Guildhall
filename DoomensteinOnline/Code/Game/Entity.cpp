@@ -41,7 +41,7 @@ Entity::Entity( const EntityDefinition& entityDef )
 //-----------------------------------------------------------------------------------------------
 void Entity::Update( float deltaSeconds )
 {
-	m_cumulativeTime += deltaSeconds;
+	UpdateAnimation( deltaSeconds );
 
 	if ( m_isDead )
 	{
@@ -68,6 +68,13 @@ void Entity::Update( float deltaSeconds )
 	m_orientationDegrees += m_angularVelocity * deltaSeconds;
 
 	ApplyFriction();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::UpdateAnimation( float deltaSeconds )
+{
+	m_cumulativeTime += deltaSeconds;
 }
 
 

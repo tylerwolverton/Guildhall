@@ -35,3 +35,13 @@ void Server::BeginFrame()
 {
 	ProcessNetworkMessages();
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Server::ReceiveClientRequest( const ClientRequest* clientRequest )
+{
+	std::vector<const ClientRequest*> reqestVec;
+	reqestVec.push_back( clientRequest );
+
+	ReceiveClientRequests( reqestVec );
+}

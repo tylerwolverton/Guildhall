@@ -22,6 +22,7 @@ enum eClientFunctionType
 	CREATE_ENTITY,
 	UPDATE_ENTITY,
 	UPDATE_ENTITY_ON_REMOTE_SERVER,
+	NOTIFY_ENTITY_DIED,
 	POSSESS_ENTITY,
 	UNPOSSESS_ENTITY,
 	SET_PLAYER_ID,
@@ -151,6 +152,21 @@ public:
 		, entityType( entityTypeIn )
 		, position( positionIn )
 		, yawOrientationDegrees( yawOrientationDegreesIn )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct NotifyEntityDiedRequest : ClientRequest
+{
+public:
+	EntityId entityId = -1;
+
+public:
+	NotifyEntityDiedRequest( int clientIdIn, EntityId entityIdIn )
+		: ClientRequest( clientIdIn, eClientFunctionType::NOTIFY_ENTITY_DIED )
+		, entityId( entityIdIn )
 	{
 	}
 };

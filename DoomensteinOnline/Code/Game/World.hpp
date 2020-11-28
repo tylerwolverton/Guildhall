@@ -25,6 +25,7 @@ public:
 
 	void Update();
 	void UpdateMesh();
+	void UpdateEntityAnimations();
 	void Render() const;
 	void DebugRender() const;
 
@@ -39,6 +40,7 @@ public:
 	Entity* CreateEntityInCurrentMap( eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
 	Entity* CreateEntityInCurrentMap( EntityId id, eEntityType entityType, const Vec2& position, float yawOrientationDegrees );
 	std::vector<Entity*> GetEntitiesInCurrentMap();
+	std::vector<Entity*> GetLivingEntitiesInCurrentMap();
 
 	void AddEntity( Entity* entity );
 	Entity* GetEntityById( EntityId entityId );

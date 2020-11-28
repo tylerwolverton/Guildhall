@@ -271,3 +271,16 @@ void AuthoritativeServer::RegisterNewClient( Client* client )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+void AuthoritativeServer::SendMessageToAllDistantClients( ClientRequest* clientRequest )
+{
+	// Skip the first client since that will be the server's player client
+	for ( int clientIdx = 1; clientIdx < (int)m_clients.size(); ++clientIdx )
+	{
+		Client*& client = m_clients[clientIdx];
+		
+		client->SendMessageToDistantClient( clientRequest );
+	}
+}
+
+

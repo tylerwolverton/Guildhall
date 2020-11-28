@@ -10,6 +10,8 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/Server.hpp"
+#include "Game/GameEvents.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Actor.hpp"
 #include "Game/Projectile.hpp"
@@ -54,6 +56,24 @@ void Map::Update( float deltaSeconds )
 	ResolveEntityVsEntityCollisions();
 	UpdateMeshes();
 	ResolveEntityVsPortalCollisions();
+
+	CleanupDeadEntities();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::UpdateEntityAnimations()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity* const& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		entity->UpdateAnimation( g_game->GetLastDeltaSeconds() );
+	}
 }
 
 
@@ -121,6 +141,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		{
 			newEntity = new Actor( entityDef );
 			m_entities.push_back( newEntity );
+			m_livingEntities.push_back( newEntity );
 		}
 		break;
 
@@ -128,6 +149,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		{
 			newEntity = new Projectile( entityDef );
 			m_entities.push_back( newEntity );
+			m_livingEntities.push_back( newEntity );
 		}
 		break;
 
@@ -136,6 +158,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 			newEntity = new Portal( entityDef );
 			m_entities.push_back( newEntity );
 			m_portals.push_back( (Portal*)newEntity );
+			m_livingEntities.push_back( (Portal*)newEntity );
 		}
 		break;
 
@@ -143,6 +166,7 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 		{
 			newEntity = new Entity( entityDef );
 			m_entities.push_back( newEntity );
+			m_livingEntities.push_back( newEntity );
 		}
 		break;
 
@@ -310,6 +334,13 @@ std::vector<Entity*> Map::GetAllEntities()
 
 
 //-----------------------------------------------------------------------------------------------
+std::vector<Entity*> Map::GetAllLivingEntities()
+{
+	return m_livingEntities;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::DeleteAllEntities()
 {
 	PTR_VECTOR_SAFE_DELETE( m_entities );
@@ -462,6 +493,30 @@ void Map::ResolveEntityVsPortalCollisions()
 			{
 				WarpEntityInMap( entity, portal );
 			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::CleanupDeadEntities()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_livingEntities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_livingEntities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		if ( entity->IsDead() )
+		{
+			ClientRequest* req = new NotifyEntityDiedRequest( -1, entity->GetId() );
+			g_server->SendMessageToAllDistantClients( req );
+			
+			m_livingEntities[entityIdx] = nullptr;
+
+			PTR_SAFE_DELETE( req );
 		}
 	}
 }

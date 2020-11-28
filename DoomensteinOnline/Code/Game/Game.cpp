@@ -133,6 +133,13 @@ void Game::UpdateWorldMesh()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateEntityAnimations()
+{
+	m_world->UpdateEntityAnimations();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
 
@@ -453,9 +460,23 @@ Entity* Game::CreateEntityInCurrentMap( EntityId id, eEntityType entityType, con
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* Game::GetEntityById( EntityId id )
+{
+	return m_world->GetEntityById( id );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::vector<Entity*> Game::GetEntitiesInCurrentMap()
 {
 	return m_world->GetEntitiesInCurrentMap();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<Entity*> Game::GetLivingEntitiesInCurrentMap()
+{
+	return m_world->GetLivingEntitiesInCurrentMap();
 }
 
 

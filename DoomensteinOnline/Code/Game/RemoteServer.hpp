@@ -23,6 +23,8 @@ public:
 
 	virtual void RegisterNewClient( Client* client ) override;
 
+	virtual void SendMessageToAllDistantClients( ClientRequest* clientRequest ) override;
+
 protected:
 	virtual void StartGame( eAppMode appMode ) override;
 	virtual void ProcessNetworkMessages() override;

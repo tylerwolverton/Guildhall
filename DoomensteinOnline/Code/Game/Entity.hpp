@@ -27,6 +27,7 @@ public:
 	virtual ~Entity() {}
 
 	virtual void Update( float deltaSeconds );
+	virtual void UpdateAnimation( float deltaSeconds );
 	virtual void Render() const;
 	virtual void Die();
 	virtual void DebugRender() const;

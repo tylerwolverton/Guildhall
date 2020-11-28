@@ -479,7 +479,7 @@ void NetworkingSystem::RetryReliableUDPMessages()
 		{
 			if ( reliableMessage.second.hasBeenAcked == false )
 			{
-				g_devConsole->PrintString( Stringf( "Abandoning reliable message to port %i after 1000 retries", reliableMessage.second.udpMessage.sendToPort ) );
+				//g_devConsole->PrintString( Stringf( "Abandoning reliable message to port %i after 1000 retries", reliableMessage.second.udpMessage.sendToPort ) );
 			}
 			expiredMessages.push_back( reliableMessage.first );
 		}

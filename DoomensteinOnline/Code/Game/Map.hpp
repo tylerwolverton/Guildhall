@@ -41,6 +41,7 @@ public:
 
 	virtual void Update( float deltaSeconds );
 	virtual void UpdateMeshes() = 0;
+	virtual void UpdateEntityAnimations();
 	virtual void Render() const;
 	virtual void DebugRender() const;
 
@@ -54,6 +55,7 @@ public:
 
 	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 	std::vector<Entity*> GetAllEntities();
+	std::vector<Entity*> GetAllLivingEntities();
 	void DeleteAllEntities();
 
 	virtual Entity* GetEntityFromRaycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
@@ -63,6 +65,7 @@ protected:
 	void ResolveEntityVsEntityCollisions();
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 	void ResolveEntityVsPortalCollisions();
+	void CleanupDeadEntities();
 
 	void WarpEntityInMap( Entity* entity, Portal* portal );
 
@@ -77,5 +80,6 @@ protected:
 	float				 m_playerStartYaw = 0.f;
 
 	std::vector<Entity*> m_entities;
+	std::vector<Entity*> m_livingEntities;
 	std::vector<Portal*> m_portals;
 };

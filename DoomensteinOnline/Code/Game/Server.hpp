@@ -24,9 +24,12 @@ public:
 	virtual void BeginFrame();
 	virtual void Update() = 0;
 
+	virtual void ReceiveClientRequest( const ClientRequest* clientRequest );
 	virtual void ReceiveClientRequests( const std::vector<const ClientRequest*> clientRequests ) = 0;
 	
 	virtual void RegisterNewClient( Client* client ) = 0;
+
+	virtual void SendMessageToAllDistantClients( ClientRequest* clientRequest ) = 0;
 
 protected:
 	virtual void StartGame( eAppMode appMode ) = 0;
