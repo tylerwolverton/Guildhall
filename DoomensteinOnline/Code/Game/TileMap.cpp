@@ -602,6 +602,15 @@ bool TileMap::DoesRayHitEntityAlongZ( RaycastResult& raycastResult, const Vec3& 
 
 
 //-----------------------------------------------------------------------------------------------
+Entity* TileMap::GetEntityFromRaycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const
+{
+	RaycastResult result = Raycast( startPos, forwardNormal, maxDist );
+
+	return result.impactEntity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void TileMap::PopulateTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs )
 {
 	CreateInitialTiles( regionTypeDefs );

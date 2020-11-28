@@ -171,6 +171,7 @@ Entity* World::CreateEntityInCurrentMap( eEntityType entityType, const Vec2& pos
 
 	newEntiy->SetPosition( position );
 	newEntiy->SetOrientationDegrees( yawOrientationDegrees );
+	newEntiy->SetMap( m_curMap );
 
 	return newEntiy;
 }

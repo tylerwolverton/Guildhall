@@ -183,6 +183,12 @@ std::vector<const ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRe
 		translationXY *= m_player->GetWalkSpeed();
 
 		requests.push_back( new UpdateEntityRequest( m_clientId, m_player->GetId(), translationXY * deltaSeconds, yawDegrees ) );
+
+		// Check for attack if controlling entity
+		if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
+		{
+			requests.push_back( new ShootRequest( m_clientId, m_player->GetId(), g_playerClient->GetWorldCamera()->GetTransform().GetForwardVector(), 5.f, 1 ) );
+		}
 	}
 	// No entity possessed, move the camera directly
 	else
@@ -193,6 +199,8 @@ std::vector<const ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRe
 		// Translation
 		TranslateCameraFPS( movementTranslation * deltaSeconds );
 	}
+
+	
 
 	return requests;
 }

@@ -11,6 +11,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Map;
 class Texture;
 
 
@@ -47,7 +48,9 @@ public:
 	std::string  GetName() const										{ return m_entityDef.m_name; }
 	eEntityClass GetClass() const										{ return m_entityDef.m_class; }
 	eEntityType  GetType() const										{ return m_entityDef.m_type; }
-				 
+	void		 SetMap( Map* map )										{ m_curMap = map; }
+	Map*		 GetMap() const											{ return m_curMap; }
+
 	void		 AddVelocity( const Vec2& deltaVelocity )				{ m_velocity += deltaVelocity; }
 	void		 Translate( const Vec2& translation )					{ m_position += translation; }
 	void		 RotateYawDegrees( float yawRotation )					{ m_orientationDegrees += yawRotation; }
@@ -62,6 +65,8 @@ public:
 	void		 TakeDamage( int damage );
 	void		 ApplyFriction();
 
+	void		ChangeSpriteAnimation( const std::string& spriteAnimDefSetName );
+
 protected:
 	// Game state
 	EntityId				m_id;
@@ -70,6 +75,7 @@ protected:
 	bool					m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool					m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
 	bool					m_isPossessed = false;							
+	Map*					m_curMap = nullptr;
 
 	// Physics
 	Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity’s 2D(x, y) Cartesian origin / center location, in world space
@@ -90,6 +96,7 @@ protected:
 	float					m_cumulativeTime = 0.f;
 	std::vector<Vertex_PCU> m_vertices;
 	Texture*				m_texture = nullptr;
+	SpriteAnimationSetDefinition* m_curSpriteAnimSetDef = nullptr;
 
 	// Statics
 	static int				s_nextEntityId;

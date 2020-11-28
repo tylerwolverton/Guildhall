@@ -248,6 +248,13 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientR
 				g_game->RotateEntity( updateEntityReq->entityId, updateEntityReq->yawRotationDegrees );
 			}
 			break;
+
+			case eClientFunctionType::SHOOT:
+			{
+				ShootRequest* shootReq = (ShootRequest*)req;
+				g_game->ShootEntity( shootReq->entityId, shootReq->forwardVector, shootReq->maxDist, shootReq->damage );
+			}
+			break;
 		}
 	}
 }

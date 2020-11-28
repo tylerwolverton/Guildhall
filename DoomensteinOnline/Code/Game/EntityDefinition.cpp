@@ -75,7 +75,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		return;
 	}
 
-
+	// Physics
 	const XmlElement* physicsElem = entityDefElem.FirstChildElement( "Physics" );
 	if( physicsElem != nullptr )
 	{
@@ -85,6 +85,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
 	}
 
+	// Appearance
 	const XmlElement* appearanceElem = entityDefElem.FirstChildElement( "Appearance" );
 	if ( appearanceElem != nullptr )
 	{

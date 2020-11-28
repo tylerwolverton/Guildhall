@@ -33,6 +33,8 @@ Entity::Entity( const EntityDefinition& entityDef )
 	{
 		GetNewWanderDestination();
 	}
+
+	ChangeSpriteAnimation( "Walk" );
 }
 
 
@@ -40,6 +42,11 @@ Entity::Entity( const EntityDefinition& entityDef )
 void Entity::Update( float deltaSeconds )
 {
 	m_cumulativeTime += deltaSeconds;
+
+	if ( m_isDead )
+	{
+		return;
+	}
 
 	if ( m_entityDef.GetType() == eEntityType::PINKY )
 	{
@@ -67,8 +74,7 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	if ( //m_isPossessed
-		  g_playerClient == nullptr )
+	if ( g_playerClient == nullptr )
 	{
 		return;
 	}
@@ -87,14 +93,14 @@ void Entity::Render() const
 	}
 	
 	Vec2 mins, maxs;
-	SpriteAnimationSetDefinition* walkAnimSetDef = m_entityDef.GetSpriteAnimSetDef( "Walk" );
-	SpriteAnimDefinition* walkAnimDef = nullptr;
-	if ( walkAnimSetDef != nullptr )
+	SpriteAnimDefinition* animDef = nullptr;
+	if ( m_curSpriteAnimSetDef != nullptr )
 	{
-		walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_playerClient->GetWorldCamera() );
+		animDef = m_curSpriteAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_playerClient->GetWorldCamera() );
 	}
 
-	if ( walkAnimDef == nullptr )
+	// Show error image when no animation is bound
+	if ( animDef == nullptr )
 	{
 		AppendVertsForQuad( vertices, corners, Rgba8::WHITE );
 
@@ -102,7 +108,7 @@ void Entity::Render() const
 	}
 	else
 	{
-		const SpriteDefinition& spriteDef = walkAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
+		const SpriteDefinition& spriteDef = animDef->GetSpriteDefAtTime( m_cumulativeTime );
 		spriteDef.GetUVs( mins, maxs );
 
 		AppendVertsForQuad( vertices, corners, Rgba8::WHITE, mins, maxs );
@@ -117,7 +123,14 @@ void Entity::Render() const
 //-----------------------------------------------------------------------------------------------
 void Entity::Die()
 {
+	if ( m_isDead )
+	{
+		return;
+	}
+
 	m_isDead = true;
+	ChangeSpriteAnimation( "Death" );
+	m_cumulativeTime = 0.f;
 }
 
 
@@ -176,3 +189,18 @@ void Entity::ApplyFriction()
 		m_velocity = Vec2( 0.f, 0.f );
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::ChangeSpriteAnimation( const std::string& spriteAnimDefSetName )
+{
+	SpriteAnimationSetDefinition* newSpriteAnimSetDef = m_entityDef.GetSpriteAnimSetDef( spriteAnimDefSetName );
+
+	if ( newSpriteAnimSetDef == nullptr )
+	{
+		return;
+	}
+
+	m_curSpriteAnimSetDef = newSpriteAnimSetDef;
+}
+

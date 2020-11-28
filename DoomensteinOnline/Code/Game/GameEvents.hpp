@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/EntityDefinition.hpp"
@@ -32,6 +33,8 @@ enum eClientFunctionType
 	REMOTE_CLIENT_REGISTRATION,
 
 	SERVER_LAST_DELTA_SECONDS,
+
+	SHOOT,
 
 	NUM_TYPES
 };
@@ -246,6 +249,27 @@ public:
 public:
 	SetPlayerIdAckRequest( int clientIdIn )
 		: ClientRequest( clientIdIn, eClientFunctionType::SET_PLAYER_ID_ACK )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct ShootRequest : ClientRequest
+{
+public:
+	Vec3 forwardVector = Vec3::ZERO;
+	float maxDist = 0.f;
+	EntityId entityId = -1;
+	int damage = 1;
+
+public:
+	ShootRequest( int clientId, const EntityId entityId, const Vec3& forwardVector, float maxDist, int damage )
+		: ClientRequest( clientId, eClientFunctionType::SHOOT )
+		, entityId( entityId )
+		, forwardVector( forwardVector )
+		, maxDist( maxDist )
+		, damage( damage )
 	{
 	}
 };

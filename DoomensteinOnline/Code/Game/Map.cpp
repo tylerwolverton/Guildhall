@@ -227,6 +227,7 @@ Entity* Map::SpawnNewEntityOfType( EntityId id, const EntityDefinition& entityDe
 	if ( newEntity != nullptr )
 	{
 		newEntity->SetId( id );
+		newEntity->SetMap( this );
 	}
 
 	if ( m_world != nullptr )
@@ -260,6 +261,8 @@ void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 //-----------------------------------------------------------------------------------------------
 void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
 {
+	entityToAdd->SetMap( this );
+
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity*& entity = m_entities[entityIdx];

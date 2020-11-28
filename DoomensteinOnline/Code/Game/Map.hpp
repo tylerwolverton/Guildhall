@@ -56,6 +56,8 @@ public:
 	std::vector<Entity*> GetAllEntities();
 	void DeleteAllEntities();
 
+	virtual Entity* GetEntityFromRaycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
+
 protected:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 	void ResolveEntityVsEntityCollisions();

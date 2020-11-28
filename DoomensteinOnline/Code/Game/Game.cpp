@@ -39,6 +39,7 @@
 #include "Game/Entity.hpp"
 #include "Game/GameEvents.hpp"
 #include "Game/GameJobs.hpp"
+#include "Game/Map.hpp"
 #include "Game/MapData.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
@@ -488,6 +489,32 @@ void Game::MoveEntity( EntityId entityId, const Vec2& translationVec )
 	}
 
 	entity->Translate( translationVec );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ShootEntity( EntityId shooterId, const Vec3& forwardVector, float shotRange, int damage )
+{
+	Entity* entity = m_world->GetEntityById( shooterId );
+
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	Map* map = entity->GetMap();
+	if ( map == nullptr )
+	{
+		return;
+	}
+
+	Entity* targetEntity = map->GetEntityFromRaycast( Vec3( entity->GetPosition(), entity->GetEyeHeight() ), forwardVector, shotRange );
+	if ( targetEntity == nullptr )
+	{
+		return;
+	}
+
+	targetEntity->TakeDamage( damage );
 }
 
 

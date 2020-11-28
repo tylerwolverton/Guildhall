@@ -45,6 +45,8 @@ public:
 	RaycastResult RaycastAgainstEntitiesFast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const;
 	bool DoesRayHitEntityAlongZ( RaycastResult& raycastResult, const Vec3& potentialImpactPos, const Entity& entity ) const;
 
+	virtual Entity* GetEntityFromRaycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const override;
+
 private:
 	void				PopulateTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs );
 	void				CreateInitialTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs );
