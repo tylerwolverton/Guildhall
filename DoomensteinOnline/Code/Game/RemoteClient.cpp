@@ -45,8 +45,8 @@ void RemoteClient::Update()
 	// Retry initial message if not acked yet
 	//if ( m_remoteServerInitState == eInitializationState::SENT )
 	//{
-	//	/*RemoteClientRegistrationRequest req( m_clientId );
-	//	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );*/
+	//	RemoteClientRegistrationRequest req( m_clientId );
+	//	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
 
 	//	return;
 	//}
@@ -54,8 +54,8 @@ void RemoteClient::Update()
 	//// Retry set player id message if not acked yet
 	//if ( m_remoteServerPlayerIdInitState == eInitializationState::SENT )
 	//{
-	//	/*SetPlayerIdRequest req( m_clientId, m_playerId );
-	//	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );*/
+	//	SetPlayerIdRequest req( m_clientId, m_playerId );
+	//	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
 
 	//	return;
 	//}	
@@ -130,7 +130,7 @@ void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
 		case eClientFunctionType::CREATE_ENTITY:
 		{
 			CreateEntityRequest* createEntityReq = (CreateEntityRequest*)message;
-			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, createEntityReq, sizeof( *createEntityReq ) );
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, createEntityReq, sizeof( *createEntityReq ), true );
 		}
 		break;
 
@@ -138,6 +138,20 @@ void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
 		{
 			NotifyEntityDiedRequest* notifyEntityDiedReq = (NotifyEntityDiedRequest*)message;
 			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, notifyEntityDiedReq, sizeof( *notifyEntityDiedReq ), true );
+		}
+		break;
+
+		case eClientFunctionType::UPDATE_PLAYER_SCORE:
+		{
+			UpdatePlayerScoreRequest* updatePlayerScoreReq = (UpdatePlayerScoreRequest*)message;
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, updatePlayerScoreReq, sizeof( *updatePlayerScoreReq ), true );
+		}
+		break;
+
+		case eClientFunctionType::DRAW_SHOT:
+		{
+			DrawShotRequest* drawShotReq = (DrawShotRequest*)message;
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, drawShotReq, sizeof( *drawShotReq ), true, 5 );
 		}
 		break;
 	}
@@ -150,7 +164,7 @@ void RemoteClient::SetClientId( int id )
 	m_clientId = id;
 	// Send a message to RemoteServer to set player client's id
 	RemoteClientRegistrationRequest req( m_clientId );
-	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
 
 	m_remoteServerInitState = eInitializationState::SENT;
 }
@@ -162,7 +176,7 @@ void RemoteClient::SetPlayer( Entity* entity )
 	m_playerId = entity->GetId();
 
 	SetPlayerIdRequest req( m_clientId, m_playerId );
-	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
 
 	g_game->AddPlayerScore( m_clientId, m_playerId );
 

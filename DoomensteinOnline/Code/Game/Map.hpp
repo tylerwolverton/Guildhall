@@ -58,6 +58,7 @@ public:
 	std::vector<Entity*> GetAllLivingEntities();
 	void DeleteAllEntities();
 
+	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 	virtual Entity* GetEntityFromRaycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 
 protected:
@@ -68,8 +69,6 @@ protected:
 	void CleanupDeadEntities();
 
 	void WarpEntityInMap( Entity* entity, Portal* portal );
-
-	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 
 protected:
 	World*				 m_world;

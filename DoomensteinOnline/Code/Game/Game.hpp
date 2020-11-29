@@ -68,6 +68,7 @@ public:
 	void SetServerLastDeltaSeconds( float deltaSeconds )									{ m_serverLastDeltaSeconds = deltaSeconds; }
 	
 	virtual void AddPlayerScore( int playerNum, EntityId playerId );
+	virtual void UpdatePlayerScore( int playerNum, int newScore );
 	virtual std::vector<int> GetPlayerScores() const;
 
 public:

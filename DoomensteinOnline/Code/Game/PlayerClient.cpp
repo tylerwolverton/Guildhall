@@ -188,6 +188,13 @@ std::vector<const ClientRequest*> PlayerClient::ProcessInputAndConvertToClientRe
 		if ( g_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 		{
 			requests.push_back( new ShootRequest( m_clientId, m_player->GetId(), g_playerClient->GetWorldCamera()->GetTransform().GetForwardVector(), 5.f, 1 ) );
+			//RaycastResult result = Raycast( m_raytraceTransform.GetPosition(), m_raytraceTransform.GetForwardVector(), 5.f );
+			//DebugAddWorldLine( result.impactPos, result.impactPos + result.impactSurfaceNormal * .5f, Rgba8::ORANGE );
+			/*Vec3 start( m_player->GetPosition(), m_player->GetEyeHeight() - .1f );
+			Vec3 end = start + g_playerClient->GetWorldCamera()->GetTransform().GetForwardVector() * 5.f;*/
+
+
+			
 		}
 	}
 	// No entity possessed, move the camera directly
@@ -569,6 +576,26 @@ void PlayerClient::SetPlayerNum( int playerNum )
 	m_playerNum = playerNum; 
 
 	g_game->AddPlayerScore( playerNum, m_playerId );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Rgba8 PlayerClient::GetColorForPlayer( int playerNum )
+{
+	if ( playerNum < 0
+		 || playerNum >= 8 )
+	{
+		return Rgba8::WHITE;
+	}
+
+	return m_playerColors[playerNum];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void PlayerClient::DrawShot( const Vec3& start, const Vec3& end, const Rgba8& color )
+{
+	DebugAddWorldLine( start, end, color, .005f, 3.3f );
 }
 
 

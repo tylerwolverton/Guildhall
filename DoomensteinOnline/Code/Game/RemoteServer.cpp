@@ -124,7 +124,7 @@ void RemoteServer::ProcessTCPMessages()
 				g_networkingSystem->CreateAndRegisterUDPSocket( responseReq->localSendToPort );
 
 				KeyVerificationRequest keyVerifyReq( m_remoteClientId, responseReq->connectKey );
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &keyVerifyReq, sizeof( keyVerifyReq ), true );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &keyVerifyReq, sizeof( keyVerifyReq ) );
 			}
 			break;
 		}
@@ -175,7 +175,7 @@ void RemoteServer::ProcessUDPMessages()
 				}
 
 				SetPlayerIdAckRequest ackReq( m_remoteClientId );
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ), true );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ) );
 
 				data.Process();
 			}
@@ -243,13 +243,19 @@ void RemoteServer::ProcessUDPMessages()
 			}
 			break;
 
-			/*case eClientFunctionType::UPDATE_ENTITY:
+			case eClientFunctionType::UPDATE_PLAYER_SCORE:
 			{
-				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
-				g_game->MoveEntity( updateEntityReq->entityId, updateEntityReq->translationVec );
-				g_game->RotateEntity( updateEntityReq->entityId, updateEntityReq->yawRotationDegrees );
+				UpdatePlayerScoreRequest* updatePlayerScoreReq = (UpdatePlayerScoreRequest*)req;
+				g_game->UpdatePlayerScore( updatePlayerScoreReq->playerNum, updatePlayerScoreReq->newScore );
 			}
-			break;*/
+			break;
+			
+			case eClientFunctionType::DRAW_SHOT:
+			{
+				DrawShotRequest* drawShotReq = (DrawShotRequest*)req;
+				g_playerClient->DrawShot( drawShotReq->start, drawShotReq->end, drawShotReq->color );
+			}
+			break;
 		}
 	}
 }
@@ -316,7 +322,7 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			{
 				ShootRequest* shootReq = (ShootRequest*)req;
 				shootReq->clientId = m_remoteClientId;
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, shootReq, sizeof( *shootReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, shootReq, sizeof( *shootReq ), true, 10 );
 			}
 			break;
 		}

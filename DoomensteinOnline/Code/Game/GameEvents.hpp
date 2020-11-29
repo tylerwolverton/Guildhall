@@ -36,13 +36,14 @@ enum eClientFunctionType
 	SERVER_LAST_DELTA_SECONDS,
 
 	SHOOT,
+	DRAW_SHOT,
+	UPDATE_PLAYER_SCORE,
 
 	NUM_TYPES
 };
 
 
 //-----------------------------------------------------------------------------------------------
-// TODO: Virtualize destructors
 struct ClientRequest
 {
 public:
@@ -286,6 +287,42 @@ public:
 		, forwardVector( forwardVector )
 		, maxDist( maxDist )
 		, damage( damage )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct DrawShotRequest : ClientRequest
+{
+public:
+	Rgba8 color = Rgba8::WHITE;
+	Vec3 start = Vec3::ZERO;
+	Vec3 end = Vec3::ZERO;
+
+public:
+	DrawShotRequest( int clientId, const Vec3& start, const Vec3& end, const Rgba8& color )
+		: ClientRequest( clientId, eClientFunctionType::DRAW_SHOT )
+		, start( start )
+		, end( end )
+		, color( color )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct UpdatePlayerScoreRequest : ClientRequest
+{
+public:
+	int playerNum = -1;
+	int newScore = -1;
+
+public:
+	UpdatePlayerScoreRequest( int clientId, int playerNum, int newScore )
+		: ClientRequest( clientId, eClientFunctionType::UPDATE_PLAYER_SCORE )
+		, playerNum( playerNum )
+		, newScore( newScore )
 	{
 	}
 };

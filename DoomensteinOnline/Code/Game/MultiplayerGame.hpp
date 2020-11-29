@@ -18,7 +18,8 @@ public:
 
 	virtual void ShootEntity( EntityId shooterId, const Vec3& forwardVector, float shotRange, int damage ) override;
 
-	virtual void AddPlayerScore( int playerNum, EntityId playerId );
+	virtual void AddPlayerScore( int playerNum, EntityId playerId ) override;
+	virtual void UpdatePlayerScore( int playerNum, int newScore ) override;
 	virtual std::vector<int> GetPlayerScores() const override						{ return m_playerScores; }
 
 private:

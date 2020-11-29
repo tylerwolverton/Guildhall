@@ -46,6 +46,9 @@ public:
 	void			SetPlayerId( EntityId playerId );
 	void			SetPlayerNum( int playerNum );
 
+	Rgba8			GetColorForPlayer( int playerNum );
+	void			DrawShot( const Vec3& start, const Vec3& end, const Rgba8& color );
+
 	// Events
 	static bool SetMouseSensitivity( EventArgs* args );
 	static bool SetAmbientLightColor( EventArgs* args );

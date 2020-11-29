@@ -43,13 +43,15 @@ struct ReliableUDPMessage
 public:
 	UDPMessage udpMessage;
 	int retryCount = 0;
+	int maxRetryCount = 1000;
 	bool hasBeenAcked = false;
 
 public:
 	ReliableUDPMessage() = default;
 
-	ReliableUDPMessage( UDPMessage udpMessage )
+	ReliableUDPMessage( UDPMessage udpMessage, int maxRetryCount )
 		: udpMessage( udpMessage )
+		, maxRetryCount( maxRetryCount )
 	{
 	}
 };
@@ -104,7 +106,7 @@ public:
 	void OpenAndBindUDPPort( int localBindPort, int distantSendToPort );
 	void CreateAndRegisterUDPSocket( int distantSendToPort );
 	void CloseUDPPort( int localBindPort );
-	void SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable = false );
+	void SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable = false, int retryCount = 1000 );
 	void SendUDPTextMessage( int localBindPort, const std::string& text );
 
 private:

@@ -633,6 +633,14 @@ void Game::AddPlayerScore( int playerNum, EntityId playerId )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdatePlayerScore( int playerNum, int newScore )
+{
+	UNUSED( playerNum );
+	UNUSED( newScore );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::vector<int> Game::GetPlayerScores() const
 {
 	return std::vector<int>();

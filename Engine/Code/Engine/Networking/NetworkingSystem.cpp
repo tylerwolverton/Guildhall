@@ -475,7 +475,7 @@ void NetworkingSystem::RetryReliableUDPMessages()
 			m_outgoingMessages.Push( reliableMessage.second.udpMessage );
 		}
 		
-		if ( reliableMessage.second.retryCount > 1000 )
+		if ( reliableMessage.second.retryCount > reliableMessage.second.maxRetryCount )
 		{
 			if ( reliableMessage.second.hasBeenAcked == false )
 			{
@@ -792,10 +792,10 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable )
+void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable, int retryCount )
 {
 	// TEMP HACK to test hack reliable udp
-	isReliable = false;
+	//isReliable = false;
 
 	std::array<char, 512> buffer = {};
 	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
@@ -817,7 +817,7 @@ void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t
 	UDPMessage udpMessage( distantSendToPort, buffer );
 	if ( isReliable )
 	{
-		m_reliableUDPMessagesToRetry[msgHeader->uniqueId] = ReliableUDPMessage( udpMessage );
+		m_reliableUDPMessagesToRetry[msgHeader->uniqueId] = ReliableUDPMessage( udpMessage, retryCount );
 	}
 
 	m_outgoingMessages.Push( udpMessage );
