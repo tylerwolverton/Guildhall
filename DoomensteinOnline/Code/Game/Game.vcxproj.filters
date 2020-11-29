@@ -218,5 +218,8 @@
     <Xml Include="..\..\Run\Data\Maps\UVTest.xml">
       <Filter>Data\Maps</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Maps\MultiplayerMap.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

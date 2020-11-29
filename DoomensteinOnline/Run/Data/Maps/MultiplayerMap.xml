@@ -1,0 +1,41 @@
+<MapDefinition type="TileMap" version="1" dimensions="15,15">
+
+	<Legend>
+		<Tile glyph="C" regionType="CobblestoneWall"/>
+		<Tile glyph="W" regionType="WoodWall"/>
+		<Tile glyph="." regionType="StoneFloor"/>
+		<Tile glyph="," regionType="GrassFloor"/>
+	</Legend>
+	<MapRows>
+		<MapRow tiles="CCCCCCCCCCCCCCC"/>
+		<MapRow tiles="C,,,,W,..,,,,.C"/>
+		<MapRow tiles="C,WWWW,..,WW,.C"/>
+		<MapRow tiles="C,,,,,,,.,WW,.C"/>
+		<MapRow tiles="C..,WWW,.,,,,.C"/>
+		<MapRow tiles="C..,,,W,......C"/>
+		<MapRow tiles="C..,,,,,,,,...C"/>
+		<MapRow tiles="C..,WWWWWW,...C"/>
+		<MapRow tiles="C..,,,W,,,,...C"/>
+		<MapRow tiles="C....,W,..WW..C"/>
+		<MapRow tiles="C.W..,W,..WW..C"/>
+		<MapRow tiles="C..W.,W,......C"/>
+		<MapRow tiles="C...W,,,...WWWC"/>
+		<MapRow tiles="C.............C"/>
+		<MapRow tiles="CCCCCCCCCCCCCCC"/>
+	</MapRows>
+	<Entities>
+		<PlayerStart pos="6.5,1.5" yaw="150"/>
+		<!--<Actor name="Pinky" pos="1.5,1.5" yaw="150"/>
+		<Actor name="Pinky" pos="3.5,1.5" yaw="75"/>
+		<Actor name="Pinky" pos="2.5,1.5" yaw="15"/>-->
+		<!--<Actor name="Marine" pos="1.5,3.5" yaw="180"/>
+		<Actor name="Marine" pos="6.5,5.5" yaw="180"/>-->
+		<Actor name="Pinky" pos="1.5,4.5" yaw="150"/>
+		<Actor name="Pinky" pos="3.5,3.5" yaw="120"/>
+		<Actor name="Pinky" pos="2.5,6.5" yaw="150"/>
+    <!--<Portal name="Energy Teleporter" pos="6.5,6.5" yaw="90" destMap="EmptyRoom" destPos="3,3" destYawOffset="90"/>-->
+	</Entities>
+
+</MapDefinition>
+
+

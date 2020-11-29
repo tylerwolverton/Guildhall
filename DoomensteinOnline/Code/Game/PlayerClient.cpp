@@ -287,6 +287,7 @@ void PlayerClient::Render( const World* gameWorld ) const
 	g_devConsole->Render();
 
 	RenderFPSCounter();
+	RenderScore();
 
 	Texture* backbuffer = g_renderer->GetBackBuffer();
 	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
@@ -429,6 +430,27 @@ void PlayerClient::RenderFPSCounter() const
 
 
 //-----------------------------------------------------------------------------------------------
+void PlayerClient::RenderScore() const
+{
+	std::vector<int> playerScores = g_game->GetPlayerScores();
+	if ( playerScores.empty() )
+	{
+		return;
+	}
+
+	DebugAddScreenTextf( Vec4( 0.45f, .97f, 0.f, 0.f ), Vec2::ZERO, 25.f, m_playerColors[m_playerNum], 0.f,
+						 "Player %i", m_playerNum + 1 );
+
+	for ( int playerIdx = 0; playerIdx < (int)playerScores.size(); ++playerIdx )
+	{
+		DebugAddScreenTextf( Vec4( 0.01f, .97f - (float)playerIdx * .04f, 0.f, 0.f ), Vec2::ZERO, 25.f, m_playerColors[playerIdx], 0.f,
+							 "P%i Score: %i",
+							 playerIdx + 1, playerScores[playerIdx] );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void PlayerClient::AddScreenShakeIntensity( float intensity )
 {
 	m_screenShakeIntensity += intensity;
@@ -515,6 +537,15 @@ float PlayerClient::GetAverageFPS() const
 
 
 //-----------------------------------------------------------------------------------------------
+void PlayerClient::SetPlayer( Entity* playerEntity )
+{
+	m_player = playerEntity;
+
+	g_game->AddPlayerScore( 0, m_player->GetId() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 EntityId PlayerClient::GetPlayerId() const
 {
 	return m_playerId;
@@ -529,6 +560,15 @@ void PlayerClient::SetPlayerId( EntityId playerId )
 	{
 		m_player->SetId( playerId );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void PlayerClient::SetPlayerNum( int playerNum )
+{
+	m_playerNum = playerNum; 
+
+	g_game->AddPlayerScore( playerNum, m_playerId );
 }
 
 

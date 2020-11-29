@@ -171,6 +171,7 @@ void RemoteServer::ProcessUDPMessages()
 				if ( m_playerClient->GetPlayerId() == -1 )
 				{
 					m_playerClient->SetPlayerId( setPlayerIdReq->playerId );
+					m_playerClient->SetPlayerNum( setPlayerIdReq->clientId );
 				}
 
 				SetPlayerIdAckRequest ackReq( m_remoteClientId );

@@ -9,11 +9,19 @@ public:
 	MultiplayerGame() = default;
 	~MultiplayerGame() = default;
 
-	/*void		Startup();
-	void		Update();
-	void		Render() const;
-	void		DebugRender() const;
-	void		Shutdown();
+	virtual void	Startup();
+	virtual void	Update();
+	virtual void	Render() const;
+	//virtual void	Shutdown();
 
-	void		RestartGame();*/
+	virtual void	RestartGame();
+
+	virtual void ShootEntity( EntityId shooterId, const Vec3& forwardVector, float shotRange, int damage ) override;
+
+	virtual void AddPlayerScore( int playerNum, EntityId playerId );
+	virtual std::vector<int> GetPlayerScores() const override						{ return m_playerScores; }
+
+private:
+	std::map<EntityId, int> m_playerIdsToPlayerNums;
+	std::vector<int> m_playerScores;
 };

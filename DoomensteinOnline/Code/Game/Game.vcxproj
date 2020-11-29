@@ -259,6 +259,7 @@
     <Xml Include="..\..\Run\Data\Definitions\MapRegionTypes.xml" />
     <Xml Include="..\..\Run\Data\GameConfig.xml" />
     <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml" />
+    <Xml Include="..\..\Run\Data\Maps\MultiplayerMap.xml" />
     <Xml Include="..\..\Run\Data\Maps\SingleBlock.xml" />
     <Xml Include="..\..\Run\Data\Maps\TestRoom.xml" />
     <Xml Include="..\..\Run\Data\Maps\TwistyMaze.xml" />

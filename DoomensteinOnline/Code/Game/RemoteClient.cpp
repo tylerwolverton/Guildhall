@@ -164,6 +164,8 @@ void RemoteClient::SetPlayer( Entity* entity )
 	SetPlayerIdRequest req( m_clientId, m_playerId );
 	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true );
 
+	g_game->AddPlayerScore( m_clientId, m_playerId );
+
 	m_remoteServerInitState = eInitializationState::ACKED;
 	m_remoteServerPlayerIdInitState = eInitializationState::SENT;
 }

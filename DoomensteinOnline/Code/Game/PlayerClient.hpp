@@ -41,9 +41,10 @@ public:
 
 	virtual void	SetClientId( int id ) override												{ m_clientId = id; }
 
-	virtual void	SetPlayer( Entity* playerEntity ) override									{ m_player = playerEntity; }
+	virtual void	SetPlayer( Entity* playerEntity ) override;
 	EntityId		GetPlayerId() const;
 	void			SetPlayerId( EntityId playerId );
+	void			SetPlayerNum( int playerNum );
 
 	// Events
 	static bool SetMouseSensitivity( EventArgs* args );
@@ -62,6 +63,7 @@ private:
 	void DebugRender( const World* gameWorld ) const;
 	void RenderDebugUI() const;
 	void RenderFPSCounter() const;
+	void RenderScore() const;
 
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
@@ -100,4 +102,7 @@ private:
 	float m_specularFactor = 0.f;
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;
+
+	int m_playerNum = 0;
+	Rgba8 m_playerColors[8] = { Rgba8::BLUE, Rgba8::RED, Rgba8::GREEN, Rgba8::YELLOW, Rgba8::PURPLE, Rgba8::ORANGE, Rgba8::CYAN, Rgba8::MAGENTA };
 };

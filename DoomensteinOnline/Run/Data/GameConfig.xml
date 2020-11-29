@@ -1,5 +1,5 @@
 <GameConfig
-	startMap="TestRoom"
+	startMap="MultiplayerMap"
   playerEntityType="Marine"
   windowHeightRatio=".75f"
 	windowAspect="1.777"

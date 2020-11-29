@@ -57,7 +57,7 @@ public:
 
 	void MovePlayer( Entity* player, const Vec2& translationVec );
 	void MoveEntity( EntityId entityId, const Vec2& translationVec );
-	void ShootEntity( EntityId shooterId, const Vec3& forwardVector, float shotRange, int damage );
+	virtual void ShootEntity( EntityId shooterId, const Vec3& forwardVector, float shotRange, int damage );
 	void RotateEntity( EntityId entityId, float yawRotationDegrees );
 	void SetEntityPosition( EntityId entityId, const Vec2& newPosition );
 	void SetEntityOrientation( EntityId entityId, float yawOrientationDegrees );
@@ -67,6 +67,9 @@ public:
 	float GetLastDeltaSeconds() const;
 	void SetServerLastDeltaSeconds( float deltaSeconds )									{ m_serverLastDeltaSeconds = deltaSeconds; }
 	
+	virtual void AddPlayerScore( int playerNum, EntityId playerId );
+	virtual std::vector<int> GetPlayerScores() const;
+
 public:
 	RandomNumberGenerator* m_rng = nullptr;
 
@@ -81,7 +84,7 @@ private:
 	// Events
 	void WarpMapCommand( EventArgs* args );
 
-private:
+protected:
 	bool m_isGameStarted = false;
 
 	Clock* m_gameClock = nullptr;

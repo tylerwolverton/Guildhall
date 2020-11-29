@@ -530,7 +530,8 @@ void Game::ShootEntity( EntityId shooterId, const Vec3& forwardVector, float sho
 	}
 
 	Entity* targetEntity = map->GetEntityFromRaycast( Vec3( entity->GetPosition(), entity->GetEyeHeight() ), forwardVector, shotRange );
-	if ( targetEntity == nullptr )
+	if ( targetEntity == nullptr 
+		 || targetEntity->IsDead() )
 	{
 		return;
 	}
@@ -620,6 +621,21 @@ float Game::GetLastDeltaSeconds() const
 	}
 
 	return (float)m_gameClock->GetLastDeltaSeconds();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::AddPlayerScore( int playerNum, EntityId playerId )
+{
+	UNUSED( playerNum );
+	UNUSED( playerId );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::vector<int> Game::GetPlayerScores() const
+{
+	return std::vector<int>();
 }
 
 
