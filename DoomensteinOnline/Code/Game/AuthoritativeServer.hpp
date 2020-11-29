@@ -3,6 +3,8 @@
 #include "Game/GameCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 
+#include <unordered_set>
+
 
 //-----------------------------------------------------------------------------------------------
 class Client;
@@ -58,4 +60,6 @@ private:
 	const std::vector<ClientRequest*>	m_clientRequests;
 
 	std::vector<ConnectionInfo> m_clientConnectionInfo;
+
+	std::unordered_set<int> m_spawnedPlayerClientIds;
 };

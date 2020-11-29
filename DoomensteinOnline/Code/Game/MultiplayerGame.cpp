@@ -104,12 +104,35 @@ void MultiplayerGame::AddPlayerScore( int playerNum, EntityId playerId )
 //-----------------------------------------------------------------------------------------------
 void MultiplayerGame::UpdatePlayerScore( int playerNum, int newScore )
 {
-	if ( playerNum >= (int)m_playerScores.size()
-		 || playerNum < 0 )
+	if ( playerNum < 0 )
 	{
 		return;
 	}
 
+	// Expand player scores array to handle new players
+	if ( playerNum >= (int)m_playerScores.size() )
+	{
+		int numNewPlayers = playerNum - ( (int)m_playerScores.size() - 1 );
+		for ( int newPlayerIdx = 0; newPlayerIdx < numNewPlayers; ++newPlayerIdx )
+		{
+			m_playerScores.push_back( 0 );
+		}
+	}
+
 	m_playerScores[playerNum] = newScore;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void MultiplayerGame::UpdatePlayerScoresForAllClients()
+{
+	for ( int playerIdx = 0; playerIdx < (int)m_playerScores.size(); ++playerIdx )
+	{
+		ClientRequest* updateScoresReq = new UpdatePlayerScoreRequest( -1, playerIdx, m_playerScores[playerIdx] );
+		g_server->SendMessageToAllDistantClients( updateScoresReq );
+
+		PTR_SAFE_DELETE( updateScoresReq );
+	}
+}
+
 

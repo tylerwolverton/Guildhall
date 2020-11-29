@@ -641,6 +641,13 @@ void Game::UpdatePlayerScore( int playerNum, int newScore )
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdatePlayerScoresForAllClients()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::vector<int> Game::GetPlayerScores() const
 {
 	return std::vector<int>();

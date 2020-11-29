@@ -69,6 +69,7 @@ public:
 	
 	virtual void AddPlayerScore( int playerNum, EntityId playerId );
 	virtual void UpdatePlayerScore( int playerNum, int newScore );
+	virtual void UpdatePlayerScoresForAllClients();
 	virtual std::vector<int> GetPlayerScores() const;
 
 public:

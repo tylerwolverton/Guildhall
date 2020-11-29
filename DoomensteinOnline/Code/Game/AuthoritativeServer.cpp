@@ -213,6 +213,13 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientR
 			case eClientFunctionType::CREATE_ENTITY:	
 			{
 				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
+				if ( createEntityReq->entityType == eEntityType::PLAYER
+					 && m_spawnedPlayerClientIds.find( createEntityReq->clientId ) != m_spawnedPlayerClientIds.end() )
+				{
+					// Already spawned a player for this client
+					return;
+				}
+
 				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
 				if ( newEntity == nullptr )
 				{
@@ -224,6 +231,7 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientR
 					// send player's id back to client and have client possess entity
 					m_clients[req->clientId]->SetPlayer( newEntity );
 					newEntity->Possess();
+					m_spawnedPlayerClientIds.insert( createEntityReq->clientId );
 				}
 
 				createEntityReq->entityId = newEntity->GetId();

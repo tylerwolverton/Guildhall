@@ -83,7 +83,7 @@ void RemoteClient::SendUpdatedGameWorldToServer()
 		{
 			CreateEntityRequest req( m_clientId, entity->GetId(), entity->GetType(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
-			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true );
 			Sleep( 10 );
 		}
 
@@ -91,9 +91,9 @@ void RemoteClient::SendUpdatedGameWorldToServer()
 	}
 	else
 	{
-		if ( GetCurrentTimeSeconds() - m_lastUpdateTime < .005f )
+		if ( GetCurrentTimeSeconds() - m_lastUpdateTime > .1f )
 		{
-			//return;
+			g_game->UpdatePlayerScoresForAllClients();
 		}
 
 		std::vector<Entity*> entities = g_game->GetLivingEntitiesInCurrentMap();
@@ -144,7 +144,7 @@ void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
 		case eClientFunctionType::UPDATE_PLAYER_SCORE:
 		{
 			UpdatePlayerScoreRequest* updatePlayerScoreReq = (UpdatePlayerScoreRequest*)message;
-			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, updatePlayerScoreReq, sizeof( *updatePlayerScoreReq ), true );
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, updatePlayerScoreReq, sizeof( *updatePlayerScoreReq ) );
 		}
 		break;
 
@@ -164,7 +164,7 @@ void RemoteClient::SetClientId( int id )
 	m_clientId = id;
 	// Send a message to RemoteServer to set player client's id
 	RemoteClientRegistrationRequest req( m_clientId );
-	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true, 100000 );
 
 	m_remoteServerInitState = eInitializationState::SENT;
 }
@@ -173,10 +173,15 @@ void RemoteClient::SetClientId( int id )
 //-----------------------------------------------------------------------------------------------
 void RemoteClient::SetPlayer( Entity* entity )
 {
+	if ( m_playerId != -1 )
+	{
+		return;
+	}
+
 	m_playerId = entity->GetId();
 
 	SetPlayerIdRequest req( m_clientId, m_playerId );
-	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
+	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true, 100000 );
 
 	g_game->AddPlayerScore( m_clientId, m_playerId );
 

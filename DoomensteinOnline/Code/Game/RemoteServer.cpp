@@ -175,7 +175,7 @@ void RemoteServer::ProcessUDPMessages()
 				}
 
 				SetPlayerIdAckRequest ackReq( m_remoteClientId );
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ) );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ), true );
 
 				data.Process();
 			}
@@ -190,6 +190,11 @@ void RemoteServer::ProcessUDPMessages()
 				}
 
 				const CreateEntityRequest* createEntityReq = reinterpret_cast<const CreateEntityRequest*>( data.GetPayload() );
+				if ( g_game->GetEntityById( createEntityReq->entityId ) != nullptr )
+				{
+					return;
+				}
+
 				Entity* newEntity = g_game->CreateEntityInCurrentMap( createEntityReq->entityId, createEntityReq->entityType, createEntityReq->position, createEntityReq->yawOrientationDegrees );
 				if ( newEntity == nullptr )
 				{

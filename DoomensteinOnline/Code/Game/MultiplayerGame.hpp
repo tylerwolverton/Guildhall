@@ -20,6 +20,7 @@ public:
 
 	virtual void AddPlayerScore( int playerNum, EntityId playerId ) override;
 	virtual void UpdatePlayerScore( int playerNum, int newScore ) override;
+	virtual void UpdatePlayerScoresForAllClients() override;
 	virtual std::vector<int> GetPlayerScores() const override						{ return m_playerScores; }
 
 private:
