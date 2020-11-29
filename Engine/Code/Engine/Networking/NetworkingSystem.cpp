@@ -737,22 +737,20 @@ void NetworkingSystem::OpenAndBindUDPPort( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::OpenAndBindUDPPort( int localBindPort, int distantSendToPort )
+void NetworkingSystem::OpenAndBindUDPPort( int localBindPort, int distantSendToPort, const std::string& ipAddress )
 {
 	UNUSED( distantSendToPort );
-	//m_udpSockets[distantSendToPort] = new UDPSocket( "", distantSendToPort );
-	//m_udpSockets[distantSendToPort]->Bind( localBindPort );
 
-	m_localBoundUDPSocket = new UDPSocket( "", -1 );
+	m_localBoundUDPSocket = new UDPSocket( ipAddress, -1 );
 	//m_udpSocket = new UDPSocket( "", distantSendToPort );
 	m_localBoundUDPSocket->Bind( localBindPort );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::CreateAndRegisterUDPSocket( int distantSendToPort )
+void NetworkingSystem::CreateAndRegisterUDPSocket( int distantSendToPort, const std::string& ipAddress )
 {
-	m_udpSockets[distantSendToPort] = new UDPSocket( "", distantSendToPort );
+	m_udpSockets[distantSendToPort] = new UDPSocket( ipAddress, distantSendToPort );
 }
 
 

@@ -103,8 +103,8 @@ public:
 	std::vector<UDPData>& ReceiveUDPMessages();
 
 	// UDP
-	void OpenAndBindUDPPort( int localBindPort, int distantSendToPort );
-	void CreateAndRegisterUDPSocket( int distantSendToPort );
+	void OpenAndBindUDPPort( int localBindPort, int distantSendToPort, const std::string& ipAddress = "" );
+	void CreateAndRegisterUDPSocket( int distantSendToPort, const std::string& ipAddress = "" );
 	void CloseUDPPort( int localBindPort );
 	void SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable = false, int retryCount = 1000 );
 	void SendUDPTextMessage( int localBindPort, const std::string& text );
