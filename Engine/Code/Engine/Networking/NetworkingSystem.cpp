@@ -6,6 +6,7 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Time/Time.hpp"
 
 #include <array>
 #include <winsock2.h>
@@ -32,6 +33,8 @@ void NetworkingSystem::Startup()
 	g_eventSystem->RegisterMethodEvent( "open_udp_port",	"Open a UDP port and specify target port, bindPort=<port number> sendToPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::OpenAndBindUDPPort );
 	g_eventSystem->RegisterMethodEvent( "close_udp_port",	"Close a UDP port, bindPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::CloseUDPPort );
 	g_eventSystem->RegisterMethodEvent( "send_udp_message", "Send a message, msg=\"<message text>\"", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendUDPMessage );
+
+	m_rng.Reset( (uint)GetCurrentTimeSeconds() );
 
 	// Initialize winsock
 	WSADATA wsaData;
@@ -309,12 +312,15 @@ void NetworkingSystem::ProcessUDPCommunication()
 			int distantToPort = udpHeader->localBindPort;
 			if ( uniqueMsgId > 0 )
 			{
+
 				// Send an ack for the reliable message
 				UDPMessageHeader ackHeader;
 				ackHeader.id = (uint16_t)eMessasgeProtocolIds::ACK;
 				ackHeader.size = (uint16_t)1;
 				ackHeader.uniqueId = uniqueMsgId;
 				ackHeader.localBindPort = m_localBoundUDPSocket->GetReceivePort();
+
+				//g_devConsole->PrintString( Stringf( "Received reliable message %i from port %i", uniqueMsgId, ackHeader.localBindPort ), Rgba8::ORANGE );
 
 				std::array<char, 512> buffer;
 				memcpy( &buffer, &ackHeader, sizeof( UDPMessageHeader ) );
@@ -358,7 +364,7 @@ void NetworkingSystem::ProcessUDPCommunication()
 			auto reliableMessageIter = m_reliableUDPMessagesToRetry.find( ackId );
 			if ( reliableMessageIter != m_reliableUDPMessagesToRetry.end() )
 			{
-				g_devConsole->PrintString( Stringf( "Received ack from port %i after retrying %i times", reliableMessageIter->second.udpMessage.sendToPort, reliableMessageIter->second.retryCount ) );
+				g_devConsole->PrintString( Stringf( "Received ack for %i from port %i after retrying %i times", ackId, reliableMessageIter->second.udpMessage.sendToPort, reliableMessageIter->second.retryCount ), Rgba8::GREEN );
 				reliableMessageIter->second.hasBeenAcked = true;
 			}
 			m_reliableUDPMessagesToRetry.erase( ackId );
@@ -816,6 +822,7 @@ void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t
 	if ( isReliable )
 	{
 		m_reliableUDPMessagesToRetry[msgHeader->uniqueId] = ReliableUDPMessage( udpMessage, retryCount );
+		g_devConsole->PrintString( Stringf( "Saving reliable message %i", msgHeader->uniqueId ) );
 	}
 
 	m_outgoingMessages.Push( udpMessage );

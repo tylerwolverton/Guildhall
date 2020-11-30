@@ -124,7 +124,8 @@ void RemoteServer::ProcessTCPMessages()
 				g_networkingSystem->CreateAndRegisterUDPSocket( responseReq->localSendToPort, ipAddress );
 
 				KeyVerificationRequest keyVerifyReq( m_remoteClientId, responseReq->connectKey );
-				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &keyVerifyReq, sizeof( keyVerifyReq ) );
+				g_devConsole->PrintString( Stringf( "UDP: RS KeyVerify" ), Rgba8::BLUE );
+				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &keyVerifyReq, sizeof( keyVerifyReq ), true );
 			}
 			break;
 		}
@@ -166,6 +167,8 @@ void RemoteServer::ProcessUDPMessages()
 
 			case eClientFunctionType::SET_PLAYER_ID:
 			{
+				data.Process();
+
 				const SetPlayerIdRequest* setPlayerIdReq = reinterpret_cast<const SetPlayerIdRequest*>( data.GetPayload() );
 				
 				if ( m_playerClient->GetPlayerId() == -1 )
@@ -173,11 +176,15 @@ void RemoteServer::ProcessUDPMessages()
 					m_playerClient->SetPlayerId( setPlayerIdReq->playerId );
 					m_playerClient->SetPlayerNum( setPlayerIdReq->clientId );
 				}
+				else
+				{
+					return;
+				}
 
 				SetPlayerIdAckRequest ackReq( m_remoteClientId );
+				g_devConsole->PrintString( Stringf( "UDP: RS PlayerIdAck" ), Rgba8::BLUE );
 				g_networkingSystem->SendUDPMessage( m_udpSendToPort, &ackReq, sizeof( ackReq ), true );
 
-				data.Process();
 			}
 			break;
 
@@ -310,6 +317,7 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			{
 				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
 				createEntityReq->clientId = m_remoteClientId;
+				g_devConsole->PrintString( Stringf( "UDP: RS CreateEntity" ), Rgba8::BLUE );
 				g_networkingSystem->SendUDPMessage( m_udpSendToPort, createEntityReq, sizeof( *createEntityReq ), true );
 
 			}
@@ -319,6 +327,7 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			{
 				UpdateEntityRequest* updateEntityReq = (UpdateEntityRequest*)req;
 				updateEntityReq->clientId = m_remoteClientId;
+				//g_devConsole->PrintString( Stringf( "UDP: RS UpdateEntity" ), Rgba8::BLUE );
 				g_networkingSystem->SendUDPMessage( m_udpSendToPort, updateEntityReq, sizeof( *updateEntityReq ) );
 			}
 			break;
@@ -327,6 +336,7 @@ void RemoteServer::ReceiveClientRequests( const std::vector<const ClientRequest*
 			{
 				ShootRequest* shootReq = (ShootRequest*)req;
 				shootReq->clientId = m_remoteClientId;
+				g_devConsole->PrintString( Stringf( "UDP: RS Shoot" ), Rgba8::BLUE );
 				g_networkingSystem->SendUDPMessage( m_udpSendToPort, shootReq, sizeof( *shootReq ), true, 10 );
 			}
 			break;

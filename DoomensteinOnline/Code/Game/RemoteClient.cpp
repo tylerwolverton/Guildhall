@@ -82,18 +82,19 @@ void RemoteClient::SendUpdatedGameWorldToServer()
 		for ( Entity* entity : entities )
 		{
 			CreateEntityRequest req( m_clientId, entity->GetId(), entity->GetType(), entity->GetPosition(), entity->GetOrientationDegrees() );
-
+			g_devConsole->PrintString( Stringf( "UDP: CreateEntity" ), Rgba8::BLUE );
 			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true );
-			Sleep( 10 );
+			//Sleep( 10 );
 		}
 
 		m_hasSentInitialState = true;
 	}
 	else
 	{
-		if ( GetCurrentTimeSeconds() - m_lastUpdateTime > .1f )
+		if ( GetCurrentTimeSeconds() - m_lastUpdateTime > 2.f )
 		{
-			g_game->UpdatePlayerScoresForAllClients();
+			//g_game->UpdatePlayerScoresForAllClients();
+			m_lastUpdateTime = GetCurrentTimeSeconds();
 		}
 
 		std::vector<Entity*> entities = g_game->GetLivingEntitiesInCurrentMap();
@@ -112,9 +113,7 @@ void RemoteClient::SendUpdatedGameWorldToServer()
 
 			//std::this_thread::sleep_for( std::chrono::microseconds( 2 ) );
 		}
-
-		m_lastUpdateTime = GetCurrentTimeSeconds();
-
+		
 		// Update client's deltaSeconds
 		ServerLastDeltaSecondsRequest lastDeltaSecondsReq( m_clientId, g_game->GetLastDeltaSeconds() );
 		g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &lastDeltaSecondsReq, sizeof( lastDeltaSecondsReq ) );
@@ -130,6 +129,7 @@ void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
 		case eClientFunctionType::CREATE_ENTITY:
 		{
 			CreateEntityRequest* createEntityReq = (CreateEntityRequest*)message;
+			g_devConsole->PrintString( Stringf( "UDP: RC CreateEntity" ), Rgba8::BLUE );
 			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, createEntityReq, sizeof( *createEntityReq ), true );
 		}
 		break;
@@ -137,6 +137,7 @@ void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
 		case eClientFunctionType::NOTIFY_ENTITY_DIED:
 		{
 			NotifyEntityDiedRequest* notifyEntityDiedReq = (NotifyEntityDiedRequest*)message;
+			g_devConsole->PrintString( Stringf( "UDP: RC EntityDied" ), Rgba8::BLUE );
 			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, notifyEntityDiedReq, sizeof( *notifyEntityDiedReq ), true );
 		}
 		break;
@@ -144,14 +145,16 @@ void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
 		case eClientFunctionType::UPDATE_PLAYER_SCORE:
 		{
 			UpdatePlayerScoreRequest* updatePlayerScoreReq = (UpdatePlayerScoreRequest*)message;
-			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, updatePlayerScoreReq, sizeof( *updatePlayerScoreReq ) );
+			//g_devConsole->PrintString( Stringf( "UDP: RC Update Score" ), Rgba8::BLUE );
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, updatePlayerScoreReq, sizeof( *updatePlayerScoreReq ), true, 50 );
 		}
 		break;
 
 		case eClientFunctionType::DRAW_SHOT:
 		{
 			DrawShotRequest* drawShotReq = (DrawShotRequest*)message;
-			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, drawShotReq, sizeof( *drawShotReq ), true, 5 );
+			g_devConsole->PrintString( Stringf( "UDP: RC DrawShot" ), Rgba8::BLUE );
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, drawShotReq, sizeof( *drawShotReq ), true, 20 );
 		}
 		break;
 	}
@@ -164,6 +167,8 @@ void RemoteClient::SetClientId( int id )
 	m_clientId = id;
 	// Send a message to RemoteServer to set player client's id
 	RemoteClientRegistrationRequest req( m_clientId );
+
+	g_devConsole->PrintString( Stringf( "UDP: SetClientId" ), Rgba8::BLUE );
 	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true, 100000 );
 
 	m_remoteServerInitState = eInitializationState::SENT;
@@ -181,6 +186,8 @@ void RemoteClient::SetPlayer( Entity* entity )
 	m_playerId = entity->GetId();
 
 	SetPlayerIdRequest req( m_clientId, m_playerId );
+
+	g_devConsole->PrintString( Stringf( "UDP: SetPlayer" ), Rgba8::BLUE );
 	g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ), true, 100000 );
 
 	g_game->AddPlayerScore( m_clientId, m_playerId );
