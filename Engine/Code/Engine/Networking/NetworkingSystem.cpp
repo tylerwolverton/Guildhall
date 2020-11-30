@@ -750,9 +750,9 @@ void NetworkingSystem::OpenAndBindUDPPort( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::OpenAndBindUDPPort( int localBindPort, int distantSendToPort, const std::string& ipAddress )
 {
-	UNUSED( distantSendToPort );
+	//UNUSED( distantSendToPort );
 
-	m_localBoundUDPSocket = new UDPSocket( ipAddress, -1 );
+	m_localBoundUDPSocket = new UDPSocket( ipAddress, distantSendToPort );
 	//m_udpSocket = new UDPSocket( "", distantSendToPort );
 	m_localBoundUDPSocket->Bind( localBindPort );
 }
