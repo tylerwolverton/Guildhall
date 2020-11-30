@@ -31,14 +31,14 @@ void NetworkingSystem::Startup()
 	g_eventSystem->RegisterMethodEvent( "send_message",		"Send a message, msg=\"<message text>\"", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendMessage );
 	
 	// udp commands
-	g_eventSystem->RegisterMethodEvent( "open_udp_port",	"Open a UDP port and specify target port, bindPort=<port number> sendToPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::OpenAndBindUDPPort );
+	g_eventSystem->RegisterMethodEvent( "open_udp_port",	"Open a UDP port and specify target port, bindPort=<port number> sendToPort=<port number> ip=<ip address>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::OpenAndBindUDPPort );
 	g_eventSystem->RegisterMethodEvent( "close_udp_port",	"Close a UDP port, bindPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::CloseUDPPort );
 	g_eventSystem->RegisterMethodEvent( "send_udp_message", "Send a message, msg=\"<message text>\"", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendUDPMessage );
 
 	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 	auto duration = now.time_since_epoch();
 	auto millis = std::chrono::duration_cast<std::chrono::milliseconds>( duration ).count();
-	m_rng.Reset( millis );
+	m_rng.Reset( (uint)millis );
 
 	// Initialize winsock
 	WSADATA wsaData;
@@ -732,8 +732,9 @@ void NetworkingSystem::OpenAndBindUDPPort( EventArgs* args )
 {
 	int bindPort = args->GetValue( "bindPort", 48000 );
 	int sendToPort = args->GetValue( "sendToPort", 48001 );
+	std::string ipAddress = args->GetValue( "ip", "" );
 	
-	OpenAndBindUDPPort( bindPort, sendToPort );
+	OpenAndBindUDPPort( bindPort, sendToPort, ipAddress );
 
 	/*if ( m_udpSocket != nullptr )
 	{
