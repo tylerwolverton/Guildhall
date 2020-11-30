@@ -805,9 +805,6 @@ void NetworkingSystem::SendUDPMessage( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t dataSize, bool isReliable, int retryCount )
 {
-	// TEMP HACK to test hack reliable udp
-	//isReliable = false;
-
 	std::array<char, 512> buffer = {};
 	UDPMessageHeader* msgHeader = reinterpret_cast<UDPMessageHeader*>( &buffer[0] );
 

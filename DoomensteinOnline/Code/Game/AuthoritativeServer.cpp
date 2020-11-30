@@ -114,7 +114,7 @@ void AuthoritativeServer::ProcessTCPMessages()
 
 				if ( m_clients.size() < 2 )
 				{
-					g_networkingSystem->OpenAndBindUDPPort( udpLocalBindPort, udpDistantSendToPort, m_ipAddress );
+					g_networkingSystem->OpenAndBindUDPPort( udpLocalBindPort, udpDistantSendToPort, data.GetFromIPAddress() );
 					g_networkingSystem->CreateAndRegisterUDPSocket( udpDistantSendToPort, data.GetFromIPAddress() );
 				}
 				else
@@ -160,6 +160,7 @@ void AuthoritativeServer::ProcessUDPMessages()
 						client->Startup();
 
 						foundIdx = connectionIdx;
+						data.Process();
 						break;
 					}
 				}
@@ -224,7 +225,12 @@ void AuthoritativeServer::ReceiveClientRequests( const std::vector<const ClientR
 				{
 					break;
 				}
-					  
+
+				if ( req->clientId == -1 )
+				{
+					return;
+				}
+
 				if( createEntityReq->entityType == eEntityType::PLAYER )
 				{
 					// send player's id back to client and have client possess entity

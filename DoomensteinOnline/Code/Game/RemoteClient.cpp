@@ -218,6 +218,7 @@ void RemoteClient::ProcessUDPMessages()
 			{
 				CreateEntityRequest* createEntityReq = (CreateEntityRequest*)req;
 				gameRequests.push_back( createEntityReq );
+				data.Process();
 			}
 			break;
 
@@ -236,12 +237,14 @@ void RemoteClient::ProcessUDPMessages()
 				//updateEntityReq->translationVec *= ( multiplier * (float)roughRoundTripTime );
 				updateEntityReq->yawRotationDegrees *= 500.f * g_game->GetLastDeltaSeconds();//( multiplier * (float)roughRoundTripTime );
 				gameRequests.push_back( updateEntityReq );
+				data.Process();
 			}
 			break;
 
 			case eClientFunctionType::SET_PLAYER_ID_ACK:
 			{
 				m_remoteServerPlayerIdInitState = eInitializationState::ACKED;
+				data.Process();
 			}
 			break;
 
@@ -249,11 +252,10 @@ void RemoteClient::ProcessUDPMessages()
 			{
 				ShootRequest* shootReq = (ShootRequest*)req;
 				gameRequests.push_back( shootReq );
+				data.Process();
 			}
 			break;
 		}
-
-		data.Process();
 	}
 
 	g_server->ReceiveClientRequests( gameRequests );

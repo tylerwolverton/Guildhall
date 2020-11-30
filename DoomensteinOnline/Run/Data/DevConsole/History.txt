@@ -481,3 +481,9 @@ connect_to_multiplayer_server ip=72.180.107.141
 start_multiplayer_server
 connect_to_multiplayer_server ip=72.180.107.141
 start_multiplayer_server
+connect_to_multiplayer_server ip=72.180.107.141
+start_multiplayer_server
+connect_to_multiplayer_server ip=72.180.107.141
+open_udp_port bindPort=49012 sendToPort=48008 ip=192.168.1.11
+start_multiplayer_server
+connect_to_multiplayer_server

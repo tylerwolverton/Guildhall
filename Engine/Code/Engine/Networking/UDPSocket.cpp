@@ -12,7 +12,7 @@ UDPSocket::UDPSocket( const std::string& host, int distantSendToPort )
 	{
 		hostAddr = "127.0.0.1";
 	}
-
+	
 	m_toAddress.sin_family = AF_INET;
 	m_toAddress.sin_port = htons((u_short)distantSendToPort);
 	m_toAddress.sin_addr.s_addr = inet_addr( hostAddr.c_str() );
@@ -53,7 +53,7 @@ void UDPSocket::Bind( int localBindPort )
 	if ( result != 0 )
 	{
 		LOG_ERROR( "Bind failed with '%i'", WSAGetLastError() );
-	}
+	} 
 }
 
 
@@ -75,7 +75,7 @@ void UDPSocket::Close()
 
 //-----------------------------------------------------------------------------------------------
 //int UDPSocket::Send( const char* data, size_t length )
-int UDPSocket::Send( size_t length )
+int UDPSocket::Send( size_t length ) 
 {
 	int bytesSent = sendto( m_socket, &m_sendBuffer[0], (int)length, 0, reinterpret_cast<SOCKADDR*>( &m_toAddress ), sizeof( m_toAddress ) );
 	if ( bytesSent == SOCKET_ERROR )
