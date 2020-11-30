@@ -96,7 +96,7 @@ void AuthoritativeServer::ProcessTCPMessages()
 			{
 				int clientKey = m_rng.RollRandomIntInRange( 0, INT_MAX );
 				int udpDistantSendToPort = m_rng.RollRandomIntInRange( 48001, 48500 );
-				int udpLocalBindPort = 48000;
+				int udpLocalBindPort = 49012;
 
 				ResponseToConnectionRequest response( -1, clientKey, udpDistantSendToPort, udpLocalBindPort, (uint16_t)data.GetFromIPAddress().size() );
 				 
