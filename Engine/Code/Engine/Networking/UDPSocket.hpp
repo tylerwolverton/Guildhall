@@ -36,6 +36,8 @@ public:
 	bool		HasBeenProcessed()				{ return m_hasBeenProcessed; }
 	void		Process()						{ m_hasBeenProcessed = true; }
 
+	void		SetFromPort( int port )			{ m_fromPort = port; }
+
 private:
 	size_t m_length = 0;
 	char* m_data = nullptr;

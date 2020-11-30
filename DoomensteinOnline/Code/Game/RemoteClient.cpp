@@ -107,7 +107,6 @@ void RemoteClient::SendUpdatedGameWorldToServer()
 			}
 
 			UpdateEntityOnRemoteServerRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
-			//UpdateEntityRequest req( m_clientId, entity->GetId(), entity->GetPosition(), entity->GetOrientationDegrees() );
 
 			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, &req, sizeof( req ) );
 
@@ -146,7 +145,7 @@ void RemoteClient::SendMessageToDistantClient( ClientRequest* message )
 		{
 			UpdatePlayerScoreRequest* updatePlayerScoreReq = (UpdatePlayerScoreRequest*)message;
 			//g_devConsole->PrintString( Stringf( "UDP: RC Update Score" ), Rgba8::BLUE );
-			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, updatePlayerScoreReq, sizeof( *updatePlayerScoreReq ), true, 50 );
+			g_networkingSystem->SendUDPMessage( m_connectionInfo.distantSendToPort, updatePlayerScoreReq, sizeof( *updatePlayerScoreReq ), true, 100 );
 		}
 		break;
 
@@ -207,7 +206,7 @@ void RemoteClient::ProcessUDPMessages()
 	for ( UDPData& data : newMessages )
 	{
 		if ( data.GetData() == nullptr 
-			 || data.GetFromPort() != m_connectionInfo.localBindPort )
+			 || data.GetFromPort() != m_connectionInfo.distantSendToPort )
 		{
 			continue;
 		}

@@ -17,14 +17,12 @@ struct ConnectionInfo
 public:
 	int key = -1;
 	std::string ipAddress;
-	int localBindPort;
 	int distantSendToPort;
 
 public:
-	ConnectionInfo( int keyIn, const std::string& ipAddressIn, int localBindPortIn, int distantSendToPortIn )
+	ConnectionInfo( int keyIn, const std::string& ipAddressIn, int distantSendToPortIn )
 		: key( keyIn )
 		, ipAddress( ipAddressIn )
-		, localBindPort( localBindPortIn )
 		, distantSendToPort( distantSendToPortIn )
 	{}
 };

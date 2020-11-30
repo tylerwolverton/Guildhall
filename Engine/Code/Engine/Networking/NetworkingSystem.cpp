@@ -314,9 +314,9 @@ void NetworkingSystem::ProcessUDPCommunication()
 			// This is a reliable message if it has a valid uniqueId
 			UniqueMessageId uniqueMsgId = udpHeader->uniqueId;
 			int distantToPort = udpHeader->localBindPort;
+			data.SetFromPort( distantToPort );
 			if ( uniqueMsgId > 0 )
 			{
-
 				// Send an ack for the reliable message
 				UDPMessageHeader ackHeader;
 				ackHeader.id = (uint16_t)eMessasgeProtocolIds::ACK;
@@ -330,7 +330,8 @@ void NetworkingSystem::ProcessUDPCommunication()
 				memcpy( &buffer, &ackHeader, sizeof( UDPMessageHeader ) );
 				buffer[sizeof( UDPMessageHeader ) + 1] = '\0';
 
-				UDPMessage udpMessage( data.GetFromPort(), buffer );
+				UDPMessage udpMessage( distantToPort, buffer );
+				//UDPMessage udpMessage( data.GetFromPort(), buffer );
 
 				m_outgoingMessages.Push( udpMessage );
 
@@ -752,6 +753,7 @@ void NetworkingSystem::OpenAndBindUDPPort( int localBindPort, int distantSendToP
 {
 	//UNUSED( distantSendToPort );
 
+	// Neither of these matter, never sending messages on 
 	m_localBoundUDPSocket = new UDPSocket( ipAddress, distantSendToPort );
 	//m_udpSocket = new UDPSocket( "", distantSendToPort );
 	m_localBoundUDPSocket->Bind( localBindPort );

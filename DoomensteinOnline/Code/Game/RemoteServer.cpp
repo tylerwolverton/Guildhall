@@ -120,7 +120,7 @@ void RemoteServer::ProcessTCPMessages()
 				m_isTCPClientClosed = true;
 
 				m_udpSendToPort = responseReq->localSendToPort;
-				g_networkingSystem->OpenAndBindUDPPort( responseReq->distantBindPort, responseReq->localSendToPort );
+				g_networkingSystem->OpenAndBindUDPPort( responseReq->distantBindPort, responseReq->localSendToPort, ipAddress );
 				g_networkingSystem->CreateAndRegisterUDPSocket( responseReq->localSendToPort, ipAddress );
 
 				KeyVerificationRequest keyVerifyReq( m_remoteClientId, responseReq->connectKey );

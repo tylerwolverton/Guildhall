@@ -105,7 +105,7 @@ void AuthoritativeServer::ProcessTCPMessages()
 				memcpy( &buffer[0], &response, sizeof( response ) );
 				memcpy( &buffer[sizeof( response )], data.GetFromIPAddress().c_str(), response.size );
 
-				ConnectionInfo info( clientKey, data.GetFromIPAddress(), udpLocalBindPort, udpDistantSendToPort );
+				ConnectionInfo info( clientKey, data.GetFromIPAddress(), udpDistantSendToPort );
 				m_clientConnectionInfo.push_back( info );
 
 				g_devConsole->PrintString( Stringf( "Sending connection info: distantSendToPort '%i', localBindPort '%i'", udpDistantSendToPort, udpLocalBindPort ) );
@@ -114,7 +114,7 @@ void AuthoritativeServer::ProcessTCPMessages()
 
 				if ( m_clients.size() < 2 )
 				{
-					g_networkingSystem->OpenAndBindUDPPort( udpLocalBindPort, udpDistantSendToPort );
+					g_networkingSystem->OpenAndBindUDPPort( udpLocalBindPort, udpDistantSendToPort, m_ipAddress );
 					g_networkingSystem->CreateAndRegisterUDPSocket( udpDistantSendToPort, data.GetFromIPAddress() );
 				}
 				else
@@ -151,7 +151,6 @@ void AuthoritativeServer::ProcessUDPMessages()
 				for ( int connectionIdx = 0; connectionIdx < (int)m_clientConnectionInfo.size(); ++connectionIdx )
 				{
 					ConnectionInfo info = m_clientConnectionInfo[connectionIdx];
-					info.localBindPort = data.GetFromPort();
 
 					if ( info.key == keyVerifyReq->connectKey )
 						// && info.ipAddress == data.GetFromIPAddress() )

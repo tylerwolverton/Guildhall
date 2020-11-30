@@ -595,7 +595,7 @@ Rgba8 PlayerClient::GetColorForPlayer( int playerNum )
 //-----------------------------------------------------------------------------------------------
 void PlayerClient::DrawShot( const Vec3& start, const Vec3& end, const Rgba8& color )
 {
-	DebugAddWorldLine( start, end, color, .005f, 3.3f );
+	DebugAddWorldLine( start, end, color, .005f, .5f );
 }
 
 
