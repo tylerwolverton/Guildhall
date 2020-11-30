@@ -6,9 +6,10 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Engine/Time/Time.hpp"
 
 #include <array>
+#include <chrono>
+#include <ctime>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
@@ -34,7 +35,10 @@ void NetworkingSystem::Startup()
 	g_eventSystem->RegisterMethodEvent( "close_udp_port",	"Close a UDP port, bindPort=<port number>", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::CloseUDPPort );
 	g_eventSystem->RegisterMethodEvent( "send_udp_message", "Send a message, msg=\"<message text>\"", eUsageLocation::DEV_CONSOLE, this, &NetworkingSystem::SendUDPMessage );
 
-	m_rng.Reset( (uint)GetCurrentTimeSeconds() );
+	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+	auto duration = now.time_since_epoch();
+	auto millis = std::chrono::duration_cast<std::chrono::milliseconds>( duration ).count();
+	m_rng.Reset( millis );
 
 	// Initialize winsock
 	WSADATA wsaData;
