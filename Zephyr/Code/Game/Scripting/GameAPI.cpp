@@ -77,6 +77,10 @@ bool GameAPI::IsMethodRegistered( const std::string& methodName )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Destroys the entity who called this event.
+ */
+//-----------------------------------------------------------------------------------------------
 void GameAPI::DestroySelf( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
@@ -88,6 +92,19 @@ void GameAPI::DestroySelf( EventArgs* args )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+/**
+ * Damages target entity
+ * 
+ * params:
+ *	- id: id of entity to damage
+ *		- Zephyr type: Number
+ *	- damage: amount of damage to deal
+ *		- Zephyr type: Number
+ *	- damageType: type of damage to deal
+ *		- Zephyr type: String
+ *		- default: "normal"
+*/
 //-----------------------------------------------------------------------------------------------
 void GameAPI::DamageEntity( EventArgs* args )
 {
@@ -107,6 +124,17 @@ void GameAPI::DamageEntity( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Makes target entity invincible to all damage entity. 
+ * 
+ * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event. 
+ * params:
+ *	- targetId: id of entity to damage
+ *		- Zephyr type: Number
+ *	- targetName: amount of damage to deal
+ *		- Zephyr type: String
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::ActivateInvincibility( EventArgs* args )
 {
 	Entity* entity = GetTargetEntityFromArgs( args );
@@ -120,6 +148,17 @@ void GameAPI::ActivateInvincibility( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Reset target entity's damage multipliers.
+ *
+ * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
+ * params:
+ *	- targetId: id of entity to damage
+ *		- Zephyr type: Number
+ *	- targetName: amount of damage to deal
+ *		- Zephyr type: String
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::DeactivateInvincibility( EventArgs* args )
 {
 	Entity* entity = GetTargetEntityFromArgs( args );
@@ -132,6 +171,24 @@ void GameAPI::DeactivateInvincibility( EventArgs* args )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+/**
+ * Add a new damage type multiplier to target entity. 
+ *
+ * Description: When the entity takes damage the type of damage will be used to apply a multiplier if one exists for the given type. If an unregistered type of damage is dealt it will be applied at 1x. 
+ *
+ * params:
+ * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
+ *	- targetId: id of entity to damage
+ *		- Zephyr type: Number
+ *	- targetName: amount of damage to deal
+ *		- Zephyr type: String
+ *	
+ *	- multiplier: the multiplier to apply to entity upon taking damage of the given type
+ *		- Zephyr type: Number
+ *	- damageType: the name of the damage type to register
+ *		- Zephyr type: String
+*/
 //-----------------------------------------------------------------------------------------------
 void GameAPI::AddNewDamageTypeMultiplier( EventArgs* args )
 {
@@ -153,6 +210,22 @@ void GameAPI::AddNewDamageTypeMultiplier( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Change the damage type multiplier for a given damage type for target entity.
+ *
+ * params:
+ * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
+ *	- targetId: id of entity to damage
+ *		- Zephyr type: Number
+ *	- targetName: amount of damage to deal
+ *		- Zephyr type: String
+ *
+ *	- multiplier: the multiplier to apply to entity upon taking damage of the given type
+ *		- Zephyr type: Number
+ *	- damageType: the name of the damage type to register
+ *		- Zephyr type: String
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::ChangeDamageTypeMultiplier( EventArgs* args )
 {
 	Entity* entity = GetTargetEntityFromArgs( args );
@@ -173,6 +246,10 @@ void GameAPI::ChangeDamageTypeMultiplier( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Change the game state to Dialogue to initiate a dialogue with an NPC.
+ */
+//-----------------------------------------------------------------------------------------------
 void GameAPI::StartDialogue( EventArgs* args )
 {
 	UNUSED( args );
@@ -181,6 +258,10 @@ void GameAPI::StartDialogue( EventArgs* args )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+/**
+ * Change the game state back to Playing to end a dialogue sequence.
+ */
 //-----------------------------------------------------------------------------------------------
 void GameAPI::EndDialogue( EventArgs* args )
 {
@@ -191,6 +272,15 @@ void GameAPI::EndDialogue( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Add a line of text to the current dialogue box. 
+ *	- Note: Only works if StartDialogue has been called first.
+ *
+ * params:
+ *	- text: Text to add to dialogue box
+ *		- Zephyr type: String
+ */
+//-----------------------------------------------------------------------------------------------
 void GameAPI::AddLineOfDialogueText( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "" );
@@ -199,6 +289,19 @@ void GameAPI::AddLineOfDialogueText( EventArgs* args )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+/**
+ * Add a player selectable choice to the current dialogue box. The player can then select choices with the wasd or arrow keys and confirm with space/enter.
+ *	- Note: Only works if StartDialogue has been called first.
+ *
+ * params:
+ *	- name: Name to identify this choice in order to assign a callback event on selection
+ *		- Zephyr type: String
+ *		- A script can listen for the event "PlayerInteract" which has a "String choiceName" parameter containing the name of the choice that was selected
+ *	
+ *	- text: Text to add for choice to dialogue box
+ *		- Zephyr type: String
+ */
 //-----------------------------------------------------------------------------------------------
 void GameAPI::AddDialogueChoice( EventArgs* args )
 {
@@ -210,40 +313,59 @@ void GameAPI::AddDialogueChoice( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Start a new timer to fire an event on completion.
+ *
+ * params:
+ * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
+ *	- targetId: id of entity to damage
+ *		- Zephyr type: Number
+ *	- targetName: amount of damage to deal
+ *		- Zephyr type: String
+ *
+ *	- name: the name of the timer ( currently unused, reserved for future use  )
+ *		- Zephyr type: String
+ *	- durationSeconds: length of time in seconds of timer
+ *		- Zephyr type: Number
+ *	- onCompletedEvent: the name of the event to fire upon timer completion
+ *		- Zephyr type: String
+ *	- broadcastEventToAll: when true, broadcast the onCompletedEvent to all entities ( this will override any target entity set )
+ *		- Zephyr type: Bool
+ *		- default: false
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::StartNewTimer( EventArgs* args )
 {
 	std::string timerName = args->GetValue( "name", "" );
 	float durationSeconds = args->GetValue( "durationSeconds", 1.f );
 	std::string onCompletedEventName = args->GetValue( "onCompletedEvent", "" );
 	bool broadcastEventToAll = args->GetValue( "broadcastEventToAll", false );
-	std::string targetName = args->GetValue( "targetName", "" );
-
+	
 	// Broadcast event to all takes precedence and broadcasts to all entities
 	if ( broadcastEventToAll )
 	{
 		g_game->StartNewTimer( -1, timerName, durationSeconds, onCompletedEventName );
 		return;
 	}
-
-	// Named target takes precedence over sending it to self
-	if ( !targetName.empty() )
+	
+	Entity* entity = GetTargetEntityFromArgs( args );
+	if ( entity == nullptr )
 	{
-		g_game->StartNewTimer( targetName, timerName, durationSeconds, onCompletedEventName );
 		return;
 	}
 
-	// Send event to entity who fired it
-	EntityId targetId = -1;
-	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
-	if ( entity != nullptr )
-	{
-		targetId = entity->GetId();
-	}
-
-	g_game->StartNewTimer( targetId, timerName, durationSeconds, onCompletedEventName );
+	g_game->StartNewTimer( entity->GetId(), timerName, durationSeconds, onCompletedEventName );
 }
 
 
+//-----------------------------------------------------------------------------------------------
+/**
+ * Change the current State of the Zephyr script for the entity who called the event.
+ *
+ * params:
+ *	- targetState: the name of the Zephyr State to change to
+ *	- Zephyr type: String
+*/
 //-----------------------------------------------------------------------------------------------
 void GameAPI::ChangeZephyrScriptState( EventArgs* args )
 {
@@ -258,6 +380,20 @@ void GameAPI::ChangeZephyrScriptState( EventArgs* args )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+/**
+ * Print debug world text at position of entity who called the event.
+ *
+ * params:
+ *	- text: text to print
+ *		- Zephyr type: String
+ *	- duration: duration in seconds to display text
+ *		- Zephyr type: Number
+ *		- default: 0 ( single frame )
+ *	- color: name of color to print in ( supported colors: white, red, green, blue, black )
+ *		- Zephyr type: String
+ *		- default: "white"
+*/
 //-----------------------------------------------------------------------------------------------
 void GameAPI::PrintDebugText( EventArgs* args )
 {
@@ -286,6 +422,29 @@ void GameAPI::PrintDebugText( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Print debug screen text at given position.
+ *
+ * params:
+ *	- text: text to print
+ *		- Zephyr type: String
+ *	- duration: duration in seconds to display text
+ *		- Zephyr type: Number
+ *		- default: 0 ( single frame )
+ *	- fontSize: height in pixels of font 
+ *		- Zephyr type: Number 
+ *		- default: 24
+ *	- locationRatio: position of font on screen, x and y are between 0 and 1
+ *		- Zephyr type: Vec2
+ *		- default: ( 0, 0 )
+ *	- padding: how much padding in pixels to add to text position
+ *		- Zephyr type: Vec2
+ *		- default: ( 0, 0 )
+ *	- color: name of color to print in ( supported colors: white, red, green, blue, black )
+ *		- Zephyr type: String
+ *		- default: "white"
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::PrintDebugScreenText( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "" );
@@ -308,9 +467,20 @@ void GameAPI::PrintDebugScreenText( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Print text to dev console.
+ *
+ * params:
+ *	- text: text to print
+ *		- Zephyr type: String
+ *	- color: name of color to print in ( supported colors: white, red, green, blue, black )
+ *		- Zephyr type: String
+ *		- default: "white"
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::PrintToConsole( EventArgs* args )
 {
-	std::string text = args->GetValue( "text", "TestPrint" );
+	std::string text = args->GetValue( "text", "" );
 	std::string colorStr = args->GetValue( "color", "white" );
 
 	Rgba8 color = Rgba8::WHITE;
@@ -387,7 +557,7 @@ void GameAPI::MoveToLocation( EventArgs* args )
 	Vec2 moveDirection = targetPos - entity->GetPosition();
 	moveDirection.Normalize();
 
-	float moveSpeed = entity->GetWalkSpeed();// *g_game->GetLastDeltaSecondsf();
+	float moveSpeed = entity->GetWalkSpeed();
 
 	entity->MoveWithPhysics( moveSpeed, moveDirection );
 }

@@ -1151,6 +1151,12 @@ Map* Game::GetCurrentMap()
 //-----------------------------------------------------------------------------------------------
 void Game::AddLineOfDialogueText( const std::string& text )
 {
+	if ( m_gameState != eGameState::DIALOGUE )
+	{
+		g_devConsole->PrintError( "Tried to add dialogue line of text while not in a dialogue sequence" );
+		return;
+	}
+
 	if ( m_dialogueBox == nullptr )
 	{
 		g_devConsole->PrintError( "Tried to add dialogue line of text but dialogue box is null" );
@@ -1164,6 +1170,12 @@ void Game::AddLineOfDialogueText( const std::string& text )
 //-----------------------------------------------------------------------------------------------
 void Game::AddDialogueChoice( const std::string& name, const std::string& text )
 {
+	if ( m_gameState != eGameState::DIALOGUE )
+	{
+		g_devConsole->PrintError( "Tried to add dialogue choice while not in a dialogue sequence" );
+		return;
+	}
+
 	if ( m_dialogueBox == nullptr )
 	{
 		g_devConsole->PrintError( "Tried to add dialogue choice but dialogue box is null" );
