@@ -85,6 +85,8 @@ void Actor::SetAsPlayer()
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateFromKeyboard( float deltaSeconds )
 {
+	UNUSED( deltaSeconds );
+
 	if ( g_devConsole->IsOpen() )
 	{
 		return;
