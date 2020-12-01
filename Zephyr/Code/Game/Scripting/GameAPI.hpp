@@ -19,17 +19,15 @@ public:
 	bool IsMethodRegistered( const std::string& methodName );
 
 private:
-	//-----------------------------------------------------------------------------------------------
-	// Debug Events
-	//-----------------------------------------------------------------------------------------------
+	// Zephyr Script Events
 	void ChangeZephyrScriptState( EventArgs* args );
+
+	// Debug Events
 	void PrintDebugText( EventArgs* args );
 	void PrintDebugScreenText( EventArgs* args );
 	void PrintToConsole( EventArgs* args );
 
-	//-----------------------------------------------------------------------------------------------
 	// Game Events
-	//-----------------------------------------------------------------------------------------------
 	void SpawnEntity( EventArgs* args );
 	void StartDialogue( EventArgs* args );
 	void EndDialogue( EventArgs* args );
@@ -38,22 +36,15 @@ private:
 	void StartNewTimer( EventArgs* args );
 	void WinGame( EventArgs* args );
 
-	//-----------------------------------------------------------------------------------------------
 	// Entity Events
-	//-----------------------------------------------------------------------------------------------
-
 	void DestroySelf( EventArgs* args );
-
-	
 	void DamageEntity( EventArgs* args );
 	void ActivateInvincibility( EventArgs* args );
 	void DeactivateInvincibility( EventArgs* args );
 	void AddNewDamageTypeMultiplier( EventArgs* args );
 	void ChangeDamageTypeMultiplier( EventArgs* args );
 
-	//-----------------------------------------------------------------------------------------------
 	// AI
-	//-----------------------------------------------------------------------------------------------
 	void MoveToLocation( EventArgs* args );
 	void MoveInDirection( EventArgs* args );
 	void ChaseTargetEntity( EventArgs* args );
@@ -63,15 +54,11 @@ private:
 	void CheckForTarget( EventArgs* args );
 	void GetDistanceToTarget( EventArgs* args );
 
-	//-----------------------------------------------------------------------------------------------
 	// Input
-	//-----------------------------------------------------------------------------------------------
 	void RegisterKeyEvent( EventArgs* args );
 	void UnRegisterKeyEvent( EventArgs* args );
 
-	//-----------------------------------------------------------------------------------------------
 	// Audio/Visual
-	//-----------------------------------------------------------------------------------------------
 	void ChangeSpriteAnimation( EventArgs* args );
 	void PlaySound( EventArgs* args );
 	void ChangeMusic( EventArgs* args );

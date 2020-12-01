@@ -55,7 +55,7 @@
 			"patterns": [
 			{
 				"name": "variable.language.gameapi.zephyr",
-				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|DestroySelf|SpawnEntity|DamageEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|WinGame|MoveToLocation|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|CheckForTarget|GetNewWanderTargetPosition|GetDistanceToTarget|AddScreenShake)\\b"
+				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|AddNewDamageTypeMultiplier|ChangeDamageTypeMultiplier|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake)\\b"
 			}
 		]
 		},

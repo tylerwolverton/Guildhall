@@ -361,6 +361,7 @@ void GameAPI::StartNewTimer( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 /**
  * Change the current State of the Zephyr script for the entity who called the event.
+ *	Note: Called like ChangeState( newState ) in script as a built in function
  *
  * params:
  *	- targetState: the name of the Zephyr State to change to
