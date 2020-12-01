@@ -67,11 +67,6 @@ StateMachine
 	// -----------------------------------------------------------------------------------------
 	State Wander
 	{	
-		if( !active )
-		{
-			return;
-		}
-
 		OnEvent( TargetFound )
 		{		
 			ChangeState( Chase );

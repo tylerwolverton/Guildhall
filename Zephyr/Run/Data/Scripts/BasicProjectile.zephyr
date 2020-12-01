@@ -2,6 +2,17 @@ StateMachine
 {
     Number attackDamage = 1;
 
+    OnEvent( Spawn )
+    {
+        FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" ) );
+    }
+
+    OnEvent( ProjectileLifeExpired )
+    {
+        FireEvent( PlaySound( soundName = "EnemyHit", volume = .25) );
+        FireEvent( DestroySelf() );
+    }
+
     Number otherId;
     OnEvent( EnterCollision )
     {
@@ -14,12 +25,4 @@ StateMachine
         FireEvent( PlaySound( soundName = "PlayerHit", volume = .1 ) );
         FireEvent( DestroySelf() );
     }
-
-    OnEvent( ProjectileLifeExpired )
-    {
-        FireEvent( PlaySound( soundName = "EnemyHit", volume = .25) );
-        FireEvent( DestroySelf() );
-    }
-
-    FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" ) );
 }

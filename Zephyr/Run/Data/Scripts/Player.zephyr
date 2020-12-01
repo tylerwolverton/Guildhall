@@ -16,6 +16,7 @@ StateMachine
         FireEvent( RegisterKeyEvent( key = "A", event = "MoveLeft" ) );
         FireEvent( RegisterKeyEvent( key = "S", event = "MoveDown" ) );
         FireEvent( RegisterKeyEvent( key = "D", event = "MoveRight" ) );
+
         FireEvent( RegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
         FireEvent( RegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
         FireEvent( RegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
@@ -31,6 +32,7 @@ StateMachine
             FireEvent( UnRegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
             FireEvent( UnRegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
             FireEvent( UnRegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
+            
             FireEvent( RegisterKeyEvent( key = "Up", event = "ShootTripleFireballUp" ) );
             FireEvent( RegisterKeyEvent( key = "Left", event = "ShootTripleFireballLeft" ) );
             FireEvent( RegisterKeyEvent( key = "Down", event = "ShootTripleFireballDown" ) );
