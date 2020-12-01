@@ -51,6 +51,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( ChangeDamageTypeMultiplier );
 
 	REGISTER_EVENT( RegisterKeyEvent );
+	REGISTER_EVENT( UnRegisterKeyEvent );
 
 	REGISTER_EVENT( ChangeSpriteAnimation );
 	REGISTER_EVENT( PlaySound );
@@ -568,6 +569,31 @@ void GameAPI::RegisterKeyEvent( EventArgs* args )
 	}
 
 	entity->RegisterKeyEvent( key, event );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::UnRegisterKeyEvent( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	std::string key = args->GetValue( "key", "" );
+	if ( key.empty() )
+	{
+		return;
+	}
+
+	std::string event = args->GetValue( "event", "" );
+	if ( event.empty() )
+	{
+		return;
+	}
+
+	entity->UnRegisterKeyEvent( key, event );
 }
 
 

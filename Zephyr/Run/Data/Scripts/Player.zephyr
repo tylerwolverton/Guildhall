@@ -22,6 +22,22 @@ StateMachine
         FireEvent( RegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
     }
 
+    String itemName;
+	OnEvent( PickupItem )
+	{
+		if( itemName == "TripleFireballPickup" )
+		{
+            FireEvent( UnRegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
+            FireEvent( UnRegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
+            FireEvent( UnRegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
+            FireEvent( UnRegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
+            FireEvent( RegisterKeyEvent( key = "Up", event = "ShootTripleFireballUp" ) );
+            FireEvent( RegisterKeyEvent( key = "Left", event = "ShootTripleFireballLeft" ) );
+            FireEvent( RegisterKeyEvent( key = "Down", event = "ShootTripleFireballDown" ) );
+            FireEvent( RegisterKeyEvent( key = "Right", event = "ShootTripleFireballRight" ) );
+		}
+	}
+
     Vec2 newPos;
 	OnEvent( UpdateEntityPosition )
 	{
@@ -118,21 +134,74 @@ StateMachine
         FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 0 ) );
     }
 
-    OnEvent( ShootTripleFireballUp )
+    // TripleFireball
+    Vec2 fireballOffset1;
+    Number shotOrientation1;
+    Vec2 fireballOffset2;
+    Number shotOrientation2;
+    Vec2 fireballOffset3;
+    Number shotOrientation3;
+    OnEvent( ShootTripleFireball )
     {
         if( !canShoot )
         {
             return;
         }
 
-        Vec2 posOffset = ( 0, .6 );
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + posOffset, orientation = 90 ) );
-        Vec2 posOffset = ( -.5, .6 );
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + posOffset, orientation = 135 ) );
-        Vec2 posOffset = ( .5, .6 );
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + posOffset, orientation = 45 ) );
+        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset1, orientation = shotOrientation1 ) );
+        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset2, orientation = shotOrientation1 + 45 ) );
+        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset3, orientation = shotOrientation1 - 45 ) );
+
         FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
 
         canShoot = false;
+    }
+
+    OnEvent( ShootTripleFireballUp )
+    {
+        Vec2 posOffset1 = ( 0, .6 );
+        Vec2 posOffset2 = ( -.5, .6 );
+        Vec2 posOffset3 = ( .5, .6 );
+        
+        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
+                                    fireballOffset2 = posOffset2,
+                                    fireballOffset3 = posOffset3,
+                                    shotOrientation1 = 90 ) );
+    }
+
+    OnEvent( ShootTripleFireballLeft )
+    {
+        Vec2 posOffset1 = ( -.6, 0 );
+        Vec2 posOffset2 = ( -.6, .1 );
+        Vec2 posOffset3 = ( -.6, 1.1 );
+        
+        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
+                                    fireballOffset2 = posOffset2,
+                                    fireballOffset3 = posOffset3,
+                                    shotOrientation1 = 180 ) );
+    }
+
+    OnEvent( ShootTripleFireballDown )
+    {
+        Vec2 posOffset1 = ( 0, -.6 );
+        Vec2 posOffset2 = ( .5, -.6 );
+        Vec2 posOffset3 = ( -.5, -.6 );
+        
+        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
+                                    fireballOffset2 = posOffset2,
+                                    fireballOffset3 = posOffset3,
+                                    shotOrientation1 = 270 ) );
+    }
+
+    OnEvent( ShootTripleFireballRight )
+    {
+        Vec2 posOffset1 = ( .6, 0 );
+        Vec2 posOffset2 = ( .6, 1.1 );
+        Vec2 posOffset3 = ( .6, .1 );
+        
+        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
+                                    fireballOffset2 = posOffset2,
+                                    fireballOffset3 = posOffset3,
+                                    shotOrientation1 = 0 ) );
     }
 }

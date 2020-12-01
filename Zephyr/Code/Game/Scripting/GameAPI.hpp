@@ -57,6 +57,7 @@ private:
 
 	// Input
 	void RegisterKeyEvent( EventArgs* args );
+	void UnRegisterKeyEvent( EventArgs* args );
 
 	// Audio/Visual
 	void ChangeSpriteAnimation( EventArgs* args );

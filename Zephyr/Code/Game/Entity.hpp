@@ -117,7 +117,8 @@ public:
 
 	void			MoveWithPhysics( float speed, const Vec2& direction );
 
-	void			RegisterKeyEvent( const std::string& keyCode, const std::string& eventName );
+	void			RegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );
+	void			UnRegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );
 
 protected:
 	void			EnterCollisionEvent( Collision2D collision );
@@ -127,6 +128,8 @@ protected:
 	void			StayTriggerEvent( Collision2D collision );
 	void			ExitTriggerEvent( Collision2D collision );
 	void			SendPhysicsEventToScript( Collision2D collision, const std::string& eventName );
+
+	char			GetKeyCodeFromString( const std::string& keyCodeStr );
 
 protected:
 	ZephyrScript*							m_scriptObj = nullptr;
@@ -159,7 +162,7 @@ protected:
 	SpriteAnimationSetDefinition*			m_curSpriteAnimSetDef = nullptr;
 
 	// Input
-	std::map<char, std::vector<std::string>>				m_registeredKeyEvents;
+	std::map<char, std::vector<std::string>> m_registeredKeyEvents;
 
 	// Statics
 	static EntityId							s_nextEntityId;

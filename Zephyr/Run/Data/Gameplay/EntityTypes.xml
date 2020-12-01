@@ -142,6 +142,13 @@
     </Appearance>
   </Pickup>
 
+  <Pickup name="TripleFireballPowerup">
+    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Pickup" isTrigger="true"/>
+    <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
+      <Walk up="20"/>
+    </Appearance>
+  </Pickup>
+
   <Entity name="ScreenShakeTrigger">
     <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal" isTrigger="true"/>
     <Script name="ScreenShaker.zephyr"/>

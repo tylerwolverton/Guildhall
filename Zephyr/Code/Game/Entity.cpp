@@ -374,29 +374,49 @@ void Entity::MoveWithPhysics( float speed, const Vec2& direction )
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::RegisterKeyEvent( const std::string& keyCode, const std::string& eventName )
+void Entity::RegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName )
 {
-	if		( IsEqualIgnoreCase( keyCode, "space" ) )	{ m_registeredKeyEvents[KEY_SPACEBAR].push_back( eventName ); }
-	else if ( IsEqualIgnoreCase( keyCode, "enter" ) )	{ m_registeredKeyEvents[KEY_ENTER].push_back( eventName ); }
-	else if ( IsEqualIgnoreCase( keyCode, "shift" ) )	{ m_registeredKeyEvents[KEY_SHIFT].push_back( eventName ); }
-	else if ( IsEqualIgnoreCase( keyCode, "left" ) )	{ m_registeredKeyEvents[KEY_LEFTARROW].push_back( eventName ); }
-	else if ( IsEqualIgnoreCase( keyCode, "right" ) )	{ m_registeredKeyEvents[KEY_RIGHTARROW].push_back( eventName ); }
-	else if ( IsEqualIgnoreCase( keyCode, "up" ) )		{ m_registeredKeyEvents[KEY_UPARROW].push_back( eventName ); }
-	else if ( IsEqualIgnoreCase( keyCode, "down" ) )	{ m_registeredKeyEvents[KEY_DOWNARROW].push_back( eventName ); }
-	else
+	char keyCode = GetKeyCodeFromString( keyCodeStr );
+	
+	if ( keyCode == '\0' )
 	{
-		// Register letters and numbers
-		char key = keyCode[0];
-		if ( key >= 'a' && key <= 'z' )
-		{
-			key -= 32;
-		}
+		return;
+	}
 
-		if ( ( key >= '0' && key <= '9' )
-			 || ( key >= 'A' && key <= 'Z' ) )
+	m_registeredKeyEvents[keyCode].push_back( eventName );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::UnRegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName )
+{
+	char keyCode = GetKeyCodeFromString( keyCodeStr );
+
+	if ( keyCode == '\0' )
+	{
+		return;
+	}
+
+	auto eventIter = m_registeredKeyEvents.find(keyCode);
+	if ( eventIter == m_registeredKeyEvents.end() )
+	{
+		return;
+	}
+
+	Strings& eventNames = eventIter->second;
+	int eventIdx = 0;
+	for ( ; eventIdx < (int)eventNames.size(); ++eventIdx )
+	{
+		if ( eventName == eventNames[eventIdx] )
 		{
-			m_registeredKeyEvents[key].push_back( eventName );
+			break;
 		}
+	}
+
+	// Remove bound event
+	if ( eventIdx < (int)eventNames.size() )
+	{
+		eventNames.erase( eventNames.begin() + eventIdx );
 	}
 }
 
@@ -571,3 +591,34 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 		}
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+char Entity::GetKeyCodeFromString( const std::string& keyCodeStr )
+{
+	if ( IsEqualIgnoreCase( keyCodeStr, "space" ) )			{ return KEY_SPACEBAR; }
+	else if ( IsEqualIgnoreCase( keyCodeStr, "enter" ) )	{ return KEY_ENTER; }
+	else if ( IsEqualIgnoreCase( keyCodeStr, "shift" ) )	{ return KEY_SHIFT; }
+	else if ( IsEqualIgnoreCase( keyCodeStr, "left" ) )		{ return KEY_LEFTARROW; }
+	else if ( IsEqualIgnoreCase( keyCodeStr, "right" ) )	{ return KEY_RIGHTARROW; }
+	else if ( IsEqualIgnoreCase( keyCodeStr, "up" ) )		{ return KEY_UPARROW; }
+	else if ( IsEqualIgnoreCase( keyCodeStr, "down" ) )		{ return KEY_DOWNARROW; }
+	else
+	{
+		// Register letters and numbers
+		char key = keyCodeStr[0];
+		if ( key >= 'a' && key <= 'z' )
+		{
+			key -= 32;
+		}
+
+		if ( ( key >= '0' && key <= '9' )
+			 || ( key >= 'A' && key <= 'Z' ) )
+		{
+			return key;
+		}
+	}
+
+	return '\0';
+}
+
