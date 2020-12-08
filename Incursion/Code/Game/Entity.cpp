@@ -2,6 +2,7 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
@@ -52,9 +53,9 @@ void Entity::Die()
 //-----------------------------------------------------------------------------------------------
 void Entity::DebugRender() const
 {
-	g_renderer->BindTexture( nullptr );
-	g_renderer->DrawRing2D( m_position, m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
-	g_renderer->DrawRing2D( m_position, m_cosmeticRadius, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
+	g_renderer->BindTexture( 0, nullptr );
+	DrawRing2D( g_renderer, m_position, m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
+	DrawRing2D( g_renderer, m_position, m_cosmeticRadius, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
 }
 
 
@@ -164,14 +165,14 @@ void Entity::RenderHealthBar() const
 {
 	float healthPercentage = (float)m_health / (float)m_maxHealth;
 
-	g_renderer->BindTexture( nullptr );
+	g_renderer->BindTexture( 0, nullptr );
 
 	// Black background
 	std::vector<Vertex_PCU> backgroundVertexes;
 	AABB2 backgroundBox( Vec2::ZERO, Vec2( 1.f, .09f ) );
 	Vec2 backgroundPos( m_position.x - .5f, m_position.y + .5f );
 
-	g_renderer->AppendVertsForAABB2D( backgroundVertexes, backgroundBox, Rgba8::BLACK, Vec2::ZERO, Vec2::ONE );
+	AppendVertsForAABB2D( backgroundVertexes, backgroundBox, Rgba8::BLACK, Vec2::ZERO, Vec2::ONE );
 	Vertex_PCU::TransformVertexArray( backgroundVertexes, 1.f, 0.f, backgroundPos );
 
 	g_renderer->DrawVertexArray( backgroundVertexes );
@@ -191,7 +192,7 @@ void Entity::RenderHealthBar() const
 		color = Rgba8::YELLOW;
 	}
 
-	g_renderer->AppendVertsForAABB2D( healthVertexes, healthBox, color, Vec2::ZERO, Vec2::ONE );
+	AppendVertsForAABB2D( healthVertexes, healthBox, color, Vec2::ZERO, Vec2::ONE );
 	Vertex_PCU::TransformVertexArray( healthVertexes, 1.f, 0.f, healthPos );
 
 	g_renderer->DrawVertexArray( healthVertexes );

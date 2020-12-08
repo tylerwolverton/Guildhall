@@ -5,8 +5,9 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -33,7 +34,15 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+	m_worldCamera->SetPosition( Vec3( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) * .5f, 0.f ) );
+	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+
 	m_uiCamera = new Camera();
+	m_uiCamera->SetPosition( Vec3( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) * .5f, 0.f ) );
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 
 	m_rng = new RandomNumberGenerator();
 
@@ -85,7 +94,8 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
 {
-	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
+	m_worldCamera->SetPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
 }
 
 
@@ -202,10 +212,6 @@ void Game::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen(Rgba8::BLACK);
-
 	g_renderer->BeginCamera(*m_worldCamera );
 
 	switch ( m_gameState )
@@ -234,7 +240,7 @@ void Game::Render() const
 			std::vector<Vertex_PCU> vertexes;
 			m_font->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Loading..." );
 
-			g_renderer->BindTexture( m_font->GetTexture() );
+			g_renderer->BindTexture( 0, m_font->GetTexture() );
 			g_renderer->DrawVertexArray( vertexes );
 		}
 		break;
@@ -244,7 +250,7 @@ void Game::Render() const
 			std::vector<Vertex_PCU> vertexes;
 			m_font->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Incursion" );
 
-			g_renderer->BindTexture( m_font->GetTexture() );
+			g_renderer->BindTexture( 0, m_font->GetTexture() );
 			g_renderer->DrawVertexArray( vertexes );
 		}
 		break;
@@ -276,14 +282,14 @@ void Game::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game::RenderPauseOverlay() const
 {
-	g_renderer->BindTexture( nullptr );
+	g_renderer->BindTexture( 0, nullptr );
 	g_renderer->DrawVertexArray( m_darkScreenVertexes );
 
 	std::vector<Vertex_PCU> vertexes;
 	m_font->AppendVertsForText2D( vertexes, Vec2( 750.f, 500.f ), 50.f, "Paused..." );
 	m_font->AppendVertsForText2D( vertexes, Vec2( 450.f, 450.f ), 24.f, "Press P or Start to continue, Back or Esc to exit" );
 
-	g_renderer->BindTexture( m_font->GetTexture() );
+	g_renderer->BindTexture( 0, m_font->GetTexture() );
 	g_renderer->DrawVertexArray( vertexes );
 }
 
@@ -293,14 +299,14 @@ void Game::RenderDeathOverlay( float curDeathSeconds ) const
 {
 	if ( curDeathSeconds > DEATH_OVERLAY_TIMER_SECONDS )
 	{
-		g_renderer->BindTexture( nullptr );
+		g_renderer->BindTexture( 0, nullptr );
 		g_renderer->DrawVertexArray( m_darkScreenVertexes );
 
 		std::vector<Vertex_PCU> vertexes;
 		m_font->AppendVertsForText2D( vertexes, Vec2( 750.f, 500.f ), 50.f, "You died." );
 		m_font->AppendVertsForText2D( vertexes, Vec2( 450.f, 450.f ), 24.f, "Press P or Start to respawn, Back or Esc to exit" );
 
-		g_renderer->BindTexture( m_font->GetTexture() );
+		g_renderer->BindTexture( 0, m_font->GetTexture() );
 		g_renderer->DrawVertexArray( vertexes );
 	}
 	else
@@ -313,7 +319,7 @@ void Game::RenderDeathOverlay( float curDeathSeconds ) const
 			vertexesCopy[vertIndex].m_color.a = newAlpha;
 		}
 
-		g_renderer->BindTexture( nullptr );
+		g_renderer->BindTexture( 0, nullptr );
 		g_renderer->DrawVertexArray( vertexesCopy );
 	}
 }
@@ -330,14 +336,14 @@ void Game::RenderDeathOverlayFadeOut( float curDeathSeconds ) const
 		vertexesCopy[vertIndex].m_color.a = newAlpha;
 	}
 
-	g_renderer->BindTexture( nullptr );
+	g_renderer->BindTexture( 0, nullptr );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	std::vector<Vertex_PCU> vertexes;
 	m_font->AppendVertsForText2D( vertexes, Vec2( 750.f, 500.f ), 50.f, "You died." );
 	m_font->AppendVertsForText2D( vertexes, Vec2( 450.f, 450.f ), 24.f, "Press P or Start to respawn, Back or Esc to exit" ); 
 	
-	g_renderer->BindTexture( m_font->GetTexture() );
+	g_renderer->BindTexture( 0, m_font->GetTexture() );
 	g_renderer->DrawVertexArray( vertexes );
 }
 
@@ -361,13 +367,13 @@ void Game::RenderVictoryScreen() const
 			}
 		}
 
-		g_renderer->BindTexture( nullptr );
+		g_renderer->BindTexture( 0, nullptr );
 		g_renderer->DrawVertexArray( vertexCopy );
 
 		std::vector<Vertex_PCU> victoryVertexes;
 		m_font->AppendVertsForText2D( victoryVertexes, Vec2( 650.f, 500.f ), 70.f, "You win!", Rgba8::BLACK );
 
-		g_renderer->BindTexture( m_font->GetTexture() );
+		g_renderer->BindTexture( 0, m_font->GetTexture() );
 		g_renderer->DrawVertexArray( victoryVertexes );
 
 		if ( m_curEndGameSeconds <= 0.f )
@@ -448,17 +454,17 @@ void Game::UpdateCameras( float deltaSeconds )
 {
 	// World camera
 	m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
-	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.0);
+	m_screenShakeIntensity = ClampMinMax( m_screenShakeIntensity, 0.f, 1.f );
 
 	float maxScreenShake = m_screenShakeIntensity * MAX_CAMERA_SHAKE_DIST;
 	float cameraShakeX = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
 	float cameraShakeY = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
 	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
 
-	m_worldCamera->Translate2D(cameraShakeOffset);
+	m_worldCamera->Translate( Vec3( cameraShakeOffset, 0.f) );
 
 	// UI Camera
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	//m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 }
 
 
@@ -531,7 +537,7 @@ void Game::PopulateFullScreenVertexes()
 	Rgba8 color( Rgba8::BLACK );
 	color.a = 100;
 
-	g_renderer->AppendVertsForAABB2D( m_darkScreenVertexes, bounds, color, Vec2::ZERO, Vec2::ONE );
+	AppendVertsForAABB2D( m_darkScreenVertexes, bounds, color, Vec2::ZERO, Vec2::ONE );
 }
 
 

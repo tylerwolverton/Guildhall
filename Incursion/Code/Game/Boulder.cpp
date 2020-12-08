@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
@@ -49,7 +50,7 @@ void Boulder::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( m_texture );
+	g_renderer->BindTexture( 0, m_texture );
 	g_renderer->DrawVertexArray( vertexesCopy );
 }
 
@@ -71,5 +72,5 @@ void Boulder::PopulateVertexes()
 	Vec2 uvAtMins, uvAtMaxs;
 	m_extrasSpriteSheet->GetSpriteUVs( uvAtMins, uvAtMaxs, 3 );
 
-	g_renderer->AppendVertsForAABB2D( m_vertexes, AABB2::ONE_BY_ONE, Rgba8::WHITE, uvAtMins, uvAtMaxs );
+	AppendVertsForAABB2D( m_vertexes, AABB2::ONE_BY_ONE, Rgba8::WHITE, uvAtMins, uvAtMaxs );
 }

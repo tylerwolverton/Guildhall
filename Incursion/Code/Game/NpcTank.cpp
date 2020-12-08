@@ -3,6 +3,7 @@
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
@@ -89,7 +90,7 @@ void NpcTank::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( m_tankBodyTexture );
+	g_renderer->BindTexture( 0, m_tankBodyTexture );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	RenderHealthBar();
@@ -107,19 +108,19 @@ void NpcTank::DebugRender() const
 	// Draw chase range
 	RaycastImpact impact1 = m_map->Raycast( m_position, Vec2::MakeFromPolarDegrees( m_orientationDegrees + TANK_CHASE_ANGLE_RANGE_DEGREES ), TANK_MAX_CHASE_RANGE );
 	RaycastImpact impact2 = m_map->Raycast( m_position, Vec2::MakeFromPolarDegrees( m_orientationDegrees - TANK_CHASE_ANGLE_RANGE_DEGREES ), TANK_MAX_CHASE_RANGE );
-	g_renderer->DrawLine2D( m_position, impact1.m_impactPosition, Rgba8::YELLOW, DEBUG_LINE_THICKNESS );
-	g_renderer->DrawLine2D( m_position, impact2.m_impactPosition, Rgba8::YELLOW, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, impact1.m_impactPosition, Rgba8::YELLOW, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, impact2.m_impactPosition, Rgba8::YELLOW, DEBUG_LINE_THICKNESS );
 
 	// Draw shot range
 	impact1 = m_map->Raycast( m_position, Vec2::MakeFromPolarDegrees( m_orientationDegrees + TANK_SHOT_ANGLE_RANGE_DEGREES ), TANK_MAX_CHASE_RANGE );
 	impact2 = m_map->Raycast( m_position, Vec2::MakeFromPolarDegrees( m_orientationDegrees - TANK_SHOT_ANGLE_RANGE_DEGREES ), TANK_MAX_CHASE_RANGE );
-	g_renderer->DrawLine2D( m_position, impact1.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
-	g_renderer->DrawLine2D( m_position, impact2.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, impact1.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, impact2.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
 
 	// Draw whiskers
-	g_renderer->DrawLine2D( m_position, m_middleWhisker.m_impactPosition, Rgba8::WHITE, DEBUG_LINE_THICKNESS );
-	g_renderer->DrawLine2D( m_position, m_leftWhisker.m_impactPosition,	  Rgba8::WHITE, DEBUG_LINE_THICKNESS );
-	g_renderer->DrawLine2D( m_position, m_rightWhisker.m_impactPosition,  Rgba8::WHITE, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, m_middleWhisker.m_impactPosition, Rgba8::WHITE, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, m_leftWhisker.m_impactPosition,	  Rgba8::WHITE, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, m_rightWhisker.m_impactPosition,  Rgba8::WHITE, DEBUG_LINE_THICKNESS );
 
 	Entity::DebugRender();
 }
@@ -150,7 +151,7 @@ void NpcTank::PopulateVertexes()
 {
 	m_tankBodyTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/EnemyTank3.png" );
 
-	g_renderer->AppendVertsForAABB2D( m_vertexes, AABB2::ONE_BY_ONE, Rgba8::WHITE, Vec2::ZERO, Vec2::ONE );
+	AppendVertsForAABB2D( m_vertexes, AABB2::ONE_BY_ONE, Rgba8::WHITE, Vec2::ZERO, Vec2::ONE );
 }
 
 

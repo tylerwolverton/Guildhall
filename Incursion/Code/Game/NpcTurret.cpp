@@ -1,6 +1,7 @@
 #include "Game/NpcTurret.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/GameCommon.hpp"
 #include "Map.hpp"
@@ -76,19 +77,19 @@ void NpcTurret::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, 0.f, m_position );
 
-	g_renderer->BindTexture( m_turretBase );
+	g_renderer->BindTexture( 0, m_turretBase );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	// Turret
 	vertexesCopy = m_vertexes;
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( m_turretTop );
+	g_renderer->BindTexture( 0, m_turretTop );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	// Laser sight
-	g_renderer->BindTexture( nullptr );
-	g_renderer->DrawLine2D( m_position + GetForwardVector() * TURRET_COSMETIC_RADIUS, m_lastRaycastImpact.m_impactPosition, Rgba8::RED, DEBUG_LINE_THICKNESS );
+	g_renderer->BindTexture( 0, nullptr );
+	DrawLine2D( g_renderer, m_position + GetForwardVector() * TURRET_COSMETIC_RADIUS, m_lastRaycastImpact.m_impactPosition, Rgba8::RED, DEBUG_LINE_THICKNESS );
 
 	RenderHealthBar();
 }
@@ -105,8 +106,8 @@ void NpcTurret::DebugRender() const
 	// Draw attack view range
 	RaycastImpact impact1 = m_map->Raycast( m_position, Vec2::MakeFromPolarDegrees( m_orientationDegrees + TURRET_SHOT_ANGLE_RANGE_DEGREES ), TURRET_MAX_ATTACK_RANGE );
 	RaycastImpact impact2 = m_map->Raycast( m_position, Vec2::MakeFromPolarDegrees( m_orientationDegrees - TURRET_SHOT_ANGLE_RANGE_DEGREES ), TURRET_MAX_ATTACK_RANGE );
-	g_renderer->DrawLine2D( m_position, impact1.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
-	g_renderer->DrawLine2D( m_position, impact2.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, impact1.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
+	DrawLine2D( g_renderer, m_position, impact2.m_impactPosition, Rgba8::GREEN, DEBUG_LINE_THICKNESS );
 
 	Entity::DebugRender();
 }
@@ -138,7 +139,7 @@ void NpcTurret::PopulateVertexes()
 	m_turretBase = g_renderer->CreateOrGetTextureFromFile( "Data/Images/EnemyTurretBase.png" );
 	m_turretTop = g_renderer->CreateOrGetTextureFromFile( "Data/Images/EnemyCannon.png" );
 
-	g_renderer->AppendVertsForAABB2D( m_vertexes, AABB2::ONE_BY_ONE, Rgba8::WHITE, Vec2::ZERO, Vec2::ONE );
+	AppendVertsForAABB2D( m_vertexes, AABB2::ONE_BY_ONE, Rgba8::WHITE, Vec2::ZERO, Vec2::ONE );
 }
 
 

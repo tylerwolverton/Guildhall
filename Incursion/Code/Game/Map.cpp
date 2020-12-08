@@ -4,8 +4,9 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
@@ -112,10 +113,13 @@ void Map::UpdateCameras()
 {
 	if ( g_game->IsDebugCameraEnabled() )
 	{
-		Vec2 aspectDimensions = Vec2( WINDOW_WIDTH, WINDOW_HEIGHT );
+		/*Vec2 aspectDimensions = Vec2( WINDOW_WIDTH, WINDOW_HEIGHT );
 		AABB2 cameraBounds( Vec2( 0.f, 0.f ), aspectDimensions );
 		cameraBounds.StretchToIncludePointMaintainAspect( Vec2( (float)m_width, (float)m_height ), aspectDimensions );
-		
+		*/
+		float aspectRatio = WINDOW_WIDTH / WINDOW_HEIGHT;
+		AABB2 cameraBounds( Vec2::ZERO, Vec2( (float)m_width, (float)m_height ) * aspectRatio );
+
 		g_game->SetWorldCameraOrthographicView( cameraBounds );
 	}
 	else
@@ -230,10 +234,10 @@ void Map::RenderTiles() const
 	{
 		const Tile& tile = m_tiles[tileIndex];
 		AABB2 uvCoords = GetUVsForTileType( tile.m_tileType );
-		g_renderer->AppendVertsForAABB2D( vertexes, tile.GetBounds(), GetColorForTileType( tile.m_tileType ), uvCoords.mins, uvCoords.maxs );
+		AppendVertsForAABB2D( vertexes, tile.GetBounds(), GetColorForTileType( tile.m_tileType ), uvCoords.mins, uvCoords.maxs );
 	}
 
-	g_renderer->BindTexture( m_tileTexture );
+	g_renderer->BindTexture( 0, m_tileTexture );
 	g_renderer->DrawVertexArray( vertexes );
 }
 
@@ -245,7 +249,7 @@ void Map::RenderEntities() const
 	{
 		if ( entityType == ENTITY_TYPE_EXPLOSION )
 		{
-			g_renderer->SetBlendMode( BlendMode::ADDITIVE );
+			g_renderer->SetBlendMode( eBlendMode::ADDITIVE );
 		}
 
 		for ( int entityIndex = 0; entityIndex < (int)m_entityVectorsByType[entityType].size(); ++entityIndex )
@@ -259,7 +263,7 @@ void Map::RenderEntities() const
 
 		if ( entityType == ENTITY_TYPE_EXPLOSION )
 		{
-			g_renderer->SetBlendMode( BlendMode::ALPHA );
+			g_renderer->SetBlendMode( eBlendMode::ALPHA );
 		}
 	}
 }

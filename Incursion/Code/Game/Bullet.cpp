@@ -1,6 +1,7 @@
 #include "Game/Bullet.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Map.hpp"
@@ -43,7 +44,7 @@ void Bullet::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, BULLET_SPRITE_SCALE, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( m_texture );
+	g_renderer->BindTexture( 0, m_texture );
 	g_renderer->DrawVertexArray( vertexesCopy );
 }
 
@@ -82,5 +83,5 @@ void Bullet::PopulateVertexes()
 
 	AABB2 spriteBounds( AABB2::ONE_BY_ONE );
 	spriteBounds.maxs.x *= 2.f;
-	g_renderer->AppendVertsForAABB2D( m_vertexes, spriteBounds, Rgba8::WHITE, Vec2::ZERO, Vec2::ONE );
+	AppendVertsForAABB2D( m_vertexes, spriteBounds, Rgba8::WHITE, Vec2::ZERO, Vec2::ONE );
 }

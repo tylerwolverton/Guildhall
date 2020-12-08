@@ -6,6 +6,7 @@
 class Camera;
 class RenderContext;
 class Game;
+enum class eWindowMode;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -24,6 +25,8 @@ public:
 	void RestartGame();
 	
 private:
+	eWindowMode GetWindowModeFromGameConfig();
+
 	void BeginFrame();
 	void Update( float deltaSeconds );
 	void UpdateFromKeyboard( float deltaSeconds );
