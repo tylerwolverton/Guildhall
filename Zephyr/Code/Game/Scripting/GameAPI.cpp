@@ -297,7 +297,7 @@ void GameAPI::AddLineOfDialogueText( EventArgs* args )
  * params:
  *	- name: Name to identify this choice in order to assign a callback event on selection
  *		- Zephyr type: String
- *		- A script can listen for the event "PlayerInteract" which has a "String choiceName" parameter containing the name of the choice that was selected
+ *		- A script can listen for the event "PlayerInteracted" which has a "String choiceName" parameter containing the name of the choice that was selected
  *	
  *	- text: Text to add for choice to dialogue box
  *		- Zephyr type: String

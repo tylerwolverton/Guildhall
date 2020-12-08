@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/Entity.hpp"
 
+
 //-----------------------------------------------------------------------------------------------
 class EntityDefinition;
 class Collision2D;

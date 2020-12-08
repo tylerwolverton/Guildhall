@@ -4,7 +4,7 @@ StateMachine
 
     State Waiting
     {
-        OnEvent( PlayerInteract )
+        OnEvent( PlayerInteracted )
         {
             ChangeState( Intro );
         }
@@ -17,13 +17,12 @@ StateMachine
             FireEvent( StartDialogue() );
             FireEvent( AddLineOfDialogueText( text = "Hello, traveler! Can I help you?" ) );
             
-            
             FireEvent( AddDialogueChoice( name = "choice1", text = "Could you open the door in the other room?" ) );
             FireEvent( AddDialogueChoice( name = "choice2", text = "Nevermind" ) );
         }
 
         String choiceName;
-        OnEvent( PlayerInteract )
+        OnEvent( PlayerInteracted )
         {
             if( choiceName == "choice1" )
             {
@@ -57,7 +56,7 @@ StateMachine
             }
         }
 
-        OnEvent( PlayerInteract )
+        OnEvent( PlayerInteracted )
         {
             FireEvent( EndDialogue() );
 
@@ -72,7 +71,7 @@ StateMachine
             FireEvent( AddLineOfDialogueText( text = "Okay, see ya" ) );
         }
 
-        OnEvent( PlayerInteract )
+        OnEvent( PlayerInteracted )
         {
             FireEvent( EndDialogue() );
 

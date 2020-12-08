@@ -24,7 +24,7 @@ StateMachine
     }
 
     String itemName;
-	OnEvent( PickupItem )
+	OnEvent( ItemAcquired )
 	{
 		if( itemName == "TripleFireballPickup" )
 		{

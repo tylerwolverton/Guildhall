@@ -1200,7 +1200,7 @@ void Game::SelectInDialogue( Entity* dialoguePartner )
 
 	EventArgs args;
 	args.SetValue( "choiceName", choiceName );
-	dialoguePartner->FireScriptEvent( "PlayerInteract", &args );
+	dialoguePartner->FireScriptEvent( "PlayerInteracted", &args );
 }
 
 

@@ -207,7 +207,7 @@ void Entity::AddItemToInventory( Entity* item )
 	EventArgs args;
 	args.SetValue( "itemName", item->GetName() );
 
-	g_eventSystem->FireEvent( "PickupItem", &args );
+	g_eventSystem->FireEvent( "ItemAcquired", &args );
 }
 
 

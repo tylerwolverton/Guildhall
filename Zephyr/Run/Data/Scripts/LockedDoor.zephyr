@@ -4,7 +4,7 @@ StateMachine
 
 	// Event arguments to reference
 	String itemName;
-	OnEvent( PickupItem )
+	OnEvent( ItemAcquired )
 	{
 		if( itemName == keyName )
 		{
