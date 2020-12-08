@@ -2,6 +2,6 @@ StateMachine
 {
 	State Win
 	{
-		FireEvent( QuestComplete( questId = "Victory" ) );
+		FireEvent( QuestCompleted( questId = "Victory" ) );
 	}
 }

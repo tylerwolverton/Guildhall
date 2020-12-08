@@ -131,7 +131,7 @@ void Entity::Die()
 	if ( m_scriptObj != nullptr )
 	{
 		EventArgs args;
-		m_scriptObj->FireEvent( "Die", &args );
+		m_scriptObj->FireEvent( "Died", &args );
 	}
 }
 
@@ -175,7 +175,7 @@ void Entity::SetPosition( const Vec2& position )
 		EventArgs args;
 		args.SetValue( "newPos", m_rigidbody2D->GetPosition() );
 
-		FireScriptEvent( "UpdateEntityPosition", &args );
+		FireScriptEvent( "PositionUpdated", &args );
 	}
 }
 
@@ -251,7 +251,7 @@ void Entity::FireSpawnEvent()
 		EventArgs args;
 		args.SetValue( "maxHealth", m_entityDef.GetMaxHealth() );
 
-		m_scriptObj->FireEvent( "Spawn", &args );
+		m_scriptObj->FireEvent( "Spawned", &args );
 	}
 }
 
@@ -368,7 +368,7 @@ void Entity::MoveWithPhysics( float speed, const Vec2& direction )
 		EventArgs args;
 		args.SetValue( "newPos", m_rigidbody2D->GetPosition() );
 
-		FireScriptEvent( "UpdateEntityPosition", &args );
+		FireScriptEvent( "PositionUpdated", &args );
 	}
 }
 
@@ -527,42 +527,42 @@ void Entity::ChangeSpriteAnimation( const std::string& spriteAnimDefSetName )
 //-----------------------------------------------------------------------------------------------
 void Entity::EnterCollisionEvent( Collision2D collision )
 {
-	SendPhysicsEventToScript( collision, "EnterCollision" );
+	SendPhysicsEventToScript( collision, "CollisionEntered" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::StayCollisionEvent( Collision2D collision )
 {
-	SendPhysicsEventToScript( collision, "StayCollision" );
+	SendPhysicsEventToScript( collision, "CollisionStayed" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::ExitCollisionEvent( Collision2D collision )
 {
-	SendPhysicsEventToScript( collision, "ExitCollision" );
+	SendPhysicsEventToScript( collision, "CollisionExited" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::EnterTriggerEvent( Collision2D collision )
 {
-	SendPhysicsEventToScript( collision, "EnterTrigger" );
+	SendPhysicsEventToScript( collision, "TriggerEntered" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::StayTriggerEvent( Collision2D collision )
 {
-	SendPhysicsEventToScript( collision, "StayTrigger" );
+	SendPhysicsEventToScript( collision, "TriggerStayed" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::ExitTriggerEvent( Collision2D collision )
 {
-	SendPhysicsEventToScript( collision, "ExitTrigger" );
+	SendPhysicsEventToScript( collision, "TriggerExited" );
 }
 
 

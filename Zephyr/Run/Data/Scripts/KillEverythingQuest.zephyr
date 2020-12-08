@@ -16,7 +16,7 @@ StateMachine
 
 		if( enemiesInLevel <= 0 )
 		{
-			FireEvent( QuestComplete( questId = roomId ) );
+			FireEvent( QuestCompleted( questId = roomId ) );
 		}
 	}
 }

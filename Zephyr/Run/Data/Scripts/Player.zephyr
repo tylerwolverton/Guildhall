@@ -6,7 +6,7 @@ StateMachine
     Number fireCooldown = .5;
 
     Number maxHealth;
-    OnEvent( Spawn )
+    OnEvent( Spawned )
     {
         curHealth = maxHealth;
 
@@ -41,7 +41,7 @@ StateMachine
 	}
 
     Vec2 newPos;
-	OnEvent( UpdateEntityPosition )
+	OnEvent( PositionUpdated )
 	{
 		curPosition = newPos;
 	}

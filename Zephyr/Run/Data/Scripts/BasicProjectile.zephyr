@@ -2,7 +2,7 @@ StateMachine
 {
     Number attackDamage = 1;
 
-    OnEvent( Spawn )
+    OnEvent( Spawned )
     {
         FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" ) );
     }
@@ -14,7 +14,7 @@ StateMachine
     }
 
     Number otherId;
-    OnEvent( EnterCollision )
+    OnEvent( CollisionEntered )
     {
         if( otherId != -1 )
         {

@@ -4,6 +4,6 @@ StateMachine
     
     OnEvent( Level3DialogueSolved )
     {
-        FireEvent( QuestComplete( questId = roomId ) );
+        FireEvent( QuestCompleted( questId = roomId ) );
     }
 }

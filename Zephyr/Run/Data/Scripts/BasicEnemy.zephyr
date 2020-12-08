@@ -15,7 +15,7 @@ StateMachine
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
 	Number maxHealth;
 	String mapName;
-	OnEvent( Spawn )
+	OnEvent( Spawned )
 	{
 		health = maxHealth;
 		FireEvent( EnemySpawned( mapName = mapName ) );
@@ -33,20 +33,20 @@ StateMachine
 		}
 	}
 
-	OnEvent( Die )
+	OnEvent( Died )
 	{
 		FireEvent( EnemyDied( mapName = mapName ) );
 	}
 
 	// TODO: Make this more intuitive
 	Vec2 newPos;
-	OnEvent( UpdateEntityPosition )
+	OnEvent( PositionUpdated )
 	{
 		lastPosition = position;
 		position = newPos;
 	}
 
-	OnEvent( UpdateTargetPosition )
+	OnEvent( TargetPositionUpdated )
 	{
 		targetPosition = newPos;
 	}
@@ -54,7 +54,7 @@ StateMachine
 	// Damage
     Number attackDamage = 1;
 	Number otherId;
-    OnEvent( EnterCollision )
+    OnEvent( CollisionEntered )
     {
         if( otherId != -1 )
         {
@@ -112,7 +112,7 @@ StateMachine
 
 		Number distance;
 		FireEvent( GetDistanceToTarget( id = targetName ) );
-		OnEvent( UpdateDistanceToTarget )
+		OnEvent( DistanceToTargetUpdated )
 		{		
 			if( distance > 3 )
 			{
@@ -130,7 +130,7 @@ StateMachine
 	State Flee
 	{
 		Number distance;
-		OnEvent( UpdateDistanceToTarget )
+		OnEvent( DistanceToTargetUpdated )
 		{		
 			if( distance > 5 )
 			{

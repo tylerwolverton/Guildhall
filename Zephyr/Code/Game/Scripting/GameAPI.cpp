@@ -647,7 +647,7 @@ void GameAPI::GetEntityLocation( EventArgs* args )
 	EventArgs targetArgs;
 	targetArgs.SetValue( "entityPos", targetEntity->GetPosition() );
 
-	entity->FireScriptEvent( "UpdateEntityLocation", &targetArgs );
+	entity->FireScriptEvent( "EntityLocationUpdated", &targetArgs );
 }
 
 
@@ -666,7 +666,7 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 	EventArgs targetArgs;
 	targetArgs.SetValue( "newPos", Vec2( newX, newY ) );
 
-	entity->FireScriptEvent( "UpdateTargetPosition", &targetArgs );
+	entity->FireScriptEvent( "TargetPositionUpdated", &targetArgs );
 }
 
 
@@ -714,7 +714,7 @@ void GameAPI::GetDistanceToTarget( EventArgs* args )
 	EventArgs targetArgs;
 	targetArgs.SetValue( "distance", displacementToTarget.GetLength() );
 
-	entity->FireScriptEvent( "UpdateDistanceToTarget", &targetArgs );
+	entity->FireScriptEvent( "DistanceToTargetUpdated", &targetArgs );
 }
 
 

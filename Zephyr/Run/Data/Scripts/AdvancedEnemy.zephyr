@@ -10,12 +10,12 @@ StateMachine
 	}
 
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
-	OnEvent( Spawn )
+	OnEvent( Spawned )
 	{
 		FireEvent( EnemySpawned() );
 	}
 
-	OnEvent( Die )
+	OnEvent( Died )
 	{
 		FireEvent( EnemyDied() );
 	}
