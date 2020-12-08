@@ -29,7 +29,6 @@ std::string ToString( eTokenType type )
 		case eTokenType::FALSE:				return "false";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant Number";
-		case eTokenType::CONSTANT_VEC2:		return "Constant Vec2";
 		case eTokenType::CONSTANT_STRING:	return "Constant String";
 		case eTokenType::PLUS:				return "+";
 		case eTokenType::MINUS:				return "-";
@@ -82,7 +81,6 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::FALSE:				return "FALSE";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
-		case eTokenType::CONSTANT_VEC2:		return "CONSTANT_VEC2";
 		case eTokenType::CONSTANT_STRING:	return "CONSTANT_STRING";
 		case eTokenType::PLUS:				return "PLUS";
 		case eTokenType::MINUS:				return "MINUS";

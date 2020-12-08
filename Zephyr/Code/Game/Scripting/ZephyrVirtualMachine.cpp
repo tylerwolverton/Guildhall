@@ -97,14 +97,19 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 			case eOpCode::ASSIGNMENT_VEC2:
 			{
-				// Maybe push Vec2 back onto constant stack for if statements?
 				ZephyrValue variableName = PopConstant();
+				ZephyrValue value = PeekConstant();
+
+				AssignToVariable( variableName.GetAsString(), value, localVariables );
+			}
+			break;
+
+			case eOpCode::CONSTANT_VEC2:
+			{
 				ZephyrValue yValue = PopConstant();
 				ZephyrValue xValue = PopConstant();
 
-				ZephyrValue value ( Vec2( xValue.GetAsNumber(), yValue.GetAsNumber() ) );
-				AssignToVariable( variableName.GetAsString(), value, localVariables );
-
+				ZephyrValue value( Vec2( xValue.GetAsNumber(), yValue.GetAsNumber() ) );
 				PushConstant( value );
 			}
 			break;

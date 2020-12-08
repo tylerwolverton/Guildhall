@@ -5,7 +5,7 @@ StateMachine
 	Number testNum2 = 2.5;  
 	Number testNum3 = .7;
 	Vec2 testVec2;		
-	Vec2 testVec2Init = (5,5);
+	Vec2 testVec2Init = Vec2(5,5);
 	Bool testBool;
 	Bool testBool2 = true;
 	Bool testBool3 = false;
@@ -55,7 +55,7 @@ StateMachine
 				{
 					testVec2.x = 1;
 					testVec2.y = 2;
-					Vec2 actualVec = ( 1, 2 );
+					Vec2 actualVec = Vec2( 1, 2 );
 					if( testVec2 = actualVec )
 					{
 						FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Success", color = "green" ) );

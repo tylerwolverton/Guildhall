@@ -49,7 +49,6 @@ enum class eTokenType
 	IDENTIFIER,
 
 	CONSTANT_NUMBER,
-	CONSTANT_VEC2,
 	CONSTANT_STRING,
 
 	// Operators
@@ -95,6 +94,7 @@ enum class eOpCode : byte
 	NOT,
 
 	CONSTANT,
+	CONSTANT_VEC2,
 
 	DEFINE_VARIABLE,
 	GET_VARIABLE_VALUE,

@@ -69,26 +69,22 @@ StateMachine
     // TODO? Add parameter passing into key events to remove the need to make separate events for each direction
     OnEvent( MoveUp )
     {
-        Vec2 dir = ( 0, 1 );
-        FireEvent( MoveInDirection( direction = dir ) );
+        FireEvent( MoveInDirection( direction = Vec2( 0, 1 ) ) );
     }
 
     OnEvent( MoveDown )
     {
-        Vec2 dir = ( 0, -1 );
-        FireEvent( MoveInDirection( direction = dir ) );
+        FireEvent( MoveInDirection( direction = Vec2( 0, -1 ) ) );
     }
 
     OnEvent( MoveLeft )
     {
-        Vec2 dir = ( -1, 0 );
-        FireEvent( MoveInDirection( direction = dir ) );
+        FireEvent( MoveInDirection( direction = Vec2( -1, 0 ) ) );
     }
 
     OnEvent( MoveRight )
     {
-        Vec2 dir = ( 1, 0 );
-        FireEvent( MoveInDirection( direction = dir ) );
+        FireEvent( MoveInDirection( direction = Vec2( 1, 0 ) ) );
     }
 
     // Attacks
@@ -114,26 +110,22 @@ StateMachine
 
     OnEvent( ShootFireballUp )
     {
-        Vec2 posOffset = ( 0, .6 );
-        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 90 ) );
+        FireEvent( ShootFireball( fireballOffset = Vec2( 0, .6 ), shotOrientation = 90 ) );
     }
 
     OnEvent( ShootFireballLeft )
     {
-        Vec2 posOffset = ( -.6, 0 );
-        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 180 ) );
+        FireEvent( ShootFireball( fireballOffset = Vec2( -.6, 0 ), shotOrientation = 180 ) );
     }
 
     OnEvent( ShootFireballDown )
     {
-        Vec2 posOffset = ( 0, -.6 );
-        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 270 ) );
+        FireEvent( ShootFireball( fireballOffset = Vec2( 0, -.6 ), shotOrientation = 270 ) );
     }
 
     OnEvent( ShootFireballRight )
     {
-        Vec2 posOffset = ( .6, 0 );
-        FireEvent( ShootFireball( fireballOffset = posOffset, shotOrientation = 0 ) );
+        FireEvent( ShootFireball( fireballOffset = Vec2( .6, 0 ), shotOrientation = 0 ) );
     }
 
     // TripleFireball
@@ -161,49 +153,33 @@ StateMachine
 
     OnEvent( ShootTripleFireballUp )
     {
-        Vec2 posOffset1 = ( 0, .6 );
-        Vec2 posOffset2 = ( -.5, .6 );
-        Vec2 posOffset3 = ( .5, .6 );
-        
-        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
-                                    fireballOffset2 = posOffset2,
-                                    fireballOffset3 = posOffset3,
+        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( 0, .6 ), 
+                                    fireballOffset2 = Vec2( -.5, .6 ),
+                                    fireballOffset3 = Vec2( .5, .6 ),
                                     shotOrientation1 = 90 ) );
     }
 
     OnEvent( ShootTripleFireballLeft )
     {
-        Vec2 posOffset1 = ( -.6, 0 );
-        Vec2 posOffset2 = ( -.6, .1 );
-        Vec2 posOffset3 = ( -.6, 1.1 );
-        
-        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
-                                    fireballOffset2 = posOffset2,
-                                    fireballOffset3 = posOffset3,
+        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( -.6, 0 ), 
+                                    fireballOffset2 = Vec2( -.6, .1 ),
+                                    fireballOffset3 = Vec2( -.6, 1.1 ),
                                     shotOrientation1 = 180 ) );
     }
 
     OnEvent( ShootTripleFireballDown )
     {
-        Vec2 posOffset1 = ( 0, -.6 );
-        Vec2 posOffset2 = ( .5, -.6 );
-        Vec2 posOffset3 = ( -.5, -.6 );
-        
-        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
-                                    fireballOffset2 = posOffset2,
-                                    fireballOffset3 = posOffset3,
+        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( 0, -.6 ), 
+                                    fireballOffset2 = Vec2( .5, -.6 ),
+                                    fireballOffset3 = Vec2( -.5, -.6 ),
                                     shotOrientation1 = 270 ) );
     }
 
     OnEvent( ShootTripleFireballRight )
-    {
-        Vec2 posOffset1 = ( .6, 0 );
-        Vec2 posOffset2 = ( .6, 1.1 );
-        Vec2 posOffset3 = ( .6, .1 );
-        
-        FireEvent( ShootTripleFireball( fireballOffset1 = posOffset1, 
-                                    fireballOffset2 = posOffset2,
-                                    fireballOffset3 = posOffset3,
+    {        
+        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( .6, 0 ), 
+                                    fireballOffset2 = Vec2( .6, 1.1 ),
+                                    fireballOffset3 = Vec2( .6, .1 ),
                                     shotOrientation1 = 0 ) );
     }
 }

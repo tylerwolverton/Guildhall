@@ -58,7 +58,6 @@ private:
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseVariableDeclaration( const eValueType& varType );
-	bool ParseVec2Declaration();
 	bool ParseFireEvent();
 	bool ParseEventArgs();
 	bool ParseChangeStateStatement();
@@ -70,10 +69,10 @@ private:
 	bool ParseParenthesesGroup( const eValueType& expressionType );
 	bool ParseUnaryExpression( const eValueType& expressionType );
 	bool ParseBinaryExpression( const eValueType& expressionType );
-	bool ParseNumberExpression();
-	bool ParseVec2Expression();
-	bool ParseBoolExpression( bool value );
-	bool ParseStringExpression();
+	bool ParseNumberConstant();
+	bool ParseVec2Constant();
+	bool ParseBoolConstant( bool value );
+	bool ParseStringConstant();
 	bool ParseIdentifierExpressionOfType( eValueType expectedType );
 
 	// Pratt Parser Helpers

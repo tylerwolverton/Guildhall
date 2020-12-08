@@ -31,7 +31,7 @@ StateMachine
         // Spawn minions on damage
         if( minionSpawnType != "" )
         {
-            Vec2 posOffset = ( .25, 0 );
+            Vec2 posOffset = Vec2( .25, 0 );
             FireEvent( SpawnEntity( type = minionSpawnType, position = position + posOffset ) );
             FireEvent( SpawnEntity( type = minionSpawnType, position = position - posOffset ) );
         }
