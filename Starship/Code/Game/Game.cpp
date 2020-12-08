@@ -33,7 +33,15 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+	m_worldCamera->SetPosition( Vec3( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) * .5f, 0.f ) );
+	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+
 	m_uiCamera = new Camera();
+	m_uiCamera->SetPosition( Vec3( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) * .5f, 0.f ) );
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
 
 	m_playerShip = new PlayerShip( this, Vec2( WORLD_CENTER_X, WORLD_CENTER_Y ) );
 	
@@ -185,10 +193,6 @@ void Game::Update(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen(Rgba8(0, 0, 0));
-
 	g_renderer->BeginCamera(*m_worldCamera);
 
 	if ( m_curGameState == GameState::GAME_STATE_ATTRACT )
@@ -766,18 +770,18 @@ void Game::UpdateCameras( float deltaSeconds )
 {
 	// World camera
 	m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
-	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.0);
+	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.f );
 
 	float maxScreenShake = m_screenShakeIntensity * MAX_CAMERA_SHAKE_DIST;
 	float cameraShakeX = m_randNumGen->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
 	float cameraShakeY = m_randNumGen->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
 	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
 
-	m_worldCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
-	m_worldCamera->Translate2D(cameraShakeOffset);
+	//m_worldCamera->SetOrthoView( Vec2::ZERO, Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ));
+	m_worldCamera->Translate( Vec3( cameraShakeOffset, 0.f) );
 
 	// UI Camera
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	//m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
 
 }
 

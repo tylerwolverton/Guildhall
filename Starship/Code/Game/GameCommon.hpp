@@ -1,5 +1,6 @@
 #pragma once
 class App;
+class Window;
 class InputSystem;
 class RenderContext;
 class Game;
@@ -10,9 +11,16 @@ struct Rgba8;
 //-----------------------------------------------------------------------------------------------
 // External variable declarations
 //
+extern Window* g_window;
 extern App* g_app;
 extern InputSystem* g_inputSystem;
 extern RenderContext* g_renderer;
+
+
+//-----------------------------------------------------------------------------------------------
+// Global Functions
+//
+void PopulateGameConfig();
 
 
 //-----------------------------------------------------------------------------------------------

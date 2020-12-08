@@ -549,8 +549,14 @@ void RenderContext::EndCamera( const Camera& camera )
 void RenderContext::UpdateFrameData()
 {
 	FrameData frameData;
-	frameData.systemTimeSeconds = (float)Clock::GetMaster()->GetTotalElapsedSeconds();
-	frameData.systemDeltaTimeSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	if ( Clock::GetMaster() != nullptr )
+	{
+		frameData.systemTimeSeconds = (float)Clock::GetMaster()->GetTotalElapsedSeconds();
+	}
+	if ( m_gameClock != nullptr )
+	{
+		frameData.systemDeltaTimeSeconds = (float)m_gameClock->GetLastDeltaSeconds();
+	}
 
 	frameData.nearFogDistance = m_linearFog.nearFogDistance;
 	frameData.farFogDistance = m_linearFog.farFogDistance;
