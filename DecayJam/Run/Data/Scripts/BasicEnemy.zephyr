@@ -1,5 +1,6 @@
 StateMachine
 {
+	Number id;
 	Vec2 position;		
 	Vec2 targetPosition;
 	String targetName = "player";
@@ -13,10 +14,12 @@ StateMachine
 	// Global events
 	// -----------------------------------------------------------------------------------------
 	// TODO: reserve Spawn and Die as special events that the user can't fire 
+	Number entityId;
 	Number maxHealth;
 	String mapName;
 	OnEvent( Spawned )
 	{
+		id = entityId;
 		health = maxHealth;
 		FireEvent( EnemySpawned( mapName = mapName ) );
 		FireEvent( GetNewWanderTargetPosition() );
@@ -35,7 +38,7 @@ StateMachine
 
 	OnEvent( Died )
 	{
-		FireEvent( EnemyDied( mapName = mapName ) );
+		FireEvent( EnemyDied( mapName = mapName, deadEntityId = id ) );
 	}
 
 	// TODO: Make this more intuitive
@@ -72,7 +75,7 @@ StateMachine
 			ChangeState( Chase );
 		}
 		
-		// FireEvent( PrintDebugText( text = "Wander" ) );
+		FireEvent( PrintDebugText( text = id ) );
 		
 		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
 		FireEvent( MoveToLocation( pos = targetPosition ) );
@@ -120,6 +123,7 @@ StateMachine
 				ChangeState( Wander );
 			}
 		}
+		FireEvent( PrintDebugText( text = id ) );
 
 		FireEvent( ChaseTargetEntity( id = targetName ) );
 	}

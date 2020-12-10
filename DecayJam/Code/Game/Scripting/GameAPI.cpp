@@ -112,7 +112,7 @@ void GameAPI::DestroySelf( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::DamageEntity( EventArgs* args )
 {
-	EntityId targetId = (EntityId)args->GetValue( "id", 0.f );
+	EntityId targetId = (EntityId)args->GetValue( "id", -1.f );
 	float damage = args->GetValue( "damage", 0.f );
 	std::string damageType = args->GetValue( "damageType", "normal" );
 

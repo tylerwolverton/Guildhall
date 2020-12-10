@@ -1,6 +1,7 @@
 StateMachine
 {
     Number id;
+    Number attackTargetId = -1;
     
     Number entityId;
     OnEvent( Spawned )
@@ -10,6 +11,11 @@ StateMachine
 
     State FollowPlayer
     {
+        OnEnter()
+        {
+            attackTargetId = -1;
+        }
+
         OnEvent( ItemThrown )
         {
             FireEvent( PrintDebugText( text = "Thrown", duration = 3 ) );
@@ -23,7 +29,7 @@ StateMachine
     {
         OnEnter()
         {
-            // If this plaque diesn't hit anything, return to player
+            // If this plaque doesn't hit anything, return to player
             FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "ReturnToPlayer" ) );
         }
 
@@ -34,19 +40,53 @@ StateMachine
         }
 
         String otherEntityType;
+        String otherEntityName;
+        Number otherEntityId;
         OnEvent( CollisionEntered )
         {
-            if( otherEntityType != "Plaque" )
+            if( otherEntityId == -1 )
             {
+                return;
+            }
+
+            if( otherEntityType != "Plaque" 
+                && otherEntityName != "Player" )
+            {
+                attackTargetId = otherEntityId;
                 ChangeState( Attacking );
             }
         }
 
-        FireEvent( MoveInDirection( direction = Vec2( 0, 1 ) ) );
+        FireEvent( MoveInDirection( speed = 200, direction = Vec2( 0, 1 ) ) );
     }
 
     State Attacking
     {
-        FireEvent( PrintDebugText( text = "Attacking" ) );
+        FireEvent( PrintDebugText( text = attackTargetId ) );
+        OnEnter()
+        {
+            // If this plaque doesn't hit anything, return to player
+            FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "DealDamage" ) );
+        }
+
+        OnEvent( DealDamage )
+        {
+            if( attackTargetId != -1 )
+            {
+                FireEvent( DamageEntity( id = attackTargetId, damage = 1 ) );
+                FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "DealDamage" ) );
+            }
+        }
+
+        Number deadEntityId;
+        OnEvent( EnemyDied )
+        {
+            if( deadEntityId == attackTargetId )
+            {
+                ChangeState( FollowPlayer );
+            }
+        }
+
+        FireEvent( ChaseTargetEntity( targetId = attackTargetId ) );
     }
 }

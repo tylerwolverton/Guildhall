@@ -1,5 +1,6 @@
 StateMachine
 {
+    Number id;
     Number curHealth;
     Vec2 curPosition;
     Bool canShoot = true;
@@ -7,9 +8,11 @@ StateMachine
 
     //Number[] plaqueIds;
 
+    Number entityId;
     Number maxHealth;
     OnEvent( Spawned )
     {
+        id = entityId;
         curHealth = maxHealth;
 
         FireEvent( AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 ) );
@@ -28,10 +31,15 @@ StateMachine
         FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( .1, .1 ) ) );
     }
 
+    OnEvent( Died )
+    {
+        FireEvent( PrintDebugText( text = "ded", duration = 3 ) );
+    }
+
     String itemName;
 	OnEvent( ItemAcquired )
 	{
-		FireEvent( PrintDebugText( text = "Added Item", duration = 5 ) );
+		
 	}
 
     Vec2 newPos;
@@ -40,18 +48,19 @@ StateMachine
 		curPosition = newPos;
 	}
 
-    // Number newHealth;
-	// OnEvent( HealthUpdated )
-	// {
-    //     if( newHealth < curHealth )
-    //     {
-    //         FireEvent( ActivateInvincibility() );
-    //         //FireEvent( ChangeSpriteAnimation( newAnim = "Damaged" ) );
-    //         //FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" ) );
-    //     }
+    Number newHealth;
+	OnEvent( HealthUpdated )
+	{
+        FireEvent( PrintDebugText( text = "ouch", duration = 3 ) );
+        if( newHealth < curHealth )
+        {
+            FireEvent( ActivateInvincibility() );
+            //FireEvent( ChangeSpriteAnimation( newAnim = "Damaged" ) );
+            //FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" ) );
+        }
 
-	// 	curHealth = newHealth;
-    // }
+		curHealth = newHealth;
+    }
 
     // OnEvent( InvincibilityExpired )
     // {
@@ -118,5 +127,10 @@ StateMachine
     OnEvent( ShootFireballRight )
     {
         FireEvent( ShootFireball( fireballOffset = Vec2( .6, 0 ), shotOrientation = 0 ) );
+    }
+
+    State Default
+    {
+        FireEvent( PrintDebugText( text = id ) );
     }
 }
