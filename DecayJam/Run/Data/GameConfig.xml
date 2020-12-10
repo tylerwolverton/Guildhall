@@ -1,0 +1,8 @@
+<GameConfig
+	startMap="Level1"
+  playerActorName="Link"
+	windowAspect="1.777"
+  windowTitle="Plaque Ops"
+  gameTitle="Plaque Ops"
+	windowMode="windowed"
+/>

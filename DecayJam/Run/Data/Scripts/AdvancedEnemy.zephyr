@@ -1,0 +1,28 @@
+StateMachine
+{
+	Number test = 13 + 7 - 9;
+	String msg = "Hello";
+	
+	OnEvent( TestEvent )
+	{		
+		if(msg == "Hello"){ msg = "Goodbye"; }
+		else{ msg = "Hello"; }
+	}
+
+	// TODO: reserve Spawn and Die as special events that the user can't fire 
+	OnEvent( Spawned )
+	{
+		FireEvent( EnemySpawned() );
+	}
+
+	OnEvent( Died )
+	{
+		FireEvent( EnemyDied() );
+	}
+	
+	State TestState
+	{	
+		FireEvent( PrintDebugText( text = msg )  );
+	}
+}
+

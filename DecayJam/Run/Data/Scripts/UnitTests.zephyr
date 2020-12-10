@@ -1,0 +1,187 @@
+StateMachine
+{
+	Number testNum; 
+	Number testNumInit = 12; 
+	Number testNum2 = 2.5;  
+	Number testNum3 = .7;
+	Vec2 testVec2;		
+	Vec2 testVec2Init = Vec2(5,5);
+	Bool testBool;
+	Bool testBool2 = true;
+	Bool testBool3 = false;
+	String testStr;
+	String testStrInit = "Hello";
+
+	// Error cases to comment in to test parser
+	State NoPrint
+	{	
+		OnEvent( TestEvent )
+		{		
+			//ChangeState( GlobalAssignmentTest );
+
+			// OnEvent( SubEvent ) {}
+		}
+
+		// unknownVar = 6;
+		// testVec2.z = 27;
+		// State SubState {}
+		// testStr = testVec2;
+		// testVec2 + testStr;
+		// testNum = testVec2 + testStr;
+		// testNum2 = 2.5.4.4.34;  
+
+		
+		if( 1 == 1 )
+		{
+			Number transitiveTestNum = 10;
+		}
+		transitiveTestNum = 2;
+
+		FireEvent( PrintToConsole( text = "Running unit tests..." ) ); 
+
+		ChangeState( GlobalAssignmentTest );
+	}
+
+	State GlobalAssignmentTest
+	{		
+		testNum = testNumInit;
+		if( testNum == testNumInit )
+		{
+			testVec2 = testVec2Init;
+			if( testVec2 == testVec2Init )
+			{
+				testStr = testStrInit;
+				if( testStr == testStrInit )
+				{
+					testVec2.x = 1;
+					testVec2.y = 2;
+					Vec2 actualVec = Vec2( 1, 2 );
+					if( testVec2 = actualVec )
+					{
+						FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Success", color = "green" ) );
+					}
+					else
+					{
+						FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+					}
+				}
+				else
+				{
+					FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+				}
+			}
+			else
+			{	
+				FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+			}	
+		}
+		else
+		{
+			FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+		}
+
+		ChangeState( ScopeAssignmentTest );
+	}
+
+	State ScopeAssignmentTest
+	{		
+		Number localTestNum = 1;
+		if( localTestNum == 1 )
+		{
+			localTestNum = 2;
+		}
+		else
+		{
+			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to initialize local variable", color = "red" ) );
+		}
+
+		if( localTestNum == 2 )
+		{
+			Number localTestNum;
+			localTestNum = 12;
+		}
+		else
+		{
+			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to set var in if statement", color = "red" ) );
+		}
+
+		// This should be a parsing error probably
+		//if( localTestNum == 12 )
+		//{
+		//	FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to hide scope of local var", color = "red" ) );
+		//}
+
+		FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Success", color = "green" ) );
+
+		ChangeState( OperatorTest );
+	}
+
+	State OperatorTest
+	{
+		Number testNum = -(1 + 2 * 3 - 4 / 2);
+		if( testNum != -5 )
+		{
+			FireEvent( PrintToConsole( text = "OperatorTest: Failed", color = "red" ) );
+		}
+		else
+		{
+			FireEvent( PrintToConsole( text = "OperatorTest: Success", color = "green" ) );
+		}
+
+		ChangeState( LogicalOperatorTest );
+	}
+
+	State LogicalOperatorTest
+	{
+		if( 1 == 1 
+			&& 2 == 2 )
+		{
+			if( 3 == 1 
+				|| 2 == 2 )
+			{
+				if( ( 1 == 1 || 6 == 7 )
+					&& 2 == 2 
+					|| "yes" == "no" )
+				{
+					FireEvent( PrintToConsole( text = "LogicalOperatorTest: Success", color = "green" ) );
+				}
+				else
+				{
+					FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed combination", color = "red" ) );
+				}
+			}
+			else
+			{
+				FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed or", color = "red" ) );
+			}
+		}
+		else
+		{
+			FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed and", color = "red" ) );
+		}
+
+		ChangeState( BoolTest );
+	}
+
+	State BoolTest
+	{
+		Bool a;
+		Bool b = true;
+
+		if( !( a && b ) )
+		{
+			FireEvent( PrintToConsole( text = "BoolTest: Success", color = "green" ) );
+		}
+		else
+		{
+			FireEvent( PrintToConsole( text = "BoolTest: Failed", color = "red" ) );
+		}
+
+		ChangeState( End );
+	}
+
+	State End
+	{
+	}
+}
+

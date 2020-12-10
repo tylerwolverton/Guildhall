@@ -1,0 +1,13 @@
+StateMachine
+{
+	String name;
+	
+	String doorName;
+	OnEvent( OpenDoor )
+	{
+		if( name == doorName )
+		{
+			FireEvent( DestroySelf() );
+		}
+	}
+}

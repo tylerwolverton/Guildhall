@@ -1,0 +1,99 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Zephyr",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#variables"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+			{
+				"name": "keyword.control.zephyr",
+				"match": "\\b(if|else|return)\\b"
+			},
+			{
+				"name": "keyword.states.zephyr",
+				"match": "\\b(StateMachine|State|ChangeState)\\b"
+			},
+			{
+				"name": "keyword.operator.arithmetic.zephyr",
+				"match": "\\+|\\-|\\*|\\\\"
+			},
+			{
+				"name": "keyword.operator.comparison.zephyr",
+				"match": "<\\=|>\\=|\\=\\=|<|>|\\!\\="
+			},
+			{
+				"name": "keyword.events.zephyr",
+				"match": "\\b(FireEvent|OnEvent|OnEnter|OnExit)\\b"
+			},
+			{
+				"name": "keyword.operator.assignment.zephyr",
+				"match": "\\="
+			},
+			{
+				"name": "storage.type.zephyr",
+				"match": "\\b(Number|String|Vec2|Bool)\\b"
+			}
+		]
+		},
+		"variables": {
+			"patterns": [
+			{
+				"name": "variable.language.gameapi.zephyr",
+				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|AddNewDamageTypeMultiplier|ChangeDamageTypeMultiplier|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake)\\b"
+			}
+		]
+		},
+		"constants": {
+			"patterns": [
+			{
+				"name": "constant.numeric.float.zephyr",
+				"match": "\\b(?i:(\\d+\\.\\d*(e[\\-\\+]?\\d+)?))(?=[^a-zA-Z_])"
+			},
+			{
+				"name": "constant.numeric.integer.decimal.zephyr",
+				"match": "\\b([1-9]+[0-9]*|0)"
+			},
+			{
+				"name": "constant.numeric.bool.zephyr",
+				"match": "\\b(true|false)"
+			}
+		]
+		},
+		"comments": {
+			"patterns": [
+			{
+				"name": "comment.line.zephyr",
+				"match": "//.*"
+			}
+		]
+		},
+		"strings": {
+			"name": "string.quoted.double.zephyr",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.zephyr",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.zephyr"
+}

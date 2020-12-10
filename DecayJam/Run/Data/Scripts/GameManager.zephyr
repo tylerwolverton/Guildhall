@@ -1,0 +1,39 @@
+StateMachine
+{
+	Number totalQuestCount = 3;
+    Number completedQuests = 0;
+	
+	OnEvent( GameStarted )
+	{
+		FireEvent( ChangeMusic( musicName = "FF6TheDecisiveBattle", volume = .1 ) );
+	}
+
+	String questId;
+	OnEvent( QuestCompleted )
+	{
+		if ( questId == "Level1" )
+		{
+			FireEvent( OpenDoor( doorName = "Level3Door" ) );
+			completedQuests = completedQuests + 1;
+		}
+		
+		if ( questId == "Level2" )
+		{
+			completedQuests = completedQuests + 1;
+			FireEvent( OpenDoor( doorName = "VictoryDoor" ) );
+			FireEvent( OpenDoor( doorName = "Level2To1Door" ) );
+		}
+
+		if ( questId == "Level3" )
+		{
+			FireEvent( OpenDoor( doorName = "Level4Door" ) );
+			completedQuests = completedQuests + 1;
+		}
+
+		if( questId == "Victory" )
+		{
+			FireEvent( WinGame() );
+			FireEvent( ChangeMusic( musicName = "LoZCredits", volume = .1 ) );
+		}
+	}
+}

@@ -1,0 +1,15 @@
+<TileDefinitions>
+
+  <TileDefinition
+		name="BlueDungeonFloor"
+    materialType="BlueDungeonFloor"
+		isSolid="false"
+	/>
+
+  <TileDefinition
+		name="BlueDungeonBlock"
+    materialType="BlueDungeonBlock"
+		isSolid="true"
+	/>
+
+</TileDefinitions>
