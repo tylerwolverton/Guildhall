@@ -193,6 +193,8 @@ void Entity::SetCollisionLayer( uint layer )
 //-----------------------------------------------------------------------------------------------
 void Entity::AddItemToInventory( Entity* item )
 {
+	item->SetOwner( this );
+
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
 		if ( m_inventory[itemIdx] == nullptr )
@@ -311,6 +313,8 @@ void Entity::FireSpawnEvent()
 	{
 		EventArgs args;
 		args.SetValue( "maxHealth", m_entityDef.GetMaxHealth() );
+		args.SetValue( "entityId", GetId() );
+		args.SetValue( "entityName", GetName() );
 
 		m_scriptObj->FireEvent( "Spawned", &args );
 	}

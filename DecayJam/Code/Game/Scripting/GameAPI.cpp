@@ -49,8 +49,10 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( DeactivateInvincibility );
 	REGISTER_EVENT( AddNewDamageTypeMultiplier );
 	REGISTER_EVENT( ChangeDamageTypeMultiplier );
+	REGISTER_EVENT( SpawnNewEntityInInventory );
 	REGISTER_EVENT( AddItemToInventory );
 	REGISTER_EVENT( RemoveItemFromInventory );
+	REGISTER_EVENT( ThrowItemFromInventory );
 
 	REGISTER_EVENT( RegisterKeyEvent );
 	REGISTER_EVENT( UnRegisterKeyEvent );
@@ -248,6 +250,22 @@ void GameAPI::ChangeDamageTypeMultiplier( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+void GameAPI::SpawnNewEntityInInventory( EventArgs* args )
+{
+	Entity* newEntity = SpawnEntityFromArgs( args );
+	Entity* targetEntity = GetTargetEntityFromArgs( args );
+
+	if ( newEntity == nullptr
+		 || targetEntity == nullptr )
+	{
+		return;
+	}
+
+	targetEntity->AddItemToInventory( newEntity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void GameAPI::AddItemToInventory( EventArgs* args )
 {
 	Entity* itemEntity = GetItemEntityFromArgs( args );
@@ -276,6 +294,59 @@ void GameAPI::RemoveItemFromInventory( EventArgs* args )
 	}
 
 	targetEntity->RemoveItemFromInventory( itemEntity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::ThrowItemFromInventory( EventArgs* args )
+{
+	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	std::string itemType = args->GetValue( "itemType", "" );
+	if ( targetEntity == nullptr 
+		 || itemType.empty() )
+	{
+		return;
+	}
+
+	std::vector<Entity*> inventory = targetEntity->GetInventory();
+	Entity* itemToThrow = nullptr;
+	for ( int itemIdx = 0; itemIdx < (int)inventory.size(); ++itemIdx )
+	{
+		if ( inventory[itemIdx] != nullptr
+			 && inventory[itemIdx]->GetType() == itemType )
+		{
+			itemToThrow = inventory[itemIdx];
+			break;
+		}
+	}
+
+	if ( itemToThrow == nullptr )
+	{
+		return;
+	}
+	
+	EventArgs itemArgs;
+	itemToThrow->FireScriptEvent( "ItemThrown", &itemArgs );
+
+	/*Vec2 direction = args->GetValue( "direction", Vec2::ZERO );
+	if ( direction == Vec2::ZERO )
+	{
+		return;
+	}
+
+	direction.Normalize();
+
+	float speed = args->GetValue( "speed", itemToThrow->GetSpeed() );*/
+
+	targetEntity->RemoveItemFromInventory( itemToThrow );
+
+	Map* mapToSpawnIn = targetEntity->GetMap();
+	if ( mapToSpawnIn == nullptr )
+	{
+		mapToSpawnIn = g_game->GetCurrentMap();
+	}
+
+	mapToSpawnIn->TakeOwnershipOfEntity( itemToThrow );
 }
 
 
@@ -532,48 +603,7 @@ void GameAPI::PrintToConsole( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::SpawnEntity( EventArgs* args )
 {
-	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
-	if ( entity == nullptr )
-	{
-		return;
-	}
-
-	std::string entityType = args->GetValue( "type", "" );
-	if ( entityType.empty() )
-	{
-		return;
-	}
-
-	std::string name = args->GetValue( "name", "" );
-	std::string mapName = args->GetValue( "map", "" );
-	Vec2 position = args->GetValue( "position", entity->GetPosition() );
-	float orientation = args->GetValue( "orientation", entity->GetOrientationDegrees() );
-
-	Map* mapToSpawnIn = entity->GetMap();
-	if ( mapToSpawnIn == nullptr )
-	{
-		mapToSpawnIn = g_game->GetCurrentMap();
-	}
-
-	if ( !mapName.empty() )
-	{
-		mapToSpawnIn = g_game->GetMapByName( mapName );
-		if ( mapToSpawnIn == nullptr )
-		{
-			g_devConsole->PrintError( Stringf( "Can't spawn entity in nonexistent map '%s'", mapName.c_str() ) );
-			return;
-		}
-	}
-
-	Entity* newEntity = mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
-	newEntity->SetOrientationDegrees( orientation );
-	newEntity->SetName( name );
-	g_game->SaveEntityByName( newEntity );
-	newEntity->FireSpawnEvent();
-	if ( mapToSpawnIn == g_game->GetCurrentMap() )
-	{
-		newEntity->Load();
-	}
+	SpawnEntityFromArgs( args );
 }
 
 
@@ -867,6 +897,56 @@ void GameAPI::AddScreenShake( EventArgs* args )
 	float intensity = args->GetValue( "intensity", 0.f );
 
 	g_game->AddScreenShakeIntensity( intensity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* GameAPI::SpawnEntityFromArgs( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	if ( entity == nullptr )
+	{
+		return nullptr;
+	}
+
+	std::string entityType = args->GetValue( "type", "" );
+	if ( entityType.empty() )
+	{
+		return nullptr;
+	}
+
+	std::string name = args->GetValue( "name", "" );
+	std::string mapName = args->GetValue( "map", "" );
+	Vec2 position = args->GetValue( "position", entity->GetPosition() );
+	float orientation = args->GetValue( "orientation", entity->GetOrientationDegrees() );
+
+	Map* mapToSpawnIn = entity->GetMap();
+	if ( mapToSpawnIn == nullptr )
+	{
+		mapToSpawnIn = g_game->GetCurrentMap();
+	}
+
+	if ( !mapName.empty() )
+	{
+		mapToSpawnIn = g_game->GetMapByName( mapName );
+		if ( mapToSpawnIn == nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "Can't spawn entity in nonexistent map '%s'", mapName.c_str() ) );
+			return nullptr;
+		}
+	}
+
+	Entity* newEntity = mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
+	newEntity->SetOrientationDegrees( orientation );
+	newEntity->SetName( name );
+	g_game->SaveEntityByName( newEntity );
+	newEntity->FireSpawnEvent();
+	if ( mapToSpawnIn == g_game->GetCurrentMap() )
+	{
+		newEntity->Load();
+	}
+
+	return newEntity;
 }
 
 

@@ -21,13 +21,11 @@ StateMachine
 
         FireEvent( RegisterKeyEvent( key = "Up", event = "FirePlaque" ) );
 
-        FireEvent( SpawnEntity( type = "Plaque", name = "plaque1", position = curPosition + Vec2( .1, 0 ) ) );
-        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( -.1, 0 ) ) );
-        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, .1 ) ) );
-        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, -.1 ) ) );
-        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( .1, .1 ) ) );
-
-        FireEvent( AddItemToInventory( itemName = "plaque1", targetName = "player" ) );
+        FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( .1, 0 ) ) );
+        FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( -.1, 0 ) ) );
+        FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( 0, .1 ) ) );
+        FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( 0, -.1 ) ) );
+        FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( .1, .1 ) ) );
     }
 
     String itemName;
@@ -96,7 +94,7 @@ StateMachine
             return;
         }
 
-        FireEvent( PlaqueFired() );
+        FireEvent( ThrowItemFromInventory( itemType = "Plaque" ) );
         FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
 
         canShoot = false;

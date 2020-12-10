@@ -1,9 +1,18 @@
 StateMachine
 {
+    Number id;
+    
+    Number entityId;
+    OnEvent( Spawned )
+    {
+        id = entityId;
+    }
+
     State FollowPlayer
     {
-        OnEvent( PlaqueFired )
+        OnEvent( ItemThrown )
         {
+            FireEvent( PrintDebugText( text = "Thrown", duration = 3 ) );
             ChangeState( Projectile );
         }
 
@@ -20,6 +29,7 @@ StateMachine
 
         OnEvent( ReturnToPlayer )
         {
+            FireEvent( AddItemToInventory( targetName = "player", itemId = id ) );
             ChangeState( FollowPlayer );
         }
 

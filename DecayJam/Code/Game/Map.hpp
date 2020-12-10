@@ -56,6 +56,8 @@ public:
 
 	void RemoveOwnershipOfEntity( Entity* entityToRemove );
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
+	void RemoveEntityFromMap( Entity* entityToRemove );
+	void AddEntityToMap( Entity* entityToAdd );
 
 	void AddItemToTargetInventory( Entity* item, Entity* targetEntity );
 

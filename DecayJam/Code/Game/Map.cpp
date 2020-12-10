@@ -36,7 +36,8 @@ Map::~Map()
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		if ( m_entities[entityIdx] != nullptr )
+		if ( m_entities[entityIdx] != nullptr
+			 && m_entities[entityIdx]->GetOwner() == this )
 		{
 			m_entities[entityIdx]->Die();
 
@@ -69,6 +70,7 @@ void Map::Load( Entity* player )
 	m_entities.push_back( player );
 
 	player->SetMap( this );
+	player->SetOwner( this );
 	player->SetPosition( m_playerStartPos );
 	player->SetOrientationDegrees( m_playerStartYaw );
 	player->FireSpawnEvent();
@@ -87,7 +89,8 @@ void Map::Unload()
 			continue;
 		}
 
-		if ( m_entities[entityIdx] != nullptr )
+		if ( m_entities[entityIdx] != nullptr 
+			 && m_entities[entityIdx]->GetOwner() == this )
 		{
 			m_entities[entityIdx]->Unload();
 		}
@@ -262,6 +265,27 @@ void Map::ReloadAllEntityScripts()
 //-----------------------------------------------------------------------------------------------
 void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 {
+
+	//entityToAdd->SetOwner( this );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
+{
+	if ( entityToAdd == nullptr )
+	{
+		return;
+	}
+
+	entityToAdd->SetMap( this );
+	entityToAdd->SetOwner( this );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::RemoveEntityFromMap( Entity* entityToRemove )
+{
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity*& entity = m_entities[entityIdx];
@@ -279,7 +303,7 @@ void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
+void Map::AddEntityToMap( Entity* entityToAdd )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{

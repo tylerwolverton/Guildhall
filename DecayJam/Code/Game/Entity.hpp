@@ -73,6 +73,9 @@ public:
 
 	void					ChangeSpriteAnimation( const std::string& spriteAnimDefSetName );
 
+	void					SetOwner( void* ownerObj )								{ m_owner = ownerObj; }
+	void*					GetOwner() const										{ return m_owner; }
+
 	const Vec2				GetForwardVector() const;
 	const Vec2				GetPosition() const;
 	void					SetPosition( const Vec2& position );
@@ -138,6 +141,8 @@ protected:
 
 protected:
 	ZephyrScript*							m_scriptObj = nullptr;
+
+	void*									m_owner = nullptr;
 
 	// Game state
 	const EntityDefinition&					m_entityDef;
