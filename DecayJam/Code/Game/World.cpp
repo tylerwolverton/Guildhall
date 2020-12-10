@@ -228,7 +228,7 @@ void World::AddEntityFromDefinition( const EntityDefinition& entityDef )
 	}
 
 	m_worldEntities.push_back( newEntity );
-	m_entitiesByName[newEntity->GetName()] = newEntity;
+	SaveEntityByName( newEntity );
 }
 
 

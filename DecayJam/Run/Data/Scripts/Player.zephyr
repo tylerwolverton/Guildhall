@@ -5,6 +5,8 @@ StateMachine
     Bool canShoot = true;
     Number fireCooldown = .5;
 
+    //Number[] plaqueIds;
+
     Number maxHealth;
     OnEvent( Spawned )
     {
@@ -19,17 +21,19 @@ StateMachine
 
         FireEvent( RegisterKeyEvent( key = "Up", event = "FirePlaque" ) );
 
-        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( .1, 0 ) ) );
+        FireEvent( SpawnEntity( type = "Plaque", name = "plaque1", position = curPosition + Vec2( .1, 0 ) ) );
         FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( -.1, 0 ) ) );
         FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, .1 ) ) );
         FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, -.1 ) ) );
         FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( .1, .1 ) ) );
+
+        FireEvent( AddItemToInventory( itemName = "plaque1", targetName = "player" ) );
     }
 
     String itemName;
 	OnEvent( ItemAcquired )
 	{
-		
+		FireEvent( PrintDebugText( text = "Added Item", duration = 5 ) );
 	}
 
     Vec2 newPos;
@@ -38,24 +42,24 @@ StateMachine
 		curPosition = newPos;
 	}
 
-    Number newHealth;
-	OnEvent( HealthUpdated )
-	{
-        if( newHealth < curHealth )
-        {
-            FireEvent( ActivateInvincibility() );
-            FireEvent( ChangeSpriteAnimation( newAnim = "Damaged" ) );
-            FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" ) );
-        }
+    // Number newHealth;
+	// OnEvent( HealthUpdated )
+	// {
+    //     if( newHealth < curHealth )
+    //     {
+    //         FireEvent( ActivateInvincibility() );
+    //         //FireEvent( ChangeSpriteAnimation( newAnim = "Damaged" ) );
+    //         //FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" ) );
+    //     }
 
-		curHealth = newHealth;
-    }
+	// 	curHealth = newHealth;
+    // }
 
-    OnEvent( InvincibilityExpired )
-    {
-        FireEvent( DeactivateInvincibility() );
-        FireEvent( ChangeSpriteAnimation( newAnim = "Walk" ) );
-    }
+    // OnEvent( InvincibilityExpired )
+    // {
+    //     FireEvent( DeactivateInvincibility() );
+    //     FireEvent( ChangeSpriteAnimation( newAnim = "Walk" ) );
+    // }
 
     // Input Events
     // TODO? Add parameter passing into key events to remove the need to make separate events for each direction
@@ -85,8 +89,6 @@ StateMachine
         canShoot = true;
     }
 
-    Vec2 fireballOffset;
-    Number shotOrientation;
     OnEvent( FirePlaque )
     {
         if( !canShoot )
@@ -94,7 +96,7 @@ StateMachine
             return;
         }
 
-        FireEvent( Fired() );
+        FireEvent( PlaqueFired() );
         FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
 
         canShoot = false;

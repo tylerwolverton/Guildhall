@@ -1,13 +1,8 @@
 StateMachine
 {
-    OnEvent( ReturnToPlayer )
-    {
-        ChangeState( FollowPlayer );
-    }
-
     State FollowPlayer
     {
-        OnEvent( Fired )
+        OnEvent( PlaqueFired )
         {
             ChangeState( Projectile );
         }
@@ -19,9 +14,29 @@ StateMachine
     {
         OnEnter()
         {
+            // If this plaque diesn't hit anything, return to player
             FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "ReturnToPlayer" ) );
         }
 
+        OnEvent( ReturnToPlayer )
+        {
+            ChangeState( FollowPlayer );
+        }
+
+        String otherEntityType;
+        OnEvent( CollisionEntered )
+        {
+            if( otherEntityType != "Plaque" )
+            {
+                ChangeState( Attacking );
+            }
+        }
+
         FireEvent( MoveInDirection( direction = Vec2( 0, 1 ) ) );
+    }
+
+    State Attacking
+    {
+        FireEvent( PrintDebugText( text = "Attacking" ) );
     }
 }
