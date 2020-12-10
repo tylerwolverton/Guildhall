@@ -1,7 +1,7 @@
 <EntityTypes spriteSheet="Data/Images/EntitiesSpriteSheet_30x30.png" spriteSheetDimensions="30,30">
   ​
   <Actor name="Link">
-    <Physics radius="0.5" walkSpeed="150.0" collisionLayer="Enemy"/>
+    <Physics radius="0.5" drag="5.0" speed="150.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="5">
       <!--First anim is defaulted as initial animation-->
       <Walk up="6,7" left="4,5" down="0,1" right="2,3" fps="2"/>
@@ -14,8 +14,19 @@
     <Script name="Player.zephyr"/>
   </Actor>
   ​
-  <Actor name="OldMan">
-    <Physics radius="0.5" walkSpeed="55.0" collisionLayer="NPC"/>
+  <Entity name="Plaque">
+    <Physics radius="0.125" drag="5.0" speed="140.0" collisionLayer="PlayerProjectile"/>
+    <Appearance size=".25,.25" localDrawBounds="-.125,-.125,.125,.125" fps="1.75">
+      <Walk up="30,31"/>
+      <LowHealth up ="32,33" fps="3"/>
+    </Appearance>
+    <Gameplay maxHealth="3">
+    </Gameplay>
+    <Script name="Plaque.zephyr"/>
+  </Entity>
+
+<Actor name="OldMan">
+    <Physics radius="0.5" speed="55.0" collisionLayer="NPC"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
       <Walk up="90"/>
     </Appearance>
@@ -25,7 +36,7 @@
   </Actor>
   
   <Actor name="Blob">
-    <Physics radius="0.5" walkSpeed="55.0" collisionLayer="Enemy"/>
+    <Physics radius="0.5" drag="5.0" speed="55.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
       <Walk up="30,31"/>
       <LowHealth up ="32,33" fps="3"/>
@@ -36,7 +47,7 @@
   </Actor>
 
   <Actor name="BlobBossBig">
-    <Physics radius="2.0" walkSpeed="30.0" collisionLayer="Enemy"/>
+    <Physics radius="2.0" speed="30.0" collisionLayer="Enemy"/>
     <Appearance size="4.0,4.0" localDrawBounds="-2.0,-2.0,2.0,2.0" fps="1.25">
       <Walk up="30,31"/>
     </Appearance>
@@ -45,28 +56,6 @@
     <Script name="SplittingBlob.zephyr">
       <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossMed"/>
     </Script>
-  </Actor>
-
-  <Actor name="BlobBossMed">
-    <Physics radius="0.5" walkSpeed="55.0" collisionLayer="Enemy"/>
-    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1.75">
-      <Walk up="30,31"/>
-    </Appearance>
-    <Gameplay maxHealth="2">
-    </Gameplay>
-    <Script name="SplittingBlob.zephyr">
-      <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossSmall"/>
-    </Script>
-  </Actor>
-
-  <Actor name="BlobBossSmall">
-    <Physics radius="0.25" walkSpeed="75.0" collisionLayer="Enemy"/>
-    <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
-      <Walk up="30,31"/>
-    </Appearance>
-    <Gameplay maxHealth="1">
-    </Gameplay>
-    <Script name="SplittingBlob.zephyr"/>
   </Actor>
 
   <Entity name="UnitTester">
@@ -80,13 +69,9 @@
   <Entity name="Level1Manager">
     <Script name="Level1Manager.zephyr"/>
   </Entity>
-  
+
   <Entity name="Level2Manager">
     <Script name="Level2Manager.zephyr"/>
-  </Entity>
-  
-  <Entity name="Level3Manager">
-    <Script name="Level3Manager.zephyr"/>
   </Entity>
 
   <Entity name="VictoryTrigger">
@@ -112,46 +97,9 @@
     <Gameplay maxHealth="99999"/>
     <Script name="LockedDoor.zephyr"/>
   </Entity>
-
-  <Projectile name="Fireball">
-    <Physics radius="0.25" speed="4" collisionLayer="EnemyProjectile"/>
-    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
-      <Walk up="20"/>
-    </Appearance>
-    <Gameplay damage="1~1" maxHealth="3"/>
-    <Script name="BasicProjectile.zephyr"/>
-  </Projectile>
-  ​
-  <Projectile name="PlayerFireball">
-    <Physics radius="0.25" speed="4" collisionLayer="PlayerProjectile"/>
-    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
-      <Walk up="20"/>
-    </Appearance>
-    <Gameplay damage="1~1" maxHealth="3"/>
-    <Script name="BasicProjectile.zephyr"/>
-  </Projectile>
-
+ 
   <Portal name="InvisibleTeleporter">
     <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal" isTrigger="true"/>
   </Portal>
-  ​
-  <Pickup name="Key">
-    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Pickup" isTrigger="true"/>
-    <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
-      <Walk up="120"/>
-    </Appearance>
-  </Pickup>
-
-  <Pickup name="TripleFireballPowerup">
-    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Pickup" isTrigger="true"/>
-    <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
-      <Walk up="20"/>
-    </Appearance>
-  </Pickup>
-
-  <Entity name="ScreenShakeTrigger">
-    <Physics radius="0.25" walkSpeed="0.0" collisionLayer="Portal" isTrigger="true"/>
-    <Script name="ScreenShaker.zephyr"/>
-  </Entity>
-  
+  ​  
 </EntityTypes>

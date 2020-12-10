@@ -38,7 +38,7 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 
 	m_rigidbody2D = g_physicsSystem2D->CreateRigidbody();
 	m_rigidbody2D->SetMass( m_entityDef.GetMass() );
-	
+	m_rigidbody2D->SetDrag( m_entityDef.GetDrag() );
 	m_rigidbody2D->SetLayer( m_entityDef.GetCollisionLayer() );
 	
 	switch( m_entityDef.GetCollisionLayer() )

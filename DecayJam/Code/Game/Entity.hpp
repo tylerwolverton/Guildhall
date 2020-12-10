@@ -79,8 +79,9 @@ public:
 	void			SetRigidbody2D( Rigidbody2D* rigidbody2D )				{ m_rigidbody2D = rigidbody2D; }
 	void			SetCollisionLayer( uint layer );
 	const float		GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
-	const float		GetWalkSpeed() const									{ return m_entityDef.m_walkSpeed; }
+	const float		GetSpeed() const										{ return m_entityDef.m_speed; }
 	const float		GetMass() const											{ return m_entityDef.m_mass; }
+	const float		GetDrag() const											{ return m_entityDef.m_drag; }
 	const float		GetOrientationDegrees() const							{ return m_orientationDegrees; }
 	void			SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 

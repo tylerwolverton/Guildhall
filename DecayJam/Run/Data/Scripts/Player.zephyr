@@ -17,27 +17,15 @@ StateMachine
         FireEvent( RegisterKeyEvent( key = "S", event = "MoveDown" ) );
         FireEvent( RegisterKeyEvent( key = "D", event = "MoveRight" ) );
 
-        FireEvent( RegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
-        FireEvent( RegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
-        FireEvent( RegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
-        FireEvent( RegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
+        // FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( .1, 0 ) ) );
+        // FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( -.1, 0 ) ) );
+        // FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, .1 ) ) );
     }
 
     String itemName;
 	OnEvent( ItemAcquired )
 	{
-		if( itemName == "TripleFireballPickup" )
-		{
-            FireEvent( UnRegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
-            FireEvent( UnRegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
-            FireEvent( UnRegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
-            FireEvent( UnRegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
-            
-            FireEvent( RegisterKeyEvent( key = "Up", event = "ShootTripleFireballUp" ) );
-            FireEvent( RegisterKeyEvent( key = "Left", event = "ShootTripleFireballLeft" ) );
-            FireEvent( RegisterKeyEvent( key = "Down", event = "ShootTripleFireballDown" ) );
-            FireEvent( RegisterKeyEvent( key = "Right", event = "ShootTripleFireballRight" ) );
-		}
+		
 	}
 
     Vec2 newPos;
@@ -126,60 +114,5 @@ StateMachine
     OnEvent( ShootFireballRight )
     {
         FireEvent( ShootFireball( fireballOffset = Vec2( .6, 0 ), shotOrientation = 0 ) );
-    }
-
-    // TripleFireball
-    Vec2 fireballOffset1;
-    Number shotOrientation1;
-    Vec2 fireballOffset2;
-    Number shotOrientation2;
-    Vec2 fireballOffset3;
-    Number shotOrientation3;
-    OnEvent( ShootTripleFireball )
-    {
-        if( !canShoot )
-        {
-            return;
-        }
-
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset1, orientation = shotOrientation1 ) );
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset2, orientation = shotOrientation1 + 45 ) );
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset3, orientation = shotOrientation1 - 45 ) );
-
-        FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
-
-        canShoot = false;
-    }
-
-    OnEvent( ShootTripleFireballUp )
-    {
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( 0, .6 ), 
-                                    fireballOffset2 = Vec2( -.5, .6 ),
-                                    fireballOffset3 = Vec2( .5, .6 ),
-                                    shotOrientation1 = 90 ) );
-    }
-
-    OnEvent( ShootTripleFireballLeft )
-    {
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( -.6, 0 ), 
-                                    fireballOffset2 = Vec2( -.6, .1 ),
-                                    fireballOffset3 = Vec2( -.6, 1.1 ),
-                                    shotOrientation1 = 180 ) );
-    }
-
-    OnEvent( ShootTripleFireballDown )
-    {
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( 0, -.6 ), 
-                                    fireballOffset2 = Vec2( .5, -.6 ),
-                                    fireballOffset3 = Vec2( -.5, -.6 ),
-                                    shotOrientation1 = 270 ) );
-    }
-
-    OnEvent( ShootTripleFireballRight )
-    {        
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( .6, 0 ), 
-                                    fireballOffset2 = Vec2( .6, 1.1 ),
-                                    fireballOffset3 = Vec2( .6, .1 ),
-                                    shotOrientation1 = 0 ) );
     }
 }

@@ -51,6 +51,12 @@ Map::~Map()
 //-----------------------------------------------------------------------------------------------
 void Map::Load( Entity* player )
 {
+	if ( player == nullptr )
+	{
+		g_devConsole->PrintError( Stringf( "Map '%s': Tried to load a map with a null player", m_name.c_str() ) );
+		return;
+	}
+
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		if ( m_entities[entityIdx] != nullptr )
@@ -65,6 +71,7 @@ void Map::Load( Entity* player )
 	player->SetMap( this );
 	player->SetPosition( m_playerStartPos );
 	player->SetOrientationDegrees( m_playerStartYaw );
+	player->FireSpawnEvent();
 }
 
 

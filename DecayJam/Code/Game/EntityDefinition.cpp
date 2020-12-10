@@ -86,12 +86,9 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 	{
 		m_physicsRadius = ParseXmlAttribute( *physicsElem, "radius", m_physicsRadius );
 		m_mass = ParseXmlAttribute( *physicsElem, "mass", m_mass );
-
-		switch ( m_class )
-		{
-			case eEntityClass::ACTOR: m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed ); break;
-			case eEntityClass::PROJECTILE: m_speed = ParseXmlAttribute( *physicsElem, "speed", m_speed ); break;
-		}
+		m_drag = ParseXmlAttribute( *physicsElem, "drag", m_drag );
+		m_speed = ParseXmlAttribute( *physicsElem, "speed", m_speed ); 
+		
 
 		std::string collisionLayerStr = ParseXmlAttribute( *physicsElem, "collisionLayer", "" );
 		m_collisionLayer = GetCollisionLayerFromString( collisionLayerStr );
