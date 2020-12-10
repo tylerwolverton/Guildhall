@@ -1,0 +1,7 @@
+StateMachine
+{
+    State FollowPlayer
+    {
+        FireEvent( ChaseTargetEntity( targetName = "player" ) );
+    }
+}

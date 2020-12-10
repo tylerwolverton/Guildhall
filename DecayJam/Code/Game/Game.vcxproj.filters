@@ -227,11 +227,5 @@
     <Xml Include="..\..\Run\Data\Gameplay\WorldDef.xml">
       <Filter>Data\Gameplay</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Maps\Level3.xml">
-      <Filter>Data\Maps</Filter>
-    </Xml>
-    <Xml Include="..\..\Run\Data\Maps\Level4.xml">
-      <Filter>Data\Maps</Filter>
-    </Xml>
   </ItemGroup>
 </Project>
