@@ -1,7 +1,27 @@
 StateMachine
 {
+    OnEvent( ReturnToPlayer )
+    {
+        ChangeState( FollowPlayer );
+    }
+
     State FollowPlayer
     {
+        OnEvent( Fired )
+        {
+            ChangeState( Projectile );
+        }
+
         FireEvent( ChaseTargetEntity( targetName = "player" ) );
+    }
+
+    State Projectile
+    {
+        OnEnter()
+        {
+            FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "ReturnToPlayer" ) );
+        }
+
+        FireEvent( MoveInDirection( direction = Vec2( 0, 1 ) ) );
     }
 }

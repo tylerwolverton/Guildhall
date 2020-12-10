@@ -17,9 +17,13 @@ StateMachine
         FireEvent( RegisterKeyEvent( key = "S", event = "MoveDown" ) );
         FireEvent( RegisterKeyEvent( key = "D", event = "MoveRight" ) );
 
-        // FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( .1, 0 ) ) );
-        // FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( -.1, 0 ) ) );
-        // FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, .1 ) ) );
+        FireEvent( RegisterKeyEvent( key = "Up", event = "FirePlaque" ) );
+
+        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( .1, 0 ) ) );
+        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( -.1, 0 ) ) );
+        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, .1 ) ) );
+        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( 0, -.1 ) ) );
+        FireEvent( SpawnEntity( type = "Plaque", position = curPosition + Vec2( .1, .1 ) ) );
     }
 
     String itemName;
@@ -83,14 +87,14 @@ StateMachine
 
     Vec2 fireballOffset;
     Number shotOrientation;
-    OnEvent( ShootFireball )
+    OnEvent( FirePlaque )
     {
         if( !canShoot )
         {
             return;
         }
 
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset, orientation = shotOrientation ) );
+        FireEvent( Fired() );
         FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
 
         canShoot = false;

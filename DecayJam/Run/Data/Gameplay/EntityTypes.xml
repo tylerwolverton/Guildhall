@@ -4,18 +4,18 @@
     <Physics radius="0.5" drag="5.0" speed="150.0" collisionLayer="Enemy"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="5">
       <!--First anim is defaulted as initial animation-->
-      <Walk up="6,7" left="4,5" down="0,1" right="2,3" fps="2"/>
-      <Attack up="0"/>
+      <Invisible up="29"/>
+      <!-- <Walk up="6,7" left="4,5" down="0,1" right="2,3" fps="2"/>
       <Pain up="0"/>
       <Death up="0"/>
-      <Damaged up="6,21,7,21" left="4,21,5,21" down="0,21,1,21" right="2,21,3,21" fps="4"/>
+      <Damaged up="6,21,7,21" left="4,21,5,21" down="0,21,1,21" right="2,21,3,21" fps="4"/> -->
     </Appearance>
     <Gameplay maxHealth="5"/>
     <Script name="Player.zephyr"/>
   </Actor>
   ​
   <Entity name="Plaque">
-    <Physics radius="0.125" drag="5.0" speed="140.0" collisionLayer="PlayerProjectile"/>
+    <Physics radius="0.125" drag="5.0" speed="150.0" collisionLayer="PlayerProjectile"/>
     <Appearance size=".25,.25" localDrawBounds="-.125,-.125,.125,.125" fps="1.75">
       <Walk up="30,31"/>
       <LowHealth up ="32,33" fps="3"/>
