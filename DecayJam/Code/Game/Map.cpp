@@ -452,6 +452,12 @@ void Map::DeleteDeadEntities()
 			continue;
 		}
 		
+		if ( m_player != nullptr
+			 && m_player->IsInInventory( entity ) )
+		{
+			m_player->RemoveItemFromInventory( entity );
+		}
+
 		delete( m_entities[entityIdx] );
 		m_entities[entityIdx] = nullptr;
 	}
