@@ -53,8 +53,7 @@
     </Appearance>
     <Gameplay maxHealth="3">
     </Gameplay>
-    <Script name="SplittingBlob.zephyr">
-      <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossMed"/>
+    <Script name="BasicEnemy.zephyr">
     </Script>
   </Actor>
 
