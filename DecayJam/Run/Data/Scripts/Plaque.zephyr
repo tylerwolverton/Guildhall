@@ -2,6 +2,7 @@ StateMachine
 {
     Number id;
     Number attackTargetId = -1;
+    Vec2 moveDirection;
     
     Number entityId;
     OnEvent( Spawned )
@@ -16,9 +17,10 @@ StateMachine
             attackTargetId = -1;
         }
 
+        Vec2 direction;
         OnEvent( ItemThrown )
         {
-            FireEvent( PrintDebugText( text = "Thrown", duration = 3 ) );
+            moveDirection = direction;
             ChangeState( Projectile );
         }
 
@@ -57,12 +59,11 @@ StateMachine
             }
         }
 
-        FireEvent( MoveInDirection( speed = 200, direction = Vec2( 0, 1 ) ) );
+        FireEvent( MoveInDirection( speed = 200, direction = moveDirection ) );
     }
 
     State Attacking
     {
-        FireEvent( PrintDebugText( text = attackTargetId ) );
         OnEnter()
         {
             // If this plaque doesn't hit anything, return to player
@@ -83,6 +84,7 @@ StateMachine
         {
             if( deadEntityId == attackTargetId )
             {
+                FireEvent( AddItemToInventory( targetName = "player", itemId = id ) );
                 ChangeState( FollowPlayer );
             }
         }

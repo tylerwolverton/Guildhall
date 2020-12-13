@@ -22,7 +22,10 @@ StateMachine
         FireEvent( RegisterKeyEvent( key = "S", event = "MoveDown" ) );
         FireEvent( RegisterKeyEvent( key = "D", event = "MoveRight" ) );
 
-        FireEvent( RegisterKeyEvent( key = "Up", event = "FirePlaque" ) );
+        FireEvent( RegisterKeyEvent( key = "Up", event = "FirePlaqueUp" ) );
+        FireEvent( RegisterKeyEvent( key = "Left", event = "FirePlaqueLeft" ) );
+        FireEvent( RegisterKeyEvent( key = "Down", event = "FirePlaqueDown" ) );
+        FireEvent( RegisterKeyEvent( key = "Right", event = "FirePlaqueRight" ) );
 
         FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( .1, 0 ) ) );
         FireEvent( SpawnNewEntityInInventory( type = "Plaque", position = curPosition + Vec2( -.1, 0 ) ) );
@@ -96,6 +99,7 @@ StateMachine
         canShoot = true;
     }
 
+    Vec2 shotDirection;
     OnEvent( FirePlaque )
     {
         if( !canShoot )
@@ -103,34 +107,33 @@ StateMachine
             return;
         }
 
-        FireEvent( ThrowItemFromInventory( itemType = "Plaque" ) );
+        FireEvent( ThrowItemFromInventory( itemType = "Plaque", direction = shotDirection ) );
         FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
 
         canShoot = false;
     }
 
-    OnEvent( ShootFireballUp )
+    OnEvent( FirePlaqueUp )
     {
-        FireEvent( ShootFireball( fireballOffset = Vec2( 0, .6 ), shotOrientation = 90 ) );
+        FireEvent( FirePlaque( shotDirection = Vec2( 0, 1 ) ) );
     }
 
-    OnEvent( ShootFireballLeft )
+    OnEvent( FirePlaqueLeft )
     {
-        FireEvent( ShootFireball( fireballOffset = Vec2( -.6, 0 ), shotOrientation = 180 ) );
+        FireEvent( FirePlaque( shotDirection = Vec2( -1, 0 ) ) );
     }
 
-    OnEvent( ShootFireballDown )
+    OnEvent( FirePlaqueDown )
     {
-        FireEvent( ShootFireball( fireballOffset = Vec2( 0, -.6 ), shotOrientation = 270 ) );
+        FireEvent( FirePlaque( shotDirection = Vec2( 0, -1 ) ) );
     }
 
-    OnEvent( ShootFireballRight )
+    OnEvent( FirePlaqueRight )
     {
-        FireEvent( ShootFireball( fireballOffset = Vec2( .6, 0 ), shotOrientation = 0 ) );
+        FireEvent( FirePlaque( shotDirection = Vec2( 1, 0 ) ) );
     }
 
     State Default
     {
-        FireEvent( PrintDebugText( text = id ) );
     }
 }

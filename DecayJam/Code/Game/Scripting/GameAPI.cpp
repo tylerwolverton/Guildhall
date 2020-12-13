@@ -325,8 +325,7 @@ void GameAPI::ThrowItemFromInventory( EventArgs* args )
 		return;
 	}
 	
-	EventArgs itemArgs;
-	itemToThrow->FireScriptEvent( "ItemThrown", &itemArgs );
+	itemToThrow->FireScriptEvent( "ItemThrown", args );
 
 	/*Vec2 direction = args->GetValue( "direction", Vec2::ZERO );
 	if ( direction == Vec2::ZERO )

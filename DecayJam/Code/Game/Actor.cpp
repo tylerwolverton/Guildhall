@@ -59,6 +59,7 @@ void Actor::Die()
 	{
 		m_curHealth = m_entityDef.GetMaxHealth();
 		m_rigidbody2D->SetPosition( m_map->GetPlayerStartPos() );
+		FireSpawnEvent();
 	}
 	else
 	{
@@ -70,6 +71,7 @@ void Actor::Die()
 //-----------------------------------------------------------------------------------------------
 void Actor::SetAsPlayer()
 {
+	m_owner = g_game;
 	m_controllerID = 0;
 	m_isPlayer = true;
 

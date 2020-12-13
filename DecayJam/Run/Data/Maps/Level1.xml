@@ -23,9 +23,6 @@
     </Entity>
     <Entity type="UnitTester" pos="6.5,6.5"/>
     <!-- Door to level 2 -->
-    <Entity type="LockedDoorVertical" name="door1" pos="8.5,9.5">
-      <ScriptVarInit type="string" var="keyName" value="key1"/>
-    </Entity>
     <Portal type="InvisibleTeleporter" pos="8.5,9.5" yaw="0" destMap="Level2" destPos="3.5,1.5" destYawOffset="0"/>
     <!-- Entities -->
     <PlayerStart pos="1.5,1.5" yaw="0"/>

@@ -20,7 +20,7 @@
       <Walk up="30,31"/>
       <LowHealth up ="32,33" fps="3"/>
     </Appearance>
-    <Gameplay maxHealth="10">
+    <Gameplay maxHealth="3">
     </Gameplay>
     <Script name="Plaque.zephyr"/>
   </Entity>

@@ -54,10 +54,11 @@ public:
 	Vec2 GetPlayerStartPos() const										{ return m_playerStartPos; }
 	std::string GetName() const											{ return m_name; }
 
-	void RemoveOwnershipOfEntity( Entity* entityToRemove );
 	void TakeOwnershipOfEntity( Entity* entityToAdd );
 	void RemoveEntityFromMap( Entity* entityToRemove );
 	void AddEntityToMap( Entity* entityToAdd );
+	void AddInventoryItemsToMap( Entity* entity );
+	void RemoveInventoryItemsFromMap( Entity* entity );
 
 	void AddItemToTargetInventory( Entity* item, Entity* targetEntity );
 

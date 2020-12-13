@@ -66,6 +66,8 @@ void Map::Load( Entity* player )
 		}
 	}
 	
+	// transfer inventory too
+
 	m_player = player;
 	m_entities.push_back( player );
 
@@ -73,7 +75,9 @@ void Map::Load( Entity* player )
 	player->SetOwner( this );
 	player->SetPosition( m_playerStartPos );
 	player->SetOrientationDegrees( m_playerStartYaw );
-	player->FireSpawnEvent();
+
+	AddInventoryItemsToMap( player );
+	//player->FireSpawnEvent();
 }
 
 
@@ -85,6 +89,7 @@ void Map::Unload()
 	{
 		if ( m_entities[entityIdx] == m_player )
 		{
+			RemoveInventoryItemsFromMap( m_entities[entityIdx] );
 			m_entities[entityIdx] = nullptr;
 			continue;
 		}
@@ -263,14 +268,6 @@ void Map::ReloadAllEntityScripts()
 
 
 //-----------------------------------------------------------------------------------------------
-void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
-{
-
-	//entityToAdd->SetOwner( this );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
 {
 	if ( entityToAdd == nullptr )
@@ -303,6 +300,28 @@ void Map::RemoveEntityFromMap( Entity* entityToRemove )
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::RemoveInventoryItemsFromMap( Entity* entity )
+{
+	for ( const auto& item : entity->GetInventory() )
+	{
+		for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+		{
+			if ( m_entities[entityIdx] == nullptr )
+			{
+				continue;
+			}
+
+			if ( m_entities[entityIdx] == item )
+			{
+				m_entities[entityIdx] = nullptr;
+				break;
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::AddEntityToMap( Entity* entityToAdd )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
@@ -320,6 +339,38 @@ void Map::AddEntityToMap( Entity* entityToAdd )
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::AddInventoryItemsToMap( Entity* entity )
+{
+	for ( const auto& item : entity->GetInventory() )
+	{
+		if ( item == nullptr )
+		{
+			continue;
+		}
+
+		bool itemAdded = false;
+		for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+		{
+			if ( m_entities[entityIdx] == nullptr )
+			{
+				m_entities[entityIdx] = item;
+				itemAdded = true;
+				break;
+			}
+		}
+
+		if ( !itemAdded )
+		{
+			m_entities.push_back( item );
+		}
+
+		item->SetPosition( entity->GetPosition() );
+		item->SetMap( this );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::AddItemToTargetInventory( Entity* item, Entity* targetEntity )
 {
 	if ( targetEntity == nullptr
@@ -331,8 +382,6 @@ void Map::AddItemToTargetInventory( Entity* item, Entity* targetEntity )
 	targetEntity->AddItemToInventory( item );
 
 	item->m_rigidbody2D->Disable();
-
-	RemoveOwnershipOfEntity( item );
 }
 
 
@@ -372,7 +421,6 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 
 		m_world->SaveEntityByName( newEntity );
 	}
-
 }
 
 

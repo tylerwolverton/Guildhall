@@ -322,7 +322,7 @@ void Game::LoadAssets()
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
 	LoadMapsFromXml();
-
+	
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
 
@@ -726,7 +726,7 @@ void Game::ReloadGame()
 	LoadTileMaterialsFromXml();
 	LoadTilesFromXml();
 	LoadMapsFromXml();
-
+	
 	EventArgs args;
 	g_eventSystem->FireEvent( "GameStarted", &args );
 	g_devConsole->PrintString( "Data files reloaded", Rgba8::GREEN );
@@ -800,7 +800,7 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F5 ) )
 			{
 				ReloadGame();
-				ChangeMap( m_startingMapName );
+				LoadStartingMap( m_startingMapName );
 			}
 
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F6 ) )
@@ -830,7 +830,7 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F5 ) )
 			{
 				ReloadGame();
-				ChangeMap( m_startingMapName );
+				LoadStartingMap( m_startingMapName );
 			}
 
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F6 ) )
@@ -869,9 +869,10 @@ void Game::UpdateFromKeyboard()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::ChangeMap( const std::string& mapName )
+void Game::LoadStartingMap( const std::string& mapName )
 {
 	m_world->ChangeMap( mapName, m_player );
+	m_player->FireSpawnEvent();
 }
 
 
@@ -1254,6 +1255,7 @@ void Game::StartNewTimer( const EntityId& targetId, const std::string& name, flo
 {
 	for ( int timerIdx = 0; timerIdx < (int)m_timerPool.size(); ++timerIdx )
 	{
+
 		GameTimer& gameTimer = m_timerPool[timerIdx];
 
 		if ( !gameTimer.timer.IsRunning() )
@@ -1362,7 +1364,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::ATTRACT:
 				{					
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_startingMapName.c_str() ) );
-					ChangeMap( m_startingMapName );
+					LoadStartingMap( m_startingMapName );
 
 					EventArgs args;
 					g_eventSystem->FireEvent( "GameStarted", &args );

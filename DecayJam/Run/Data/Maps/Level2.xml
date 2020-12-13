@@ -28,9 +28,6 @@
     </Entity>
     <Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
     <!-- Door back to level 1 -->
-    <Entity type="ClosedDoorVertical" name="door2To1" pos="3.5,.5">
-      <ScriptVarInit type="string" var="name" value="Level2To1Door"/>
-    </Entity>
     <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
     <!-- Entities -->
     <PlayerStart pos="3.5,1.5" yaw="0"/>

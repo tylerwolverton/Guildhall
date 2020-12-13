@@ -79,6 +79,7 @@ public:
 	const Vec2				GetForwardVector() const;
 	const Vec2				GetPosition() const;
 	void					SetPosition( const Vec2& position );
+	void					SetInventoryItemPositions( const Vec2& position );
 	void					SetRigidbody2D( Rigidbody2D* rigidbody2D )				{ m_rigidbody2D = rigidbody2D; }
 	void					SetCollisionLayer( uint layer );
 	const float				GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }

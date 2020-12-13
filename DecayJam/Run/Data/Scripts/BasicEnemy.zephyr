@@ -1,6 +1,7 @@
 StateMachine
 {
 	Number id;
+    Number attackTargetId = -1;
 	Vec2 position;		
 	Vec2 targetPosition;
 	String targetName = "player";
@@ -61,9 +62,24 @@ StateMachine
     {
         if( otherEntityId != -1 )
         {
-            FireEvent( DamageEntity( id = otherEntityId, damage = attackDamage, damageType = "normal" ) );
+			attackTargetId = otherEntityId;
+            FireEvent( DealDamage() );
         }
     }
+
+	OnEvent( CollisionExited )
+    {
+        attackTargetId = -1;
+    }
+
+	OnEvent( DealDamage )
+	{
+		if( attackTargetId != -1 )
+		{
+			FireEvent( DamageEntity( id = attackTargetId, damage = attackDamage ) );
+			FireEvent( StartNewTimer( durationSeconds = .85, onCompletedEvent = "DealDamage" ) );
+		}
+	}
 
 	// -----------------------------------------------------------------------------------------
 	// Wander
@@ -74,9 +90,7 @@ StateMachine
 		{		
 			ChangeState( Chase );
 		}
-		
-		FireEvent( PrintDebugText( text = id ) );
-		
+				
 		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
 		FireEvent( MoveToLocation( pos = targetPosition ) );
 
@@ -123,7 +137,6 @@ StateMachine
 				ChangeState( Wander );
 			}
 		}
-		FireEvent( PrintDebugText( text = id ) );
 
 		FireEvent( ChaseTargetEntity( id = targetName ) );
 	}

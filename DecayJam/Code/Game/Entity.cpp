@@ -33,6 +33,8 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	: m_entityDef( entityDef )
 	, m_map( map )
 {
+	m_owner = map;
+
 	m_id = s_nextEntityId++;
 	m_curHealth = m_entityDef.GetMaxHealth();
 
@@ -176,6 +178,19 @@ void Entity::SetPosition( const Vec2& position )
 		args.SetValue( "newPos", m_rigidbody2D->GetPosition() );
 
 		FireScriptEvent( "PositionUpdated", &args );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SetInventoryItemPositions( const Vec2& position )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] != nullptr )
+		{
+			m_inventory[itemIdx]->SetPosition( position );
+		}
 	}
 }
 
@@ -636,6 +651,12 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 {
 	if ( !IsDead() )
 	{
+		if ( collision.theirCollider == nullptr
+			 || collision.theirCollider->m_rigidbody == nullptr )
+		{
+			return;
+		}
+
 		Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
 
 		if ( m_scriptObj != nullptr )
