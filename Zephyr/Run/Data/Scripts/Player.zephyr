@@ -1,6 +1,6 @@
 StateMachine
 {
-    Number curHealth;
+    Number curHealth = -1;
     Vec2 curPosition;
     Bool canShoot = true;
     Number fireCooldown = .5;
@@ -8,7 +8,10 @@ StateMachine
     Number maxHealth;
     OnEvent( Spawned )
     {
-        curHealth = maxHealth;
+        if( curHealth == -1 )
+        {
+            curHealth = maxHealth;
+        }
 
         FireEvent( AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 ) );
     

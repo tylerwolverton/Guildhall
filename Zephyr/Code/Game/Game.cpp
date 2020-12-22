@@ -596,7 +596,6 @@ void Game::LoadEntitiesFromXml()
 	m_player = new Actor( *playerDef, nullptr );
 	m_player->SetAsPlayer();
 	m_world->SaveEntityByName( m_player );
-	m_player->FireSpawnEvent();
 
 	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }
@@ -799,7 +798,7 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F5 ) )
 			{
 				ReloadGame();
-				ChangeMap( m_startingMapName );
+				LoadingStartingMap( m_startingMapName );
 			}
 
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F6 ) )
@@ -829,7 +828,7 @@ void Game::UpdateFromKeyboard()
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F5 ) )
 			{
 				ReloadGame();
-				ChangeMap( m_startingMapName );
+				LoadingStartingMap( m_startingMapName );
 			}
 
 			if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F6 ) )
@@ -868,9 +867,10 @@ void Game::UpdateFromKeyboard()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::ChangeMap( const std::string& mapName )
+void Game::LoadingStartingMap( const std::string& mapName )
 {
 	m_world->ChangeMap( mapName, m_player );
+	m_player->FireSpawnEvent();
 }
 
 
@@ -1354,7 +1354,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 				case eGameState::ATTRACT:
 				{					
 					g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_startingMapName.c_str() ) );
-					ChangeMap( m_startingMapName );
+					LoadingStartingMap( m_startingMapName );
 
 					EventArgs args;
 					g_eventSystem->FireEvent( "GameStarted", &args );

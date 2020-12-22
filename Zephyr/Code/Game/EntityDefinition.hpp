@@ -44,9 +44,9 @@ public:
 	float			GetMaxHealth() const														{ return m_maxHealth; }
 	eEntityClass	GetClass() const															{ return m_class; }
 	
-	float			GetWalkSpeed() const														{ return m_walkSpeed; }
 	float			GetSpeed() const															{ return m_speed; }
 	float			GetMass() const																{ return m_mass; }
+	float			GetDrag() const																{ return m_drag; }
 	eCollisionLayer	GetCollisionLayer() const													{ return m_collisionLayer; }
 	bool			IsTrigger() const															{ return m_isTrigger; }
 
@@ -74,7 +74,7 @@ protected:
 	float			m_maxHealth = 1.f;
 	float			m_physicsRadius = 0.f;
 	float			m_mass = 10.f;
-	float			m_walkSpeed = 0.f;
+	float			m_drag = 0.f;
 	float			m_speed = 0.f;
 
 	FloatRange		m_damageRange = FloatRange( 0.f );

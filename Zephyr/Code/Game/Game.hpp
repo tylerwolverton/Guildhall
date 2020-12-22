@@ -116,7 +116,7 @@ private:
 	void ReloadScripts();
 
 	void UpdateFromKeyboard();
-	void ChangeMap( const std::string& mapName );
+	void LoadingStartingMap( const std::string& mapName );
 	void UpdateMousePositions();
 	void UpdateMouseWorldPosition();
 	void UpdateMouseUIPosition();

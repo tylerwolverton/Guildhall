@@ -515,6 +515,11 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	float orientation = args->GetValue( "orientation", entity->GetOrientationDegrees() );
 
 	Map* mapToSpawnIn = entity->GetMap();
+	if ( mapToSpawnIn == nullptr )
+	{
+		mapToSpawnIn = g_game->GetCurrentMap();
+	}
+
 	if ( !mapName.empty() )
 	{
 		mapToSpawnIn = g_game->GetMapByName( mapName );
@@ -558,9 +563,9 @@ void GameAPI::MoveToLocation( EventArgs* args )
 	Vec2 moveDirection = targetPos - entity->GetPosition();
 	moveDirection.Normalize();
 
-	float moveSpeed = entity->GetWalkSpeed();
+	float speed = args->GetValue( "speed", entity->GetSpeed() );
 
-	entity->MoveWithPhysics( moveSpeed, moveDirection );
+	entity->MoveWithPhysics( speed, moveDirection );
 }
 
 
@@ -581,7 +586,7 @@ void GameAPI::MoveInDirection( EventArgs* args )
 
 	direction.Normalize();
 
-	float speed = args->GetValue( "speed", entity->GetWalkSpeed() );
+	float speed = args->GetValue( "speed", entity->GetSpeed() );
 
 	entity->MoveWithPhysics( speed, direction );
 }
@@ -590,12 +595,12 @@ void GameAPI::MoveInDirection( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::ChaseTargetEntity( EventArgs* args )
 {
-	std::string targetId = args->GetValue( "id", "" );
-	Entity* targetEntity = g_game->GetEntityByName( targetId );
+	Entity* targetEntity = GetTargetEntityFromArgs( args );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr 
-		 || targetEntity == nullptr )
+		 || targetEntity == nullptr
+		 || entity == targetEntity )
 	{
 		return;
 	}
@@ -603,9 +608,9 @@ void GameAPI::ChaseTargetEntity( EventArgs* args )
 	Vec2 moveDirection = targetEntity->GetPosition() - entity->GetPosition();
 	moveDirection.Normalize();
 
-	float moveSpeed = entity->GetWalkSpeed();
+	float speed = args->GetValue( "speed", entity->GetSpeed() );
 
-	entity->MoveWithPhysics( moveSpeed, moveDirection );
+	entity->MoveWithPhysics( speed, moveDirection );
 }
 
 
@@ -625,9 +630,9 @@ void GameAPI::FleeTargetEntity( EventArgs* args )
 	Vec2 moveDirection = targetEntity->GetPosition() - entity->GetPosition();
 	moveDirection.Normalize();
 
-	float moveSpeed = entity->GetWalkSpeed();
+	float speed = args->GetValue( "speed", entity->GetSpeed() );
 
-	entity->MoveWithPhysics( moveSpeed, -moveDirection );
+	entity->MoveWithPhysics( speed, -moveDirection );
 }
 
 
