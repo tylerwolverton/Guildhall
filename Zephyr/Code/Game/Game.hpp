@@ -176,5 +176,5 @@ private:
 	std::string m_startingMapName;
 
 	// Timer management
-	std::vector<GameTimer> m_timerPool;
+	std::vector<GameTimer*> m_timerPool;
 };

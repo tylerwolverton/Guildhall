@@ -312,6 +312,8 @@ void Entity::FireSpawnEvent()
 	{
 		EventArgs args;
 		args.SetValue( "maxHealth", m_entityDef.GetMaxHealth() );
+		args.SetValue( "entityId", GetId() );
+		args.SetValue( "entityName", GetName() );
 
 		m_scriptObj->FireEvent( "Spawned", &args );
 	}

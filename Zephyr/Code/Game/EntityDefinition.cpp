@@ -138,6 +138,12 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 		{
 			m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( m_zephyrScriptName );
 
+			if ( m_zephyrScriptDef == nullptr )
+			{
+				g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': Script '%s' does not exist", m_type.c_str(), m_zephyrScriptName.c_str() ) );
+				return;
+			}
+
 			// Parse initial values
 			const XmlElement* scriptVarInitElem = scriptElem->FirstChildElement( "ScriptVarInit" );
 			while ( scriptVarInitElem != nullptr )

@@ -101,9 +101,6 @@ void Game::Startup()
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
-	// Seed the timer pool
-	m_timerPool = { GameTimer( m_gameClock ), GameTimer( m_gameClock ), GameTimer( m_gameClock ), GameTimer( m_gameClock ), GameTimer( m_gameClock ) };
-
 	m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
 
@@ -701,7 +698,7 @@ void Game::ReloadGame()
 	m_world->ClearEntities();
 	m_world->ClearMaps();
 
-	m_timerPool.clear();
+	PTR_VECTOR_SAFE_DELETE( m_timerPool );
 
 	PopulateGameConfig();
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
@@ -918,32 +915,37 @@ void Game::UpdateCameras()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateTimers()
 {
-	for ( int timerIdx = 0; timerIdx < (int)m_timerPool.size(); ++timerIdx )
+	int numTimers = (int)m_timerPool.size();
+	for ( int timerIdx = 0; timerIdx < numTimers; ++timerIdx )
 	{
-		GameTimer& gameTimer = m_timerPool[timerIdx];
-
-		if ( gameTimer.timer.IsRunning()
-			&& gameTimer.timer.HasElapsed() )
+		GameTimer*& gameTimer = m_timerPool[timerIdx];
+		if ( gameTimer == nullptr )
 		{
-			if ( !gameTimer.callbackName.empty() )
+			continue;
+		}
+
+		if ( gameTimer->timer.IsRunning()
+			 && gameTimer->timer.HasElapsed() )
+		{
+			if ( !gameTimer->callbackName.empty() )
 			{
-				if ( gameTimer.targetId == -1 )
+				if ( gameTimer->targetId == -1 )
 				{
-					g_eventSystem->FireEvent( gameTimer.callbackName );
+					g_eventSystem->FireEvent( gameTimer->callbackName );
 				}
 				else
 				{
-					Entity* targetEntity = GetEntityById( gameTimer.targetId );
+					Entity* targetEntity = GetEntityById( gameTimer->targetId );
 					if ( targetEntity != nullptr )
 					{
 						EventArgs args;
-						targetEntity->FireScriptEvent( gameTimer.callbackName, &args );
+						targetEntity->FireScriptEvent( gameTimer->callbackName, &args );
 					}
 				}
 			}
 
-			gameTimer.timer.Stop();
-			gameTimer.timer.Reset();
+			delete m_timerPool[timerIdx];
+			m_timerPool[timerIdx] = nullptr;
 		}
 	}
 
@@ -1251,24 +1253,20 @@ void Game::ChangeMusic( const std::string& musicName, bool isLooped, float volum
 //-----------------------------------------------------------------------------------------------
 void Game::StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName )
 {
-	for ( int timerIdx = 0; timerIdx < (int)m_timerPool.size(); ++timerIdx )
+	GameTimer* newTimer = new GameTimer( m_gameClock, targetId, onCompletedEventName, name );
+
+	int numTimers = (int)m_timerPool.size();
+	for ( int timerIdx = 0; timerIdx < numTimers; ++timerIdx )
 	{
-		GameTimer& gameTimer = m_timerPool[timerIdx];
-
-		if ( !gameTimer.timer.IsRunning() )
+		if ( m_timerPool[timerIdx] == nullptr )
 		{
-			gameTimer.name = name;
-			gameTimer.timer.Start( (double)durationSeconds );
-			gameTimer.callbackName = onCompletedEventName;
-			gameTimer.targetId = targetId;
-
+			m_timerPool[timerIdx] = newTimer;
+			newTimer->timer.Start( (double)durationSeconds );
 			return;
 		}
 	}
 
-	// No available timers, expand the pool
-	GameTimer newTimer( m_gameClock, targetId, onCompletedEventName, name );
-	newTimer.timer.Start( (double)durationSeconds );
+	newTimer->timer.Start( (double)durationSeconds );
 	m_timerPool.push_back( newTimer );
 }
 
