@@ -89,6 +89,7 @@ public:
 	Entity*		GetEntityByName( const std::string& name );
 	Map*		GetMapByName( const std::string& name );
 	Map*		GetCurrentMap();
+	void		SaveEntityByName( Entity* entity );
 
 	void		AddLineOfDialogueText( const std::string& text );
 	void		AddDialogueChoice( const std::string& name, const std::string& text );

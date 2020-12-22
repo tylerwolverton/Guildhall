@@ -96,8 +96,11 @@ public:
 	void			SetMap( Map* map )										{ m_map = map; }
 		
 	void			AddItemToInventory( Entity* item );
+	void			RemoveItemFromInventory( const std::string& itemName );
+	void			RemoveItemFromInventory( const EntityId& itemId );
+	void			RemoveItemFromInventory( Entity* item );
 	bool			IsInInventory( const std::string& itemName );
-	//bool			IsInInventory( const std::string& itemId );
+	bool			IsInInventory( const EntityId& itemId );
 	bool			IsInInventory( Entity* item );
 
 	void			FireSpawnEvent();

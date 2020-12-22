@@ -213,6 +213,67 @@ void Entity::AddItemToInventory( Entity* item )
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::RemoveItemFromInventory( const std::string& itemName )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] != nullptr
+			 && m_inventory[itemIdx]->GetName() == itemName )
+		{
+			m_inventory[itemIdx] = nullptr;
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::RemoveItemFromInventory( const EntityId& itemId )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] != nullptr
+			 && m_inventory[itemIdx]->GetId() == itemId )
+		{
+			m_inventory[itemIdx] = nullptr;
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Entity::IsInInventory( const EntityId& itemId )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] != nullptr
+			 && m_inventory[itemIdx]->GetId() == itemId )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::RemoveItemFromInventory( Entity* item )
+{
+	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
+	{
+		if ( m_inventory[itemIdx] != nullptr
+			 && m_inventory[itemIdx] == item )
+		{
+			m_inventory[itemIdx] = nullptr;
+			return;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Entity::IsInInventory( const std::string& itemName )
 {
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
@@ -579,15 +640,18 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 			EventArgs args;
 			EntityId otherId = -1;
 			std::string otherName;
+			std::string otherType;
 			if ( theirEntity != nullptr
 				 && !theirEntity->IsDead() )
 			{
 				otherId = theirEntity->GetId();
 				otherName = theirEntity->GetName();
+				otherType = theirEntity->GetType();
 			}
 
-			args.SetValue( "otherId", otherId );
-			args.SetValue( "otherName", otherName );
+			args.SetValue( "otherEntityId", otherId );
+			args.SetValue( "otherEntityName", otherName );
+			args.SetValue( "otherEntityType", otherType );
 			m_scriptObj->FireEvent( eventName, &args );
 		}
 	}

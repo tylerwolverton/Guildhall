@@ -53,12 +53,12 @@ StateMachine
 	
 	// Damage
     Number attackDamage = 1;
-	Number otherId;
+	Number otherEntityId = -1;
     OnEvent( CollisionEntered )
     {
-        if( otherId != -1 )
+        if( otherEntityId != -1 )
         {
-            FireEvent( DamageEntity( id = otherId, damage = attackDamage, damageType = "normal" ) );
+            FireEvent( DamageEntity( id = otherEntityId, damage = attackDamage, damageType = "normal" ) );
         }
     }
 

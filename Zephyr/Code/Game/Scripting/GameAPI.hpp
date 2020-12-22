@@ -43,6 +43,8 @@ private:
 	void DeactivateInvincibility( EventArgs* args );
 	void AddNewDamageTypeMultiplier( EventArgs* args );
 	void ChangeDamageTypeMultiplier( EventArgs* args );
+	void AddItemToInventory( EventArgs* args );
+	void RemoveItemFromInventory( EventArgs* args );
 
 	// AI
 	void MoveToLocation( EventArgs* args );
@@ -65,6 +67,7 @@ private:
 	void AddScreenShake( EventArgs* args );
 
 private:
+	Entity* GetItemEntityFromArgs( EventArgs* args );
 	Entity* GetTargetEntityFromArgs( EventArgs* args );
 
 private:

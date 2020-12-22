@@ -1149,6 +1149,13 @@ Map* Game::GetCurrentMap()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::SaveEntityByName( Entity* entity )
+{
+	m_world->SaveEntityByName( entity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::AddLineOfDialogueText( const std::string& text )
 {
 	if ( m_gameState != eGameState::DIALOGUE )
