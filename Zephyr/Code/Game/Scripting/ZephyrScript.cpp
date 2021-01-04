@@ -58,10 +58,31 @@ void ZephyrScript::Update()
 		return;
 	}
 
-	if ( m_curStateBytecodeChunk != nullptr )
+	// If this is the first update we need to call OnEnter explicitly
+	if ( !m_hasUpdated )
 	{
-		ZephyrInterpreter::InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+		m_hasUpdated = true;
+
+		EventArgs args;
+		FireEvent( "OnEnter", &args );
 	}
+
+	EventArgs args;
+	FireEvent( "OnUpdate", &args );
+
+	//if ( m_curStateBytecodeChunk == nullptr )
+	//{
+	//	return;
+	//}
+
+	//// Find the update event chunk
+	//ZephyrBytecodeChunk* updateChunk = GetEventBytecodeChunk( "OnUpdate" );
+	//if ( updateChunk == nullptr )
+	//{
+	//	return;
+	//}
+
+	//ZephyrInterpreter::InterpretStateBytecodeChunk( *updateChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
 }
 
 

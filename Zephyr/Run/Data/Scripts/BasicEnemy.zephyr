@@ -76,7 +76,7 @@ StateMachine
 		
 		OnUpdate()
 		{
-			FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
+			FireEvent( CheckForTarget( targetName = targetName, maxDist = 3 ) );
 			FireEvent( MoveToLocation( pos = targetPosition ) );
 
 			if( position == targetPosition )
@@ -125,8 +125,8 @@ StateMachine
 			
 			//FireEvent( PrintDebugText( text = "Chase" ) );
 
-			FireEvent( GetDistanceToTarget( id = targetName ) );
-			FireEvent( ChaseTargetEntity( id = targetName ) );
+			FireEvent( GetDistanceToTarget( targetName = targetName ) );
+			FireEvent( ChaseTargetEntity( targetName = targetName ) );
 		}
 	}
 
@@ -148,8 +148,8 @@ StateMachine
 		//FireEvent( PrintDebugText( text = "Flee" ) );
 		OnUpdate()
 		{
-			FireEvent( GetDistanceToTarget( id = targetName ) );
-			FireEvent( FleeTargetEntity( id = targetName ) );
+			FireEvent( GetDistanceToTarget( targetName = targetName ) );
+			FireEvent( FleeTargetEntity( targetName = targetName ) );
 		}
 	}
 }

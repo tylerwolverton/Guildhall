@@ -83,7 +83,7 @@ StateMachine
 		
 		OnUpdate()
 		{
-			FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
+			FireEvent( CheckForTarget( targetName = targetName, maxDist = 3 ) );
 			FireEvent( MoveToLocation( pos = targetPosition ) );
 
 			if( position == targetPosition )
@@ -124,11 +124,11 @@ StateMachine
 				ChangeState( Wander );
 			}
 		}
-		
+
 		OnUpdate()
 		{
-			FireEvent( GetDistanceToTarget( id = targetName ) );
-			FireEvent( ChaseTargetEntity( id = targetName ) );
+			FireEvent( GetDistanceToTarget( targetName = targetName ) );
+			FireEvent( ChaseTargetEntity( targetName = targetName ) );
 		}
 	}
 }

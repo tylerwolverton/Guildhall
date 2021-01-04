@@ -36,6 +36,8 @@ private:
 	ZephyrBytecodeChunk* GetEventBytecodeChunk( const std::string& eventName );
 
 private:
+	bool m_hasUpdated = false;
+
 	std::string m_name;
 	Entity* m_parentEntity = nullptr;
 
