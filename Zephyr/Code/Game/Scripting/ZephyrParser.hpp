@@ -89,6 +89,7 @@ private:
 	void BackupToLastToken();
 	void AdvanceToNextTokenIfTypeMatches( eTokenType expectedType );
 	bool ConsumeExpectedNextToken( eTokenType expectedType );
+	bool IsStatementValidForChunk( eTokenType statementToken, eBytecodeChunkType chunkType );
 
 	ZephyrToken PeekNextToken() const;
 	ZephyrToken PeekNextNextToken() const;

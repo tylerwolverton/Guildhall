@@ -22,7 +22,10 @@ StateMachine
 	
 	State TestState
 	{	
-		FireEvent( PrintDebugText( text = msg )  );
+		OnUpdate()
+		{
+			FireEvent( PrintDebugText( text = msg )  );
+		}
 	}
 }
 

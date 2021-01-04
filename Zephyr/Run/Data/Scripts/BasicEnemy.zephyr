@@ -74,27 +74,30 @@ StateMachine
 		
 		// FireEvent( PrintDebugText( text = "Wander" ) );
 		
-		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
-		FireEvent( MoveToLocation( pos = targetPosition ) );
-
-		if( position == targetPosition )
+		OnUpdate()
 		{
-			FireEvent( GetNewWanderTargetPosition() );
-		}
+			FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
+			FireEvent( MoveToLocation( pos = targetPosition ) );
 
-		// Check for stuck on wall, find new position if stuck for a second
-		if( lastPosition == position )
-		{
-			numFramesInSameSpace = numFramesInSameSpace + 1;
-
-			if( numFramesInSameSpace > 60 )
+			if( position == targetPosition )
 			{
 				FireEvent( GetNewWanderTargetPosition() );
 			}
-		}
-		else
-		{
-			numFramesInSameSpace = 0;
+
+			// Check for stuck on wall, find new position if stuck for a second
+			if( lastPosition == position )
+			{
+				numFramesInSameSpace = numFramesInSameSpace + 1;
+
+				if( numFramesInSameSpace > 60 )
+				{
+					FireEvent( GetNewWanderTargetPosition() );
+				}
+			}
+			else
+			{
+				numFramesInSameSpace = 0;
+			}
 		}
 	}
 
@@ -103,15 +106,7 @@ StateMachine
 	// -----------------------------------------------------------------------------------------
 	State Chase
 	{
-		if( health == 1 )
-		{
-			ChangeState( Flee );
-		}
-		
-		//FireEvent( PrintDebugText( text = "Chase" ) );
-
 		Number distance;
-		FireEvent( GetDistanceToTarget( id = targetName ) );
 		OnEvent( DistanceToTargetUpdated )
 		{		
 			if( distance > 3 )
@@ -121,7 +116,18 @@ StateMachine
 			}
 		}
 
-		FireEvent( ChaseTargetEntity( id = targetName ) );
+		OnUpdate()
+		{
+			if( health == 1 )
+			{
+				ChangeState( Flee );
+			}
+			
+			//FireEvent( PrintDebugText( text = "Chase" ) );
+
+			FireEvent( GetDistanceToTarget( id = targetName ) );
+			FireEvent( ChaseTargetEntity( id = targetName ) );
+		}
 	}
 
 	// -----------------------------------------------------------------------------------------
@@ -140,9 +146,10 @@ StateMachine
 		}
 
 		//FireEvent( PrintDebugText( text = "Flee" ) );
-
-		FireEvent( GetDistanceToTarget( id = targetName ) );
-
-		FireEvent( FleeTargetEntity( id = targetName ) );
+		OnUpdate()
+		{
+			FireEvent( GetDistanceToTarget( id = targetName ) );
+			FireEvent( FleeTargetEntity( id = targetName ) );
+		}
 	}
 }

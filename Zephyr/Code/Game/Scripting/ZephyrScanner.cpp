@@ -321,6 +321,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "OnEvent" )			{ AddToken( eTokenType::ON_EVENT ); }
 	else if ( curIdentifier == "OnEnter" )			{ AddToken( eTokenType::ON_ENTER ); }
 	else if ( curIdentifier == "OnExit" )			{ AddToken( eTokenType::ON_EXIT ); }
+	else if ( curIdentifier == "OnUpdate" )			{ AddToken( eTokenType::ON_UPDATE ); }
 	else if ( curIdentifier == "ChangeState" )		{ AddToken( eTokenType::CHANGE_STATE ); }
 	else if ( curIdentifier == "if" )				{ AddToken( eTokenType::IF ); }
 	else if ( curIdentifier == "else" )				{ AddToken( eTokenType::ELSE ); }

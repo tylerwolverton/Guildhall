@@ -81,29 +81,30 @@ StateMachine
 			ChangeState( Chase );
 		}
 		
-		// FireEvent( PrintDebugText( text = "Wander" ) );
-		
-		FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
-		FireEvent( MoveToLocation( pos = targetPosition ) );
-
-		if( position == targetPosition )
+		OnUpdate()
 		{
-			FireEvent( GetNewWanderTargetPosition() );
-		}
+			FireEvent( CheckForTarget( id = targetName, maxDist = 3 ) );
+			FireEvent( MoveToLocation( pos = targetPosition ) );
 
-		// Check for stuck on wall, find new position if stuck for a second
-		if( lastPosition == position )
-		{
-			numFramesInSameSpace = numFramesInSameSpace + 1;
-
-			if( numFramesInSameSpace > 60 )
+			if( position == targetPosition )
 			{
 				FireEvent( GetNewWanderTargetPosition() );
 			}
-		}
-		else
-		{
-			numFramesInSameSpace = 0;
+
+			// Check for stuck on wall, find new position if stuck for a second
+			if( lastPosition == position )
+			{
+				numFramesInSameSpace = numFramesInSameSpace + 1;
+
+				if( numFramesInSameSpace > 60 )
+				{
+					FireEvent( GetNewWanderTargetPosition() );
+				}
+			}
+			else
+			{
+				numFramesInSameSpace = 0;
+			}
 		}
 	}
 
@@ -115,7 +116,6 @@ StateMachine
 		//FireEvent( PrintDebugText( text = "Chase" ) );
 
 		Number distance;
-		FireEvent( GetDistanceToTarget( id = targetName ) );
 		OnEvent( DistanceToTargetUpdated )
 		{		
 			if( distance > 3 )
@@ -124,7 +124,11 @@ StateMachine
 				ChangeState( Wander );
 			}
 		}
-
-		FireEvent( ChaseTargetEntity( id = targetName ) );
+		
+		OnUpdate()
+		{
+			FireEvent( GetDistanceToTarget( id = targetName ) );
+			FireEvent( ChaseTargetEntity( id = targetName ) );
+		}
 	}
 }

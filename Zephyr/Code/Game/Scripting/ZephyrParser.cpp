@@ -250,6 +250,12 @@ bool ZephyrParser::ParseStatement()
 {
 	ZephyrToken curToken = ConsumeNextToken();
 
+	// Error if this statement is invalid for chunk type
+	if ( !IsStatementValidForChunk( curToken.GetType(), m_curBytecodeChunk->GetType() ) )
+	{
+		return false;
+	}
+
 	switch ( curToken.GetType() )
 	{
 		case eTokenType::STATE:				
@@ -308,48 +314,7 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
-		case eTokenType::ON_ENTER:
-		case eTokenType::ON_EXIT:
-		{
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) { return false; }
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) {	return false; }
-
-			bool succeeded = CreateBytecodeChunk( ToString( curToken.GetType() ), eBytecodeChunkType::EVENT );
-			if ( !succeeded )
-			{
-				return false;
-			}
-
-			succeeded = ParseBlock();
-
-			FinalizeCurBytecodeChunk();
-
-			return succeeded;
-		}
-		break;
-
-		case eTokenType::CHANGE_STATE:
-		{
-			if ( !ParseChangeStateStatement() )
-			{
-				return false;
-			}
-		}
-		break;
-
-		case eTokenType::IF:
-		{
-			return ParseIfStatement();
-		}
-		break;
-
-		case eTokenType::RETURN:
-		{
-			m_curBytecodeChunk->WriteByte( eOpCode::RETURN );
-		}
-		break;
-
-		case eTokenType::NUMBER:			
+		case eTokenType::NUMBER:
 		{
 			if ( !ParseVariableDeclaration( eValueType::NUMBER ) )
 			{
@@ -382,6 +347,48 @@ bool ZephyrParser::ParseStatement()
 			{
 				return false;
 			}
+		}
+		break;
+		
+		case eTokenType::ON_ENTER:
+		case eTokenType::ON_EXIT:
+		case eTokenType::ON_UPDATE:
+		{
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) { return false; }
+			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) {	return false; }
+
+			bool succeeded = CreateBytecodeChunk( ToString( curToken.GetType() ), eBytecodeChunkType::EVENT );
+			if ( !succeeded )
+			{
+				return false;
+			}
+
+			succeeded = ParseBlock();
+
+			FinalizeCurBytecodeChunk();
+
+			return succeeded;
+		}
+		break;
+		
+		case eTokenType::CHANGE_STATE:
+		{
+			if ( !ParseChangeStateStatement() )
+			{
+				return false;
+			}
+		}
+		break;
+
+		case eTokenType::IF:
+		{
+			return ParseIfStatement();
+		}
+		break;
+
+		case eTokenType::RETURN:
+		{
+			m_curBytecodeChunk->WriteByte( eOpCode::RETURN );
 		}
 		break;
 
@@ -513,7 +520,23 @@ bool ZephyrParser::ParseFireEvent()
 	ZephyrToken eventName = ConsumeNextToken();
 	if ( !DoesTokenMatchType( eventName, eTokenType::IDENTIFIER ) )
 	{
-		ReportError( "FireEvent must specify an event to call in parentheses" );
+		if ( DoesTokenMatchType( eventName, eTokenType::ON_ENTER ) )
+		{
+			ReportError( "OnEnter cannot be called from FireEvent, it's automatically called when entering a state" );
+		}
+		else if ( DoesTokenMatchType( eventName, eTokenType::ON_EXIT ) )
+		{
+			ReportError( "OnExit cannot be called from FireEvent, it's automatically called when exiting a state" );
+		}
+		else if ( DoesTokenMatchType( eventName, eTokenType::ON_UPDATE ) )
+		{
+			ReportError( "OnUpdate cannot be called from FireEvent, it's automatically called when the entity updates" );
+		}
+		else
+		{
+			ReportError( "FireEvent must specify an event to call in parentheses" );
+		}
+
 		return false;
 	}
 
@@ -1367,6 +1390,66 @@ bool ZephyrParser::ConsumeExpectedNextToken( eTokenType expectedType )
 	}
 
 	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecodeChunkType chunkType )
+{
+	switch ( statementToken )
+	{
+		// Valid to define anywhere
+		case eTokenType::STATE:
+		case eTokenType::ON_EVENT:
+		case eTokenType::NUMBER:
+		case eTokenType::VEC2:
+		case eTokenType::BOOL:
+		case eTokenType::STRING:
+		case eTokenType::BRACE_RIGHT:
+		{
+			return true;
+		}
+		break;
+
+		// Valid to define in state only
+		case eTokenType::ON_ENTER:
+		case eTokenType::ON_EXIT:
+		case eTokenType::ON_UPDATE:
+		{
+			if ( chunkType != eBytecodeChunkType::STATE )
+			{
+				ReportError( Stringf( "'%s' can only be defined inside a State", ToString( statementToken ).c_str() ) );
+				return false;
+			}
+
+			return true;
+		}
+		break;
+
+		// Valid to define in event only
+		case eTokenType::CHANGE_STATE:
+		case eTokenType::IF:
+		case eTokenType::RETURN:
+		case eTokenType::FIRE_EVENT:
+		case eTokenType::IDENTIFIER:
+		{
+			if ( chunkType != eBytecodeChunkType::EVENT )
+			{
+				ReportError( Stringf( "'%s' can only be defined inside an Event", ToString( statementToken ).c_str() ) );
+				return false;
+			}
+
+			return true;
+		}
+		break;
+
+		default:
+		{
+			ReportError( Stringf( "Unknown statement starting with '%s' seen", ToString( statementToken ).c_str() ) );
+			return false;
+		}
+
+	}
 }
 
 
