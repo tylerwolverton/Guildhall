@@ -3,12 +3,26 @@ StateMachine
     Number id;
     Number attackTargetId = -1;
     Vec2 moveDirection;
+	Vec2 position;		
+    Vec2 targetPosition;
+    Number playerId;
     
     Number entityId;
     OnEvent( Spawned )
     {
         id = entityId;
     }
+
+    Vec2 newPos;
+	OnEvent( PositionUpdated )
+	{
+		position = newPos;
+	}
+
+    OnEvent( TargetPositionUpdated )
+	{
+		targetPosition = newPos;
+	}
 
     State FollowPlayer
     {
@@ -27,6 +41,28 @@ StateMachine
         FireEvent( ChaseTargetEntity( targetName = "player" ) );
     }
 
+    State ReturnToPlayer
+    {
+        OnEnter()
+        {
+            attackTargetId = -1;
+        }
+
+        Number distance;
+        OnEvent( DistanceToTargetUpdated )
+		{		
+			if( distance < .5 )
+			{
+                FireEvent( AddItemToInventory( targetName = "player", itemId = id ) );
+				ChangeState( FollowPlayer );
+			}
+		}
+
+		FireEvent( GetDistanceToTarget( id = "player" ) );
+		
+		FireEvent( ChaseTargetEntity( id = "player" ) );
+    }
+
     State Projectile
     {
         OnEnter()
@@ -37,8 +73,7 @@ StateMachine
 
         OnEvent( ReturnToPlayer )
         {
-            FireEvent( AddItemToInventory( targetName = "player", itemId = id ) );
-            ChangeState( FollowPlayer );
+            ChangeState( ReturnToPlayer );
         }
 
         String otherEntityType;
@@ -84,8 +119,7 @@ StateMachine
         {
             if( deadEntityId == attackTargetId )
             {
-                FireEvent( AddItemToInventory( targetName = "player", itemId = id ) );
-                ChangeState( FollowPlayer );
+                ChangeState( ReturnToPlayer );
             }
         }
 

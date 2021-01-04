@@ -744,9 +744,8 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::CheckForTarget( EventArgs* args )
 {
-	std::string targetName = args->GetValue( "id", "" );
 	float maxDist = args->GetValue( "maxDist", 0.f );
-	Entity* targetEntity = g_game->GetEntityByName( targetName );
+	Entity* targetEntity = GetTargetEntityFromArgs( args );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
@@ -770,8 +769,7 @@ void GameAPI::CheckForTarget( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::GetDistanceToTarget( EventArgs* args )
 {
-	std::string targetId = args->GetValue( "id", "" );
-	Entity* targetEntity = g_game->GetEntityByName( targetId );
+	Entity* targetEntity = GetTargetEntityFromArgs( args );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
