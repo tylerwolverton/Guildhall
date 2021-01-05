@@ -95,8 +95,8 @@ void AuthoritativeServer::ProcessTCPMessages()
 			case eClientFunctionType::REQUEST_CONNECTION:
 			{
 				int clientKey = m_rng.RollRandomIntInRange( 0, INT_MAX );
-				int udpDistantSendToPort = m_rng.RollRandomIntInRange( 48001, 48500 );
-				int udpLocalBindPort = 49012;
+				int udpDistantSendToPort = m_rng.RollRandomIntInRange( 48001, 48470 );
+				int udpLocalBindPort = m_nextLocalBindPort++;
 
 				ResponseToConnectionRequest response( -1, clientKey, udpDistantSendToPort, udpLocalBindPort, (uint16_t)data.GetFromIPAddress().size() );
 				 
@@ -112,15 +112,15 @@ void AuthoritativeServer::ProcessTCPMessages()
 
 				g_networkingSystem->SendTCPMessage( &buffer, sizeof( response ) + response.size );
 
-				if ( m_clients.size() < 2 )
-				{
+				//if ( m_clients.size() < 2 )
+				//{
 					g_networkingSystem->OpenAndBindUDPPort( udpLocalBindPort, udpDistantSendToPort, data.GetFromIPAddress() );
 					g_networkingSystem->CreateAndRegisterUDPSocket( udpDistantSendToPort, data.GetFromIPAddress() );
-				}
+				/*}
 				else
 				{
-					g_networkingSystem->CreateAndRegisterUDPSocket( udpDistantSendToPort, data.GetFromIPAddress() );
-				}
+					g_networkingSystem->CreateAndRegisterUDPSocket( udpDistantSendToPort, data.GetFromIPAddress() );*/
+				//}
 			}
 			break;
 		}

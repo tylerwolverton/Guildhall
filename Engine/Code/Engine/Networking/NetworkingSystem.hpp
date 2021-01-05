@@ -118,7 +118,7 @@ private:
 
 	// UDP
 	void ProcessUDPCommunication();
-	void UDPReaderThreadMain();
+	void UDPReaderThreadMain( int localUDPPort );
 	void UDPWriterThreadMain();
 	void ClearProcessedUDPMessages();
 	void RetryReliableUDPMessages();
@@ -147,8 +147,9 @@ private:
 	std::vector<TCPData> m_tcpReceivedMessages;
 	std::vector<UDPData> m_udpReceivedMessages;
 
-	std::map<int, UDPSocket*> m_udpSockets;
-	UDPSocket* m_localBoundUDPSocket = nullptr;
+	std::map<int, UDPSocket*> m_outgoingUDPSockets;
+	std::map<int, UDPSocket*> m_localBoundUDPSockets;
+	//UDPSocket* m_localBoundUDPSocket = nullptr;
 
 	SynchronizedNonBlockingQueue<UDPData> m_incomingMessages;
 	SynchronizedBlockingQueue<UDPMessage> m_outgoingMessages;
@@ -158,6 +159,7 @@ private:
 
 	bool m_isQuitting = false;
 	std::thread* m_udpReaderThread = nullptr;
+	std::vector<std::thread*> m_udpReaderThreads;
 	std::thread* m_udpWriterThread = nullptr;
 
 	RandomNumberGenerator m_rng;

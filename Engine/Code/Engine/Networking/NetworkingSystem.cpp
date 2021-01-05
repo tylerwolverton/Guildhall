@@ -52,7 +52,7 @@ void NetworkingSystem::Startup()
 	m_tcpServer = new TCPServer( eBlockingMode::NONBLOCKING );
 	m_tcpClient = new TCPClient( eBlockingMode::NONBLOCKING );
 
-	m_udpReaderThread = new std::thread( &NetworkingSystem::UDPReaderThreadMain, this );
+	m_udpReaderThread = new std::thread( &NetworkingSystem::UDPReaderThreadMain, this, 4912 );
 	m_udpWriterThread = new std::thread( &NetworkingSystem::UDPWriterThreadMain, this );
 }
 
@@ -87,7 +87,16 @@ void NetworkingSystem::Shutdown()
 
 	m_outgoingMessages.NotifyAll();
 	
-	for ( auto& udpSocket : m_udpSockets )
+	for ( auto& udpSocket : m_outgoingUDPSockets )
+	{
+		if ( udpSocket.second != nullptr )
+		{
+			udpSocket.second->Close();
+			//PTR_SAFE_DELETE( m_udpSocket );
+		}
+	}	
+	
+	for ( auto& udpSocket : m_localBoundUDPSockets )
 	{
 		if ( udpSocket.second != nullptr )
 		{
@@ -96,16 +105,21 @@ void NetworkingSystem::Shutdown()
 		}
 	}
 
-	if ( m_localBoundUDPSocket != nullptr )
+	/*if ( m_localBoundUDPSocket != nullptr )
 	{
 		m_localBoundUDPSocket->Close();
 		PTR_SAFE_DELETE( m_localBoundUDPSocket );
-	}
+	}*/
 
+	for ( int threadIdx = 0; threadIdx < (int)m_udpReaderThreads.size(); ++threadIdx )
+	{
+		m_udpReaderThreads[threadIdx]->join();
+	}
 	m_udpReaderThread->join();
 	m_udpWriterThread->join();
 
-	PTR_MAP_SAFE_DELETE( m_udpSockets );
+	PTR_MAP_SAFE_DELETE( m_outgoingUDPSockets );
+	PTR_MAP_SAFE_DELETE( m_localBoundUDPSockets );
 	PTR_SAFE_DELETE( m_udpReaderThread );
 	PTR_SAFE_DELETE( m_udpWriterThread );
 
@@ -322,7 +336,8 @@ void NetworkingSystem::ProcessUDPCommunication()
 				ackHeader.id = (uint16_t)eMessasgeProtocolIds::ACK;
 				ackHeader.size = (uint16_t)1;
 				ackHeader.uniqueId = uniqueMsgId;
-				ackHeader.localBindPort = m_localBoundUDPSocket->GetReceivePort();
+				//ackHeader.localBindPort = m_localBoundUDPSocket->GetReceivePort();
+				ackHeader.localBindPort = m_localBoundUDPSockets[distantToPort]->GetReceivePort();
 
 				//g_devConsole->PrintString( Stringf( "Received reliable message %i from port %i", uniqueMsgId, ackHeader.localBindPort ), Rgba8::ORANGE );
 
@@ -387,20 +402,27 @@ void NetworkingSystem::ProcessUDPCommunication()
 
 
 //-----------------------------------------------------------------------------------------------
-void NetworkingSystem::UDPReaderThreadMain()
+void NetworkingSystem::UDPReaderThreadMain( int localUDPPort )
 {
 	while( !m_isQuitting )
 	{
-		if ( m_localBoundUDPSocket == nullptr )
+		// Receive from each locally bound udp socket 
+		/*for ( auto& localUDPSocket : m_localBoundUDPSockets )
+		{*/
+		auto iter = m_localBoundUDPSockets.find( localUDPPort );
+
+		if ( iter == m_localBoundUDPSockets.end()
+			 || iter->second == nullptr )
 		{
 			continue;
 		}
 
-		UDPData data = m_localBoundUDPSocket->Receive();
+		UDPData data = iter->second->Receive();
 		if ( data.GetLength() > 0 )
 		{
 			m_incomingMessages.Push( data );
-		}		
+		}
+		//}
 	}
 }
 
@@ -416,13 +438,13 @@ void NetworkingSystem::UDPWriterThreadMain()
 		while ( msgHeader->size > 0 )
 		{
 			UDPSocket* udpSocket = nullptr;
-			auto udpSocketIter = m_udpSockets.find( message.sendToPort );
-			if ( udpSocketIter == m_udpSockets.end() )
+			auto udpSocketIter = m_outgoingUDPSockets.find( message.sendToPort );
+			if ( udpSocketIter == m_outgoingUDPSockets.end() )
 			{
 				// This is on a client with only 1 connection, send back on that socket
-				if ( m_udpSockets.size() == 1 )
+				if ( m_outgoingUDPSockets.size() == 1 )
 				{
-					udpSocket = m_udpSockets.begin()->second;
+					udpSocket = m_outgoingUDPSockets.begin()->second;
 				}
 			}
 			else
@@ -754,16 +776,21 @@ void NetworkingSystem::OpenAndBindUDPPort( int localBindPort, int distantSendToP
 	//UNUSED( distantSendToPort );
 
 	// Neither of these matter, never sending messages on 
-	m_localBoundUDPSocket = new UDPSocket( ipAddress, distantSendToPort );
+	//m_localBoundUDPSocket = new UDPSocket( ipAddress, distantSendToPort );
 	//m_udpSocket = new UDPSocket( "", distantSendToPort );
-	m_localBoundUDPSocket->Bind( localBindPort );
+	//m_localBoundUDPSocket->Bind( localBindPort );
+
+	m_localBoundUDPSockets[distantSendToPort] = new UDPSocket( ipAddress, distantSendToPort );
+	m_localBoundUDPSockets[distantSendToPort]->Bind( localBindPort );
+
+	m_udpReaderThreads.push_back( new std::thread( &NetworkingSystem::UDPReaderThreadMain, this, distantSendToPort ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::CreateAndRegisterUDPSocket( int distantSendToPort, const std::string& ipAddress )
 {
-	m_udpSockets[distantSendToPort] = new UDPSocket( ipAddress, distantSendToPort );
+	m_outgoingUDPSockets[distantSendToPort] = new UDPSocket( ipAddress, distantSendToPort );
 }
 
 
@@ -779,8 +806,8 @@ void NetworkingSystem::CloseUDPPort( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void NetworkingSystem::CloseUDPPort( int localBindPort )
 {
-	auto udpSocketIter = m_udpSockets.find( localBindPort );
-	if ( udpSocketIter == m_udpSockets.end() )
+	auto udpSocketIter = m_outgoingUDPSockets.find( localBindPort );
+	if ( udpSocketIter == m_outgoingUDPSockets.end() )
 	{
 		return;
 	}
@@ -789,7 +816,7 @@ void NetworkingSystem::CloseUDPPort( int localBindPort )
 	udpSocket->Close();
 	PTR_SAFE_DELETE( udpSocket );
 
-	m_udpSockets.erase( localBindPort );
+	m_outgoingUDPSockets.erase( localBindPort );
 }
 
 
@@ -811,7 +838,7 @@ void NetworkingSystem::SendUDPMessage( int distantSendToPort, void* data, size_t
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::DATA;
 	msgHeader->size = (uint16_t)dataSize;
 	msgHeader->sequenceNum = (uint16_t)0;
-	msgHeader->localBindPort = m_localBoundUDPSocket->GetReceivePort();
+	msgHeader->localBindPort = m_localBoundUDPSockets[distantSendToPort]->GetReceivePort();
 
 	if ( isReliable )
 	{
@@ -849,7 +876,7 @@ void NetworkingSystem::SendUDPTextMessage( int localBindPort, const std::string&
 	msgHeader->id = (uint16_t)eMessasgeProtocolIds::TEXT;
 	msgHeader->size = (uint16_t)text.size();
 	msgHeader->sequenceNum = (uint16_t)0;
-	msgHeader->localBindPort = m_localBoundUDPSocket->GetReceivePort();
+	msgHeader->localBindPort = localBindPort;
 
 	memcpy( &buffer[sizeof( UDPMessageHeader )], text.c_str(), msgHeader->size );
 

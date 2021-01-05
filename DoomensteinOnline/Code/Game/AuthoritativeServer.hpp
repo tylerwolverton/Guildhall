@@ -55,6 +55,8 @@ protected:
 private:
 
 private:
+	int m_nextLocalBindPort = 48471;
+
 	const std::vector<ClientRequest*>	m_clientRequests;
 
 	std::vector<ConnectionInfo> m_clientConnectionInfo;
