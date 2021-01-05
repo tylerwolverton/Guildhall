@@ -700,6 +700,7 @@ void Game::ReloadGame()
 
 	PTR_VECTOR_SAFE_DELETE( m_timerPool );
 
+	g_gameConfigBlackboard.Clear();
 	PopulateGameConfig();
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
 
@@ -867,7 +868,11 @@ void Game::UpdateFromKeyboard()
 void Game::LoadingStartingMap( const std::string& mapName )
 {
 	m_world->ChangeMap( mapName, m_player );
-	m_player->FireSpawnEvent();
+
+	if ( m_player != nullptr )
+	{
+		m_player->FireSpawnEvent();
+	}
 }
 
 

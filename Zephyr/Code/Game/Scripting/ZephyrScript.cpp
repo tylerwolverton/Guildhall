@@ -96,6 +96,8 @@ void ZephyrScript::UnloadScript()
 
 	UnRegisterScriptEvents( m_curStateBytecodeChunk );
 	UnRegisterScriptEvents( m_scriptDef.GetGlobalBytecodeChunk() );
+
+	m_stateBytecodeChunks.clear();
 }
 
 

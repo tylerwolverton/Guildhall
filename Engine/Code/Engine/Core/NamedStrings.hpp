@@ -31,6 +31,8 @@ public:
 	Vec3			GetValue( const std::string& keyName, const Vec3& defaultValue ) const;
 	IntVec2			GetValue( const std::string& keyName, const IntVec2& defaultValue ) const;
 
+	void			Clear();
+
 private:
 	std::map< std::string, std::string >	m_keyValuePairs;
 };

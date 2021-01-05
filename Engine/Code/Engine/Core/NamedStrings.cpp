@@ -1,5 +1,6 @@
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -149,3 +150,11 @@ Vec3 NamedStrings::GetValue( const std::string& keyName, const Vec3& defaultValu
 	mapValue.SetFromText( mapIter->second.c_str() );
 	return mapValue;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void NamedStrings::Clear()
+{
+	m_keyValuePairs.clear();
+}
+
