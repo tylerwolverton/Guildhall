@@ -58,7 +58,7 @@ StateMachine
     {
         if( otherEntityId != -1 )
         {
-            FireEvent( DamageEntity( id = otherEntityId, damage = attackDamage, damageType = "normal" ) );
+            FireEvent( DamageEntity( targetId = otherEntityId, damage = attackDamage, damageType = "normal" ) );
         }
     }
 
