@@ -96,11 +96,15 @@ void GameAPI::DestroySelf( EventArgs* args )
 
 //-----------------------------------------------------------------------------------------------
 /**
- * Damages target entity
+ * Damages target entity. Will not do damage if entity applying damage is in the same faction as the entity to damage.
  * 
+ * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
  * params:
- *	- id: id of entity to damage
+ *	- targetId: id of target entity
  *		- Zephyr type: Number
+ *	- targetName: name of target entity
+ *		- Zephyr type: String
+ * 
  *	- damage: amount of damage to deal
  *		- Zephyr type: Number
  *	- damageType: type of damage to deal
@@ -110,12 +114,11 @@ void GameAPI::DestroySelf( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::DamageEntity( EventArgs* args )
 {
-	EntityId targetId = (EntityId)args->GetValue( "id", -1.f );
+	Entity* entityToDamage = GetTargetEntityFromArgs( args );
 	float damage = args->GetValue( "damage", 0.f );
 	std::string damageType = args->GetValue( "damageType", "normal" );
 
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
-	Entity* entityToDamage = g_game->GetEntityById( targetId );
 
 	if ( entityToDamage != nullptr 
 		 && entityToDamage->GetFaction() != entity->GetFaction() )
@@ -127,13 +130,13 @@ void GameAPI::DamageEntity( EventArgs* args )
 
 //-----------------------------------------------------------------------------------------------
 /**
- * Makes target entity invincible to all damage entity. 
+ * Makes target entity invincible to all damage. 
  * 
  * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event. 
  * params:
- *	- targetId: id of entity to damage
+ *	- targetId: id of target entity
  *		- Zephyr type: Number
- *	- targetName: amount of damage to deal
+ *	- targetName: name of target entity
  *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
@@ -155,9 +158,9 @@ void GameAPI::ActivateInvincibility( EventArgs* args )
  *
  * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
  * params:
- *	- targetId: id of entity to damage
+ *	- targetId: id of target entity
  *		- Zephyr type: Number
- *	- targetName: amount of damage to deal
+ *	- targetName: name of target entity
  *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
@@ -181,9 +184,9 @@ void GameAPI::DeactivateInvincibility( EventArgs* args )
  *
  * params:
  * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
- *	- targetId: id of entity to damage
+ *	- targetId: id of target entity
  *		- Zephyr type: Number
- *	- targetName: amount of damage to deal
+ *	- targetName: name of target entity
  *		- Zephyr type: String
  *	
  *	- multiplier: the multiplier to apply to entity upon taking damage of the given type
@@ -217,9 +220,9 @@ void GameAPI::AddNewDamageTypeMultiplier( EventArgs* args )
  *
  * params:
  * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
- *	- targetId: id of entity to damage
+ *	- targetId: id of target entity
  *		- Zephyr type: Number
- *	- targetName: amount of damage to deal
+ *	- targetName: name of target entity
  *		- Zephyr type: String
  *
  *	- multiplier: the multiplier to apply to entity upon taking damage of the given type
@@ -352,9 +355,9 @@ void GameAPI::AddDialogueChoice( EventArgs* args )
  *
  * params:
  * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
- *	- targetId: id of entity to damage
+ *	- targetId: id of target entity
  *		- Zephyr type: Number
- *	- targetName: amount of damage to deal
+ *	- targetName: name of target entity
  *		- Zephyr type: String
  *
  *	- name: the name of the timer ( currently unused, reserved for future use  )
@@ -399,7 +402,7 @@ void GameAPI::StartNewTimer( EventArgs* args )
  *
  * params:
  *	- targetState: the name of the Zephyr State to change to
- *	- Zephyr type: String
+ *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
 void GameAPI::ChangeZephyrScriptState( EventArgs* args )
@@ -587,6 +590,17 @@ void GameAPI::WinGame( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Move an entity towards a location.
+ *
+ * params:
+ *	- pos: target position
+ *		- Zephyr type: Number
+ *	- speed: speed to move the entity
+ *		- Zephyr type: Number
+ *		- default: entity's default movement speed
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::MoveToLocation( EventArgs* args )
 {
 	Vec2 targetPos = args->GetValue( "pos", Vec2::ZERO );
@@ -606,6 +620,17 @@ void GameAPI::MoveToLocation( EventArgs* args )
 }
 
 
+//-----------------------------------------------------------------------------------------------
+/**
+ * Move an entity in a direction.
+ *
+ * params:
+ *	- direction: target direction
+ *		- Zephyr type: Vec2
+ *	- speed: speed to move the entity
+ *		- Zephyr type: Number
+ *		- default: entity's default movement speed
+*/
 //-----------------------------------------------------------------------------------------------
 void GameAPI::MoveInDirection( EventArgs* args )
 {
@@ -630,6 +655,21 @@ void GameAPI::MoveInDirection( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Move the entity that fired this event towards a target entity.
+ *
+ * params:
+ *	Target will be determined by the following optional parameters, checking in order the targetId, then targetName. If neither is specified the entity won't move.
+ *	- targetId: id of target entity
+ *		- Zephyr type: Number
+ *	- targetName: name of target entity
+ *		- Zephyr type: String
+ * 
+ *	- speed: speed to move the entity
+ *		- Zephyr type: Number
+ *		- default: entity's default movement speed
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::ChaseTargetEntity( EventArgs* args )
 {
 	Entity* targetEntity = GetTargetEntityFromArgs( args );
@@ -652,6 +692,21 @@ void GameAPI::ChaseTargetEntity( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Move the entity that fired this event away from a target entity.
+ *
+ * params:
+ *	Target will be determined by the following optional parameters, checking in order the targetId, then targetName. If neither is specified the entity won't move.
+ *	- targetId: id of target entity
+ *		- Zephyr type: Number
+ *	- targetName: name of target entity
+ *		- Zephyr type: String
+ *
+ *	- speed: speed to move the entity
+ *		- Zephyr type: Number
+ *		- default: entity's default movement speed
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::FleeTargetEntity( EventArgs* args )
 {
 	Entity* targetEntity = GetTargetEntityFromArgs( args );
@@ -673,10 +728,23 @@ void GameAPI::FleeTargetEntity( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Gets the position of the target entity. 
+ * 
+ * returns:
+ *	- Fires the EntityLocationUpdated event with a parameter "entityPos" containing a Vec2 with the requested position
+ *
+ * params:
+ *	Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
+ *	- targetId: id of target entity
+ *		- Zephyr type: Number
+ *	- targetName: name of target entity
+ *		- Zephyr type: String
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::GetEntityLocation( EventArgs* args )
 {
-	std::string targetId = args->GetValue( "id", "" );
-	Entity* targetEntity = g_game->GetEntityByName( targetId );
+	Entity* targetEntity = GetTargetEntityFromArgs( args );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
@@ -693,6 +761,20 @@ void GameAPI::GetEntityLocation( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
+/**
+ * Gets a new random position inside current map for the calling entity to wander towards.
+ *
+ * returns:
+ *	- Fires the TargetPositionUpdated event with a parameter "newPos" containing a Vec2 with the requested position
+ *
+ * params:
+ *	Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
+ *	- targetId: id of target entity
+ *		- Zephyr type: Number
+ *	- targetName: name of target entity
+ *		- Zephyr type: String
+*/
+//-----------------------------------------------------------------------------------------------
 void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
@@ -701,8 +783,15 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 		return;
 	}
 
-	float newX = g_game->m_rng->RollRandomFloatInRange( 2.f, 10.f );
-	float newY = g_game->m_rng->RollRandomFloatInRange( 2.f, 7.f );
+	Map* map = entity->GetMap();
+	if ( map == nullptr )
+	{
+		return;
+	}
+
+	Vec2 mapDimensions = map->GetDimensions();
+	float newX = g_game->m_rng->RollRandomFloatInRange( 0.f, mapDimensions.x );
+	float newY = g_game->m_rng->RollRandomFloatInRange( 0.f, mapDimensions.y );
 	
 	EventArgs targetArgs;
 	targetArgs.SetValue( "newPos", Vec2( newX, newY ) );

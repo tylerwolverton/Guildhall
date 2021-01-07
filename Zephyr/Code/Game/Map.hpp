@@ -32,6 +32,8 @@ struct RaycastResult
 //-----------------------------------------------------------------------------------------------
 class Map
 {
+	friend class World;
+
 public:
 	Map( const MapData& mapData, World* world );
 	virtual ~Map();
@@ -43,6 +45,8 @@ public:
 	virtual void UpdateMesh() = 0;
 	virtual void Render() const;
 	virtual void DebugRender() const;
+
+	virtual Vec2 GetDimensions() const = 0;
 
 	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
 	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );

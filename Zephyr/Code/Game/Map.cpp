@@ -27,7 +27,6 @@ Map::Map( const MapData& mapData, World* world )
 	, m_playerStartYaw( mapData.playerStartYaw )
 	, m_world( world )
 {
-	LoadEntities( mapData.mapEntityDefs );
 }
 
 
@@ -347,7 +346,6 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 
 		m_world->SaveEntityByName( newEntity );
 	}
-
 }
 
 

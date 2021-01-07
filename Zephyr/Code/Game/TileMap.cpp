@@ -159,6 +159,13 @@ void TileMap::DebugRender() const
 
 
 //-----------------------------------------------------------------------------------------------
+Vec2 TileMap::GetDimensions() const
+{
+	return Vec2( (float)m_dimensions.x, (float)m_dimensions.y );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 RaycastResult TileMap::Raycast( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const
 {
 	RaycastResult closestImpact;

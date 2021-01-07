@@ -52,7 +52,7 @@ void ZephyrScript::Update()
 		EventArgs args;
 		args.SetValue( "entity", (void*)m_parentEntity );
 		args.SetValue( "text", "Error Script" );
-		args.SetValue( "color", Rgba8::RED );
+		args.SetValue( "color", "red" );
 
 		g_eventSystem->FireEvent( "PrintDebugText", &args );
 		return;
@@ -63,26 +63,10 @@ void ZephyrScript::Update()
 	{
 		m_hasUpdated = true;
 
-		EventArgs args;
-		FireEvent( "OnEnter", &args );
+		FireEvent( "OnEnter" );
 	}
 
-	EventArgs args;
-	FireEvent( "OnUpdate", &args );
-
-	//if ( m_curStateBytecodeChunk == nullptr )
-	//{
-	//	return;
-	//}
-
-	//// Find the update event chunk
-	//ZephyrBytecodeChunk* updateChunk = GetEventBytecodeChunk( "OnUpdate" );
-	//if ( updateChunk == nullptr )
-	//{
-	//	return;
-	//}
-
-	//ZephyrInterpreter::InterpretStateBytecodeChunk( *updateChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+	FireEvent( "OnUpdate" );
 }
 
 
@@ -104,6 +88,12 @@ void ZephyrScript::UnloadScript()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 {
+	EventArgs eventArgs;
+	if ( args == nullptr )
+	{
+		args = &eventArgs;
+	}
+
 	if ( !m_scriptDef.IsValid() )
 	{
 		return;
@@ -144,8 +134,7 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 		return;
 	}
 
-	EventArgs args;
-	FireEvent( "OnExit", &args );
+	FireEvent( "OnExit" );
 
 	UnRegisterScriptEvents( m_curStateBytecodeChunk );
 
@@ -153,7 +142,7 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 
 	RegisterScriptEvents( m_curStateBytecodeChunk );
 
-	FireEvent( "OnEnter", &args );
+	FireEvent( "OnEnter" );
 }
 
 

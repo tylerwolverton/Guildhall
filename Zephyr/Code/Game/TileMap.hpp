@@ -40,6 +40,8 @@ public:
 	virtual void Render() const override;
 	virtual void DebugRender() const override;
 
+	virtual Vec2 GetDimensions() const override;
+
 	virtual RaycastResult	Raycast( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const override;
 	RaycastResult			RaycastAgainstWalls( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const;
 	//RaycastResult			RaycastAgainstEntities( const Vec2& startPos, const Vec2& forwardNormal, float maxDist ) const;

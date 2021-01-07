@@ -21,7 +21,7 @@ public:
 	void Update();
 	void UnloadScript();
 
-	void FireEvent( const std::string& eventName, EventArgs* args );
+	void FireEvent( const std::string& eventName, EventArgs* args = nullptr );
 
 	void ChangeState( const std::string& targetState );
 
