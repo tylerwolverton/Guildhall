@@ -1,14 +1,18 @@
-StateMachine
+ItemAcquired( item ) 
 {
-	String keyName;
-
-	// Event arguments to reference
-	String itemName;
-	OnEvent( ItemAcquired )
+	if( item.name == this.keyName )
 	{
-		if( itemName == keyName )
+		FireEvent( DestroySelf() );
+	}
+}
+
+CollisionEntered( other )
+{
+	if( other.name == "player" )
+	{
+		if( other.hasItem( this.keyName ) )
 		{
-			FireEvent( DestroySelf() );
+			DestroySelf()
 		}
 	}
 }

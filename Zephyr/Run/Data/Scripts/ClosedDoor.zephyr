@@ -1,13 +1,8 @@
-StateMachine
+OpenDoor( name )
 {
-	String name;
-	
-	String doorName;
-	OnEvent( OpenDoor )
+	if( this.name == name )
 	{
-		if( name == doorName )
-		{
-			FireEvent( DestroySelf() );
-		}
+		ChangeSpriteAnimation( anim: "OpenDoor" )
+		PlaySound( sound: "DoorCreak" )
 	}
 }
