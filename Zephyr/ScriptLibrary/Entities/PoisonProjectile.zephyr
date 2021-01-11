@@ -55,5 +55,7 @@ State StuckInWall
 
         FireDelayedEvent( delaySeconds: this.stuckLifespanSeconds
                           event: "Disappear" )
+        // or                  
+        //Disappear( delaySeconds: this.stuckLifespanSeconds )
     }
 }

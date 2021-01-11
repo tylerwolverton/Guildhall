@@ -1,18 +1,53 @@
-ItemAcquired( item ) 
+MemberVariables
 {
-	if( item.name == this.keyName )
+    Entity entity = null;  // necessary to specify or assume all scripts have parent entity?
+	String keyName = "unknown";
+}
+
+
+State Locked
+{
+	CollisionEntered( other )
 	{
-		DestroySelf();
+		if( other.name == "player" )
+		{
+			if( other.hasItem( this.keyName ) )
+			{
+				ChangeState( Open )
+			}
+		}
 	}
 }
 
+
+State Open
+{
+	Enter()
+	{
+		ChangeSpriteAnimation( name: "OpenDoor" )
+		PlaySound( name: "DoorOpenCreak" )
+		DisableCollision( this.entity ) // this.parentEntity?
+	}
+}
+
+// Or....
 CollisionEntered( other )
 {
 	if( other.name == "player" )
 	{
 		if( other.hasItem( this.keyName ) )
 		{
-			DestroySelf()
+			OpenDoor( doorId: this.id
+					  spriteAnimName: "OpenDoor"
+					  sfxName: "DoorOpenCreak" )
 		}
 	}
+}
+
+
+OpenDoor( doorId, spriteAnimName, sfxName )
+{
+	ChangeSpriteAnimation( name: spriteAnimName )
+	PlaySound( name: sfxName )
+	DisableCollision( doorId )
 }

@@ -1,0 +1,20 @@
+MemberVariables
+{
+    String doorName = "unknown";
+    String normalSpriteName = "PressurePlateNormal";
+    String depressedSpriteName = "PressurePlateDepressed";
+}
+
+
+TriggerEntered( other )
+{
+    OpenDoor( doorName: this.doorName )
+    ChangeSpriteAnimation( this.depressedSpriteName ) 
+}
+
+
+TriggerExited( other )
+{
+    CloseDoor( doorName: this.doorName )
+    ChangeSpriteAnimation( this.normalSpriteName ) 
+}

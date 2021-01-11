@@ -1,8 +1,45 @@
+MemberVariables
+{
+	String name = "unknown";  // just pull this from the entity instead?
+	String spriteAnimName = "OpenDoor";
+	String sfxName = "DoorCreak";
+}
+
+
 OpenDoor( name )
 {
 	if( this.name == name )
 	{
-		ChangeSpriteAnimation( anim: "OpenDoor" )
-		PlaySound( sound: "DoorCreak" )
+		ChangeSpriteAnimation( anim: spriteAnimName )
+		PlaySound( sound: sfxName )
 	}
+}
+
+
+OpenDoor( doorId, spriteAnimName, sfxName )
+{
+	ChangeSpriteAnimation( name: spriteAnimName )
+	PlaySound( name: sfxName )
+	DisableCollision( doorId )
+}
+
+OpenDoor( doorName, spriteAnimName, sfxName )
+{
+	ChangeSpriteAnimation( name: spriteAnimName )
+	PlaySound( name: sfxName )
+	DisableCollision( doorName )
+}
+
+CloseDoor( doorId, spriteAnimName, sfxName )
+{
+	ChangeSpriteAnimation( name: spriteAnimName )
+	PlaySound( name: sfxName )
+	DisableCollision( doorId )
+}
+
+CloseDoor( doorName, spriteAnimName, sfxName )
+{
+	ChangeSpriteAnimation( name: spriteAnimName )
+	PlaySound( name: sfxName )
+	DisableCollision( doorName )
 }
