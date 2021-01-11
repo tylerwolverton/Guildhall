@@ -5,49 +5,23 @@ MemberVariables
 }
 
 
-State Locked
-{
-	CollisionEntered( other )
-	{
-		if( other.name == "player" )
-		{
-			if( other.hasItem( this.keyName ) )
-			{
-				ChangeState( Open )
-			}
-		}
-	}
-}
-
-
-State Open
-{
-	Enter()
-	{
-		ChangeSpriteAnimation( name: "OpenDoor" )
-		PlaySound( name: "DoorOpenCreak" )
-		DisableCollision( this.entity ) // this.parentEntity?
-	}
-}
-
-// Or....
 CollisionEntered( other )
 {
 	if( other.name == "player" )
 	{
 		if( other.hasItem( this.keyName ) )
 		{
-			OpenDoor( doorId: this.id
-					  spriteAnimName: "OpenDoor"
-					  sfxName: "DoorOpenCreak" )
+			OpenDoor( doorName: this.entity.name )
 		}
 	}
 }
 
 
-OpenDoor( doorId, spriteAnimName, sfxName )
+OpenDoor( name )
 {
-	ChangeSpriteAnimation( name: spriteAnimName )
-	PlaySound( name: sfxName )
-	DisableCollision( doorId )
+	if( this.name == name )
+	{
+		ChangeSpriteAnimation( anim: spriteAnimName )
+		PlaySound( sound: sfxName )
+	}
 }
