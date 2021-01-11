@@ -8,7 +8,7 @@ MemberVariables
 }
 
 
-OpenDoor( name )
+OpenDoor( String name )
 {
 	if( this.name == name )
 	{
@@ -17,7 +17,7 @@ OpenDoor( name )
 	}
 }
 
-CloseDoor( name )
+CloseDoor( String name )
 {
 	if( this.name == name )
 	{

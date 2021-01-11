@@ -4,20 +4,24 @@ MemberVariables
 	String keyName = "unknown";
 }
 
+// State Any -> reserved state that could be used to explicitly specify events don't belong to any one state 
+//{ ...
 
-CollisionEntered( other )
+CollisionEntered( Entity other )
 {
 	if( other.name == "player" )
 	{
 		if( other.hasItem( this.keyName ) )
 		{
 			OpenDoor( doorName: this.entity.name )
+			ConsumeItem( entityId: other.id
+						 itemName: this.keyName )
 		}
 	}
 }
 
 
-OpenDoor( name )
+OpenDoor( String name )
 {
 	if( this.name == name )
 	{

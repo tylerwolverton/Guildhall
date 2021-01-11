@@ -1,4 +1,4 @@
-TriggerEntered( other )
+TriggerEntered( Entity other )
 {
     if( other.faction != this.faction )
     {

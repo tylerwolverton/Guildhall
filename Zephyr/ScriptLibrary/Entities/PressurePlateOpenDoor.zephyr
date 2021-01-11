@@ -6,15 +6,15 @@ MemberVariables
 }
 
 
-TriggerEntered( other )
+TriggerEntered( Entity other )
 {
     OpenDoor( doorName: this.doorName )
-    ChangeSpriteAnimation( this.depressedSpriteName ) 
+    ChangeSpriteAnimation( name: this.depressedSpriteName ) 
 }
 
 
-TriggerExited( other )
+TriggerExited( Entity other )
 {
     CloseDoor( doorName: this.doorName )
-    ChangeSpriteAnimation( this.normalSpriteName ) 
+    ChangeSpriteAnimation( name: this.normalSpriteName ) 
 }

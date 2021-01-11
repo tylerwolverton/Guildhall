@@ -1,155 +1,77 @@
-StateMachine
+MemberVariables
 {
-	Vec2 position;		
+	Entity entity = null;		
+	Entity target = null;
+	Number maxChaseDist = 4;
+	Number lowHealthThreshhold = 1;
+	Number speed = 3;
+}
+	
+
+State Wander
+{
 	Vec2 targetPosition;
-	String targetName = "player";
-	Number health;
 
-	Vec2 lastPosition;
-	Number numFramesInSameSpace;
-	
-	Bool active = true;
-	// -----------------------------------------------------------------------------------------
-	// Global events
-	// -----------------------------------------------------------------------------------------
-	// TODO: reserve Spawn and Die as special events that the user can't fire 
-	Number maxHealth;
-	String mapName;
-	OnEvent( Spawned )
+	// Callback from CheckForTarget
+	TargetFound( Entity target )
 	{
-		health = maxHealth;
-		FireEvent( EnemySpawned( mapName = mapName ) );
-		FireEvent( GetNewWanderTargetPosition() );
-	}
+		this.target = target;
 
-	Number newHealth;
-	OnEvent( HealthUpdated )
-	{
-		health = newHealth;
-
-		if( health == 1 )
+		if( this.entity.health <= this.lowHealthThreshhold )
 		{
-			FireEvent( ChangeSpriteAnimation( newAnim = "LowHealth" ) );
+			ChangeState( Flee )
+		}
+		else
+		{
+			ChangeState( Chase )
 		}
 	}
 
-	OnEvent( Died )
+	Enter()
 	{
-		FireEvent( EnemyDied( mapName = mapName ) );
+		targetPosition = GetNewWanderTargetPosition() // C++ event
 	}
 
-	// TODO: Make this more intuitive
-	Vec2 newPos;
-	OnEvent( PositionUpdated )
+	Update()
 	{
-		lastPosition = position;
-		position = newPos;
-	}
-
-	OnEvent( TargetPositionUpdated )
-	{
-		targetPosition = newPos;
-	}
-	
-	// Damage
-    Number attackDamage = 1;
-	Number otherEntityId = -1;
-    OnEvent( CollisionEntered )
-    {
-        if( otherEntityId != -1 )
-        {
-            FireEvent( DamageEntity( targetId = otherEntityId, damage = attackDamage, damageType = "normal" ) );
-        }
-    }
-
-	// -----------------------------------------------------------------------------------------
-	// Wander
-	// -----------------------------------------------------------------------------------------
-	State Wander
-	{	
-		OnEvent( TargetFound )
-		{		
-			ChangeState( Chase );
+		if( this.entity.position == targetPosition )
+		{
+			targetPosition = GetNewWanderTargetPosition()
 		}
+
+		CheckForTarget() // C++ event
 		
-		// FireEvent( PrintDebugText( text = "Wander" ) );
-		
-		OnUpdate()
-		{
-			FireEvent( CheckForTarget( targetName = targetName, maxDist = 3 ) );
-			FireEvent( MoveToLocation( pos = targetPosition ) );
-
-			if( position == targetPosition )
-			{
-				FireEvent( GetNewWanderTargetPosition() );
-			}
-
-			// Check for stuck on wall, find new position if stuck for a second
-			if( lastPosition == position )
-			{
-				numFramesInSameSpace = numFramesInSameSpace + 1;
-
-				if( numFramesInSameSpace > 60 )
-				{
-					FireEvent( GetNewWanderTargetPosition() );
-				}
-			}
-			else
-			{
-				numFramesInSameSpace = 0;
-			}
-		}
+		MoveToPosition( pos: targetPosition
+						speed: this.speed )
 	}
+}
 
-	// -----------------------------------------------------------------------------------------
-	// Chase
-	// -----------------------------------------------------------------------------------------
-	State Chase
+State Chase
+{
+	Update()
 	{
-		Number distance;
-		OnEvent( DistanceToTargetUpdated )
-		{		
-			if( distance > 3 )
-			{
-				FireEvent( GetNewWanderTargetPosition() );
-				ChangeState( Wander );
-			}
-		}
-
-		OnUpdate()
+		if( DistanceBetweenEntities( this.entity, this.target ) > this.maxChaseDist )
 		{
-			if( health == 1 )
-			{
-				ChangeState( Flee );
-			}
-			
-			//FireEvent( PrintDebugText( text = "Chase" ) );
-
-			FireEvent( GetDistanceToTarget( targetName = targetName ) );
-			FireEvent( ChaseTargetEntity( targetName = targetName ) );
+			this.target = null;
+			ChangeState( Wander )
 		}
+
+		MoveTowardsTarget( target: this.target
+						   speed: this.speed )
 	}
+}
 
-	// -----------------------------------------------------------------------------------------
-	// Flee
-	// -----------------------------------------------------------------------------------------
-	State Flee
+State Flee
+{
+	Update()
 	{
-		Number distance;
-		OnEvent( DistanceToTargetUpdated )
-		{		
-			if( distance > 5 )
-			{
-				FireEvent( GetNewWanderTargetPosition() );
-				ChangeState( Wander );
-			}
+		if( DistanceBetweenEntities( this.entity, this.target ) > this.maxChaseDist )
+		{
+			this.target = null;
+			ChangeState( Wander )
 		}
 
-		//FireEvent( PrintDebugText( text = "Flee" ) );
-		OnUpdate()
-		{
-			FireEvent( GetDistanceToTarget( targetName = targetName ) );
-			FireEvent( FleeTargetEntity( targetName = targetName ) );
-		}
+		MoveAwayFromTarget( target: this.target
+							speed: this.speed )
 	}
 }
