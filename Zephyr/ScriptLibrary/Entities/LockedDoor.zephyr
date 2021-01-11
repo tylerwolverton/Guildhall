@@ -2,7 +2,7 @@ ItemAcquired( item )
 {
 	if( item.name == this.keyName )
 	{
-		FireEvent( DestroySelf() );
+		DestroySelf();
 	}
 }
 

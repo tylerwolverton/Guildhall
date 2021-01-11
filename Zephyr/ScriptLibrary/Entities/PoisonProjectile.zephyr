@@ -1,0 +1,59 @@
+MemberVariables  // Not sold on this name, but need a way to communicate which this. variables are available
+{
+    Entity entity = null;
+    Number speed = 5;
+    Number damage = .5;
+    Number stuckLifespanSeconds = 1;
+    Vec2 direction = Vec2( 1,0 );
+}
+
+
+Disappear()
+{
+    DestroySelf()
+}
+
+
+State Flying
+{
+    CollisionEntered( other )
+    {
+        // Physics layers and collisions could also be used to control when this can collide with
+        if( other.faction == "Environment" )
+        {
+            ChangeState( StuckInWall );
+        }
+
+        // Hit target, poision and destroy arrow
+        if( other.faction != this.faction )
+        {
+            // Poison could either be a built in effect or abstracted to DamageOverTime, potentially behind the scenes
+            ApplyPoision( targetId: other.id 
+                          damage: this.damage
+                          intervalSeconds: 1
+                          totalTimeLimitSeconds: 10  // would default to no limit
+                          canStack: false ) 
+
+            Disappear()
+        }
+    }
+
+    Update()
+    {
+        MoveInDirection( direction: this.direction
+                         speed: this.speed )
+    }
+}
+
+
+State StuckInWall
+{
+    Enter()
+    {
+        PlaySound( name: "ArrowThwack" )
+        DisableCollision( this.entity )  // Collisions
+
+        FireDelayedEvent( delaySeconds: this.stuckLifespanSeconds
+                          event: "Disappear" )
+    }
+}

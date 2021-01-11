@@ -1,0 +1,7 @@
+TriggerEntered( other )
+{
+    if( other.faction != this.faction )
+    {
+        TrapTriggered( trapId: this.id ) // or maybe trapName: this.name
+    }
+}

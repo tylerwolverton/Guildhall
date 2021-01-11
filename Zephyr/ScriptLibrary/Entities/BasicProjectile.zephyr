@@ -1,6 +1,6 @@
 Spawned( lifespan )
 {
-    CallDelayedEvent( delaySeconds: lifespan event: "LifetimeExpired" )
+    FireDelayedEvent( delaySeconds: lifespan event: "LifetimeExpired" )
 }
 
 LifetimeExpired()
