@@ -1,0 +1,22 @@
+Spawned( lifespan )
+{
+    CallDelayedEvent( delaySeconds: lifespan event: "LifetimeExpired" )
+}
+
+LifetimeExpired()
+{
+    PlaySound( sound: "EnemyHit" volume: .25 )
+    DestroySelf();
+}
+
+CollisionEntered( other )
+{
+    if( other.canBeDamagedBy( this ) )
+    {
+        DamageEntity( targetId: other.id, damage: this.damage, type: this.damageType )
+        AddScreenShake( intensity: .05 ) );
+    }
+
+    PlaySound( soundName: "PlayerHit" volume: .1 )
+    DestroySelf()
+}

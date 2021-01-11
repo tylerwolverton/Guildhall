@@ -1,0 +1,8 @@
+OpenDoor( name )
+{
+	if( this.name == name )
+	{
+		ChangeSpriteAnimation( anim: "OpenDoor" )
+		PlaySound( sound: "DoorCreak" )
+	}
+}

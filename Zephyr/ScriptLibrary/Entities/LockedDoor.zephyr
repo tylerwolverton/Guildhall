@@ -1,0 +1,18 @@
+ItemAcquired( item ) 
+{
+	if( item.name == this.keyName )
+	{
+		FireEvent( DestroySelf() );
+	}
+}
+
+CollisionEntered( other )
+{
+	if( other.name == "player" )
+	{
+		if( other.hasItem( this.keyName ) )
+		{
+			DestroySelf()
+		}
+	}
+}

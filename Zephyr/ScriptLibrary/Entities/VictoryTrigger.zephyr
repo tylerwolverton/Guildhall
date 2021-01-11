@@ -1,0 +1,10 @@
+StateMachine
+{
+	State Win
+	{
+		OnEnter()
+		{
+			FireEvent( QuestCompleted( questId = "Victory" ) );
+		}
+	}
+}

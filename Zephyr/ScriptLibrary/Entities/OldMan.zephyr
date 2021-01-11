@@ -1,0 +1,42 @@
+State Waiting()
+{
+    PlayerInteracted()
+    {
+        ChangeState( Conversation )
+    }
+}
+
+State Conversation()
+{
+    Welcome()
+    {
+        Text( "Hello traveler" )
+        
+        Choice( text: "Could you open the door in the other room?" next: AskToOpenDoor )
+        Choice( text: "Nevermind" next: End )
+    }
+    
+    AskToOpenDoor( isDoorOpen )
+    {
+        if( isDoorOpen )
+        {
+            Text( "It's already open" )
+            
+            Choice( text: "Oh, right" next: End )
+        }
+        else
+        {
+            OpenDoor( this.doorName )
+
+            Text( "There you go" )
+
+            Choice( text: "Thanks!" next: End )
+        }
+    }
+
+    End()
+    {
+        EndDialogue()
+        ChangeState( Waiting )
+    }
+}
