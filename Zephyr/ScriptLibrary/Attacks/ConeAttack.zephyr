@@ -1,0 +1,21 @@
+MemberVariables
+{
+    String name = "unknown";
+    Number damage = 2;
+    String damageType = "normal"
+    Number widthDegrees = 30;
+    Number coneLength = 2;
+}
+
+
+Attack( String name, Vec2 directionVec )
+{
+    if( this.name == name )
+    {
+        DamageEntitiesInCone( damage: damage
+                            type: damageType
+                            directionVec: directionVec
+                            widthDegrees: widthDegrees
+                            coneLength: coneLength )
+    }
+}

@@ -1,188 +1,71 @@
-StateMachine
+MemberVariables
 {
-    Number curHealth = -1;
-    Vec2 curPosition;
-    Bool canShoot = true;
-    Number fireCooldown = .5;
+    String curAttack = "IceConeAttack";
+}
 
-    Number maxHealth;
-    OnEvent( Spawned )
-    {
-        if( curHealth == -1 )
-        {
-            curHealth = maxHealth;
-        }
 
-        FireEvent( AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 ) );
+Initialize()
+{
+    // Actions are defined in GameConfig.xml
+    RegisterInputAction( action: "MoveUp", type: "IsKeyDown", event: Move( Vec2( 0, 1 ) ) )
+    RegisterInputAction( action: "MoveLeft", type: "IsKeyDown", event: Move( Vec2( -1, 0 ) ) )
+    RegisterInputAction( action: "MoveDown", type: "IsKeyDown", event: Move( Vec2( 0, -1 ) ) )
+    RegisterInputAction( action: "MoveRight", type: "IsKeyDown", event: Move( Vec2( 1, 0 ) ) )
     
-        FireEvent( RegisterKeyEvent( key = "W", event = "MoveUp" ) );
-        FireEvent( RegisterKeyEvent( key = "A", event = "MoveLeft" ) );
-        FireEvent( RegisterKeyEvent( key = "S", event = "MoveDown" ) );
-        FireEvent( RegisterKeyEvent( key = "D", event = "MoveRight" ) );
+    RegisterInputAction( action: "Attack", type: "KeyPressed", event: Attack() )
 
-        FireEvent( RegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
-        FireEvent( RegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
-        FireEvent( RegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
-        FireEvent( RegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
-    }
+    RegisterInputAction( action: "SwitchAttackUp", type: "KeyPressed", event: SwitchAttackUp() )
+    RegisterInputAction( action: "SwitchAttackDown", type: "KeyPressed", event: SwitchAttackDown() )
+}
 
-    String itemName;
-	OnEvent( ItemAcquired )
-	{
-		if( itemName == "TripleFireballPickup" )
-		{
-            FireEvent( UnRegisterKeyEvent( key = "Up", event = "ShootFireballUp" ) );
-            FireEvent( UnRegisterKeyEvent( key = "Left", event = "ShootFireballLeft" ) );
-            FireEvent( UnRegisterKeyEvent( key = "Down", event = "ShootFireballDown" ) );
-            FireEvent( UnRegisterKeyEvent( key = "Right", event = "ShootFireballRight" ) );
-            
-            FireEvent( RegisterKeyEvent( key = "Up", event = "ShootTripleFireballUp" ) );
-            FireEvent( RegisterKeyEvent( key = "Left", event = "ShootTripleFireballLeft" ) );
-            FireEvent( RegisterKeyEvent( key = "Down", event = "ShootTripleFireballDown" ) );
-            FireEvent( RegisterKeyEvent( key = "Right", event = "ShootTripleFireballRight" ) );
-		}
-	}
 
-    Vec2 newPos;
-	OnEvent( PositionUpdated )
-	{
-		curPosition = newPos;
-	}
+Move( Vec2 direction)
+{
+    MoveInDirection( direction: direction );
+}
 
-    Number newHealth;
-	OnEvent( HealthUpdated )
-	{
-        if( newHealth < curHealth )
-        {
-            FireEvent( ActivateInvincibility() );
-            FireEvent( ChangeSpriteAnimation( newAnim = "Damaged" ) );
-            FireEvent( StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" ) );
-        }
 
-		curHealth = newHealth;
-    }
+Attack()
+{
+    Attack( name: curAttack
+            directionVec: this.entity.forwardVec )
+}
 
-    OnEvent( InvincibilityExpired )
+
+SwitchAttackUp()
+{
+    if( this.curAttack == "IceConeAttack" )
     {
-        FireEvent( DeactivateInvincibility() );
-        FireEvent( ChangeSpriteAnimation( newAnim = "Walk" ) );
+        this.curAttack = "SwordAttack"
+        return;
     }
-
-    // Input Events
-    // TODO? Add parameter passing into key events to remove the need to make separate events for each direction
-    OnEvent( MoveUp )
+    if( this.curAttack == "SwordAttack" )
     {
-        FireEvent( MoveInDirection( direction = Vec2( 0, 1 ) ) );
+        this.curAttack = "ArrowAttack"
+        return;
     }
-
-    OnEvent( MoveDown )
+    if( this.curAttack == "ArrowAttack" )
     {
-        FireEvent( MoveInDirection( direction = Vec2( 0, -1 ) ) );
+        this.curAttack = "IceConeAttack"
+        return;
     }
+}
 
-    OnEvent( MoveLeft )
+SwitchAttackDown()
+{
+    if( this.curAttack == "IceConeAttack" )
     {
-        FireEvent( MoveInDirection( direction = Vec2( -1, 0 ) ) );
+        this.curAttack = "ArrowAttack"
+        return;
     }
-
-    OnEvent( MoveRight )
+    if( this.curAttack == "ArrowAttack" )
     {
-        FireEvent( MoveInDirection( direction = Vec2( 1, 0 ) ) );
+        this.curAttack = "SwordAttack"
+        return;
     }
-
-    // Attacks
-    OnEvent( ShotCooldownExpired )
+    if( this.curAttack == "SwordAttack" )
     {
-        canShoot = true;
-    }
-
-    Vec2 fireballOffset;
-    Number shotOrientation;
-    OnEvent( ShootFireball )
-    {
-        if( !canShoot )
-        {
-            return;
-        }
-
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset, orientation = shotOrientation ) );
-        FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
-
-        canShoot = false;
-    }
-
-    OnEvent( ShootFireballUp )
-    {
-        FireEvent( ShootFireball( fireballOffset = Vec2( 0, .6 ), shotOrientation = 90 ) );
-    }
-
-    OnEvent( ShootFireballLeft )
-    {
-        FireEvent( ShootFireball( fireballOffset = Vec2( -.6, 0 ), shotOrientation = 180 ) );
-    }
-
-    OnEvent( ShootFireballDown )
-    {
-        FireEvent( ShootFireball( fireballOffset = Vec2( 0, -.6 ), shotOrientation = 270 ) );
-    }
-
-    OnEvent( ShootFireballRight )
-    {
-        FireEvent( ShootFireball( fireballOffset = Vec2( .6, 0 ), shotOrientation = 0 ) );
-    }
-
-    // TripleFireball
-    Vec2 fireballOffset1;
-    Number shotOrientation1;
-    Vec2 fireballOffset2;
-    Number shotOrientation2;
-    Vec2 fireballOffset3;
-    Number shotOrientation3;
-    OnEvent( ShootTripleFireball )
-    {
-        if( !canShoot )
-        {
-            return;
-        }
-
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset1, orientation = shotOrientation1 ) );
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset2, orientation = shotOrientation1 + 45 ) );
-        FireEvent( SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset3, orientation = shotOrientation1 - 45 ) );
-
-        FireEvent( StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" ) );
-
-        canShoot = false;
-    }
-
-    OnEvent( ShootTripleFireballUp )
-    {
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( 0, .6 ), 
-                                    fireballOffset2 = Vec2( -.5, .6 ),
-                                    fireballOffset3 = Vec2( .5, .6 ),
-                                    shotOrientation1 = 90 ) );
-    }
-
-    OnEvent( ShootTripleFireballLeft )
-    {
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( -.6, 0 ), 
-                                    fireballOffset2 = Vec2( -.6, .1 ),
-                                    fireballOffset3 = Vec2( -.6, 1.1 ),
-                                    shotOrientation1 = 180 ) );
-    }
-
-    OnEvent( ShootTripleFireballDown )
-    {
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( 0, -.6 ), 
-                                    fireballOffset2 = Vec2( .5, -.6 ),
-                                    fireballOffset3 = Vec2( -.5, -.6 ),
-                                    shotOrientation1 = 270 ) );
-    }
-
-    OnEvent( ShootTripleFireballRight )
-    {        
-        FireEvent( ShootTripleFireball( fireballOffset1 = Vec2( .6, 0 ), 
-                                    fireballOffset2 = Vec2( .6, 1.1 ),
-                                    fireballOffset3 = Vec2( .6, .1 ),
-                                    shotOrientation1 = 0 ) );
+        this.curAttack = "IceConeAttack"
+        return;
     }
 }
