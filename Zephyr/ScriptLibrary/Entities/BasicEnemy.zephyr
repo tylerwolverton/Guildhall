@@ -1,11 +1,7 @@
-MemberVariables
-{
-	Entity entity = null;		
-	Entity target = null;
-	Number maxChaseDist = 4;
-	Number lowHealthThreshhold = 1;
-	Number speed = 3;
-}
+Variable Entity target = null
+Variable Number maxChaseDist = 4
+Variable Number lowHealthThreshhold = 1
+Variable Number speed = 3
 	
 
 State Wander

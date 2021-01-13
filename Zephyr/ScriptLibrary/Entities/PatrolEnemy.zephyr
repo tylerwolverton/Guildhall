@@ -1,0 +1,86 @@
+Variable Vec2[] patrolPoints
+Variable Number startingPatrolPoint = 0
+Variable Number maxPursueDist = 3
+Variable Number maxAttackDist = 1
+Variable Entity target = null
+Variable Bool canAttack = true
+
+
+Function Spawned() // listens for event sent from C++ on entity spawn
+{
+    // array could keep track if its state internally to avoid the scripter needing 
+    // to mess with indices. Could also bounds check under the hood
+    patrolPoints.select( startingPatrolPoint ) 
+}
+
+
+Function ResetAttackCooldown()
+{
+    this.canAttack = true
+}
+
+
+State Patrol
+{
+    Update()
+    {
+        Number dist = DistanceBetweenEntities( this.entity, this.target )
+		if( dist < this.maxPursueDist )
+		{
+			ChangeState( Pursue )
+		}
+
+        if( this.entity.position == this.patrolPoints.current() )
+        {
+            this.patrolPoints.advance()
+        }
+
+        MoveToPosition( pos: this.patrolPoints.current()
+                        speed: this.entity.speed )
+    }
+}
+
+
+State Pursue
+{
+    Update()
+	{
+        Number dist = DistanceBetweenEntities( this.entity, this.target )
+		if( dist > this.maxPursueDist )
+		{
+			this.target = null;
+			ChangeState( Patrol )
+		}
+
+        if( dist < this.maxAttackDist )
+		{
+			ChangeState( Attack )
+		}
+
+		MoveTowardsTarget( target: this.target
+						   speed: this.entity.speed )
+	}
+}
+
+
+State Attack
+{
+    Update()
+    {
+        Number dist = DistanceBetweenEntities( this.entity, this.target )
+        if( dist > this.maxAttackDist )
+        {
+            ChangeState( Pursue )
+        }
+
+        if( this.canAttack )
+        {
+            SpawnEntity( type: this.projectileType
+                         direction: this.target.position - this.entity.position
+                         speed: this.projectileSpeed )
+
+            this.canAttack = false
+            ResetCooldown( delaySeconds: 1 )
+        }
+    }
+}
