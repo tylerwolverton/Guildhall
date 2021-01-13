@@ -1,10 +1,9 @@
-MemberVariables  // Not sold on this name, but need a way to communicate which this. variables are available
+MemberVariables  // Not sold on this name, but need a way to communicate which "this." variables are available
 {
     Entity entity = null;
     Number speed = 5;
     Number damage = .5;
     Number stuckLifespanSeconds = 1;
-    Vec2 direction = Vec2( 1,0 );
 }
 
 
@@ -18,10 +17,10 @@ State Flying
 {
     CollisionEntered( other )
     {
-        // Physics layers and collisions could also be used to control when this can collide with
+        // Physics layers and collisions could also be used to control what this can collide with
         if( other.faction == "Environment" )
         {
-            ChangeState( StuckInWall );
+            ChangeState( StuckInWall )
         }
 
         // Hit target, poision and destroy arrow
@@ -30,7 +29,7 @@ State Flying
             // Poison could either be a built in effect or abstracted to DamageOverTime, potentially behind the scenes
             ApplyPoision( targetId: other.id 
                           damage: this.damage
-                          intervalSeconds: 1
+                          damageIntervalSeconds: 1  // how often to apply damage
                           totalTimeLimitSeconds: 10  // would default to no limit
                           canStack: false ) 
 
@@ -40,7 +39,7 @@ State Flying
 
     Update()
     {
-        MoveInDirection( direction: this.direction
+        MoveInDirection( direction: this.entity.forwardVec
                          speed: this.speed )
     }
 }
@@ -48,14 +47,14 @@ State Flying
 
 State StuckInWall
 {
-    Enter()
+    Enter() // Might need to be EnterState for clarity
     {
         PlaySound( name: "ArrowThwack" )
-        DisableCollision( this.entity )  // Collisions
+        DisableCollision( this.entity )
 
         FireDelayedEvent( delaySeconds: this.stuckLifespanSeconds
                           event: "Disappear" )
         // or                  
-        //Disappear( delaySeconds: this.stuckLifespanSeconds )
+        //Disappear( delaySeconds: this.stuckLifespanSeconds )  // could consider delaySeconds a built in parameter for any event
     }
 }

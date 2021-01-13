@@ -2,18 +2,18 @@ MemberVariables  // Not sold on this name, but need a way to communicate which t
 {
     Entity entity = null;
     String projectileType = "unknown";
-    Number fireSpeed = 5;
+    Number projectileSpeed = 5;
     Number triggerId = -1;  // id of trigger this trap is waiting for
                             // this may need to be name so that users can set easier in map file
 }
 
 
-TrapTriggered( trapId )
+TrapTriggered( Number trapId )
 {
     if( trapId == this.triggerId )
     {
         SpawnEntity( entityType: this.projectileType
-                     direction: this.entity.forwardVec // necessary for this. and entity. ?
-                     speed: this.fireSpeed )
+                     direction: this.entity.forwardVec
+                     speed: this.projectileSpeed )
     }
 }

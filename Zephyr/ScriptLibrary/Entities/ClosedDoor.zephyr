@@ -1,6 +1,6 @@
 MemberVariables
 {
-	String name = "unknown";  // just pull this from the entity instead?
+	String name = "unknown";
 	String openSpriteAnimName = "OpenDoor";
 	String closeSpriteAnimName = "ClosedDoor";
 	String openSFXName = "DoorCreak";
@@ -14,8 +14,10 @@ OpenDoor( String name )
 	{
 		ChangeSpriteAnimation( anim: openSpriteAnimName )
 		PlaySound( sound: openSFXName )
+        DisableCollision( this.entity )
 	}
 }
+
 
 CloseDoor( String name )
 {
@@ -23,5 +25,6 @@ CloseDoor( String name )
 	{
 		ChangeSpriteAnimation( anim: closeSpriteAnimName )
 		PlaySound( sound: closeSFXName )
+        EnableCollision( this.entity )
 	}
 }

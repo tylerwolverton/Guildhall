@@ -1,7 +1,11 @@
-MemberVariables
+MemberVariables // Not sold on this name, but need a way to communicate which "this." variables are available
 {
     Entity entity = null;  // necessary to specify or assume all scripts have parent entity?
+	String name = "unknown";  // just pull this from the entity instead? if so should it be this.entity.name?
+
 	String keyName = "unknown";
+	String openSpriteAnimName = "OpenDoor";
+	String openSFXName = "DoorCreak";
 }
 
 // State Any -> reserved state that could be used to explicitly specify events don't belong to any one state 
@@ -13,9 +17,13 @@ CollisionEntered( Entity other )
 	{
 		if( other.hasItem( this.keyName ) )
 		{
-			OpenDoor( doorName: this.entity.name )
+			OpenDoor( name: this.name )
 			ConsumeItem( entityId: other.id
 						 itemName: this.keyName )
+		}
+		else
+		{
+			PlaySound( name: "LockRattle" )
 		}
 	}
 }
@@ -25,7 +33,8 @@ OpenDoor( String name )
 {
 	if( this.name == name )
 	{
-		ChangeSpriteAnimation( anim: spriteAnimName )
-		PlaySound( sound: sfxName )
+		ChangeSpriteAnimation( name: openSpriteAnimName )
+		PlaySound( name: openSFXName )
+        DisableCollision( this.entity )
 	}
 }

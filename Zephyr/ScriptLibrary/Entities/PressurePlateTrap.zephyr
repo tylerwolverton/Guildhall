@@ -1,7 +1,14 @@
+MemberVariables // Not sold on this name, but need a way to communicate which "this." variables are available
+{
+    Entity entity = null;  // necessary to specify or assume all scripts have parent entity?
+}
+
+
 TriggerEntered( Entity other )
 {
-    if( other.faction != this.faction )
+    if( other.faction != this.entity.faction )
     {
-        TrapTriggered( trapId: this.id ) // or maybe trapName: this.name
+        TrapTriggered( trapId: this.entity.id ) // or maybe trapName: this.entity.name
     }
 }
+
