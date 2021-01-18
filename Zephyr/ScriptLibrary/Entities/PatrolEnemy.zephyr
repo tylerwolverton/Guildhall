@@ -65,6 +65,11 @@ State Pursue
 
 State Attack
 {
+    StatInRange()
+    {
+        // maintain attack distance
+    }
+
     Update()
     {
         Number dist = DistanceBetweenEntities( this.entity, this.target )
@@ -82,5 +87,7 @@ State Attack
             this.canAttack = false
             ResetCooldown( delaySeconds: 1 )
         }
+
+        StayInRange()
     }
 }

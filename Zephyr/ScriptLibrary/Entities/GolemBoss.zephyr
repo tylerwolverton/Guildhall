@@ -1,0 +1,115 @@
+Variable Number meleeAttackRange = 2
+Variable Number meleeAttackRangeTolerance = .5
+Variable Number breakdownSeconds = 1.5
+Variable Number functioningSeconds = 5
+Variable Number attackCooldownSeconds = .8
+Variable Entity target = null
+Variable Bool isRaging = false
+Variable Number rageHealthThreshhold = 5
+
+
+Function BreakDown()
+{
+    ChangeState( BrokenDown )
+
+    WakeUp( delaySeconds: this.breakdownSeconds )
+}
+
+Function WakeUp()
+{
+    if( this.isRaging )
+    {
+        ChangeState( Raging )
+    }
+    else
+    {
+        ChangeState( MeleeAttack )
+    }
+    
+    FireDelayedEvent( delaySeconds: this.functioningSeconds
+                      event: "BreakDown" )
+    
+}
+
+
+State BrokenDown
+{
+    Enter()
+    {
+        ChangeSpriteAnimation( name: "BreakDown" )
+        DeactivateInvincibility()
+    }
+
+    HealthUpdated()
+    {
+        if( this.entity.health < this.rageHealthThreshhold )
+        {
+            this.isRaging = true
+        }
+    }
+
+    Exit()
+    {
+        ChangeSpriteAnimation( name: "WakeUp" )
+        ActivateInvincibility()
+    }
+}
+
+State MeleeAttack
+{
+    Enter()
+    {
+        ChangeSpriteAnimation( name: "Normal" )
+    }
+
+    Update()
+    {
+        Number dist = DistanceBetweenEntities( this.entity, this.target )
+
+        if( dist > meleeAttackRange + meleeAttackRangeTolerance  )
+        {
+            ChangeState( RangedAttack )
+        }  
+        
+        if( this.canAttack )
+        {
+            
+        }
+    }
+}
+
+State RangedAttack
+{
+    Enter()
+    {
+        ChangeSpriteAnimation( name: "Normal" )
+    }
+
+    Update()
+    {
+        Number dist = DistanceBetweenEntities( this.entity, this.target )
+
+        if( dist < meleeAttackRange - meleeAttackRangeTolerance  )
+        {
+            ChangeState( MeleeAttack )
+        }  
+
+
+    }
+}
+
+State Raging
+{
+    Enter()
+    {
+        this.entity.speed = this.entity.speed * 2
+        this.attackCooldownSeconds = this.attackCooldownSeconds * .5
+        ChangeSpriteAnimation( name: "Raging" )
+    }
+
+    Update()
+    {
+
+    }
+}
+
