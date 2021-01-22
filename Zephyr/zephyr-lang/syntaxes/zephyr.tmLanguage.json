@@ -27,7 +27,7 @@
 			},
 			{
 				"name": "keyword.states.zephyr",
-				"match": "\\b(StateMachine|State|ChangeState)\\b"
+				"match": "\\b(StateMachine|State|Function|Variable|ChangeState)\\b"
 			},
 			{
 				"name": "keyword.operator.arithmetic.zephyr",
@@ -39,7 +39,7 @@
 			},
 			{
 				"name": "keyword.events.zephyr",
-				"match": "\\b(FireEvent|OnEvent|OnEnter|OnExit|OnUpdate)\\b"
+				"match": "\\b(FireEvent|OnEvent|OnEnter|OnExit|OnUpdate|Update|Enter|Exit)\\b"
 			},
 			{
 				"name": "keyword.operator.assignment.zephyr",
@@ -47,7 +47,7 @@
 			},
 			{
 				"name": "storage.type.zephyr",
-				"match": "\\b(Number|String|Vec2|Bool)\\b"
+				"match": "\\b(Number|String|Vec2|Bool|Entity)\\b"
 			}
 		]
 		},
@@ -55,7 +55,7 @@
 			"patterns": [
 			{
 				"name": "variable.language.gameapi.zephyr",
-				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|AddNewDamageTypeMultiplier|ChangeDamageTypeMultiplier|AddItemToInventory|RemoveItemFromInventory|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake)\\b"
+				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|AddNewDamageTypeMultiplier|ChangeDamageTypeMultiplier|AddItemToInventory|RemoveItemFromInventory|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake|MoveTowardsTarget|DamageEntitiesInCircle|DistanceBetweenEntities|FireAtEntity|FireDelayedEvent|HealthUpdated)\\b"
 			}
 		]
 		},
@@ -71,7 +71,7 @@
 			},
 			{
 				"name": "constant.numeric.bool.zephyr",
-				"match": "\\b(true|false)"
+				"match": "\\b(true|false|this|null)"
 			}
 		]
 		},
