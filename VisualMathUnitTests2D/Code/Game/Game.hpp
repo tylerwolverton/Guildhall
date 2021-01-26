@@ -64,7 +64,6 @@ private:
 	void RenderNearestPoints() const;
 
 	void UpdateFromKeyboard( float deltaSeconds );
-	void UpdateCameras( float deltaSeconds );
 	void UpdateMousePosition();
 	void UpdateNearestPoints();
 	void UpdateShapeColors();
@@ -73,7 +72,6 @@ private:
 	bool		m_isDebugRendering = false;
 
 	Camera*		m_worldCamera = nullptr;
-	Camera*		m_uiCamera = nullptr;
 
 	MouseState  m_mouseState = MOUSE_STATE_POINT;
 	Vec2		m_mouseWorldPosition = Vec2::ZERO;

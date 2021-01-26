@@ -262,7 +262,7 @@ void Map::TiePortalToDoor()
 void Map::Render() const
 {
 	std::vector<Vertex_PCU> vertexes;
-	AppendVertsForAABB2D( vertexes, AABB2( Vec2::ZERO, Vec2( (float)m_width, (float)m_height ) ), Rgba8::WHITE );
+	AppendVertsForAABB2D( vertexes, AABB2(  Vec2(0.f, .25f), Vec2( (float)m_width, (float)m_height ) ), Rgba8::WHITE );
 
 	g_renderer->BindTexture( 0, m_mapDef->m_backgroundTexture );
 	g_renderer->DrawVertexArray( vertexes );

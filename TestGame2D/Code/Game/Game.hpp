@@ -40,7 +40,7 @@ public:
 
 	void AddScreenShakeIntensity(float additionalIntensityFraction);
 
-	static bool LogToDevConsole( EventArgs args );
+	static bool LogToDevConsole( EventArgs* args );
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;

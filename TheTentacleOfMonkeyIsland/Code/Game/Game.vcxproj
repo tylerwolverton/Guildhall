@@ -209,6 +209,7 @@
     <ClCompile Include="MapDefinition.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="PortalDefinition.cpp" />
+    <ClCompile Include="SpriteAnimSetDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="TriggerRegion.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="MapDefinition.hpp" />
     <ClInclude Include="Portal.hpp" />
     <ClInclude Include="PortalDefinition.hpp" />
+    <ClInclude Include="SpriteAnimSetDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="TriggerRegion.hpp" />

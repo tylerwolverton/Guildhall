@@ -39,6 +39,7 @@ public:
 	Vec2		GetDimensions() const;
 	void		SetDimensions( const Vec2& dimensions );
 	void		FitWithinBounds( const AABB2& boundingBox );
+	void		CenterWithinBounds( const AABB2& boundingBox );
 	void		AlignWithinBounds( const AABB2& boundingBox, const Vec2& alignment );
 
 	// Geometric Queries

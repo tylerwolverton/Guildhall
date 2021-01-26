@@ -420,6 +420,29 @@ void AABB2::SetDimensions( const Vec2& dimensions )
 //-----------------------------------------------------------------------------------------------
 void AABB2::FitWithinBounds( const AABB2& boundingBox )
 {
+	if ( mins.x < boundingBox.mins.x )
+	{
+		Translate( Vec2( boundingBox.mins.x - mins.x, 0.f ) );
+	}
+	if ( maxs.x > boundingBox.maxs.x )
+	{
+		Translate( Vec2( boundingBox.maxs.x - maxs.x, 0.f ) );
+	}
+
+	if ( mins.y < boundingBox.mins.y )
+	{
+		Translate( Vec2( 0.f, boundingBox.mins.y - mins.y ) );
+	}
+	if ( maxs.y > boundingBox.maxs.y )
+	{
+		Translate( Vec2( 0.f, boundingBox.maxs.y - maxs.y ) );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AABB2::CenterWithinBounds( const AABB2& boundingBox )
+{
 	// Center horizontally in bounds if bounds are smaller
 	if ( boundingBox.GetWidth() < GetWidth() )
 	{

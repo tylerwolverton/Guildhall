@@ -2,7 +2,6 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
-#include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
 #include "Game/GameCommon.hpp"
 
 
@@ -44,6 +43,4 @@ ActorDefinition::ActorDefinition( const XmlElement& actorDefElem )
 //-----------------------------------------------------------------------------------------------
 ActorDefinition::~ActorDefinition()
 {
-	delete m_spriteAnimSetDef;
-	m_spriteAnimSetDef = nullptr;
 }

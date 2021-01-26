@@ -42,7 +42,7 @@ void Player::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( m_tankBodyTexture );
+	g_renderer->BindTexture( 0, m_tankBodyTexture );
 	g_renderer->DrawVertexArray( vertexesCopy );
 }
 

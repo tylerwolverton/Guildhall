@@ -72,7 +72,6 @@ constexpr float ACTOR_WANDER_DIRECTION_CHANGE_COOLDOWN_SECONDS = 3.f;
 constexpr float PHYSICS_FRICTION_FRACTION = .2f;
 
 constexpr float DEBUG_LINE_THICKNESS = 0.02f;
-constexpr float UI_DEBUG_LINE_THICKNESS = 2.f;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;

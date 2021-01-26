@@ -4,7 +4,7 @@ class InputSystem;
 class AudioSystem;
 class RenderContext;
 class Game;
-class BitmapFont;
+class Window;
 struct Vec2;
 struct Rgba8;
 
@@ -12,12 +12,18 @@ struct Rgba8;
 //-----------------------------------------------------------------------------------------------
 // External variable declarations
 //
+extern Window* g_window;
 extern App* g_app;
 extern InputSystem* g_inputSystem;
 extern AudioSystem* g_audioSystem;
 extern RenderContext* g_renderer;
 extern Game* g_game;
-extern BitmapFont* g_testFont;
+
+
+//-----------------------------------------------------------------------------------------------
+// Global Functions
+//
+void PopulateGameConfig();
 
 
 //-----------------------------------------------------------------------------------------------

@@ -115,7 +115,7 @@ void TileMap::CenterCameraOnPlayer() const
 		AABB2 cameraBounds( m_player->GetPosition() - halfWindowSize, m_player->GetPosition() + halfWindowSize );
 
 		AABB2 windowBox( Vec2( 0.f, 0.f ), Vec2( (float)m_dimensions.x, (float)m_dimensions.y ) );
-		cameraBounds.FitWithinBounds( windowBox );
+		cameraBounds.CenterWithinBounds( windowBox );
 
 		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 	}

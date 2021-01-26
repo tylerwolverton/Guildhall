@@ -4,8 +4,9 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
-#include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
+
 #include "Game/GameCommon.hpp"
+#include "Game/SpriteAnimSetDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

@@ -6,6 +6,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/World.hpp"
@@ -121,8 +122,8 @@ void Map::RenderTiles() const
 	{
 		const Tile& tile = m_tiles[tileIndex];
 
-		g_renderer->BindTexture( nullptr );
-		g_renderer->DrawAABB2( tile.GetBounds(), GetColorForTileType( tile.m_tileType ) );
+		g_renderer->BindTexture( 0, nullptr );
+		DrawAABB2( g_renderer, tile.GetBounds(), GetColorForTileType( tile.m_tileType ) );
 	}
 }
 

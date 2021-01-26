@@ -3,6 +3,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 
@@ -50,9 +51,9 @@ void Entity::Die()
 //-----------------------------------------------------------------------------------------------
 void Entity::DebugRender() const
 {
-	g_renderer->BindTexture( nullptr );
-	g_renderer->DrawRing2D( m_position, m_physicsRadius, Rgba8(0, 255, 255), DEBUG_LINE_THICKNESS );
-	g_renderer->DrawRing2D( m_position, m_cosmeticRadius, Rgba8(255, 0, 255), DEBUG_LINE_THICKNESS );
+	g_renderer->BindTexture( 0, nullptr );
+	DrawRing2D( g_renderer, m_position, m_physicsRadius, Rgba8(0, 255, 255), DEBUG_LINE_THICKNESS );
+	DrawRing2D( g_renderer, m_position, m_cosmeticRadius, Rgba8(255, 0, 255), DEBUG_LINE_THICKNESS );
 }
 
 

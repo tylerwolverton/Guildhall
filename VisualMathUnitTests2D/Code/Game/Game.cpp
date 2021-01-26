@@ -6,6 +6,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
@@ -28,11 +29,14 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
-	m_uiCamera = new Camera();
-
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+	m_worldCamera->SetPosition( Vec3( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) * .5f, 0.f ) );
+	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+	
 	m_rng = new RandomNumberGenerator();
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 
 	RandomizeShapes();
 
@@ -46,9 +50,6 @@ void Game::Shutdown()
 	delete m_rng;
 	m_rng = nullptr;
 	
-	delete m_uiCamera;
-	m_uiCamera = nullptr;
-
 	delete m_worldCamera;
 	m_worldCamera = nullptr;
 }
@@ -66,7 +67,6 @@ void Game::RestartGame()
 void Game::Update( float deltaSeconds )
 {
 	UpdateFromKeyboard( deltaSeconds );
-	UpdateCameras( deltaSeconds );
 
 	UpdateMousePosition();
 	UpdateNearestPoints();
@@ -77,24 +77,15 @@ void Game::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen( Rgba8::BLACK );
-
 	g_renderer->BeginCamera(*m_worldCamera );
-		
+	
+	g_renderer->BindTexture( 0, nullptr );
+
 	RenderMouseShape();
 	RenderShapes();
 	RenderNearestPoints();
 
 	g_renderer->EndCamera( *m_worldCamera );
-
-	// Render UI with a new camera
-	g_renderer->BeginCamera( *m_uiCamera );
-
-	g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
-	
-	g_renderer->EndCamera( *m_uiCamera );
 }
 
 
@@ -204,15 +195,15 @@ void Game::RenderMouseShape() const
 	{
 		case MOUSE_STATE_POINT:
 			{
-				g_renderer->BindTexture( nullptr );
-				g_renderer->DrawRing2D( m_mouseWorldPosition, .02f, Rgba8::WHITE, .04f );
+				//g_renderer->BindTexture( 0, nullptr );
+				DrawRing2D( g_renderer, m_mouseWorldPosition, .02f, Rgba8::WHITE, .04f );
 			}
 			break;
 
 		case MOUSE_STATE_OBB2:
 			{
-				g_renderer->BindTexture( nullptr );
-				g_renderer->DrawOBB2( m_mouseOBB2, Rgba8::WHITE );
+				//g_renderer->BindTexture( 0, nullptr );
+				DrawOBB2( g_renderer, m_mouseOBB2, Rgba8::WHITE );
 			}
 			break;
 	}
@@ -222,7 +213,7 @@ void Game::RenderMouseShape() const
 //-----------------------------------------------------------------------------------------------
 void Game::RenderShapes() const
 {
-	g_renderer->BindTexture( nullptr );
+	//g_renderer->BindTexture( 0, nullptr );
 
 	RenderLine();
 	RenderDisc();
@@ -236,42 +227,42 @@ void Game::RenderShapes() const
 //-----------------------------------------------------------------------------------------------
 void Game::RenderLine() const
 {
-	g_renderer->DrawLine2D( m_lineSegmentStart, m_lineSegmentStart + m_lineSegmentVector, m_lineColor, .01f );
+	DrawLine2D( g_renderer, m_lineSegmentStart, m_lineSegmentStart + m_lineSegmentVector, m_lineColor, .01f );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::RenderDisc() const
 {
-	g_renderer->DrawDisc2D( m_discCenter, m_discRadius, m_discColor );
+	DrawDisc2D( g_renderer, m_discCenter, m_discRadius, m_discColor );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::RenderAABB2() const
 {
-	g_renderer->DrawAABB2( m_aabb2, m_AABB2Color );
+	DrawAABB2( g_renderer, m_aabb2, m_AABB2Color );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::RenderOBB2() const
 {
-	g_renderer->DrawOBB2( m_obb2, m_OBB2Color );
+	DrawOBB2( g_renderer, m_obb2, m_OBB2Color );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::RenderCapsule2() const
 {
-	g_renderer->DrawCapsule2D( m_capsule2, m_capsule2Color );
+	DrawCapsule2D( g_renderer, m_capsule2, m_capsule2Color );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::RenderPolygon2() const
 {
-	g_renderer->DrawPolygon2( m_polygon2, m_polygon2Color );
+	DrawPolygon2( g_renderer, m_polygon2, m_polygon2Color );
 }
 
 
@@ -281,24 +272,24 @@ void Game::RenderNearestPoints() const
 	if ( m_mouseState == MOUSE_STATE_POINT )
 	{
 		// Line
-		g_renderer->DrawRing2D( m_nearestPointOnLine, .02f, Rgba8::WHITE, .04f );
-		g_renderer->DrawLine2D( m_mouseWorldPosition, m_nearestPointOnLine, Rgba8::YELLOW, .025f );
+		DrawRing2D( g_renderer, m_nearestPointOnLine, .02f, Rgba8::WHITE, .04f );
+		DrawLine2D( g_renderer, m_mouseWorldPosition, m_nearestPointOnLine, Rgba8::YELLOW, .025f );
 
 		// Disc
-		g_renderer->DrawRing2D( m_nearestPointOnDisc, .02f, Rgba8::WHITE, .04f );
-		g_renderer->DrawLine2D( m_mouseWorldPosition, m_nearestPointOnDisc, Rgba8::YELLOW, .025f );
+		DrawRing2D( g_renderer, m_nearestPointOnDisc, .02f, Rgba8::WHITE, .04f );
+		DrawLine2D( g_renderer, m_mouseWorldPosition, m_nearestPointOnDisc, Rgba8::YELLOW, .025f );
 
 		// AABB2
-		g_renderer->DrawRing2D( m_nearestPointOnAABB2, .02f, Rgba8::WHITE, .04f );
-		g_renderer->DrawLine2D( m_mouseWorldPosition, m_nearestPointOnAABB2, Rgba8::YELLOW, .025f );
+		DrawRing2D( g_renderer, m_nearestPointOnAABB2, .02f, Rgba8::WHITE, .04f );
+		DrawLine2D( g_renderer, m_mouseWorldPosition, m_nearestPointOnAABB2, Rgba8::YELLOW, .025f );
 
 		// OBB2
-		g_renderer->DrawRing2D( m_nearestPointOnOBB2, .02f, Rgba8::WHITE, .04f );
-		g_renderer->DrawLine2D( m_mouseWorldPosition, m_nearestPointOnOBB2, Rgba8::YELLOW, .025f );
+		DrawRing2D( g_renderer, m_nearestPointOnOBB2, .02f, Rgba8::WHITE, .04f );
+		DrawLine2D( g_renderer, m_mouseWorldPosition, m_nearestPointOnOBB2, Rgba8::YELLOW, .025f );
 
 		// Capsule2
-		g_renderer->DrawRing2D( m_nearestPointOnCapsule2, .02f, Rgba8::WHITE, .04f );
-		g_renderer->DrawLine2D( m_mouseWorldPosition, m_nearestPointOnCapsule2, Rgba8::YELLOW, .025f );
+		DrawRing2D( g_renderer, m_nearestPointOnCapsule2, .02f, Rgba8::WHITE, .04f );
+		DrawLine2D( g_renderer, m_mouseWorldPosition, m_nearestPointOnCapsule2, Rgba8::YELLOW, .025f );
 	}
 }
 
@@ -308,6 +299,11 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 		
+	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
+	{
+		g_devConsole->ToggleOpenFull();
+	}
+
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{
 		m_isDebugRendering = !m_isDebugRendering;
@@ -341,15 +337,6 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 	{
 		m_mouseOBB2.SetOrientationDegrees( m_mouseOBB2.GetOrientationDegrees() - ( 30.f * deltaSeconds ) );
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateCameras( float deltaSeconds )
-{
-	UNUSED( deltaSeconds );
-	m_worldCamera->SetOrthoView( Vec2::ZERO, Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 }
 
 

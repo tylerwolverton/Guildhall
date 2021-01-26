@@ -52,6 +52,9 @@
     <ClCompile Include="Cursor.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="SpriteAnimSetDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -91,6 +94,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Cursor.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteAnimSetDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

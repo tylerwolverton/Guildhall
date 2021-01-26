@@ -1,11 +1,6 @@
-#include "Engine/Math/Vec2.hpp"
-#include "Engine/Math/MathUtils.hpp"
-#include "Engine/Core/Rgba8.hpp"
-#include "Engine/Core/NamedStrings.hpp"
-#include "Engine/Core/Vertex_PCU.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
-#include "Engine/Core/XmlUtils.hpp"
 #include "Game/GameCommon.hpp"
+#include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/XmlUtils.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

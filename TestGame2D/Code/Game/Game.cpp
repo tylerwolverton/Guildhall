@@ -8,6 +8,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -50,7 +51,15 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+	m_worldCamera->SetPosition( Vec3( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) * .5f, 0.f ) );
+	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+
 	m_uiCamera = new Camera();
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 
 	m_rng = new RandomNumberGenerator();
 
@@ -59,7 +68,7 @@ void Game::Startup()
 	m_world = new World();
 	m_world->BuildNewMap( 20, 30 );
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Game Started" );
+	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
 
@@ -91,7 +100,8 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
 {
-	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
+	m_worldCamera->SetOutputSize( cameraBounds.GetDimensions() );
+	m_worldCamera->SetPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 }
 
 
@@ -131,10 +141,6 @@ void Game::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen(Rgba8(0, 0, 0));
-
 	g_renderer->BeginCamera(*m_worldCamera );
 
 	/*m_world->Render();
@@ -153,9 +159,7 @@ void Game::Render() const
 
 	RenderTestText();
 	RenderTestTextInBox();
-
-	g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
-	
+		
 	g_renderer->EndCamera( *m_uiCamera );
 }
 
@@ -163,10 +167,8 @@ void Game::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game::LoadAssets()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Assets..." );
-
-	g_testFont = g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" );
-
+	g_devConsole->PrintString( "Loading Assets..." );
+	
 	g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/TestAtlas_4x4.png" );
 	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_SpriteSheet8x2.png" );
@@ -185,7 +187,7 @@ void Game::LoadAssets()
 	LoadTestXml();
 	LoadTestImage();
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Assets Loaded" );
+	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
 
 
@@ -202,9 +204,9 @@ void Game::RenderTestSpriteAnimations() const
 void Game::RenderTestText() const
 {
 	std::vector<Vertex_PCU> textVerts;
-	g_testFont->AppendVertsForText2D( textVerts, Vec2( 200.f, 100.f ), 30.f, "Hello, world" );
-	g_testFont->AppendVertsForText2D( textVerts, Vec2( 450.f, .5f ), 50.f, "Options!", Rgba8::RED, 0.6f );
-	g_renderer->BindTexture( g_testFont->GetTexture() );
+	g_renderer->GetSystemFont()->AppendVertsForText2D( textVerts, Vec2( 200.f, 100.f ), 30.f, "Hello, world" );
+	g_renderer->GetSystemFont()->AppendVertsForText2D( textVerts, Vec2( 450.f, .5f ), 50.f, "Options!", Rgba8::RED, 0.6f );
+	g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 	g_renderer->DrawVertexArray( textVerts );
 
 }
@@ -216,22 +218,22 @@ void Game::RenderTestTextInBox() const
 
 	AABB2 box( Vec2( 1000.f, 40.f ), Vec2( 1800.f, 750.f ) );
 
-	g_renderer->BindTexture( nullptr );
-	g_renderer->DrawAABB2( box, Rgba8(127, 0, 255, 100 ));
+	g_renderer->BindTexture( 0, nullptr );
+	DrawAABB2( g_renderer, box, Rgba8(127, 0, 255, 100 ));
 
 	std::vector<Vertex_PCU> textVerts;
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Center", Rgba8::GREEN, 1.f, ALIGN_CENTERED );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Bottom Left", Rgba8::GREEN, 1.f, ALIGN_BOTTOM_LEFT );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Bottom Center", Rgba8::GREEN, 1.f, ALIGN_BOTTOM_CENTER );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Bottom Right", Rgba8::GREEN, 1.f, ALIGN_BOTTOM_RIGHT );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Center Left", Rgba8::GREEN, 1.f, ALIGN_CENTERED_LEFT );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Center Right", Rgba8::GREEN, 1.f, ALIGN_CENTERED_RIGHT );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Top Left", Rgba8::GREEN, 1.f, ALIGN_TOP_LEFT );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Top Center", Rgba8::GREEN, 1.f, ALIGN_TOP_CENTER );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Top Right", Rgba8::GREEN, 1.f, ALIGN_TOP_RIGHT );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 32.f, "Somewhere in the Middle", Rgba8::RED, 1.f, Vec2( .3f, .7f ) );
-	g_testFont->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Hi", Rgba8::RED, 1.f, Vec2( .15f, .15f ) );
-	g_renderer->BindTexture( g_testFont->GetTexture() );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Center", Rgba8::GREEN, 1.f, ALIGN_CENTERED );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Bottom Left", Rgba8::GREEN, 1.f, ALIGN_BOTTOM_LEFT );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Bottom Center", Rgba8::GREEN, 1.f, ALIGN_BOTTOM_CENTER );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Bottom Right", Rgba8::GREEN, 1.f, ALIGN_BOTTOM_RIGHT );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Center Left", Rgba8::GREEN, 1.f, ALIGN_CENTERED_LEFT );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Center Right", Rgba8::GREEN, 1.f, ALIGN_CENTERED_RIGHT );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Top Left", Rgba8::GREEN, 1.f, ALIGN_TOP_LEFT );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Top Center", Rgba8::GREEN, 1.f, ALIGN_TOP_CENTER );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Top Right", Rgba8::GREEN, 1.f, ALIGN_TOP_RIGHT );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 32.f, "Somewhere in the Middle", Rgba8::RED, 1.f, Vec2( .3f, .7f ) );
+	g_renderer->GetSystemFont()->AppendVertsForTextInBox2D( textVerts, box, 16.f, "Hi", Rgba8::RED, 1.f, Vec2( .15f, .15f ) );
+	g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 	g_renderer->DrawVertexArray( textVerts );
 }
 
@@ -250,11 +252,11 @@ void Game::RenderSquareTestSprite() const
 	spriteBounds.maxs.x *= testSpriteDef.GetAspect();
 	spriteBounds.maxs.y *= inverseAspect;
 
-	g_renderer->AppendVertsForAABB2D( testVerts, spriteBounds, Rgba8::WHITE, uvAtMins, uvAtMaxs );
+	AppendVertsForAABB2D( testVerts, spriteBounds, Rgba8::WHITE, uvAtMins, uvAtMaxs );
 
 	Vertex_PCU::TransformVertexArray( testVerts, 1.f, 0.f, Vec2( 1.f, 5.f ) );
 
-	g_renderer->BindTexture( m_spriteAtlas4x4Texture );
+	g_renderer->BindTexture( 0, m_spriteAtlas4x4Texture );
 	g_renderer->DrawVertexArray( testVerts );
 }
 
@@ -273,11 +275,11 @@ void Game::RenderNonSquareTestSprite() const
 	spriteBounds.maxs.x *= testSpriteDef.GetAspect();
 	spriteBounds.maxs.y *= inverseAspect;
 
-	g_renderer->AppendVertsForAABB2D( testVerts, spriteBounds, Rgba8::WHITE, uvAtMins, uvAtMaxs );
+	AppendVertsForAABB2D( testVerts, spriteBounds, Rgba8::WHITE, uvAtMins, uvAtMaxs );
 
 	Vertex_PCU::TransformVertexArray( testVerts, 1.f, 0.f, Vec2( 2.5f, 5.f ) );
 
-	g_renderer->BindTexture( m_spriteSheet8x2Texture );
+	g_renderer->BindTexture( 0, m_spriteSheet8x2Texture );
 	g_renderer->DrawVertexArray( testVerts );
 }
 
@@ -289,8 +291,8 @@ void Game::RenderMousePointer() const
 	mouseWorldPosition.x *= WINDOW_WIDTH;
 	mouseWorldPosition.y *= WINDOW_HEIGHT;
 
-	g_renderer->BindTexture( nullptr );
-	g_renderer->DrawRing2D( mouseWorldPosition, .05f, Rgba8::CYAN, .05f );
+	g_renderer->BindTexture( 0, nullptr );
+	DrawRing2D( g_renderer, mouseWorldPosition, .05f, Rgba8::CYAN, .05f );
 }
 
 
@@ -306,11 +308,11 @@ void Game::RenderSpriteAnimation( const SpriteDefinition& spriteDef, const Vec2&
 	spriteBounds.maxs.x *= spriteDef.GetAspect();
 	spriteBounds.maxs.y *= inverseAspect;
 
-	g_renderer->AppendVertsForAABB2D( testVerts, spriteBounds, Rgba8::WHITE, uvAtMins, uvAtMaxs );
+	AppendVertsForAABB2D( testVerts, spriteBounds, Rgba8::WHITE, uvAtMins, uvAtMaxs );
 
 	Vertex_PCU::TransformVertexArray( testVerts, 1.f, 0.f, position );
 
-	g_renderer->BindTexture( m_spriteSheet8x2Texture );
+	g_renderer->BindTexture( 0, m_spriteSheet8x2Texture );
 	g_renderer->DrawVertexArray( testVerts );
 }
 
@@ -333,7 +335,7 @@ void Game::LoadTestXml()
 	XmlError loadError = doc.LoadFile( filePath );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		g_devConsole->PrintString( Rgba8::RED, "XML file couldn't be opened!" );
+		g_devConsole->PrintString( "XML file couldn't be opened!", Rgba8::RED );
 		return;
 	}
 
@@ -341,13 +343,13 @@ void Game::LoadTestXml()
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
-		g_devConsole->PrintString( Rgba8::WHITE, ParseXmlAttribute( *element, "name", "" ) );
-		g_devConsole->PrintString( Rgba8::WHITE, ParseXmlAttribute( *element, "spriteCoords", "" ) );
-		g_devConsole->PrintString( Rgba8::WHITE, ParseXmlAttribute( *element, "spriteTint", "" ) );
-		g_devConsole->PrintString( Rgba8::WHITE, ParseXmlAttribute( *element, "allowsSight", "" ) );
-		g_devConsole->PrintString( Rgba8::WHITE, ParseXmlAttribute( *element, "allowsWalking", "" ) );
-		g_devConsole->PrintString( Rgba8::WHITE, ParseXmlAttribute( *element, "allowsFlying", "" ) );
-		g_devConsole->PrintString( Rgba8::WHITE, ParseXmlAttribute( *element, "allowsSwimming", "" ) );
+		g_devConsole->PrintString( ParseXmlAttribute( *element, "name", "" ) );
+		g_devConsole->PrintString( ParseXmlAttribute( *element, "spriteCoords", "" ) );
+		g_devConsole->PrintString( ParseXmlAttribute( *element, "spriteTint", "" ) );
+		g_devConsole->PrintString( ParseXmlAttribute( *element, "allowsSight", "" ) );
+		g_devConsole->PrintString( ParseXmlAttribute( *element, "allowsWalking", "" ) );
+		g_devConsole->PrintString( ParseXmlAttribute( *element, "allowsFlying", "" ) );
+		g_devConsole->PrintString( ParseXmlAttribute( *element, "allowsSwimming", "" ) );
 
 		element = element->NextSiblingElement();
 	}
@@ -404,7 +406,7 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->WasKeyJustPressed( 'S' ) )
 	{
-		g_eventSystem->RegisterEvent( "LogToDevConsole", LogToDevConsole );
+		g_eventSystem->RegisterEvent( "LogToDevConsole", "", eUsageLocation::EVERYWHERE, LogToDevConsole );
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( 'D' ) )
@@ -423,12 +425,12 @@ void Game::UpdateFromKeyboard( float deltaSeconds )
 
 	if ( g_inputSystem->WasKeyJustPressed( '9' ) )
 	{
-		g_devConsole->PrintString( Rgba8::RED, "Hey, Red" );
+		g_devConsole->PrintString( "Hey, Red", Rgba8::RED );
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( '8' ) )
 	{
-		g_devConsole->PrintString( Rgba8::PURPLE, "Yo, Purple" );
+		g_devConsole->PrintString( "Yo, Purple", Rgba8::PURPLE );
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
@@ -443,7 +445,7 @@ void Game::UpdateCameras( float deltaSeconds )
 {
 	// World camera
 	m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
-	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.0);
+	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.f);
 
 	float maxScreenShake = m_screenShakeIntensity * MAX_CAMERA_SHAKE_DIST;
 	float cameraShakeX = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
@@ -451,9 +453,6 @@ void Game::UpdateCameras( float deltaSeconds )
 	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
 
 	m_worldCamera->Translate2D(cameraShakeOffset);
-
-	// UI Camera
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
 }
 
 
@@ -472,14 +471,14 @@ void Game::AddScreenShakeIntensity(float intensity)
 
 
 //-----------------------------------------------------------------------------------------------
-bool Game::LogToDevConsole( EventArgs args )
+bool Game::LogToDevConsole( EventArgs* args )
 {
 	Rgba8 color( Rgba8::WHITE );
-	color = args.GetValue( "Color", color );
+	color = args->GetValue( "Color", color );
 
 	std::string message;
-	message = args.GetValue( "Message", message );
+	message = args->GetValue( "Message", message );
 
-	g_devConsole->PrintString( color, message );
+	g_devConsole->PrintString( message, color );
 	return false;
 }
