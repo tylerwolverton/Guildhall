@@ -209,6 +209,7 @@
     <ClCompile Include="MapGenStep_Mutate.cpp" />
     <ClCompile Include="MapGenStep_RoomsAndPaths.cpp" />
     <ClCompile Include="MapGenStep_Worm.cpp" />
+    <ClCompile Include="SpriteAnimSetDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinition.cpp" />
     <ClCompile Include="World.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="MapGenStep_Mutate.hpp" />
     <ClInclude Include="MapGenStep_RoomsAndPaths.hpp" />
     <ClInclude Include="MapGenStep_Worm.hpp" />
+    <ClInclude Include="SpriteAnimSetDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinition.hpp" />
     <ClInclude Include="World.hpp" />

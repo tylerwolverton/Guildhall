@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
 
 
@@ -23,7 +24,9 @@ public:
 	
 	bool HandleQuitRequested();
 	void RestartGame();
-	
+
+	static bool QuitGame( EventArgs* args );
+
 private:
 	eWindowMode GetWindowModeFromGameConfig();
 

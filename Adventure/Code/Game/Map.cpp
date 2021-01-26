@@ -9,6 +9,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
@@ -179,10 +180,10 @@ void Map::RenderTiles() const
 	{
 		const Tile& tile = m_tiles[tileIndex];
 
-		g_renderer->AppendVertsForAABB2D( vertexes, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
+		AppendVertsForAABB2D( vertexes, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
 	}
 
-	g_renderer->BindTexture( &(g_tileSpriteSheet->GetTexture()) );
+	g_renderer->BindTexture( 0, &(g_tileSpriteSheet->GetTexture()) );
 	g_renderer->DrawVertexArray( vertexes );
 }
 

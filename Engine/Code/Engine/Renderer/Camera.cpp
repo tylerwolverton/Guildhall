@@ -57,6 +57,13 @@ void Camera::Translate( const Vec3& translation )
 
 
 //-----------------------------------------------------------------------------------------------
+void Camera::Translate2D( const Vec2& translation )
+{
+	m_transform.Translate( Vec3( translation, 0.f ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Vec2 Camera::GetOrthoMin() const
 {
 	return ClientToWorldPosition( Vec2::ZERO, 0 ).XY();

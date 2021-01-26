@@ -21,8 +21,10 @@ public:
 	SpriteAnimSetDefinition( RenderContext& renderer, const XmlElement& spriteAnimSetDefElem );
 	~SpriteAnimSetDefinition();
 
+	static SpriteAnimDefinition* GetSpriteAnimDefinitionByName( const std::string& name );
+
 private:
-	std::map< std::string, SpriteAnimDefinition* > m_spriteAnimDefMapByName;
+	static std::map< std::string, SpriteAnimDefinition* > s_spriteAnimDefMapByName;
 
 	SpriteSheet* m_spriteSheet = nullptr;
 };

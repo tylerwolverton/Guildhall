@@ -946,6 +946,8 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 		return nullptr;
 	}
 
+	//GUARANTEE_OR_DIE( numComponents == 4, Stringf( "Image '%s' needs an alpha channel", imageFilePath ) );
+
 	if ( !( numComponents == 4 && imageTexelSizeX > 0 && imageTexelSizeY > 0 ) )
 	{
 		g_devConsole->PrintString( Stringf( "ERROR loading image \"%s\" (Bpp=%i, size=%i,%i)", imageFilePath, numComponents, imageTexelSizeX, imageTexelSizeY ) ,Rgba8::RED );

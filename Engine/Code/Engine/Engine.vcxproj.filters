@@ -151,9 +151,6 @@
     <ClCompile Include="Math\OBB2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\SpriteAnimSetDefinition.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Core\TextBox.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -449,9 +446,6 @@
     </ClInclude>
     <ClInclude Include="Core\EventSystem.hpp">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\SpriteAnimSetDefinition.hpp">
-      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Core\TextBox.hpp">
       <Filter>Core</Filter>

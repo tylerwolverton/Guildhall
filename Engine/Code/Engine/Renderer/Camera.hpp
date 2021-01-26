@@ -55,6 +55,7 @@ public:
 	// Transform
 	void SetPosition( const Vec3& position );
 	void Translate( const Vec3& translation );
+	void Translate2D( const Vec2& translation );
 	void SetPitchRollYawOrientationDegrees( float pitch, float roll, float yaw );
 	void SetYawPitchRollOrientationDegrees( float yawDegrees, float pitchDegrees, float rollDegrees );
 	void SetYawOrientationDegrees( float yawDegrees );

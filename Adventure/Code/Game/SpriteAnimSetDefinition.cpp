@@ -1,4 +1,4 @@
-#include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
+#include "Game/SpriteAnimSetDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -7,8 +7,20 @@
 
 
 //-----------------------------------------------------------------------------------------------
+std::map< std::string, SpriteAnimDefinition* > SpriteAnimSetDefinition::s_spriteAnimDefMapByName;
+
+
+//-----------------------------------------------------------------------------------------------
 SpriteAnimSetDefinition::SpriteAnimSetDefinition( RenderContext& renderer, const XmlElement& spriteAnimSetDefElem )
 {
+	/*<SpriteAnimSet spriteSheet = "KushnariovaCharacters_12x53.png" spriteLayout = "12,53" fps = "10">
+		<SpriteAnim name = "MoveEast"		spriteIndexes = "3,4,5,4"/>
+		<SpriteAnim name = "MoveWest"		spriteIndexes = "9,10,11,10"/>
+		<SpriteAnim name = "MoveNorth"	spriteIndexes = "0,1,2,1"/>
+		<SpriteAnim name = "MoveSouth"	spriteIndexes = "6,7,8,7"/>
+		<SpriteAnim name = "Idle"				spriteIndexes = "6,7,8,7" fps = "3"/>
+		</SpriteAnimSet>*/
+
 	std::string spriteSheetFileName;
 	spriteSheetFileName = ParseXmlAttribute( spriteAnimSetDefElem, "spriteSheet", spriteSheetFileName );
 
@@ -17,11 +29,10 @@ SpriteAnimSetDefinition::SpriteAnimSetDefinition( RenderContext& renderer, const
 	spriteSheetLayout.SetFromText( spriteSheetLayoutStr.c_str() );
 
 	// Try to find spritesheet in static map
-	std::string spriteSheetName = ParseXmlAttribute( spriteAnimSetDefElem, "spriteSheetName", "" );
-	m_spriteSheet = SpriteSheet::GetSpriteSheetByName( spriteSheetName );
+	m_spriteSheet = SpriteSheet::GetSpriteSheetByName( spriteSheetFileName );
 	if ( m_spriteSheet == nullptr )
 	{
-		std::string spriteSheetDataPath( "Data/Images/SpriteSheets/" + spriteSheetFileName );
+		std::string spriteSheetDataPath( "Data/Images/" + spriteSheetFileName );
 		m_spriteSheet = new SpriteSheet( *( renderer.CreateOrGetTextureFromFile( spriteSheetDataPath.c_str() ) ), spriteSheetLayout );
 		SpriteSheet::s_definitions.push_back( m_spriteSheet );
 	}
@@ -54,7 +65,7 @@ SpriteAnimSetDefinition::SpriteAnimSetDefinition( RenderContext& renderer, const
 		float fps = ParseXmlAttribute( *spriteAnimElem, "fps", defaultFps );
 
 		SpriteAnimDefinition* animDef = new SpriteAnimDefinition( *m_spriteSheet, spriteIndexes, fps );
-		m_spriteAnimDefMapByName[name] = animDef;
+		s_spriteAnimDefMapByName[name] = animDef;
 
 		spriteAnimElem = spriteAnimElem->NextSiblingElement( "SpriteAnim" );
 	}
@@ -66,3 +77,18 @@ SpriteAnimSetDefinition::~SpriteAnimSetDefinition()
 {
 	PTR_SAFE_DELETE( m_spriteSheet );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteAnimDefinition* SpriteAnimSetDefinition::GetSpriteAnimDefinitionByName( const std::string& name )
+{
+	std::map< std::string, SpriteAnimDefinition* >::const_iterator  mapIter = s_spriteAnimDefMapByName.find( name );
+
+	if ( mapIter == s_spriteAnimDefMapByName.cend() )
+	{
+		return nullptr;
+	}
+
+	return mapIter->second;
+}
+

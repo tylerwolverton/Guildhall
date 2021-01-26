@@ -2,8 +2,9 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
-#include "Engine/Renderer/SpriteAnimSetDefinition.hpp"
+
 #include "Game/GameCommon.hpp"
+#include "Game/SpriteAnimSetDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -13,14 +14,7 @@ std::map< std::string, ActorDefinition* > ActorDefinition::s_definitions;
 //-----------------------------------------------------------------------------------------------
 SpriteAnimDefinition* ActorDefinition::GetSpriteAnimDef( std::string animName )
 {
-	std::map< std::string, SpriteAnimDefinition* >::const_iterator  mapIter = m_spriteAnimSetDef->m_spriteAnimDefMapByName.find( animName );
-	
-	if ( mapIter == m_spriteAnimSetDef->m_spriteAnimDefMapByName.cend() )
-	{
-		return nullptr;
-	}
-
-	return mapIter->second;
+	return SpriteAnimSetDefinition::GetSpriteAnimDefinitionByName( animName );
 }
 
 

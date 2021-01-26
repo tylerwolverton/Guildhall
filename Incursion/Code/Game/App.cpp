@@ -78,6 +78,8 @@ void App::Startup()
 	g_devConsole->SetBitmapFont( g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" ) );
 
 	g_game->Startup();
+
+	g_eventSystem->RegisterEvent( "Quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
 }
 
 
@@ -214,4 +216,14 @@ void App::EndFrame()
 	g_devConsole->EndFrame();
 	g_eventSystem->EndFrame();
 	g_window->EndFrame();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool App::QuitGame( EventArgs* args )
+{
+	UNUSED( args );
+	g_app->HandleQuitRequested();
+
+	return 0;
 }

@@ -47,7 +47,15 @@ Game::~Game()
 void Game::Startup()
 {
 	m_worldCamera = new Camera();
+	m_worldCamera->SetOutputSize( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+	m_worldCamera->SetClearMode( CLEAR_COLOR_BIT, Rgba8::BLACK );
+	m_worldCamera->SetPosition( Vec3( Vec2( WINDOW_WIDTH, WINDOW_HEIGHT ) * .5f, 0.f ) );
+	m_worldCamera->SetProjectionOrthographic( WINDOW_HEIGHT );
+
 	m_uiCamera = new Camera();
+	m_uiCamera->SetOutputSize( Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_uiCamera->SetPosition( Vec3( WINDOW_WIDTH_PIXELS * .5f, WINDOW_HEIGHT_PIXELS * .5f, 0.f ) );
+	m_uiCamera->SetProjectionOrthographic( WINDOW_HEIGHT_PIXELS );
 
 	m_debugInfoTextBox = new TextBox( *g_renderer, AABB2( Vec2::ZERO, Vec2( 200.f, 80.f ) ) );
 
@@ -109,22 +117,23 @@ void Game::RestartGame()
 //-----------------------------------------------------------------------------------------------
 void Game::LogMapDebugCommands()
 {
-	g_devConsole->PrintString(Rgba8::WHITE, "Map Generation Debug Commands" );
-	g_devConsole->PrintString(Rgba8::WHITE, "F4 - View entire map" );
-	g_devConsole->PrintString(Rgba8::WHITE, "F5 - Reload current map" );
-	g_devConsole->PrintString(Rgba8::WHITE, "0 - Volcano Islands" );
-	g_devConsole->PrintString(Rgba8::WHITE, "1 - Mutate Demo" );
-	g_devConsole->PrintString(Rgba8::WHITE, "2 - Worm Demo" );
-	g_devConsole->PrintString(Rgba8::WHITE, "3 - FromImage Demo" );
-	g_devConsole->PrintString(Rgba8::WHITE, "4 - Cellular Automata Demo" );
-	g_devConsole->PrintString(Rgba8::WHITE, "5 - Rooms And Paths Demo" );
+	g_devConsole->PrintString( "Map Generation Debug Commands" );
+	g_devConsole->PrintString( "F4 - View entire map" );
+	g_devConsole->PrintString( "F5 - Reload current map" );
+	g_devConsole->PrintString( "0 - Volcano Islands" );
+	g_devConsole->PrintString( "1 - Mutate Demo" );
+	g_devConsole->PrintString( "2 - Worm Demo" );
+	g_devConsole->PrintString( "3 - FromImage Demo" );
+	g_devConsole->PrintString( "4 - Cellular Automata Demo" );
+	g_devConsole->PrintString( "5 - Rooms And Paths Demo" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::SetWorldCameraOrthographicView( const AABB2& cameraBounds )
 {
-	m_worldCamera->SetOrthoView( cameraBounds.mins, cameraBounds.maxs );
+	m_worldCamera->SetOutputSize( cameraBounds.GetDimensions() );
+	m_worldCamera->SetPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 }
 
 
@@ -163,10 +172,6 @@ void Game::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	// Clear all screen (backbuffer) pixels to black
-	// ALWAYS clear the screen at the top of each frame's Render()!
-	g_renderer->ClearScreen(Rgba8(0, 0, 0));
-
 	g_renderer->BeginCamera(*m_worldCamera );
 
 	m_world->Render();
@@ -180,7 +185,7 @@ void Game::Render() const
 	// Render UI with a new camera
 	g_renderer->BeginCamera( *m_uiCamera );
 
-	g_devConsole->Render( *g_renderer, *m_uiCamera, 20 );
+	//g_devConsole->Render( *m_uiCamera, 20 );
 
 	if ( m_isDebugRendering )
 	{
@@ -194,7 +199,7 @@ void Game::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game::LoadAssets()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Assets..." );
+	g_devConsole->PrintString( "Loading Assets..." );
 	g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 
 	// TODO: Check for nullptrs when loading textures
@@ -206,14 +211,14 @@ void Game::LoadAssets()
 	LoadMapsFromXml();
 	LoadActorsFromXml();
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Assets Loaded" );
+	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadTilesFromXml()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Tiles..." );
+	g_devConsole->PrintString( "Loading Tiles..." );
 
 	const char* filePath = "Data/Gameplay/TileDefs.xml";
 
@@ -234,14 +239,14 @@ void Game::LoadTilesFromXml()
 		element = element->NextSiblingElement();
 	}
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Tiles Loaded" );
+	g_devConsole->PrintString( "Tiles Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadMapsFromXml()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Maps..." );
+	g_devConsole->PrintString( "Loading Maps..." );
 
 	const char* filePath = "Data/Gameplay/MapDefs.xml";
 
@@ -262,14 +267,14 @@ void Game::LoadMapsFromXml()
 		element = element->NextSiblingElement();
 	}
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Maps Loaded" );
+	g_devConsole->PrintString( "Maps Loaded", Rgba8::GREEN );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::LoadActorsFromXml()
 {
-	g_devConsole->PrintString( Rgba8::WHITE, "Loading Actors..." );
+	g_devConsole->PrintString( "Loading Actors..." );
 
 	const char* filePath = "Data/Gameplay/ActorDefs.xml";
 
@@ -290,7 +295,7 @@ void Game::LoadActorsFromXml()
 		element = element->NextSiblingElement();
 	}
 
-	g_devConsole->PrintString( Rgba8::GREEN, "Actors Loaded" );
+	g_devConsole->PrintString( "Actors Loaded", Rgba8::GREEN );
 }
 
 
@@ -393,9 +398,9 @@ void Game::UpdateMouseWorldPosition( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 
-	Vec2 worldWindowDimensions = m_worldCamera->GetOrthoTopRight() - m_worldCamera->GetOrthoBottomLeft();
+	Vec2 worldWindowDimensions = m_worldCamera->GetOrthoMax() - m_worldCamera->GetOrthoMin();
 	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos() * worldWindowDimensions;
-	m_mouseWorldPosition += m_worldCamera->GetOrthoBottomLeft();
+	m_mouseWorldPosition += m_worldCamera->GetOrthoMin();
 }
 
 
@@ -404,7 +409,7 @@ void Game::UpdateMouseUIPosition( float deltaSeconds )
 {
 	UNUSED( deltaSeconds );
 
-	Vec2 uiWindowDimensions = m_uiCamera->GetOrthoTopRight() - m_uiCamera->GetOrthoBottomLeft();
+	Vec2 uiWindowDimensions = m_uiCamera->GetOrthoMax() - m_uiCamera->GetOrthoMin();
 	m_mouseUIPosition = g_inputSystem->GetNormalizedMouseClientPos() * uiWindowDimensions;
 }
 
@@ -414,17 +419,14 @@ void Game::UpdateCameras( float deltaSeconds )
 {
 	// World camera
 	m_screenShakeIntensity -= SCREEN_SHAKE_ABLATION_PER_SECOND * deltaSeconds;
-	m_screenShakeIntensity = ClampMinMax(m_screenShakeIntensity, 0.f, 1.0);
+	m_screenShakeIntensity = ClampMinMax( m_screenShakeIntensity, 0.f, 1.f );
 
 	float maxScreenShake = m_screenShakeIntensity * MAX_CAMERA_SHAKE_DIST;
 	float cameraShakeX = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
 	float cameraShakeY = m_rng->RollRandomFloatInRange(-maxScreenShake, maxScreenShake);
 	Vec2 cameraShakeOffset = Vec2(cameraShakeX, cameraShakeY);
 
-	m_worldCamera->Translate2D(cameraShakeOffset);
-
-	// UI Camera
-	m_uiCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WINDOW_WIDTH_PIXELS, WINDOW_HEIGHT_PIXELS ) );
+	m_worldCamera->Translate2D( cameraShakeOffset );
 }
 
 
@@ -450,10 +452,10 @@ void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::stri
 		return;
 	}
 
-	m_debugInfoTextBox->SetText( color, textLines[0] );
+	m_debugInfoTextBox->SetText( textLines[0], color );
 
 	for ( int textLineIndex = 1; textLineIndex < (int)textLines.size(); ++textLineIndex )
 	{
-		m_debugInfoTextBox->AddLineOFText( color, textLines[ textLineIndex ] );
+		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
 	}
 }
