@@ -1,42 +1,81 @@
-State Waiting()
+StateMachine
 {
-    PlayerInteracted()
-    {
-        ChangeState( Conversation )
-    }
-}
+    Number hasOpenedDoor = 0;
 
-State Conversation()
-{
-    Welcome()
+    State Waiting
     {
-        Text( "Hello traveler" )
-        
-        Choice( text: "Could you open the door in the other room?" next: AskToOpenDoor )
-        Choice( text: "Nevermind" next: End )
-    }
-    
-    AskToOpenDoor( isDoorOpen )
-    {
-        if( isDoorOpen )
+        OnEvent( PlayerInteracted )
         {
-            Text( "It's already open" )
+            ChangeState( Intro );
+        }
+    }
+
+    State Intro
+    {
+        OnEnter()
+        {
+            FireEvent( StartDialogue() );
+            FireEvent( AddLineOfDialogueText( text = "Hello, traveler! Can I help you?" ) );
             
-            Choice( text: "Oh, right" next: End )
+            FireEvent( AddDialogueChoice( name = "choice1", text = "Could you open the door in the other room?" ) );
+            FireEvent( AddDialogueChoice( name = "choice2", text = "Nevermind" ) );
         }
-        else
+
+        String choiceName;
+        OnEvent( PlayerInteracted )
         {
-            OpenDoor( this.doorName )
+            if( choiceName == "choice1" )
+            {
+                ChangeState( Choice1 );
+            }
 
-            Text( "There you go" )
+            if( choiceName == "choice2" )
+            {
+                ChangeState( Choice2 );
+            }
 
-            Choice( text: "Thanks!" next: End )
+            FireEvent( EndDialogue() );
+            ChangeState( Waiting );
         }
     }
 
-    End()
+    State Choice1
     {
-        EndDialogue()
-        ChangeState( Waiting )
+        OnEnter()
+        {
+            if( hasOpenedDoor == 0 )
+            {
+                hasOpenedDoor = 1;
+
+                FireEvent( AddLineOfDialogueText( text = "Sure, it should be open now" ) );
+                FireEvent( Level3DialogueSolved() );
+            }
+            else
+            {
+                FireEvent( AddLineOfDialogueText( text = "It's already open" ) );
+            }
+        }
+
+        OnEvent( PlayerInteracted )
+        {
+            FireEvent( EndDialogue() );
+
+            ChangeState( Waiting );
+        }
+    }
+
+    State Choice2
+    {
+        OnEnter()
+        {
+            FireEvent( AddLineOfDialogueText( text = "Okay, see ya" ) );
+        }
+
+        OnEvent( PlayerInteracted )
+        {
+            FireEvent( EndDialogue() );
+
+            ChangeState( Waiting );
+        }
     }
 }

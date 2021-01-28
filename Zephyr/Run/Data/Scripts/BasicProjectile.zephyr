@@ -1,22 +1,28 @@
-Spawned( lifespan )
+StateMachine
 {
-    CallDelayedEvent( delaySeconds: lifespan event: "LifetimeExpired" )
-}
+    Number attackDamage = 1;
 
-LifetimeExpired()
-{
-    PlaySound( sound: "EnemyHit" volume: .25 )
-    DestroySelf();
-}
-
-CollisionEntered( other )
-{
-    if( other.canBeDamagedBy( this ) )
+    OnEvent( Spawned )
     {
-        DamageEntity( targetId: other.id, damage: this.damage, type: this.damageType )
-        AddScreenShake( intensity: .05 ) );
+        FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" ) );
     }
 
-    PlaySound( soundName: "PlayerHit" volume: .1 )
-    DestroySelf()
+    OnEvent( ProjectileLifeExpired )
+    {
+        FireEvent( PlaySound( soundName = "EnemyHit", volume = .25) );
+        FireEvent( DestroySelf() );
+    }
+
+    Number otherEntityId = -1;
+    OnEvent( CollisionEntered )
+    {
+        if( otherEntityId != -1 )
+        {
+            FireEvent( DamageEntity( targetId = otherEntityId, damage = attackDamage ) );
+            FireEvent( AddScreenShake( intensity = .05 ) );
+        }
+
+        FireEvent( PlaySound( soundName = "PlayerHit", volume = .1 ) );
+        FireEvent( DestroySelf() );
+    }
 }
