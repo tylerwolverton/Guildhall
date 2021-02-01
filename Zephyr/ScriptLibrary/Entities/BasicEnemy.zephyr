@@ -1,15 +1,12 @@
 Variable Entity target = null
-Variable Number maxChaseDist = 4
+Variable Number maxChaseDist = 4.5
 Variable Number lowHealthThreshhold = 1
-Variable Number speed = 3
 	
 
-State Wander
+Function ChangeStateIfTargetSeen()
 {
-	Vec2 targetPosition;
-
-	// Callback from CheckForTarget
-	TargetFound( Entity target )
+	Entity newTarget = CheckForTarget() 
+	if( newTarget != null )
 	{
 		this.target = target;
 
@@ -22,52 +19,62 @@ State Wander
 			ChangeState( Chase )
 		}
 	}
+}
+
+
+State Wander
+{
+	Vec2 targetPosition;
 
 	Enter()
 	{
-		targetPosition = GetNewWanderTargetPosition() // C++ event
+		targetPosition = GetNewWanderTargetPosition() 
 	}
 
 	Update()
 	{
+		ChangeStateIfTargetSeen()
+
 		if( this.entity.position == targetPosition )
 		{
 			targetPosition = GetNewWanderTargetPosition()
 		}
-
-		CheckForTarget() // C++ event
 		
 		MoveToPosition( pos: targetPosition
-						speed: this.speed )
+						speed: this.entity.speed )
 	}
 }
+
+
+Function StartWanderIfTooFarAway()
+{
+	if( DistanceBetweenEntities( this.entity, this.target ) > this.maxChaseDist )
+	{
+		this.target = null;
+		ChangeState( Wander )
+	}
+}
+
 
 State Chase
 {
 	Update()
 	{
-		if( DistanceBetweenEntities( this.entity, this.target ) > this.maxChaseDist )
-		{
-			this.target = null;
-			ChangeState( Wander )
-		}
+		StartWanderIfTooFarAway()
 
 		MoveTowardsTarget( target: this.target
-						   speed: this.speed )
+						   speed: this.entity.speed )
 	}
 }
+
 
 State Flee
 {
 	Update()
 	{
-		if( DistanceBetweenEntities( this.entity, this.target ) > this.maxChaseDist )
-		{
-			this.target = null;
-			ChangeState( Wander )
-		}
+		StartWanderIfTooFarAway()
 
 		MoveAwayFromTarget( target: this.target
-							speed: this.speed )
+							speed: this.entity.speed )
 	}
 }
