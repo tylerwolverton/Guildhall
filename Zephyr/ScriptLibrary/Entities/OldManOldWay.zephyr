@@ -15,8 +15,8 @@ Conversation DoorConversation
     {
         Text( "Hello traveler" )
         
-        Choice( text: "Could you open the door in the other room?" next: AskToOpenDoor )
-        Choice( text: "Nevermind" next: End )
+        Choice( "Could you open the door in the other room?", AskToOpenDoor )
+        Choice( "Nevermind", End )
     }
     
     AskToOpenDoor()
@@ -25,7 +25,7 @@ Conversation DoorConversation
         {
             Text( "It's already open" )
             
-            Choice( text: "Oh, right" next: End )
+            Choice( "Oh, right", End )
         }
         else
         {
@@ -34,7 +34,7 @@ Conversation DoorConversation
             
             Text( "There you go" )
 
-            Choice( text: "Thanks!" next: End )
+            Choice( "Thanks!", End )
         }
     }
 

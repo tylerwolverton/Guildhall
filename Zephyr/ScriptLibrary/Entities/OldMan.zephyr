@@ -20,7 +20,7 @@ Conversation DoorConversation
     
     AskToOpenDoor()
     {
-        if( this.door.IsOpen() )
+        if( this.door.isOpen )
         {
             Text( "It's already open" )
             

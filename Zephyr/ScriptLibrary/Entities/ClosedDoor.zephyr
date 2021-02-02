@@ -1,30 +1,24 @@
-MemberVariables
-{
-	String name = "unknown";
-	String openSpriteAnimName = "OpenDoor";
-	String closeSpriteAnimName = "ClosedDoor";
-	String openSFXName = "DoorCreak";
-	String closeSFXName = "DoorSlam";
+Variable String name = "unknown"
+Variable String openSpriteAnimName = "OpenDoor"
+Variable String closeSpriteAnimName = "ClosedDoor"
+Variable String openSFXName = "DoorCreak"
+Variable String closeSFXName = "DoorSlam"
+Variable bool isOpen = false
+
+
+Function Open()
+{	
+	ChangeSpriteAnimation( anim: openSpriteAnimName )
+	PlaySound( sound: openSFXName )
+	DisableCollision( this.entity )
+	this.isOpen = true
 }
 
 
-OpenDoor( String name )
+Function Close()
 {
-	if( this.name == name )
-	{
-		ChangeSpriteAnimation( anim: openSpriteAnimName )
-		PlaySound( sound: openSFXName )
-        DisableCollision( this.entity )
-	}
-}
-
-
-CloseDoor( String name )
-{
-	if( this.name == name )
-	{
-		ChangeSpriteAnimation( anim: closeSpriteAnimName )
-		PlaySound( sound: closeSFXName )
-        EnableCollision( this.entity )
-	}
+	ChangeSpriteAnimation( anim: closeSpriteAnimName )
+	PlaySound( sound: closeSFXName )
+	EnableCollision( this.entity )
+	this.isOpen = false
 }
