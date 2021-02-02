@@ -1,0 +1,49 @@
+Variable Entity target = null	// can be set in map editor, normally the player
+Variable Number maxChaseDist = 4.5
+	
+State SearchForTarget
+{
+	Vec2 targetPosition;
+
+	Enter()
+	{
+		targetPosition = GetNewWanderTargetPosition() // search by wandering randomly
+	}
+
+	Update()
+	{
+		if( CanSeeTarget( target )  )
+		{
+			ChangeState( Chase )
+		}
+
+		if( this.entity.position == targetPosition )
+		{
+			targetPosition = GetNewWanderTargetPosition()
+		}
+		
+		MoveToPosition( pos: targetPosition
+						speed: this.entity.speed )
+	}
+}
+
+Function StartSearchingIfTargetLost()
+{
+	Number dist = DistanceBetweenEntities( this.entity, this.target )
+
+	if( dist > this.maxChaseDist )
+	{
+		ChangeState( SearchForTarget )
+	}
+}
+
+State Chase
+{
+	Update()
+	{
+		StartSearchingIfTargetLost()
+
+		MoveTowardsTarget( target: this.target
+						   speed: this.entity.speed )
+	}
+}

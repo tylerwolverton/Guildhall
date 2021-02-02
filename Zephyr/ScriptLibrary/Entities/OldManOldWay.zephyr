@@ -1,4 +1,5 @@
-Variable Entity door  // Set from map editor
+Variable String doorName  // Set from map editor
+Variable Bool isDoorOpen = false
 
 State Waiting
 {
@@ -20,7 +21,7 @@ Conversation DoorConversation
     
     AskToOpenDoor()
     {
-        if( this.door.IsOpen() )
+        if( this.isDoorOpen )
         {
             Text( "It's already open" )
             
@@ -28,8 +29,9 @@ Conversation DoorConversation
         }
         else
         {
-            this.door.Open()
-
+            OpenDoor( this.doorName )
+            this.isDoorOpen = true
+            
             Text( "There you go" )
 
             Choice( text: "Thanks!" next: End )
