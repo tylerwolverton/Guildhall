@@ -12,11 +12,10 @@ State Intro
 {
     OnEnter()
     {
-        FireEvent( StartDialogue() );
-        FireEvent( AddLineOfDialogueText( text = "Hello, traveler! Can I help you?" ) );
-        
-        FireEvent( AddDialogueChoice( name = "choice1", text = "Could you open the door in the other room?" ) );
-        FireEvent( AddDialogueChoice( name = "choice2", text = "Nevermind" ) );
+        StartDialogue()
+        AddLineOfDialogueText( text = "Hello, traveler! Can I help you?" )
+        AddDialogueChoice( name = "choice1", text = "Could you open the door in the other room?" )
+        AddDialogueChoice( name = "choice2", text = "Nevermind" )
     }
 
     String choiceName;
@@ -32,7 +31,7 @@ State Intro
             ChangeState( Choice2 );
         }
 
-        FireEvent( EndDialogue() );
+        EndDialogue()
         ChangeState( Waiting );
     }
 }
@@ -45,18 +44,18 @@ State Choice1
         {
             hasOpenedDoor = 1;
 
-            FireEvent( AddLineOfDialogueText( text = "Sure, it should be open now" ) );
-            FireEvent( Level3DialogueSolved() );
+            AddLineOfDialogueText( text = "Sure, it should be open now" )
+            Level3DialogueSolved()
         }
         else
         {
-            FireEvent( AddLineOfDialogueText( text = "It's already open" ) );
+            AddLineOfDialogueText( text = "It's already open" )
         }
     }
 
     OnEvent( PlayerInteracted )
     {
-        FireEvent( EndDialogue() );
+        EndDialogue()
 
         ChangeState( Waiting );
     }
@@ -66,12 +65,12 @@ State Choice2
 {
     OnEnter()
     {
-        FireEvent( AddLineOfDialogueText( text = "Okay, see ya" ) );
+        AddLineOfDialogueText( text = "Okay, see ya" )
     }
 
     OnEvent( PlayerInteracted )
     {
-        FireEvent( EndDialogue() );
+        EndDialogue()
 
         ChangeState( Waiting );
     }

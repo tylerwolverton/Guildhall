@@ -16,8 +16,8 @@ String mapName
 OnEvent( Spawned )
 {
 	health = maxHealth
-	FireEvent( EnemySpawned( mapName = mapName ) )
-	FireEvent( GetNewWanderTargetPosition() )
+	EnemySpawned( mapName = mapName )
+	GetNewWanderTargetPosition()
 }
 
 Number newHealth
@@ -27,13 +27,13 @@ OnEvent( HealthUpdated )
 
 	if( health == 1 )
 	{
-		FireEvent( ChangeSpriteAnimation( newAnim = "LowHealth" ) )
+		ChangeSpriteAnimation( newAnim = "LowHealth" )
 	}
 }
 
 OnEvent( Died )
 {
-	FireEvent( EnemyDied( mapName = mapName ) )
+	EnemyDied( mapName = mapName )
 }
 
 // TODO: Make this more intuitive
@@ -56,7 +56,7 @@ OnEvent( CollisionEntered )
 {
 	if( otherEntityId != -1 )
 	{
-		FireEvent( DamageEntity( targetId = otherEntityId, damage = attackDamage, damageType = "normal" ) );
+		DamageEntity( targetId = otherEntityId, damage = attackDamage, damageType = "normal" )
 	}
 }
 
@@ -74,12 +74,12 @@ State Wander
 	
 	OnUpdate()
 	{
-		FireEvent( CheckForTarget( targetName = targetName, maxDist = 3 ) )
-		FireEvent( MoveToLocation( pos = targetPosition ) )
+		CheckForTarget( targetName = targetName, maxDist = 3 )
+		MoveToLocation( pos = targetPosition )
 
 		if( position == targetPosition )
 		{
-			FireEvent( GetNewWanderTargetPosition() )
+			GetNewWanderTargetPosition()
 		}
 
 		// Check for stuck on wall, find new position if stuck for a second
@@ -89,7 +89,7 @@ State Wander
 
 			if( numFramesInSameSpace > 60 )
 			{
-				FireEvent( GetNewWanderTargetPosition() )
+				GetNewWanderTargetPosition()
 			}
 		}
 		else
@@ -109,7 +109,7 @@ State Chase
 	{		
 		if( distance > 3 )
 		{
-			FireEvent( GetNewWanderTargetPosition() )
+			GetNewWanderTargetPosition()
 			ChangeState( Wander )
 		}
 	}
@@ -123,8 +123,8 @@ State Chase
 		
 		//FireEvent( PrintDebugText( text = "Chase" ) );
 
-		FireEvent( GetDistanceToTarget( targetName = targetName ) )
-		FireEvent( ChaseTargetEntity( targetName = targetName ) )
+		GetDistanceToTarget( targetName = targetName )
+		ChaseTargetEntity( targetName = targetName )
 	}
 }
 
@@ -138,7 +138,7 @@ State Flee
 	{		
 		if( distance > 5 )
 		{
-			FireEvent( GetNewWanderTargetPosition() )
+			GetNewWanderTargetPosition()
 			ChangeState( Wander )
 		}
 	}
@@ -146,7 +146,7 @@ State Flee
 	//FireEvent( PrintDebugText( text = "Flee" ) );
 	OnUpdate()
 	{
-		FireEvent( GetDistanceToTarget( targetName = targetName ) )
-		FireEvent( FleeTargetEntity( targetName = targetName ) )
+		GetDistanceToTarget( targetName = targetName ) 
+		FleeTargetEntity( targetName = targetName ) 
 	}
 }

@@ -37,7 +37,7 @@ State NoPrint
 		}
 		transitiveTestNum = 2;
 
-		FireEvent( PrintToConsole( text = "Running unit tests..." ) ); 
+		PrintToConsole( text = "Running unit tests..." ) 
 
 		ChangeState( GlobalAssignmentTest );
 	}
@@ -61,26 +61,26 @@ State GlobalAssignmentTest
 					Vec2 actualVec = Vec2( 1, 2 );
 					if( testVec2 = actualVec )
 					{
-						FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Success", color = "green" ) );
+						PrintToConsole( text = "GlobalAssignmentTest: Success", color = "green" )
 					}
 					else
 					{
-						FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+						PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
 					}
 				}
 				else
 				{
-					FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+					PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
 				}
 			}
 			else
 			{	
-				FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+				PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
 			}	
 		}
 		else
 		{
-			FireEvent( PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" ) );
+			PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
 		}
 
 		ChangeState( ScopeAssignmentTest );
@@ -98,7 +98,7 @@ State ScopeAssignmentTest
 		}
 		else
 		{
-			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to initialize local variable", color = "red" ) );
+			PrintToConsole( text = "ScopeAssignmentTest: Failed to initialize local variable", color = "red" )
 		}
 
 		if( localTestNum == 2 )
@@ -108,7 +108,7 @@ State ScopeAssignmentTest
 		}
 		else
 		{
-			FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to set var in if statement", color = "red" ) );
+			PrintToConsole( text = "ScopeAssignmentTest: Failed to set var in if statement", color = "red" )
 		}
 
 		// This should be a parsing error probably
@@ -117,7 +117,7 @@ State ScopeAssignmentTest
 		//	FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to hide scope of local var", color = "red" ) );
 		//}
 
-		FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Success", color = "green" ) );
+		PrintToConsole( text = "ScopeAssignmentTest: Success", color = "green" )
 
 		ChangeState( OperatorTest );
 	}
@@ -130,11 +130,11 @@ State OperatorTest
 		Number testNum = -(1 + 2 * 3 - 4 / 2);
 		if( testNum != -5 )
 		{
-			FireEvent( PrintToConsole( text = "OperatorTest: Failed", color = "red" ) );
+			PrintToConsole( text = "OperatorTest: Failed", color = "red" )
 		}
 		else
 		{
-			FireEvent( PrintToConsole( text = "OperatorTest: Success", color = "green" ) );
+			PrintToConsole( text = "OperatorTest: Success", color = "green" )
 		}
 
 		ChangeState( LogicalOperatorTest );
@@ -155,21 +155,21 @@ State LogicalOperatorTest
 					&& 2 == 2 
 					|| "yes" == "no" )
 				{
-					FireEvent( PrintToConsole( text = "LogicalOperatorTest: Success", color = "green" ) );
+					PrintToConsole( text = "LogicalOperatorTest: Success", color = "green" )
 				}
 				else
 				{
-					FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed combination", color = "red" ) );
+					PrintToConsole( text = "LogicalOperatorTest: Failed combination", color = "red" )
 				}
 			}
 			else
 			{
-				FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed or", color = "red" ) );
+				PrintToConsole( text = "LogicalOperatorTest: Failed or", color = "red" )
 			}
 		}
 		else
 		{
-			FireEvent( PrintToConsole( text = "LogicalOperatorTest: Failed and", color = "red" ) );
+			PrintToConsole( text = "LogicalOperatorTest: Failed and", color = "red" )
 		}
 
 		ChangeState( BoolTest );
@@ -185,11 +185,11 @@ State BoolTest
 
 		if( !( a && b ) )
 		{
-			FireEvent( PrintToConsole( text = "BoolTest: Success", color = "green" ) );
+			PrintToConsole( text = "BoolTest: Success", color = "green" )
 		}
 		else
 		{
-			FireEvent( PrintToConsole( text = "BoolTest: Failed", color = "red" ) );
+			PrintToConsole( text = "BoolTest: Failed", color = "red" )
 		}
 	}
 }

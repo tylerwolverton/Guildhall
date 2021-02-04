@@ -382,10 +382,10 @@ bool ZephyrParser::ParseStatement()
 			m_curBytecodeChunk->WriteByte( eOpCode::RETURN );
 		}
 		break;
-
-		case eTokenType::FIRE_EVENT:
+		
+		case eTokenType::FUNCTION_CALL:
 		{
-			if ( !ParseFireEvent() )
+			if ( !ParseFunctionCall() )
 			{
 				return false;
 			}
@@ -441,18 +441,6 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 	ZephyrToken curToken = GetCurToken();
 	switch ( curToken.GetType() )
 	{
-		/*case eTokenType::SEMICOLON:
-		{
-			switch ( varType )
-			{
-				case eValueType::NUMBER: WriteConstantToCurChunk( ZephyrValue( 0.f ) ); break;
-				case eValueType::BOOL:	 WriteConstantToCurChunk( ZephyrValue( false ) ); break;
-				case eValueType::STRING: WriteConstantToCurChunk( ZephyrValue( "" ) ); break;
-				case eValueType::VEC2:	 WriteConstantToCurChunk( ZephyrValue( Vec2::ZERO ) ); break;
-			}
-		}
-		break;*/
-
 		case eTokenType::EQUAL:
 		{
 			AdvanceToNextToken();
@@ -505,64 +493,50 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseFireEvent()
+bool ZephyrParser::ParseFunctionCall()
 {
-	// FireEvent opening paren
+	ZephyrToken functionName = GetLastToken();
+	
+	// Function call opening paren
 	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
 	{
 		return false;
 	}
 
-	ZephyrToken eventName = ConsumeNextToken();
-	if ( !DoesTokenMatchType( eventName, eTokenType::IDENTIFIER ) )
-	{
-		if ( DoesTokenMatchType( eventName, eTokenType::ON_ENTER ) )
-		{
-			ReportError( "OnEnter cannot be called from FireEvent, it's automatically called when entering a state" );
-		}
-		else if ( DoesTokenMatchType( eventName, eTokenType::ON_EXIT ) )
-		{
-			ReportError( "OnExit cannot be called from FireEvent, it's automatically called when exiting a state" );
-		}
-		else if ( DoesTokenMatchType( eventName, eTokenType::ON_UPDATE ) )
-		{
-			ReportError( "OnUpdate cannot be called from FireEvent, it's automatically called when the entity updates" );
-		}
-		else
-		{
-			ReportError( "FireEvent must specify an event to call in parentheses" );
-		}
-
-		return false;
-	}
-
-	// Event opening paren
-	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
-	{
-		return false;
-	}
+	//if ( !DoesTokenMatchType( eventName, eTokenType::IDENTIFIER ) )
+	//{
+	//	if ( DoesTokenMatchType( eventName, eTokenType::ON_ENTER ) )
+	//	{
+	//		ReportError( "OnEnter cannot be called from FireEvent, it's automatically called when entering a state" );
+	//	}
+	//	else if ( DoesTokenMatchType( eventName, eTokenType::ON_EXIT ) )
+	//	{
+	//		ReportError( "OnExit cannot be called from FireEvent, it's automatically called when exiting a state" );
+	//	}
+	//	else if ( DoesTokenMatchType( eventName, eTokenType::ON_UPDATE ) )
+	//	{
+	//		ReportError( "OnUpdate cannot be called from FireEvent, it's automatically called when the entity updates" );
+	//	}
+	//	else
+	//	{
+	//		ReportError( "FireEvent must specify an event to call in parentheses" );
+	//	}
 
 	if ( !ParseEventArgs() )
 	{
 		return false;
 	}
-
-	// Event closing paren
-	if ( GetCurToken().GetType() != eTokenType::PARENTHESIS_RIGHT )
-	{
-		ReportError( "Expected ')' after parameter list for event" );
-		return false;
-	}
-
-	// FireEvent closing paren
-	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
-	{
-		return false;
-	}
-
-	WriteConstantToCurChunk( ZephyrValue( eventName.GetData() ) );
-	WriteOpCodeToCurChunk( eOpCode::FIRE_EVENT );
 	
+	// We should be one token past the closing paren
+	if ( GetLastToken().GetType() != eTokenType::PARENTHESIS_RIGHT )
+	{
+		ReportError( "Expected ')' after parameter list for function call" );
+		return false;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( functionName.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::FUNCTION_CALL );
+
 	return true;
 }
 
@@ -1436,7 +1410,7 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 		case eTokenType::CHANGE_STATE:
 		case eTokenType::IF:
 		case eTokenType::RETURN:
-		case eTokenType::FIRE_EVENT:
+		case eTokenType::FUNCTION_CALL:
 		case eTokenType::IDENTIFIER:
 		{
 			if ( chunkType != eBytecodeChunkType::EVENT )

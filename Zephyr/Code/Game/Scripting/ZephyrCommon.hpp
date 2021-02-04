@@ -29,7 +29,6 @@ enum class eTokenType
 	VEC2,
 	BOOL,
 	STRING,
-	FIRE_EVENT,
 	ON_EVENT,
 	ON_ENTER,
 	ON_UPDATE,
@@ -47,6 +46,7 @@ enum class eTokenType
 	PARENTHESIS_RIGHT,
 	
 	IDENTIFIER,
+	FUNCTION_CALL,
 
 	CONSTANT_NUMBER,
 	CONSTANT_STRING,
@@ -117,7 +117,7 @@ enum class eOpCode : byte
 	LESS,
 	LESS_EQUAL,
 
-	FIRE_EVENT,
+	FUNCTION_CALL,
 	CHANGE_STATE,
 
 	RETURN,

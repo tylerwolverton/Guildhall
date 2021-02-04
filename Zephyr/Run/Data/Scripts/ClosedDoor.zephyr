@@ -5,6 +5,6 @@ OnEvent( OpenDoor )
 {
 	if( name == doorName )
 	{
-		FireEvent( DestroySelf() );
+		DestroySelf()
 	}
 }

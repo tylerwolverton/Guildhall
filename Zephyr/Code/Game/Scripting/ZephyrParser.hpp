@@ -58,7 +58,7 @@ private:
 	bool ParseBlock();
 	bool ParseStatement();
 	bool ParseVariableDeclaration( const eValueType& varType );
-	bool ParseFireEvent();
+	bool ParseFunctionCall();
 	bool ParseEventArgs();
 	bool ParseChangeStateStatement();
 	bool ParseIfStatement();

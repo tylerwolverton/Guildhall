@@ -10,18 +10,18 @@ OnEvent( TestEvent )
 // TODO: reserve Spawn and Die as special events that the user can't fire 
 OnEvent( Spawned )
 {
-	FireEvent( EnemySpawned() );
+	EnemySpawned()
 }
 
 OnEvent( Died )
 {
-	FireEvent( EnemyDied() );
+	EnemyDied()
 }
 
 State TestState
 {	
 	OnUpdate()
 	{
-		FireEvent( PrintDebugText( text = msg )  );
+		PrintDebugText( text = msg )
 	}
 }

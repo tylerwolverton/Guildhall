@@ -2,13 +2,13 @@ Number attackDamage = 1;
 
 OnEvent( Spawned )
 {
-    FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" ) );
+    StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" )
 }
 
 OnEvent( ProjectileLifeExpired )
 {
-    FireEvent( PlaySound( soundName = "EnemyHit", volume = .25) );
-    FireEvent( DestroySelf() );
+    PlaySound( soundName = "EnemyHit", volume = .25)
+    DestroySelf()
 }
 
 Number otherEntityId = -1;
@@ -16,10 +16,10 @@ OnEvent( CollisionEntered )
 {
     if( otherEntityId != -1 )
     {
-        FireEvent( DamageEntity( targetId = otherEntityId, damage = attackDamage ) );
-        FireEvent( AddScreenShake( intensity = .05 ) );
+        DamageEntity( targetId = otherEntityId, damage = attackDamage )
+        AddScreenShake( intensity = .05 )
     }
 
-    FireEvent( PlaySound( soundName = "PlayerHit", volume = .1 ) );
-    FireEvent( DestroySelf() );
+    PlaySound( soundName = "PlayerHit", volume = .1 )
+    DestroySelf()
 }

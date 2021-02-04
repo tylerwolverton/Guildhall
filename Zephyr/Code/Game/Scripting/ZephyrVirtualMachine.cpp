@@ -238,7 +238,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
-			case eOpCode::FIRE_EVENT:
+			case eOpCode::FUNCTION_CALL:
 			{
 				ZephyrValue eventName = PopConstant();
 				EventArgs args;

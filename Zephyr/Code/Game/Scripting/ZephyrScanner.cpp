@@ -316,7 +316,6 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "Vec2" )				{ AddToken( eTokenType::VEC2 ); }
 	else if ( curIdentifier == "Bool" )				{ AddToken( eTokenType::BOOL ); }
 	else if ( curIdentifier == "String" )			{ AddToken( eTokenType::STRING ); }
-	else if ( curIdentifier == "FireEvent" )		{ AddToken( eTokenType::FIRE_EVENT ); }
 	else if ( curIdentifier == "OnEvent" )			{ AddToken( eTokenType::ON_EVENT ); }
 	else if ( curIdentifier == "OnEnter" )			{ AddToken( eTokenType::ON_ENTER ); }
 	else if ( curIdentifier == "OnExit" )			{ AddToken( eTokenType::ON_EXIT ); }
@@ -327,9 +326,16 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "return" )			{ AddToken( eTokenType::RETURN ); }
 	else if ( curIdentifier == "true" )				{ AddToken( eTokenType::TRUE ); }
 	else if ( curIdentifier == "false" )			{ AddToken( eTokenType::FALSE ); }
-	// Must be a variable name
+	// Could be a variable name or function call
 	else
 	{
+		// Check for open parenthesis to signal function
+		if ( Peek() == '(' )
+		{
+			AddToken( eTokenType::FUNCTION_CALL, curIdentifier );
+			return;
+		}
+
 		AddToken( eTokenType::IDENTIFIER, curIdentifier );
 	}
 }

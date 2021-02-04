@@ -6,6 +6,6 @@ OnEvent( ItemAcquired )
 {
 	if( itemName == keyName )
 	{
-		FireEvent( DestroySelf() );
+		DestroySelf()
 	}
 }
