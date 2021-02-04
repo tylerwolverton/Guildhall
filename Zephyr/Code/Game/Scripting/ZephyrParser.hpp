@@ -88,6 +88,7 @@ private:
 	void AdvanceToNextToken();
 	void BackupToLastToken();
 	void AdvanceToNextTokenIfTypeMatches( eTokenType expectedType );
+	void AdvanceThroughAllMatchingTokens( eTokenType expectedType );
 	bool ConsumeExpectedNextToken( eTokenType expectedType );
 	bool IsStatementValidForChunk( eTokenType statementToken, eBytecodeChunkType chunkType );
 

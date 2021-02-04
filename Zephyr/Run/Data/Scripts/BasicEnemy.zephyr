@@ -1,57 +1,57 @@
-Vec2 position;		
-Vec2 targetPosition;
-String targetName = "player";
-Number health;
+Vec2 position
+Vec2 targetPosition
+String targetName = "player"
+Number health
 
-Vec2 lastPosition;
-Number numFramesInSameSpace;
+Vec2 lastPosition 
+Number numFramesInSameSpace
 
-Bool active = true;
+Bool active = true
 // -----------------------------------------------------------------------------------------
 // Global events
 // -----------------------------------------------------------------------------------------
 // TODO: reserve Spawn and Die as special events that the user can't fire 
-Number maxHealth;
-String mapName;
+Number maxHealth
+String mapName
 OnEvent( Spawned )
 {
-	health = maxHealth;
-	FireEvent( EnemySpawned( mapName = mapName ) );
-	FireEvent( GetNewWanderTargetPosition() );
+	health = maxHealth
+	FireEvent( EnemySpawned( mapName = mapName ) )
+	FireEvent( GetNewWanderTargetPosition() )
 }
 
-Number newHealth;
+Number newHealth
 OnEvent( HealthUpdated )
 {
-	health = newHealth;
+	health = newHealth
 
 	if( health == 1 )
 	{
-		FireEvent( ChangeSpriteAnimation( newAnim = "LowHealth" ) );
+		FireEvent( ChangeSpriteAnimation( newAnim = "LowHealth" ) )
 	}
 }
 
 OnEvent( Died )
 {
-	FireEvent( EnemyDied( mapName = mapName ) );
+	FireEvent( EnemyDied( mapName = mapName ) )
 }
 
 // TODO: Make this more intuitive
-Vec2 newPos;
+Vec2 newPos
 OnEvent( PositionUpdated )
 {
-	lastPosition = position;
-	position = newPos;
+	lastPosition = position
+	position = newPos
 }
 
 OnEvent( TargetPositionUpdated )
 {
-	targetPosition = newPos;
+	targetPosition = newPos
 }
 
 // Damage
-Number attackDamage = 1;
-Number otherEntityId = -1;
+Number attackDamage = 1
+Number otherEntityId = -1
 OnEvent( CollisionEntered )
 {
 	if( otherEntityId != -1 )
@@ -67,34 +67,34 @@ State Wander
 {	
 	OnEvent( TargetFound )
 	{		
-		ChangeState( Chase );
+		ChangeState( Chase )
 	}
 	
 	// FireEvent( PrintDebugText( text = "Wander" ) );
 	
 	OnUpdate()
 	{
-		FireEvent( CheckForTarget( targetName = targetName, maxDist = 3 ) );
-		FireEvent( MoveToLocation( pos = targetPosition ) );
+		FireEvent( CheckForTarget( targetName = targetName, maxDist = 3 ) )
+		FireEvent( MoveToLocation( pos = targetPosition ) )
 
 		if( position == targetPosition )
 		{
-			FireEvent( GetNewWanderTargetPosition() );
+			FireEvent( GetNewWanderTargetPosition() )
 		}
 
 		// Check for stuck on wall, find new position if stuck for a second
 		if( lastPosition == position )
 		{
-			numFramesInSameSpace = numFramesInSameSpace + 1;
+			numFramesInSameSpace = numFramesInSameSpace + 1
 
 			if( numFramesInSameSpace > 60 )
 			{
-				FireEvent( GetNewWanderTargetPosition() );
+				FireEvent( GetNewWanderTargetPosition() )
 			}
 		}
 		else
 		{
-			numFramesInSameSpace = 0;
+			numFramesInSameSpace = 0
 		}
 	}
 }
@@ -109,8 +109,8 @@ State Chase
 	{		
 		if( distance > 3 )
 		{
-			FireEvent( GetNewWanderTargetPosition() );
-			ChangeState( Wander );
+			FireEvent( GetNewWanderTargetPosition() )
+			ChangeState( Wander )
 		}
 	}
 
@@ -118,13 +118,13 @@ State Chase
 	{
 		if( health == 1 )
 		{
-			ChangeState( Flee );
+			ChangeState( Flee )
 		}
 		
 		//FireEvent( PrintDebugText( text = "Chase" ) );
 
-		FireEvent( GetDistanceToTarget( targetName = targetName ) );
-		FireEvent( ChaseTargetEntity( targetName = targetName ) );
+		FireEvent( GetDistanceToTarget( targetName = targetName ) )
+		FireEvent( ChaseTargetEntity( targetName = targetName ) )
 	}
 }
 
@@ -138,15 +138,15 @@ State Flee
 	{		
 		if( distance > 5 )
 		{
-			FireEvent( GetNewWanderTargetPosition() );
-			ChangeState( Wander );
+			FireEvent( GetNewWanderTargetPosition() )
+			ChangeState( Wander )
 		}
 	}
 
 	//FireEvent( PrintDebugText( text = "Flee" ) );
 	OnUpdate()
 	{
-		FireEvent( GetDistanceToTarget( targetName = targetName ) );
-		FireEvent( FleeTargetEntity( targetName = targetName ) );
+		FireEvent( GetDistanceToTarget( targetName = targetName ) )
+		FireEvent( FleeTargetEntity( targetName = targetName ) )
 	}
 }

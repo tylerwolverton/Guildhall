@@ -420,10 +420,7 @@ bool ZephyrParser::ParseStatement()
 		break;
 	}
 
-	if ( !ConsumeExpectedNextToken( eTokenType::SEMICOLON ) )
-	{
-		return false;
-	}
+	AdvanceThroughAllMatchingTokens( eTokenType::SEMICOLON );
 
 	return true;
 }
@@ -444,7 +441,7 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 	ZephyrToken curToken = GetCurToken();
 	switch ( curToken.GetType() )
 	{
-		case eTokenType::SEMICOLON:
+		/*case eTokenType::SEMICOLON:
 		{
 			switch ( varType )
 			{
@@ -454,7 +451,7 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 				case eValueType::VEC2:	 WriteConstantToCurChunk( ZephyrValue( Vec2::ZERO ) ); break;
 			}
 		}
-		break;
+		break;*/
 
 		case eTokenType::EQUAL:
 		{
@@ -483,14 +480,22 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 
 		default:
 		{
-			std::string errorMsg( "Unexpected '" );
+			switch ( varType )
+			{
+				case eValueType::NUMBER: WriteConstantToCurChunk( ZephyrValue( 0.f ) ); break;
+				case eValueType::BOOL:	 WriteConstantToCurChunk( ZephyrValue( false ) ); break;
+				case eValueType::STRING: WriteConstantToCurChunk( ZephyrValue( "" ) ); break;
+				case eValueType::VEC2:	 WriteConstantToCurChunk( ZephyrValue( Vec2::ZERO ) ); break;
+			}
+
+			/*std::string errorMsg( "Unexpected '" );
 			errorMsg += curToken.GetDebugName();
 			errorMsg += "' seen, expected ';' or '=' after '";
 			errorMsg +=	ToString( varType );
 			errorMsg +=	" declaration";
 
 			ReportError( errorMsg );
-			return false;
+			return false;*/
 		}
 		break;
 	}
@@ -1363,6 +1368,16 @@ void ZephyrParser::BackupToLastToken()
 void ZephyrParser::AdvanceToNextTokenIfTypeMatches( eTokenType expectedType )
 {
 	if ( GetCurToken().GetType() == expectedType )
+	{
+		AdvanceToNextToken();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrParser::AdvanceThroughAllMatchingTokens( eTokenType expectedType )
+{
+	while ( GetCurToken().GetType() == expectedType )
 	{
 		AdvanceToNextToken();
 	}
