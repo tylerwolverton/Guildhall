@@ -1,9 +1,6 @@
-StateMachine
+String roomId;
+
+OnEvent( Level3DialogueSolved )
 {
-    String roomId;
-    
-    OnEvent( Level3DialogueSolved )
-    {
-        FireEvent( QuestCompleted( questId = roomId ) );
-    }
+    FireEvent( QuestCompleted( questId = roomId ) );
 }

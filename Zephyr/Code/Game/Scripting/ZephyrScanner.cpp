@@ -311,8 +311,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	std::string curIdentifier = m_scriptSource.substr( m_startSrcPos, stringLength );
 
 	// Match keywords
-	if ( curIdentifier == "StateMachine" )			{ AddToken( eTokenType::STATE_MACHINE ); }
-	else if ( curIdentifier == "State" )			{ AddToken( eTokenType::STATE ); }
+	if ( curIdentifier == "State" )					{ AddToken( eTokenType::STATE ); }
 	else if ( curIdentifier == "Number" )			{ AddToken( eTokenType::NUMBER ); }
 	else if ( curIdentifier == "Vec2" )				{ AddToken( eTokenType::VEC2 ); }
 	else if ( curIdentifier == "Bool" )				{ AddToken( eTokenType::BOOL ); }

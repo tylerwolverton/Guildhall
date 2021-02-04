@@ -19,28 +19,19 @@ ZephyrParser::ZephyrParser( const std::string& filename, const std::vector<Zephy
 //-----------------------------------------------------------------------------------------------
 ZephyrScriptDefinition* ZephyrParser::ParseTokensIntoScriptDefinition()
 {
-	// First token must be StateMachine
-	ZephyrToken nextToken = ConsumeNextToken();
-	if ( nextToken.GetType() != eTokenType::STATE_MACHINE )
-	{
-		ReportError( "File must begin with a StateMachine definition" );
-		return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
-	}
-
 	CreateStateMachineBytecodeChunk();
 
-	if ( !ParseBlock() )
+	ZephyrToken nextToken = GetCurToken();
+	while ( !DoesTokenMatchType( nextToken, eTokenType::END_OF_FILE ) )
 	{
-		return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
-	}
+		if ( !ParseStatement() )
+		{
+			return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
+		}
 
-	nextToken = ConsumeNextToken();
-	if ( !DoesTokenMatchType( nextToken, eTokenType::END_OF_FILE ) )
-	{
-		ReportError( "Nothing can be defined outside StateMachine" );
-		return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
+		nextToken = GetCurToken();
 	}
-
+	
 	ZephyrScriptDefinition* validScript =  new ZephyrScriptDefinition( m_stateMachineBytecodeChunk, m_bytecodeChunks );
 	validScript->SetIsValid( true );
 

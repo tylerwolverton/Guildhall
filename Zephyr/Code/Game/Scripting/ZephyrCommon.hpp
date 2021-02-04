@@ -24,7 +24,6 @@ enum class eTokenType
 	ERROR_TOKEN,
 
 	// Keywords
-	STATE_MACHINE,
 	STATE,
 	NUMBER,
 	VEC2,

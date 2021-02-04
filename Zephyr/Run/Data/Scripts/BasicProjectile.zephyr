@@ -1,28 +1,25 @@
-StateMachine
+Number attackDamage = 1;
+
+OnEvent( Spawned )
 {
-    Number attackDamage = 1;
+    FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" ) );
+}
 
-    OnEvent( Spawned )
+OnEvent( ProjectileLifeExpired )
+{
+    FireEvent( PlaySound( soundName = "EnemyHit", volume = .25) );
+    FireEvent( DestroySelf() );
+}
+
+Number otherEntityId = -1;
+OnEvent( CollisionEntered )
+{
+    if( otherEntityId != -1 )
     {
-        FireEvent( StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" ) );
+        FireEvent( DamageEntity( targetId = otherEntityId, damage = attackDamage ) );
+        FireEvent( AddScreenShake( intensity = .05 ) );
     }
 
-    OnEvent( ProjectileLifeExpired )
-    {
-        FireEvent( PlaySound( soundName = "EnemyHit", volume = .25) );
-        FireEvent( DestroySelf() );
-    }
-
-    Number otherEntityId = -1;
-    OnEvent( CollisionEntered )
-    {
-        if( otherEntityId != -1 )
-        {
-            FireEvent( DamageEntity( targetId = otherEntityId, damage = attackDamage ) );
-            FireEvent( AddScreenShake( intensity = .05 ) );
-        }
-
-        FireEvent( PlaySound( soundName = "PlayerHit", volume = .1 ) );
-        FireEvent( DestroySelf() );
-    }
+    FireEvent( PlaySound( soundName = "PlayerHit", volume = .1 ) );
+    FireEvent( DestroySelf() );
 }

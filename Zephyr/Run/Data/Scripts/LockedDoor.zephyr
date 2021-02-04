@@ -1,14 +1,11 @@
-StateMachine
-{
-	String keyName;
+String keyName;
 
-	// Event arguments to reference
-	String itemName;
-	OnEvent( ItemAcquired )
+// Event arguments to reference
+String itemName;
+OnEvent( ItemAcquired )
+{
+	if( itemName == keyName )
 	{
-		if( itemName == keyName )
-		{
-			FireEvent( DestroySelf() );
-		}
+		FireEvent( DestroySelf() );
 	}
 }

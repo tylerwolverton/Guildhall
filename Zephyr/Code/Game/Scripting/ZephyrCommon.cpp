@@ -11,7 +11,6 @@ std::string ToString( eTokenType type )
 		case eTokenType::BRACE_RIGHT:		return "}";
 		case eTokenType::PARENTHESIS_LEFT:	return "(";
 		case eTokenType::PARENTHESIS_RIGHT:	return ")";
-		case eTokenType::STATE_MACHINE:		return "StateMachine";
 		case eTokenType::STATE:				return "State";
 		case eTokenType::NUMBER:			return "Number";
 		case eTokenType::VEC2:				return "Vec2";
@@ -64,7 +63,6 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::BRACE_RIGHT:		return "BRACE_RIGHT";
 		case eTokenType::PARENTHESIS_LEFT:	return "PARENTHESIS_LEFT";
 		case eTokenType::PARENTHESIS_RIGHT:	return "PARENTHESIS_RIGHT";
-		case eTokenType::STATE_MACHINE:		return "STATE_MACHINE";
 		case eTokenType::STATE:				return "STATE";
 		case eTokenType::NUMBER:			return "NUMBER";
 		case eTokenType::VEC2:				return "VEC2";
