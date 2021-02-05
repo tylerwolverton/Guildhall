@@ -260,6 +260,24 @@ bool ZephyrParser::ParseStatement()
 			return ParseFunctionDefinition();
 		}
 
+		case eTokenType::VARIABLE:
+		{
+			switch ( GetCurTokenType() )
+			{
+				case eTokenType::NUMBER:
+				case eTokenType::VEC2:
+				case eTokenType::BOOL:
+				case eTokenType::STRING:
+				{
+					return ParseStatement();
+				}
+			}
+
+			ReportError( "Variable can only be used to define Number, Vec2, Bool, or String variables." );
+
+			return false;
+		}
+
 		case eTokenType::ON_EVENT:
 		{
 			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
@@ -1440,6 +1458,17 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 		}
 		break;
 
+		// Valid only at global scope
+		case eTokenType::VARIABLE:
+		{
+			if ( chunkType != eBytecodeChunkType::STATE_MACHINE )
+			{
+				ReportError( Stringf( "'%s' can only be defined outside State and Function definitions", ToString( statementToken ).c_str() ) );
+				return false;
+			}
+		}
+		break;
+
 		// Valid to define in state only
 		case eTokenType::ON_ENTER:
 		case eTokenType::ON_EXIT:
@@ -1459,7 +1488,6 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 		case eTokenType::CHANGE_STATE:
 		case eTokenType::IF:
 		case eTokenType::RETURN:
-		case eTokenType::FUNCTION_CALL:
 		case eTokenType::IDENTIFIER:
 		{
 			if ( chunkType != eBytecodeChunkType::EVENT )

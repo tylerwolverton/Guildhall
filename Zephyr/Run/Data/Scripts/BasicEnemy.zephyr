@@ -1,4 +1,4 @@
-Vec2 position
+Variable Vec2 position
 Vec2 targetPosition
 String targetName = "player"
 Number health
@@ -65,7 +65,7 @@ Function CollisionEntered()
 // -----------------------------------------------------------------------------------------
 State Wander
 {	
-	Function TargetFound())
+	Function TargetFound()
 	{		
 		ChangeState( Chase )
 	}

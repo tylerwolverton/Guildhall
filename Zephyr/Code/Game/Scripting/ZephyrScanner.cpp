@@ -313,6 +313,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	// Match keywords
 	if ( curIdentifier == "State" )					{ AddToken( eTokenType::STATE ); }
 	else if ( curIdentifier == "Function" )			{ AddToken( eTokenType::FUNCTION ); }
+	else if ( curIdentifier == "Variable" )			{ AddToken( eTokenType::VARIABLE ); }
 	else if ( curIdentifier == "Number" )			{ AddToken( eTokenType::NUMBER ); }
 	else if ( curIdentifier == "Vec2" )				{ AddToken( eTokenType::VEC2 ); }
 	else if ( curIdentifier == "Bool" )				{ AddToken( eTokenType::BOOL ); }
