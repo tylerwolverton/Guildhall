@@ -239,7 +239,7 @@ bool ZephyrParser::ParseBlock()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseStatement()
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	// Error if this statement is invalid for chunk type
 	if ( !IsStatementValidForChunk( curToken.GetType(), m_curBytecodeChunk->GetType() ) )
@@ -251,26 +251,14 @@ bool ZephyrParser::ParseStatement()
 	{
 		case eTokenType::STATE:				
 		{
-			curToken = ConsumeNextToken();
-			if ( curToken.GetType() != eTokenType::IDENTIFIER )
-			{
-				ReportError( "State must be followed by a name" );
-				return false;
-			}
-
-			bool succeeded = CreateBytecodeChunk( curToken.GetData(), eBytecodeChunkType::STATE );
-			if ( !succeeded )
-			{
-				return false;
-			}
-
-			succeeded = ParseBlock();
-
-			FinalizeCurBytecodeChunk();
-
-			return succeeded;
+			return ParseStateDefinition();
 		}
 		break;
+
+		case eTokenType::FUNCTION:
+		{
+			return ParseFunctionDefinition();
+		}
 
 		case eTokenType::ON_EVENT:
 		{
@@ -279,7 +267,7 @@ bool ZephyrParser::ParseStatement()
 				return false;
 			}
 
-			curToken = ConsumeNextToken();
+			curToken = ConsumeCurToken();
 			if ( curToken.GetType() != eTokenType::IDENTIFIER )
 			{
 				ReportError( "OnEvent must specify an event name" );
@@ -383,20 +371,22 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 		
-		case eTokenType::FUNCTION_CALL:
-		{
-			if ( !ParseFunctionCall() )
-			{
-				return false;
-			}
-		}
-		break;
-
 		case eTokenType::IDENTIFIER:
 		{
-			if ( !ParseAssignment() )
+			// Check if this is a function name by looking for opening paren
+			if ( GetCurTokenType() == eTokenType::PARENTHESIS_LEFT  )
 			{
-				return false;
+				if ( !ParseFunctionCall() )
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if ( !ParseAssignment() )
+				{
+					return false;
+				}
 			}
 		}
 		break;
@@ -427,9 +417,67 @@ bool ZephyrParser::ParseStatement()
 
 
 //-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseStateDefinition()
+{
+	ZephyrToken curToken = ConsumeCurToken();
+	if ( curToken.GetType() != eTokenType::IDENTIFIER )
+	{
+		ReportError( "State must be followed by a name" );
+		return false;
+	}
+
+	bool succeeded = CreateBytecodeChunk( curToken.GetData(), eBytecodeChunkType::STATE );
+	if ( !succeeded )
+	{
+		return false;
+	}
+
+	succeeded = ParseBlock();
+
+	FinalizeCurBytecodeChunk();
+
+	return succeeded;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseFunctionDefinition()
+{
+	ZephyrToken functionNameToken = ConsumeCurToken();
+	if ( functionNameToken.GetType() != eTokenType::IDENTIFIER )
+	{
+		ReportError( "Function must be specified in the form: Function Example()" );
+		return false;
+	}
+
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+	{
+		return false;
+	}
+
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+	{
+		return false;
+	}
+
+	bool succeeded = CreateBytecodeChunk( functionNameToken.GetData(), eBytecodeChunkType::EVENT );
+	if ( !succeeded )
+	{
+		return false;
+	}
+
+	succeeded = ParseBlock();
+
+	FinalizeCurBytecodeChunk();
+
+	return succeeded;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 {
-	ZephyrToken identifier = ConsumeNextToken();
+	ZephyrToken identifier = ConsumeCurToken();
 	if ( !DoesTokenMatchType( identifier, eTokenType::IDENTIFIER ) )
 	{
 		ReportError( Stringf( "Expected variable name after '%s'", ToString( varType ).c_str() ) );
@@ -544,7 +592,7 @@ bool ZephyrParser::ParseFunctionCall()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseEventArgs()
 {
-	ZephyrToken identifier = ConsumeNextToken();
+	ZephyrToken identifier = ConsumeCurToken();
 	int paramCount = 0;
 
 	while ( identifier.GetType() == eTokenType::IDENTIFIER )
@@ -623,7 +671,7 @@ bool ZephyrParser::ParseEventArgs()
 
 		AdvanceToNextTokenIfTypeMatches( eTokenType::COMMA );
 
-		identifier = ConsumeNextToken();
+		identifier = ConsumeCurToken();
 	}
 
 	WriteConstantToCurChunk( ZephyrValue( (float)paramCount ) );
@@ -641,7 +689,7 @@ bool ZephyrParser::ParseChangeStateStatement()
 		return false;
 	}
 
-	ZephyrToken stateName = ConsumeNextToken();
+	ZephyrToken stateName = ConsumeCurToken();
 	if ( !DoesTokenMatchType( stateName, eTokenType::IDENTIFIER ) )
 	{
 		ReportError( "ChangeState must specify a target state" );
@@ -790,7 +838,7 @@ bool ZephyrParser::ParseAssignment()
 
 			AdvanceToNextToken();
 			AdvanceToNextToken();
-			ZephyrToken member = ConsumeNextToken();
+			ZephyrToken member = ConsumeCurToken();
 
 			if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
 			{
@@ -852,7 +900,7 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseParenthesesGroup( const eValueType& expressionType )
 {
-	ConsumeNextToken();
+	ConsumeCurToken();
 
 	if ( !ParseExpression( expressionType ) )
 	{
@@ -866,7 +914,7 @@ bool ZephyrParser::ParseParenthesesGroup( const eValueType& expressionType )
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseUnaryExpression( const eValueType& expressionType )
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	if ( !ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel::UNARY, expressionType ) )
 	{
@@ -911,7 +959,7 @@ bool ZephyrParser::ParseUnaryExpression( const eValueType& expressionType )
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	eOpPrecedenceLevel precLevel = GetNextHighestPrecedenceLevel( curToken );
 
@@ -994,7 +1042,7 @@ bool ZephyrParser::ParseBinaryExpression( const eValueType& expressionType )
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseNumberConstant()
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	return WriteConstantToCurChunk( (NUMBER_TYPE)atof( curToken.GetData().c_str() ) );
 }
@@ -1030,7 +1078,7 @@ bool ZephyrParser::ParseVec2Constant()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseBoolConstant( bool value )
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	return WriteConstantToCurChunk( value );
 }
@@ -1039,7 +1087,7 @@ bool ZephyrParser::ParseBoolConstant( bool value )
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseStringConstant()
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	return WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
 }
@@ -1048,7 +1096,7 @@ bool ZephyrParser::ParseStringConstant()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseIdentifierExpressionOfType( eValueType expectedType )
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	if ( curToken.GetType() != eTokenType::IDENTIFIER )
 	{
@@ -1071,7 +1119,7 @@ bool ZephyrParser::ParseIdentifierExpressionOfType( eValueType expectedType )
 		{
 			if( ConsumeExpectedNextToken( eTokenType::PERIOD ) )
 			{
-				ZephyrToken memberName = ConsumeNextToken();
+				ZephyrToken memberName = ConsumeCurToken();
 				if ( memberName.GetData() == "x" 
 					 || memberName.GetData() == "y" )
 				{
@@ -1293,7 +1341,7 @@ ZephyrToken ZephyrParser::PeekNextNextToken() const
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrToken ZephyrParser::ConsumeNextToken()
+ZephyrToken ZephyrParser::ConsumeCurToken()
 {
 	if ( IsAtEnd() )
 	{
@@ -1361,7 +1409,7 @@ void ZephyrParser::AdvanceThroughAllMatchingTokens( eTokenType expectedType )
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ConsumeExpectedNextToken( eTokenType expectedType )
 {
-	ZephyrToken curToken = ConsumeNextToken();
+	ZephyrToken curToken = ConsumeCurToken();
 
 	if ( !DoesTokenMatchType( curToken, expectedType ) )
 	{
@@ -1380,6 +1428,7 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 	{
 		// Valid to define anywhere
 		case eTokenType::STATE:
+		case eTokenType::FUNCTION:
 		case eTokenType::ON_EVENT:
 		case eTokenType::NUMBER:
 		case eTokenType::VEC2:

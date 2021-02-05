@@ -13,7 +13,7 @@ Bool active = true
 // TODO: reserve Spawn and Die as special events that the user can't fire 
 Number maxHealth
 String mapName
-OnEvent( Spawned )
+Function Spawned()
 {
 	health = maxHealth
 	EnemySpawned( mapName = mapName )
@@ -21,7 +21,7 @@ OnEvent( Spawned )
 }
 
 Number newHealth
-OnEvent( HealthUpdated )
+Function HealthUpdated()
 {
 	health = newHealth
 
@@ -31,20 +31,20 @@ OnEvent( HealthUpdated )
 	}
 }
 
-OnEvent( Died )
+Function Died()
 {
 	EnemyDied( mapName = mapName )
 }
 
 // TODO: Make this more intuitive
 Vec2 newPos
-OnEvent( PositionUpdated )
+Function PositionUpdated()
 {
 	lastPosition = position
 	position = newPos
 }
 
-OnEvent( TargetPositionUpdated )
+Function TargetPositionUpdated()
 {
 	targetPosition = newPos
 }
@@ -52,7 +52,7 @@ OnEvent( TargetPositionUpdated )
 // Damage
 Number attackDamage = 1
 Number otherEntityId = -1
-OnEvent( CollisionEntered )
+Function CollisionEntered()
 {
 	if( otherEntityId != -1 )
 	{
@@ -65,7 +65,7 @@ OnEvent( CollisionEntered )
 // -----------------------------------------------------------------------------------------
 State Wander
 {	
-	OnEvent( TargetFound )
+	Function TargetFound())
 	{		
 		ChangeState( Chase )
 	}

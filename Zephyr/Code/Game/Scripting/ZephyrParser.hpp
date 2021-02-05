@@ -57,6 +57,8 @@ private:
 
 	bool ParseBlock();
 	bool ParseStatement();
+	bool ParseStateDefinition();
+	bool ParseFunctionDefinition();
 	bool ParseVariableDeclaration( const eValueType& varType );
 	bool ParseFunctionCall();
 	bool ParseEventArgs();
@@ -84,7 +86,7 @@ private:
 
 	void ReportError( const std::string& errorMsg );
 
-	ZephyrToken ConsumeNextToken();
+	ZephyrToken ConsumeCurToken();
 	void AdvanceToNextToken();
 	void BackupToLastToken();
 	void AdvanceToNextTokenIfTypeMatches( eTokenType expectedType );

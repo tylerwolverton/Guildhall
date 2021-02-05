@@ -25,6 +25,7 @@ enum class eTokenType
 
 	// Keywords
 	STATE,
+	FUNCTION,
 	NUMBER,
 	VEC2,
 	BOOL,
@@ -46,7 +47,6 @@ enum class eTokenType
 	PARENTHESIS_RIGHT,
 	
 	IDENTIFIER,
-	FUNCTION_CALL,
 
 	CONSTANT_NUMBER,
 	CONSTANT_STRING,
