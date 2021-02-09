@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include "Game/GameCommon.hpp"
 
 #include <string>
 
@@ -31,6 +32,7 @@ enum class eTokenType
 	VEC2,
 	BOOL,
 	STRING,
+	ENTITY,
 	ON_EVENT,
 	ON_ENTER,
 	ON_UPDATE,
@@ -142,6 +144,7 @@ enum class eValueType
 	VEC2,
 	BOOL,
 	STRING,
+	ENTITY,
 };
 
 std::string ToString( eValueType valueType );
@@ -156,6 +159,7 @@ public:
 	ZephyrValue( const Vec2& value );
 	ZephyrValue( bool value );
 	ZephyrValue( const std::string& value );
+	ZephyrValue( EntityId value );
 	ZephyrValue( ZephyrValue const& other );
 	~ZephyrValue();
 
@@ -167,6 +171,7 @@ public:
 	Vec2		GetAsVec2() const		{ return vec2Data; }
 	bool		GetAsBool() const		{ return boolData; }
 	std::string GetAsString() const;
+	EntityId	GetAsEntity() const		{ return entityData; }
 	
 	bool		IsTrue() const;
 
@@ -179,5 +184,6 @@ private:
 		Vec2 vec2Data;
 		bool boolData;
 		std::string* strData = nullptr;
+		EntityId entityData;
 	};
 };

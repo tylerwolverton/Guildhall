@@ -1466,6 +1466,8 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 				ReportError( Stringf( "'%s' can only be defined outside State and Function definitions", ToString( statementToken ).c_str() ) );
 				return false;
 			}
+
+			return true;
 		}
 		break;
 
@@ -1505,7 +1507,6 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 			ReportError( Stringf( "Unknown statement starting with '%s' seen", ToString( statementToken ).c_str() ) );
 			return false;
 		}
-
 	}
 }
 
@@ -1593,7 +1594,6 @@ bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue&
 				return false;
 			}
 		}
-
 	}
 
 	return foundValue;

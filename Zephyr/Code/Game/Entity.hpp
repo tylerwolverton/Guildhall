@@ -141,7 +141,7 @@ protected:
 	// Game state
 	const EntityDefinition&					m_entityDef;
 	std::string								m_name;
-	EntityId								m_id;
+	EntityId								m_id = -1;
 	eFaction								m_faction = eFaction::NEUTRAL;
 	float									m_curHealth = 1.f;								// how much health is currently remaining on entity
 	bool									m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
