@@ -848,11 +848,25 @@ bool ZephyrParser::ParseAssignment()
 		// Special case to handle member assignment for Vec2
 		case eTokenType::PERIOD:
 		{
-			if ( !TryToGetVariable( identifier.GetData(), value ) )
+			eValueType valType;
+			if ( !TryToGetVariableType( identifier.GetData(), valType ) )
 			{
 				ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
 				return false;
 			}
+
+			// Make sure this variable can have members
+			if ( valType != eValueType::VEC2 )
+			{
+				ReportError( Stringf( "Variable '%s' of type '%s' doesn't have any members to access", identifier.GetData().c_str(), ToString( valType ).c_str() ) );
+				return false;
+			}
+
+			if ( !TryToGetVariable( identifier.GetData(), value ) )
+			{
+				ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+				return false;
+			}	
 
 			AdvanceToNextToken();
 			AdvanceToNextToken();
@@ -1572,7 +1586,7 @@ bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue&
 		foundValue = m_stateMachineBytecodeChunk->TryToGetVariable( identifier, out_value );
 	}
 
-	// Check for member accessor
+	// Check for member accessor for Vec2
 	if ( foundValue && out_value.GetType() == eValueType::VEC2 )
 	{
 		ZephyrToken nextToken = PeekNextToken();
@@ -1594,6 +1608,27 @@ bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue&
 				return false;
 			}
 		}
+	}
+
+	return foundValue;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::TryToGetVariableType( const std::string& identifier, eValueType& out_varType )
+{
+	ZephyrValue val;
+	bool foundValue = m_curBytecodeChunk->TryToGetVariable( identifier, val );
+
+	if ( !foundValue
+		 && m_curBytecodeChunk != m_stateMachineBytecodeChunk )
+	{
+		foundValue = m_stateMachineBytecodeChunk->TryToGetVariable( identifier, val );
+	}
+
+	if ( foundValue )
+	{
+		out_varType = val.GetType();
 	}
 
 	return foundValue;

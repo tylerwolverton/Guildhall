@@ -54,6 +54,7 @@ private:
 
 	void DeclareVariable( const ZephyrToken& identifier, const eValueType& varType );
 	bool TryToGetVariable( const std::string& identifier, ZephyrValue& out_value );
+	bool TryToGetVariableType( const std::string& identifier, eValueType& out_varType );
 
 	bool ParseBlock();
 	bool ParseStatement();
