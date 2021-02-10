@@ -257,6 +257,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 						case eValueType::NUMBER:	args.SetValue( param.GetAsString(), value.GetAsNumber() ); break;
 						case eValueType::VEC2:		args.SetValue( param.GetAsString(), value.GetAsVec2() ); break;
 						case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
+						case eValueType::ENTITY:	args.SetValue( param.GetAsString(), value.GetAsEntity() ); break;
 						default: ERROR_AND_DIE( Stringf( " Unimplemented event arg type '%s'", ToString( value.GetType() ).c_str() ) );
 					}					
 				}
@@ -380,6 +381,8 @@ ZephyrValue ZephyrVirtualMachine::PeekConstant()
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode )
 {
+	// Do type checking inside each sub function
+
 	if ( a.GetType() == eValueType::NUMBER
 		 && b.GetType() == eValueType::NUMBER )
 	{
