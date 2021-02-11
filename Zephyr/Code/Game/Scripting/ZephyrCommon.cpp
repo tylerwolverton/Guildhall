@@ -232,11 +232,12 @@ std::string ZephyrValue::GetAsString() const
 
 
 //-----------------------------------------------------------------------------------------------
+// EvaluateAsBool()...
 bool ZephyrValue::IsTrue() const
 {
 	switch ( m_type )
 	{
-		case eValueType::STRING: 	return *strData != std::string( "" );
+		case eValueType::STRING: 	return !strData->empty();
 		case eValueType::VEC2: 		return !IsNearlyEqual( vec2Data, Vec2::ZERO );			
 		case eValueType::NUMBER: 	return !IsNearlyEqual( numberData, 0.f );			
 		case eValueType::BOOL:		return boolData;	
