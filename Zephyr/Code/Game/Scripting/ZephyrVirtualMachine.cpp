@@ -20,9 +20,6 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 												   EventArgs* eventArgs,
 												   ZephyrValueMap* stateVariables )
 {
-	ClearConstantStack();
-	ResetVariableMaps();
-
 	m_globalVariables = globalVariables;
 	m_stateVariables = stateVariables;
 	CopyEventArgVariables( eventArgs );
@@ -634,6 +631,7 @@ ZephyrValue ZephyrVirtualMachine::GetVariableValue( const std::string& variableN
 		}
 	}
 
+	// Runtime error: This variable does not exist
 	return ZephyrValue( 0.f );
 }
 
@@ -712,23 +710,4 @@ void ZephyrVirtualMachine::AssignToMemberVariable( const std::string& variableNa
 			( *m_globalVariables )[variableName] = ZephyrValue( vecValue );
 		}
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::ClearConstantStack()
-{
-	while ( !m_constantStack.empty() )
-	{
-		m_constantStack.pop();
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::ResetVariableMaps()
-{
-	m_globalVariables = nullptr;
-	m_stateVariables = nullptr;
-	m_eventsVariablesCopy.clear();
 }

@@ -1,17 +1,9 @@
-MemberVariables // Not sold on this name, but need a way to communicate which "this." variables are available
-{
-    Entity entity = null;  // necessary to specify or assume all scripts have parent entity?
-	String name = "unknown";  // just pull this from the entity instead? if so should it be this.entity.name?
+Variable String keyName = "unknown"
+Variable String openSpriteAnimName = "OpenDoor"
+Variable String openSFXName = "DoorCreak"
 
-	String keyName = "unknown";
-	String openSpriteAnimName = "OpenDoor";
-	String openSFXName = "DoorCreak";
-}
 
-// State Any -> reserved state that could be used to explicitly specify events don't belong to any one state 
-//{ ...
-
-CollisionEntered( Entity other )
+Function CollisionEntered( Entity other )
 {
 	if( other.name == "player" )
 	{
@@ -29,7 +21,7 @@ CollisionEntered( Entity other )
 }
 
 
-OpenDoor( String name )
+Function OpenDoor( String name )
 {
 	if( this.name == name )
 	{
