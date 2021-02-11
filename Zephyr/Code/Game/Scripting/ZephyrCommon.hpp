@@ -104,7 +104,6 @@ enum class eOpCode : byte
 	GET_MEMBER_VARIABLE_VALUE,
 	ASSIGNMENT,
 	MEMBER_ASSIGNMENT,
-	ASSIGNMENT_VEC2,
 
 	// Arithmetic
 	ADD,

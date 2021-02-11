@@ -160,9 +160,9 @@ void ZephyrScript::InitializeGlobalVariables( const ZephyrValueMap& intialValues
 		return;
 	}
 
-	for ( auto initialValue : intialValues )
+	for ( auto const& initialValue : intialValues )
 	{
-		auto globalVarIter = globalVariables->find( initialValue.first );
+		const auto globalVarIter = globalVariables->find( initialValue.first );
 		if ( globalVarIter == globalVariables->end() )
 		{
 			g_devConsole->PrintError( Stringf( "Cannot initialize nonexistent variable '%s' in script '%s'", initialValue.first.c_str(), m_name.c_str() ) );

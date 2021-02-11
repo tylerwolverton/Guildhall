@@ -522,11 +522,8 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 				case eValueType::NUMBER:
 				case eValueType::BOOL:
 				case eValueType::STRING:
-					WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT ); 
-					break;
-
 				case eValueType::VEC2:
-					WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT_VEC2 );
+					WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT ); 
 					break;
 			}
 		}

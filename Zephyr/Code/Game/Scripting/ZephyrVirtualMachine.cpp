@@ -92,15 +92,6 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
-			case eOpCode::ASSIGNMENT_VEC2:
-			{
-				ZephyrValue variableName = PopConstant();
-				ZephyrValue value = PeekConstant();
-
-				AssignToVariable( variableName.GetAsString(), value, localVariables );
-			}
-			break;
-
 			case eOpCode::CONSTANT_VEC2:
 			{
 				ZephyrValue yValue = PopConstant();
@@ -255,7 +246,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 						case eValueType::VEC2:		args.SetValue( param.GetAsString(), value.GetAsVec2() ); break;
 						case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
 						case eValueType::ENTITY:	args.SetValue( param.GetAsString(), value.GetAsEntity() ); break;
-						default: ERROR_AND_DIE( Stringf( " Unimplemented event arg type '%s'", ToString( value.GetType() ).c_str() ) );
+						default: ERROR_AND_DIE( Stringf( "Unimplemented event arg type '%s'", ToString( value.GetType() ).c_str() ) );
 					}					
 				}
 
@@ -318,7 +309,7 @@ void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs )
 	// For each event arg that matches a known ZephyrType, add it to the local variables map so the event can use it
 	std::map<std::string, TypedPropertyBase*> argKeyValuePairs = eventArgs->GetAllKeyValuePairs();
 
-	for ( auto keyValuePair : argKeyValuePairs )
+	for ( auto const& keyValuePair : argKeyValuePairs )
 	{
 		if ( keyValuePair.second->Is<float>() )
 		{
