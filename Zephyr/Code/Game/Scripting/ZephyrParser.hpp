@@ -67,20 +67,20 @@ private:
 	bool ParseIfStatement();
 	bool GenerateIfStatementBytecode( std::vector<ZephyrValue>& byteJumpCounts );
 	bool ParseAssignment();
-	bool ParseExpression( const eValueType& expressionType );
-	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel, const eValueType& expressionType );
-	bool ParseParenthesesGroup( const eValueType& expressionType );
-	bool ParseUnaryExpression( const eValueType& expressionType );
-	bool ParseBinaryExpression( const eValueType& expressionType );
+	bool ParseExpression();
+	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel );
+	bool ParseParenthesesGroup();
+	bool ParseUnaryExpression();
+	bool ParseBinaryExpression();
 	bool ParseNumberConstant();
 	bool ParseVec2Constant();
 	bool ParseBoolConstant( bool value );
 	bool ParseStringConstant();
-	bool ParseIdentifierExpressionOfType( eValueType expectedType );
+	bool ParseIdentifierExpression();
 
 	// Pratt Parser Helpers
-	bool CallPrefixFunction( const ZephyrToken& token, const eValueType& expressionType );
-	bool CallInfixFunction( const ZephyrToken& token, const eValueType& expressionType );
+	bool CallPrefixFunction( const ZephyrToken& token );
+	bool CallInfixFunction( const ZephyrToken& token );
 	eOpPrecedenceLevel GetPrecedenceLevel( const ZephyrToken& token );
 	eOpPrecedenceLevel GetNextHighestPrecedenceLevel( const ZephyrToken& token );
 	eValueType GetNextValueTypeInExpression();
