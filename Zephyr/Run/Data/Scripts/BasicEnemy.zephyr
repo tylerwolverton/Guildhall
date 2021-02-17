@@ -2,6 +2,7 @@ Vec2 position
 Vec2 targetPosition
 String targetName = "player"
 Number health
+Entity target = 1000
 
 Vec2 lastPosition 
 Number numFramesInSameSpace
@@ -74,7 +75,7 @@ State Wander
 	
 	OnUpdate()
 	{
-		CheckForTarget( targetName = targetName, maxDist = 3 )
+		CheckForTarget( target = target, maxDist = 3 )
 		MoveToLocation( pos = targetPosition )
 
 		if( position == targetPosition )

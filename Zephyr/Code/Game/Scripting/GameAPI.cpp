@@ -805,7 +805,10 @@ void GameAPI::CheckForTarget( EventArgs* args )
 {
 	std::string targetName = args->GetValue( "targetName", "" );
 	float maxDist = args->GetValue( "maxDist", 0.f );
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	//Entity* targetEntity = GetTargetEntityFromArgs( args );
+	
+	EntityId targetId = args->GetValue( "target", -1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr

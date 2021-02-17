@@ -328,6 +328,15 @@ bool ZephyrParser::ParseStatement()
 			}
 		}
 		break;
+
+		case eTokenType::ENTITY:
+		{
+			if ( !ParseVariableDeclaration( eValueType::ENTITY ) )
+			{
+				return false;
+			}
+		}
+		break;
 		
 		case eTokenType::ON_ENTER:
 		case eTokenType::ON_EXIT:
@@ -510,6 +519,7 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 				case eValueType::NUMBER: WriteConstantToCurChunk( ZephyrValue( 0.f ) ); break;
 				case eValueType::BOOL:	 WriteConstantToCurChunk( ZephyrValue( false ) ); break;
 				case eValueType::STRING: WriteConstantToCurChunk( ZephyrValue( "" ) ); break;
+				case eValueType::ENTITY: WriteConstantToCurChunk( ZephyrValue( -1 ) ); break;
 				case eValueType::VEC2:	 WriteConstantToCurChunk( ZephyrValue( Vec2::ZERO ) ); break;
 			}
 
@@ -597,6 +607,7 @@ bool ZephyrParser::ParseEventArgs()
 		{
 			case eTokenType::CONSTANT_NUMBER:
 			case eTokenType::VEC2:
+			case eTokenType::ENTITY:
 			case eTokenType::TRUE:
 			case eTokenType::FALSE:
 			case eTokenType::CONSTANT_STRING:
@@ -1262,6 +1273,7 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 		case eTokenType::VEC2:
 		case eTokenType::BOOL:
 		case eTokenType::STRING:
+		case eTokenType::ENTITY:
 		case eTokenType::BRACE_RIGHT:
 		{
 			return true;
