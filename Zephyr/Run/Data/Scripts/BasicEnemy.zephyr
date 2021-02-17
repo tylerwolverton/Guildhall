@@ -1,4 +1,4 @@
-Variable Vec2 position
+Vec2 position
 Vec2 targetPosition
 String targetName = "player"
 Number health

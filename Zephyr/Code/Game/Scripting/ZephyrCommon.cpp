@@ -13,7 +13,6 @@ std::string ToString( eTokenType type )
 		case eTokenType::PARENTHESIS_RIGHT:	return ")";
 		case eTokenType::STATE:				return "State";
 		case eTokenType::FUNCTION:			return "Function";
-		case eTokenType::VARIABLE:			return "Variable";
 		case eTokenType::NUMBER:			return "Number";
 		case eTokenType::VEC2:				return "Vec2";
 		case eTokenType::BOOL:				return "Bool";

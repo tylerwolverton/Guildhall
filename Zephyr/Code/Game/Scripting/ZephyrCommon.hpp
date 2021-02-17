@@ -27,7 +27,6 @@ enum class eTokenType
 	// Keywords
 	STATE,
 	FUNCTION,
-	VARIABLE,  // best name?
 	NUMBER,
 	VEC2,
 	BOOL,
