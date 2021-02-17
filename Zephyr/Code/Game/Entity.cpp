@@ -56,6 +56,7 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	{
 		m_scriptObj = new ZephyrScript( *scriptDef, this );
 		m_scriptObj->InitializeGlobalVariables( entityDef.GetZephyrScriptInitialValues() );
+		m_scriptObj->SetEntityVariableInitializers( entityDef.GetZephyrEntityVarInits() );
 	}
 
 	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
@@ -569,6 +570,16 @@ void Entity::InitializeScriptValues( const ZephyrValueMap& initialValues )
 	if ( m_scriptObj != nullptr )
 	{
 		m_scriptObj->InitializeGlobalVariables( initialValues );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits )
+{
+	if ( m_scriptObj != nullptr )
+	{
+		m_scriptObj->SetEntityVariableInitializers( entityVarInits );
 	}
 }
 

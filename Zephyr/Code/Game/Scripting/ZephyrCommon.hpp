@@ -149,6 +149,22 @@ std::string ToString( eValueType valueType );
 
 
 //-----------------------------------------------------------------------------------------------
+struct EntityVariableInitializer
+{
+public:
+	std::string varName;
+	std::string entityName;
+
+public:
+	EntityVariableInitializer( const std::string& varName, const std::string& entityName )
+		: varName( varName )
+		, entityName( entityName )
+	{
+	}
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class ZephyrValue
 {
 public:

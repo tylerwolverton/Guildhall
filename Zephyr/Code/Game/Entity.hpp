@@ -70,6 +70,7 @@ public:
 	void			UnloadZephyrScript();
 	void			ReloadZephyrScript();
 	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
+	void			SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
 
 	void			ChangeSpriteAnimation( const std::string& spriteAnimDefSetName );
 

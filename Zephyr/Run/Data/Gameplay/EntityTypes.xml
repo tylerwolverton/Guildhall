@@ -32,7 +32,9 @@
     </Appearance>
     <Gameplay maxHealth="3">
     </Gameplay>
-    <Script name="BasicEnemy.zephyr"/>
+    <Script name="BasicEnemy.zephyr">
+      <ScriptVarInit type="entity" var="target" value="playert"/>
+    </Script>
   </Actor>
 
   <Actor name="BlobBossBig">

@@ -39,7 +39,9 @@
     <Portal type="InvisibleTeleporter" pos="0.5,6.5" yaw="0" destMap="Level4" destPos="8.5,3.5" destYawOffset="0"/>
     <!-- Entities -->
     <PlayerStart pos="1.5,1.5" yaw="0"/>
-    <Actor type="Blob" name="blob1" pos="5.5,5.5" yaw="0"/>
+    <Actor type="Blob" name="blob1" pos="5.5,5.5" yaw="0">
+      <ScriptVarInit type="entity" var="target" value="player"/>
+    </Actor>
     <Actor type="Blob" name="blob2" pos="7.5,3.5" yaw="0"/>
     <Actor type="Blob" name="blob3" pos="9.5,5.5" yaw="0"/>
   </Entities>

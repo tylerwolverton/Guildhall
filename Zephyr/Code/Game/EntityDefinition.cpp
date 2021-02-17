@@ -176,9 +176,17 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 				{
 					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, 0.f ) );
 				}
+				else if ( !_strcmpi( typeName.c_str(), "bool" ) )
+				{
+					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, false ) );
+				}
 				else if ( !_strcmpi( typeName.c_str(), "vec2" ) )
 				{
 					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, Vec2::ZERO ) );
+				}
+				else if ( !_strcmpi( typeName.c_str(), "entity" ) )
+				{
+					m_zephyrEntityVarInits.emplace_back( varName, valueStr );
 				}
 				else
 				{

@@ -59,6 +59,7 @@ public:
 
 	ZephyrScriptDefinition* GetZephyrScriptDefinition() const									{ return m_zephyrScriptDef; }
 	ZephyrValueMap GetZephyrScriptInitialValues() const											{ return m_zephyrScriptInitialValues; }
+	std::vector<EntityVariableInitializer> GetZephyrEntityVarInits() const						{ return m_zephyrEntityVarInits; }
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
@@ -83,9 +84,10 @@ protected:
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
 
 	// Scripts
-	std::string				m_zephyrScriptName;
-	ZephyrScriptDefinition* m_zephyrScriptDef = nullptr;
-	ZephyrValueMap			m_zephyrScriptInitialValues;
+	std::string								m_zephyrScriptName;
+	ZephyrScriptDefinition*					m_zephyrScriptDef = nullptr;
+	ZephyrValueMap							m_zephyrScriptInitialValues;
+	std::vector<EntityVariableInitializer>  m_zephyrEntityVarInits;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 	SpriteAnimationSetDefinition* m_defaultSpriteAnimSetDef = nullptr;

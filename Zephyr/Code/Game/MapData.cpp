@@ -298,9 +298,17 @@ void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const st
 		{
 			mapEntityDef.zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, 0.f ) );
 		}
+		else if ( !_strcmpi( typeName.c_str(), "bool" ) )
+		{
+			mapEntityDef.zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, false ) );
+		}
 		else if ( !_strcmpi( typeName.c_str(), "vec2" ) )
 		{
 			mapEntityDef.zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, Vec2::ZERO ) );
+		}
+		else if ( !_strcmpi( typeName.c_str(), "entity" ) )
+		{
+			mapEntityDef.zephyrEntityVarInits.emplace_back( varName, valueStr );
 		}
 		else
 		{

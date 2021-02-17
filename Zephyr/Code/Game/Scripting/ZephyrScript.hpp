@@ -26,8 +26,13 @@ public:
 	void ChangeState( const std::string& targetState );
 
 	void InitializeGlobalVariables( const ZephyrValueMap& intialValues );
+	void SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
 
 private:
+	bool IsScriptValid() const;
+
+	void InitializeEntityVariables();
+
 	void RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
 	void UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
 
@@ -36,10 +41,14 @@ private:
 	ZephyrBytecodeChunk* GetEventBytecodeChunk( const std::string& eventName );
 
 private:
+	bool m_isScriptObjectValid = true;
 	bool m_hasUpdated = false;
 
 	std::string m_name;
 	Entity* m_parentEntity = nullptr;
+
+	// Initial values for entity variables are given as names but must be translated into ids after all entities are loaded
+	std::vector<EntityVariableInitializer> m_entityVarInits;
 
 	const ZephyrScriptDefinition& m_scriptDef;
 	ZephyrBytecodeChunk* m_globalBytecodeChunk = nullptr;

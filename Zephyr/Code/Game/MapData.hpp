@@ -24,6 +24,7 @@ struct MapEntityDefinition
 	float yawDegrees = 0.f;
 
 	ZephyrValueMap zephyrScriptInitialValues;
+	std::vector<EntityVariableInitializer> zephyrEntityVarInits;
 
 	// Portal specific variables
 	// TODO: Move this to sub struct?

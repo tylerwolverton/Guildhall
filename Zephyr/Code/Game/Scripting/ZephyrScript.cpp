@@ -5,6 +5,7 @@
 #include "Engine/Core/StringUtils.hpp"
 
 #include "Game/GameCommon.hpp"
+#include "Game/Game.hpp"
 #include "Game/Map.hpp"
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
@@ -47,11 +48,11 @@ ZephyrScript::~ZephyrScript()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::Update()
 {
-	if ( !m_scriptDef.IsValid() )
+	if ( !IsScriptValid() )
 	{
 		EventArgs args;
 		args.SetValue( "entity", (void*)m_parentEntity );
-		args.SetValue( "text", "Error Script" );
+		args.SetValue( "text", "Script Error" );
 		args.SetValue( "color", "red" );
 
 		g_eventSystem->FireEvent( "PrintDebugText", &args );
@@ -61,6 +62,12 @@ void ZephyrScript::Update()
 	// If this is the first update we need to call OnEnter explicitly
 	if ( !m_hasUpdated )
 	{
+		InitializeEntityVariables();
+		if(	!m_isScriptObjectValid )
+		{
+			return;
+		}
+
 		m_hasUpdated = true;
 
 		FireEvent( "OnEnter" );
@@ -73,7 +80,7 @@ void ZephyrScript::Update()
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::UnloadScript()
 {
-	if ( !m_scriptDef.IsValid() )
+	if ( !IsScriptValid() )
 	{
 		return;
 	}
@@ -122,7 +129,7 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::ChangeState( const std::string& targetState )
 {
-	if ( !m_scriptDef.IsValid() )
+	if ( !IsScriptValid() )
 	{
 		return;
 	}
@@ -171,6 +178,42 @@ void ZephyrScript::InitializeGlobalVariables( const ZephyrValueMap& intialValues
 
 		(*globalVariables)[initialValue.first] = initialValue.second;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScript::SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits )
+{
+	m_entityVarInits.insert( m_entityVarInits.begin(), entityVarInits.begin(), entityVarInits.end() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrScript::IsScriptValid() const
+{
+	return m_isScriptObjectValid && m_scriptDef.IsValid();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScript::InitializeEntityVariables()
+{
+	ZephyrValueMap validEntities;
+	
+	for ( const auto& entityVarInit : m_entityVarInits )
+	{
+		Entity* entity = g_game->GetEntityByName( entityVarInit.entityName );
+		if ( entity == nullptr )
+		{
+			g_devConsole->PrintError( Stringf( "Error defining entity variable '%s' in zephyr script. Entity with name '%s' can not be found", entityVarInit.varName.c_str(), entityVarInit.entityName.c_str() ) );
+			m_isScriptObjectValid = false;
+			continue;
+		}
+
+		validEntities[entityVarInit.varName] = entity->GetId();
+	}
+
+	InitializeGlobalVariables( validEntities );
 }
 
 

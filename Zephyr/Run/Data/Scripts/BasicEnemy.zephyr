@@ -2,7 +2,7 @@ Vec2 position
 Vec2 targetPosition
 String targetName = "player"
 Number health
-Entity target = 1000
+Entity target = -1
 
 Vec2 lastPosition 
 Number numFramesInSameSpace

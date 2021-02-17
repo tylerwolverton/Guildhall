@@ -342,6 +342,7 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 		// Define initial script values defined in map file
 		// Note: These will override any initial values already defined in the EntityDefinition
 		newEntity->InitializeScriptValues( mapEntityDef.zephyrScriptInitialValues );
+		newEntity->SetEntityVariableInitializers( mapEntityDef.zephyrEntityVarInits );
 		newEntity->FireSpawnEvent();
 
 		m_world->SaveEntityByName( newEntity );
