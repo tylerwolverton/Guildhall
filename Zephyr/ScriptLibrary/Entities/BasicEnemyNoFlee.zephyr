@@ -1,5 +1,5 @@
-Variable Entity target = null	// can be set in map editor, normally the player
-Variable Number maxChaseDist = 4.5
+Entity target = null	// can be set in map editor
+Number maxChaseDist = 4.5
 	
 State SearchForTarget
 {

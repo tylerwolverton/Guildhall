@@ -1,8 +1,8 @@
-Variable String openSpriteAnimName = "OpenDoor"
-Variable String closeSpriteAnimName = "ClosedDoor"
-Variable String openSFXName = "DoorCreak"
-Variable String closeSFXName = "DoorSlam"
-Variable Bool isOpen = false
+String openSpriteAnimName = "OpenDoor"
+String closeSpriteAnimName = "ClosedDoor"
+String openSFXName = "DoorCreak"
+String closeSFXName = "DoorSlam"
+Bool isOpen = false
 
 
 Function Open()
