@@ -382,21 +382,28 @@ bool ZephyrParser::ParseStatement()
 		
 		case eTokenType::IDENTIFIER:
 		{
-			// Check if this is a function name by looking for opening paren
-			if ( GetCurTokenType() == eTokenType::PARENTHESIS_LEFT  )
+			// This could be a function call, assignment to variable or assignment to member so parse the expression generically
+			BackupToLastToken();
+			if ( !ParseExpression() )
 			{
-				if ( !ParseFunctionCall() )
-				{
-					return false;
-				}
+				return false;
 			}
-			else
-			{
-				if ( !ParseAssignment() )
-				{
-					return false;
-				}
-			}
+
+			//// Check if this is a function name by looking for opening paren
+			//if ( GetCurTokenType() == eTokenType::PARENTHESIS_LEFT  )
+			//{
+			//	if ( !ParseFunctionCall() )
+			//	{
+			//		return false;
+			//	}
+			//}
+			//else
+			//{
+			//	if ( !ParseAssignment() )
+			//	{
+			//		return false;
+			//	}
+			//}
 		}
 		break;
 
@@ -772,11 +779,11 @@ bool ZephyrParser::ParseAssignment()
 			// Advance to the actual value for expression
 			AdvanceToNextToken();
 			AdvanceToNextToken();
-			if ( !TryToGetVariable( identifier.GetData(), value ) )
+			/*if ( !TryToGetVariable( identifier.GetData(), value ) )
 			{
 				ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
 				return false;
-			}
+			}*/
 
 			if ( !ParseExpression() )
 			{
@@ -844,6 +851,27 @@ bool ZephyrParser::ParseAssignment()
 
 
 //-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseAccessor()
+{
+	// Advance past period
+	AdvanceToNextToken();
+
+	ZephyrToken member = ConsumeCurToken();
+
+	if ( member.GetType() != eTokenType::IDENTIFIER )
+	{
+		ReportError( Stringf( "Invalid symbol seen after '.': '%s'. Only variable or function names can follow '.'", member.GetData().c_str() ) );
+		return false;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( member.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::MEMBER_ACCESSOR );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseExpression()
 {
 	return ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel::ASSIGNMENT );
@@ -886,6 +914,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 		case eTokenType::TRUE:				return ParseBoolConstant( true );
 		case eTokenType::FALSE:				return ParseBoolConstant( false );
 		case eTokenType::CONSTANT_STRING:	return ParseStringConstant();
+		case eTokenType::PERIOD:			return ParseAccessor();
 
 		case eTokenType::IDENTIFIER:
 		{
@@ -894,6 +923,13 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 				AdvanceToNextToken();
 				return ParseAssignment();
 			}
+
+			// Check if this is a function call
+			/*if ( PeekNextToken().GetType() == eTokenType::PARENTHESIS_LEFT )
+			{
+				AdvanceToNextToken();
+				return ParseFunctionCall();
+			}*/
 
 			return ParseIdentifierExpression();
 		}
@@ -921,12 +957,25 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 		case eTokenType::LESS_EQUAL:
 		case eTokenType::AND:
 		case eTokenType::OR:
-		case eTokenType::PERIOD:
-		case eTokenType::PARENTHESIS_LEFT:
 		{
 			return ParseBinaryExpression();
 		}
 		break;
+		
+		case eTokenType::EQUAL:
+		{
+			return ParseAssignment();
+		}
+
+		case eTokenType::PERIOD:
+		{
+			return ParseAccessor();
+		}
+
+		case eTokenType::PARENTHESIS_LEFT: 
+		{
+			return ParseFunctionCall();
+		}
 	}
 
 	return false;
@@ -1066,12 +1115,12 @@ bool ZephyrParser::ParseIdentifierExpression()
 		return false;
 	}
 
-	ZephyrValue value;
+	/*ZephyrValue value;
 	if ( !TryToGetVariable( curToken.GetData(), value ) )
 	{
 		ReportError( Stringf( "Undefined variable seen, '%s'", curToken.GetData().c_str() ) );
 		return false;
-	}
+	}*/
 	
 	WriteConstantToCurChunk( ZephyrValue( curToken.GetData() ) );
 	WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
@@ -1097,6 +1146,8 @@ eOpPrecedenceLevel ZephyrParser::GetPrecedenceLevel( const ZephyrToken& token )
 		case eTokenType::LESS_EQUAL:		return eOpPrecedenceLevel::COMPARISON;
 		case eTokenType::AND:				return eOpPrecedenceLevel::AND;
 		case eTokenType::OR:				return eOpPrecedenceLevel::OR;
+		case eTokenType::PERIOD:			return eOpPrecedenceLevel::CALL;
+		case eTokenType::PARENTHESIS_LEFT:	return eOpPrecedenceLevel::CALL;
 		default:							return eOpPrecedenceLevel::NONE;
 	}
 }

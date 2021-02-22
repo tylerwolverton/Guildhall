@@ -92,6 +92,24 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::MEMBER_ACCESSOR:
+			{
+				ZephyrValue memberName = PopConstant();
+				ZephyrValue variable = PopConstant();
+
+				if ( variable.GetType() == eValueType::BOOL
+					 || variable.GetType() == eValueType::NUMBER
+					 || variable.GetType() == eValueType::STRING )
+				{
+					// Throw runtime error
+					g_devConsole->PrintError( "Can't access that!" );
+					return;
+				}
+
+
+			}
+			break;
+
 			case eOpCode::CONSTANT_VEC2:
 			{
 				ZephyrValue yValue = PopConstant();
