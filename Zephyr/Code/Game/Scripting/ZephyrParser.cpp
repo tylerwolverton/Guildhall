@@ -383,27 +383,27 @@ bool ZephyrParser::ParseStatement()
 		case eTokenType::IDENTIFIER:
 		{
 			// This could be a function call, assignment to variable or assignment to member so parse the expression generically
-			BackupToLastToken();
+			/*BackupToLastToken();
 			if ( !ParseExpression() )
 			{
 				return false;
-			}
+			}*/
 
-			//// Check if this is a function name by looking for opening paren
-			//if ( GetCurTokenType() == eTokenType::PARENTHESIS_LEFT  )
-			//{
-			//	if ( !ParseFunctionCall() )
-			//	{
-			//		return false;
-			//	}
-			//}
-			//else
-			//{
-			//	if ( !ParseAssignment() )
-			//	{
-			//		return false;
-			//	}
-			//}
+			// Check if this is a function name by looking for opening paren
+			if ( GetCurTokenType() == eTokenType::PARENTHESIS_LEFT  )
+			{
+				if ( !ParseFunctionCall() )
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if ( !ParseAssignment() )
+				{
+					return false;
+				}
+			}
 		}
 		break;
 
@@ -515,7 +515,13 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 			}
 
 			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT ); 
+			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
+
+			//// Put identifier onto the stack first so that the assignment is made to this value
+			//WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+			//WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
+
+			//ParseAssignment();
 		}
 		break;
 
@@ -728,44 +734,19 @@ bool ZephyrParser::ParseIfStatement()
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::GenerateIfStatementBytecode( std::vector<ZephyrValue>& byteJumpCounts )
-{
-	// Write a placeholder for how many bytes the if block is so we can update it with the length later
-	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
-	int ifInstructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
-	m_curBytecodeChunk->WriteByte( ifInstructionCountIdx );
-
-	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) return false;
-
-	if ( !ParseExpression() ) return false;
-
-	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) return false;
-
-	WriteOpCodeToCurChunk( eOpCode::IF );
-
-	int preIfBlockByteCount = (int)m_curBytecodeChunk->GetCode().size();
-
-	if ( !ParseBlock() ) return false;
-
-	// Set the number of bytes to jump to be the size of the if block plus 3 bytes
-	// 2 for the constant declaration and 1 for the JUMP op to jump over the else statement
-	byteJumpCounts.push_back( ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preIfBlockByteCount ) + 3.f ) );
-	//m_curBytecodeChunk->SetConstantAtIdx( ifInstructionCountIdx, ZephyrValue( (float)( m_curBytecodeChunk->GetCode().size() - preIfBlockByteCount ) + 3.f ) );
-
-	// Write a placeholder for the jump over the else block
-	m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
-	int elseInstructionCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
-	m_curBytecodeChunk->WriteByte( elseInstructionCountIdx );
-
-	WriteOpCodeToCurChunk( eOpCode::JUMP );
-
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseAssignment()
 {
+	//// Advance past = sign
+	//AdvanceToNextToken();
+
+	//if ( !ParseExpression() )
+	//{
+	//	return false;
+	//}
+
+	//WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	//WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
+
 	// Start at the identifier for TryToGetVariable to work properly
 	BackupToLastToken();
 	ZephyrToken identifier = GetCurToken();
@@ -851,6 +832,57 @@ bool ZephyrParser::ParseAssignment()
 
 
 //-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseMemberAssignment()
+{
+	BackupToLastToken();
+	ZephyrToken identifier = GetCurToken();
+	ZephyrToken nextToken = PeekNextToken();
+
+	eValueType valType;
+	if ( !TryToGetVariableType( identifier.GetData(), valType ) )
+	{
+		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+		return false;
+	}
+
+	// Make sure this variable can have members
+	if ( valType != eValueType::VEC2 )
+	{
+		ReportError( Stringf( "Variable '%s' of type '%s' doesn't have any members to access", identifier.GetData().c_str(), ToString( valType ).c_str() ) );
+		return false;
+	}
+
+	ZephyrValue value;
+	if ( !TryToGetVariable( identifier.GetData(), value ) )
+	{
+		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+		return false;
+	}
+
+	AdvanceToNextToken();
+	AdvanceToNextToken();
+	ZephyrToken member = ConsumeCurToken();
+
+	if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
+	{
+		ReportError( Stringf( "Assignment to variable '%s.%s' expected a '=' sign after the variable name", identifier.GetData().c_str(), member.GetData().c_str() ) );
+		return false;
+	}
+
+	if ( !ParseExpression() )
+	{
+		return false;
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+	WriteConstantToCurChunk( ZephyrValue( member.GetData() ) );
+	WriteOpCodeToCurChunk( eOpCode::MEMBER_ASSIGNMENT );
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseAccessor()
 {
 	// Advance past period
@@ -892,7 +924,13 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 	curToken = GetCurToken();
 	while ( precLevel <= GetPrecedenceLevel( curToken ) )
 	{
-		CallInfixFunction( curToken );
+		if ( !CallInfixFunction( curToken ) )
+		{
+			// TODO: Make this more descriptive
+			ReportError( "Missing expression" );
+			return false;
+		}
+
 		curToken = GetCurToken();
 	}
 
@@ -914,15 +952,22 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 		case eTokenType::TRUE:				return ParseBoolConstant( true );
 		case eTokenType::FALSE:				return ParseBoolConstant( false );
 		case eTokenType::CONSTANT_STRING:	return ParseStringConstant();
-		case eTokenType::PERIOD:			return ParseAccessor();
+		//case eTokenType::PERIOD:			return ParseAccessor();
 
 		case eTokenType::IDENTIFIER:
 		{
 			if ( PeekNextToken().GetType() == eTokenType::EQUAL )
 			{
+				// TODO: advance just to back up?
 				AdvanceToNextToken();
 				return ParseAssignment();
 			}
+
+			/*if ( PeekNextToken().GetType() == eTokenType::PERIOD )
+			{
+				AdvanceToNextToken();
+				return ParseMemberAssignment();
+			}*/
 
 			// Check if this is a function call
 			/*if ( PeekNextToken().GetType() == eTokenType::PARENTHESIS_LEFT )
@@ -962,12 +1007,12 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 		}
 		break;
 		
-		case eTokenType::EQUAL:
+		/*case eTokenType::EQUAL:
 		{
 			return ParseAssignment();
-		}
+		}*/
 
-		case eTokenType::PERIOD:
+		/*case eTokenType::PERIOD:
 		{
 			return ParseAccessor();
 		}
@@ -975,7 +1020,7 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 		case eTokenType::PARENTHESIS_LEFT: 
 		{
 			return ParseFunctionCall();
-		}
+		}*/
 	}
 
 	return false;
@@ -1148,6 +1193,7 @@ eOpPrecedenceLevel ZephyrParser::GetPrecedenceLevel( const ZephyrToken& token )
 		case eTokenType::OR:				return eOpPrecedenceLevel::OR;
 		case eTokenType::PERIOD:			return eOpPrecedenceLevel::CALL;
 		case eTokenType::PARENTHESIS_LEFT:	return eOpPrecedenceLevel::CALL;
+		case eTokenType::EQUAL:				return eOpPrecedenceLevel::ASSIGNMENT;
 		default:							return eOpPrecedenceLevel::NONE;
 	}
 }

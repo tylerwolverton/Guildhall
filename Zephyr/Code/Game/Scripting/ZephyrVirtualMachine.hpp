@@ -49,7 +49,10 @@ private:
 	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	void		AssignToMemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	
+	void ReportError( const std::string& errorMsg );
+
 private:
+	Entity* m_parentEntity = nullptr;
 	std::stack<ZephyrValue> m_constantStack;
 
 	ZephyrValueMap* m_globalVariables;

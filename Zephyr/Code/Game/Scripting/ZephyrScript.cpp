@@ -25,9 +25,7 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 
 	m_globalBytecodeChunk = new ZephyrBytecodeChunk( *m_scriptDef.GetGlobalBytecodeChunk() );
 	GUARANTEE_OR_DIE( m_globalBytecodeChunk != nullptr, "Global Bytecode Chunk was null" );
-
-	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
-
+	
 	m_curStateBytecodeChunk = m_scriptDef.GetFirstStateBytecodeChunk();
 	m_stateBytecodeChunks = m_scriptDef.GetAllStateBytecodeChunks();
 
@@ -62,6 +60,8 @@ void ZephyrScript::Update()
 	// If this is the first update we need to call OnEnter explicitly
 	if ( !m_hasUpdated )
 	{
+		ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+
 		InitializeEntityVariables();
 		if(	!m_isScriptObjectValid )
 		{
@@ -192,6 +192,13 @@ void ZephyrScript::SetEntityVariableInitializers( const std::vector<EntityVariab
 bool ZephyrScript::IsScriptValid() const
 {
 	return m_isScriptObjectValid && m_scriptDef.IsValid();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScript::SetScriptObjectValidity( bool isValid )
+{
+	m_isScriptObjectValid = isValid;
 }
 
 

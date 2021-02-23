@@ -28,9 +28,12 @@ public:
 	void InitializeGlobalVariables( const ZephyrValueMap& intialValues );
 	void SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
 
-private:
 	bool IsScriptValid() const;
+	void SetScriptObjectValidity( bool isValid );
 
+	std::string GetScriptName() const													{ return m_name; }
+
+private:
 	void InitializeEntityVariables();
 
 	void RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );

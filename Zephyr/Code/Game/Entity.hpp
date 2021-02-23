@@ -72,6 +72,10 @@ public:
 	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
 	void			SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
 
+	bool			IsScriptValid() const;
+	void			SetScriptObjectValidity( bool isValid );
+	std::string		GetScriptName() const;
+
 	void			ChangeSpriteAnimation( const std::string& spriteAnimDefSetName );
 
 	const Vec2		GetForwardVector() const;

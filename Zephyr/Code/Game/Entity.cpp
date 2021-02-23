@@ -585,6 +585,42 @@ void Entity::SetEntityVariableInitializers( const std::vector<EntityVariableInit
 
 
 //-----------------------------------------------------------------------------------------------
+bool Entity::IsScriptValid() const
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return false;
+	}
+
+	return m_scriptObj->IsScriptValid();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SetScriptObjectValidity( bool isValid )
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return;
+	}
+
+	return m_scriptObj->SetScriptObjectValidity( isValid );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string Entity::GetScriptName() const
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return "unknown";
+	}
+
+	return m_scriptObj->GetScriptName();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::ChangeSpriteAnimation( const std::string& spriteAnimDefSetName )
 {
 	SpriteAnimationSetDefinition* newSpriteAnimSetDef = m_entityDef.GetSpriteAnimSetDef( spriteAnimDefSetName );

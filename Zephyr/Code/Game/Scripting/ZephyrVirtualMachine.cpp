@@ -6,6 +6,8 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
+#include "Game/Entity.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 ZephyrVirtualMachine::ZephyrVirtualMachine()
@@ -20,6 +22,12 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 												   EventArgs* eventArgs,
 												   ZephyrValueMap* stateVariables )
 {
+	if ( !parentEntity->IsScriptValid() )
+	{
+		return;
+	}
+
+	m_parentEntity = parentEntity;
 	m_globalVariables = globalVariables;
 	m_stateVariables = stateVariables;
 	CopyEventArgVariables( eventArgs );
@@ -57,8 +65,8 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 			case eOpCode::GET_VARIABLE_VALUE:
 			{
-				ZephyrValue constant = PopConstant();
-				PushConstant( GetVariableValue( constant.GetAsString(), localVariables ) );
+				ZephyrValue variableName = PopConstant();
+				PushConstant( GetVariableValue( variableName.GetAsString(), localVariables ) );
 			}
 			break;
 
@@ -69,9 +77,24 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 				ZephyrValue objectVal = GetVariableValue( objectName.GetAsString(), localVariables );
 				
-				// TODO: Generalize this for more object types
-				if ( memberName.GetAsString() == "x" ) { PushConstant( objectVal.GetAsVec2().x ); }
-				else if ( memberName.GetAsString() == "y" ) { PushConstant( objectVal.GetAsVec2().y ); }
+				if ( objectVal.GetType() == eValueType::VEC2 )
+				{
+					if ( memberName.GetAsString() == "x" ) { PushConstant( objectVal.GetAsVec2().x ); }
+					else if ( memberName.GetAsString() == "y" ) { PushConstant( objectVal.GetAsVec2().y ); }
+				}
+				else if ( objectVal.GetType() == eValueType::ENTITY )
+				{
+					//if( !DoesEntityHaveMember( memberName.GetAsString() ) )
+					//{
+						// Throw runtime error
+					//}
+					
+					//PushConstant( GetConstantFromEntity( objectVal.GetAsEntity() ) );
+				}
+				else
+				{
+					// Throw runtime error
+				}
 			}
 			break;
 
@@ -102,7 +125,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 					 || variable.GetType() == eValueType::STRING )
 				{
 					// Throw runtime error
-					g_devConsole->PrintError( "Can't access that!" );
+					ReportError( "Can't access that!" );
 					return;
 				}
 
@@ -370,6 +393,8 @@ void ZephyrVirtualMachine::PushConstant( const ZephyrValue& number )
 //-----------------------------------------------------------------------------------------------
 ZephyrValue ZephyrVirtualMachine::PopConstant()
 {
+	GUARANTEE_OR_DIE( !m_constantStack.empty(), Stringf( "Constant stack is empty in script '%s'", m_parentEntity->GetScriptName().c_str() ) );
+	
 	ZephyrValue topConstant = m_constantStack.top();
 	m_constantStack.pop();
 
@@ -380,6 +405,8 @@ ZephyrValue ZephyrVirtualMachine::PopConstant()
 //-----------------------------------------------------------------------------------------------
 ZephyrValue ZephyrVirtualMachine::PeekConstant()
 {
+	GUARANTEE_OR_DIE( !m_constantStack.empty(), Stringf( "Constant stack is empty in script '%s'", m_parentEntity->GetScriptName().c_str() ) );
+
 	return m_constantStack.top();
 }
 
@@ -408,6 +435,10 @@ void ZephyrVirtualMachine::PushBinaryOp( const ZephyrValue& a, const ZephyrValue
 			  && b.GetType() == eValueType::STRING )
 	{
 		PushStringBinaryOp( a.GetAsString(), b.GetAsString(), opCode );
+	}
+	else
+	{
+		ReportError( "Type mismatch" );
 	}
 }
 
@@ -720,3 +751,13 @@ void ZephyrVirtualMachine::AssignToMemberVariable( const std::string& variableNa
 		}
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::ReportError( const std::string& errorMsg )
+{
+	g_devConsole->PrintError( Stringf( "Error in script'%s': %s", m_parentEntity->GetScriptName().c_str(), errorMsg.c_str() ) );
+
+	m_parentEntity->SetScriptObjectValidity( false );
+}
+
