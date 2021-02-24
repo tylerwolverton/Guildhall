@@ -117,24 +117,57 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 			case eOpCode::MEMBER_ACCESSOR:
 			{
-				ZephyrValue memberName = PopConstant();
-				ZephyrValue variable = PopConstant();
+				ZephyrValue memberCountZephyr = PopConstant();
+				int memberCount = (int)memberCountZephyr.GetAsNumber();
+				
+				ZephyrValue baseObjName = PopConstant();
 
-				if ( variable.GetType() == eValueType::BOOL
-					 || variable.GetType() == eValueType::NUMBER
-					 || variable.GetType() == eValueType::STRING )
+				// Pull all members from the constant stack into a temp buffer for processing 
+				// so in case there is a member error the stack is left in a good(ish) state 
+				// Note: the members will be in reverse order, so accoutn for that
+				std::vector<std::string> memberNames;
+				memberNames.resize( memberCount );
+				for ( int memberIdx = memberCount - 1; memberIdx >= 0; --memberIdx )
 				{
-					ReportError( Stringf( "Cannot access member '%s' in %s variable", memberName.GetAsString().c_str(), ToString( variable.GetType() ).c_str() ) );
+					memberNames[memberIdx] = PopConstant().GetAsString();
+				}
+
+				// Find base object in this bytecode chunk
+				ZephyrValue memberVal = GetVariableValue( baseObjName.GetAsString(), localVariables );
+				if ( IsErrorValue( memberVal ) )
+				{
 					return;
 				}
 
-				if ( variable.GetType() == eValueType::VEC2 )
+				// Process accessors excluding the final component, since that needs to be handled separately
+				for ( int memberNameIdx = 0; memberNameIdx < (int)memberNames.size()-1; ++memberNameIdx )
 				{
-					if		( memberName.GetAsString() == "x" ) { PushConstant( variable.GetAsVec2().x ); }
-					else if ( memberName.GetAsString() == "y" ) { PushConstant( variable.GetAsVec2().y ); }
+					std::string& memberName = memberNames[memberNameIdx];
+
+
+	
+				}
+
+				// Push final member to top of constant stack
+				const std::string& lastMemberName = memberNames[memberCount - 1];
+
+				if ( memberVal.GetType() == eValueType::BOOL
+					 || memberVal.GetType() == eValueType::NUMBER
+					 || memberVal.GetType() == eValueType::STRING )
+				{
+					ReportError( Stringf( "Variable of type %s can't have members. Tried to access '%s'",
+										  ToString( memberVal.GetType() ).c_str(),
+										  lastMemberName.c_str() ) );
+					return;
+				}
+
+				if ( memberVal.GetType() == eValueType::VEC2 )
+				{
+					if		( lastMemberName == "x" ) { PushConstant( memberVal.GetAsVec2().x ); }
+					else if ( lastMemberName == "y" ) { PushConstant( memberVal.GetAsVec2().y ); }
 					else
 					{
-						ReportError( Stringf( "'%s' is not a member of Vec2", memberName.GetAsString().c_str() ) );
+						ReportError( Stringf( "'%s' is not a member of Vec2", lastMemberName.c_str() ) );
 					}
 				}
 
@@ -324,7 +357,6 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 		}
 	}
 }
-
 
 
 //-----------------------------------------------------------------------------------------------
@@ -679,8 +711,8 @@ ZephyrValue ZephyrVirtualMachine::GetVariableValue( const std::string& variableN
 		}
 	}
 
-	// Runtime error: This variable does not exist
-	return ZephyrValue( 0.f );
+	ReportError( Stringf( "Variable '%s' is undefined", variableName.c_str() ) );
+	return ZephyrValue( ERROR_ZEPHYR_VAL );
 }
 
 
@@ -769,3 +801,9 @@ void ZephyrVirtualMachine::ReportError( const std::string& errorMsg )
 	m_parentEntity->SetScriptObjectValidity( false );
 }
 
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrVirtualMachine::IsErrorValue( const ZephyrValue& zephyrValue )
+{
+	return zephyrValue.GetAsEntity() == ERROR_ZEPHYR_VAL;
+}

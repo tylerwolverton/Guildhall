@@ -67,7 +67,7 @@ private:
 	bool ParseIfStatement();
 	bool ParseAssignment();
 	bool ParseMemberAssignment();
-	bool ParseAccessor();
+	bool ParseMemberAccessor();
 	bool ParseExpression();
 	bool ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLevel );
 	bool ParseParenthesesGroup();

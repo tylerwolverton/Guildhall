@@ -883,22 +883,66 @@ bool ZephyrParser::ParseMemberAssignment()
 
 
 //-----------------------------------------------------------------------------------------------
-bool ZephyrParser::ParseAccessor()
+bool ZephyrParser::ParseMemberAccessor()
 {
-	// Advance past period
+	ZephyrToken topLevelObj = GetCurToken();
+	
+	// Placeholder for member count
+	//m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
+	//int memberCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
+	//m_curBytecodeChunk->WriteByte( memberCountIdx );
+
+
+	// Advance to first period
 	AdvanceToNextToken();
-
-	ZephyrToken member = ConsumeCurToken();
-
-	if ( member.GetType() != eTokenType::IDENTIFIER )
+	
+	int memberCount = 0;
+	while ( GetCurTokenType() == eTokenType::PERIOD )
 	{
-		ReportError( Stringf( "Invalid symbol seen after '.': '%s'. Only variable or function names can follow '.'", member.GetData().c_str() ) );
-		return false;
+		++memberCount;
+
+		// Advance past period
+		AdvanceToNextToken();
+
+		ZephyrToken member = ConsumeCurToken();
+
+		if ( member.GetType() != eTokenType::IDENTIFIER )
+		{
+			ReportError( Stringf( "Invalid symbol seen after '.': '%s'. Only variable or function names can follow '.'", member.GetData().c_str() ) );
+			return false;
+		}
+
+		WriteConstantToCurChunk( ZephyrValue( member.GetData() ) );
 	}
 
-	WriteConstantToCurChunk( ZephyrValue( member.GetData() ) );
-	WriteOpCodeToCurChunk( eOpCode::MEMBER_ACCESSOR );
+	// Write number of accessors as number
+	//m_curBytecodeChunk->SetConstantAtIdx( memberCountIdx, (float)memberCount );
+	WriteConstantToCurChunk( ZephyrValue( topLevelObj.GetData() ) );
+	WriteConstantToCurChunk( ZephyrValue( (float)memberCount ) );
+		
+	switch ( GetCurTokenType() )
+	{
+		case eTokenType::EQUAL:
+		{
+			WriteOpCodeToCurChunk( eOpCode::MEMBER_ASSIGNMENT );
+		}
+		break;
 
+		case eTokenType::PARENTHESIS_LEFT:
+		{
+			//WriteOpCodeToCurChunk( eOpCode::MEMBER_FUNCTION_CALL );
+			ParseFunctionCall();
+		}
+		break;
+
+		// If something else is at current token, must just be an accessor in an expression
+		default:
+		{
+			WriteOpCodeToCurChunk( eOpCode::MEMBER_ACCESSOR );
+		}
+		break;
+	}
+	
 	return true;
 }
 
@@ -963,11 +1007,10 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 			}
 
 			// Need to keep checking for = sign here
-			/*if ( PeekNextToken().GetType() == eTokenType::PERIOD )
+			if ( PeekNextToken().GetType() == eTokenType::PERIOD )
 			{
-				AdvanceToNextToken();
-				return ParseMemberAssignment();
-			}*/
+				return ParseMemberAccessor();
+			}
 
 			// Check if this is a function call
 			/*if ( PeekNextToken().GetType() == eTokenType::PARENTHESIS_LEFT )
@@ -1012,10 +1055,10 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 			return ParseAssignment();
 		}*/
 
-		case eTokenType::PERIOD:
+		/*case eTokenType::PERIOD:
 		{
-			return ParseAccessor();
-		}
+			return ParseMemberAccessor();
+		}*/
 
 		/*case eTokenType::PARENTHESIS_LEFT: 
 		{
