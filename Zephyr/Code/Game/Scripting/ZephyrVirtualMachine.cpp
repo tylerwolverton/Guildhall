@@ -6,6 +6,8 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
+#include "Game/GameCommon.hpp"
+#include "Game/Game.hpp"
 #include "Game/Entity.hpp"
 
 
@@ -142,7 +144,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				// Process accessors excluding the final component, since that needs to be handled separately
 				for ( int memberNameIdx = 0; memberNameIdx < (int)memberNames.size()-1; ++memberNameIdx )
 				{
-					std::string& memberName = memberNames[memberNameIdx];
+					//std::string& memberName = memberNames[memberNameIdx];
 
 
 	
@@ -151,26 +153,45 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				// Push final member to top of constant stack
 				const std::string& lastMemberName = memberNames[memberCount - 1];
 
-				if ( memberVal.GetType() == eValueType::BOOL
-					 || memberVal.GetType() == eValueType::NUMBER
-					 || memberVal.GetType() == eValueType::STRING )
+				switch ( memberVal.GetType() )
 				{
-					ReportError( Stringf( "Variable of type %s can't have members. Tried to access '%s'",
-										  ToString( memberVal.GetType() ).c_str(),
-										  lastMemberName.c_str() ) );
-					return;
-				}
-
-				if ( memberVal.GetType() == eValueType::VEC2 )
-				{
-					if		( lastMemberName == "x" ) { PushConstant( memberVal.GetAsVec2().x ); }
-					else if ( lastMemberName == "y" ) { PushConstant( memberVal.GetAsVec2().y ); }
-					else
+					case eValueType::BOOL:
+					case eValueType::NUMBER:
+					case eValueType::STRING:
 					{
-						ReportError( Stringf( "'%s' is not a member of Vec2", lastMemberName.c_str() ) );
+						ReportError( Stringf( "Variable of type %s can't have members. Tried to access '%s'",
+											  ToString( memberVal.GetType() ).c_str(),
+											  lastMemberName.c_str() ) );
+						return;
 					}
-				}
+					break;
 
+					case eValueType::VEC2:
+					{
+						if		( lastMemberName == "x" ) { PushConstant( memberVal.GetAsVec2().x ); }
+						else if ( lastMemberName == "y" ) { PushConstant( memberVal.GetAsVec2().y ); }
+						else
+						{
+							ReportError( Stringf( "'%s' is not a member of Vec2", lastMemberName.c_str() ) );
+						}
+					}
+					break;
+
+					case eValueType::ENTITY:
+					{
+						ZephyrValue val = GetGlobalVariableFromEntity( memberVal.GetAsEntity(), lastMemberName );
+						if ( IsErrorValue( val ) )
+						{
+							std::string entityVarName = memberCount > 1 ? memberNames[memberCount - 2] : baseObjName.GetAsString();
+
+							ReportError( Stringf( "Variable '%s' is not a member of Entity '%s'", lastMemberName.c_str(), entityVarName.c_str() ) );
+							return;
+						}
+
+						PushConstant( val );
+					}
+					break;
+				}
 			}
 			break;
 
@@ -790,6 +811,20 @@ void ZephyrVirtualMachine::AssignToMemberVariable( const std::string& variableNa
 			( *m_globalVariables )[variableName] = ZephyrValue( vecValue );
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue ZephyrVirtualMachine::GetGlobalVariableFromEntity( EntityId entityId, const std::string& variableName )
+{
+	Entity* entity = g_game->GetEntityById( entityId );
+	if ( entity == nullptr )
+	{
+		ReportError( Stringf( "Unknown entity does not contain a member '%s'", variableName.c_str() ) );
+		return ZephyrValue( ERROR_ZEPHYR_VAL );
+	}
+
+	return entity->GetGlobalVariable( variableName );
 }
 
 

@@ -17,6 +17,8 @@ class ZephyrBytecodeChunk;
 typedef std::map<std::string, ZephyrValue> ZephyrValueMap;
 typedef std::map<std::string, ZephyrBytecodeChunk*> ZephyrBytecodeChunkMap;
 
+constexpr int ERROR_ZEPHYR_VAL = -1000;
+
 
 //-----------------------------------------------------------------------------------------------
 enum class eTokenType

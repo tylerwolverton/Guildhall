@@ -10,9 +10,6 @@ class ZephyrBytecodeChunk;
 class Entity;
 
 
-constexpr int ERROR_ZEPHYR_VAL = -1000;
-
-
 //-----------------------------------------------------------------------------------------------
 class ZephyrVirtualMachine
 {
@@ -53,6 +50,8 @@ private:
 	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	void		AssignToMemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	
+	ZephyrValue GetGlobalVariableFromEntity( EntityId entityId, const std::string& variableName );
+
 	void ReportError( const std::string& errorMsg );
 	bool IsErrorValue( const ZephyrValue& zephyrValue );
 

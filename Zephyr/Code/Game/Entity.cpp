@@ -585,6 +585,18 @@ void Entity::SetEntityVariableInitializers( const std::vector<EntityVariableInit
 
 
 //-----------------------------------------------------------------------------------------------
+ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return ZephyrValue( ERROR_ZEPHYR_VAL );
+	}
+
+	return m_scriptObj->GetGlobalVariable( varName );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Entity::IsScriptValid() const
 {
 	if ( m_scriptObj == nullptr )

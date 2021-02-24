@@ -32,6 +32,7 @@ public:
 	void SetScriptObjectValidity( bool isValid );
 
 	std::string GetScriptName() const													{ return m_name; }
+	ZephyrValue GetGlobalVariable( const std::string& varName );
 
 private:
 	void InitializeEntityVariables();

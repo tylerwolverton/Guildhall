@@ -203,6 +203,17 @@ void ZephyrScript::SetScriptObjectValidity( bool isValid )
 
 
 //-----------------------------------------------------------------------------------------------
+ZephyrValue ZephyrScript::GetGlobalVariable( const std::string& varName )
+{
+	ZephyrValue val( ERROR_ZEPHYR_VAL );
+
+	m_globalBytecodeChunk->TryToGetVariable( varName, val );
+
+	return val;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::InitializeEntityVariables()
 {
 	ZephyrValueMap validEntities;

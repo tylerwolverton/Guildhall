@@ -125,7 +125,8 @@ State Chase
 		//FireEvent( PrintDebugText( text = "Chase" ) );
 
 		GetDistanceToTarget( targetName = targetName )
-		ChaseTargetEntity( targetName = targetName )
+		//ChaseTargetEntity( targetName = targetName )
+		MoveToLocation( pos = target.curPosition )
 	}
 }
 
