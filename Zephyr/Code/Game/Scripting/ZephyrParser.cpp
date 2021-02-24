@@ -776,49 +776,49 @@ bool ZephyrParser::ParseAssignment()
 		}
 		break;
 
-		// Special case to handle member assignment for Vec2
-		case eTokenType::PERIOD:
-		{
-			eValueType valType;
-			if ( !TryToGetVariableType( identifier.GetData(), valType ) )
-			{
-				ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
-				return false;
-			}
+		//// Special case to handle member assignment for Vec2
+		//case eTokenType::PERIOD:
+		//{
+		//	eValueType valType;
+		//	if ( !TryToGetVariableType( identifier.GetData(), valType ) )
+		//	{
+		//		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+		//		return false;
+		//	}
 
-			// Make sure this variable can have members
-			if ( valType != eValueType::VEC2 )
-			{
-				ReportError( Stringf( "Variable '%s' of type '%s' doesn't have any members to access", identifier.GetData().c_str(), ToString( valType ).c_str() ) );
-				return false;
-			}
+		//	// Make sure this variable can have members
+		//	if ( valType != eValueType::VEC2 )
+		//	{
+		//		ReportError( Stringf( "Variable '%s' of type '%s' doesn't have any members to access", identifier.GetData().c_str(), ToString( valType ).c_str() ) );
+		//		return false;
+		//	}
 
-			if ( !TryToGetVariable( identifier.GetData(), value ) )
-			{
-				ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
-				return false;
-			}	
+		//	if ( !TryToGetVariable( identifier.GetData(), value ) )
+		//	{
+		//		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
+		//		return false;
+		//	}	
 
-			AdvanceToNextToken();
-			AdvanceToNextToken();
-			ZephyrToken member = ConsumeCurToken();
+		//	AdvanceToNextToken();
+		//	AdvanceToNextToken();
+		//	ZephyrToken member = ConsumeCurToken();
 
-			if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
-			{
-				ReportError( Stringf( "Assignment to variable '%s.%s' expected a '=' sign after the variable name", identifier.GetData().c_str(), member.GetData().c_str() ) );
-				return false;
-			}
+		//	if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
+		//	{
+		//		ReportError( Stringf( "Assignment to variable '%s.%s' expected a '=' sign after the variable name", identifier.GetData().c_str(), member.GetData().c_str() ) );
+		//		return false;
+		//	}
 
-			if ( !ParseExpression() )
-			{
-				return false;
-			}
+		//	if ( !ParseExpression() )
+		//	{
+		//		return false;
+		//	}
 
-			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-			WriteConstantToCurChunk( ZephyrValue( member.GetData() ) );
-			WriteOpCodeToCurChunk( eOpCode::MEMBER_ASSIGNMENT );
-		}
-		break;
+		//	WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
+		//	WriteConstantToCurChunk( ZephyrValue( member.GetData() ) );
+		//	WriteOpCodeToCurChunk( eOpCode::MEMBER_ASSIGNMENT );
+		//}
+		//break;
 
 		default:
 		{
@@ -846,7 +846,7 @@ bool ZephyrParser::ParseMemberAssignment()
 	}
 
 	// Make sure this variable can have members
-	if ( valType != eValueType::VEC2 )
+	/*if ( valType != eValueType::VEC2 )
 	{
 		ReportError( Stringf( "Variable '%s' of type '%s' doesn't have any members to access", identifier.GetData().c_str(), ToString( valType ).c_str() ) );
 		return false;
@@ -857,7 +857,7 @@ bool ZephyrParser::ParseMemberAssignment()
 	{
 		ReportError( Stringf( "Cannot assign to an undefined variable, '%s'", identifier.GetData().c_str() ) );
 		return false;
-	}
+	}*/
 
 	AdvanceToNextToken();
 	AdvanceToNextToken();
@@ -952,7 +952,6 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 		case eTokenType::TRUE:				return ParseBoolConstant( true );
 		case eTokenType::FALSE:				return ParseBoolConstant( false );
 		case eTokenType::CONSTANT_STRING:	return ParseStringConstant();
-		//case eTokenType::PERIOD:			return ParseAccessor();
 
 		case eTokenType::IDENTIFIER:
 		{
@@ -963,6 +962,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 				return ParseAssignment();
 			}
 
+			// Need to keep checking for = sign here
 			/*if ( PeekNextToken().GetType() == eTokenType::PERIOD )
 			{
 				AdvanceToNextToken();
@@ -1012,12 +1012,12 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 			return ParseAssignment();
 		}*/
 
-		/*case eTokenType::PERIOD:
+		case eTokenType::PERIOD:
 		{
 			return ParseAccessor();
 		}
 
-		case eTokenType::PARENTHESIS_LEFT: 
+		/*case eTokenType::PARENTHESIS_LEFT: 
 		{
 			return ParseFunctionCall();
 		}*/
@@ -1478,29 +1478,29 @@ bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue&
 		foundValue = m_stateMachineBytecodeChunk->TryToGetVariable( identifier, out_value );
 	}
 
-	// Check for member accessor for Vec2
-	if ( foundValue && out_value.GetType() == eValueType::VEC2 )
-	{
-		ZephyrToken nextToken = PeekNextToken();
-		if ( nextToken.GetType() == eTokenType::PERIOD )
-		{
-			ZephyrToken member = PeekNextNextToken();
+	//// Check for member accessor for Vec2
+	//if ( foundValue && out_value.GetType() == eValueType::VEC2 )
+	//{
+	//	ZephyrToken nextToken = PeekNextToken();
+	//	if ( nextToken.GetType() == eTokenType::PERIOD )
+	//	{
+	//		ZephyrToken member = PeekNextNextToken();
 
-			if ( member.GetData() == "x" ) 
-			{
-				out_value = ZephyrValue( out_value.GetAsVec2().x );
-			}
-			else if ( member.GetData() == "y" ) 
-			{ 
-				out_value = ZephyrValue( out_value.GetAsVec2().x );
-			}
-			else
-			{
-				ReportError( Stringf( "%s is not a member of Vec2", member.GetData().c_str() ) );
-				return false;
-			}
-		}
-	}
+	//		if ( member.GetData() == "x" ) 
+	//		{
+	//			out_value = ZephyrValue( out_value.GetAsVec2().x );
+	//		}
+	//		else if ( member.GetData() == "y" ) 
+	//		{ 
+	//			out_value = ZephyrValue( out_value.GetAsVec2().x );
+	//		}
+	//		else
+	//		{
+	//			ReportError( Stringf( "%s is not a member of Vec2", member.GetData().c_str() ) );
+	//			return false;
+	//		}
+	//	}
+	//}
 
 	return foundValue;
 }

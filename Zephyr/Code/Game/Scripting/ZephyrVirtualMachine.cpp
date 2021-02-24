@@ -124,11 +124,19 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 					 || variable.GetType() == eValueType::NUMBER
 					 || variable.GetType() == eValueType::STRING )
 				{
-					// Throw runtime error
-					ReportError( "Can't access that!" );
+					ReportError( Stringf( "Cannot access member '%s' in %s variable", memberName.GetAsString().c_str(), ToString( variable.GetType() ).c_str() ) );
 					return;
 				}
 
+				if ( variable.GetType() == eValueType::VEC2 )
+				{
+					if		( memberName.GetAsString() == "x" ) { PushConstant( variable.GetAsVec2().x ); }
+					else if ( memberName.GetAsString() == "y" ) { PushConstant( variable.GetAsVec2().y ); }
+					else
+					{
+						ReportError( Stringf( "'%s' is not a member of Vec2", memberName.GetAsString().c_str() ) );
+					}
+				}
 
 			}
 			break;

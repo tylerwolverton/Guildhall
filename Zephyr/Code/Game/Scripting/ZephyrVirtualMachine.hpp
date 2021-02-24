@@ -2,6 +2,7 @@
 #include "Game/Scripting/ZephyrCommon.hpp"
 
 #include <stack>
+#include <queue>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -54,6 +55,7 @@ private:
 private:
 	Entity* m_parentEntity = nullptr;
 	std::stack<ZephyrValue> m_constantStack;
+	std::deque<std::string> m_curMemberAccessorNames;
 
 	ZephyrValueMap* m_globalVariables;
 	ZephyrValueMap* m_stateVariables;
