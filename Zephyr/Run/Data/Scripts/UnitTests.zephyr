@@ -211,7 +211,9 @@ State MemberTest
 		Number b
 		// b = a.x
 
-		Number posX = testEntity.target.x.y
+		Number posX = testEntity.target.curPosition.x
+		//posX = testEntity.target.curPosition.x.y
+		//posX = testEntity.target.x.y
 		
 		PrintToConsole( text = "MemberTest: Success", color = "green" )
 	}
