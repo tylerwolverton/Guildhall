@@ -22,7 +22,6 @@ Doxygen
 
 Any changes made to the scripts will be reflected when returning to the main menu.
 Supported features
-- StateMachine
 - State
 - Number variables
 - String variables
@@ -31,5 +30,4 @@ Supported features
 - Logical operators
 - ChangeState(<targetState>) function
 - if statements
-- FireEvent(<parameters>)
-- OnEvent(<event name>)
+- Function(<parameters>)
