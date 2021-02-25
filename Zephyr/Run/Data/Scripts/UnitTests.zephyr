@@ -9,6 +9,7 @@ Bool testBool2 = true;
 Bool testBool3 = false;
 String testStr;
 String testStrInit = "Hello";
+Entity testEntity
 
 // Error cases to comment in to test parser
 State NoPrint
@@ -192,5 +193,26 @@ State BoolTest
 		{
 			PrintToConsole( text = "BoolTest: Failed", color = "red" )
 		}
+
+		ChangeState( MemberTest )
+	}
+}
+
+// This succeeds if it compiles
+State MemberTest
+{
+	OnEnter()
+	{
+		Vec2 vec1 = Vec2( 1, 2 )
+		Number a = vec1.x;
+		a = vec1.y
+		// a = vec1.z
+
+		Number b
+		// b = a.x
+
+		Number posX = testEntity.target.x.y
+		
+		PrintToConsole( text = "MemberTest: Success", color = "green" )
 	}
 }

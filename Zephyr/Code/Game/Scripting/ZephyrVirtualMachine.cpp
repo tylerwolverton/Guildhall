@@ -142,12 +142,50 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				}
 
 				// Process accessors excluding the final component, since that needs to be handled separately
-				for ( int memberNameIdx = 0; memberNameIdx < (int)memberNames.size()-1; ++memberNameIdx )
+				for ( int memberNameIdx = 0; memberNameIdx < (int)memberNames.size() - 1; ++memberNameIdx )
 				{
-					//std::string& memberName = memberNames[memberNameIdx];
+					std::string& memberName = memberNames[memberNameIdx];
 
+					switch ( memberVal.GetType() )
+					{
+						// This isn't the last member, so it can't be a primitive type
+						case eValueType::BOOL:
+						case eValueType::NUMBER:
+						case eValueType::STRING:
+						{
+							ReportError( Stringf( "Variable of type %s can't have members. Tried to access '%s'",
+												  ToString( memberVal.GetType() ).c_str(),
+												  memberName.c_str() ) );
+							return;
+						}
+						break;
 
-	
+						case eValueType::VEC2:
+						{
+							if		( memberName == "x" ) { memberVal = ZephyrValue( memberVal.GetAsVec2().x ); }
+							else if ( memberName == "y" ) { memberVal = ZephyrValue( memberVal.GetAsVec2().y ); }
+							else
+							{
+								ReportError( Stringf( "'%s' is not a member of Vec2", memberName.c_str() ) );
+							}
+						}
+						break;
+
+						case eValueType::ENTITY:
+						{
+							ZephyrValue val = GetGlobalVariableFromEntity( memberVal.GetAsEntity(), memberName );
+							if ( IsErrorValue( val ) )
+							{
+								std::string entityVarName = memberNameIdx > 0 ? memberNames[memberNameIdx - 1] : baseObjName.GetAsString();
+
+								ReportError( Stringf( "Variable '%s' is not a member of Entity '%s'", memberName.c_str(), entityVarName.c_str() ) );
+								return;
+							}
+
+							memberVal = val;
+						}
+						break;
+					}
 				}
 
 				// Push final member to top of constant stack

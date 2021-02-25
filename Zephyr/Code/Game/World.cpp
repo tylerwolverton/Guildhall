@@ -32,6 +32,14 @@ World::~World()
 //-----------------------------------------------------------------------------------------------
 void World::Update()
 {
+	// Before updating the entities, hook up all the entity references for entity zephyr variables
+	if ( m_isFirstUpdate )
+	{
+		m_isFirstUpdate = false;
+
+		InitializeAllZephyrEntityVariables();
+	}
+
 	for ( Entity* entity : m_worldEntities )
 	{
 		if ( entity != nullptr )
@@ -160,6 +168,17 @@ void World::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapNam
 bool World::IsMapLoaded( const std::string& mapName )
 {
 	return GetLoadedMapByName( mapName ) != nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::Reset()
+{
+	UnloadAllEntityScripts();
+	ClearEntities();
+	ClearMaps();
+
+	m_isFirstUpdate = true;
 }
 
 
@@ -333,3 +352,19 @@ Map* World::GetLoadedMapByName( const std::string& mapName )
 
 	return mapIter->second;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void World::InitializeAllZephyrEntityVariables()
+{
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->InitializeZephyrEntityVariables();
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->InitializeAllZephyrEntityVariables();
+	}
+}
+

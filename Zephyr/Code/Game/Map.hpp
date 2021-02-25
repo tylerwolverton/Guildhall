@@ -54,6 +54,7 @@ public:
 
 	void			UnloadAllEntityScripts();
 	void			ReloadAllEntityScripts();
+	void			InitializeAllZephyrEntityVariables();
 
 	Vec2 GetPlayerStartPos() const										{ return m_playerStartPos; }
 	std::string GetName() const											{ return m_name; }

@@ -34,9 +34,9 @@ public:
 	std::string GetScriptName() const													{ return m_name; }
 	ZephyrValue GetGlobalVariable( const std::string& varName );
 
-private:
 	void InitializeEntityVariables();
 
+private:
 	void RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
 	void UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
 

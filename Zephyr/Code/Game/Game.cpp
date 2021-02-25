@@ -694,9 +694,7 @@ void Game::ReloadGame()
 		g_audioSystem->StopSound( m_curMusicId );
 	}
 
-	m_world->UnloadAllEntityScripts();
-	m_world->ClearEntities();
-	m_world->ClearMaps();
+	m_world->Reset();
 
 	PTR_VECTOR_SAFE_DELETE( m_timerPool );
 

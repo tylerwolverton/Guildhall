@@ -258,6 +258,22 @@ void Map::ReloadAllEntityScripts()
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::InitializeAllZephyrEntityVariables()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
+		{
+			continue;
+		}
+
+		entity->InitializeZephyrEntityVariables();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )

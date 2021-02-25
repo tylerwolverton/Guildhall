@@ -34,11 +34,10 @@ public:
 	void WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 	bool IsMapLoaded( const std::string& mapName );
 
+	void Reset();
+
 	void UnloadAllEntityScripts();
 	void ReloadAllEntityScripts();
-
-	void ClearMaps();
-	void ClearEntities();
 
 	void AddEntityFromDefinition( const EntityDefinition& entityDef );
 
@@ -51,8 +50,13 @@ public:
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
+	void InitializeAllZephyrEntityVariables();
+
+	void ClearMaps();
+	void ClearEntities();
 
 private:
+	bool m_isFirstUpdate = true;
 	Map* m_curMap = nullptr;
 	Clock* m_worldClock = nullptr;
 

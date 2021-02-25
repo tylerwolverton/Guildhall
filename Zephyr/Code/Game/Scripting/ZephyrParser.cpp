@@ -908,7 +908,7 @@ bool ZephyrParser::ParseMemberAccessor()
 
 		if ( member.GetType() != eTokenType::IDENTIFIER )
 		{
-			ReportError( Stringf( "Invalid symbol seen after '.': '%s'. Only variable or function names can follow '.'", member.GetData().c_str() ) );
+			ReportError( Stringf( "Invalid symbol seen after '.': '%s' Only variable or function names can follow '.'", member.GetData().c_str() ) );
 			return false;
 		}
 
@@ -960,8 +960,6 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 	ZephyrToken curToken = GetCurToken();
 	if ( !CallPrefixFunction( curToken ) )
 	{
-		// TODO: Make this more descriptive
-		ReportError( "Missing expression" );
 		return false;
 	}
 
@@ -970,8 +968,6 @@ bool ZephyrParser::ParseExpressionWithPrecedenceLevel( eOpPrecedenceLevel precLe
 	{
 		if ( !CallInfixFunction( curToken ) )
 		{
-			// TODO: Make this more descriptive
-			ReportError( "Missing expression" );
 			return false;
 		}
 
@@ -1024,6 +1020,8 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 		break;
 	}
 
+	// TODO: Make this more descriptive
+	ReportError( "Missing expression" );
 	return false;
 }
 
@@ -1066,6 +1064,8 @@ bool ZephyrParser::CallInfixFunction( const ZephyrToken& token )
 		}*/
 	}
 
+	// TODO: Make this more descriptive
+	ReportError( "Missing expression" );
 	return false;
 }
 
@@ -1504,6 +1504,7 @@ void ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueT
 		case eValueType::VEC2:	 value = ZephyrValue( Vec2::ZERO ); break;
 		case eValueType::BOOL:	 value = ZephyrValue( false ); break;
 		case eValueType::STRING: value = ZephyrValue( std::string("") ); break;
+		case eValueType::ENTITY: value = ZephyrValue( -1 ); break;
 	}
 
 	m_curBytecodeChunk->SetVariable( identifier.GetData(), value );

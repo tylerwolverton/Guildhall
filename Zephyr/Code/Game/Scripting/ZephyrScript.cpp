@@ -60,9 +60,6 @@ void ZephyrScript::Update()
 	// If this is the first update we need to call OnEnter explicitly
 	if ( !m_hasUpdated )
 	{
-		ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
-
-		InitializeEntityVariables();
 		if(	!m_isScriptObjectValid )
 		{
 			return;
@@ -216,6 +213,8 @@ ZephyrValue ZephyrScript::GetGlobalVariable( const std::string& varName )
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::InitializeEntityVariables()
 {
+	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+
 	ZephyrValueMap validEntities;
 	
 	for ( const auto& entityVarInit : m_entityVarInits )

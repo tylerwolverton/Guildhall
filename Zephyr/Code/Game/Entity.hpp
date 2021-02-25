@@ -72,6 +72,7 @@ public:
 	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
 	void			SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
 	ZephyrValue		GetGlobalVariable( const std::string& varName );
+	void			InitializeZephyrEntityVariables();
 
 	bool			IsScriptValid() const;
 	void			SetScriptObjectValidity( bool isValid );
