@@ -182,6 +182,33 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			}
 			break;
 
+			case eOpCode::MEMBER_FUNCTION_CALL:
+			{
+				EventArgs args;
+				args.SetValue( "entity", (void*)parentEntity );
+
+				InsertParametersIntoEventArgs( args );
+
+				MemberAccessorResult memberAccessorResult = ProcessResultOfMemberAccessor( localVariables );
+
+				if ( IsErrorValue( memberAccessorResult.finalMemberVal ) )
+				{
+					return;
+				}
+
+				int memberCount = (int)memberAccessorResult.memberNames.size();
+
+				if ( memberAccessorResult.finalMemberVal.GetType() != eValueType::ENTITY )
+				{
+					std::string entityVarName = memberCount > 1 ? memberAccessorResult.memberNames[memberCount - 2] : memberAccessorResult.baseObjName;
+					ReportError( Stringf( "Cannot call method on non entity variable '%s' with type '%s'", entityVarName.c_str(), ToString( memberAccessorResult.finalMemberVal.GetType() ).c_str() ) );
+					return;
+				}
+
+				CallMemberFunctionOnEntity( memberAccessorResult.finalMemberVal.GetAsEntity(), memberAccessorResult.memberNames.back(), &args );
+			}
+			break;
+
 			case eOpCode::CONSTANT_VEC2:
 			{
 				ZephyrValue yValue = PopConstant();
@@ -322,23 +349,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				EventArgs args;
 				args.SetValue( "entity", (void*)parentEntity );
 
-				ZephyrValue paramCount = PopConstant();
-
-				for ( int paramIdx = 0; paramIdx < (int)paramCount.GetAsNumber(); ++paramIdx )
-				{
-					ZephyrValue param = PopConstant();
-					ZephyrValue value = PopConstant();
-
-					switch ( value.GetType() )
-					{
-						case eValueType::BOOL:		args.SetValue( param.GetAsString(), value.GetAsBool() ); break;
-						case eValueType::NUMBER:	args.SetValue( param.GetAsString(), value.GetAsNumber() ); break;
-						case eValueType::VEC2:		args.SetValue( param.GetAsString(), value.GetAsVec2() ); break;
-						case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
-						case eValueType::ENTITY:	args.SetValue( param.GetAsString(), value.GetAsEntity() ); break;
-						default: ERROR_AND_DIE( Stringf( "Unimplemented event arg type '%s'", ToString( value.GetType() ).c_str() ) );
-					}					
-				}
+				InsertParametersIntoEventArgs( args );
 
 				g_eventSystem->FireEvent( eventName.GetAsString(), &args, EVERYWHERE );
 			}
@@ -889,6 +900,29 @@ MemberAccessorResult ZephyrVirtualMachine::ProcessResultOfMemberAccessor( Zephyr
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::InsertParametersIntoEventArgs( EventArgs& args )
+{
+	ZephyrValue paramCount = PopConstant();
+
+	for ( int paramIdx = 0; paramIdx < (int)paramCount.GetAsNumber(); ++paramIdx )
+	{
+		ZephyrValue param = PopConstant();
+		ZephyrValue value = PopConstant();
+
+		switch ( value.GetType() )
+		{
+			case eValueType::BOOL:		args.SetValue( param.GetAsString(), value.GetAsBool() ); break;
+			case eValueType::NUMBER:	args.SetValue( param.GetAsString(), value.GetAsNumber() ); break;
+			case eValueType::VEC2:		args.SetValue( param.GetAsString(), value.GetAsVec2() ); break;
+			case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
+			case eValueType::ENTITY:	args.SetValue( param.GetAsString(), value.GetAsEntity() ); break;
+			default: ERROR_AND_DIE( Stringf( "Unimplemented event arg type '%s'", ToString( value.GetType() ).c_str() ) );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 ZephyrValue ZephyrVirtualMachine::GetGlobalVariableFromEntity( EntityId entityId, const std::string& variableName )
 {
 	Entity* entity = g_game->GetEntityById( entityId );
@@ -927,6 +961,20 @@ void ZephyrVirtualMachine::SetGlobalVec2MemberVariableInEntity( EntityId entityI
 	}
 
 	return entity->SetGlobalVec2Variable( variableName, memberName, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::CallMemberFunctionOnEntity( EntityId entityId, const std::string& functionName, EventArgs* args )
+{
+	Entity* entity = g_game->GetEntityById( entityId );
+	if ( entity == nullptr )
+	{
+		ReportError( Stringf( "Unknown entity does not contain a member '%s'", functionName.c_str() ) );
+		return;
+	}
+
+	entity->FireScriptEvent( functionName, args );
 }
 
 

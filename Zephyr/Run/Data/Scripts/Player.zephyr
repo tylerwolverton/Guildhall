@@ -4,6 +4,7 @@ Bool canShoot = true;
 Number fireCooldown = .5;
 
 Vec2 testVec
+Entity blob
 
 Number maxHealth;
 OnEvent( Spawned )
@@ -15,6 +16,8 @@ OnEvent( Spawned )
 
     AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 )
 
+    RegisterKeyEvent( key = "P", event = "SummonBlob" )
+
     RegisterKeyEvent( key = "W", event = "MoveUp" )
     RegisterKeyEvent( key = "A", event = "MoveLeft" )
     RegisterKeyEvent( key = "S", event = "MoveDown" )
@@ -24,6 +27,12 @@ OnEvent( Spawned )
     RegisterKeyEvent( key = "Left", event = "ShootFireballLeft" )
     RegisterKeyEvent( key = "Down", event = "ShootFireballDown" )
     RegisterKeyEvent( key = "Right", event = "ShootFireballRight" )
+}
+
+Function SummonBlob()
+{
+    //blob.target.MoveUp()
+    blob.SummonBlob( newPos = curPosition )
 }
 
 String itemName;

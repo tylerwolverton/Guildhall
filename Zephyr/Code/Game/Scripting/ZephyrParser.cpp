@@ -922,8 +922,20 @@ bool ZephyrParser::ParseMemberAccessor()
 
 		case eTokenType::PARENTHESIS_LEFT:
 		{
-			//WriteOpCodeToCurChunk( eOpCode::MEMBER_FUNCTION_CALL );
-			ParseFunctionCall();
+			AdvanceToNextToken();
+			if ( !ParseEventArgs() )
+			{
+				return false;
+			}
+
+			// We should be one token past the closing paren
+			if ( GetLastToken().GetType() != eTokenType::PARENTHESIS_RIGHT )
+			{
+				ReportError( "Expected ')' after parameter list for function call" );
+				return false;
+			}
+
+			WriteOpCodeToCurChunk( eOpCode::MEMBER_FUNCTION_CALL );
 		}
 		break;
 

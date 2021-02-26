@@ -4,6 +4,8 @@ String targetName = "player"
 Number health
 Entity target = -1
 
+Number maxChaseDist = 3
+
 Vec2 lastPosition 
 Number numFramesInSameSpace
 
@@ -48,6 +50,12 @@ Function PositionUpdated()
 Function TargetPositionUpdated()
 {
 	targetPosition = newPos
+}
+
+Function SummonBlob()
+{
+	targetPosition = newPos
+	maxChaseDist = 99999
 }
 
 // Damage
@@ -108,7 +116,7 @@ State Chase
 	Number distance;
 	OnEvent( DistanceToTargetUpdated )
 	{		
-		if( distance > 3 )
+		if( distance > maxChaseDist )
 		{
 			GetNewWanderTargetPosition()
 			ChangeState( Wander )

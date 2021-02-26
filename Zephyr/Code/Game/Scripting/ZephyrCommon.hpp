@@ -105,6 +105,7 @@ enum class eOpCode : byte
 	ASSIGNMENT,
 	MEMBER_ASSIGNMENT,
 	MEMBER_ACCESSOR,
+	MEMBER_FUNCTION_CALL,
 
 	// Arithmetic
 	ADD,
