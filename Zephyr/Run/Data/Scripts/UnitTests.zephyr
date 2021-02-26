@@ -10,6 +10,7 @@ Bool testBool3 = false;
 String testStr;
 String testStrInit = "Hello";
 Entity testEntity
+Entity player
 
 // Error cases to comment in to test parser
 State NoPrint
@@ -211,10 +212,31 @@ State MemberTest
 		Number b
 		// b = a.x
 
-		Number posX = testEntity.target.curPosition.x
+		Number posX = testEntity.target.curPosition.x + 6
+		// testEntity.target = player
 		//posX = testEntity.target.curPosition.x.y
 		//posX = testEntity.target.x.y
 		
+		testEntity.target.testVec.x = posX = 10
+		if( testEntity.target.testVec.x != 10
+			|| posX != 10 )
+		{
+			PrintToConsole( text = "MemberTest: Failed, expected 10 but found ", color = "red" )
+			PrintToConsole( text = testEntity.target.testVec.x, color = "red" )
+			return;
+		}
+
+
+		vec1.x = 6
+		if( vec1.x != 6 )
+		{
+			PrintToConsole( text = "MemberTest: Failed, expected 6 but found ", color = "red" )
+			PrintToConsole( text = vec1.x, color = "red" )
+			return;
+		}
+		
+		//vec1.z = 7
+
 		PrintToConsole( text = "MemberTest: Success", color = "green" )
 	}
 }

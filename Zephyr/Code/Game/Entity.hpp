@@ -69,10 +69,14 @@ public:
 	void			ChangeZephyrScriptState( const std::string& targetState );
 	void			UnloadZephyrScript();
 	void			ReloadZephyrScript();
+	
+	void			InitializeZephyrEntityVariables();
 	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
 	void			SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
+	
 	ZephyrValue		GetGlobalVariable( const std::string& varName );
-	void			InitializeZephyrEntityVariables();
+	void			SetGlobalVariable( const std::string& varName, const ZephyrValue& value );
+	void			SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value );
 
 	bool			IsScriptValid() const;
 	void			SetScriptObjectValidity( bool isValid );

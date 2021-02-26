@@ -211,6 +211,21 @@ ZephyrValue ZephyrScript::GetGlobalVariable( const std::string& varName )
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScript::SetGlobalVariable( const std::string& varName, const ZephyrValue& value )
+{
+	m_globalBytecodeChunk->SetVariable( varName, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrScript::SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
+{
+	// Already checked to make sure this is a valid member
+	m_globalBytecodeChunk->SetVec2Variable( varName, memberName, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::InitializeEntityVariables()
 {
 	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );

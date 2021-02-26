@@ -382,13 +382,6 @@ bool ZephyrParser::ParseStatement()
 		
 		case eTokenType::IDENTIFIER:
 		{
-			// This could be a function call, assignment to variable or assignment to member so parse the expression generically
-			/*BackupToLastToken();
-			if ( !ParseExpression() )
-			{
-				return false;
-			}*/
-
 			// Check if this is a function name by looking for opening paren
 			if ( GetCurTokenType() == eTokenType::PARENTHESIS_LEFT  )
 			{
@@ -396,6 +389,12 @@ bool ZephyrParser::ParseStatement()
 				{
 					return false;
 				}
+				
+			}
+			else if ( GetCurTokenType() == eTokenType::PERIOD )
+			{
+				BackupToLastToken();
+				return ParseMemberAccessor();
 			}
 			else
 			{
@@ -516,12 +515,6 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 
 			WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
 			WriteOpCodeToCurChunk( eOpCode::ASSIGNMENT );
-
-			//// Put identifier onto the stack first so that the assignment is made to this value
-			//WriteConstantToCurChunk( ZephyrValue( identifier.GetData() ) );
-			//WriteOpCodeToCurChunk( eOpCode::GET_VARIABLE_VALUE );
-
-			//ParseAssignment();
 		}
 		break;
 
@@ -887,12 +880,6 @@ bool ZephyrParser::ParseMemberAccessor()
 {
 	ZephyrToken topLevelObj = GetCurToken();
 	
-	// Placeholder for member count
-	//m_curBytecodeChunk->WriteByte( eOpCode::CONSTANT );
-	//int memberCountIdx = m_curBytecodeChunk->AddConstant( ZephyrValue( 0.f ) );
-	//m_curBytecodeChunk->WriteByte( memberCountIdx );
-
-
 	// Advance to first period
 	AdvanceToNextToken();
 	
@@ -916,7 +903,6 @@ bool ZephyrParser::ParseMemberAccessor()
 	}
 
 	// Write number of accessors as number
-	//m_curBytecodeChunk->SetConstantAtIdx( memberCountIdx, (float)memberCount );
 	WriteConstantToCurChunk( ZephyrValue( topLevelObj.GetData() ) );
 	WriteConstantToCurChunk( ZephyrValue( (float)memberCount ) );
 		
@@ -924,6 +910,12 @@ bool ZephyrParser::ParseMemberAccessor()
 	{
 		case eTokenType::EQUAL:
 		{
+			AdvanceToNextToken();
+			if ( !ParseExpression() )
+			{
+				return false;
+			}
+
 			WriteOpCodeToCurChunk( eOpCode::MEMBER_ASSIGNMENT );
 		}
 		break;

@@ -43,6 +43,7 @@ public:
 	void AddEventChunk( ZephyrBytecodeChunk* eventBytecodeChunk );
 
 	void SetVariable( const std::string& identifier, const ZephyrValue& value );
+	void SetVec2Variable( const std::string& identifier, const std::string& memberName, const ZephyrValue& value );
 	void SetType( eBytecodeChunkType type )								{ m_type = type; }
 	void SetAsInitialState()											{ m_isInitialState = true; }
 

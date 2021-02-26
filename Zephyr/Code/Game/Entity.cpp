@@ -597,6 +597,30 @@ ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& value )
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return;
+	}
+
+	m_scriptObj->SetGlobalVariable( varName, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return;
+	}
+
+	m_scriptObj->SetGlobalVec2Variable( varName, memberName, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::InitializeZephyrEntityVariables()
 {
 	if ( m_scriptObj == nullptr )

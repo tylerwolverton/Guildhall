@@ -99,6 +99,21 @@ void ZephyrBytecodeChunk::SetVariable( const std::string& identifier, const Zeph
 	m_variables[identifier] = value;
 }
 
+//-----------------------------------------------------------------------------------------------
+void ZephyrBytecodeChunk::SetVec2Variable( const std::string& identifier, const std::string& memberName, const ZephyrValue& value )
+{
+	Vec2 var = m_variables[identifier].GetAsVec2();
+	if ( memberName == "x" )
+	{
+		var.x = value.GetAsNumber();
+	}
+	if ( memberName == "y" )
+	{
+		var.y = value.GetAsNumber();
+	}
+
+	m_variables[identifier] = ZephyrValue( var );
+}
 
 //-----------------------------------------------------------------------------------------------
 void ZephyrBytecodeChunk::Disassemble()

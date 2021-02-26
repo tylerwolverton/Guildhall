@@ -11,6 +11,17 @@ class Entity;
 
 
 //-----------------------------------------------------------------------------------------------
+struct MemberAccessorResult
+{
+public:
+	ZephyrValue finalMemberVal = ZephyrValue( ERROR_ZEPHYR_VAL );
+	std::string	baseObjName;
+	std::vector<std::string> memberNames;
+	std::vector<EntityId> entityIdChain;
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class ZephyrVirtualMachine
 {
 	friend class ZephyrInterpreter;
@@ -50,7 +61,11 @@ private:
 	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	void		AssignToMemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	
+	MemberAccessorResult ProcessResultOfMemberAccessor( ZephyrValueMap localVariables );
+
 	ZephyrValue GetGlobalVariableFromEntity( EntityId entityId, const std::string& variableName );
+	void SetGlobalVariableInEntity( EntityId entityId, const std::string& variableName, const ZephyrValue& value );
+	void SetGlobalVec2MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value );
 
 	void ReportError( const std::string& errorMsg );
 	bool IsErrorValue( const ZephyrValue& zephyrValue );

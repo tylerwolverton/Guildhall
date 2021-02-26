@@ -3,6 +3,8 @@ Vec2 curPosition;
 Bool canShoot = true;
 Number fireCooldown = .5;
 
+Vec2 testVec
+
 Number maxHealth;
 OnEvent( Spawned )
 {
