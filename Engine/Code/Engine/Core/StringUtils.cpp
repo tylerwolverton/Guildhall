@@ -279,7 +279,7 @@ std::string ToString( uint value )
 //-----------------------------------------------------------------------------------------------
 std::string ToString( float value )
 {
-	return std::string( Stringf( "%f", value ) );
+	return std::string( Stringf( "%.2f", value ) );
 }
 
 

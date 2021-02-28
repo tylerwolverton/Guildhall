@@ -190,7 +190,14 @@ public:
 	std::string GetAsString() const;
 	EntityId	GetAsEntity() const		{ return entityData; }
 	
-	bool		IsTrue() const;
+	bool		EvaluateAsBool();
+	Vec2		EvaluateAsVec2();
+	std::string	EvaluateAsString();
+	float		EvaluateAsNumber();
+	EntityId	EvaluateAsEntity();
+
+private:
+	void ReportConversionError( eValueType targetType );
 
 private:
 	eValueType m_type = eValueType::NONE;

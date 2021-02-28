@@ -525,7 +525,7 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 				case eValueType::NUMBER: WriteConstantToCurChunk( ZephyrValue( 0.f ) ); break;
 				case eValueType::BOOL:	 WriteConstantToCurChunk( ZephyrValue( false ) ); break;
 				case eValueType::STRING: WriteConstantToCurChunk( ZephyrValue( "" ) ); break;
-				case eValueType::ENTITY: WriteConstantToCurChunk( ZephyrValue( -1 ) ); break;
+				case eValueType::ENTITY: WriteConstantToCurChunk( ZephyrValue( (EntityId)-1 ) ); break;
 				case eValueType::VEC2:	 WriteConstantToCurChunk( ZephyrValue( Vec2::ZERO ) ); break;
 			}
 
@@ -996,6 +996,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 		case eTokenType::TRUE:				return ParseBoolConstant( true );
 		case eTokenType::FALSE:				return ParseBoolConstant( false );
 		case eTokenType::CONSTANT_STRING:	return ParseStringConstant();
+		case eTokenType::ENTITY:
 
 		case eTokenType::IDENTIFIER:
 		{

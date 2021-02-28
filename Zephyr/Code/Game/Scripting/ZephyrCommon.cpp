@@ -1,4 +1,6 @@
 #include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 
@@ -231,8 +233,7 @@ std::string ZephyrValue::GetAsString() const
 
 
 //-----------------------------------------------------------------------------------------------
-// EvaluateAsBool()...
-bool ZephyrValue::IsTrue() const
+bool ZephyrValue::EvaluateAsBool()
 {
 	switch ( m_type )
 	{
@@ -244,6 +245,82 @@ bool ZephyrValue::IsTrue() const
 	}
 
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 ZephyrValue::EvaluateAsVec2()
+{
+	switch ( m_type )
+	{
+		case eValueType::VEC2: 		return vec2Data;
+		case eValueType::NUMBER: 	
+		case eValueType::STRING: 	
+		case eValueType::BOOL:		
+		case eValueType::ENTITY:	
+			ReportConversionError( eValueType::VEC2 );
+	}
+
+	// Doesn't matter, Entity val will be set as -1000
+	return Vec2::ZERO;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+std::string ZephyrValue::EvaluateAsString()
+{
+	switch ( m_type )
+	{
+		case eValueType::STRING: 	return GetAsString();
+		case eValueType::VEC2: 		return ToString( vec2Data );
+		case eValueType::NUMBER: 	return ToString( numberData );
+		case eValueType::BOOL:		return ToString( boolData );
+		case eValueType::ENTITY:	return ToString( entityData );
+	}
+
+	return "";
+}
+
+
+//-----------------------------------------------------------------------------------------------
+float ZephyrValue::EvaluateAsNumber()
+{
+	switch ( m_type )
+	{
+		case eValueType::NUMBER: 	return numberData;
+		case eValueType::BOOL:		return boolData ? 1.f : 0.f;
+		case eValueType::STRING: 	
+		case eValueType::VEC2: 		
+		case eValueType::ENTITY:	
+			ReportConversionError( eValueType::NUMBER );
+	}
+
+	return ERROR_ZEPHYR_VAL;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+EntityId ZephyrValue::EvaluateAsEntity()
+{
+	switch ( m_type )
+	{
+		case eValueType::ENTITY:	return entityData;
+		case eValueType::STRING: 	
+		case eValueType::VEC2: 		
+		case eValueType::NUMBER: 	
+		case eValueType::BOOL:		
+			ReportConversionError( eValueType::ENTITY );
+	}
+
+	return ERROR_ZEPHYR_VAL;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrValue::ReportConversionError( eValueType targetType )
+{
+	g_devConsole->PrintError( Stringf( "Cannot access '%s' variable as type '%s'", ToString( m_type ).c_str(), ToString( targetType ).c_str() ) );
+	entityData = ERROR_ZEPHYR_VAL;
 }
 
 

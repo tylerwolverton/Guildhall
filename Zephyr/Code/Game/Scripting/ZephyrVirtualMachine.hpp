@@ -51,11 +51,22 @@ private:
 	ZephyrValue PopConstant();
 	ZephyrValue PeekConstant();
 
-	void PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode );
+	void PushBinaryOp( ZephyrValue& a, ZephyrValue& b, eOpCode opCode );
 	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
 	void PushVec2BinaryOp( const Vec2& a, const Vec2& b, eOpCode opCode );
 	void PushBoolBinaryOp( bool a, bool b, eOpCode opCode );
 	void PushStringBinaryOp( const std::string& a, const std::string& b, eOpCode opCode );
+
+	void PushAddOp( ZephyrValue& a, ZephyrValue& b );
+	void PushSubtractOp( ZephyrValue& a, ZephyrValue& b );
+	void PushMultiplyOp( ZephyrValue& a, ZephyrValue& b );
+	void PushDivideOp( ZephyrValue& a, ZephyrValue& b );
+	void PushNotEqualOp( ZephyrValue& a, ZephyrValue& b );
+	void PushEqualOp( ZephyrValue& a, ZephyrValue& b );
+	void PushGreaterOp( ZephyrValue& a, ZephyrValue& b );
+	void PushGreaterEqualOp( ZephyrValue& a, ZephyrValue& b );
+	void PushLessOp( ZephyrValue& a, ZephyrValue& b );
+	void PushLessEqualOp( ZephyrValue& a, ZephyrValue& b );
 
 	ZephyrValue GetVariableValue( const std::string& variableName, const ZephyrValueMap& localVariables );
 	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );

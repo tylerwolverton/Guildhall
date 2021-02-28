@@ -232,7 +232,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				ZephyrValue ifBlockByteCount = PopConstant();
 
 				// The if statement is false, jump over the bytes corresponding to that code block
-				if ( !expression.IsTrue() )
+				if ( !expression.EvaluateAsBool() )
 				{
 					byteIdx += (int)ifBlockByteCount.GetAsNumber();
 				}
@@ -251,8 +251,8 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				ZephyrValue rightVal = PopConstant();
 				ZephyrValue leftVal = PopConstant();
 
-				if ( !leftVal.IsTrue() 
-					 || !rightVal.IsTrue() )
+				if ( !leftVal.EvaluateAsBool() 
+					 || !rightVal.EvaluateAsBool() )
 				{
 					PushConstant( ZephyrValue( false ) );
 				}
@@ -268,8 +268,8 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				ZephyrValue rightVal = PopConstant();
 				ZephyrValue leftVal = PopConstant();
 
-				if ( !leftVal.IsTrue()
-					 && !rightVal.IsTrue() )
+				if ( !leftVal.EvaluateAsBool()
+					 && !rightVal.EvaluateAsBool() )
 				{
 					PushConstant( ZephyrValue( false ) );
 				}
@@ -346,6 +346,8 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::FUNCTION_CALL:
 			{
 				ZephyrValue eventName = PopConstant();
+				GUARANTEE_OR_DIE( eventName.GetType() == eValueType::STRING, "Event name isn't string" );
+
 				EventArgs args;
 				args.SetValue( "entity", (void*)parentEntity );
 
@@ -471,222 +473,312 @@ ZephyrValue ZephyrVirtualMachine::PeekConstant()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::PushBinaryOp( const ZephyrValue& a, const ZephyrValue& b, eOpCode opCode )
+void ZephyrVirtualMachine::PushBinaryOp( ZephyrValue& a, ZephyrValue& b, eOpCode opCode )
 {
-	// Do type checking inside each sub function
-
-	if ( a.GetType() == eValueType::NUMBER
-		 && b.GetType() == eValueType::NUMBER )
+	switch ( opCode )
 	{
-		PushNumberBinaryOp( a.GetAsNumber(), b.GetAsNumber(), opCode );
-	}
-	else if ( a.GetType() == eValueType::VEC2
-			  && b.GetType() == eValueType::VEC2 )
-	{
-		PushVec2BinaryOp( a.GetAsVec2(), b.GetAsVec2(), opCode );
-	}
-	else if ( a.GetType() == eValueType::BOOL
-			  && b.GetType() == eValueType::BOOL )
-	{
-		PushBoolBinaryOp( a.GetAsBool(), b.GetAsBool(), opCode );
-	}
-	else if ( a.GetType() == eValueType::STRING
-			  && b.GetType() == eValueType::STRING )
-	{
-		PushStringBinaryOp( a.GetAsString(), b.GetAsString(), opCode );
-	}
-	else
-	{
-		ReportError( "Type mismatch" );
+		case eOpCode::ADD:				PushAddOp( a, b ); break;
+		case eOpCode::SUBTRACT:			PushSubtractOp( a, b ); break;
+		case eOpCode::MULTIPLY:			PushMultiplyOp( a, b ); break;
+		case eOpCode::DIVIDE:			PushDivideOp( a, b ); break;
+		case eOpCode::NOT_EQUAL:		PushNotEqualOp( a, b ); break;
+		case eOpCode::EQUAL:			PushEqualOp( a, b ); break;
+		case eOpCode::GREATER:			PushGreaterOp( a, b ); break;
+		case eOpCode::GREATER_EQUAL:	PushGreaterEqualOp( a, b ); break;
+		case eOpCode::LESS:				PushLessOp( a, b ); break;
+		case eOpCode::LESS_EQUAL:		PushLessEqualOp( a, b ); break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode )
+void ZephyrVirtualMachine::PushAddOp( ZephyrValue& a, ZephyrValue& b )
 {
-	switch ( opCode )
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
 	{
-		case eOpCode::ADD:
-		{
-			NUMBER_TYPE result = a + b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::SUBTRACT:
-		{
-			NUMBER_TYPE result = a - b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::MULTIPLY:
-		{
-			NUMBER_TYPE result = a * b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::DIVIDE:
-		{
-			NUMBER_TYPE result = a / b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::NOT_EQUAL:
-		{
-			bool result = !IsNearlyEqual( a, b );
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::EQUAL:
-		{
-			bool result = IsNearlyEqual( a, b );
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::GREATER:
-		{
-			bool result = a > b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::GREATER_EQUAL:
-		{
-			bool result = a >= b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::LESS:
-		{
-			bool result = a < b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::LESS_EQUAL:
-		{
-			bool result = a <= b;
-			PushConstant( result );
-		}
-		break;
-
-		default:
-		{
-
-		}
+		NUMBER_TYPE result = a.GetAsNumber() + b.GetAsNumber();
+		PushConstant( result );
+		return;
 	}
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
+	{
+		Vec2 result = a.GetAsVec2() + b.GetAsVec2();
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::STRING
+		 || bType == eValueType::STRING )
+	{
+		std::string result = a.EvaluateAsString();
+		result.append( b.EvaluateAsString() );
+		PushConstant( result );
+		return;
+	}
+
+	ReportError( Stringf( "Cannot add a variable of type %s with a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::PushVec2BinaryOp( const Vec2& a, const Vec2& b, eOpCode opCode )
+void ZephyrVirtualMachine::PushSubtractOp( ZephyrValue& a, ZephyrValue& b )
 {
-	switch ( opCode )
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
 	{
-		case eOpCode::ADD:
-		{
-			Vec2 result = a + b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::SUBTRACT:
-		{
-			Vec2 result = a - b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::MULTIPLY:
-		{
-			Vec2 result = a * b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::NOT_EQUAL:
-		{
-			bool result = !IsNearlyEqual( a, b, .001f );
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::EQUAL:
-		{
-			bool result = IsNearlyEqual( a, b, .001f );
-			PushConstant( result );
-		}
-		break;
-
-		default:
-		{
-
-		}
+		NUMBER_TYPE result = a.GetAsNumber() - b.GetAsNumber();
+		PushConstant( result );
+		return;
 	}
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
+	{
+		Vec2 result = a.GetAsVec2() - b.GetAsVec2();
+		PushConstant( result );
+		return;
+	}
+	
+	ReportError( Stringf( "Cannot subtract a variable of type %s from a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::PushBoolBinaryOp( bool a, bool b, eOpCode opCode )
+void ZephyrVirtualMachine::PushMultiplyOp( ZephyrValue& a, ZephyrValue& b )
 {
-	switch ( opCode )
-	{
-		case eOpCode::NOT_EQUAL:
-		{
-			bool result = a != b;
-			PushConstant( result );
-		}
-		break;
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
 
-		case eOpCode::EQUAL:
-		{
-			bool result = a == b;
-			PushConstant( result );
-		}
-		break;
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
+	{
+		NUMBER_TYPE result = a.GetAsNumber() * b.GetAsNumber();
+		PushConstant( result );
+		return;
 	}
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
+	{
+		Vec2 result = a.GetAsVec2() * b.GetAsVec2();
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::NUMBER )
+	{
+		Vec2 result = a.GetAsVec2() * b.GetAsNumber();
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::VEC2 )
+	{
+		Vec2 result = a.GetAsNumber() * b.GetAsVec2();
+		PushConstant( result );
+		return;
+	}
+
+	ReportError( Stringf( "Cannot multiply a variable of type %s by a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::PushStringBinaryOp( const std::string& a, const std::string& b, eOpCode opCode )
+void ZephyrVirtualMachine::PushDivideOp( ZephyrValue& a, ZephyrValue& b )
 {
-	switch ( opCode )
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
 	{
-		case eOpCode::ADD:
+		if ( IsNearlyEqual( b.GetAsNumber(), 0.f, .0000001f ) )
 		{
-			std::string result = a;
-			result.append( b );
-			PushConstant( result );
+			ReportError( "Cannot divide a Number variable by 0" );
+			return;
 		}
-		break;
 
-		case eOpCode::NOT_EQUAL:
-		{
-			bool result = a != b;
-			PushConstant( result );
-		}
-		break;
-
-		case eOpCode::EQUAL:
-		{
-			bool result = a == b;
-			PushConstant( result );
-		}
-		break;
-
-		default:
-		{
-
-		}
+		NUMBER_TYPE result = a.GetAsNumber() / b.GetAsNumber();
+		PushConstant( result );
+		return;
 	}
+	
+	if ( aType == eValueType::VEC2 && bType == eValueType::NUMBER )
+	{
+		if ( IsNearlyEqual( b.GetAsNumber(), 0.f, .0000001f ) )
+		{
+			ReportError( "Cannot divide a Vec2 variable by 0" );
+			return;
+		}
+
+		Vec2 result = a.GetAsVec2() / b.GetAsNumber();
+		PushConstant( result );
+		return;
+	}
+	
+	ReportError( Stringf( "Cannot divide a variable of type %s by a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushNotEqualOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
+	{
+		bool result = !IsNearlyEqual( a.GetAsNumber(), b.GetAsNumber(), .001f );
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
+	{
+		bool result = !IsNearlyEqual( a.GetAsVec2(), b.GetAsVec2(), .001f );
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::STRING && bType == eValueType::STRING )
+	{
+		bool result = a.GetAsString() != b.GetAsString();
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::BOOL 
+		 || bType == eValueType::BOOL )
+	{
+		bool result = a.EvaluateAsBool() != b.EvaluateAsBool();
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::ENTITY && bType == eValueType::ENTITY )
+	{
+		bool result = a.GetAsEntity() != b.GetAsEntity();
+		PushConstant( result );
+		return;
+	}
+
+	ReportError( Stringf( "Cannot compare a variable of type %s with a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushEqualOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
+	{
+		bool result = IsNearlyEqual( a.GetAsNumber(), b.GetAsNumber(), .001f );
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
+	{
+		bool result = IsNearlyEqual( a.GetAsVec2(), b.GetAsVec2(), .001f );
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::STRING && bType == eValueType::STRING )
+	{
+		bool result = a.GetAsString() == b.GetAsString();
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::BOOL
+		 || bType == eValueType::BOOL )
+	{
+		bool result = a.EvaluateAsBool() == b.EvaluateAsBool();
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::ENTITY && bType == eValueType::ENTITY )
+	{
+		bool result = a.GetAsEntity() == b.GetAsEntity();
+		PushConstant( result );
+		return;
+	}
+
+	ReportError( Stringf( "Cannot compare a variable of type %s with a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushGreaterOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
+	{
+		bool result = a.GetAsNumber() > b.GetAsNumber();
+		PushConstant( result );
+		return;
+	}
+	
+	ReportError( Stringf( "Cannot check if a variable of type %s is greater than a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushGreaterEqualOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
+	{
+		bool result = a.GetAsNumber() >= b.GetAsNumber();
+		PushConstant( result );
+		return;
+	}
+
+	ReportError( Stringf( "Cannot check if a variable of type %s is greater than or equal to a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushLessOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
+	{
+		bool result = a.GetAsNumber() < b.GetAsNumber();
+		PushConstant( result );
+		return;
+	}
+
+	ReportError( Stringf( "Cannot check if a variable of type %s is less than a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::PushLessEqualOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
+	{
+		bool result = a.GetAsNumber() < b.GetAsNumber();
+		PushConstant( result );
+		return;
+	}
+
+	ReportError( Stringf( "Cannot check if a variable of type %s is less than a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
 }
 
 

@@ -61,7 +61,7 @@ std::string Vec2::GetAsString() const
 //-----------------------------------------------------------------------------------------------
 std::string Vec2::ToString() const
 {
-	return std::string( Stringf( "( %f, %f )", x, y ) );
+	return std::string( Stringf( "( %.2f, %.2f )", x, y ) );
 }
 
 
