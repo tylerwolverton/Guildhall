@@ -52,11 +52,6 @@ private:
 	ZephyrValue PeekConstant();
 
 	void PushBinaryOp( ZephyrValue& a, ZephyrValue& b, eOpCode opCode );
-	void PushNumberBinaryOp( NUMBER_TYPE a, NUMBER_TYPE b, eOpCode opCode );
-	void PushVec2BinaryOp( const Vec2& a, const Vec2& b, eOpCode opCode );
-	void PushBoolBinaryOp( bool a, bool b, eOpCode opCode );
-	void PushStringBinaryOp( const std::string& a, const std::string& b, eOpCode opCode );
-
 	void PushAddOp( ZephyrValue& a, ZephyrValue& b );
 	void PushSubtractOp( ZephyrValue& a, ZephyrValue& b );
 	void PushMultiplyOp( ZephyrValue& a, ZephyrValue& b );

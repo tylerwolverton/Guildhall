@@ -3,6 +3,7 @@ Vec2 targetPosition
 String targetName = "player"
 Number health
 Entity target = -1
+Entity levelMgr = -1
 
 Number maxChaseDist = 3
 

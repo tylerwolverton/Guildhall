@@ -122,3 +122,15 @@ void ZephyrBytecodeChunk::Disassemble()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+std::string ToString( eBytecodeChunkType type )
+{
+	switch ( type )
+	{
+		case eBytecodeChunkType::STATE_MACHINE:		return "Global State";
+		case eBytecodeChunkType::STATE:				return "State";
+		case eBytecodeChunkType::EVENT:				return "Function";
+	}
+
+	return "Unknown";
+}

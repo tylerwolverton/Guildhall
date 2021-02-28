@@ -13,6 +13,8 @@ enum class eBytecodeChunkType
 	EVENT,
 };
 
+std::string ToString( eBytecodeChunkType type );
+
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrBytecodeChunk
@@ -24,6 +26,7 @@ public:
 	std::string						GetName() const									{ return m_name; }
 	std::vector<byte>				GetCode() const									{ return m_bytes; }
 	int								GetNumBytes() const								{ return (int)m_bytes.size(); }
+	int								GetNumConstants() const							{ return (int)m_constants.size(); }
 	byte							GetByte( int idx ) const						{ return m_bytes[idx]; }
 	ZephyrValue						GetConstant( int idx ) const					{ return m_constants[idx]; }
 	bool							TryToGetVariable( const std::string& identifier, ZephyrValue& out_value ) const;

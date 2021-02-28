@@ -346,7 +346,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::FUNCTION_CALL:
 			{
 				ZephyrValue eventName = PopConstant();
-				GUARANTEE_OR_DIE( eventName.GetType() == eValueType::STRING, "Event name isn't string" );
+				GUARANTEE_OR_DIE( eventName.GetType() == eValueType::STRING, "Event name isn't a string" );
 
 				EventArgs args;
 				args.SetValue( "entity", (void*)parentEntity );
@@ -739,8 +739,8 @@ void ZephyrVirtualMachine::PushGreaterEqualOp( ZephyrValue& a, ZephyrValue& b )
 
 	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
 	{
-		bool result = a.GetAsNumber() >= b.GetAsNumber();
-		PushConstant( result );
+		bool result = a.GetAsNumber() < b.GetAsNumber();
+		PushConstant( !result );
 		return;
 	}
 
@@ -773,8 +773,8 @@ void ZephyrVirtualMachine::PushLessEqualOp( ZephyrValue& a, ZephyrValue& b )
 
 	if ( aType == eValueType::NUMBER && bType == eValueType::NUMBER )
 	{
-		bool result = a.GetAsNumber() < b.GetAsNumber();
-		PushConstant( result );
+		bool result = a.GetAsNumber() > b.GetAsNumber();
+		PushConstant( !result );
 		return;
 	}
 

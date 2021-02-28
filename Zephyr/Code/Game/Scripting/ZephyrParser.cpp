@@ -32,6 +32,33 @@ ZephyrScriptDefinition* ZephyrParser::ParseTokensIntoScriptDefinition()
 		nextToken = GetCurToken();
 	}
 	
+	// Check for any chunks with too many constants
+	bool anyErrorChunks = false;
+	for ( auto const& bytecodeChunk : m_bytecodeChunks )
+	{
+		if ( bytecodeChunk.second->GetNumConstants() > 254 )
+		{
+			std::string bytecodeChunkType = ToString( bytecodeChunk.second->GetType() );
+			ReportError( Stringf( "%s %s contains too many constants. Try to break up into smaller functions", bytecodeChunkType.c_str(), bytecodeChunk.first.c_str(), bytecodeChunkType.c_str() ) );
+			anyErrorChunks = true;
+		}
+
+		for ( auto const& eventChunk : bytecodeChunk.second->GetEventBytecodeChunks() )
+		{
+			if ( eventChunk.second->GetNumConstants() > 254 )
+			{
+				std::string eventChunkType = ToString( eventChunk.second->GetType() );
+				ReportError( Stringf( "%s %s contains too many constants. Try to break up into smaller functions", eventChunkType.c_str(), eventChunk.first.c_str(), eventChunkType.c_str() ) );
+				anyErrorChunks = true;
+			}
+		}
+	}
+
+	if ( anyErrorChunks )
+	{
+		return new ZephyrScriptDefinition( nullptr, m_bytecodeChunks );
+	}
+
 	ZephyrScriptDefinition* validScript =  new ZephyrScriptDefinition( m_stateMachineBytecodeChunk, m_bytecodeChunks );
 	validScript->SetIsValid( true );
 

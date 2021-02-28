@@ -43,9 +43,16 @@
     <PlayerStart pos="1.5,1.5" yaw="0"/>
     <Actor type="Blob" name="blob1" pos="5.5,5.5" yaw="0">
       <ScriptVarInit type="entity" var="target" value="player"/>
+      <ScriptVarInit type="entity" var="levelMgr" value="Level1Manager"/>
     </Actor>
-    <Actor type="Blob" name="blob2" pos="7.5,3.5" yaw="0"/>
-    <Actor type="Blob" name="blob3" pos="9.5,5.5" yaw="0"/>
+    <Actor type="Blob" name="blob2" pos="7.5,3.5" yaw="0">
+      <ScriptVarInit type="entity" var="target" value="player"/>
+      <ScriptVarInit type="entity" var="levelMgr" value="Level1Manager"/>
+    </Actor>
+    <Actor type="Blob" name="blob3" pos="9.5,5.5" yaw="0">
+      <ScriptVarInit type="entity" var="target" value="player"/>
+      <ScriptVarInit type="entity" var="levelMgr" value="Level1Manager"/>
+    </Actor>
   </Entities>
 
 </MapDefinition>
