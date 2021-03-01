@@ -32,7 +32,6 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 	m_parentEntity = parentEntity;
 	m_globalVariables = globalVariables;
 	m_stateVariables = stateVariables;
-	CopyEventArgVariables( eventArgs );
 
 	// Event variables don't need to be persisted after this call, so save a copy as local variables
 	// TODO: Account for scopes inside if statements, etc.?
@@ -41,6 +40,11 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 		||  bytecodeChunk.GetType() == eBytecodeChunkType::EVENT )
 	{
 		localVariables = bytecodeChunk.GetVariables();
+
+		if ( bytecodeChunk.GetType() == eBytecodeChunkType::EVENT )
+		{
+			CopyEventArgVariables( eventArgs, localVariables );
+		}
 	}
 
 	int byteIdx = 0;
@@ -401,7 +405,7 @@ void ZephyrVirtualMachine::InterpretEventBytecodeChunk( const ZephyrBytecodeChun
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs )
+void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs, ZephyrValueMap& localVariables )
 {
 	if ( eventArgs == nullptr )
 	{
@@ -415,28 +419,28 @@ void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs )
 	{
 		if ( keyValuePair.second->Is<float>() )
 		{
-			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, 0.f ) );
+			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, 0.f ) );
 		}
 		else if ( keyValuePair.second->Is<int>() )
 		{
-			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0 ) );
+			localVariables[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0 ) );
 		}
 		else if ( keyValuePair.second->Is<double>() )
 		{
-			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0.0 ) );
+			localVariables[keyValuePair.first] = ZephyrValue( (float)eventArgs->GetValue( keyValuePair.first, 0.0 ) );
 		}
 		else if ( keyValuePair.second->Is<bool>() )
 		{
-			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, false ) );
+			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, false ) );
 		}
 		else if ( keyValuePair.second->Is<Vec2>() )
 		{
-			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, Vec2::ZERO ) );
+			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, Vec2::ZERO ) );
 		}
 		else if ( keyValuePair.second->Is<std::string>() 
 				  || keyValuePair.second->Is<char*>() )
 		{
-			m_eventsVariablesCopy[keyValuePair.first] = ZephyrValue( keyValuePair.second->GetAsString() );
+			localVariables[keyValuePair.first] = ZephyrValue( keyValuePair.second->GetAsString() );
 		}
 
 		// Any other variables will be ignored since they have no ZephyrType equivalent

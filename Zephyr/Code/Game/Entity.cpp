@@ -732,8 +732,10 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 	{
 		Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
 
-		if ( m_scriptObj != nullptr )
+		if ( IsScriptValid() )
 		{
+			// Save data if collision is with another entity
+			// Still report collision regardless to account for environmental collisions
 			EventArgs args;
 			EntityId otherId = -1;
 			std::string otherName;

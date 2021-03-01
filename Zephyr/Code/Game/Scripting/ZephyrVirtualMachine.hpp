@@ -45,7 +45,7 @@ private:
 										EventArgs* eventArgs = nullptr, 
 										ZephyrValueMap* stateVariables = nullptr );
 
-	void		CopyEventArgVariables( EventArgs* eventArgs );
+	void		CopyEventArgVariables( EventArgs* eventArgs, ZephyrValueMap& localVariables );
 
 	void		PushConstant( const ZephyrValue& number );
 	ZephyrValue PopConstant();

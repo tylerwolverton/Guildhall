@@ -492,21 +492,44 @@ bool ZephyrParser::ParseFunctionDefinition()
 		return false;
 	}
 
-	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
-	{
-		return false;
-	}
-
-	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
-	{
-		return false;
-	}
-
+	// Create this function chunk so params are saved inside
 	bool succeeded = CreateBytecodeChunk( functionNameToken.GetData(), eBytecodeChunkType::EVENT );
 	if ( !succeeded )
 	{
 		return false;
 	}
+
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
+	{
+		return false;
+	}
+
+	ZephyrToken curToken = ConsumeCurToken();
+	while ( curToken.GetType() != eTokenType::PARENTHESIS_RIGHT )
+	{
+		switch ( curToken.GetType() )
+		{
+			case eTokenType::NUMBER: if ( !ParseVariableDeclaration( eValueType::NUMBER ) ) { return false; } break;
+			case eTokenType::VEC2:	 if ( !ParseVariableDeclaration( eValueType::VEC2   ) ) { return false; } break;
+			case eTokenType::BOOL:   if ( !ParseVariableDeclaration( eValueType::BOOL   ) ) { return false; } break;
+			case eTokenType::STRING: if ( !ParseVariableDeclaration( eValueType::STRING ) ) { return false; } break;
+			case eTokenType::ENTITY: if ( !ParseVariableDeclaration( eValueType::ENTITY ) ) { return false; } break;
+
+			default:
+			{
+				ReportError( Stringf( "Only variables can be declared inside Function() definition, found %s", ToString( curToken.GetType() ).c_str() ) );
+				return false;
+			}
+		}
+
+		AdvanceToNextTokenIfTypeMatches( eTokenType::COMMA );
+		curToken = ConsumeCurToken();
+	}
+
+	/*if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+	{
+		return false;
+	}*/
 
 	succeeded = ParseBlock();
 

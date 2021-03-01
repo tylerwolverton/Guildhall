@@ -15,17 +15,14 @@ Bool active = true
 // Global events
 // -----------------------------------------------------------------------------------------
 // TODO: reserve Spawn and Die as special events that the user can't fire 
-Number maxHealth
-String mapName
-Function Spawned()
+Function Spawned( Number maxHealth, String mapName )
 {
 	health = maxHealth
 	EnemySpawned( mapName: mapName )
 	GetNewWanderTargetPosition()
 }
 
-Number newHealth
-Function HealthUpdated()
+Function HealthUpdated( Number newHealth )
 {
 	health = newHealth
 
@@ -35,34 +32,30 @@ Function HealthUpdated()
 	}
 }
 
-Function Died()
+Function Died( String mapName )
 {
 	EnemyDied( mapName: mapName )
 }
 
-// TODO: Make this more intuitive
-Vec2 newPos
-Function PositionUpdated()
+Function PositionUpdated( Vec2 newPos )
 {
 	lastPosition = position
 	position = newPos
 }
 
-Function TargetPositionUpdated()
+Function TargetPositionUpdated( Vec2 newPos )
 {
 	targetPosition = newPos
 }
 
-Function SummonBlob()
+Function SummonBlob( Vec2 newPos )
 {
 	targetPosition = newPos
 	maxChaseDist = 99999
 }
 
 // Damage
-Number attackDamage = 1
-Number otherEntityId = -1
-Function CollisionEntered()
+Function CollisionEntered( Number attackDamage = 1, Number otherEntityId )
 {
 	if( otherEntityId != -1 )
 	{
@@ -114,8 +107,7 @@ State Wander
 // -----------------------------------------------------------------------------------------
 State Chase
 {
-	Number distance;
-	OnEvent( DistanceToTargetUpdated )
+	Function DistanceToTargetUpdated( Number distance )
 	{		
 		if( distance > maxChaseDist )
 		{
@@ -144,8 +136,7 @@ State Chase
 // -----------------------------------------------------------------------------------------
 State Flee
 {
-	Number distance;
-	OnEvent( DistanceToTargetUpdated )
+	Function DistanceToTargetUpdated( Number distance )
 	{		
 		if( distance > 5 )
 		{

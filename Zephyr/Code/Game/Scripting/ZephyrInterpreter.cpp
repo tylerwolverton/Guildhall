@@ -14,7 +14,7 @@ void ZephyrInterpreter::InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& 
 
 //-----------------------------------------------------------------------------------------------
 void ZephyrInterpreter::InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
-													 ZephyrValueMap* globalVariables, 
+													 ZephyrValueMap* globalVariables,
 													 Entity* parentEntity, 
 													 EventArgs* eventArgs, 
 													 ZephyrValueMap* stateVariables )

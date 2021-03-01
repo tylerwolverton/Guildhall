@@ -101,7 +101,7 @@ State ScopeAssignmentTest
 		}
 		else
 		{
-			PrintToConsole( text: "ScopeAssignmentTest: Failed to initialize local variable", color: "red" )
+			PrintToConsole( text: "ScopeAssignmentTest: Failed to initialize local variable Expected: 1 Found: " + localTestNum, color: "red" )
 		}
 
 		if( localTestNum == 2 )
