@@ -20,7 +20,6 @@ std::string ToString( eTokenType type )
 		case eTokenType::BOOL:				return "Bool";
 		case eTokenType::STRING:			return "String";
 		case eTokenType::ENTITY:			return "Entity";
-		case eTokenType::ON_EVENT:			return "OnEvent";
 		case eTokenType::ON_ENTER:			return "OnEnter";
 		case eTokenType::ON_UPDATE:			return "OnUpdate";
 		case eTokenType::ON_EXIT:			return "OnExit";
@@ -74,7 +73,6 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::BOOL:				return "BOOL";
 		case eTokenType::STRING:			return "STRING";
 		case eTokenType::ENTITY:			return "ENTITY";
-		case eTokenType::ON_EVENT:			return "ON_EVENT";
 		case eTokenType::ON_ENTER:			return "ON_ENTER";
 		case eTokenType::ON_UPDATE:			return "ON_UPDATE";
 		case eTokenType::ON_EXIT:			return "ON_EXIT";

@@ -287,39 +287,7 @@ bool ZephyrParser::ParseStatement()
 			return ParseFunctionDefinition();
 		}
 		
-		case eTokenType::ON_EVENT:
-		{
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) )
-			{
-				return false;
-			}
-
-			curToken = ConsumeCurToken();
-			if ( curToken.GetType() != eTokenType::IDENTIFIER )
-			{
-				ReportError( "OnEvent must specify an event name" );
-				return false;
-			}
-
-			if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
-			{
-				return false;
-			}
-
-			bool succeeded = CreateBytecodeChunk( curToken.GetData(), eBytecodeChunkType::EVENT );
-			if ( !succeeded )
-			{
-				return false;
-			}
-
-			succeeded = ParseBlock();
-
-			FinalizeCurBytecodeChunk();
-
-			return succeeded;
-		}
-		break;
-
+		
 		case eTokenType::NUMBER:
 		{
 			if ( !ParseVariableDeclaration( eValueType::NUMBER ) )
@@ -1463,7 +1431,6 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 		// Valid to define anywhere
 		case eTokenType::STATE:
 		case eTokenType::FUNCTION:
-		case eTokenType::ON_EVENT:
 		case eTokenType::NUMBER:
 		case eTokenType::VEC2:
 		case eTokenType::BOOL:

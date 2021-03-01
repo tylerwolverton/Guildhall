@@ -1,18 +1,17 @@
 Number attackDamage = 1;
 
-OnEvent( Spawned )
+Function Spawned()
 {
     StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired" )
 }
 
-OnEvent( ProjectileLifeExpired )
+Function ProjectileLifeExpired()
 {
     PlaySound( soundName: "EnemyHit", volume: .25)
     DestroySelf()
 }
 
-Number otherEntityId = -1;
-OnEvent( CollisionEntered )
+Function CollisionEntered( Number otherEntityId )
 {
     if( otherEntityId != -1 )
     {

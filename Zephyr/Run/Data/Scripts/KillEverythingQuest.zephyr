@@ -1,14 +1,12 @@
-String roomId;
-Number enemiesInLevel;
+Number enemiesInLevel
+String roomId
 
-// TODO: Add parameters to scripts so this can query the map for enemy count
-
-OnEvent( EnemySpawned )
+Function EnemySpawned()
 {
 	enemiesInLevel = enemiesInLevel + 1;
 }
 
-OnEvent( EnemyDied )
+Function EnemyDied()
 {
 	enemiesInLevel = enemiesInLevel - 1;
 

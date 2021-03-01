@@ -2,8 +2,7 @@ String roomId;
 Number enemiesInLevel;
 String questStatusText = "Clear All Enemies";
 
-String mapName;
-OnEvent( EnemySpawned )
+Function EnemySpawned( String mapName )
 {
     if( roomId == mapName )
     {
@@ -12,7 +11,7 @@ OnEvent( EnemySpawned )
     }
 }
 
-OnEvent( EnemyDied )
+Function EnemyDied( String mapName )
 {
     if( roomId == mapName )
     {

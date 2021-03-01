@@ -6,8 +6,7 @@ Number fireCooldown = .5;
 Vec2 testVec
 Entity blob
 
-Number maxHealth;
-OnEvent( Spawned )
+Function Spawned( Number maxHealth )
 {
     if( curHealth == -1 )
     {
@@ -35,8 +34,7 @@ Function SummonBlob()
     blob.SummonBlob( newPos: curPosition )
 }
 
-String itemName;
-OnEvent( ItemAcquired )
+Function ItemAcquired( String itemName )
 {
     if( itemName == "TripleFireballPickup" )
     {
@@ -52,14 +50,12 @@ OnEvent( ItemAcquired )
     }
 }
 
-Vec2 newPos;
-OnEvent( PositionUpdated )
+Function PositionUpdated( Vec2 newPos )
 {
     curPosition = newPos;
 }
 
-Number newHealth;
-OnEvent( HealthUpdated )
+Function HealthUpdated( Number newHealth )
 {
     if( newHealth < curHealth )
     {
@@ -71,7 +67,7 @@ OnEvent( HealthUpdated )
     curHealth = newHealth;
 }
 
-OnEvent( InvincibilityExpired )
+Function InvincibilityExpired()
 {
     DeactivateInvincibility()
     ChangeSpriteAnimation( newAnim: "Walk" )
@@ -79,35 +75,33 @@ OnEvent( InvincibilityExpired )
 
 // Input Events
 // TODO? Add parameter passing into key events to remove the need to make separate events for each direction
-OnEvent( MoveUp )
+Function MoveUp()
 {
     MoveInDirection( direction: Vec2( 0, 1 ) )
 }
 
-OnEvent( MoveDown )
+Function MoveDown()
 {
     MoveInDirection( direction: Vec2( 0, -1 ) )
 }
 
-OnEvent( MoveLeft )
+Function MoveLeft()
 {
     MoveInDirection( direction: Vec2( -1, 0 ) )
 }
 
-OnEvent( MoveRight )
+Function MoveRight()
 {
     MoveInDirection( direction: Vec2( 1, 0 ) )
 }
 
 // Attacks
-OnEvent( ShotCooldownExpired )
+Function ShotCooldownExpired()
 {
     canShoot = true;
 }
 
-Vec2 fireballOffset;
-Number shotOrientation;
-OnEvent( ShootFireball )
+Function ShootFireball( Vec2 fireballOffset, Number shotOrientation )
 {
     if( !canShoot )
     {
@@ -120,34 +114,34 @@ OnEvent( ShootFireball )
     canShoot = false;
 }
 
-OnEvent( ShootFireballUp )
+Function ShootFireballUp()
 {
     ShootFireball( fireballOffset: Vec2( 0, .6 ), shotOrientation: 90 )
 }
 
-OnEvent( ShootFireballLeft )
+Function ShootFireballLeft()
 {
     ShootFireball( fireballOffset: Vec2( -.6, 0 ), shotOrientation: 180 )
 }
 
-OnEvent( ShootFireballDown )
+Function ShootFireballDown()
 {
     ShootFireball( fireballOffset: Vec2( 0, -.6 ), shotOrientation: 270 )
 }
 
-OnEvent( ShootFireballRight )
+Function ShootFireballRight()
 {
     ShootFireball( fireballOffset: Vec2( .6, 0 ), shotOrientation: 0 )
 }
 
 // TripleFireball
-Vec2 fireballOffset1;
-Number shotOrientation1;
-Vec2 fireballOffset2;
-Number shotOrientation2;
-Vec2 fireballOffset3;
-Number shotOrientation3;
-OnEvent( ShootTripleFireball )
+
+Function ShootTripleFireball( Vec2 fireballOffset1,
+                              Number shotOrientation1,
+                              Vec2 fireballOffset2,
+                              Number shotOrientation2,
+                              Vec2 fireballOffset3,
+                              Number shotOrientation3 )
 {
     if( !canShoot )
     {
@@ -163,7 +157,7 @@ OnEvent( ShootTripleFireball )
     canShoot = false;
 }
 
-OnEvent( ShootTripleFireballUp )
+Function ShootTripleFireballUp()
 {
     ShootTripleFireball( fireballOffset1: Vec2( 0, .6 ), 
                          fireballOffset2: Vec2( -.5, .6 ),
@@ -171,7 +165,7 @@ OnEvent( ShootTripleFireballUp )
                          shotOrientation1: 90 ) 
 }
 
-OnEvent( ShootTripleFireballLeft )
+Function ShootTripleFireballLeft()
 {
     ShootTripleFireball( fireballOffset1: Vec2( -.6, 0 ), 
                          fireballOffset2: Vec2( -.6, .1 ),
@@ -179,7 +173,7 @@ OnEvent( ShootTripleFireballLeft )
                          shotOrientation1: 180 )
 }
 
-OnEvent( ShootTripleFireballDown )
+Function ShootTripleFireballDown()
 {
     ShootTripleFireball( fireballOffset1: Vec2( 0, -.6 ), 
                          fireballOffset2: Vec2( .5, -.6 ),
@@ -187,7 +181,7 @@ OnEvent( ShootTripleFireballDown )
                          shotOrientation1: 270 )
 }
 
-OnEvent( ShootTripleFireballRight )
+Function ShootTripleFireballRight()
 {        
     ShootTripleFireball( fireballOffset1: Vec2( .6, 0 ), 
                          fireballOffset2: Vec2( .6, 1.1 ),

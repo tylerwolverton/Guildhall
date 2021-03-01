@@ -1,8 +1,6 @@
-String keyName;
+String keyName
 
-// Event arguments to reference
-String itemName;
-OnEvent( ItemAcquired )
+Function ItemAcquired( String itemName )
 {
 	if( itemName == keyName )
 	{

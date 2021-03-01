@@ -34,7 +34,6 @@ enum class eTokenType
 	BOOL,
 	STRING,
 	ENTITY,
-	ON_EVENT,
 	ON_ENTER,
 	ON_UPDATE,
 	ON_EXIT,

@@ -1,13 +1,12 @@
 Number totalQuestCount = 3;
 Number completedQuests = 0;
 
-OnEvent( GameStarted )
+Function GameStarted()
 {
 	ChangeMusic( musicName: "FF6TheDecisiveBattle", volume: .1 )
 }
 
-String questId;
-OnEvent( QuestCompleted )
+Function QuestCompleted( String questId )
 {
 	if ( questId == "Level1" )
 	{

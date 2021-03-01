@@ -1,6 +1,6 @@
 String roomId;
 
-OnEvent( Level3DialogueSolved )
+Function Level3DialogueSolved()
 {
     QuestCompleted( questId: roomId )
 }

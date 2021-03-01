@@ -15,7 +15,7 @@ Entity player
 // Error cases to comment in to test parser
 State NoPrint
 {	
-	OnEvent( TestEvent )
+	Function TestEvent()
 	{		
 		//ChangeState( GlobalAssignmentTest );
 

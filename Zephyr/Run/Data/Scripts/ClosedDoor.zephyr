@@ -1,7 +1,6 @@
 String name;
 
-String doorName;
-OnEvent( OpenDoor )
+Function OpenDoor( String doorName )
 {
 	if( name == doorName )
 	{

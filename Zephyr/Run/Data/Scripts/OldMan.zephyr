@@ -2,7 +2,7 @@ Number hasOpenedDoor = 0;
 
 State Waiting
 {
-    OnEvent( PlayerInteracted )
+    Function PlayerInteracted()
     {
         ChangeState( Intro );
     }
@@ -18,8 +18,8 @@ State Intro
         AddDialogueChoice( name: "choice2", text: "Nevermind" )
     }
 
-    String choiceName;
-    OnEvent( PlayerInteracted )
+    
+    Function PlayerInteracted( String choiceName )
     {
         if( choiceName == "choice1" )
         {
@@ -53,7 +53,7 @@ State Choice1
         }
     }
 
-    OnEvent( PlayerInteracted )
+    Function PlayerInteracted()
     {
         EndDialogue()
 
@@ -68,7 +68,7 @@ State Choice2
         AddLineOfDialogueText( text: "Okay, see ya" )
     }
 
-    OnEvent( PlayerInteracted )
+    Function PlayerInteracted()
     {
         EndDialogue()
 
