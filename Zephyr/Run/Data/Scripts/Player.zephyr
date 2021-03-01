@@ -14,25 +14,25 @@ OnEvent( Spawned )
         curHealth = maxHealth;
     }
 
-    AddNewDamageTypeMultiplier( damageType = "normal", multiplier = 1 )
+    AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
 
-    RegisterKeyEvent( key = "P", event = "SummonBlob" )
+    RegisterKeyEvent( key: "P", event: "SummonBlob" )
 
-    RegisterKeyEvent( key = "W", event = "MoveUp" )
-    RegisterKeyEvent( key = "A", event = "MoveLeft" )
-    RegisterKeyEvent( key = "S", event = "MoveDown" )
-    RegisterKeyEvent( key = "D", event = "MoveRight" )
+    RegisterKeyEvent( key: "W", event: "MoveUp" )
+    RegisterKeyEvent( key: "A", event: "MoveLeft" )
+    RegisterKeyEvent( key: "S", event: "MoveDown" )
+    RegisterKeyEvent( key: "D", event: "MoveRight" )
 
-    RegisterKeyEvent( key = "Up", event = "ShootFireballUp" )
-    RegisterKeyEvent( key = "Left", event = "ShootFireballLeft" )
-    RegisterKeyEvent( key = "Down", event = "ShootFireballDown" )
-    RegisterKeyEvent( key = "Right", event = "ShootFireballRight" )
+    RegisterKeyEvent( key: "Up", event: "ShootFireballUp" )
+    RegisterKeyEvent( key: "Left", event: "ShootFireballLeft" )
+    RegisterKeyEvent( key: "Down", event: "ShootFireballDown" )
+    RegisterKeyEvent( key: "Right", event: "ShootFireballRight" )
 }
 
 Function SummonBlob()
 {
     //blob.target.MoveUp()
-    blob.SummonBlob( newPos = curPosition )
+    blob.SummonBlob( newPos: curPosition )
 }
 
 String itemName;
@@ -40,15 +40,15 @@ OnEvent( ItemAcquired )
 {
     if( itemName == "TripleFireballPickup" )
     {
-        UnRegisterKeyEvent( key = "Up", event = "ShootFireballUp" )
-        UnRegisterKeyEvent( key = "Left", event = "ShootFireballLeft" )
-        UnRegisterKeyEvent( key = "Down", event = "ShootFireballDown" )
-        UnRegisterKeyEvent( key = "Right", event = "ShootFireballRight" )
+        UnRegisterKeyEvent( key: "Up", event: "ShootFireballUp" )
+        UnRegisterKeyEvent( key: "Left", event: "ShootFireballLeft" )
+        UnRegisterKeyEvent( key: "Down", event: "ShootFireballDown" )
+        UnRegisterKeyEvent( key: "Right", event: "ShootFireballRight" )
         
-        RegisterKeyEvent( key = "Up", event = "ShootTripleFireballUp" )
-        RegisterKeyEvent( key = "Left", event = "ShootTripleFireballLeft" )
-        RegisterKeyEvent( key = "Down", event = "ShootTripleFireballDown" )
-        RegisterKeyEvent( key = "Right", event = "ShootTripleFireballRight" )
+        RegisterKeyEvent( key: "Up", event: "ShootTripleFireballUp" )
+        RegisterKeyEvent( key: "Left", event: "ShootTripleFireballLeft" )
+        RegisterKeyEvent( key: "Down", event: "ShootTripleFireballDown" )
+        RegisterKeyEvent( key: "Right", event: "ShootTripleFireballRight" )
     }
 }
 
@@ -64,8 +64,8 @@ OnEvent( HealthUpdated )
     if( newHealth < curHealth )
     {
         ActivateInvincibility()
-        ChangeSpriteAnimation( newAnim = "Damaged" )
-        StartNewTimer( durationSeconds = 2, onCompletedEvent = "InvincibilityExpired" )
+        ChangeSpriteAnimation( newAnim: "Damaged" )
+        StartNewTimer( durationSeconds: 2, onCompletedEvent: "InvincibilityExpired" )
     }
 
     curHealth = newHealth;
@@ -74,29 +74,29 @@ OnEvent( HealthUpdated )
 OnEvent( InvincibilityExpired )
 {
     DeactivateInvincibility()
-    ChangeSpriteAnimation( newAnim = "Walk" )
+    ChangeSpriteAnimation( newAnim: "Walk" )
 }
 
 // Input Events
 // TODO? Add parameter passing into key events to remove the need to make separate events for each direction
 OnEvent( MoveUp )
 {
-    MoveInDirection( direction = Vec2( 0, 1 ) )
+    MoveInDirection( direction: Vec2( 0, 1 ) )
 }
 
 OnEvent( MoveDown )
 {
-    MoveInDirection( direction = Vec2( 0, -1 ) )
+    MoveInDirection( direction: Vec2( 0, -1 ) )
 }
 
 OnEvent( MoveLeft )
 {
-    MoveInDirection( direction = Vec2( -1, 0 ) )
+    MoveInDirection( direction: Vec2( -1, 0 ) )
 }
 
 OnEvent( MoveRight )
 {
-    MoveInDirection( direction = Vec2( 1, 0 ) )
+    MoveInDirection( direction: Vec2( 1, 0 ) )
 }
 
 // Attacks
@@ -114,30 +114,30 @@ OnEvent( ShootFireball )
         return;
     }
 
-    SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset, orientation = shotOrientation )
-    StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" )
+    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset, orientation: shotOrientation )
+    StartNewTimer( durationSeconds: fireCooldown, onCompletedEvent: "ShotCooldownExpired" )
 
     canShoot = false;
 }
 
 OnEvent( ShootFireballUp )
 {
-    ShootFireball( fireballOffset = Vec2( 0, .6 ), shotOrientation = 90 )
+    ShootFireball( fireballOffset: Vec2( 0, .6 ), shotOrientation: 90 )
 }
 
 OnEvent( ShootFireballLeft )
 {
-    ShootFireball( fireballOffset = Vec2( -.6, 0 ), shotOrientation = 180 )
+    ShootFireball( fireballOffset: Vec2( -.6, 0 ), shotOrientation: 180 )
 }
 
 OnEvent( ShootFireballDown )
 {
-    ShootFireball( fireballOffset = Vec2( 0, -.6 ), shotOrientation = 270 )
+    ShootFireball( fireballOffset: Vec2( 0, -.6 ), shotOrientation: 270 )
 }
 
 OnEvent( ShootFireballRight )
 {
-    ShootFireball( fireballOffset = Vec2( .6, 0 ), shotOrientation = 0 )
+    ShootFireball( fireballOffset: Vec2( .6, 0 ), shotOrientation: 0 )
 }
 
 // TripleFireball
@@ -154,44 +154,44 @@ OnEvent( ShootTripleFireball )
         return;
     }
 
-    SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset1, orientation = shotOrientation1 )
-    SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset2, orientation = shotOrientation1 + 45 )
-    SpawnEntity( type = "PlayerFireball", position = curPosition + fireballOffset3, orientation = shotOrientation1 - 45 )
+    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset1, orientation: shotOrientation1 )
+    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset2, orientation: shotOrientation1 + 45 )
+    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset3, orientation: shotOrientation1 - 45 )
 
-    StartNewTimer( durationSeconds = fireCooldown, onCompletedEvent = "ShotCooldownExpired" )
+    StartNewTimer( durationSeconds: fireCooldown, onCompletedEvent: "ShotCooldownExpired" )
 
     canShoot = false;
 }
 
 OnEvent( ShootTripleFireballUp )
 {
-    ShootTripleFireball( fireballOffset1 = Vec2( 0, .6 ), 
-                         fireballOffset2 = Vec2( -.5, .6 ),
-                         fireballOffset3 = Vec2( .5, .6 ),
-                         shotOrientation1 = 90 ) 
+    ShootTripleFireball( fireballOffset1: Vec2( 0, .6 ), 
+                         fireballOffset2: Vec2( -.5, .6 ),
+                         fireballOffset3: Vec2( .5, .6 ),
+                         shotOrientation1: 90 ) 
 }
 
 OnEvent( ShootTripleFireballLeft )
 {
-    ShootTripleFireball( fireballOffset1 = Vec2( -.6, 0 ), 
-                         fireballOffset2 = Vec2( -.6, .1 ),
-                         fireballOffset3 = Vec2( -.6, 1.1 ),
-                         shotOrientation1 = 180 )
+    ShootTripleFireball( fireballOffset1: Vec2( -.6, 0 ), 
+                         fireballOffset2: Vec2( -.6, .1 ),
+                         fireballOffset3: Vec2( -.6, 1.1 ),
+                         shotOrientation1: 180 )
 }
 
 OnEvent( ShootTripleFireballDown )
 {
-    ShootTripleFireball( fireballOffset1 = Vec2( 0, -.6 ), 
-                         fireballOffset2 = Vec2( .5, -.6 ),
-                         fireballOffset3 = Vec2( -.5, -.6 ),
-                         shotOrientation1 = 270 )
+    ShootTripleFireball( fireballOffset1: Vec2( 0, -.6 ), 
+                         fireballOffset2: Vec2( .5, -.6 ),
+                         fireballOffset3: Vec2( -.5, -.6 ),
+                         shotOrientation1: 270 )
 }
 
 OnEvent( ShootTripleFireballRight )
 {        
-    ShootTripleFireball( fireballOffset1 = Vec2( .6, 0 ), 
-                         fireballOffset2 = Vec2( .6, 1.1 ),
-                         fireballOffset3 = Vec2( .6, .1 ),
-                         shotOrientation1 = 0 )
+    ShootTripleFireball( fireballOffset1: Vec2( .6, 0 ), 
+                         fireballOffset2: Vec2( .6, 1.1 ),
+                         fireballOffset3: Vec2( .6, .1 ),
+                         shotOrientation1: 0 )
 }
 

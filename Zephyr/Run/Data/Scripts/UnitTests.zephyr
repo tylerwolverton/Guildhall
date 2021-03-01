@@ -39,7 +39,7 @@ State NoPrint
 		}
 		//transitiveTestNum = 2;
 		
-		PrintToConsole( text = "Running unit tests..." ) 
+		PrintToConsole( text: "Running unit tests..." ) 
 
 		ChangeState( GlobalAssignmentTest );
 	}
@@ -64,26 +64,26 @@ State GlobalAssignmentTest
 					Vec2 actualVec = Vec2( 1, 2 );
 					if( testVec2 = actualVec )
 					{
-						PrintToConsole( text = "GlobalAssignmentTest: Success", color = "green" )
+						PrintToConsole( text: "GlobalAssignmentTest: Success", color:"green" )
 					}
 					else
 					{
-						PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
+						PrintToConsole( text:"GlobalAssignmentTest: Failed", color: "red" )
 					}
 				}
 				else
 				{
-					PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
+					PrintToConsole( text: "GlobalAssignmentTest: Failed", color: "red" )
 				}
 			}
 			else
 			{	
-				PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
+				PrintToConsole( text: "GlobalAssignmentTest: Failed", color: "red" )
 			}	
 		}
 		else
 		{
-			PrintToConsole( text = "GlobalAssignmentTest: Failed", color = "red" )
+			PrintToConsole( text: "GlobalAssignmentTest: Failed", color: "red" )
 		}
 
 		ChangeState( ScopeAssignmentTest );
@@ -101,7 +101,7 @@ State ScopeAssignmentTest
 		}
 		else
 		{
-			PrintToConsole( text = "ScopeAssignmentTest: Failed to initialize local variable", color = "red" )
+			PrintToConsole( text: "ScopeAssignmentTest: Failed to initialize local variable", color: "red" )
 		}
 
 		if( localTestNum == 2 )
@@ -111,7 +111,7 @@ State ScopeAssignmentTest
 		}
 		else
 		{
-			PrintToConsole( text = "ScopeAssignmentTest: Failed to set var in if statement", color = "red" )
+			PrintToConsole( text: "ScopeAssignmentTest: Failed to set var in if statement", color: "red" )
 		}
 
 		// This should be a parsing error probably
@@ -120,7 +120,7 @@ State ScopeAssignmentTest
 		//	FireEvent( PrintToConsole( text = "ScopeAssignmentTest: Failed to hide scope of local var", color = "red" ) );
 		//}
 
-		PrintToConsole( text = "ScopeAssignmentTest: Success", color = "green" )
+		PrintToConsole( text: "ScopeAssignmentTest: Success", color: "green" )
 
 		ChangeState( OperatorTest );
 	}
@@ -133,11 +133,11 @@ State OperatorTest
 		Number testNum = -(1 + 2 * 3 - 4 / 2);
 		if( testNum != -5 )
 		{
-			PrintToConsole( text = "OperatorTest: Failed", color = "red" )
+			PrintToConsole( text: "OperatorTest: Failed", color: "red" )
 		}
 		else
 		{
-			PrintToConsole( text = "OperatorTest: Success", color = "green" )
+			PrintToConsole( text: "OperatorTest: Success", color: "green" )
 		}
 
 		ChangeState( LogicalOperatorTest );
@@ -158,21 +158,21 @@ State LogicalOperatorTest
 					&& 2 == 2 
 					|| "yes" == "no" )
 				{
-					PrintToConsole( text = "LogicalOperatorTest: Success", color = "green" )
+					PrintToConsole( text: "LogicalOperatorTest: Success", color: "green" )
 				}
 				else
 				{
-					PrintToConsole( text = "LogicalOperatorTest: Failed combination", color = "red" )
+					PrintToConsole( text: "LogicalOperatorTest: Failed combination", color: "red" )
 				}
 			}
 			else
 			{
-				PrintToConsole( text = "LogicalOperatorTest: Failed or", color = "red" )
+				PrintToConsole( text: "LogicalOperatorTest: Failed or", color: "red" )
 			}
 		}
 		else
 		{
-			PrintToConsole( text = "LogicalOperatorTest: Failed and", color = "red" )
+			PrintToConsole( text: "LogicalOperatorTest: Failed and", color: "red" )
 		}
 
 		ChangeState( BoolTest );
@@ -188,11 +188,11 @@ State BoolTest
 
 		if( !( a && b ) )
 		{
-			PrintToConsole( text = "BoolTest: Success", color = "green" )
+			PrintToConsole( text: "BoolTest: Success", color: "green" )
 		}
 		else
 		{
-			PrintToConsole( text = "BoolTest: Failed", color = "red" )
+			PrintToConsole( text: "BoolTest: Failed", color: "red" )
 		}
 
 		ChangeState( MemberTest )
@@ -221,8 +221,8 @@ State MemberTest
 		if( testEntity.target.testVec.x != 10
 			|| posX != 10 )
 		{
-			PrintToConsole( text = "MemberTest: Failed, expected 10 but found ", color = "red" )
-			PrintToConsole( text = testEntity.target.testVec.x, color = "red" )
+			PrintToConsole( text: "MemberTest: Failed, expected 10 but found ", color: "red" )
+			PrintToConsole( text: testEntity.target.testVec.x, color: "red" )
 			return;
 		}
 
@@ -230,14 +230,14 @@ State MemberTest
 		vec1.x = 6
 		if( vec1.x != 6 )
 		{
-			PrintToConsole( text = "MemberTest: Failed, expected 6 but found ", color = "red" )
-			PrintToConsole( text = vec1.x, color = "red" )
+			PrintToConsole( text: "MemberTest: Failed, expected 6 but found ", color: "red" )
+			PrintToConsole( text: vec1.x, color: "red" )
 			return;
 		}
 		
 		//vec1.z = 7
 
-		PrintToConsole( text = "MemberTest: Success", color = "green" )
+		PrintToConsole( text: "MemberTest: Success", color: "green" )
 
 		ChangeState( BinaryOpTest )
 	}
@@ -253,7 +253,7 @@ State BinaryOpTest
 		RunStringTests()
 		RunEntityTests()
 
-		PrintToConsole( text = "BinaryOpTest: Complete", color = "green" )
+		PrintToConsole( text: "BinaryOpTest: Complete", color: "green" )
 	}
 
 	Function RunNumberTests()
@@ -263,13 +263,13 @@ State BinaryOpTest
 		Vec2 aVec = Vec2( 5, 6 )
 		Vec2 bVec = Vec2( 2, 10 )
 
-		if( ( aNum - bNum ) != 2 )	  			{ PrintToConsole( text = "BinaryOpTest: Failed Number - Number", color = "red" ) }
-		if( ( aNum * bNum ) != 8 )	  			{ PrintToConsole( text = "BinaryOpTest: Failed Number * Number", color = "red" ) }
-		if( ( aNum / bNum ) != 2 )    			{ PrintToConsole( text = "BinaryOpTest: Failed Number / Number", color = "red" ) }
-		if( ( aNum > bNum ) != true)  			{ PrintToConsole( text = "BinaryOpTest: Failed Number > Number", color = "red" ) }
-		if( ( aNum >= bNum ) != true) 			{ PrintToConsole( text = "BinaryOpTest: Failed Number >= Number", color = "red" ) }
-		if( aNum < bNum )  		  				{ PrintToConsole( text = "BinaryOpTest: Failed Number < Number", color = "red" ) }
-		if( aNum <= bNum )  	  				{ PrintToConsole( text = "BinaryOpTest: Failed Number <= Number", color = "red" ) }
+		if( ( aNum - bNum ) != 2 )	  			{ PrintToConsole( text: "BinaryOpTest: Failed Number - Number", color :"red" ) }
+		if( ( aNum * bNum ) != 8 )	  			{ PrintToConsole( text: "BinaryOpTest: Failed Number * Number", color :"red" ) }
+		if( ( aNum / bNum ) != 2 )    			{ PrintToConsole( text: "BinaryOpTest: Failed Number / Number", color :"red" ) }
+		if( ( aNum > bNum ) != true)  			{ PrintToConsole( text: "BinaryOpTest: Failed Number > Number", color :"red" ) }
+		if( ( aNum >= bNum ) != true) 			{ PrintToConsole( text: "BinaryOpTest: Failed Number >= Number", color: "red" ) }
+		if( aNum < bNum )  		  				{ PrintToConsole( text: "BinaryOpTest: Failed Number < Number", color :"red" ) }
+		if( aNum <= bNum )  	  				{ PrintToConsole( text: "BinaryOpTest: Failed Number <= Number", color: "red" ) }
 	}
 
 	Function RunVec2Tests()
@@ -280,11 +280,11 @@ State BinaryOpTest
 		Vec2 bVec = Vec2( 2, 10 )
 
 		// Vec 2 tests
-		if( aVec + bVec != Vec2( 7, 16 ) )  { PrintToConsole( text = "BinaryOpTest: Failed Vec2 + Vec2", color = "red" ) }
-		if( aVec - bVec != Vec2( 3, -4 ) )  { PrintToConsole( text = "BinaryOpTest: Failed Vec2 - Vec2", color = "red" ) }
-		if( aVec * bVec != Vec2( 10, 60 ) ) { PrintToConsole( text = "BinaryOpTest: Failed Vec2 * Vec2", color = "red" ) }
-		if( aVec * bNum != Vec2( 10, 12 ) ) { PrintToConsole( text = "BinaryOpTest: Failed Vec2 * Number", color = "red" ) }
-		if( aNum * bVec != Vec2( 8, 40 ) )  { PrintToConsole( text = "BinaryOpTest: Failed Number * Vec2", color = "red" ) }
+		if( aVec + bVec != Vec2( 7, 16 ) )  { PrintToConsole( text: "BinaryOpTest: Failed Vec2 + Vec2", color: "red" ) }
+		if( aVec - bVec != Vec2( 3, -4 ) )  { PrintToConsole( text: "BinaryOpTest: Failed Vec2 - Vec2", color: "red" ) }
+		if( aVec * bVec != Vec2( 10, 60 ) ) { PrintToConsole( text: "BinaryOpTest: Failed Vec2 * Vec2", color: "red" ) }
+		if( aVec * bNum != Vec2( 10, 12 ) ) { PrintToConsole( text: "BinaryOpTest: Failed Vec2 * Number", color: "red" ) }
+		if( aNum * bVec != Vec2( 8, 40 ) )  { PrintToConsole( text: "BinaryOpTest: Failed Number * Vec2", color: "red" ) }
 		//bVec = aNum + bVec
 		//aVec = aVec / bVec
 		// Bool vecGreater = aVec > bVec 
@@ -301,22 +301,22 @@ State BinaryOpTest
 		Bool aBool = true
 		Bool bBool = false
 
-		if( aStr + bStr != "hellogoodbye" ) 			{ PrintToConsole( text = "BinaryOpTest: Failed String + String", color = "red" ) }
-		if( aStr + aNum != "hello4.00" )				{ PrintToConsole( text = "BinaryOpTest: Failed String + Number", color = "red" ) }
-		if( aNum + bStr != "4.00goodbye" ) 				{ PrintToConsole( text = "BinaryOpTest: Failed Number + String", color = "red" ) }
-		if( aStr + bVec != "hello( 2.00, 10.00 )" ) 	{ PrintToConsole( text = "BinaryOpTest: Failed String + Vec2 ", color = "red" ) }
-		if( aVec + bStr != "( 5.00, 6.00 )goodbye" ) 	{ PrintToConsole( text = "BinaryOpTest: Failed Vec2 + String ", color = "red" ) }
-		if( aStr + bBool != "hellofalse" ) 				{ PrintToConsole( text = "BinaryOpTest: Failed String + Bool ", color = "red" ) }
-		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text = "BinaryOpTest: Failed Bool + String ", color = "red" ) }
-		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text = "BinaryOpTest: Failed Number * Vec2", color = "red" ) }
-		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text = "BinaryOpTest: Failed Number * Vec2", color = "red" ) }
-		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text = "BinaryOpTest: Failed Number * Vec2", color = "red" ) }
-		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text = "BinaryOpTest: Failed Number * Vec2", color = "red" ) }
-		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text = "BinaryOpTest: Failed Bool + String ", color = "red" ) }
-		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text = "BinaryOpTest: Failed Bool + String ", color = "red" ) }
-		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text = "BinaryOpTest: Failed Bool + String ", color = "red" ) }
-		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text = "BinaryOpTest: Failed Bool + String ", color = "red" ) }
-		if( aStr == bStr )								{ PrintToConsole( text = "BinaryOpTest: Failed String == String ", color = "red" ) }		
+		if( aStr + bStr != "hellogoodbye" ) 			{ PrintToConsole( text: "BinaryOpTest: Failed String + String", color: "red" ) }
+		if( aStr + aNum != "hello4.00" )				{ PrintToConsole( text: "BinaryOpTest: Failed String + Number", color: "red" ) }
+		if( aNum + bStr != "4.00goodbye" ) 				{ PrintToConsole( text: "BinaryOpTest: Failed Number + String", color: "red" ) }
+		if( aStr + bVec != "hello( 2.00, 10.00 )" ) 	{ PrintToConsole( text: "BinaryOpTest: Failed String + Vec2 ",  color: "red" ) }
+		if( aVec + bStr != "( 5.00, 6.00 )goodbye" ) 	{ PrintToConsole( text: "BinaryOpTest: Failed Vec2 + String ",  color: "red" ) }
+		if( aStr + bBool != "hellofalse" ) 				{ PrintToConsole( text: "BinaryOpTest: Failed String + Bool ",  color: "red" ) }
+		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text: "BinaryOpTest: Failed Bool + String ",  color: "red" ) }
+		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text: "BinaryOpTest: Failed Number * Vec2",   color: "red" ) }
+		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text: "BinaryOpTest: Failed Number * Vec2",   color: "red" ) }
+		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text: "BinaryOpTest: Failed Number * Vec2",   color: "red" ) }
+		if( aNum * bVec != Vec2( 8, 40 ) )  			{ PrintToConsole( text: "BinaryOpTest: Failed Number * Vec2",   color: "red" ) }
+		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text: "BinaryOpTest: Failed Bool + String ",  color: "red" ) }
+		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text: "BinaryOpTest: Failed Bool + String ",  color: "red" ) }
+		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text: "BinaryOpTest: Failed Bool + String ",  color: "red" ) }
+		if( aBool + bStr != "truegoodbye" )				{ PrintToConsole( text: "BinaryOpTest: Failed Bool + String ",  color: "red" ) }
+		if( aStr == bStr )								{ PrintToConsole( text: "BinaryOpTest: Failed String == String ", color: "red" ) }		
 	}
 
 	Function RunEntityTests()
@@ -324,9 +324,9 @@ State BinaryOpTest
 		Entity aEntity = 5
 		Entity bEntity = 1		
 		
-		if( aEntity == bEntity ) 						{ PrintToConsole( text = "BinaryOpTest: Failed Entity == Entity ", color = "red" ) }
+		if( aEntity == bEntity ) 						{ PrintToConsole( text: "BinaryOpTest: Failed Entity == Entity ", color: "red" ) }
 		aEntity = bEntity
-		if( aEntity != bEntity ) 						{ PrintToConsole( text = "BinaryOpTest: Failed Entity != Entity ", color = "red" ) }
+		if( aEntity != bEntity ) 						{ PrintToConsole( text: "BinaryOpTest: Failed Entity != Entity ", color: "red" ) }
 	}
 }
 

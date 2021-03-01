@@ -20,7 +20,7 @@ String mapName
 Function Spawned()
 {
 	health = maxHealth
-	EnemySpawned( mapName = mapName )
+	EnemySpawned( mapName: mapName )
 	GetNewWanderTargetPosition()
 }
 
@@ -31,13 +31,13 @@ Function HealthUpdated()
 
 	if( health == 1 )
 	{
-		ChangeSpriteAnimation( newAnim = "LowHealth" )
+		ChangeSpriteAnimation( newAnim: "LowHealth" )
 	}
 }
 
 Function Died()
 {
-	EnemyDied( mapName = mapName )
+	EnemyDied( mapName: mapName )
 }
 
 // TODO: Make this more intuitive
@@ -66,7 +66,7 @@ Function CollisionEntered()
 {
 	if( otherEntityId != -1 )
 	{
-		DamageEntity( targetId = otherEntityId, damage = attackDamage, damageType = "normal" )
+		DamageEntity( targetId : otherEntityId, damage: attackDamage, damageType: "normal" )
 	}
 }
 
@@ -84,8 +84,8 @@ State Wander
 	
 	OnUpdate()
 	{
-		CheckForTarget( target = target, maxDist = 3 )
-		MoveToLocation( pos = targetPosition )
+		CheckForTarget( target: target, maxDist: 3 )
+		MoveToLocation( pos: targetPosition )
 
 		if( position == targetPosition )
 		{
@@ -133,9 +133,9 @@ State Chase
 		
 		//FireEvent( PrintDebugText( text = "Chase" ) );
 
-		GetDistanceToTarget( targetName = targetName )
-		//ChaseTargetEntity( targetName = targetName )
-		MoveToLocation( pos = target.curPosition )
+		GetDistanceToTarget( targetName: targetName )
+		//ChaseTargetEntity( targetName: targetName )
+		MoveToLocation( pos: target.curPosition )
 	}
 }
 
@@ -157,7 +157,7 @@ State Flee
 	//FireEvent( PrintDebugText( text = "Flee" ) );
 	OnUpdate()
 	{
-		GetDistanceToTarget( targetName = targetName ) 
-		FleeTargetEntity( targetName = targetName ) 
+		GetDistanceToTarget( targetName: targetName ) 
+		FleeTargetEntity( targetName: targetName ) 
 	}
 }

@@ -629,9 +629,9 @@ bool ZephyrParser::ParseEventArgs()
 
 	while ( identifier.GetType() == eTokenType::IDENTIFIER )
 	{
-		if ( !ConsumeExpectedNextToken( eTokenType::EQUAL ) )
+		if ( !ConsumeExpectedNextToken( eTokenType::COLON ) )
 		{
-			ReportError( "Parameter to event must be in the form, var = value" );
+			ReportError( "Parameter to event must be in the form, var: value" );
 			return false;
 		}
 
@@ -655,7 +655,7 @@ bool ZephyrParser::ParseEventArgs()
 			
 			default:
 			{
-				ReportError( "Must set parameter equal to a value in the form, var = value" );
+				ReportError( "Must set parameter equal to a value in the form, var: value" );
 				return false;
 			}
 		}

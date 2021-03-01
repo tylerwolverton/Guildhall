@@ -76,6 +76,7 @@ enum class eTokenType
 	LESS_EQUAL,
 
 	SEMICOLON,
+	COLON,
 	COMMA,
 	QUOTE,
 	PERIOD,

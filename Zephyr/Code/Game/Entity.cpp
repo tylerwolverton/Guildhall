@@ -130,7 +130,7 @@ void Entity::Die()
 
 	m_isDead = true;
 
-	if ( m_scriptObj != nullptr )
+	if ( IsScriptValid() )
 	{
 		EventArgs args;
 		m_scriptObj->FireEvent( "Died", &args );
@@ -309,7 +309,7 @@ bool Entity::IsInInventory( Entity* item )
 //-----------------------------------------------------------------------------------------------
 void Entity::FireSpawnEvent()
 {
-	if ( m_scriptObj != nullptr )
+	if ( IsScriptValid() )
 	{
 		EventArgs args;
 		args.SetValue( "maxHealth", m_entityDef.GetMaxHealth() );
@@ -324,7 +324,7 @@ void Entity::FireSpawnEvent()
 //-----------------------------------------------------------------------------------------------
 void Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
 {
-	if ( m_scriptObj == nullptr )
+	if ( !IsScriptValid() )
 	{
 		return;
 	}
@@ -526,9 +526,9 @@ void Entity::Unload()
 //-----------------------------------------------------------------------------------------------
 void Entity::ChangeZephyrScriptState( const std::string& targetState )
 {
-	if ( m_scriptObj == nullptr )
+	if ( !IsScriptValid() )
 	{
-		g_devConsole->PrintWarning( Stringf( "Tried to change state of entity: %s to %s, but it doesn't have a script", m_name.c_str(), targetState.c_str() ) );
+		g_devConsole->PrintWarning( Stringf( "Tried to change state of entity: %s to %s, but it doesn't have a valid script", m_name.c_str(), targetState.c_str() ) );
 		return;
 	}
 
@@ -567,7 +567,7 @@ void Entity::ReloadZephyrScript()
 //-----------------------------------------------------------------------------------------------
 void Entity::InitializeScriptValues( const ZephyrValueMap& initialValues )
 {
-	if ( m_scriptObj != nullptr )
+	if ( IsScriptValid() )
 	{
 		m_scriptObj->InitializeGlobalVariables( initialValues );
 	}
@@ -577,7 +577,7 @@ void Entity::InitializeScriptValues( const ZephyrValueMap& initialValues )
 //-----------------------------------------------------------------------------------------------
 void Entity::SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits )
 {
-	if ( m_scriptObj != nullptr )
+	if ( IsScriptValid() )
 	{
 		m_scriptObj->SetEntityVariableInitializers( entityVarInits );
 	}
@@ -587,7 +587,7 @@ void Entity::SetEntityVariableInitializers( const std::vector<EntityVariableInit
 //-----------------------------------------------------------------------------------------------
 ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
 {
-	if ( m_scriptObj == nullptr )
+	if ( !IsScriptValid() )
 	{
 		return ZephyrValue( ERROR_ZEPHYR_VAL );
 	}
@@ -599,7 +599,7 @@ ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
 //-----------------------------------------------------------------------------------------------
 void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& value )
 {
-	if ( m_scriptObj == nullptr )
+	if ( !IsScriptValid() )
 	{
 		return;
 	}
@@ -611,7 +611,7 @@ void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& v
 //-----------------------------------------------------------------------------------------------
 void Entity::SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
 {
-	if ( m_scriptObj == nullptr )
+	if ( !IsScriptValid() )
 	{
 		return;
 	}
@@ -623,7 +623,7 @@ void Entity::SetGlobalVec2Variable( const std::string& varName, const std::strin
 //-----------------------------------------------------------------------------------------------
 void Entity::InitializeZephyrEntityVariables()
 {
-	if ( m_scriptObj == nullptr )
+	if ( !IsScriptValid() )
 	{
 		return;
 	}

@@ -13,9 +13,9 @@ State Intro
     OnEnter()
     {
         StartDialogue()
-        AddLineOfDialogueText( text = "Hello, traveler! Can I help you?" )
-        AddDialogueChoice( name = "choice1", text = "Could you open the door in the other room?" )
-        AddDialogueChoice( name = "choice2", text = "Nevermind" )
+        AddLineOfDialogueText( text: "Hello, traveler! Can I help you?" )
+        AddDialogueChoice( name: "choice1", text: "Could you open the door in the other room?" )
+        AddDialogueChoice( name: "choice2", text: "Nevermind" )
     }
 
     String choiceName;
@@ -44,12 +44,12 @@ State Choice1
         {
             hasOpenedDoor = 1;
 
-            AddLineOfDialogueText( text = "Sure, it should be open now" )
+            AddLineOfDialogueText( text: "Sure, it should be open now" )
             Level3DialogueSolved()
         }
         else
         {
-            AddLineOfDialogueText( text = "It's already open" )
+            AddLineOfDialogueText( text: "It's already open" )
         }
     }
 
@@ -65,7 +65,7 @@ State Choice2
 {
     OnEnter()
     {
-        AddLineOfDialogueText( text = "Okay, see ya" )
+        AddLineOfDialogueText( text: "Okay, see ya" )
     }
 
     OnEvent( PlayerInteracted )

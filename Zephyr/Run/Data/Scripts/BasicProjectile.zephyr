@@ -2,12 +2,12 @@ Number attackDamage = 1;
 
 OnEvent( Spawned )
 {
-    StartNewTimer( durationSeconds = 1, onCompletedEvent = "ProjectileLifeExpired" )
+    StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired" )
 }
 
 OnEvent( ProjectileLifeExpired )
 {
-    PlaySound( soundName = "EnemyHit", volume = .25)
+    PlaySound( soundName: "EnemyHit", volume: .25)
     DestroySelf()
 }
 
@@ -16,10 +16,10 @@ OnEvent( CollisionEntered )
 {
     if( otherEntityId != -1 )
     {
-        DamageEntity( targetId = otherEntityId, damage = attackDamage )
-        AddScreenShake( intensity = .05 )
+        DamageEntity( targetId: otherEntityId, damage: attackDamage )
+        AddScreenShake( intensity: .05 )
     }
 
-    PlaySound( soundName = "PlayerHit", volume = .1 )
+    PlaySound( soundName: "PlayerHit", volume: .1 )
     DestroySelf()
 }

@@ -14,6 +14,6 @@ OnEvent( EnemyDied )
 
 	if( enemiesInLevel <= 0 )
 	{
-		QuestCompleted( questId = roomId )
+		QuestCompleted( questId: roomId )
 	}
 }

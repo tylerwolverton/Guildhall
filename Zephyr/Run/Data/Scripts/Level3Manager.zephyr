@@ -2,5 +2,5 @@ String roomId;
 
 OnEvent( Level3DialogueSolved )
 {
-    QuestCompleted( questId = roomId )
+    QuestCompleted( questId: roomId )
 }

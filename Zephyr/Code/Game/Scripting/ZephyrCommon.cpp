@@ -48,6 +48,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::LESS:				return "<";
 		case eTokenType::LESS_EQUAL:		return "<=";
 		case eTokenType::SEMICOLON:			return ";";
+		case eTokenType::COLON:				return ":";
 		case eTokenType::COMMA:				return ",";
 		case eTokenType::QUOTE:				return "\"";
 		case eTokenType::PERIOD:			return ".";
@@ -101,6 +102,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::LESS:				return "LESS";
 		case eTokenType::LESS_EQUAL:		return "LESS_EQUAL";
 		case eTokenType::SEMICOLON:			return "SEMICOLON";
+		case eTokenType::COLON:				return "COLON";
 		case eTokenType::COMMA: 			return "COMMA";
 		case eTokenType::QUOTE: 			return "QUOTE";
 		case eTokenType::PERIOD: 			return "PERIOD";

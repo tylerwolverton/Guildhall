@@ -44,6 +44,7 @@ std::vector<ZephyrToken> ZephyrScanner::ScanSourceIntoTokens()
 			case '*': AddToken( eTokenType::STAR );																 break;
 			case '/': AddToken( eTokenType::SLASH );															 break;
 			case ';': AddToken( eTokenType::SEMICOLON );														 break;
+			case ':': AddToken( eTokenType::COLON );															 break;
 			case ',': AddToken( eTokenType::COMMA );															 break;
 			case '.': 
 			{

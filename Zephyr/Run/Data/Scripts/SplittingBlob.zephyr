@@ -17,7 +17,7 @@ String mapName;
 OnEvent( Spawned )
 {
 	health = maxHealth;
-	EnemySpawned( mapName = mapName )
+	EnemySpawned( mapName: mapName )
 	GetNewWanderTargetPosition()
 }
 
@@ -30,14 +30,14 @@ OnEvent( HealthUpdated )
 	if( minionSpawnType != "" )
 	{
 		Vec2 posOffset = Vec2( .25, 0 );
-		SpawnEntity( type = minionSpawnType, position = position + posOffset )
-		SpawnEntity( type = minionSpawnType, position = position - posOffset )
+		SpawnEntity( type: minionSpawnType, position: position + posOffset )
+		SpawnEntity( type: minionSpawnType, position: position - posOffset )
 	}
 }
 
 OnEvent( Died )
 {
-	EnemyDied( mapName = mapName )
+	EnemyDied( mapName: mapName )
 }
 
 // TODO: Make this more intuitive
@@ -60,7 +60,7 @@ OnEvent( CollisionEntered )
 {
 	if( otherEntityId != -1 )
 	{
-		DamageEntity( targetId = otherEntityId, damage = attackDamage, damageType = "normal" )
+		DamageEntity( targetId: otherEntityId, damage: attackDamage, damageType: "normal" )
 	}
 }
 
@@ -76,8 +76,8 @@ State Wander
 	
 	OnUpdate()
 	{
-		CheckForTarget( targetName = targetName, maxDist = 3 )
-		MoveToLocation( pos = targetPosition )
+		CheckForTarget( targetName: targetName, maxDist: 3 )
+		MoveToLocation( pos: targetPosition )
 
 		if( position == targetPosition )
 		{
@@ -120,7 +120,7 @@ State Chase
 
 	OnUpdate()
 	{
-		GetDistanceToTarget( targetName = targetName )
-		ChaseTargetEntity( targetName = targetName )
+		GetDistanceToTarget( targetName: targetName )
+		ChaseTargetEntity( targetName: targetName )
 	}
 }
