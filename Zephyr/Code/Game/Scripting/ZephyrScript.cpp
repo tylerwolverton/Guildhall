@@ -170,6 +170,7 @@ void ZephyrScript::InitializeGlobalVariables( const ZephyrValueMap& intialValues
 		if ( globalVarIter == globalVariables->end() )
 		{
 			g_devConsole->PrintError( Stringf( "Cannot initialize nonexistent variable '%s' in script '%s'", initialValue.first.c_str(), m_name.c_str() ) );
+			m_isScriptObjectValid = false;
 			continue;
 		}
 
@@ -244,6 +245,9 @@ void ZephyrScript::InitializeEntityVariables()
 
 		validEntities[entityVarInit.varName] = entity->GetId();
 	}
+
+	// Initialize this script's parent entity
+	validEntities[PARENT_ENTITY_NAME] = m_parentEntity->GetId();
 
 	InitializeGlobalVariables( validEntities );
 }

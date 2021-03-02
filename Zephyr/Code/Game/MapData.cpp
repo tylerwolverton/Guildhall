@@ -289,6 +289,12 @@ void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const st
 			break;
 		}
 
+		if ( varName == PARENT_ENTITY_NAME )
+		{
+			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit cannot initialize reserved entity variable '%s'.", mapName.c_str(), PARENT_ENTITY_NAME.c_str() ) );
+			break;
+		}
+
 		// Convert value to correct type and store in map
 		if ( !_strcmpi( typeName.c_str(), "string" ) )
 		{

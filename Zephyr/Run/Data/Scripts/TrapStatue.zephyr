@@ -1,0 +1,7 @@
+Number attackOrientation = 0
+Vec2 attackOffset
+
+Function Activate()
+{
+    SpawnEntity( type: "Fireball", position: parentEntity.position + attackOffset, orientation: attackOrientation )
+}

@@ -21,4 +21,34 @@
    spriteCoords="2,0"
 	/>
 
+  <TileMaterialDefinitions
+   name="GreyDungeonFloor"
+   spriteCoords="1,2"
+	/>
+
+  <TileMaterialDefinitions
+   name="GreyDungeonBlock"
+   spriteCoords="2,2"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeDungeonFloor"
+   spriteCoords="1,1"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeDungeonBlock"
+   spriteCoords="2,1"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeStatueFishRight"
+   spriteCoords="5,1"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeStatueDragonLeft"
+   spriteCoords="6,1"
+	/>
+
 </TileMaterialDefinitions>

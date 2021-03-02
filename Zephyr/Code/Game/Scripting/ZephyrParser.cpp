@@ -73,6 +73,9 @@ void ZephyrParser::CreateStateMachineBytecodeChunk()
 	m_stateMachineBytecodeChunk->SetType( eBytecodeChunkType::STATE_MACHINE );
 
 	m_curBytecodeChunk = m_stateMachineBytecodeChunk;
+	
+	// Save reference to this entity into global state
+	m_stateMachineBytecodeChunk->SetVariable( PARENT_ENTITY_NAME, ZephyrValue( (EntityId)-1 ) );
 
 	m_curBytecodeChunksStack.push( m_stateMachineBytecodeChunk );
 }
@@ -517,7 +520,10 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 		return false;
 	}
 
-	DeclareVariable( identifier, varType );
+	if ( !DeclareVariable( identifier, varType ) )
+	{
+		return false;
+	}
 
 	ZephyrToken curToken = GetCurToken();
 	switch ( curToken.GetType() )
@@ -1516,7 +1522,14 @@ bool ZephyrParser::DoesTokenMatchType( const ZephyrToken& token, const eTokenTyp
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueType& varType )
+bool ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueType& varType )
+{
+	return DeclareVariable( identifier.GetData(), varType );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::DeclareVariable( const std::string& identifier, const eValueType& varType )
 {
 	// m_curBytecodeChunk will be the global state machine if outside a state declaration, should never be null
 	ZephyrValue value;
@@ -1525,11 +1538,22 @@ void ZephyrParser::DeclareVariable( const ZephyrToken& identifier, const eValueT
 		case eValueType::NUMBER: value = ZephyrValue( 0.f ); break;
 		case eValueType::VEC2:	 value = ZephyrValue( Vec2::ZERO ); break;
 		case eValueType::BOOL:	 value = ZephyrValue( false ); break;
-		case eValueType::STRING: value = ZephyrValue( std::string("") ); break;
-		case eValueType::ENTITY: value = ZephyrValue( -1 ); break;
+		case eValueType::STRING: value = ZephyrValue( std::string( "" ) ); break;
+		case eValueType::ENTITY: 
+		{
+			// Cannot redefine parent entity
+			if ( identifier == PARENT_ENTITY_NAME )
+			{
+				ReportError( Stringf( "Cannot define an entity named '%s'. That name is reserved to reference the parent entity for this script.", PARENT_ENTITY_NAME.c_str() ) );
+				return false;
+			}
+
+			value = ZephyrValue( -1 ); break;
+		}
 	}
 
-	m_curBytecodeChunk->SetVariable( identifier.GetData(), value );
+	m_curBytecodeChunk->SetVariable( identifier, value );
+	return true;
 }
 
 
