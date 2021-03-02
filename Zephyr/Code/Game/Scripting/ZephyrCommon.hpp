@@ -43,6 +43,7 @@ enum class eTokenType
 	RETURN,
 	TRUE,
 	FALSE,
+	NULL_TOKEN,
 
 	BRACE_LEFT,
 	BRACE_RIGHT,

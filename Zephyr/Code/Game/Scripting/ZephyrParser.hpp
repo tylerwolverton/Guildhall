@@ -77,6 +77,7 @@ private:
 	bool ParseNumberConstant();
 	bool ParseVec2Constant();
 	bool ParseBoolConstant( bool value );
+	bool ParseEntityConstant();
 	bool ParseStringConstant();
 	bool ParseIdentifierExpression();
 
@@ -85,7 +86,6 @@ private:
 	bool CallInfixFunction( const ZephyrToken& token );
 	eOpPrecedenceLevel GetPrecedenceLevel( const ZephyrToken& token );
 	eOpPrecedenceLevel GetNextHighestPrecedenceLevel( const ZephyrToken& token );
-	eValueType GetNextValueTypeInExpression();
 
 	void ReportError( const std::string& errorMsg );
 

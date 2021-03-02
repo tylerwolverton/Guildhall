@@ -328,6 +328,7 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "return" )			{ AddToken( eTokenType::RETURN ); }
 	else if ( curIdentifier == "true" )				{ AddToken( eTokenType::TRUE ); }
 	else if ( curIdentifier == "false" )			{ AddToken( eTokenType::FALSE ); }
+	else if ( curIdentifier == "null" )				{ AddToken( eTokenType::NULL_TOKEN ); }
 	// Must be identifier ( variable name or function call )
 	else
 	{

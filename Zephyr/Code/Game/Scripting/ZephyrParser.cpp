@@ -640,6 +640,7 @@ bool ZephyrParser::ParseEventArgs()
 			case eTokenType::ENTITY:
 			case eTokenType::TRUE:
 			case eTokenType::FALSE:
+			case eTokenType::NULL_TOKEN:
 			case eTokenType::CONSTANT_STRING:
 			case eTokenType::IDENTIFIER:
 			{
@@ -1019,6 +1020,7 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 		case eTokenType::VEC2:				return ParseVec2Constant();
 		case eTokenType::TRUE:				return ParseBoolConstant( true );
 		case eTokenType::FALSE:				return ParseBoolConstant( false );
+		case eTokenType::NULL_TOKEN:		return ParseEntityConstant();
 		case eTokenType::CONSTANT_STRING:	return ParseStringConstant();
 		case eTokenType::ENTITY:
 
@@ -1206,9 +1208,18 @@ bool ZephyrParser::ParseVec2Constant()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrParser::ParseBoolConstant( bool value )
 {
-	ZephyrToken curToken = ConsumeCurToken();
+	ConsumeCurToken();
 
 	return WriteConstantToCurChunk( value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseEntityConstant()
+{
+	ConsumeCurToken();
+
+	return WriteConstantToCurChunk( ZephyrValue( (EntityId)-1 ) );
 }
 
 
@@ -1278,37 +1289,6 @@ eOpPrecedenceLevel ZephyrParser::GetNextHighestPrecedenceLevel( const ZephyrToke
 
 	//TODO: Make this safer
 	return (eOpPrecedenceLevel)( (int)precLevel + 1 );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-eValueType ZephyrParser::GetNextValueTypeInExpression()
-{
-	ZephyrToken curToken = GetCurToken();
-
-	int tokenIdx = m_curTokenIdx;
-	while ( curToken.GetType() != eTokenType::END_OF_FILE )
-	{
-		switch ( curToken.GetType() )
-		{
-			case eTokenType::CONSTANT_NUMBER:	return eValueType::NUMBER;
-			case eTokenType::VEC2:				return eValueType::VEC2;
-			case eTokenType::TRUE:				return eValueType::BOOL;
-			case eTokenType::FALSE:				return eValueType::BOOL;
-			case eTokenType::CONSTANT_STRING:	return eValueType::STRING;
-			case eTokenType::IDENTIFIER:
-			{
-				ZephyrValue value;
-				m_curBytecodeChunk->TryToGetVariable( curToken.GetData(), value );
-				return value.GetType();
-			}
-		}
-
-		++tokenIdx;
-		curToken = m_tokens[tokenIdx];
-	}
-
-	return eValueType::NONE;
 }
 
 
@@ -1548,7 +1528,7 @@ bool ZephyrParser::DeclareVariable( const std::string& identifier, const eValueT
 				return false;
 			}
 
-			value = ZephyrValue( -1 ); break;
+			value = ZephyrValue( (EntityId)-1 ); break;
 		}
 	}
 

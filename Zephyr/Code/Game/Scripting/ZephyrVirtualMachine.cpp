@@ -50,6 +50,12 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 	int byteIdx = 0;
 	while ( byteIdx < bytecodeChunk.GetNumBytes() )
 	{
+		// If this script has an error during interpretation, bail out to avoid running in a broken, unknown state
+		if ( !parentEntity->IsScriptValid() )
+		{
+			return;
+		}
+
 		byte instruction = bytecodeChunk.GetByte( byteIdx++ );
 		eOpCode opCode = ByteToOpCode( instruction );
 		switch ( opCode )

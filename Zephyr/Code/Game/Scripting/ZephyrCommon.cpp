@@ -33,6 +33,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::RETURN:			return "return";
 		case eTokenType::TRUE:				return "true";
 		case eTokenType::FALSE:				return "false";
+		case eTokenType::NULL_TOKEN:		return "null";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant Number";
 		case eTokenType::CONSTANT_STRING:	return "Constant String";
@@ -86,6 +87,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::RETURN:			return "RETURN";
 		case eTokenType::TRUE:				return "TRUE";
 		case eTokenType::FALSE:				return "FALSE";
+		case eTokenType::NULL_TOKEN:		return "NULL_TOKEN";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
 		case eTokenType::CONSTANT_STRING:	return "CONSTANT_STRING";
