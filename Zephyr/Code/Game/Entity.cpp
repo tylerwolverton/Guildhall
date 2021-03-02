@@ -592,6 +592,14 @@ ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
 		return ZephyrValue( ERROR_ZEPHYR_VAL );
 	}
 
+	// First check c++ built in vars
+	if ( varName == "id" )			{ return ZephyrValue( (float)GetId() ); }
+	if ( varName == "name" )		{ return ZephyrValue( GetName() ); }
+	if ( varName == "health" )		{ return ZephyrValue( (float)m_curHealth ); }
+	if ( varName == "position" )	{ return ZephyrValue( GetPosition() ); }
+	if ( varName == "forwardVec" )	{ return ZephyrValue( GetForwardVector() ); }
+	if ( varName == "speed" )		{ return ZephyrValue( GetSpeed() ); }
+
 	return m_scriptObj->GetGlobalVariable( varName );
 }
 

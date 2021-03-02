@@ -1,6 +1,6 @@
 // Boy, sure would be nice to have arrays right about now
 Entity trap1
-Entity trap2
+Entity trap2 = -1
 Entity trap3
 Entity trap4
 Entity trap5
@@ -14,17 +14,13 @@ Entity none
 
 Function TriggerEntered( Number otherEntityId )
 {
-   // PrintToConsole( text: "Triggered trap!" )
+   PrintToConsole( text: "Triggered trap!" )
 	// if( otherEntityId == target.id )
 	// {
 	// }
 
     // Probably need null as an alias for -1 entity id
-    if( trap1 != none ) 
-    { 
-        PrintToConsole( text: "Activating trap1!" )
-        trap1.Activate() 
-    }
+    if( trap1 != none ) { trap1.Activate() }
     // if( trap2 != -1 ) { trap2.Activate() }
     // if( trap3 != -1 ) { trap3.Activate() }
     // if( trap4 != -1 ) { trap4.Activate() }
