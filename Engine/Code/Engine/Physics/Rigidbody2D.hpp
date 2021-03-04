@@ -13,6 +13,7 @@ class RenderContext;
 //-----------------------------------------------------------------------------------------------
 enum eSimulationMode : unsigned int
 {
+	SIMULATION_MODE_NONE,
 	SIMULATION_MODE_STATIC,
 	SIMULATION_MODE_KINEMATIC,
 	SIMULATION_MODE_DYNAMIC

@@ -151,6 +151,13 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 
 
 //-----------------------------------------------------------------------------------------------
+void ZephyrScript::InterpretGlobalBytecodeChunk()
+{
+	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void ZephyrScript::InitializeGlobalVariables( const ZephyrValueMap& intialValues )
 {
 	if ( m_globalBytecodeChunk == nullptr )
@@ -229,8 +236,6 @@ void ZephyrScript::SetGlobalVec2Variable( const std::string& varName, const std:
 //-----------------------------------------------------------------------------------------------
 void ZephyrScript::InitializeEntityVariables()
 {
-	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
-
 	ZephyrValueMap validEntities;
 	
 	for ( const auto& entityVarInit : m_entityVarInits )

@@ -49,12 +49,18 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 		default: m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_DYNAMIC ); break;
 	}
 
+	if ( m_entityDef.GetSimMode() != eSimulationMode::SIMULATION_MODE_NONE )
+	{
+		m_rigidbody2D->SetSimulationMode( m_entityDef.GetSimMode() );
+	}
+
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
 
 	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
 	if ( scriptDef != nullptr )
 	{
 		m_scriptObj = new ZephyrScript( *scriptDef, this );
+		m_scriptObj->InterpretGlobalBytecodeChunk();
 		m_scriptObj->InitializeGlobalVariables( entityDef.GetZephyrScriptInitialValues() );
 		m_scriptObj->SetEntityVariableInitializers( entityDef.GetZephyrEntityVarInits() );
 	}
@@ -214,12 +220,12 @@ void Entity::AddItemToInventory( Entity* item )
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::RemoveItemFromInventory( const std::string& itemName )
+void Entity::RemoveItemFromInventory( const std::string& itemType )
 {
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
 		if ( m_inventory[itemIdx] != nullptr
-			 && m_inventory[itemIdx]->GetName() == itemName )
+			 && m_inventory[itemIdx]->GetType() == itemType )
 		{
 			m_inventory[itemIdx] = nullptr;
 			return;
@@ -275,12 +281,12 @@ void Entity::RemoveItemFromInventory( Entity* item )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Entity::IsInInventory( const std::string& itemName )
+bool Entity::IsInInventory( const std::string& itemType )
 {
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
 		if ( m_inventory[itemIdx] != nullptr
-			&& m_inventory[itemIdx]->GetName() == itemName )
+			&& m_inventory[itemIdx]->GetType() == itemType )
 		{
 			return true;
 		}

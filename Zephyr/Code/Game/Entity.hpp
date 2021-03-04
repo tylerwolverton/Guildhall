@@ -107,10 +107,10 @@ public:
 	void			SetMap( Map* map )										{ m_map = map; }
 		
 	void			AddItemToInventory( Entity* item );
-	void			RemoveItemFromInventory( const std::string& itemName );
+	void			RemoveItemFromInventory( const std::string& itemType );
 	void			RemoveItemFromInventory( const EntityId& itemId );
 	void			RemoveItemFromInventory( Entity* item );
-	bool			IsInInventory( const std::string& itemName );
+	bool			IsInInventory( const std::string& itemType );
 	bool			IsInInventory( const EntityId& itemId );
 	bool			IsInInventory( Entity* item );
 

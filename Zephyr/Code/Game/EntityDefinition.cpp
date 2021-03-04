@@ -89,6 +89,21 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 
 		m_drag = ParseXmlAttribute( *physicsElem, "drag", m_drag );
 		m_speed = ParseXmlAttribute( *physicsElem, "speed", m_speed );
+		
+		std::string simModeStr = ParseXmlAttribute( *physicsElem, "simMode", "" );
+
+		// optional param, if empty just use layer's mode
+		if ( !simModeStr.empty() )
+		{
+			if ( IsEqualIgnoreCase( simModeStr, "static" ) ) { m_simMode = eSimulationMode::SIMULATION_MODE_STATIC; }
+			else if ( IsEqualIgnoreCase( simModeStr, "kinematic" ) ) { m_simMode = eSimulationMode::SIMULATION_MODE_KINEMATIC; }
+			else if ( IsEqualIgnoreCase( simModeStr, "dynamic" ) ) { m_simMode = eSimulationMode::SIMULATION_MODE_DYNAMIC; }
+			else
+			{
+				g_devConsole->PrintError( Stringf( "EntityTypes.xml: Unsupported simMode attribute, '%s', can be static, kinematic, or dynamic", simModeStr.c_str() ) );
+				return;
+			}
+		}
 
 		std::string collisionLayerStr = ParseXmlAttribute( *physicsElem, "collisionLayer", "" );
 		m_collisionLayer = GetCollisionLayerFromString( collisionLayerStr );

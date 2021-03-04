@@ -2,6 +2,7 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/FloatRange.hpp"
+#include "Engine/Physics/Rigidbody2D.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Scripting/ZephyrCommon.hpp"
 
@@ -48,6 +49,7 @@ public:
 	float			GetMass() const																{ return m_mass; }
 	float			GetDrag() const																{ return m_drag; }
 	eCollisionLayer	GetCollisionLayer() const													{ return m_collisionLayer; }
+	eSimulationMode	GetSimMode() const															{ return m_simMode; }
 	bool			IsTrigger() const															{ return m_isTrigger; }
 
 	FloatRange		GetDamageRange() const														{ return m_damageRange; }
@@ -71,6 +73,7 @@ protected:
 	std::string		m_type;
 	eEntityClass	m_class = eEntityClass::UNKNOWN;
 	eCollisionLayer	m_collisionLayer = eCollisionLayer::NONE;
+	eSimulationMode	m_simMode = eSimulationMode::SIMULATION_MODE_NONE;
 	bool			m_isTrigger = false;
 	float			m_maxHealth = 1.f;
 	float			m_physicsRadius = 0.f;

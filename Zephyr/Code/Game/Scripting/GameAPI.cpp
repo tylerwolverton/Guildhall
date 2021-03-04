@@ -51,6 +51,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( ChangeDamageTypeMultiplier );
 	REGISTER_EVENT( AddItemToInventory );
 	REGISTER_EVENT( RemoveItemFromInventory );
+	REGISTER_EVENT( CheckEntityForInventoryItem );
 
 	REGISTER_EVENT( RegisterKeyEvent );
 	REGISTER_EVENT( UnRegisterKeyEvent );
@@ -279,6 +280,27 @@ void GameAPI::RemoveItemFromInventory( EventArgs* args )
 	}
 
 	targetEntity->RemoveItemFromInventory( itemEntity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::CheckEntityForInventoryItem( EventArgs* args )
+{
+	std::string itemType = args->GetValue( "itemType", "" );
+	Entity* targetEntity = GetTargetEntityFromArgs( args );
+
+	if ( itemType.empty()
+		 || targetEntity == nullptr )
+	{
+		return;
+	}
+
+	bool isInInventory = targetEntity->IsInInventory( itemType );
+
+	EventArgs returnArgs;
+	returnArgs.SetValue( "hasItem", isInInventory );
+
+	targetEntity->FireScriptEvent( "CheckInventoryResult", &returnArgs );
 }
 
 

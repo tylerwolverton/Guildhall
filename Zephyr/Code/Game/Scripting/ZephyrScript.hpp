@@ -25,6 +25,7 @@ public:
 
 	void ChangeState( const std::string& targetState );
 
+	void InterpretGlobalBytecodeChunk();
 	void InitializeGlobalVariables( const ZephyrValueMap& intialValues );
 	void SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
 

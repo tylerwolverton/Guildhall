@@ -31,12 +31,57 @@
     <Portal type="InvisibleTeleporter" pos="3.5,19.5" yaw="0" destMap="Level1" destPos="7.5,1.5" destYawOffset="0"/>
     <!-- Entities -->
     <PlayerStart pos="3.5,18.5" yaw="0"/>
+    <!-- Trap1 -->
     <Entity type="TrapTrigger" name="trigger1" pos="3.5,17.5" yaw="0">
-      <ScriptVarInit type="entity" var="trap1" value="trapStatue1"/>
+      <ScriptVarInit type="entity" var="trap1" value="trapStatue1.1"/>
     </Entity>
-    <Entity type="TrapStatueFishRight" name="trapStatue1" pos="1.5,16.5" yaw="0">
+    <Entity type="TrapStatueFishRight" name="trapStatue1.1" pos="1.5,16.5" yaw="0">
       <ScriptVarInit type="vec2" var="attackOffset" value=".5,0"/>
     </Entity>
+
+    <!-- Trap2 -->
+    <Entity type="TrapTrigger" name="trigger2" pos="3.5,15.5" yaw="0">
+      <ScriptVarInit type="entity" var="trap1" value="trapStatue2.1"/>
+      <ScriptVarInit type="entity" var="trap2" value="trapStatue2.2"/>
+      <ScriptVarInit type="entity" var="trap3" value="trapStatue2.3"/>
+    </Entity>
+    <Entity type="TrapStatueFishRight" name="trapStatue2.1" pos="1.5,15" yaw="0">
+      <ScriptVarInit type="vec2" var="attackOffset" value=".5,0"/>
+    </Entity>
+    <Entity type="TrapStatueFishRight" name="trapStatue2.2" pos="5.5,14.5" yaw="0">
+      <ScriptVarInit type="vec2" var="attackOffset" value="-.5,0"/>
+      <ScriptVarInit type="number" var="attackOrientation" value="180"/>
+    </Entity>
+    <Entity type="TrapStatueFishRight" name="trapStatue2.3" pos="4.5,11.5" yaw="0">
+      <ScriptVarInit type="vec2" var="attackOffset" value="0,.5"/>
+      <ScriptVarInit type="number" var="attackOrientation" value="90"/>
+    </Entity>
+
+    <!-- Trap3 -->
+    <Entity type="TrapTrigger" name="trigger3" pos="3.5,6.5" yaw="0">
+      <ScriptVarInit type="entity" var="trap1" value="trapStatue3.1"/>
+      <ScriptVarInit type="entity" var="trap2" value="trapStatue3.2"/>
+      <ScriptVarInit type="entity" var="trap3" value="trapStatue3.3"/>
+      <ScriptVarInit type="entity" var="trap4" value="trapStatue3.4"/>
+    </Entity>
+    <Entity type="TrapStatueFishRight" name="trapStatue3.1" pos="1.5,8.5" yaw="0">
+      <ScriptVarInit type="vec2" var="attackOffset" value=".5,-.5"/>
+      <ScriptVarInit type="number" var="attackOrientation" value="315"/>
+    </Entity>
+    <Entity type="TrapStatueFishRight" name="trapStatue3.2" pos="1.5,4.5" yaw="0">
+      <ScriptVarInit type="vec2" var="attackOffset" value=".5,.5"/>
+      <ScriptVarInit type="number" var="attackOrientation" value="45"/>
+    </Entity>
+    <Entity type="TrapStatueFishRight" name="trapStatue3.3" pos="5.5,8.5" yaw="0">
+      <ScriptVarInit type="vec2" var="attackOffset" value="-.5,-.5"/>
+      <ScriptVarInit type="number" var="attackOrientation" value="225"/>
+    </Entity>
+    <Entity type="TrapStatueFishRight" name="trapStatue3.4" pos="5.5,4.5" yaw="0">
+      <ScriptVarInit type="vec2" var="attackOffset" value="-.5,.5"/>
+      <ScriptVarInit type="number" var="attackOrientation" value="135"/>
+    </Entity>
+
+    <Pickup type="Key" name="key1" pos="3.5,1.5" />
 
   </Entities>
 
