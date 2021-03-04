@@ -39,11 +39,11 @@
 			},
 			{
 				"name": "keyword.events.zephyr",
-				"match": "\\b(FireEvent|OnEvent|OnEnter|OnExit|OnUpdate|Update|Enter|Exit)\\b"
+				"match": "\\b(OnEnter|OnExit|OnUpdate|Update|Enter|Exit)\\b"
 			},
 			{
 				"name": "keyword.operator.assignment.zephyr",
-				"match": "\\="
+				"match": "\\=\\:"
 			},
 			{
 				"name": "storage.type.zephyr",
@@ -72,6 +72,10 @@
 			{
 				"name": "constant.numeric.bool.zephyr",
 				"match": "\\b(true|false|this|null)"
+			},
+			{
+				"name": "constant.numeric.entity.zephyr",
+				"match": "\\b(parentEntity)"
 			}
 		]
 		},
