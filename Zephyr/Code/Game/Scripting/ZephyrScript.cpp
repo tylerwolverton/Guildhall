@@ -119,6 +119,7 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 		}
 
 		ZephyrInterpreter::InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
+
 	}
 }
 
@@ -143,6 +144,8 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 	UnRegisterScriptEvents( m_curStateBytecodeChunk );
 
 	m_curStateBytecodeChunk = targetStateBytecodeChunk;
+	// Initialize state variables each time the state is entered
+	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, m_curStateBytecodeChunk->GetUpdateableVariables() );
 
 	RegisterScriptEvents( m_curStateBytecodeChunk );
 
@@ -154,6 +157,12 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 void ZephyrScript::InterpretGlobalBytecodeChunk()
 {
 	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_globalBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity );
+	
+	// Initialize default state variables
+	if ( m_curStateBytecodeChunk != nullptr )
+	{
+		ZephyrInterpreter::InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, m_curStateBytecodeChunk->GetUpdateableVariables() );
+	}
 }
 
 

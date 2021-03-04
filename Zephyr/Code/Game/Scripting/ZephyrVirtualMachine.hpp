@@ -29,16 +29,6 @@ class ZephyrVirtualMachine
 private:
 	ZephyrVirtualMachine();
 	
-	void InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
-									  ZephyrValueMap* globalVariables, 
-									  Entity* parentEntity = nullptr );
-
-	void InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
-									  ZephyrValueMap* globalVariables, 
-									  Entity* parentEntity = nullptr, 
-									  EventArgs* eventArgs = nullptr, 
-									  ZephyrValueMap* stateVariables = nullptr );
-
 	void		InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
 										ZephyrValueMap* globalVariables, 
 										Entity* parentEntity = nullptr, 

@@ -144,6 +144,17 @@
     <Script name="BasicProjectile.zephyr"/>
   </Projectile>
   ​
+<Projectile name="PoisonBlob">
+    <Physics radius="0.25" speed="4" drag="5" collisionLayer="EnemyProjectile"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
+    <!-- Name this animation or something-->
+      <Default up="30"/>
+      <!-- <Animation name="Explode" up="30"/> -->
+    </Appearance>
+    <Gameplay damage="1~1" maxHealth="3"/>
+    <Script name="BasicProjectile.zephyr"/>
+  </Projectile>
+
   <Projectile name="PlayerFireball">
     <Physics radius="0.25" speed="4" drag="5" collisionLayer="PlayerProjectile"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">

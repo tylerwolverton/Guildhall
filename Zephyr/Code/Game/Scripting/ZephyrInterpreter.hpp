@@ -17,7 +17,8 @@ class ZephyrInterpreter
 public:
 	static void InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk,
 											 ZephyrValueMap* globalVariables,
-											 Entity* parentEntity = nullptr );
+											 Entity* parentEntity = nullptr,
+											 ZephyrValueMap* stateVariables = nullptr );
 
 	static void InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk,
 											 ZephyrValueMap* globalVariables,

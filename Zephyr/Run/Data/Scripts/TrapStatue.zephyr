@@ -1,7 +1,8 @@
 Number attackOrientation = 0
 Vec2 attackOffset
+String projectileType = "PoisonBlob"
 
 Function Activate()
 {
-    SpawnEntity( type: "Fireball", position: parentEntity.position + attackOffset, orientation: attackOrientation )
+    SpawnEntity( type: projectileType, position: parentEntity.position + attackOffset, orientation: attackOrientation )
 }

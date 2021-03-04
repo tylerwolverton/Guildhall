@@ -391,26 +391,6 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
-														ZephyrValueMap* globalVariables, 
-														Entity* parentEntity )
-{
-	InterpretBytecodeChunk( bytecodeChunk, globalVariables, parentEntity, nullptr, nullptr );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
-														ZephyrValueMap* globalVariables, 
-														Entity* parentEntity, 
-														EventArgs* eventArgs, 
-														ZephyrValueMap* stateVariables )
-{
-	InterpretBytecodeChunk( bytecodeChunk, globalVariables, parentEntity, eventArgs, stateVariables );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs, ZephyrValueMap& localVariables )
 {
 	if ( eventArgs == nullptr )

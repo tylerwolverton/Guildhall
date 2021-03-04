@@ -11,7 +11,6 @@ Number numFramesInSameSpace;
 // -----------------------------------------------------------------------------------------
 // Global events
 // -----------------------------------------------------------------------------------------
-// TODO: reserve Spawn and Die as special events that the user can't fire 
 Function Spawned( Number maxHealth, String mapName )
 {
 	health = maxHealth;
@@ -28,6 +27,8 @@ Function HealthUpdated( Number newHealth )
 	{
 		Vec2 posOffset = Vec2( .25, 0 );
 		SpawnEntity( type: minionSpawnType, position: position + posOffset )
+		SpawnEntity( type: minionSpawnType, position: position - posOffset )
+		SpawnEntity( type: minionSpawnType, position: position - posOffset )
 		SpawnEntity( type: minionSpawnType, position: position - posOffset )
 	}
 }

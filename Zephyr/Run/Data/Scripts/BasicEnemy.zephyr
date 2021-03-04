@@ -14,7 +14,6 @@ Bool active = true
 // -----------------------------------------------------------------------------------------
 // Global events
 // -----------------------------------------------------------------------------------------
-// TODO: reserve Spawn and Die as special events that the user can't fire 
 Function Spawned( Number maxHealth, String mapName )
 {
 	health = maxHealth
@@ -48,10 +47,11 @@ Function TargetPositionUpdated( Vec2 newPos )
 	targetPosition = newPos
 }
 
-Function SummonBlob( Vec2 newPos )
+Function SummonBlob( Vec2 newPos, Number testVal )
 {
 	targetPosition = newPos
 	maxChaseDist = 99999
+	testVal = 200
 }
 
 // Damage
@@ -72,9 +72,7 @@ State Wander
 	{		
 		ChangeState( Chase )
 	}
-	
-	// FireEvent( PrintDebugText( text = "Wander" ) );
-	
+		
 	OnUpdate()
 	{
 		CheckForTarget( target: target, maxDist: 3 )
@@ -123,10 +121,7 @@ State Chase
 			ChangeState( Flee )
 		}
 		
-		//FireEvent( PrintDebugText( text = "Chase" ) );
-
 		GetDistanceToTarget( targetName: targetName )
-		//ChaseTargetEntity( targetName: targetName )
 		MoveToLocation( pos: target.curPosition )
 	}
 }

@@ -31,7 +31,10 @@ Function Spawned( Number maxHealth )
 Function SummonBlob()
 {
     //blob.target.MoveUp()
-    blob.SummonBlob( newPos: curPosition )
+   // Number testVal = 7
+   // blob.SummonBlob( newPos: curPosition, testVal: testVal )
+
+   // PrintDebugText(text: testVal )
 }
 
 Function ItemAcquired( String itemName )
@@ -187,5 +190,25 @@ Function ShootTripleFireballRight()
                          fireballOffset2: Vec2( .6, 1.1 ),
                          fireballOffset3: Vec2( .6, .1 ),
                          shotOrientation1: 0 )
+}
+
+
+State Default
+{
+    Bool isFirst = true
+    Number testVal = 12
+
+    OnUpdate()
+    {
+        if( isFirst )
+        {
+            isFirst = false
+            // testVal = 7
+            blob.SummonBlob( newPos: curPosition, testVal: testVal )
+            PrintToConsole( text: "isFirst is true" )
+        }
+
+        PrintDebugText( text: "TestVal: " + testVal )
+    }
 }
 

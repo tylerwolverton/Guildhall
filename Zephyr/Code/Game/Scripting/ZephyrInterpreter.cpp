@@ -5,10 +5,11 @@
 //-----------------------------------------------------------------------------------------------
 void ZephyrInterpreter::InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
 													 ZephyrValueMap* globalVariables, 
-													 Entity* parentEntity )
+													 Entity* parentEntity,
+													 ZephyrValueMap* stateVariables )
 {
 	ZephyrVirtualMachine vm;
-	vm.InterpretStateBytecodeChunk( bytecodeChunk, globalVariables, parentEntity );
+	vm.InterpretBytecodeChunk( bytecodeChunk, globalVariables, parentEntity, nullptr, stateVariables );
 }
 
 
@@ -20,5 +21,5 @@ void ZephyrInterpreter::InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& 
 													 ZephyrValueMap* stateVariables )
 {
 	ZephyrVirtualMachine vm;
-	vm.InterpretEventBytecodeChunk( bytecodeChunk, globalVariables, parentEntity, eventArgs, stateVariables );
+	vm.InterpretBytecodeChunk( bytecodeChunk, globalVariables, parentEntity, eventArgs, stateVariables );
 }

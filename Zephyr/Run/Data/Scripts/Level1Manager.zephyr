@@ -6,7 +6,6 @@ Function EnemySpawned( String mapName )
 {
     if( roomId == mapName )
     {
-        PrintToConsole( text: "RoomId " + roomId + " MapName " + mapName, color: "green" )
         enemiesInLevel = enemiesInLevel + 1;
     }
 }
@@ -16,7 +15,6 @@ Function EnemyDied( String mapName )
     if( roomId == mapName )
     {
         enemiesInLevel = enemiesInLevel - 1;
-        PrintToConsole( text: "RoomId " + roomId + " MapName " + mapName + " Enemies left " + enemiesInLevel, color: "red" )
 
         if( enemiesInLevel <= 0 )
         {
