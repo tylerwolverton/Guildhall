@@ -55,7 +55,7 @@
 			"patterns": [
 			{
 				"name": "variable.language.gameapi.zephyr",
-				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|AddNewDamageTypeMultiplier|ChangeDamageTypeMultiplier|AddItemToInventory|RemoveItemFromInventory|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake|MoveTowardsTarget|DamageEntitiesInCircle|DistanceBetweenEntities|FireAtEntity|FireDelayedEvent|HealthUpdated|CanSeeTarget|MoveToPosition)\\b"
+				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|AddNewDamageTypeMultiplier|ChangeDamageTypeMultiplier|AddItemToInventory|RemoveItemFromInventory|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake)\\b"
 			}
 		]
 		},
