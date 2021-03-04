@@ -38,6 +38,7 @@
     <Entity type="ClosedDoorVertical" pos="0.5,6.5">
       <ScriptVarInit type="string" var="name" value="Level4Door"/>
     </Entity>
+    <Portal type="InvisibleTeleporter" pos=".5,6.5" yaw="0" destMap="Level4" destPos="8.5,3.5" destYawOffset="0"/>
     <!-- Door to poison trap room -->
     <Portal type="InvisibleTeleporter" pos="7.5,.5" yaw="0" destMap="PoisonTrapRoom" destPos="3.5,18.5" destYawOffset="0"/>
     <!-- Entities -->
