@@ -33,6 +33,8 @@ Function HealthUpdated( Number newHealth )
 		Vec2 posOffset = Vec2( .25, 0 );
 		SpawnEntity( type: minionSpawnType, position: parentEntity.position + posOffset )
 		SpawnEntity( type: minionSpawnType, position: parentEntity.position - posOffset )
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position + posOffset )
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position - posOffset )
 	}	
 }
 
