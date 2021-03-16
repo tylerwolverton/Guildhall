@@ -1,9 +1,8 @@
 Vec2 position
 Vec2 targetPosition
-String targetName = "player"
 Number health
-Entity target = -1
-Entity levelMgr = -1
+Entity target = null
+Entity levelMgr = null
 
 Number maxChaseDist = 3
 
@@ -28,6 +27,11 @@ Function HealthUpdated( Number newHealth)
 	{
 		ChangeSpriteAnimation( newAnim: "LowHealth" )
 	}
+
+	if( health <= 0 )
+	{
+		ChangeState( Dead )
+	}
 }
 
 Function Died( String mapName )
@@ -35,12 +39,12 @@ Function Died( String mapName )
 	EnemyDied( mapName: mapName )
 }
 
-Function SummonBlob( Vec2 newPos, Number blobVal )
-{
-	targetPosition = newPos
-	maxChaseDist = 99999
-	blobVal = 200
-}
+// Function SummonBlob( Vec2 newPos, Number blobVal )
+// {
+// 	targetPosition = newPos
+// 	maxChaseDist = 99999
+// 	blobVal = 200
+// }
 
 // Damage
 Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
@@ -110,7 +114,7 @@ State Chase
 	Function WanderIfTooFar()
 	{		
 		Number distance
-		GetDistanceToTarget( targetName: targetName, distance: distance ) 
+		GetDistanceToTarget( target: target, distance: distance ) 
 
 		if( distance > maxChaseDist )
 		{
@@ -139,7 +143,7 @@ State Flee
 	Function WanderIfTooFar()
 	{		
 		Number distance
-		GetDistanceToTarget( targetName: targetName, distance: distance ) 
+		GetDistanceToTarget( target: target, distance: distance ) 
 
 		if( distance > 5 )
 		{
@@ -151,6 +155,12 @@ State Flee
 	OnUpdate()
 	{
 		WanderIfTooFar()
-		FleeTargetEntity( targetName: targetName ) 
+		FleeTargetEntity( target: target ) 
 	}
+}
+
+
+State Dead
+{
+
 }

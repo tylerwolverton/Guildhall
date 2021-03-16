@@ -1,4 +1,4 @@
-Number hasOpenedDoor = 0;
+Bool hasOpenedDoor = false
 
 State Waiting
 {
@@ -40,9 +40,9 @@ State Choice1
 {
     OnEnter()
     {
-        if( hasOpenedDoor == 0 )
+        if( !hasOpenedDoor )
         {
-            hasOpenedDoor = 1;
+            hasOpenedDoor = true;
 
             AddLineOfDialogueText( text: "Sure, it should be open now" )
             Level3DialogueSolved()
@@ -57,7 +57,7 @@ State Choice1
     {
         EndDialogue()
 
-        ChangeState( Waiting );
+        ChangeState( Waiting )
     }
 }
 
@@ -72,6 +72,6 @@ State Choice2
     {
         EndDialogue()
 
-        ChangeState( Waiting );
+        ChangeState( Waiting )
     }
 }

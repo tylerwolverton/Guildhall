@@ -655,8 +655,11 @@ bool ZephyrParser::ParseEventArgs()
 			
 			case eTokenType::IDENTIFIER:
 			{
-				// Don't support passing member accessors by reference
-				if ( PeekNextToken().GetType() != eTokenType::PERIOD )
+				// Only pass single identifiers by reference
+				eTokenType nextType = PeekNextToken().GetType();
+				if ( nextType == eTokenType::COMMA
+					 || nextType == eTokenType::PARENTHESIS_RIGHT 
+					 || nextType == eTokenType::IDENTIFIER )
 				{
 					identifierNames.push_back( valueToken.GetData() );
 					identifierParamNames.push_back( identifier.GetData() );

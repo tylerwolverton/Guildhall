@@ -195,20 +195,20 @@ Function ShootTripleFireballRight()
 
 State Default
 {
-    Bool isFirst = true
-    Number testVal = 12
+    // Bool isFirst = true
+    // Number testVal = 12
 
-    OnUpdate()
-    {
-        if( isFirst )
-        {
-            isFirst = false
-            // testVal = 7
-            blob.SummonBlob( newPos: curPosition, blobVal: testVal )
-            PrintToConsole( text: "isFirst is true" )
-        }
+    // OnUpdate()
+    // {
+    //     if( isFirst )
+    //     {
+    //         isFirst = false
+    //         // testVal = 7
+    //         blob.SummonBlob( newPos: curPosition, blobVal: testVal )
+    //         PrintToConsole( text: "isFirst is true" )
+    //     }
 
-        PrintDebugText( text: "TestVal: " + testVal )
-    }
+    //     PrintDebugText( text: "TestVal: " + testVal )
+    // }
 }
 

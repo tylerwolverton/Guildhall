@@ -48,6 +48,7 @@
     </Gameplay>
     <Script name="SplittingBlob.zephyr">
       <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossMed"/>
+      <ScriptVarInit type="entity" var="target" value="player"/>
     </Script>
   </Actor>
 
@@ -60,6 +61,7 @@
     </Gameplay>
     <Script name="SplittingBlob.zephyr">
       <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossSmall"/>
+      <ScriptVarInit type="entity" var="target" value="player"/>
     </Script>
   </Actor>
 
@@ -70,7 +72,9 @@
     </Appearance>
     <Gameplay maxHealth="1">
     </Gameplay>
-    <Script name="SplittingBlob.zephyr"/>
+    <Script name="SplittingBlob.zephyr">
+      <ScriptVarInit type="entity" var="target" value="player"/>
+    </Script>
   </Actor>
 
   <Entity name="TrapTrigger">

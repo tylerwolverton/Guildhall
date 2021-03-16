@@ -596,6 +596,7 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	newEntity->SetOrientationDegrees( orientation );
 	newEntity->SetName( name );
 	g_game->SaveEntityByName( newEntity );
+	newEntity->InitializeZephyrEntityVariables();
 	newEntity->FireSpawnEvent();
 	if ( mapToSpawnIn == g_game->GetCurrentMap() )
 	{
@@ -733,7 +734,8 @@ void GameAPI::ChaseTargetEntity( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::FleeTargetEntity( EventArgs* args )
 {
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
@@ -768,7 +770,8 @@ void GameAPI::FleeTargetEntity( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::GetEntityLocation( EventArgs* args )
 {
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr
@@ -849,7 +852,8 @@ void GameAPI::CheckForTarget( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::GetDistanceToTarget( EventArgs* args )
 {
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr

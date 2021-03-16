@@ -1,12 +1,11 @@
 Vec2 position;		
 Vec2 targetPosition;
-String targetName = "player";
+Entity target = null
 Number health;
 
-String minionSpawnType;
+Number maxChaseDist = 3
 
-Vec2 lastPosition;
-Number numFramesInSameSpace;
+String minionSpawnType;
 
 // -----------------------------------------------------------------------------------------
 // Global events
@@ -15,22 +14,26 @@ Function Spawned( Number maxHealth, String mapName )
 {
 	health = maxHealth;
 	EnemySpawned( mapName: mapName )
-	GetNewWanderTargetPosition()
+	GetNewWanderTargetPosition( newPos: targetPosition )
 }
 
 Function HealthUpdated( Number newHealth )
 {
 	health = newHealth;
 
+	// TODO: Look into why parentEntity is null but we still execute code
+	if( health <= 0 )
+	{
+		ChangeState( Dead )
+	}
+
 	// Spawn minions on damage
 	if( minionSpawnType != "" )
 	{
 		Vec2 posOffset = Vec2( .25, 0 );
-		SpawnEntity( type: minionSpawnType, position: position + posOffset )
-		SpawnEntity( type: minionSpawnType, position: position - posOffset )
-		SpawnEntity( type: minionSpawnType, position: position - posOffset )
-		SpawnEntity( type: minionSpawnType, position: position - posOffset )
-	}
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position + posOffset )
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position - posOffset )
+	}	
 }
 
 Function Died( String mapName )
@@ -38,23 +41,12 @@ Function Died( String mapName )
 	EnemyDied( mapName: mapName )
 }
 
-Function PositionUpdated( Vec2 newPos )
-{
-	lastPosition = position;
-	position = newPos;
-}
-
-Function TargetPositionUpdated( Vec2 newPos )
-{
-	targetPosition = newPos;
-}
-
 // Damage
-Function CollisionEntered( Number attackDamage = 1, Number otherEntityId )
+Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
 {
-	if( otherEntityId != -1 )
+	if( otherEntity != null )
 	{
-		DamageEntity( targetId : otherEntityId, damage: attackDamage, damageType: "normal" )
+		DamageEntity( target : otherEntity, damage: attackDamage, damageType: "normal" )
 	}
 }
 
@@ -62,35 +54,21 @@ Function CollisionEntered( Number attackDamage = 1, Number otherEntityId )
 // Wander
 // -----------------------------------------------------------------------------------------
 State Wander
-{	
-	Function TargetFound()
-	{		
-		ChangeState( Chase );
-	}
-	
+{			
 	OnUpdate()
 	{
-		CheckForTarget( targetName: targetName, maxDist: 3 )
+		// Bool wasTargetFound = false
+		// CheckForTarget( target: target, maxDist: 3, targetFound: wasTargetFound )
+		// if( wasTargetFound )
+		// {
+		// 	ChangeState( Chase )
+		// }
+
 		MoveToLocation( pos: targetPosition )
 
-		if( position == targetPosition )
+		if( parentEntity.position == targetPosition )
 		{
-			GetNewWanderTargetPosition()
-		}
-
-		// Check for stuck on wall, find new position if stuck for a second
-		if( lastPosition == position )
-		{
-			numFramesInSameSpace = numFramesInSameSpace + 1;
-
-			if( numFramesInSameSpace > 60 )
-			{
-				GetNewWanderTargetPosition()
-			}
-		}
-		else
-		{
-			numFramesInSameSpace = 0;
+			GetNewWanderTargetPosition( newPos: targetPosition )
 		}
 	}
 }
@@ -98,22 +76,33 @@ State Wander
 // -----------------------------------------------------------------------------------------
 // Chase
 // -----------------------------------------------------------------------------------------
-State Chase
-{		
-	//FireEvent( PrintDebugText( text = "Chase" ) );
+// State Chase
+// {
+// 	Function WanderIfTooFar()
+// 	{		
+// 		Number distance
+// 		GetDistanceToTarget( target: target, distance: distance ) 
 
-	Function DistanceToTargetUpdated( Number distance )
-	{		
-		if( distance > 3 )
-		{
-			GetNewWanderTargetPosition()
-			ChangeState( Wander );
-		}
-	}
+// 		if( distance > maxChaseDist )
+// 		{
+// 			GetNewWanderTargetPosition( newPos: targetPosition )
+// 			ChangeState( Wander )
+// 		}
+// 	}
 
-	OnUpdate()
-	{
-		GetDistanceToTarget( targetName: targetName )
-		ChaseTargetEntity( targetName: targetName )
-	}
+// 	OnUpdate()
+// 	{
+// 		if( health == 1 )
+// 		{
+// 			ChangeState( Flee )
+// 		}
+		
+// 		WanderIfTooFar()
+// 		MoveToLocation( pos: target.curPosition )
+// 	}
+// }
+
+State Dead
+{
+	
 }
