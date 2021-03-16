@@ -59,9 +59,9 @@ private:
 	
 	MemberAccessorResult ProcessResultOfMemberAccessor( const ZephyrValueMap& localVariables );
 	
-	std::vector<std::string> GetIdentifierNamesFromParameters( const std::string& eventName );
+	std::map<std::string, std::string> GetCallerVariableToParamNamesFromParameters( const std::string& eventName );
 	void InsertParametersIntoEventArgs( EventArgs& args );
-	void UpdateIdentifierParameters( const std::vector<std::string>& identifierParams, const EventArgs& args, ZephyrValueMap& localVariables );
+	void UpdateIdentifierParameters( const std::map<std::string, std::string>& identifierParams, const EventArgs& args, ZephyrValueMap& localVariables );
 	ZephyrValue GetZephyrValFromEventArgs( const std::string& varName, const EventArgs& args );
 
 	ZephyrValue GetGlobalVariableFromEntity	( EntityId entityId, const std::string& variableName );

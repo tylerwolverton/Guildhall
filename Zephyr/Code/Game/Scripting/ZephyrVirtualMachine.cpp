@@ -194,7 +194,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			case eOpCode::MEMBER_FUNCTION_CALL:
 			{
 				// Save identifier names to be updated with new values after call
-				std::vector<std::string> identifierNames = GetIdentifierNamesFromParameters( "Member event" );
+				std::map<std::string, std::string> identifierToParamNames = GetCallerVariableToParamNamesFromParameters( "Member function call" );
 
 				EventArgs args;
 				args.SetValue( "entity", (void*)parentEntity );
@@ -220,7 +220,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				CallMemberFunctionOnEntity( memberAccessorResult.finalMemberVal.GetAsEntity(), memberAccessorResult.memberNames.back(), &args );
 
 				// Set new values of identifier parameters
-				UpdateIdentifierParameters( identifierNames, args, localVariables );
+				UpdateIdentifierParameters( identifierToParamNames, args, localVariables );
 			}
 			break;
 
@@ -364,17 +364,19 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				GUARANTEE_OR_DIE( eventName.GetType() == eValueType::STRING, "Event name isn't a string" );
 
 				// Save identifier names to be updated with new values after call
-				std::vector<std::string> identifierNames = GetIdentifierNamesFromParameters( eventName.GetAsString() );
+				std::map<std::string, std::string> identifierToParamNames = GetCallerVariableToParamNamesFromParameters( eventName.GetAsString() );
 
-				EventArgs args;
-				args.SetValue( "entity", (void*)parentEntity );
+				EventArgs* args = new EventArgs();
+				args->SetValue( "entity", (void*)parentEntity );
 
-				InsertParametersIntoEventArgs( args );
+				InsertParametersIntoEventArgs( *args );
 
-				g_eventSystem->FireEvent( eventName.GetAsString(), &args, EVERYWHERE );
+				g_eventSystem->FireEvent( eventName.GetAsString(), args, EVERYWHERE );
 
 				// Set new values of identifier parameters
-				UpdateIdentifierParameters( identifierNames, args, localVariables );
+				UpdateIdentifierParameters( identifierToParamNames, *args, localVariables );
+
+				PTR_SAFE_DELETE( args );
 			}
 			break;
 
@@ -1013,23 +1015,25 @@ MemberAccessorResult ZephyrVirtualMachine::ProcessResultOfMemberAccessor( const 
 
 
 //-----------------------------------------------------------------------------------------------
-std::vector<std::string> ZephyrVirtualMachine::GetIdentifierNamesFromParameters( const std::string& eventName )
+std::map<std::string, std::string> ZephyrVirtualMachine::GetCallerVariableToParamNamesFromParameters( const std::string& eventName )
 {
-	std::vector<std::string> identifierNames;
+	std::map<std::string, std::string> identifierToParamNames;
 
 	ZephyrValue identifierCount = PopConstant();
 	for ( int identifierIdx = 0; identifierIdx < (int)identifierCount.GetAsNumber(); ++identifierIdx )
 	{
+		ZephyrValue identifierParamName = PopConstant();
 		ZephyrValue identifier = PopConstant();
-		if ( identifier.GetType() != eValueType::STRING )
+		if ( identifier.GetType() != eValueType::STRING
+			 || identifierParamName.GetType() != eValueType::STRING )
 		{
 			ReportError( Stringf( "Identifier name is not a string in parameter list for function call '%s'", eventName.c_str() ) );
 			continue;
 		}
-		identifierNames.push_back( identifier.GetAsString() );
+		identifierToParamNames[identifier.GetAsString()] = identifierParamName.GetAsString();
 	}
 
-	return identifierNames;
+	return identifierToParamNames;
 }
 
 
@@ -1057,13 +1061,14 @@ void ZephyrVirtualMachine::InsertParametersIntoEventArgs( EventArgs& args )
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::UpdateIdentifierParameters( const std::vector<std::string>& identifierParams, const EventArgs& args, ZephyrValueMap& localVariables )
+void ZephyrVirtualMachine::UpdateIdentifierParameters( const std::map<std::string, std::string>& identifierToParamNames, const EventArgs& args, ZephyrValueMap& localVariables )
 {
-	for ( int paramIdx = 0; paramIdx < (int)identifierParams.size(); ++paramIdx )
+	for ( auto const& identifierPair : identifierToParamNames )
 	{
-		std::string const& param = identifierParams[paramIdx];
+		std::string const& identifier = identifierPair.first;
+		std::string const& paramName = identifierPair.second;
 
-		ZephyrValue newVal = GetZephyrValFromEventArgs( param, args );
+		ZephyrValue newVal = GetZephyrValFromEventArgs( paramName, args );
 		
 		if ( newVal.GetType() == eValueType::ENTITY 
 			 && newVal.EvaluateAsEntity() == (EntityId)ERROR_ZEPHYR_VAL )
@@ -1072,7 +1077,7 @@ void ZephyrVirtualMachine::UpdateIdentifierParameters( const std::vector<std::st
 			continue;
 		}
 		
-		AssignToVariable( param, newVal, localVariables );
+		AssignToVariable( identifier, newVal, localVariables );
 	}
 }
 

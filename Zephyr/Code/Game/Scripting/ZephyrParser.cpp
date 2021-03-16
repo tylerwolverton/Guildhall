@@ -624,6 +624,7 @@ bool ZephyrParser::ParseEventArgs()
 	ZephyrToken identifier = ConsumeCurToken();
 	int paramCount = 0;
 
+	std::vector<std::string> identifierNames;
 	std::vector<std::string> identifierParamNames;
 
 	while ( identifier.GetType() == eTokenType::IDENTIFIER )
@@ -657,7 +658,8 @@ bool ZephyrParser::ParseEventArgs()
 				// Don't support passing member accessors by reference
 				if ( PeekNextToken().GetType() != eTokenType::PERIOD )
 				{
-					identifierParamNames.push_back( valueToken.GetData() );
+					identifierNames.push_back( valueToken.GetData() );
+					identifierParamNames.push_back( identifier.GetData() );
 				}
 
 				if ( !ParseExpression() )
@@ -686,6 +688,7 @@ bool ZephyrParser::ParseEventArgs()
 
 	for ( int identifierIdx = 0; identifierIdx < (int)identifierParamNames.size(); ++identifierIdx )
 	{
+		WriteConstantToCurChunk( identifierNames[identifierIdx] );
 		WriteConstantToCurChunk( identifierParamNames[identifierIdx] );
 	}
 

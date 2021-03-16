@@ -8,9 +8,7 @@ Entity levelMgr = -1
 Number maxChaseDist = 3
 
 Vec2 lastPosition 
-Number numFramesInSameSpace
 
-Bool active = true
 // -----------------------------------------------------------------------------------------
 // Global events
 // -----------------------------------------------------------------------------------------
@@ -18,7 +16,8 @@ Function Spawned( Number maxHealth, String mapName )
 {
 	health = maxHealth
 	EnemySpawned( mapName: mapName )
-	GetNewWanderTargetPosition()
+	GetNewWanderTargetPosition( newPos: targetPosition )
+	
 }
 
 Function HealthUpdated( Number newHealth)
@@ -36,22 +35,11 @@ Function Died( String mapName )
 	EnemyDied( mapName: mapName )
 }
 
-Function PositionUpdated( Vec2 newPos )
-{
-	lastPosition = position
-	position = newPos
-}
-
-Function TargetPositionUpdated( Vec2 newPos )
-{
-	targetPosition = newPos
-}
-
-Function SummonBlob( Vec2 newPos, Number testVal )
+Function SummonBlob( Vec2 newPos, Number blobVal )
 {
 	targetPosition = newPos
 	maxChaseDist = 99999
-	testVal = 200
+	blobVal = 200
 }
 
 // Damage
@@ -67,30 +55,44 @@ Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
 // Wander
 // -----------------------------------------------------------------------------------------
 State Wander
-{	
-	Function TargetFound()
-	{		
-		ChangeState( Chase )
+{			
+	Number numFramesInSameSpace = 0
+	OnEnter()
+	{
+		numFramesInSameSpace = 0
 	}
-		
+
 	OnUpdate()
 	{
-		CheckForTarget( target: target, maxDist: 3 )
-		MoveToLocation( pos: targetPosition )
-
-		if( position == targetPosition )
+		Bool wasTargetFound = false
+		CheckForTarget( target: target, maxDist: 3, targetFound: wasTargetFound )
+		if( wasTargetFound )
 		{
-			GetNewWanderTargetPosition()
+			ChangeState( Chase )
 		}
 
+		MoveToLocation( pos: targetPosition )
+
+		if( parentEntity.position == targetPosition )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+		}
+
+		UnstickFromWall()
+
+		lastPosition = parentEntity.position
+	}
+
+	Function UnstickFromWall()
+	{
 		// Check for stuck on wall, find new position if stuck for a second
-		if( lastPosition == position )
+		if( lastPosition == parentEntity.position )
 		{
 			numFramesInSameSpace = numFramesInSameSpace + 1
 
 			if( numFramesInSameSpace > 60 )
 			{
-				GetNewWanderTargetPosition()
+				GetNewWanderTargetPosition( newPos: targetPosition )
 			}
 		}
 		else
@@ -105,11 +107,14 @@ State Wander
 // -----------------------------------------------------------------------------------------
 State Chase
 {
-	Function DistanceToTargetUpdated( Number distance )
+	Function WanderIfTooFar()
 	{		
+		Number distance
+		GetDistanceToTarget( targetName: targetName, distance: distance ) 
+
 		if( distance > maxChaseDist )
 		{
-			GetNewWanderTargetPosition()
+			GetNewWanderTargetPosition( newPos: targetPosition )
 			ChangeState( Wander )
 		}
 	}
@@ -121,7 +126,7 @@ State Chase
 			ChangeState( Flee )
 		}
 		
-		GetDistanceToTarget( targetName: targetName )
+		WanderIfTooFar()
 		MoveToLocation( pos: target.curPosition )
 	}
 }
@@ -131,33 +136,21 @@ State Chase
 // -----------------------------------------------------------------------------------------
 State Flee
 {
-	Function DistanceToTargetUpdated( Number distance )
+	Function WanderIfTooFar()
 	{		
+		Number distance
+		GetDistanceToTarget( targetName: targetName, distance: distance ) 
+
 		if( distance > 5 )
 		{
-			GetNewWanderTargetPosition()
+			GetNewWanderTargetPosition( newPos: targetPosition )
 			ChangeState( Wander )
 		}
 	}
 
-	//FireEvent( PrintDebugText( text = "Flee" ) );
 	OnUpdate()
 	{
-		GetDistanceToTarget( targetName: targetName ) 
+		WanderIfTooFar()
 		FleeTargetEntity( targetName: targetName ) 
 	}
 }
-
-// Number health = 4
-// DoSomethingWithHealth( health, "fire", 1 )
-// health = ?
-
-// Function DoSomethingWithHealth( Number curHealth, String damageType, Number damage )
-// {
-// 	if( damageType == "fire" )
-// 	{
-// 		curHealth = curHealth - 1
-// 	}
-	
-// 	// more code ...
-// }

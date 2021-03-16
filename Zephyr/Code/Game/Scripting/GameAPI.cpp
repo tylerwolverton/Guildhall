@@ -817,17 +817,15 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 	float newX = g_game->m_rng->RollRandomFloatInRange( 0.f, mapDimensions.x );
 	float newY = g_game->m_rng->RollRandomFloatInRange( 0.f, mapDimensions.y );
 	
-	EventArgs targetArgs;
-	targetArgs.SetValue( "newPos", Vec2( newX, newY ) );
+	args->SetValue( "newPos", Vec2( newX, newY ) );
 
-	entity->FireScriptEvent( "TargetPositionUpdated", &targetArgs );
+	//entity->FireScriptEvent( "TargetPositionUpdated", &targetArgs );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void GameAPI::CheckForTarget( EventArgs* args )
 {
-	std::string targetName = args->GetValue( "targetName", "" );
 	float maxDist = args->GetValue( "maxDist", 0.f );
 	//Entity* targetEntity = GetTargetEntityFromArgs( args );
 	
@@ -843,13 +841,8 @@ void GameAPI::CheckForTarget( EventArgs* args )
 
 	Vec2 displacement = targetEntity->GetPosition() - entity->GetPosition();
 	float distBetween = displacement.GetLength();
-	if ( distBetween < maxDist )
-	{
-		EventArgs targetArgs;
-		targetArgs.SetValue( "targetName", targetName );
-
-		entity->FireScriptEvent( "TargetFound", &targetArgs );
-	}
+	
+	args->SetValue( "targetFound", distBetween < maxDist );
 }
 
 
@@ -867,10 +860,7 @@ void GameAPI::GetDistanceToTarget( EventArgs* args )
 
 	Vec2 displacementToTarget = targetEntity->GetPosition() - entity->GetPosition();
 
-	EventArgs targetArgs;
-	targetArgs.SetValue( "distance", displacementToTarget.GetLength() );
-
-	entity->FireScriptEvent( "DistanceToTargetUpdated", &targetArgs );
+	args->SetValue( "distance", displacementToTarget.GetLength() );
 }
 
 

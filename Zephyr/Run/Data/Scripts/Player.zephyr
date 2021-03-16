@@ -204,7 +204,7 @@ State Default
         {
             isFirst = false
             // testVal = 7
-            blob.SummonBlob( newPos: curPosition, testVal: testVal )
+            blob.SummonBlob( newPos: curPosition, blobVal: testVal )
             PrintToConsole( text: "isFirst is true" )
         }
 
