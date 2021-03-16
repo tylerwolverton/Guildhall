@@ -624,6 +624,8 @@ bool ZephyrParser::ParseEventArgs()
 	ZephyrToken identifier = ConsumeCurToken();
 	int paramCount = 0;
 
+	std::vector<std::string> identifierParamNames;
+
 	while ( identifier.GetType() == eTokenType::IDENTIFIER )
 	{
 		if ( !ConsumeExpectedNextToken( eTokenType::COLON ) )
@@ -642,7 +644,6 @@ bool ZephyrParser::ParseEventArgs()
 			case eTokenType::FALSE:
 			case eTokenType::NULL_TOKEN:
 			case eTokenType::CONSTANT_STRING:
-			case eTokenType::IDENTIFIER:
 			{
 				if ( !ParseExpression() )
 				{
@@ -651,6 +652,21 @@ bool ZephyrParser::ParseEventArgs()
 			}
 			break;
 			
+			case eTokenType::IDENTIFIER:
+			{
+				// Don't support passing member accessors by reference
+				if ( PeekNextToken().GetType() != eTokenType::PERIOD )
+				{
+					identifierParamNames.push_back( valueToken.GetData() );
+				}
+
+				if ( !ParseExpression() )
+				{
+					return false;
+				}
+			}
+			break;
+
 			default:
 			{
 				ReportError( "Must set parameter equal to a value in the form, var: value" );
@@ -667,6 +683,13 @@ bool ZephyrParser::ParseEventArgs()
 	}
 
 	WriteConstantToCurChunk( ZephyrValue( (float)paramCount ) );
+
+	for ( int identifierIdx = 0; identifierIdx < (int)identifierParamNames.size(); ++identifierIdx )
+	{
+		WriteConstantToCurChunk( identifierParamNames[identifierIdx] );
+	}
+
+	WriteConstantToCurChunk( ZephyrValue( (float)identifierParamNames.size() ) );
 
 	return true;
 }

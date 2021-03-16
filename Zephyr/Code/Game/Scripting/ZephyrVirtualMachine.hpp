@@ -55,15 +55,20 @@ private:
 
 	ZephyrValue GetVariableValue( const std::string& variableName, const ZephyrValueMap& localVariables );
 	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );
-	void		AssignToMemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
+	void		AssignToVec2MemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	
-	MemberAccessorResult ProcessResultOfMemberAccessor( ZephyrValueMap localVariables );
+	MemberAccessorResult ProcessResultOfMemberAccessor( const ZephyrValueMap& localVariables );
+	
+	std::vector<std::string> GetIdentifierNamesFromParameters( const std::string& eventName );
 	void InsertParametersIntoEventArgs( EventArgs& args );
+	void UpdateIdentifierParameters( const std::vector<std::string>& identifierParams, const EventArgs& args, ZephyrValueMap& localVariables );
+	ZephyrValue GetZephyrValFromEventArgs( const std::string& varName, const EventArgs& args );
 
 	ZephyrValue GetGlobalVariableFromEntity	( EntityId entityId, const std::string& variableName );
 	void SetGlobalVariableInEntity			( EntityId entityId, const std::string& variableName, const ZephyrValue& value );
 	void SetGlobalVec2MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value );
 	void CallMemberFunctionOnEntity			( EntityId entityId, const std::string& functionName, EventArgs* args );
+
 
 	void ReportError( const std::string& errorMsg );
 	bool IsErrorValue( const ZephyrValue& zephyrValue );
@@ -75,5 +80,6 @@ private:
 
 	ZephyrValueMap* m_globalVariables;
 	ZephyrValueMap* m_stateVariables;
-	ZephyrValueMap m_eventsVariablesCopy;
+	ZephyrValueMap m_eventVariablesCopy;
+	ZephyrValueMap* m_eventVariables;
 };

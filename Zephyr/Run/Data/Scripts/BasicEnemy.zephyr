@@ -21,7 +21,7 @@ Function Spawned( Number maxHealth, String mapName )
 	GetNewWanderTargetPosition()
 }
 
-Function HealthUpdated( Number newHealth )
+Function HealthUpdated( Number newHealth)
 {
 	health = newHealth
 
@@ -55,11 +55,11 @@ Function SummonBlob( Vec2 newPos, Number testVal )
 }
 
 // Damage
-Function CollisionEntered( Number attackDamage = 1, Number otherEntityId )
+Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
 {
-	if( otherEntityId != -1 )
+	if( otherEntity != null )
 	{
-		DamageEntity( targetId : otherEntityId, damage: attackDamage, damageType: "normal" )
+		DamageEntity( target : otherEntity, damage: attackDamage, damageType: "normal" )
 	}
 }
 
@@ -147,3 +147,17 @@ State Flee
 		FleeTargetEntity( targetName: targetName ) 
 	}
 }
+
+// Number health = 4
+// DoSomethingWithHealth( health, "fire", 1 )
+// health = ?
+
+// Function DoSomethingWithHealth( Number curHealth, String damageType, Number damage )
+// {
+// 	if( damageType == "fire" )
+// 	{
+// 		curHealth = curHealth - 1
+// 	}
+	
+// 	// more code ...
+// }

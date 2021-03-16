@@ -115,16 +115,18 @@ void GameAPI::DestroySelf( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::DamageEntity( EventArgs* args )
 {
-	Entity* entityToDamage = GetTargetEntityFromArgs( args );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
+
 	float damage = args->GetValue( "damage", 0.f );
 	std::string damageType = args->GetValue( "damageType", "normal" );
 
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
-	if ( entityToDamage != nullptr 
-		 && entityToDamage->GetFaction() != entity->GetFaction() )
+	if ( targetEntity != nullptr
+		 && targetEntity->GetFaction() != entity->GetFaction() )
 	{
-		entityToDamage->TakeDamage( damage, damageType );
+		targetEntity->TakeDamage( damage, damageType );
 	}
 }
 
@@ -829,7 +831,7 @@ void GameAPI::CheckForTarget( EventArgs* args )
 	float maxDist = args->GetValue( "maxDist", 0.f );
 	//Entity* targetEntity = GetTargetEntityFromArgs( args );
 	
-	EntityId targetId = args->GetValue( "target", -1 );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
 	Entity* targetEntity = g_game->GetEntityById( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 

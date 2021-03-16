@@ -11,11 +11,11 @@ Function ProjectileLifeExpired()
     DestroySelf()
 }
 
-Function CollisionEntered( Number otherEntityId )
+Function CollisionEntered( Entity otherEntity )
 {
-    if( otherEntityId != -1 )
+    if( otherEntity != null )
     {
-        DamageEntity( targetId: otherEntityId, damage: attackDamage )
+        DamageEntity( target: otherEntity, damage: attackDamage )
         AddScreenShake( intensity: .05 )
     }
 

@@ -71,7 +71,7 @@
 			},
 			{
 				"name": "constant.numeric.bool.zephyr",
-				"match": "\\b(true|false|this|null)"
+				"match": "\\b(true|false|this|null|out)"
 			},
 			{
 				"name": "constant.numeric.entity.zephyr",

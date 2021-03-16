@@ -762,7 +762,7 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 				otherType = theirEntity->GetType();
 			}
 
-			args.SetValue( "otherEntityId", otherId );
+			args.SetValue( "otherEntity", otherId );
 			args.SetValue( "otherEntityName", otherName );
 			args.SetValue( "otherEntityType", otherType );
 			m_scriptObj->FireEvent( eventName, &args );
