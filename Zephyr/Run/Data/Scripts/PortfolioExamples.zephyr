@@ -1,0 +1,147 @@
+Vec2 position
+Vec2 targetPosition
+Number health
+Entity target = null
+
+Number maxChaseDist = 3
+
+// -----------------------------------------------------------------------------------------
+// Global events
+// -----------------------------------------------------------------------------------------
+Function Spawned( Number maxHealth, String mapName )
+{
+	health = maxHealth
+	EnemySpawned( mapName: mapName )
+	GetNewWanderTargetPosition( newPos: targetPosition )
+}
+
+Function HealthUpdated( Number newHealth)
+{
+	health = newHealth
+
+	if( health == 1 )
+	{
+		ChangeSpriteAnimation( newAnim: "LowHealth" )
+	}
+}
+
+Function Died( String mapName )
+{
+	EnemyDied( mapName: mapName )
+}
+
+// Damage
+Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
+{
+	if( otherEntity != null )
+	{
+		DamageEntity( target : otherEntity, damage: attackDamage, damageType: "normal" )
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Wander
+// -----------------------------------------------------------------------------------------
+State Wander
+{			
+	OnUpdate()
+	{
+		Bool wasTargetFound = false
+		CheckForTarget( target: target, maxDist: 3, targetFound: wasTargetFound )
+		if( wasTargetFound )
+		{
+			ChangeState( Chase )
+		}
+
+		MoveToLocation( pos: targetPosition )
+
+		if( parentEntity.position == targetPosition )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Chase
+// -----------------------------------------------------------------------------------------
+State Chase
+{
+	Function WanderIfTooFar()
+	{		
+		Number distance
+		GetDistanceToTarget( target: target, distance: distance ) 
+
+		if( distance > maxChaseDist )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+			ChangeState( Wander )
+		}
+	}
+
+	OnUpdate()
+	{
+		if( health == 1 )
+		{
+			ChangeState( Flee )
+		}
+		
+		WanderIfTooFar()
+		MoveToLocation( pos: target.curPosition )
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Flee
+// -----------------------------------------------------------------------------------------
+State Flee
+{
+	Function WanderIfTooFar()
+	{		
+		Number distance
+		GetDistanceToTarget( target: target, distance: distance ) 
+
+		if( distance > 5 )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+			ChangeState( Wander )
+		}
+	}
+
+	OnUpdate()
+	{
+		WanderIfTooFar()
+		FleeTargetEntity( target: target ) 
+	}
+}
+
+
+
+
+
+Entity target = null
+
+State Patrol
+{
+    Bool enemySpotted = false
+
+    OnUpdate()
+    {
+        LookForTarget( canSeeTarget: enemySpotted, target: target )
+
+        if( enemySpotted )
+        {
+            ChangeState( Pursue )
+        }
+    }
+}
+
+State Pursue
+{
+    OnUpdate()
+    {
+        MoveToPosition( pos: target.position )
+    }
+}
+
+

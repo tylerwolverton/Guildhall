@@ -10,7 +10,7 @@ Function Open()
 	ChangeSpriteAnimation( anim: openSpriteAnimName )
 	PlaySound( sound: openSFXName )
 	DisableCollision( this.entity )
-	this.isOpen = true
+	isOpen = true
 }
 
 
@@ -19,5 +19,6 @@ Function Close()
 	ChangeSpriteAnimation( anim: closeSpriteAnimName )
 	PlaySound( sound: closeSFXName )
 	EnableCollision( this.entity )
-	this.isOpen = false
+	isOpen = false
 }
+
