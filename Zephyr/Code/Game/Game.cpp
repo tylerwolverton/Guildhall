@@ -595,7 +595,10 @@ void Game::LoadEntitiesFromXml()
 
 	m_player = new Actor( *playerDef, nullptr );
 	m_player->SetAsPlayer();
+
+	// Must be saved before initializing zephyr script
 	m_world->SaveEntityByName( m_player );
+	m_player->CreateZephyrScript( *playerDef );
 
 	g_devConsole->PrintString( "Entity Types Loaded", Rgba8::GREEN );
 }
@@ -868,12 +871,16 @@ void Game::UpdateFromKeyboard()
 //-----------------------------------------------------------------------------------------------
 void Game::LoadingStartingMap( const std::string& mapName )
 {
+	m_world->InitializeAllZephyrEntityVariables();
+
 	m_world->ChangeMap( mapName, m_player );
 
 	if ( m_player != nullptr )
 	{
 		m_player->FireSpawnEvent();
 	}
+
+	m_world->CallAllZephyrSpawnEvents( m_player );
 }
 
 

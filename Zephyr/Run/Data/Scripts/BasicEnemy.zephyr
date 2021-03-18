@@ -1,6 +1,6 @@
 Vec2 position
 Vec2 targetPosition
-Number health
+Number health = parentEntity.maxHealth
 Entity target = null
 Entity levelMgr = null
 
@@ -13,10 +13,8 @@ Vec2 lastPosition
 // -----------------------------------------------------------------------------------------
 Function Spawned( Number maxHealth, String mapName )
 {
-	health = maxHealth
 	EnemySpawned( mapName: mapName )
 	GetNewWanderTargetPosition( newPos: targetPosition )
-	
 }
 
 Function HealthUpdated( Number newHealth)

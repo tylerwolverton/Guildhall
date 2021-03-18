@@ -39,6 +39,9 @@ public:
 	void UnloadAllEntityScripts();
 	void ReloadAllEntityScripts();
 
+	void InitializeAllZephyrEntityVariables();
+	void CallAllZephyrSpawnEvents( Entity* player );
+	
 	void AddEntityFromDefinition( const EntityDefinition& entityDef );
 
 	Entity* GetEntityById( EntityId id );
@@ -50,13 +53,11 @@ public:
 
 private:
 	Map* GetLoadedMapByName( const std::string& mapName );
-	void InitializeAllZephyrEntityVariables();
 
 	void ClearMaps();
 	void ClearEntities();
 
 private:
-	bool m_isFirstUpdate = true;
 	Map* m_curMap = nullptr;
 	Clock* m_worldClock = nullptr;
 
@@ -64,4 +65,5 @@ private:
 
 	std::vector<Entity*> m_worldEntities;
 	std::unordered_map<std::string, Entity*> m_entitiesByName;
+	std::unordered_map<EntityId, Entity*> m_entitiesById;
 };

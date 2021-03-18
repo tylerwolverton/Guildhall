@@ -1,4 +1,4 @@
-Number curHealth = -1;
+Number curHealth = parentEntity.health;
 Vec2 curPosition;
 Bool canShoot = true;
 Number fireCooldown = .5;
@@ -8,11 +8,6 @@ Entity blob
 
 Function Spawned( Number maxHealth )
 {
-    if( curHealth == -1 )
-    {
-        curHealth = maxHealth;
-    }
-
     AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
 
     RegisterKeyEvent( key: "P", event: "SummonBlob" )

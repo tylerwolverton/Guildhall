@@ -31,6 +31,9 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* par
 
 	RegisterScriptEvents( m_globalBytecodeChunk );
 	RegisterScriptEvents( m_curStateBytecodeChunk );
+
+	// Initialize parentEntity in script
+	m_globalBytecodeChunk->SetVariable( PARENT_ENTITY_NAME, ZephyrValue( (EntityId)m_parentEntity->GetId() ) );
 }
 
 
@@ -265,9 +268,6 @@ void ZephyrScript::InitializeEntityVariables()
 
 		validEntities[entityVarInit.varName] = entity->GetId();
 	}
-
-	// Initialize this script's parent entity
-	validEntities[PARENT_ENTITY_NAME] = m_parentEntity->GetId();
 
 	InitializeGlobalVariables( validEntities );
 }

@@ -157,7 +157,10 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 		return nullptr;
 	}
 
-	return SpawnNewEntityOfType( *entityDef );
+	Entity* newEntity = SpawnNewEntityOfType( *entityDef );
+	newEntity->CreateZephyrScript( *entityDef );
+
+	return newEntity;
 }
 
 
@@ -274,6 +277,23 @@ void Map::InitializeAllZephyrEntityVariables()
 
 
 //-----------------------------------------------------------------------------------------------
+void Map::CallAllMapEntityZephyrSpawnEvents( Entity* player )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr 
+			 || entity == player )
+		{
+			continue;
+		}
+
+		entity->FireSpawnEvent();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 {
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
@@ -343,7 +363,12 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 			continue;
 		}
 
+		// Must be saved before initializing zephyr script
 		newEntity->SetName( mapEntityDef.name );
+		m_world->SaveEntityByName( newEntity );
+		
+		newEntity->CreateZephyrScript( *mapEntityDef.entityDef );
+
 		newEntity->SetPosition( mapEntityDef.position );
 		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
 
@@ -354,14 +379,11 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 			portal->SetDestinationPosition( mapEntityDef.portalDestPos );
 			portal->SetDestinationYawOffset( mapEntityDef.portalDestYawOffset );
 		}
-
+		
 		// Define initial script values defined in map file
 		// Note: These will override any initial values already defined in the EntityDefinition
 		newEntity->InitializeScriptValues( mapEntityDef.zephyrScriptInitialValues );
 		newEntity->SetEntityVariableInitializers( mapEntityDef.zephyrEntityVarInits );
-		newEntity->FireSpawnEvent();
-
-		m_world->SaveEntityByName( newEntity );
 	}
 }
 

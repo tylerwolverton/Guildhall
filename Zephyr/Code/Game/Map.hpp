@@ -56,6 +56,8 @@ public:
 	void			ReloadAllEntityScripts();
 	void			InitializeAllZephyrEntityVariables();
 
+	void			CallAllMapEntityZephyrSpawnEvents( Entity* player );
+
 	Vec2 GetPlayerStartPos() const										{ return m_playerStartPos; }
 	std::string GetName() const											{ return m_name; }
 

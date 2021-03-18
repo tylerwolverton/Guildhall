@@ -32,14 +32,6 @@ World::~World()
 //-----------------------------------------------------------------------------------------------
 void World::Update()
 {
-	// Before updating the entities, hook up all the entity references for entity zephyr variables
-	if ( m_isFirstUpdate )
-	{
-		m_isFirstUpdate = false;
-
-		InitializeAllZephyrEntityVariables();
-	}
-
 	for ( Entity* entity : m_worldEntities )
 	{
 		if ( entity != nullptr )
@@ -177,8 +169,6 @@ void World::Reset()
 	UnloadAllEntityScripts();
 	ClearEntities();
 	ClearMaps();
-
-	m_isFirstUpdate = true;
 }
 
 
@@ -251,12 +241,20 @@ void World::AddEntityFromDefinition( const EntityDefinition& entityDef )
 
 	m_worldEntities.push_back( newEntity );
 	SaveEntityByName( newEntity );
+
+	newEntity->CreateZephyrScript( entityDef );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 Entity* World::GetEntityById( EntityId id )
 {
+	auto mapIter = m_entitiesById.find( id );
+	if ( mapIter != m_entitiesById.end() )
+	{
+		return mapIter->second;
+	}
+
 	// Look in this map first
 	Entity* entity = GetEntityByIdInCurMap( id );
 	if ( entity != nullptr )
@@ -294,6 +292,11 @@ Entity* World::GetEntityById( EntityId id )
 //-----------------------------------------------------------------------------------------------
 Entity* World::GetEntityByIdInCurMap( EntityId id )
 {
+	if ( m_curMap == nullptr )
+	{
+		return nullptr;
+	}
+
 	return m_curMap->GetEntityById( id );
 }
 
@@ -314,6 +317,11 @@ Entity* World::GetEntityByName( const std::string& name )
 //-----------------------------------------------------------------------------------------------
 Entity* World::GetEntityByNameInCurMap( const std::string& name )
 {
+	if ( m_curMap == nullptr )
+	{
+		return nullptr;
+	}
+
 	return m_curMap->GetEntityByName( name );
 }
 
@@ -338,6 +346,7 @@ void World::SaveEntityByName( Entity* entity )
 	}
 
 	m_entitiesByName[entity->GetName()] = entity;
+	m_entitiesById[entity->GetId()] = entity;
 }
 
 
@@ -367,4 +376,20 @@ void World::InitializeAllZephyrEntityVariables()
 		map.second->InitializeAllZephyrEntityVariables();
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void World::CallAllZephyrSpawnEvents( Entity* player )
+{
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->FireSpawnEvent();
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->CallAllMapEntityZephyrSpawnEvents( player );
+	}
+}
+
 

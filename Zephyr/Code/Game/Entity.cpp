@@ -55,7 +55,14 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	}
 
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
+	
+	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
+}
 
+
+//-----------------------------------------------------------------------------------------------
+void Entity::CreateZephyrScript( const EntityDefinition& entityDef )
+{
 	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
 	if ( scriptDef != nullptr )
 	{
@@ -64,23 +71,7 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 		m_scriptObj->InitializeGlobalVariables( entityDef.GetZephyrScriptInitialValues() );
 		m_scriptObj->SetEntityVariableInitializers( entityDef.GetZephyrEntityVarInits() );
 	}
-
-	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
 }
-
-
-////-----------------------------------------------------------------------------------------------
-//void Entity::CreateZephyrScript( const EntityDefinition& entityDef )
-//{
-//	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
-//	if ( scriptDef != nullptr )
-//	{
-//		m_scriptObj = new ZephyrScript( *scriptDef, this );
-//		m_scriptObj->InterpretGlobalBytecodeChunk();
-//		m_scriptObj->InitializeGlobalVariables( entityDef.GetZephyrScriptInitialValues() );
-//		m_scriptObj->SetEntityVariableInitializers( entityDef.GetZephyrEntityVarInits() );
-//	}
-//}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -616,6 +607,7 @@ ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
 	if ( varName == "id" )			{ return ZephyrValue( (float)GetId() ); }
 	if ( varName == "name" )		{ return ZephyrValue( GetName() ); }
 	if ( varName == "health" )		{ return ZephyrValue( (float)m_curHealth ); }
+	if ( varName == "maxHealth" )	{ return ZephyrValue( (float)m_entityDef.GetMaxHealth() ); }
 	if ( varName == "position" )	{ return ZephyrValue( GetPosition() ); }
 	if ( varName == "forwardVec" )	{ return ZephyrValue( GetForwardVector() ); }
 	if ( varName == "speed" )		{ return ZephyrValue( GetSpeed() ); }

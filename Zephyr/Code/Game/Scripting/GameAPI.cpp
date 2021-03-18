@@ -595,9 +595,12 @@ void GameAPI::SpawnEntity( EventArgs* args )
 	Entity* newEntity = mapToSpawnIn->SpawnNewEntityOfTypeAtPosition( entityType, position );
 	newEntity->SetOrientationDegrees( orientation );
 	newEntity->SetName( name );
+
 	g_game->SaveEntityByName( newEntity );
+	
 	newEntity->InitializeZephyrEntityVariables();
 	newEntity->FireSpawnEvent();
+
 	if ( mapToSpawnIn == g_game->GetCurrentMap() )
 	{
 		newEntity->Load();
