@@ -1,0 +1,25 @@
+Entity trap1
+Entity trap2
+Entity trap3
+Entity trap4
+Entity trap5
+Entity trap6
+Entity trap7
+Entity trap8
+Entity trap9
+Entity trap10
+
+
+Function TriggerEntered( Number otherEntityId )
+{
+    if( trap1 != null ) { trap1.Activate() }
+    if( trap2 != null ) { trap2.Activate() }
+    if( trap3 != null ) { trap3.Activate() }
+    if( trap4 != null ) { trap4.Activate() }
+    if( trap5 != null ) { trap5.Activate() }
+    if( trap6 != null ) { trap6.Activate() }
+    if( trap7 != null ) { trap7.Activate() }
+    if( trap8 != null ) { trap8.Activate() }
+    if( trap9 != null ) { trap9.Activate() }
+    if( trap10 != null ) { trap10.Activate() }
+}

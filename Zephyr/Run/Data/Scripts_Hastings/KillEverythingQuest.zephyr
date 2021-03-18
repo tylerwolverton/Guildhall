@@ -1,0 +1,17 @@
+Number enemiesInLevel
+String roomId
+
+Function EnemySpawned()
+{
+	enemiesInLevel = enemiesInLevel + 1;
+}
+
+Function EnemyDied()
+{
+	enemiesInLevel = enemiesInLevel - 1;
+
+	if( enemiesInLevel <= 0 )
+	{
+		QuestCompleted( questId: roomId )
+	}
+}

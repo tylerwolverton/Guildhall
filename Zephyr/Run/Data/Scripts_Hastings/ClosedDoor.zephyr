@@ -1,0 +1,9 @@
+String name;
+
+Function OpenDoor( String doorName )
+{
+	if( name == doorName )
+	{
+		DestroySelf()
+	}
+}

@@ -1,0 +1,45 @@
+<MapDefinition type="TileMap" version="1" dimensions="16,10">
+
+	<Legend>
+		<Tile glyph="#" tileType="BlueDungeonBlock"/>
+		<Tile glyph="." tileType="BlueDungeonFloor"/>
+	</Legend>
+	<MapRows>
+		<MapRow tiles="################"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="################"/>
+	</MapRows>
+  <Entities>
+    <!-- Managers -->
+    <Entity type="TBLevel1Manager" name="TBLevel1Manager">
+      <ScriptVarInit type="string" var="roomId" value="TBLevel1"/>
+    </Entity>
+    <Entity type="UnitTester" pos="6.5,6.5">
+      <ScriptVarInit type="entity" var="testEntity" value="blob1"/>
+    </Entity>
+    <!-- Entities -->
+    <PlayerStart pos="8.5,3.5" yaw="0"/>
+    <Actor type="TBBlob" name="tbBlob1" pos="5.5,5.5" yaw="0">
+      <ScriptVarInit type="entity" var="target" value="player"/>
+      <ScriptVarInit type="entity" var="levelMgr" value="TBLevel1Manager"/>
+      <ScriptVarInit type="string" var="name" value="Blob A"/>
+      <ScriptVarInit type="number" var="enemyID" value="1"/>
+    </Actor>
+    <Actor type="TBBlob" name="tbBlob2" pos="7.5,5.5" yaw="0">
+      <ScriptVarInit type="entity" var="target" value="player"/>
+      <ScriptVarInit type="entity" var="levelMgr" value="TBLevel1Manager"/>
+      <ScriptVarInit type="string" var="name" value="Blob B"/>
+      <ScriptVarInit type="number" var="enemyID" value="2"/>
+    </Actor>
+  </Entities>
+
+</MapDefinition>
+
+

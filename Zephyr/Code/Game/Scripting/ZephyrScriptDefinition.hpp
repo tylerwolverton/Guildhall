@@ -37,6 +37,7 @@ public:
 
 private:
 	bool m_isValid = false;
+	static std::string s_dataPathSuffix;
 
 	ZephyrBytecodeChunk* m_stateMachineBytecodeChunk = nullptr;					// Owned by ZephyrScriptDefinition
 	ZephyrBytecodeChunkMap m_bytecodeChunks;									// Owned by ZephyrScriptDefinition

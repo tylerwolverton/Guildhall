@@ -1,0 +1,24 @@
+String keyName
+
+// Function CollisionEntered( Number otherEntityId )
+// {
+// 	CheckEntityForInventoryItem( itemType: keyType )	
+// }
+
+// Function CheckInventoryResult( Bool hasItem )
+// {
+// 	PrintToConsole(text: hasItem)
+
+// 	if( hasItem )
+// 	{
+// 		DestroySelf()
+// 	}
+// }
+
+Function ItemAcquired( String itemName )
+{
+	if( itemName == keyName )
+	{
+		DestroySelf()
+	}
+}

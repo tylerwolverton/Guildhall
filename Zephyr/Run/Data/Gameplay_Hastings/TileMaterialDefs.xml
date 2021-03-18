@@ -1,0 +1,54 @@
+<TileMaterialDefinitions spriteSheet="Images/ZeldaTiles_30x8.png" spriteSheetDimensions="30,8">
+
+  <TileMaterialDefinitions
+    name="BlueLockedDoorTop"
+    spriteCoords="9,0"
+	/>
+
+  <TileMaterialDefinitions
+    name="BlueClosedDoorVertical"
+    spriteCoords="11,0"
+	/>
+
+  <TileMaterialDefinitions
+		name="BlueDungeonFloor"
+		spriteCoords="1,0"
+		spriteTint="180,180,180"
+	/>
+
+  <TileMaterialDefinitions
+   name="BlueDungeonBlock"
+   spriteCoords="2,0"
+	/>
+
+  <TileMaterialDefinitions
+   name="GreyDungeonFloor"
+   spriteCoords="1,2"
+	/>
+
+  <TileMaterialDefinitions
+   name="GreyDungeonBlock"
+   spriteCoords="2,2"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeDungeonFloor"
+   spriteCoords="1,1"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeDungeonBlock"
+   spriteCoords="2,1"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeStatueFishRight"
+   spriteCoords="5,1"
+	/>
+
+  <TileMaterialDefinitions
+   name="OrangeStatueDragonLeft"
+   spriteCoords="6,1"
+	/>
+
+</TileMaterialDefinitions>

@@ -58,14 +58,14 @@ void ZephyrScript::Update()
 	}
 
 	// If this is the first update we need to call OnEnter explicitly
-	if ( !m_hasUpdated )
+	if ( !m_hasEnteredStartingState )
 	{
 		if(	!m_isScriptObjectValid )
 		{
 			return;
 		}
 
-		m_hasUpdated = true;
+		m_hasEnteredStartingState = true;
 
 		FireEvent( "OnEnter" );
 	}
@@ -119,7 +119,6 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 		}
 
 		ZephyrInterpreter::InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
-
 	}
 }
 
@@ -133,14 +132,20 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 	}
 
 	ZephyrBytecodeChunk* targetStateBytecodeChunk = GetStateBytecodeChunk( targetState );
-	if ( targetStateBytecodeChunk == nullptr )
+	if ( targetStateBytecodeChunk == nullptr 
+		 || targetStateBytecodeChunk == m_curStateBytecodeChunk )
 	{
 		// State doesn't exist, should be reported by compiler to avoid flooding with errors here
+		// Or the state change is a no-op
 		return;
 	}
 
-	FireEvent( "OnExit" );
-
+	// Only call exit if we're leaving a state
+	//if ( m_hasEnteredStartingState )
+	//{
+		FireEvent( "OnExit" );
+	//}
+	
 	UnRegisterScriptEvents( m_curStateBytecodeChunk );
 
 	m_curStateBytecodeChunk = targetStateBytecodeChunk;
@@ -150,6 +155,7 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 	RegisterScriptEvents( m_curStateBytecodeChunk );
 
 	FireEvent( "OnEnter" );
+	m_hasEnteredStartingState = true;
 }
 
 

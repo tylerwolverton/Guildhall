@@ -1,12 +1,14 @@
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 // Static Definitions
 std::map< std::string, ZephyrScriptDefinition* > ZephyrScriptDefinition::s_definitions;
-
+std::string ZephyrScriptDefinition::s_dataPathSuffix;
 
 //-----------------------------------------------------------------------------------------------
 ZephyrScriptDefinition::ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachineBytecodeChunk, 
@@ -14,7 +16,7 @@ ZephyrScriptDefinition::ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachin
 	: m_stateMachineBytecodeChunk( stateMachineBytecodeChunk )
 	, m_bytecodeChunks( bytecodeChunks )
 {
-
+	s_dataPathSuffix = g_gameConfigBlackboard.GetValue( std::string( "dataPathSuffix" ), "" );
 }
 
 
@@ -112,7 +114,7 @@ ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinitionByPath(
 //-----------------------------------------------------------------------------------------------
 ZephyrScriptDefinition* ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( const std::string& scriptName )
 {
-	std::string fullPath = "Data/Scripts/" + scriptName;
+	std::string fullPath = Stringf( "Data/Scripts%s/%s", s_dataPathSuffix.c_str(), scriptName.c_str() );
 
 	return GetZephyrScriptDefinitionByPath( fullPath );
 }

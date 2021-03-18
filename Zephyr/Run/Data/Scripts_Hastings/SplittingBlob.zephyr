@@ -1,0 +1,110 @@
+Vec2 position;		
+Vec2 targetPosition;
+Entity target = null
+Number health;
+
+Number maxChaseDist = 3
+
+String minionSpawnType;
+
+// -----------------------------------------------------------------------------------------
+// Global events
+// -----------------------------------------------------------------------------------------
+Function Spawned( Number maxHealth, String mapName )
+{
+	health = maxHealth;
+	EnemySpawned( mapName: mapName )
+	GetNewWanderTargetPosition( newPos: targetPosition )
+}
+
+Function HealthUpdated( Number newHealth )
+{
+	health = newHealth;
+
+	// TODO: Look into why parentEntity is null but we still execute code
+	if( health <= 0 )
+	{
+		ChangeState( Dead )
+	}
+
+	// Spawn minions on damage
+	if( minionSpawnType != "" )
+	{
+		Vec2 posOffset = Vec2( .25, 0 );
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position + posOffset )
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position - posOffset )
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position + posOffset )
+		SpawnEntity( type: minionSpawnType, position: parentEntity.position - posOffset )
+	}	
+}
+
+Function Died( String mapName )
+{
+	EnemyDied( mapName: mapName )
+}
+
+// Damage
+Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
+{
+	if( otherEntity != null )
+	{
+		DamageEntity( target : otherEntity, damage: attackDamage, damageType: "normal" )
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Wander
+// -----------------------------------------------------------------------------------------
+State Wander
+{			
+	OnUpdate()
+	{
+		// Bool wasTargetFound = false
+		// CheckForTarget( target: target, maxDist: 3, targetFound: wasTargetFound )
+		// if( wasTargetFound )
+		// {
+		// 	ChangeState( Chase )
+		// }
+
+		MoveToLocation( pos: targetPosition )
+
+		if( parentEntity.position == targetPosition )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Chase
+// -----------------------------------------------------------------------------------------
+// State Chase
+// {
+// 	Function WanderIfTooFar()
+// 	{		
+// 		Number distance
+// 		GetDistanceToTarget( target: target, distance: distance ) 
+
+// 		if( distance > maxChaseDist )
+// 		{
+// 			GetNewWanderTargetPosition( newPos: targetPosition )
+// 			ChangeState( Wander )
+// 		}
+// 	}
+
+// 	OnUpdate()
+// 	{
+// 		if( health == 1 )
+// 		{
+// 			ChangeState( Flee )
+// 		}
+		
+// 		WanderIfTooFar()
+// 		MoveToLocation( pos: target.curPosition )
+// 	}
+// }
+
+State Dead
+{
+	
+}

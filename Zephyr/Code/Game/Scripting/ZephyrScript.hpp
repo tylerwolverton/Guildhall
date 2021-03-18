@@ -49,7 +49,7 @@ private:
 
 private:
 	bool m_isScriptObjectValid = true;
-	bool m_hasUpdated = false;
+	bool m_hasEnteredStartingState = false;
 
 	std::string m_name;
 	Entity* m_parentEntity = nullptr;

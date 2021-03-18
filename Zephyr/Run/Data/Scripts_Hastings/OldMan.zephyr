@@ -1,0 +1,184 @@
+Bool hasOpenedDoor = false
+Bool gavePowerUp = false
+Bool introText = true
+Entity player = null
+Number lastHealth = 0
+
+State Waiting
+{
+    OnEnter()
+    {
+        lastHealth = parentEntity.health
+        introText = true
+    }
+    Function PlayerInteracted()
+    {
+        ChangeState( Intro );
+    }
+}
+
+State Intro
+{
+    OnEnter()
+    {
+        
+
+        if (introText == true)
+        {
+            StartDialogue()
+            if (parentEntity.health >= lastHealth)
+            {
+                AddLineOfDialogueText( text: "Hello, traveler! Can I help you?" )
+            }
+            else
+            {
+                AddLineOfDialogueText( text: "Watch where you swing that thing, sonny!" )
+
+                AddDialogueChoice( name: "choice5", text: "Sorry, old man...")
+
+                return
+            }
+        }
+        else
+        {
+            AddLineOfDialogueText( text: "Need anything else?" )
+        }
+
+        if (hasOpenedDoor == false)
+        {
+            AddDialogueChoice( name: "choice1", text: "Could you open the door in the other room?" )
+        }
+
+        if ((hasOpenedDoor == true || gavePowerUp == true) && (introText == false))
+        {
+            AddDialogueChoice( name: "choice4", text: "Thanks, gramps!")
+        }
+
+        if (gavePowerUp == false)
+        {
+            AddDialogueChoice( name: "choice2", text: "Gimme somethin' strong!" )
+        }
+
+        AddDialogueChoice( name: "choice3", text: "Nope!" )
+    }
+
+    
+    Function PlayerInteracted( String choiceName )
+    {
+        if( choiceName == "choice1" )
+        {
+            ChangeState( Choice1 );
+        }
+
+        if( choiceName == "choice2" )
+        {
+            ChangeState( Choice2 );
+        }
+
+        if( choiceName == "choice3" )
+        {
+            ChangeState( Choice3 );
+        }
+
+        if( choiceName== "choice4" )
+        {
+            ChangeState( Choice4 );
+        }
+
+        if( choiceName== "choice5" )
+        {
+            ChangeState( Choice5 );
+        }
+
+        EndDialogue()
+        ChangeState( Waiting );
+    }
+}
+
+State Choice1
+{
+    OnEnter()
+    {
+        if( !hasOpenedDoor )
+        {
+            hasOpenedDoor = true;
+
+            AddLineOfDialogueText( text: "Sure, it should be open now" )
+            Level3DialogueSolved()
+        }
+        else
+        {
+            AddLineOfDialogueText( text: "It's already open" )
+        }
+    }
+
+    Function PlayerInteracted()
+    {
+        introText = false
+
+        ChangeState( Intro )
+    }
+}
+
+State Choice2
+{
+    OnEnter()
+    {
+        AddLineOfDialogueText( text: "Here's a stronger fire thrower!")
+        player.projectileDamage = player.projectileDamage + 1
+        player.projectileScreenShake = player.projectileScreenShake + 0.05
+        gavePowerUp = true
+    }
+
+    Function PlayerInteracted()
+    {
+        introText = false
+
+        ChangeState( Intro )
+    }
+}
+
+State Choice3
+{
+    OnEnter()
+    {
+        AddLineOfDialogueText( text: "Okay, see ya" )
+    }
+
+    Function PlayerInteracted()
+    {
+        EndDialogue()
+
+        ChangeState( Waiting )
+    }
+}
+
+State Choice4
+{
+    OnEnter()
+    {
+        AddLineOfDialogueText( text: "No problem, sonny! Such a well-mannered child." )
+    }
+
+    Function PlayerInteracted()
+    {
+        EndDialogue()
+
+        ChangeState( Waiting )
+    }
+}
+
+State Choice5
+{
+    OnEnter()
+    {
+        AddLineOfDialogueText( text: "Be more careful next time!" )
+    }
+
+    Function PlayerInteracted()
+    {
+        EndDialogue()
+
+        ChangeState( Waiting )
+    }
+}

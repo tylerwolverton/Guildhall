@@ -1,0 +1,25 @@
+Number attackDamage = null
+Entity player = null
+
+Function Spawned()
+{
+    StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired" )
+}
+
+Function ProjectileLifeExpired()
+{
+    PlaySound( soundName: "EnemyHit", volume: .25)
+    DestroySelf()
+}
+
+Function CollisionEntered( Entity otherEntity )
+{
+    if( otherEntity != null )
+    {
+        DamageEntity( target: otherEntity, damage: player.projectileDamage )
+        AddScreenShake( intensity: player.projectileScreenShake )
+    }
+
+    PlaySound( soundName: "PlayerHit", volume: .1 )
+    DestroySelf()
+}

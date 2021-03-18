@@ -1,0 +1,51 @@
+<TileDefinitions>
+
+  <TileDefinition
+	name="BlueDungeonFloor"
+    materialType="BlueDungeonFloor"
+	isSolid="false"
+	/>
+
+  <TileDefinition
+	name="BlueDungeonBlock"
+    materialType="BlueDungeonBlock"
+	isSolid="true"
+	/>
+
+  <TileDefinition
+	name="GreyDungeonFloor"
+    materialType="GreyDungeonFloor"
+	isSolid="false"
+	/>
+
+  <TileDefinition
+	name="GreyDungeonBlock"
+    materialType="GreyDungeonBlock"
+	isSolid="true"
+	/>
+
+	<TileDefinition
+	name="OrangeDungeonFloor"
+    materialType="OrangeDungeonFloor"
+	isSolid="false"
+	/>
+
+  <TileDefinition
+	name="OrangeDungeonBlock"
+    materialType="OrangeDungeonBlock"
+	isSolid="true"
+	/>
+
+  <TileDefinition
+	name="OrangeStatueFishRight"
+    materialType="OrangeStatueFishRight"
+	isSolid="true"
+	/>
+
+  <TileDefinition
+	name="OrangeStatueDragonLeft"
+    materialType="OrangeStatueDragonLeft"
+	isSolid="true"
+	/>
+
+</TileDefinitions>

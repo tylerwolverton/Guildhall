@@ -1,0 +1,161 @@
+Number curHealth = -1;
+Vec2 curPosition;
+Bool canShoot = true;
+Bool turnStart = false;
+Number fireCooldown = .5;
+Number projectileDamage = 1;
+Number projectileScreenShake = 0.05;
+Number enemiesPresent = 0;
+Number targetID = 0;
+String enemy1 = "";
+String enemy2 = "";
+String enemy3 = "";
+
+Vec2 testVec
+Entity blob
+
+Function Spawned( Number maxHealth )
+{
+    if( curHealth == -1 )
+    {
+        curHealth = maxHealth;
+    }
+
+    AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
+
+    ChangeState( Turn )
+}
+
+Function PositionUpdated( Vec2 newPos )
+{
+    curPosition = newPos;
+}
+
+Function HealthUpdated( Number newHealth )
+{
+    if( newHealth < curHealth )
+    {
+        ActivateInvincibility()
+        ChangeSpriteAnimation( newAnim: "Damaged" )
+        StartNewTimer( durationSeconds: 2, onCompletedEvent: "InvincibilityExpired" )
+    }
+
+    curHealth = newHealth;
+}
+
+Function InvincibilityExpired()
+{
+    DeactivateInvincibility()
+    ChangeSpriteAnimation( newAnim: "Walk" )
+}
+
+State Default
+{
+    // Bool isFirst = true
+    // Number testVal = 12
+
+    // OnUpdate()
+    // {
+    //     if( isFirst )
+    //     {
+    //         isFirst = false
+    //         // testVal = 7
+    //         blob.SummonBlob( newPos: curPosition, blobVal: testVal )
+    //         PrintToConsole( text: "isFirst is true" )
+    //     }
+
+    //     PrintDebugText( text: "TestVal: " + testVal )
+    // }
+}
+
+State Turn
+{
+    
+    OnEnter()
+    {
+        // if (turnStart == false)
+        // {
+        //     turnStart = true
+        //     return
+        // }
+        
+        StartDialogue()
+        AddLineOfDialogueText(text: "Choose a target!")
+        if (enemy1 != "")
+        {
+            AddDialogueChoice(name: "target1", text: enemy1)
+        }
+        if (enemy2 != "")
+        {
+            AddDialogueChoice(name: "target2", text: enemy2)
+        }
+        if (enemy3 != "")
+        {
+            AddDialogueChoice(name: "target3", text: enemy3)
+        }
+    }
+
+    Function PlayerInteracted( String choiceName )
+    {
+        
+        if( choiceName == "target1" )
+        {
+            targetID = 1
+            ChangeState( Attack );
+        }
+
+        if( choiceName == "target2" )
+        {
+            targetID = 2
+            ChangeState( Attack );
+        }
+
+        if( choiceName == "target3" )
+        {
+            targetID = 3
+            ChangeState( Attack );
+        }
+    
+    }
+}
+
+State Attack
+{
+    OnEnter()
+    {
+        AddLineOfDialogueText(text: "Choose an attack!")
+    
+        AddDialogueChoice(name: "slash", text: "Slash")
+        AddDialogueChoice(name: "backToTarget", text: "Back")
+    }
+
+    Function PlayerInteracted( String choiceName )
+    {
+
+        if( choiceName == "slash" )
+        {
+            SlashAttack( number: targetID );
+        }
+
+        if( choiceName == "backToTarget" )
+        {
+            targetID = 0
+            ChangeState( Turn );
+        }
+    }
+}
+
+Function LoadEnemy1( String enemy )
+{
+    enemy1 = enemy
+}
+
+Function LoadEnemy2( String enemy )
+{
+    enemy2 = enemy
+}
+
+Function LoadEnemy3( String enemy )
+{
+    enemy3 = enemy
+}

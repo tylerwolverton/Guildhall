@@ -158,6 +158,7 @@ private:
 	Vec3 m_focalPoint = Vec3::ZERO;
 
 	// Default map data
+	std::string m_dataPathSuffix;
 	std::string m_defaultTileName;
 	std::string m_defaultTileMaterialName;
 

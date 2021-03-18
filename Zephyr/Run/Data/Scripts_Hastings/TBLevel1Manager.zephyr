@@ -1,0 +1,45 @@
+String roomId;
+Number enemiesInLevel;
+String questStatusText = "Clear All Enemies";
+Entity playerCharacter = null
+
+Function EnemySpawned( String mapName )
+{
+    if( roomId == mapName )
+    {
+        enemiesInLevel = enemiesInLevel + 1;
+    }
+}
+
+Function SlashAttack( Number targetID )
+{
+    return
+}
+
+Function EnemyDied( String mapName )
+{
+    if( roomId == mapName )
+    {
+        enemiesInLevel = enemiesInLevel - 1;
+
+        if( enemiesInLevel <= 0 )
+        {
+            QuestCompleted( questId: roomId )
+            questStatusText = "Room Complete";
+        }
+    }
+}
+
+State Default
+{
+    OnUpdate()
+    {
+        Vec2 screenLocationRatio = Vec2( 0, 1 );
+        Vec2 screenPadding = Vec2( 3, -30 );
+        PrintDebugScreenText( text: questStatusText,
+                              fontSize: 20,
+                              locationRatio: screenLocationRatio,
+                              padding: screenPadding,
+                              color: "white" )
+    }
+}

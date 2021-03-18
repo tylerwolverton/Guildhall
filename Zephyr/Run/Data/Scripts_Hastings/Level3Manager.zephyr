@@ -1,0 +1,6 @@
+String roomId;
+
+Function Level3DialogueSolved()
+{
+    QuestCompleted( questId: roomId )
+}

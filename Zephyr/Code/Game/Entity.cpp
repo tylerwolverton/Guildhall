@@ -69,6 +69,20 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 }
 
 
+////-----------------------------------------------------------------------------------------------
+//void Entity::CreateZephyrScript( const EntityDefinition& entityDef )
+//{
+//	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
+//	if ( scriptDef != nullptr )
+//	{
+//		m_scriptObj = new ZephyrScript( *scriptDef, this );
+//		m_scriptObj->InterpretGlobalBytecodeChunk();
+//		m_scriptObj->InitializeGlobalVariables( entityDef.GetZephyrScriptInitialValues() );
+//		m_scriptObj->SetEntityVariableInitializers( entityDef.GetZephyrEntityVarInits() );
+//	}
+//}
+
+
 //-----------------------------------------------------------------------------------------------
 Entity::~Entity()
 {

@@ -4,4 +4,5 @@
 	windowAspect="1.777"
 	windowTitle="Zephyr Test"
 	windowMode="windowed"
+  dataPathSuffix=""
 />

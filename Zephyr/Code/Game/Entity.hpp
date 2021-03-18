@@ -70,6 +70,7 @@ public:
 	void			UnloadZephyrScript();
 	void			ReloadZephyrScript();
 	
+	//void			CreateZephyrScript( const EntityDefinition& entityDef );
 	void			InitializeZephyrEntityVariables();
 	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
 	void			SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );

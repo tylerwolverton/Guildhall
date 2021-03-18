@@ -111,6 +111,7 @@ void Game::Startup()
 	m_world = new World( m_gameClock );
 
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
+	m_dataPathSuffix = g_gameConfigBlackboard.GetValue( std::string( "dataPathSuffix" ), "" );
 	
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -352,13 +353,13 @@ void Game::LoadTileMaterialsFromXml()
 {
 	g_devConsole->PrintString( "Loading Tile Materials..." );
 
-	const char* filePath = "Data/Gameplay/TileMaterialDefs.xml";
+	std::string filePath = Stringf( "Data/Gameplay%s/TileMaterialDefs.xml", m_dataPathSuffix.c_str() ).c_str();
 
 	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
+	XmlError loadError = doc.LoadFile( filePath.c_str() );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		g_devConsole->PrintError( "Data/Gameplay/TileMaterialDefs.xml: Could not be opened." );
+		g_devConsole->PrintError( Stringf( "%s: Could not be opened.", filePath.c_str() ) );
 		return;
 	}
 
@@ -424,20 +425,20 @@ void Game::LoadTilesFromXml()
 {
 	g_devConsole->PrintString( "Loading Tiles..." );
 
-	const char* filePath = "Data/Gameplay/TileDefs.xml";
+	std::string filePath = Stringf( "Data/Gameplay%s/TileDefs.xml", m_dataPathSuffix.c_str() );
 
 	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
+	XmlError loadError = doc.LoadFile( filePath.c_str() );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		g_devConsole->PrintError( Stringf( "The tiles xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( Stringf( "The tiles xml file '%s' could not be opened.", filePath.c_str() ) );
 		return;
 	}
 
 	XmlElement* root = doc.RootElement();
 	if ( strcmp( root->Name(), "TileDefinitions" ) )
 	{
-		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be TileDefinitions", filePath ) );
+		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be TileDefinitions", filePath.c_str() ) );
 		return;
 	}
 
@@ -467,7 +468,7 @@ void Game::LoadMapsFromXml()
 {
 	g_devConsole->PrintString( "Loading Maps..." );
 
-	std::string folderPath( "Data/Maps" );
+	std::string folderPath( "Data/Maps" + m_dataPathSuffix );
 
 	Strings mapFiles = GetFileNamesInFolder( folderPath, "*.xml" );
 	for ( int mapIdx = 0; mapIdx < (int)mapFiles.size(); ++mapIdx )
@@ -510,10 +511,10 @@ void Game::LoadEntitiesFromXml()
 {
 	g_devConsole->PrintString( "Loading Entity Types..." );
 
-	const char* filePath = "Data/Gameplay/EntityTypes.xml";
+	std::string filePath = Stringf( "Data/Gameplay%s/EntityTypes.xml", m_dataPathSuffix.c_str() );
 
 	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
+	XmlError loadError = doc.LoadFile( filePath.c_str() );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
 		g_devConsole->PrintError( "EntityTypes.xml could not be opened" );
@@ -605,20 +606,20 @@ void Game::LoadWorldDefinitionFromXml()
 {
 	g_devConsole->PrintString( "Loading World Definition..." );
 
-	const char* filePath = "Data/Gameplay/WorldDef.xml";
+	std::string filePath = Stringf( "Data/Gameplay%s/WorldDef.xml", m_dataPathSuffix.c_str() );
 
 	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( filePath );
+	XmlError loadError = doc.LoadFile( filePath.c_str() );
 	if ( loadError != tinyxml2::XML_SUCCESS )
 	{
-		g_devConsole->PrintError( Stringf( "The world xml file '%s' could not be opened.", filePath ) );
+		g_devConsole->PrintError( Stringf( "The world xml file '%s' could not be opened.", filePath.c_str() ) );
 		return;
 	}
 
 	XmlElement* root = doc.RootElement();
 	if ( strcmp( root->Name(), "WorldDefinition" ) )
 	{
-		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be WorldDefinition", filePath ) );
+		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be WorldDefinition", filePath.c_str() ) );
 		return;
 	}
 
@@ -636,14 +637,14 @@ void Game::LoadWorldDefinitionFromXml()
 			std::string entityTypeStr = ParseXmlAttribute( *entityElement, "type", "" );
 			if ( entityTypeStr.empty() )
 			{
-				g_devConsole->PrintError( Stringf( "'%s': %s is missing a type attribute", filePath, entityElement->Name() ) );
+				g_devConsole->PrintError( Stringf( "'%s': %s is missing a type attribute", filePath.c_str(), entityElement->Name() ) );
 				return;
 			}
 
 			EntityDefinition* entityTypeDef = EntityDefinition::GetEntityDefinition( entityTypeStr );
 			if ( entityTypeDef == nullptr )
 			{
-				g_devConsole->PrintError( Stringf( "'%s': Entity type '%s' was not defined in EntityTypes.xml", filePath, entityTypeStr.c_str() ) );
+				g_devConsole->PrintError( Stringf( "'%s': Entity type '%s' was not defined in EntityTypes.xml", filePath.c_str(), entityTypeStr.c_str() ) );
 				return;
 			}
 
@@ -666,7 +667,7 @@ void Game::LoadAndCompileZephyrScripts()
 {
 	g_devConsole->PrintString( "Loading Zephyr Scripts..." );
 
-	std::string folderPath( "Data/Scripts" );
+	std::string folderPath( "Data/Scripts" + m_dataPathSuffix );
 
 	Strings scriptFiles = GetFileNamesInFolder( folderPath, "*.zephyr" );
 	for ( int scriptIdx = 0; scriptIdx < (int)scriptFiles.size(); ++scriptIdx )
@@ -1294,6 +1295,9 @@ void Game::StartNewTimer( const std::string& targetName, const std::string& name
 //-----------------------------------------------------------------------------------------------
 void Game::ChangeGameState( const eGameState& newGameState )
 {
+	eGameState oldGameState = m_gameState;
+	m_gameState = newGameState;
+
 	switch ( newGameState )
 	{
 		case eGameState::LOADING:
@@ -1305,7 +1309,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 		case eGameState::ATTRACT:
 		{
 			// Check which state we are changing from
-			switch ( m_gameState )
+			switch ( oldGameState )
 			{
 				case eGameState::PAUSED:
 				case eGameState::PLAYING:
@@ -1348,7 +1352,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 			m_gameClock->Resume();
 
 			// Check which state we are changing from
-			switch ( m_gameState )
+			switch ( oldGameState )
 			{
 				case eGameState::PAUSED:
 				{
@@ -1407,6 +1411,4 @@ void Game::ChangeGameState( const eGameState& newGameState )
 		}
 		break;
 	}
-
-	m_gameState = newGameState;
 }
