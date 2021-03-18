@@ -695,6 +695,12 @@ void Game::LoadAndCompileZephyrScripts()
 //-----------------------------------------------------------------------------------------------
 void Game::ReloadGame()
 {
+	if ( m_gameState == eGameState::DIALOGUE )
+	{
+		m_dialogueBox->Reset();
+		m_gameState = eGameState::PLAYING;
+	}
+
 	if ( m_curMusicId != (SoundPlaybackID)-1 )
 	{
 		g_audioSystem->StopSound( m_curMusicId );

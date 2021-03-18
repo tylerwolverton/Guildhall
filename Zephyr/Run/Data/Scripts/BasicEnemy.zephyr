@@ -34,6 +34,7 @@ Function HealthUpdated( Number newHealth)
 
 Function Died( String mapName )
 {
+	// SpawnEntity( type: "Blob", position: Vec2(1,1) )
 	EnemyDied( mapName: mapName )
 }
 

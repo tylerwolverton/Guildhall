@@ -37,8 +37,6 @@ Map::~Map()
 	{
 		if ( m_entities[entityIdx] != nullptr )
 		{
-			m_entities[entityIdx]->Die();
-
 			PTR_SAFE_DELETE( m_entities[entityIdx] );
 		}
 	}

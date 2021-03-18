@@ -160,31 +160,31 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 			}
 
 			// Parse initial values
-			const XmlElement* scriptVarInitElem = scriptElem->FirstChildElement( "ScriptVarInit" );
-			while ( scriptVarInitElem != nullptr )
+			const XmlElement* globalVarElem = scriptElem->FirstChildElement( "GlobalVar" );
+			while ( globalVarElem != nullptr )
 			{
-				std::string typeName = ParseXmlAttribute( *scriptVarInitElem, "type", "" );
-				std::string varName = ParseXmlAttribute( *scriptVarInitElem, "var", "" );
-				std::string valueStr = ParseXmlAttribute( *scriptVarInitElem, "value", "" );
+				std::string typeName = ParseXmlAttribute( *globalVarElem, "type", "" );
+				std::string varName = ParseXmlAttribute( *globalVarElem, "var", "" );
+				std::string valueStr = ParseXmlAttribute( *globalVarElem, "value", "" );
 				if ( typeName.empty() )
 				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit is missing a variable type", m_type.c_str() ) );
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar is missing a variable type", m_type.c_str() ) );
 					break;
 				}
 				if ( varName.empty() )
 				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit is missing a variable name", m_type.c_str() ) );
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar is missing a variable name", m_type.c_str() ) );
 					break;
 				}
 				if ( valueStr.empty() )
 				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit is missing a variable value", m_type.c_str() ) );
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar is missing a variable value", m_type.c_str() ) );
 					break;
 				}
 
 				if ( varName == PARENT_ENTITY_NAME )
 				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit cannot initialize reserved entity variable '%s'.", m_type.c_str(), PARENT_ENTITY_NAME.c_str() ) );
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar cannot initialize reserved entity variable '%s'.", m_type.c_str(), PARENT_ENTITY_NAME.c_str() ) );
 					break;
 				}
 
@@ -211,11 +211,11 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 				}
 				else
 				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': ScriptVarInit '%s' has unsupported type '%s'", m_type.c_str(), varName.c_str(), typeName.c_str() ) );
+					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar '%s' has unsupported type '%s'", m_type.c_str(), varName.c_str(), typeName.c_str() ) );
 					break;
 				}
 
-				scriptVarInitElem = scriptVarInitElem->NextSiblingElement( "ScriptVarInit" );
+				globalVarElem = globalVarElem->NextSiblingElement( "GlobalVar" );
 			}
 		}
 	}

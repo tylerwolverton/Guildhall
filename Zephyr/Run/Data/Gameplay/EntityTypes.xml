@@ -12,7 +12,7 @@
     </Appearance>
     <Gameplay maxHealth="5"/>
     <Script name="Player.zephyr">
-      <ScriptVarInit type="entity" var="blob" value="blob1"/>
+      <GlobalVar type="entity" var="blob" value="blob1"/>
     </Script>
   </Actor>
   ​
@@ -35,7 +35,7 @@
     <Gameplay maxHealth="3">
     </Gameplay>
     <Script name="BasicEnemy.zephyr">
-      <ScriptVarInit type="entity" var="target" value="player"/>
+      <GlobalVar type="entity" var="target" value="player"/>
     </Script>
   </Actor>
 
@@ -47,8 +47,8 @@
     <Gameplay maxHealth="3">
     </Gameplay>
     <Script name="SplittingBlob.zephyr">
-      <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossMed"/>
-      <ScriptVarInit type="entity" var="target" value="player"/>
+      <GlobalVar type="string" var="minionSpawnType" value="BlobBossMed"/>
+      <GlobalVar type="entity" var="target" value="player"/>
     </Script>
   </Actor>
 
@@ -60,8 +60,8 @@
     <Gameplay maxHealth="2">
     </Gameplay>
     <Script name="SplittingBlob.zephyr">
-      <ScriptVarInit type="string" var="minionSpawnType" value="BlobBossSmall"/>
-      <ScriptVarInit type="entity" var="target" value="player"/>
+      <GlobalVar type="string" var="minionSpawnType" value="BlobBossSmall"/>
+      <GlobalVar type="entity" var="target" value="player"/>
     </Script>
   </Actor>
 
@@ -73,7 +73,7 @@
     <Gameplay maxHealth="1">
     </Gameplay>
     <Script name="SplittingBlob.zephyr">
-      <ScriptVarInit type="entity" var="target" value="player"/>
+      <GlobalVar type="entity" var="target" value="player"/>
     </Script>
   </Actor>
 

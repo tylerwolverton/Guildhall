@@ -267,31 +267,31 @@ void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const st
 		mapEntityDef.portalDestYawOffset = ParseXmlAttribute( entityElem, "destYawOffset", 0.f );
 	}
 
-	const XmlElement* scriptVarInitElem = entityElem.FirstChildElement( "ScriptVarInit" );
-	while ( scriptVarInitElem != nullptr )
+	const XmlElement* globalVarElem = entityElem.FirstChildElement( "GlobalVar" );
+	while ( globalVarElem != nullptr )
 	{
-		std::string typeName = ParseXmlAttribute( *scriptVarInitElem, "type", "" );
-		std::string varName = ParseXmlAttribute( *scriptVarInitElem, "var", "" );
-		std::string valueStr = ParseXmlAttribute( *scriptVarInitElem, "value", "" );
+		std::string typeName = ParseXmlAttribute( *globalVarElem, "type", "" );
+		std::string varName = ParseXmlAttribute( *globalVarElem, "var", "" );
+		std::string valueStr = ParseXmlAttribute( *globalVarElem, "value", "" );
 		if ( typeName.empty() )
 		{
-			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit is missing a variable type", mapName.c_str() ) );
+			g_devConsole->PrintError( Stringf( "Map file '%s': GlobalVar is missing a variable type", mapName.c_str() ) );
 			break;
 		}
 		if ( varName.empty() )
 		{
-			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit is missing a variable name", mapName.c_str() ) );
+			g_devConsole->PrintError( Stringf( "Map file '%s': GlobalVar is missing a variable name", mapName.c_str() ) );
 			break;
 		}
 		if ( valueStr.empty() )
 		{
-			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit is missing a variable value", mapName.c_str() ) );
+			g_devConsole->PrintError( Stringf( "Map file '%s': GlobalVar is missing a variable value", mapName.c_str() ) );
 			break;
 		}
 
 		if ( varName == PARENT_ENTITY_NAME )
 		{
-			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit cannot initialize reserved entity variable '%s'.", mapName.c_str(), PARENT_ENTITY_NAME.c_str() ) );
+			g_devConsole->PrintError( Stringf( "Map file '%s': GlobalVar cannot initialize reserved entity variable '%s'.", mapName.c_str(), PARENT_ENTITY_NAME.c_str() ) );
 			break;
 		}
 
@@ -318,11 +318,11 @@ void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const st
 		}
 		else
 		{
-			g_devConsole->PrintError( Stringf( "Map file '%s': ScriptVarInit '%s' has unsupported type '%s'", mapName.c_str(), varName.c_str(), typeName.c_str() ) );
+			g_devConsole->PrintError( Stringf( "Map file '%s': GlobalVar '%s' has unsupported type '%s'", mapName.c_str(), varName.c_str(), typeName.c_str() ) );
 			break;
 		}
 
-		scriptVarInitElem = scriptVarInitElem->NextSiblingElement( "ScriptVarInit" );
+		globalVarElem = globalVarElem->NextSiblingElement( "GlobalVar" );
 	}
 
 	mapEntityDefs.push_back( mapEntityDef );
