@@ -624,6 +624,16 @@ void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& v
 		return;
 	}
 
+	// First check c++ built in vars
+	if ( varName == "health" ) 
+	{ 
+		m_curHealth = value.GetAsNumber(); 
+		if ( m_curHealth < 0 ) 
+		{ 
+			Die(); 
+		} 
+	}
+
 	m_scriptObj->SetGlobalVariable( varName, value );
 }
 

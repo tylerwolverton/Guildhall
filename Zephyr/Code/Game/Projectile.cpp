@@ -17,13 +17,6 @@ Projectile::Projectile( const EntityDefinition& entityDef, Map* map )
 	m_damage = entityDef.GetDamageRange().GetRandomInRange( g_game->m_rng );
 
 	m_rigidbody2D->SetDrag( 0.f );
-
-	if ( m_scriptObj != nullptr )
-	{
-		ZephyrValueMap globalValues;
-		globalValues["attackDamage"] = m_damage;
-		m_scriptObj->InitializeGlobalVariables( globalValues );
-	}
 }
 
 
