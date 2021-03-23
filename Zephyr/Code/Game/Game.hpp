@@ -48,9 +48,11 @@ public:
 	EntityId targetId = -1;
 	std::string name;
 	std::string callbackName;
+	EventArgs* callbackArgs = nullptr;
 
 public:
-	GameTimer( Clock* clock, const EntityId& targetId = -1, const std::string& callbackName = "", const std::string& name = "" );
+	GameTimer( Clock* clock, const EntityId& targetId = -1, const std::string& callbackName = "", const std::string& name = "", EventArgs* callbackArgsIn = nullptr );
+	~GameTimer();
 };
 
 
@@ -98,8 +100,8 @@ public:
 	void		PlaySoundByName( const std::string& soundName, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
 	void		ChangeMusic( const std::string& musicName, bool isLooped = true, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
 
-	void		StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName );
-	void		StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName );
+	void		StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
+	void		StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
 
 public:
 	RandomNumberGenerator* m_rng = nullptr;

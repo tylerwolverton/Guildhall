@@ -405,7 +405,7 @@ void GameAPI::StartNewTimer( EventArgs* args )
 	// Broadcast event to all takes precedence and broadcasts to all entities
 	if ( broadcastEventToAll )
 	{
-		g_game->StartNewTimer( -1, timerName, durationSeconds, onCompletedEventName );
+		g_game->StartNewTimer( -1, timerName, durationSeconds, onCompletedEventName, args );
 		return;
 	}
 	
@@ -415,7 +415,7 @@ void GameAPI::StartNewTimer( EventArgs* args )
 		return;
 	}
 
-	g_game->StartNewTimer( entity->GetId(), timerName, durationSeconds, onCompletedEventName );
+	g_game->StartNewTimer( entity->GetId(), timerName, durationSeconds, onCompletedEventName, args );
 }
 
 

@@ -37,14 +37,50 @@
 
 
 //-----------------------------------------------------------------------------------------------
-GameTimer::GameTimer( Clock* clock, const EntityId& targetId, const std::string& callbackName, const std::string& name )
+GameTimer::GameTimer( Clock* clock, const EntityId& targetId, const std::string& callbackName, const std::string& name, EventArgs* callbackArgsIn )
 	: targetId( targetId )
 	, name( name )
 	, callbackName( callbackName )
 {
 	timer = Timer( clock );
+
+	callbackArgs = new EventArgs();
+	for ( auto const& keyValuePair : callbackArgsIn->GetAllKeyValuePairs() )
+	{
+		if ( keyValuePair.second->Is<float>() )
+		{
+			callbackArgs->SetValue( keyValuePair.first, callbackArgsIn->GetValue( keyValuePair.first, 0.f ) );
+		}
+		else if ( keyValuePair.second->Is<int>() )
+		{
+			callbackArgs->SetValue( keyValuePair.first, callbackArgsIn->GetValue( keyValuePair.first, (EntityId)-1 ) );
+		}
+		else if ( keyValuePair.second->Is<double>() )
+		{
+			callbackArgs->SetValue( keyValuePair.first, (float)callbackArgsIn->GetValue( keyValuePair.first, 0.0 ) );
+		}
+		else if ( keyValuePair.second->Is<bool>() )
+		{
+			callbackArgs->SetValue( keyValuePair.first, callbackArgsIn->GetValue( keyValuePair.first, false ) );
+		}
+		else if ( keyValuePair.second->Is<Vec2>() )
+		{
+			callbackArgs->SetValue( keyValuePair.first, callbackArgsIn->GetValue( keyValuePair.first, Vec2::ZERO ) );
+		}
+		else if ( keyValuePair.second->Is<std::string>()
+				  || keyValuePair.second->Is<char*>() )
+		{
+			callbackArgs->SetValue( keyValuePair.first, callbackArgsIn->GetValue( keyValuePair.first, "" ) );
+		}
+	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+GameTimer::~GameTimer()
+{
+	PTR_SAFE_DELETE( callbackArgs );
+}
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
@@ -950,15 +986,14 @@ void Game::UpdateTimers()
 			{
 				if ( gameTimer->targetId == -1 )
 				{
-					g_eventSystem->FireEvent( gameTimer->callbackName );
+					g_eventSystem->FireEvent( gameTimer->callbackName, gameTimer->callbackArgs );
 				}
 				else
 				{
 					Entity* targetEntity = GetEntityById( gameTimer->targetId );
 					if ( targetEntity != nullptr )
 					{
-						EventArgs args;
-						targetEntity->FireScriptEvent( gameTimer->callbackName, &args );
+						targetEntity->FireScriptEvent( gameTimer->callbackName, gameTimer->callbackArgs );
 					}
 				}
 			}
@@ -967,7 +1002,6 @@ void Game::UpdateTimers()
 			m_timerPool[timerIdx] = nullptr;
 		}
 	}
-
 }
 
 
@@ -1270,9 +1304,9 @@ void Game::ChangeMusic( const std::string& musicName, bool isLooped, float volum
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName )
+void Game::StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs )
 {
-	GameTimer* newTimer = new GameTimer( m_gameClock, targetId, onCompletedEventName, name );
+	GameTimer* newTimer = new GameTimer( m_gameClock, targetId, onCompletedEventName, name, callbackArgs );
 
 	int numTimers = (int)m_timerPool.size();
 	for ( int timerIdx = 0; timerIdx < numTimers; ++timerIdx )
@@ -1291,7 +1325,7 @@ void Game::StartNewTimer( const EntityId& targetId, const std::string& name, flo
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName )
+void Game::StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs )
 {
 	Entity* target = m_world->GetEntityByName( targetName );
 
@@ -1301,7 +1335,7 @@ void Game::StartNewTimer( const std::string& targetName, const std::string& name
 		return;
 	}
 
-	StartNewTimer( target->GetId(), name, durationSeconds, onCompletedEventName );
+	StartNewTimer( target->GetId(), name, durationSeconds, onCompletedEventName, callbackArgs );
 }
 
 

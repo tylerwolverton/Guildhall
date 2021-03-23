@@ -196,10 +196,10 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				// Save identifier names to be updated with new values after call
 				std::map<std::string, std::string> identifierToParamNames = GetCallerVariableToParamNamesFromParameters( "Member function call" );
 
-				EventArgs args;
-				args.SetValue( "entity", (void*)parentEntity );
+				EventArgs* args = new EventArgs();
+				args->SetValue( "entity", (void*)parentEntity );
 
-				InsertParametersIntoEventArgs( args );
+				InsertParametersIntoEventArgs( *args );
 
 				MemberAccessorResult memberAccessorResult = ProcessResultOfMemberAccessor( localVariables );
 
@@ -217,10 +217,12 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 					return;
 				}
 
-				CallMemberFunctionOnEntity( memberAccessorResult.finalMemberVal.GetAsEntity(), memberAccessorResult.memberNames.back(), &args );
+				CallMemberFunctionOnEntity( memberAccessorResult.finalMemberVal.GetAsEntity(), memberAccessorResult.memberNames.back(), args );
 
 				// Set new values of identifier parameters
-				UpdateIdentifierParameters( identifierToParamNames, args, localVariables );
+				UpdateIdentifierParameters( identifierToParamNames, *args, localVariables );
+
+				PTR_SAFE_DELETE( args );
 			}
 			break;
 

@@ -2,11 +2,13 @@ Number attackDamage = 1;
 
 Function Spawned()
 {
-    StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired" )
+    StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired", message: "Missed 'em" )
+    // StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired" )
 }
 
-Function ProjectileLifeExpired()
+Function ProjectileLifeExpired( String message, Number val )
 {
+    PrintToConsole( text: message )
     PlaySound( soundName: "EnemyHit", volume: .25)
     DestroySelf()
 }
