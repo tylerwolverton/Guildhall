@@ -17,8 +17,9 @@ public:
 	Actor( const EntityDefinition& entityDef, Map* map );
 	~Actor();
 
-	virtual void Update( float deltaSeconds );
-	virtual void Die();
+	virtual void Update( float deltaSeconds ) override;
+	virtual void Render() const override;
+	virtual void Die() override;
 
 	void SetAsPlayer();
 

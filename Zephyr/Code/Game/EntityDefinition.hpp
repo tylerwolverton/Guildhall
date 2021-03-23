@@ -33,6 +33,7 @@ std::string GetEntityClassAsString( eEntityClass entityClass );
 class EntityDefinition
 {
 	friend class Entity;
+	friend class Actor;
 
 public:
 	explicit EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spritSheet );

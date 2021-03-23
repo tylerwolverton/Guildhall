@@ -50,6 +50,51 @@ void Actor::Update( float deltaSeconds )
 
 
 //-----------------------------------------------------------------------------------------------
+void Actor::Render() const
+{
+	Entity::Render();
+
+	// Draw health bar if damaged
+	if ( m_curHealth == m_entityDef.GetMaxHealth() )
+	{
+		return;
+	}
+
+	std::vector<Vertex_PCU> hpVertices;
+	Vec2 hpBarMins( m_entityDef.m_localDrawBounds.mins );
+	Vec2 hpBarMaxs( m_entityDef.m_localDrawBounds.maxs.x, m_entityDef.m_localDrawBounds.mins.y + .065f );
+
+	AABB2 hpBarBackground( hpBarMins, hpBarMaxs );
+
+	AppendVertsForAABB2D( hpVertices, hpBarBackground, Rgba8::BLACK );
+
+	AABB2 hpRemaining( hpBarBackground );
+	float hpFraction = (float)m_curHealth / (float)m_entityDef.GetMaxHealth();
+	hpRemaining.ChopOffRight( 1.f - hpFraction, 0.f );
+
+	Rgba8 hpColor = Rgba8::GREEN;
+	if ( hpFraction < .25f )
+	{
+		hpColor = Rgba8::RED;
+	}
+	else if ( hpFraction < .5f )
+	{
+		hpColor = Rgba8::YELLOW;
+	}
+
+	AppendVertsForAABB2D( hpVertices, hpRemaining, hpColor );
+
+	Vec2 hpPosition( GetPosition() );
+	hpPosition.y += m_entityDef.m_localDrawBounds.GetHeight() + .001f;
+
+	Vertex_PCU::TransformVertexArray( hpVertices, 1.f, 0.f, hpPosition );
+
+	g_renderer->BindDiffuseTexture( nullptr );
+	g_renderer->DrawVertexArray( hpVertices );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Actor::Die()
 {
 	if ( m_isPlayer )
