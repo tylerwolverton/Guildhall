@@ -115,10 +115,31 @@ void ZephyrBytecodeChunk::SetVec2Variable( const std::string& identifier, const 
 	m_variables[identifier] = ZephyrValue( var );
 }
 
+
 //-----------------------------------------------------------------------------------------------
-void ZephyrBytecodeChunk::Disassemble()
+void ZephyrBytecodeChunk::Disassemble() const
 {
-	// Write debug code to print out chunks
+	int byteIdx = 0;
+	int opNum = 0;
+	while ( byteIdx < (int)m_bytes.size() )
+	{
+		byte const& instruction = GetByte( byteIdx++ );
+		eOpCode opCode = ByteToOpCode( instruction );
+		std::string instructionLine = Stringf( "%i: %s", opNum, ToString( opCode ).c_str() );
+
+		switch ( opCode )
+		{
+			case eOpCode::CONSTANT:
+			{
+				int constIdx = GetByte( byteIdx++ );
+				instructionLine += Stringf( " %i", constIdx );
+			}
+			break;
+		}
+
+		g_devConsole->PrintString( instructionLine );
+		++opNum;
+	}
 }
 
 

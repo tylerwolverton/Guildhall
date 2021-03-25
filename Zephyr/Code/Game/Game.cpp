@@ -33,6 +33,7 @@
 #include "Game/TileDefinition.hpp"
 #include "Game/MapData.hpp"
 #include "Game/Scripting/ZephyrCompiler.hpp"
+#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
 
@@ -149,6 +150,8 @@ void Game::Startup()
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
 	m_dataPathSuffix = g_gameConfigBlackboard.GetValue( std::string( "dataPathSuffix" ), "" );
 	
+	g_eventSystem->RegisterMethodEvent( "print_bytecode_chunk", "Usage: print_bytecode_chunk entityName=<> chunkName=<>", eUsageLocation::DEV_CONSOLE, this, &Game::PrintBytecodeChunk );
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -1104,6 +1107,34 @@ void Game::RenderFPSCounter() const
 	DebugAddScreenTextf( Vec4( 0.75f, .97f, 0.f, 0.f ), Vec2::ZERO, 15.f, fpsCountercolor, 0.f,
 						 "FPS: %.2f ( %.2f ms/frame )",
 						 fps, frameTime );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::PrintBytecodeChunk( EventArgs* args )
+{
+	std::string entityName = args->GetValue( "entityName", "" );
+	std::string chunkName = args->GetValue( "chunkName", "" );
+
+	if ( entityName.empty()
+		 || chunkName.empty() )
+	{
+		return;
+	}
+
+	Entity* entity = GetEntityByName( entityName );
+	if ( entity == nullptr )
+	{
+		return;
+	}
+
+	const ZephyrBytecodeChunk* chunk = entity->GetBytecodeChunkByName( chunkName );
+	if ( chunk == nullptr )
+	{
+		return;
+	}
+
+	chunk->Disassemble();
 }
 
 

@@ -130,6 +130,43 @@ eOpCode ByteToOpCode( byte opCodeByte )
 
 
 //-----------------------------------------------------------------------------------------------
+std::string ToString( eOpCode opCode )
+{
+	switch ( opCode )
+	{
+		case eOpCode::NEGATE:					return "NEGATE";
+		case eOpCode::NOT:						return "NOT";
+		case eOpCode::CONSTANT:					return "CONSTANT";
+		case eOpCode::CONSTANT_VEC2:			return "CONSTANT_VEC2";
+		case eOpCode::DEFINE_VARIABLE:			return "DEFINE_VARIABLE";
+		case eOpCode::GET_VARIABLE_VALUE:		return "GET_VARIABLE_VALUE";
+		case eOpCode::ASSIGNMENT:				return "ASSIGNMENT";
+		case eOpCode::MEMBER_ASSIGNMENT:		return "MEMBER_ASSIGNMENT";
+		case eOpCode::MEMBER_ACCESSOR:			return "MEMBER_ACCESSOR";
+		case eOpCode::MEMBER_FUNCTION_CALL:		return "MEMBER_FUNCTION_CALL";
+		case eOpCode::ADD:						return "ADD";
+		case eOpCode::SUBTRACT:					return "SUBTRACT";
+		case eOpCode::MULTIPLY:					return "MULTIPLY";
+		case eOpCode::DIVIDE:					return "DIVIDE";
+		case eOpCode::NOT_EQUAL:				return "NOT_EQUAL";
+		case eOpCode::EQUAL:					return "EQUAL";
+		case eOpCode::GREATER:					return "GREATER";
+		case eOpCode::GREATER_EQUAL:			return "GREATER_EQUAL";
+		case eOpCode::LESS:						return "LESS";
+		case eOpCode::LESS_EQUAL:				return "LESS_EQUAL";
+		case eOpCode::FUNCTION_CALL:			return "FUNCTION_CALL";
+		case eOpCode::CHANGE_STATE:				return "CHANGE_STATE";
+		case eOpCode::RETURN:					return "RETURN";
+		case eOpCode::IF:						return "IF";
+		case eOpCode::JUMP:						return "JUMP";
+		case eOpCode::AND:						return "AND";
+		case eOpCode::OR:						return "OR";
+		case eOpCode::LAST_VAL:					return "LAST_VAL";
+		default:								return "UNKNOWN";
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 std::string ToString( eValueType valueType )
 {
 	switch ( valueType )

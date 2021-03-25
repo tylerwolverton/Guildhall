@@ -136,7 +136,7 @@ enum class eOpCode : byte
 };
 
 eOpCode ByteToOpCode( byte opCodeByte );
-
+std::string ToString( eOpCode opCode );
 
 //-----------------------------------------------------------------------------------------------
 enum class eValueType

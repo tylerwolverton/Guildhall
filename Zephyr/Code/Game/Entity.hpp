@@ -74,6 +74,7 @@ public:
 	void			InitializeZephyrEntityVariables();
 	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
 	void			SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
+	const ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& chunkName ) const;
 	
 	ZephyrValue		GetGlobalVariable( const std::string& varName );
 	void			SetGlobalVariable( const std::string& varName, const ZephyrValue& value );

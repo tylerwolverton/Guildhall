@@ -132,6 +132,9 @@ private:
 	float GetAverageFPS() const;
 	void RenderFPSCounter() const;
 
+	// Events
+	void PrintBytecodeChunk( EventArgs* args );
+
 private:
 	Clock* m_gameClock = nullptr;
 	float m_fpsHistory[FRAME_HISTORY_COUNT];

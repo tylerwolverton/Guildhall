@@ -12,6 +12,11 @@ String testStrInit = "Hello";
 Entity testEntity
 Entity player
 
+Function DebugPrint()
+{
+	Number result = 1 + 2
+}
+
 // Error cases to comment in to test parser
 State NoPrint
 {	

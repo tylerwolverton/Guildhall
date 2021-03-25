@@ -143,11 +143,7 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 		return;
 	}
 
-	// Only call exit if we're leaving a state
-	//if ( m_hasEnteredStartingState )
-	//{
-		FireEvent( "OnExit" );
-	//}
+	FireEvent( "OnExit" );
 	
 	UnRegisterScriptEvents( m_curStateBytecodeChunk );
 
@@ -270,6 +266,43 @@ void ZephyrScript::InitializeEntityVariables()
 	}
 
 	InitializeGlobalVariables( validEntities );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const ZephyrBytecodeChunk* ZephyrScript::GetBytecodeChunkByName( const std::string& chunkName ) const
+{
+	if ( m_globalBytecodeChunk->GetName() == chunkName )
+	{
+		return m_globalBytecodeChunk;
+	}
+
+	// Check for global functions
+	for ( const auto& eventPair : m_globalBytecodeChunk->GetEventBytecodeChunks() )
+	{
+		if ( eventPair.second->GetName() == chunkName )
+		{
+			return eventPair.second;
+		}
+	}
+
+	for ( const auto& statePair : m_stateBytecodeChunks )
+	{
+		if ( statePair.second->GetName() == chunkName )
+		{
+			return statePair.second;
+		}
+
+		for ( const auto& eventPair : statePair.second->GetEventBytecodeChunks() )
+		{
+			if ( eventPair.second->GetName() == chunkName )
+			{
+				return eventPair.second;
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 

@@ -21,7 +21,7 @@
     <Entity type="Level1Manager" name="Level1Manager">
       <GlobalVar type="string" var="roomId" value="Level1"/>
     </Entity>
-    <Entity type="UnitTester" pos="6.5,6.5">
+    <Entity type="UnitTester" pos="6.5,6.5" name="UnitTester">
       <GlobalVar type="entity" var="testEntity" value="blob1"/>
     </Entity>
     <!-- Door to level 2 -->

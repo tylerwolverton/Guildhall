@@ -39,6 +39,8 @@ public:
 
 	void InitializeEntityVariables();
 
+	const ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& chunkName ) const;
+
 private:
 	void RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
 	void UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );

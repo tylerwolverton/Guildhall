@@ -596,6 +596,18 @@ void Entity::SetEntityVariableInitializers( const std::vector<EntityVariableInit
 
 
 //-----------------------------------------------------------------------------------------------
+const ZephyrBytecodeChunk* Entity::GetBytecodeChunkByName( const std::string& chunkName ) const
+{
+	if ( m_scriptObj == nullptr )
+	{
+		return nullptr;
+	}
+
+	return m_scriptObj->GetBytecodeChunkByName( chunkName );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
 {
 	if ( !IsScriptValid() )

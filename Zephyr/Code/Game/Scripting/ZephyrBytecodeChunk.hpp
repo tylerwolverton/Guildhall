@@ -51,7 +51,7 @@ public:
 	void SetAsInitialState()											{ m_isInitialState = true; }
 
 	// Debug methods
-	void Disassemble();
+	void Disassemble() const;
 
 private:
 	std::string m_name;
