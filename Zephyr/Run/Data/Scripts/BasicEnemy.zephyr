@@ -130,7 +130,7 @@ State Chase
 		}
 		
 		WanderIfTooFar()
-		MoveToLocation( pos: target.curPosition )
+		MoveToLocation( pos: target.position )
 	}
 }
 

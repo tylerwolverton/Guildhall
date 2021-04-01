@@ -643,7 +643,9 @@ void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& v
 		if ( m_curHealth < 0 ) 
 		{ 
 			Die(); 
-		} 
+		}
+
+		return;
 	}
 
 	m_scriptObj->SetGlobalVariable( varName, value );

@@ -217,7 +217,7 @@ State MemberTest
 		Number b
 		// b = a.x
 
-		Number posX = testEntity.target.curPosition.x + 6
+		Number posX = testEntity.target.position.x + 6
 		// testEntity.target = player
 		//posX = testEntity.target.curPosition.x.y
 		//posX = testEntity.target.x.y

@@ -157,6 +157,7 @@ protected:
 	EntityId								m_id = -1;
 	eFaction								m_faction = eFaction::NEUTRAL;
 	float									m_curHealth = 1.f;								// how much health is currently remaining on entity
+	float									m_speed = 1.f;
 	bool									m_isDead = false;								// whether the Entity is “dead” in the game; affects entity and game logic
 	bool									m_isGarbage = false;							// whether the Entity should be deleted at the end of Game::Update()
 	bool									m_isPlayer = false;

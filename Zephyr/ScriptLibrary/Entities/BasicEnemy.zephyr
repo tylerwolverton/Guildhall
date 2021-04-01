@@ -1,6 +1,5 @@
 Variable Entity target = null
 Variable Number maxChaseDist = 4.5
-Variable Number lowHealthThreshhold = 1
 	
 
 Function ChangeStateIfTargetSeen()

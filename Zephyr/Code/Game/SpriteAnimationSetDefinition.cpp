@@ -73,9 +73,19 @@ void SpriteAnimationSetDefinition::AddDirectionAnimation( const std::string& ani
 		else
 		{
 			float fps = ParseXmlAttribute( spriteAnimSetDefElem, "fps", m_defaultFPS );
+			std::string typeStr = ParseXmlAttribute( spriteAnimSetDefElem, "playbackType", "loop" );
+			SpriteAnimPlaybackType playbackType = SpriteAnimPlaybackType::LOOP;
+			if ( IsEqualIgnoreCase( typeStr, "pingpong" ) )
+			{
+				playbackType = SpriteAnimPlaybackType::PINGPONG;
+			}
+			if ( IsEqualIgnoreCase( typeStr, "once" ) )
+			{
+				playbackType = SpriteAnimPlaybackType::ONCE;
+			}
 
 			DirectionAnimation* dirAnim = new DirectionAnimation();
-			dirAnim->animDef = new SpriteAnimDefinition( *m_spriteSheet, spriteIndexes, fps );
+			dirAnim->animDef = new SpriteAnimDefinition( *m_spriteSheet, spriteIndexes, fps, playbackType );
 			dirAnim->facingDirection = facingDir;
 
 			m_directionSpriteAnims[animName] = dirAnim;

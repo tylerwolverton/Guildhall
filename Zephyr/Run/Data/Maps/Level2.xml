@@ -1,4 +1,4 @@
-<MapDefinition type="TileMap" version="1" dimensions="16,10">
+<MapDefinition type="TileMap" version="1" dimensions="21,10">
 
 	<Legend>
 		<Tile glyph="#" tileType="BlueDungeonBlock"/>
@@ -6,16 +6,16 @@
 	</Legend>
 	<MapRows>
 		<!--<MapRow tiles="#######.#.######"/>-->
-		<MapRow tiles="#######.########"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="#..............#"/>
-		<MapRow tiles="###.############"/>
+		<MapRow tiles="#######.#############"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="###.#################"/>
 	</MapRows>
 	<Entities>
     <!-- Managers -->
@@ -34,7 +34,8 @@
     <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
     <!-- Entities -->
     <PlayerStart pos="3.5,1.5" yaw="0"/>
-    <Actor type="BlobBossBig" name="blobBossBig" pos="5.5,5.5" yaw="0"/>
+    <!-- <Actor type="BlobBossBig" name="blobBossBig" pos="5.5,5.5" yaw="0"/> -->
+	<Actor type="Golem" name="golem" pos="10.5,5.5"/>
 	</Entities>
 
 </MapDefinition>

@@ -1,0 +1,245 @@
+Number meleeAttackMaxDist = 3
+Number meleeAttackMaxDistTolerance = .5 // to prevent flipping back and forth from melee to range when on the border
+Number rushAttackSpeed = parentEntity.speed * 5
+Number rushAttackSeconds = .2
+Number meleeAttackDamage = 1
+
+String projectileType = "Boulder"
+Number projectileSpeed = 3
+Number accuracy = 90
+Number accuracyVarianceDegrees = 15
+Number attackCooldownSeconds = 1.5
+Bool canAttack = true
+
+Number breakdownSeconds = 5
+Number functioningSeconds = 10
+Number moveSpeed = parentEntity.speed
+Number oldMoveSpeed = parentEntity.speed
+
+Bool isInvincible = true
+Bool isRaging = false
+Number rageHealthThreshhold = 5
+
+Entity target = null
+
+
+Function Spawned( String mapName )
+{
+	EnemySpawned( mapName: mapName )
+	WakeUp()
+}
+
+
+Function Died()
+{
+	EnemyDied( mapName: mapName )
+}
+
+
+Function CollisionEntered( Entity otherEntity )
+{
+    if( otherEntity != null )
+    {
+        if( otherEntity == target )
+        {
+            DamageEntity( target: otherEntity, damage: meleeAttackDamage )
+        }
+        else
+        {
+            if( isInvincible )
+            {
+                PlaySound( soundName: "LOZ_Shield", volume: .25 )
+            }
+            else
+            {
+                PlaySound( soundName: "LOZ_Enemy_Hit", volume: .25)
+                AddScreenShake( intensity: .05 )
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------
+// Functions to transition between attacking and vulnerable states
+// -----------------------------------------------------------------
+Function BreakDown()
+{
+    StartNewTimer( durationSeconds: breakdownSeconds, onCompletedEvent: "WakeUp" )
+    
+    ChangeState( BrokenDown )
+}
+
+
+Function WakeUp()
+{
+    StartNewTimer( durationSeconds: functioningSeconds, onCompletedEvent: "BreakDown" )
+
+    if( isRaging )
+    {
+        ChangeState( Raging )
+    }
+    else
+    {
+        ChangeState( MeleeAttack )
+    }
+}
+
+
+// Golem stays still and can be damaged
+State BrokenDown
+{
+    OnEnter()
+    {
+        ChangeSpriteAnimation( newAnim: "BreakDown" )
+        DeactivateInvincibility()
+        isInvincible = false
+    }
+
+    OnUpdate()
+    {
+        PrintDebugText( text: "Broken" )
+        if( !isRaging
+            && parentEntity.health < rageHealthThreshhold )
+        {
+            isRaging = true
+            attackCooldownSeconds = attackCooldownSeconds * .5
+            accuracy = accuracy * .8
+            functioningSeconds = functioningSeconds * 1.5
+            moveSpeed = moveSpeed * 2
+        }
+    }
+
+    OnExit()
+    {
+        ActivateInvincibility()
+        isInvincible = true
+    }
+}
+
+
+// -----------------------------------------------------------------
+// Attack functions
+// -----------------------------------------------------------------
+Function StartAttackCooldown()
+{
+    canAttack = false
+    StartNewTimer( durationSeconds: attackCooldownSeconds, onCompletedEvent: "EnableAttack" )
+}
+
+
+Function EnableAttack()
+{
+    canAttack = true
+}
+
+Function ResetSpeed()
+{
+    moveSpeed = oldMoveSpeed
+}
+
+
+Function RushAttack()
+{
+    moveSpeed = rushAttackSpeed
+    StartNewTimer( durationSeconds: rushAttackSeconds, onCompletedEvent: "ResetSpeed" )
+}
+
+
+Function ShootProjectiles()
+{
+    SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( 1, 0 ), orientation: 0 )
+	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( -1, 0 ), orientation: 180 )
+	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( 0, 1 ), orientation: 90 )
+	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( 0, -1 ), orientation: 270 )
+
+    SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( 1, 1 ), orientation: 45 )
+	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( -1, 1 ), orientation: 135 )
+	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( -1, -1 ), orientation: 225 )
+	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( 1, -1 ), orientation: 315 )
+}
+
+
+// -----------------------------------------------------------------
+// Attack states
+// -----------------------------------------------------------------
+State MeleeAttack
+{
+    OnEnter()
+    {
+        ChangeSpriteAnimation( newAnim: "Normal" )
+    }
+
+    OnUpdate()
+    {
+        PrintDebugText( text: "Melee" )
+		Number distance
+		GetDistanceToTarget( target: target, distance: distance ) 
+
+        if( distance > meleeAttackMaxDist + meleeAttackMaxDistTolerance  )
+        {
+            ChangeState( RangedAttack )
+        }  
+        
+        if( canAttack )
+        {
+            RushAttack() 
+            StartAttackCooldown()  
+        }
+
+		MoveToLocation( pos: target.position, speed: moveSpeed, radius: 1 )
+    }
+}
+
+
+State RangedAttack
+{
+    OnEnter()
+    {
+        ChangeSpriteAnimation( newAnim: "Normal" )
+    }
+
+    OnUpdate()
+    {
+        PrintDebugText( text: "Ranged" )
+		Number distance
+		GetDistanceToTarget( target: target, distance: distance ) 
+
+        if( distance < meleeAttackMaxDist - meleeAttackMaxDistTolerance  )
+        {
+            ChangeState( MeleeAttack )
+        }  
+            
+        if( canAttack )
+        {
+		    ShootProjectiles()
+            StartAttackCooldown()
+        }
+
+        MoveToLocation( pos: target.position, speed: moveSpeed )
+    }
+}
+
+
+State Raging
+{
+    OnEnter()
+    {
+        ChangeSpriteAnimation( newAnim: "Raging" )
+    }
+
+    OnUpdate()
+    {
+        PrintDebugText( text: "Raging" )
+        // Do both attacks when raging
+        if( canAttack )
+        {
+            // This will cause some wonky anims but I'll iterate on that later
+            ShootProjectiles()
+            RushAttack()
+            StartAttackCooldown()
+        }
+
+        MoveToLocation( pos: target.position, speed: moveSpeed )
+    }
+}
+

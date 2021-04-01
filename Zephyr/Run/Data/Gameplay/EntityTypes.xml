@@ -77,6 +77,20 @@
     </Script>
   </Actor>
 
+  <Actor name="Golem">
+    <Physics radius="1.5" mass="99999999" speed="750.0" drag="50" collisionLayer="Enemy"/>
+    <Appearance size="3,3" localDrawBounds="-1.5,-1.5,1.5,1.5" fps="3">
+      <Normal down="44,45" up="46,47" right="48,49" left="50,51" />
+      <BreakDown down="45, 44" playbackType="once" fps="1" />
+      <Raging down="36,37" up="38,39" right="40,41" left="42,43" fps="6"/>
+    </Appearance>
+    <Gameplay maxHealth="6">
+    </Gameplay>
+    <Script name="Golem.zephyr">
+      <GlobalVar type="entity" var="target" value="player"/>
+    </Script>
+  </Actor>
+
   <Entity name="TrapTrigger">
     <Physics radius="0.25" speed="0.0" collisionLayer="Enemy" isTrigger="true"/>
     <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
@@ -148,6 +162,15 @@
     <Script name="BasicProjectile.zephyr"/>
   </Projectile>
   ​
+  <Entity name="DamageArea">
+  <Physics radius="0.25" speed="0" drag="5" collisionLayer="EnemyProjectile"/>
+  <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
+    <Walk up="20"/>
+  </Appearance>
+  <Gameplay damage="1~1" maxHealth="3"/>
+    <Script name="DamageArea.zephyr"/>
+  </Entity>
+
 <Projectile name="PoisonBlob">
     <Physics radius="0.25" speed="4" drag="5" collisionLayer="EnemyProjectile"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
@@ -160,7 +183,7 @@
   </Projectile>
 
   <Projectile name="PlayerFireball">
-    <Physics radius="0.25" speed="4" drag="5" collisionLayer="PlayerProjectile"/>
+    <Physics radius="0.25" mass="1" speed="4" drag="5" collisionLayer="PlayerProjectile"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
       <Walk up="20"/>
     </Appearance>

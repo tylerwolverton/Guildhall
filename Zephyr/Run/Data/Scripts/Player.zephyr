@@ -1,16 +1,13 @@
 Number curHealth = parentEntity.health;
-Vec2 curPosition;
 Bool canShoot = true;
 Number fireCooldown = .5;
 
 Vec2 testVec
-Entity blob
+
 
 Function Spawned( Number maxHealth )
 {
     AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
-
-    RegisterKeyEvent( key: "P", event: "SummonBlob" )
 
     RegisterKeyEvent( key: "W", event: "MoveUp" )
     RegisterKeyEvent( key: "A", event: "MoveLeft" )
@@ -23,14 +20,6 @@ Function Spawned( Number maxHealth )
     RegisterKeyEvent( key: "Right", event: "ShootFireballRight" )
 }
 
-Function SummonBlob()
-{
-    //blob.target.MoveUp()
-   // Number testVal = 7
-   // blob.SummonBlob( newPos: curPosition, testVal: testVal )
-
-   // PrintDebugText(text: testVal )
-}
 
 Function ItemAcquired( String itemName )
 {
@@ -48,10 +37,6 @@ Function ItemAcquired( String itemName )
     }
 }
 
-Function PositionUpdated( Vec2 newPos )
-{
-    curPosition = newPos;
-}
 
 Function HealthUpdated( Number newHealth )
 {
@@ -106,7 +91,7 @@ Function ShootFireball( Vec2 fireballOffset, Number shotOrientation )
         return;
     }
 
-    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset, orientation: shotOrientation )
+    SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset, orientation: shotOrientation )
     StartNewTimer( durationSeconds: fireCooldown, onCompletedEvent: "ShotCooldownExpired" )
 
     canShoot = false;
@@ -146,9 +131,9 @@ Function ShootTripleFireball( Vec2 fireballOffset1,
         return;
     }
 
-    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset1, orientation: shotOrientation1 )
-    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset2, orientation: shotOrientation1 + 45 )
-    SpawnEntity( type: "PlayerFireball", position: curPosition + fireballOffset3, orientation: shotOrientation1 - 45 )
+    SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset1, orientation: shotOrientation1 )
+    SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset2, orientation: shotOrientation1 + 45 )
+    SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset3, orientation: shotOrientation1 - 45 )
 
     StartNewTimer( durationSeconds: fireCooldown, onCompletedEvent: "ShotCooldownExpired" )
 

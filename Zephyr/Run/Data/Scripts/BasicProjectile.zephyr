@@ -2,14 +2,13 @@ Number attackDamage = 1;
 
 Function Spawned()
 {
-    StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired", message: "Missed 'em" )
-    // StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired" )
+    StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired")
+    //  StartNewTimer( durationSeconds: 1, onCompletedEvent: ProjectileLifeExpired( message: "" ) )
 }
 
 Function ProjectileLifeExpired( String message, Number val )
 {
-    PrintToConsole( text: message )
-    PlaySound( soundName: "EnemyHit", volume: .25)
+    // PlaySound( soundName: "EnemyHit", volume: .25)
     DestroySelf()
 }
 
@@ -18,9 +17,7 @@ Function CollisionEntered( Entity otherEntity )
     if( otherEntity != null )
     {
         DamageEntity( target: otherEntity, damage: attackDamage )
-        AddScreenShake( intensity: .05 )
     }
 
-    PlaySound( soundName: "PlayerHit", volume: .1 )
     DestroySelf()
 }

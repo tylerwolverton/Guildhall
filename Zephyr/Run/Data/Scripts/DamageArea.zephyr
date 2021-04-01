@@ -1,0 +1,21 @@
+Number attackDamage = 1;
+
+Function Spawned()
+{
+    StartNewTimer( durationSeconds: 1, onCompletedEvent: "LifeExpired")
+}
+
+Function LifeExpired()
+{
+    DestroySelf()
+}
+
+Function CollisionEntered( Entity otherEntity )
+{
+    if( otherEntity != null )
+    {
+        DamageEntity( target: otherEntity, damage: attackDamage )
+    }
+
+    DestroySelf()
+}
