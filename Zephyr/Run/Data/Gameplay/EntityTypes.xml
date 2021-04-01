@@ -84,7 +84,7 @@
       <BreakDown down="45, 44" playbackType="once" fps="1" />
       <Raging down="36,37" up="38,39" right="40,41" left="42,43" fps="6"/>
     </Appearance>
-    <Gameplay maxHealth="6">
+    <Gameplay maxHealth="15">
     </Gameplay>
     <Script name="Golem.zephyr">
       <GlobalVar type="entity" var="target" value="player"/>
