@@ -21,7 +21,6 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/Scripting/GameAPI.hpp"
-#include "Game/Scripting/ZephyrVirtualMachine.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -101,6 +100,7 @@ void App::Shutdown()
 	Clock::MasterShutdown();
 		
 	PTR_SAFE_DELETE( g_game );
+	PTR_SAFE_DELETE( g_physicsSystem2D );
 	PTR_SAFE_DELETE( g_gameAPI );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_renderer );

@@ -323,6 +323,7 @@ void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
 		}
 	}
 
+	entityToAdd->m_map = this;
 	m_entities.push_back( entityToAdd );
 }
 

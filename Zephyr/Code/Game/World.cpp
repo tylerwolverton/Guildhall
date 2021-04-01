@@ -90,7 +90,7 @@ void World::AddNewMap( const MapData& mapData )
 		m_loadedMaps[mapData.mapName] = tileMap;
 	}
 
-	// Load entities after map has been fully ceated
+	// Load entities after map has been fully created
 	m_loadedMaps[mapData.mapName]->LoadEntities( mapData.mapEntityDefs );
 }
 

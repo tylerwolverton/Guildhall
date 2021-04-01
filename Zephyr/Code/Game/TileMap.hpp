@@ -51,8 +51,8 @@ private:
 	void						PopulateTiles( const std::vector<TileDefinition*>& tileDefs );
 	void						CreateInitialTiles( const std::vector<TileDefinition*>& tileDefs );
 
-	void UpdateCameras();
-	void CenterCameraOnPlayer() const;
+	void						UpdateCameras();
+	void						CenterCameraOnPlayer() const;
 
 	// Tile helpers
 	bool						IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction ) const;

@@ -38,6 +38,4 @@ private:
 
 private:
 	bool m_isQuitting = false;
-
-	float m_screenShakeIntensity = 0.f;
 };
