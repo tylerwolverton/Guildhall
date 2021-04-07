@@ -70,9 +70,9 @@ bool IsOrthoNormalMatrix( Mat44& matrix )
 	Vec3 jBasis = matrix.GetJBasis3D();
 	Vec3 kBasis = matrix.GetKBasis3D();
 
-	if ( !IsNearlyEqual( iBasis.GetLength(), 1.f )
-		 || !IsNearlyEqual( jBasis.GetLength(), 1.f )
-		 || !IsNearlyEqual( kBasis.GetLength(), 1.f ) )
+	if ( !IsNearlyEqual( iBasis.GetLengthSquared(), 1.f )
+		 || !IsNearlyEqual( jBasis.GetLengthSquared(), 1.f )
+		 || !IsNearlyEqual( kBasis.GetLengthSquared(), 1.f ) )
 	{
 		return false;
 	}

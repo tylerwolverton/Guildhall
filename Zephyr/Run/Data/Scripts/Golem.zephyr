@@ -4,7 +4,6 @@ Number rushAttackSpeed = parentEntity.speed * 5
 Number rushAttackSeconds = .2
 Number meleeAttackDamage = 1
 
-String projectileType = "Boulder"
 Number projectileSpeed = 3
 Number accuracy = 90
 Number accuracyVarianceDegrees = 15
