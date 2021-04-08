@@ -52,6 +52,8 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( AddItemToInventory );
 	REGISTER_EVENT( RemoveItemFromInventory );
 	REGISTER_EVENT( CheckEntityForInventoryItem );
+	REGISTER_EVENT( DisableCollisions );
+	REGISTER_EVENT( EnableCollisions );
 
 	REGISTER_EVENT( RegisterKeyEvent );
 	REGISTER_EVENT( UnRegisterKeyEvent );
@@ -303,6 +305,30 @@ void GameAPI::CheckEntityForInventoryItem( EventArgs* args )
 	returnArgs.SetValue( "hasItem", isInInventory );
 
 	targetEntity->FireScriptEvent( "CheckInventoryResult", &returnArgs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::DisableCollisions( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity != nullptr )
+	{
+		entity->DisableRigidbody();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::EnableCollisions( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+
+	if ( entity != nullptr )
+	{
+		entity->EnableRigidbody();
+	}
 }
 
 

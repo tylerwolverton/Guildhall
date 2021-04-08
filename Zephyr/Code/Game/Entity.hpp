@@ -133,6 +133,8 @@ public:
 	//void			ApplyFriction();
 
 	void			MoveWithPhysics( float speed, const Vec2& direction );
+	void			EnableRigidbody();
+	void			DisableRigidbody();
 
 	void			RegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );
 	void			UnRegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );

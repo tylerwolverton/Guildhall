@@ -1,0 +1,30 @@
+Function Open()
+{
+	ChangeState( Open )
+}
+
+Function Close()
+{
+	ChangeState( Closed )
+}
+
+
+State Closed
+{
+	OnEnter()
+	{
+		ChangeSpriteAnimation( newAnim: "Closed" )
+		EnableCollisions()
+	}	
+}
+
+
+State Open
+{
+	OnEnter()
+	{
+		ChangeSpriteAnimation( newAnim: "Open" )
+		DisableCollisions()
+	}
+}
+

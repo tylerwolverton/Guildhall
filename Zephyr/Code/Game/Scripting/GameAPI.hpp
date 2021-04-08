@@ -46,6 +46,8 @@ private:
 	void AddItemToInventory( EventArgs* args );
 	void RemoveItemFromInventory( EventArgs* args );
 	void CheckEntityForInventoryItem( EventArgs* args );
+	void DisableCollisions( EventArgs* args );
+	void EnableCollisions( EventArgs* args );
 
 	// AI
 	void MoveToLocation( EventArgs* args );

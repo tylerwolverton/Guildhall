@@ -129,6 +129,10 @@
     <Script name="Level3Manager.zephyr"/>
   </Entity>
 
+  <Entity name="SlidingPuzzleRoomManager">
+    <Script name="SlidingPuzzleRoomManager.zephyr"/>
+  </Entity>
+
   <Entity name="VictoryTrigger">
     <Gameplay maxHealth="1">
     </Gameplay>
@@ -171,7 +175,30 @@
     <Script name="DamageArea.zephyr"/>
   </Entity>
 
-<Projectile name="PoisonBlob">
+  <Entity name="PressurePlate">
+    <Physics radius="0.25" speed="0" drag="5" collisionLayer="Enemy" isTrigger="true"/>
+    <Script name="PressurePlate.zephyr"/>
+  </Entity>
+
+  <Entity name="Block">
+    <Physics radius="0.35" speed="0" mass="20" drag="10" collisionLayer="Enemy"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
+      <Default up="122"/>
+    </Appearance>
+    <!-- <Script name="PressurePlate.zephyr"/> -->
+  </Entity>
+
+  <Entity name="ClosedDoorEventVertical">
+    <Physics radius="0.5" collisionLayer="StaticEnvironment"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
+      <Closed up="157"/>
+      <Open   up="21"/>
+    </Appearance>
+    <Gameplay maxHealth="99999"/>
+    <Script name="ClosedDoorEvent.zephyr"/>
+  </Entity>
+
+  <Projectile name="PoisonBlob">
     <Physics radius="0.25" speed="4" drag="5" collisionLayer="EnemyProjectile"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
     <!-- Name this animation or something-->

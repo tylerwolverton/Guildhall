@@ -1,0 +1,41 @@
+<MapDefinition type="TileMap" version="1" dimensions="21,10">
+
+	<Legend>
+		<Tile glyph="#" tileType="BlueDungeonBlock"/>
+		<Tile glyph="." tileType="BlueDungeonFloor"/>
+		<Tile glyph="*" tileType="GreyDungeonFloor"/>
+	</Legend>
+	<MapRows>
+		<!--<MapRow tiles="#######.#.######"/>-->
+		<MapRow tiles="#####################"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#......#####........#"/>
+		<MapRow tiles="#......#...#........#"/>
+		<MapRow tiles="#......##.##........#"/>
+		<MapRow tiles="#..............*....."/>
+		<MapRow tiles="#...................#"/>
+		<MapRow tiles="#####################"/>
+	</MapRows>
+	<Entities>
+    <!-- Managers -->
+    <Entity type="SlidingPuzzleRoomManager">
+      <GlobalVar type="string" var="roomId" value="Level2"/>
+    </Entity>
+    <Entity type="PressurePlate" pos="15.5,2.5">
+		<GlobalVar type="entity" var="door" value="keyDoor"/>
+    </Entity>
+    <Entity type="Block" pos="12.5,4.5"/>
+	<Pickup type="Key" name="key1" pos="9.5,4.5" />
+    <!-- Door back to level 1 -->
+    <Portal type="InvisibleTeleporter" pos="20.5,2.5" yaw="0" destMap="Level1" destPos="1.5,1.5" destYawOffset="0"/>
+
+	<!-- Door to key area -->
+	<Entity type="ClosedDoorEventVertical" name="keyDoor" pos="9.5,3.5"/>
+    <!-- Entities -->
+    <PlayerStart pos="18.5,3.5" yaw="0"/>
+	
+	</Entities>
+
+</MapDefinition>

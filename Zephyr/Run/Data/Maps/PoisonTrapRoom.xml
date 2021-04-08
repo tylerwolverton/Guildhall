@@ -81,7 +81,7 @@
       <GlobalVar type="number" var="attackOrientation" value="135"/>
     </Entity>
 
-    <Pickup type="Key" name="key1" pos="3.5,1.5" />
+    <!-- <Pickup type="Key" name="key1" pos="3.5,1.5" /> -->
 
   </Entities>
 

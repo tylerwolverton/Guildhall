@@ -450,6 +450,26 @@ void Entity::MoveWithPhysics( float speed, const Vec2& direction )
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::EnableRigidbody()
+{
+	if ( m_rigidbody2D != nullptr )
+	{
+		m_rigidbody2D->Enable();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::DisableRigidbody()
+{
+	if ( m_rigidbody2D != nullptr )
+	{
+		m_rigidbody2D->Disable();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::RegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName )
 {
 	char keyCode = GetKeyCodeFromString( keyCodeStr );
