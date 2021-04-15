@@ -1,0 +1,4 @@
+what is a dsl? earlier
+Vec2 define it's a 2d vector holding numbers
+split screen for demo to follow more clearly
+darker color scheme

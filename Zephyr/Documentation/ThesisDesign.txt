@@ -1,0 +1,29 @@
+out param design
+
+function call needs to know which params are out
+
+function definition could just save all params back, but probably nice to say out in script
+
+function call
+- function is called
+- event args contain out variables
+- put those values into corresponding identifiers in normal variable way to support local, state, global etc.
+- 
+
+
+function definition bytecode
+- do function
+- save values of out vars into event args that was passed in since they will survive the call
+
+
+----------------
+Initialization of entities
+- Create all entities in game
+  - Initialize each zephyr script object
+  ^ could be interleaved without issue
+- Wire up all entity references
+
+-Call spawned for each entity in order of map definition
+
+only parentEntity can be accessed at global scope, trying to access any other entity should error since initialization order isn't guaranteed
+everything should be available when Spawned is called

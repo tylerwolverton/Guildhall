@@ -1,0 +1,61 @@
+Walking through portal to room map that failed to load still teleports to position
+Warn in console when using a tileType in map that doesn't exist in TileDefs
+
+Params in timer functions
+
+
+out needs to be specified on function definition (GameAPI can know which vars are out)
+save the out vars into event args with & preface
+call function in VM needs to check event args after and upon finding an & try to save the value for that into the current chunk
+Don't support out variables as members like (out entity.val)
+
+Parse and make sure the only thing after out param is identifier
+function call may need a signifier too so parser knows how to check
+
+--------------------------------
+Isaiah
+
+parameter name a little confusing
+pos corresponds to tile, add .5 behind the scenes
+yaw?
+ScriptVarInit -> Var
++=
+case sensitive in xml :(
+
+Projectile hardcodes attack damage!!!!!!!!
+
+health and other built in entity vars exposed and/or a way to affect health from script 
+
+Use parentEntity in global inits and Spawned
+
+can't use parentheses in parameter :(
+can't use - in parameters
+
+--------- Final Thoughts
+intuitive, liked it
+would use it :D
+case insensitive
+
+
+
+---------------------------
+Arthur
+
+case sensitivity - consistent is okay
+
+F5 while in dialog doesn't end dialogue
+
+Can't access entity after dead
+
+Spawning onto dead things will collide with the corpse briefly
+
+Can get into bad state while adding code live. Tried to add new spawning and coouldn't
+Why kill all entities when map destroyed? -> causes errors if you spawn entities on death
+
+really cool, and easy to use
+could figure it out by skimming
+
+--------------------------
+DFS
+global functions are called on every instance of the script object, not just the one who defined it, so using member variables in global functions is unsafe. This is needed to support script to script communication though
+could replace the global functions with calls to entity functions directly for script to script

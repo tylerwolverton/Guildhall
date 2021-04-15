@@ -1,0 +1,163 @@
+StateMachine necessary?
+FireEvent necessary?
+
+Thesis Recap
+-Compiler and VM in place, states events
+-Can reload game which reloads all scripts
+-Errors are reported in dev console and game doesn't crash with script compile errors
+-Test game with enemies to kill, NPC with dialogue, key locked doors, powerup, boss fight, quest manager
+-GameAPI exposes methods to scripts
+  -Sound, animation, move entities, inventory, timers
+-VS code plugin
+-Doxygen docs for GameAPI methods
+
+What's left
+-Functionality/Reduce amount of assumptions in C++
+  -Entity only
+  -Physics layers
+  -Key mapping in GameAPI
+  -Game state changes? (Dialogue, interact, etc.)
+  -Make games and expand GameAPI with new functionality
+
+-More error handling in scripts
+  -Invalid ChangeState
+  -Reserved events
+  -Infinite event loops
+
+-Performance
+
+Questions
+-Which areas should be my main focus going forward?
+
+
+-Balancing ease of use with power. Removing built in C++ classes may be more intuitive since user won't need to know what those are, but then more code needs to be written in scripts.
+-Actors, Quests, 
+-Super configuable script entities? More pretty script stuff and designer friendly stuff?
+
+-End goal: Give to a designer blind or use on a multidisciplinary team and have programmers add to GameAPI as the project goes on
+
+
+-Balance GameAPI with script code. Don't want all of it in GameAPI or programmers needed for everything, scripts harder to debug and have less functionality (like math library)
+
+----- Notes -----
+
+3 main levels that should be explained during a presentation
+- Bytecode VM
+- Scanner and Parser with language syntax
+- Functioanlity of the scripting language
+
+Explain Scanner, compiler, and VM. Need to know how large instructions are, exactly how those are generated and a general walkthrough of tat process. Defense will require I know this off the top of my head, so reamember to review all that code thoroughly.
+Make sure to explain EntityTypes.xml and map xml files. Can mention how an editor would generate the map xml but concede that it must be handwritten since a map editor would be a separate project
+
+case sensitivity -> error on case changes of reserverd words
+
+TokenEnum -> byte since won't have more than 256 of them
+String in token object makes the byte optimization irrelevant based on how huge strings are
+At parse time can save events into vector and then refer to them by the index from then on
+
+Mention all optimizations and performance improvements, and how I identified it
+
+Replace variable names with indices, like constant vector 
+packed arrays
+
+Hand wave past editor, would have one in full implementation
+
+vs code dropdown for available events, can be a manually populated list
+
+poison dart pressure plate, poisons for 5 seconds
+
+Entity type in scripts. Potentially do something like Vec2 to get fields. Same for parameters to events
+
+Focus on intuitive use, spend days refining and coming up with script code that would be nice to use and getting feedback from profs and LDs. Figure out how to implement later
+
+
+
+-------------------------------------------------------------------------------------------------------------
+Entity runtime checks
+
+LDs want communication to be easier
+Give example of accessing variable directly on entity (function too?)
+
+Explain compiler time type checking and how compiler can't know if entity functions and variables exist.
+
+Runtime would have special checks for existence, then fall into existing framework to check types.
+Would allow for mixed type expressions easier
+
+Drawbacks:
+Good chunk of work
+- Doable and important
+Not getting error until code runs
+- Can start at any map, so maybe not too bad
+No line numbers
+- Can give file and variable name
+
+
+Start ids from 1000, to ensure not using id where index should be
+
+
+
+EvaluateAsBool
+EvaluateAsNumber
+
+Consider each case converting to each case
+
+
+
+
+
+---------------------------------------------------
+Profiler
+- VS built in
+- Traci
+- windows high performance counters and macros
+
+From DFS:
+Global events being called for each entity, can't use member variables
+- global functions are called on every instance of the script object, not just the one who defined it, so using member variables in global functions is unsafe. This is needed to support script to script communication though
+could replace the global functions with calls to entity functions directly for script to script
+
+-
+
+
+How to do time correctly?
+don't set deltaSeconds
+
+What to focus on for rest of semester?
+
+
+What to profile?
+Profile around key functions
+Bunch of entities in room and have them do boring stuff like move to see how long that takes
+1-10-100-1000 ms numbers
+
+How to show DFS in presentation?
+Screenshots, overview in results sections
+
+Remove Schedule slide?
+eh, whatever, probably cut
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
