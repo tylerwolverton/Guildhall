@@ -236,5 +236,8 @@
     <Xml Include="..\..\Run\Data\Maps\PoisonTrapRoom.xml">
       <Filter>Data\Maps</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Maps\PerfTest.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

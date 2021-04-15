@@ -99,7 +99,6 @@ State BrokenDown
         {
             isRaging = true
             attackCooldownSeconds = attackCooldownSeconds * .5
-            accuracy = accuracy * .8
             functioningSeconds = functioningSeconds * 1.5
             moveSpeed = moveSpeed * 2
         }

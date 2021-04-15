@@ -4,10 +4,23 @@ Number fireCooldown = .5;
 
 Vec2 testVec
 
+Function PerformanceSpawn10()
+{
+     Spawn10()
+}
+
+Function PerformanceSpawn100()
+{
+    Spawn100()
+}
+
 
 Function Spawned( Number maxHealth )
 {
     AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
+
+    // RegisterKeyEvent( key: "Q", event: "PerformanceSpawn10" )
+    // RegisterKeyEvent( key: "E", event: "PerformanceSpawn100" )
 
     RegisterKeyEvent( key: "W", event: "MoveUp" )
     RegisterKeyEvent( key: "A", event: "MoveLeft" )

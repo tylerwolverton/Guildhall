@@ -62,6 +62,8 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( PlaySound );
 	REGISTER_EVENT( ChangeMusic );
 	REGISTER_EVENT( AddScreenShake );
+
+	REGISTER_EVENT( SpawnEntitiesInRange );
 }
 
 
@@ -846,8 +848,8 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 	}
 
 	Vec2 mapDimensions = map->GetDimensions();
-	float newX = g_game->m_rng->RollRandomFloatInRange( 0.f, mapDimensions.x );
-	float newY = g_game->m_rng->RollRandomFloatInRange( 0.f, mapDimensions.y );
+	float newX = g_game->m_rng->RollRandomFloatInRange( 2.f, mapDimensions.x - 2.f );
+	float newY = g_game->m_rng->RollRandomFloatInRange( 2.f, mapDimensions.y - 2.f );
 	
 	args->SetValue( "newPos", Vec2( newX, newY ) );
 
@@ -1004,6 +1006,28 @@ void GameAPI::AddScreenShake( EventArgs* args )
 	float intensity = args->GetValue( "intensity", 0.f );
 
 	g_game->AddScreenShakeIntensity( intensity );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::SpawnEntitiesInRange( EventArgs* args )
+{
+	Vec2 minPos = args->GetValue( "minPos", Vec2::ZERO );
+	Vec2 maxPos = args->GetValue( "maxPos", Vec2::ONE );
+	std::string entityType = args->GetValue( "type", "" );
+	float entityCount = args->GetValue( "count", 1.f );
+
+	if ( entityType.empty() )
+	{
+		return;
+	}
+
+	for ( int i = 0; i < entityCount; ++i )
+	{
+		Vec2 randomPosition = Vec2( g_game->m_rng->RollRandomFloatInRange( minPos.x, maxPos.x ), g_game->m_rng->RollRandomFloatInRange( minPos.y, maxPos.y ) );
+		args->SetValue( "position", randomPosition );
+		g_eventSystem->FireEvent( "SpawnEntity", args );
+	}
 }
 
 

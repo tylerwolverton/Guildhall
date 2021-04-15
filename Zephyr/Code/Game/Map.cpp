@@ -19,6 +19,10 @@
 #include "Game/EntityDefinition.hpp"
 #include "Game/MapData.hpp"
 
+//#define WIN32_LEAN_AND_MEAN
+//#include <windows.h>
+//#include <profileapi.h>
+
 
 //-----------------------------------------------------------------------------------------------
 Map::Map( const MapData& mapData, World* world )
@@ -96,6 +100,12 @@ void Map::Unload()
 //-----------------------------------------------------------------------------------------------
 void Map::Update( float deltaSeconds )
 {
+	/*LARGE_INTEGER frequency;
+	QueryPerformanceFrequency( &frequency );
+
+	LARGE_INTEGER ticksBefore;
+	QueryPerformanceCounter( &ticksBefore );*/
+	
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity* const& entity = m_entities[entityIdx];
@@ -106,6 +116,14 @@ void Map::Update( float deltaSeconds )
 
 		entity->Update( deltaSeconds );
 	}
+
+	/*LARGE_INTEGER ticksAfter;
+	QueryPerformanceCounter( &ticksAfter );
+
+	double msElapsed = (double)( ticksAfter.QuadPart - ticksBefore.QuadPart ) * 1000.0 / (double)frequency.QuadPart ;
+
+	DebugAddScreenTextf( Vec4( 0.f, .05f, 10.f, 10.f ), Vec2::ZERO, 32.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Entity Count: %d", (int)m_entities.size() );
+	DebugAddScreenTextf( Vec4( 0.f, 0.f, 10.f, 10.f ), Vec2::ZERO, 32.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Update Time: %.2f ms", msElapsed );*/
 
 	UpdateMesh();
 

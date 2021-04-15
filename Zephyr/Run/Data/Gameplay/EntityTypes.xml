@@ -113,6 +113,10 @@
     <Script name="UnitTests.zephyr"/>
   </Entity>
 
+  <Entity name="PerformanceTester">
+    <Script name="PerformanceTester.zephyr"/>
+  </Entity>
+
   <Entity name="GameManager">
     <Script name="GameManager.zephyr"/>
   </Entity>

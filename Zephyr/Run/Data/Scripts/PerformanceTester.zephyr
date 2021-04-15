@@ -1,0 +1,34 @@
+Bool canSpawn = true;
+Number spawnCooldown = .5;
+
+
+Function SpawnCooldownExpired()
+{
+    canSpawn = true;
+}
+
+
+Function Spawn10()
+{
+    if( !canSpawn )
+    {
+        return;
+    }
+    canSpawn = false;
+    
+    SpawnEntitiesInRange( type: "Blob", map: "PerfTest", count: 10, minPos: Vec2( 3, 3 ), maxPos: Vec2( 38, 38 ) )
+    StartNewTimer( durationSeconds: spawnCooldown, onCompletedEvent: "SpawnCooldownExpired" )
+}
+
+
+Function Spawn100()
+{
+    if( !canSpawn )
+    {
+        return;
+    }
+    canSpawn = false;
+
+    SpawnEntitiesInRange( type: "Blob", map: "PerfTest", count: 100, minPos: Vec2( 3, 3 ), maxPos: Vec2( 38, 38 ) )
+    StartNewTimer( durationSeconds: spawnCooldown, onCompletedEvent: "SpawnCooldownExpired" )
+}

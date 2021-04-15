@@ -41,7 +41,7 @@ typedef int EntityId;
 // Game Constants
 //
 constexpr float CLIENT_ASPECT = 16.f / 9.f;
-constexpr int FRAME_HISTORY_COUNT = 20;
+constexpr int FRAME_HISTORY_COUNT = 200;
 
 constexpr float SQRT_2_OVER_2 = 0.70710678f;
 

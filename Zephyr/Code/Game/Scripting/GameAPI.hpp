@@ -69,6 +69,9 @@ private:
 	void ChangeMusic( EventArgs* args );
 	void AddScreenShake( EventArgs* args );
 
+	// Map
+	void SpawnEntitiesInRange( EventArgs* args );
+
 private:
 	Entity* GetItemEntityFromArgs( EventArgs* args );
 	Entity* GetTargetEntityFromArgs( EventArgs* args );

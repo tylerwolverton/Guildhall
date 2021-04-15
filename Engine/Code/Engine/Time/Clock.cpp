@@ -63,11 +63,11 @@ Clock::~Clock()
 void Clock::Update( double deltaSeconds )
 {
 	deltaSeconds = ClampMinMax( deltaSeconds, 0.0, m_maxFrameTime );
-
+	
 	double minDeltaDiff = m_minFrameTime - deltaSeconds;
 	if ( minDeltaDiff > 0.f )
 	{
-		deltaSeconds = m_minFrameTime;
+		//deltaSeconds = m_minFrameTime;
 		DWORD sleepTime = DWORD( minDeltaDiff * 1000.0 );
 		Sleep( sleepTime );
 	}
