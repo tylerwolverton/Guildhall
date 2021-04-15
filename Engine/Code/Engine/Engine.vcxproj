@@ -211,6 +211,7 @@
     <ClCompile Include="Physics\PolygonCollider2D.cpp" />
     <ClCompile Include="Physics\Rigidbody2D.cpp" />
     <ClCompile Include="OS\Window.cpp" />
+    <ClCompile Include="Profiler\Profiler.cpp" />
     <ClCompile Include="Renderer\BitmapFont.cpp" />
     <ClCompile Include="Renderer\BufferAttribute.cpp" />
     <ClCompile Include="Renderer\BuiltInShaders.cpp" />
@@ -320,6 +321,7 @@
     <ClInclude Include="Physics\PolygonCollider2D.hpp" />
     <ClInclude Include="Physics\Rigidbody2D.hpp" />
     <ClInclude Include="OS\Window.hpp" />
+    <ClInclude Include="Profiler\Profiler.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\BufferAttribute.hpp" />
     <ClInclude Include="Renderer\BuiltInShaders.hpp" />
