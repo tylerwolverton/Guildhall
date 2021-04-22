@@ -42,9 +42,10 @@ public:
 	void InitializeAllZephyrEntityVariables();
 	void CallAllZephyrSpawnEvents( Entity* player );
 	
-	void AddEntityFromDefinition( const EntityDefinition& entityDef );
+	void AddEntityFromDefinition( const EntityDefinition& entityDef, const std::string& entityName = "" );
 
 	Entity* GetEntityById( EntityId id );
+	void	RemoveEntityFromWorldById( EntityId id );
 	Entity* GetEntityByIdInCurMap( EntityId id );
 	Entity* GetEntityByName( const std::string& name );
 	Entity* GetEntityByNameInCurMap( const std::string& name );

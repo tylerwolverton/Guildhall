@@ -93,7 +93,7 @@ void ZephyrScript::UnloadScript()
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
+bool ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 {
 	EventArgs eventArgs;
 	if ( args == nullptr )
@@ -103,7 +103,7 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 
 	if ( !m_scriptDef.IsValid() )
 	{
-		return;
+		return false;
 	}
 
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( eventName );
@@ -122,7 +122,10 @@ void ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 		}
 
 		ZephyrInterpreter::InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
+		return true;
 	}
+
+	return false;
 }
 
 

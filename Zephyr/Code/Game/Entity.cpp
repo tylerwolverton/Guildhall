@@ -333,14 +333,14 @@ void Entity::FireSpawnEvent()
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
+bool Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
 {
 	if ( !IsScriptValid() )
 	{
-		return;
+		return false;
 	}
 
-	m_scriptObj->FireEvent( eventName, args );
+	return m_scriptObj->FireEvent( eventName, args );
 }
 
 

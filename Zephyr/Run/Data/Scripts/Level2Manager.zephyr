@@ -2,6 +2,10 @@ String roomId;
 Number enemiesInLevel;
 String questStatusText = "Defeat the Boss";
 
+Entity gameMgr = null
+Entity victoryDoor = null
+Entity doorToRoom1 = null
+
 Function EnemySpawned( String mapName )
 {
     if( roomId == mapName )
@@ -18,7 +22,9 @@ Function EnemyDied( String mapName )
 
         if( enemiesInLevel <= 0 )
         {
-            QuestCompleted( questId: roomId )
+            gameMgr.QuestCompleted( questId: roomId )
+            victoryDoor.Open()
+            doorToRoom1.Open()
             questStatusText = "Room Complete";
         }
     }

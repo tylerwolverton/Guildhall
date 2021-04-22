@@ -221,7 +221,7 @@ void World::ClearEntities()
 
 
 //-----------------------------------------------------------------------------------------------
-void World::AddEntityFromDefinition( const EntityDefinition& entityDef )
+void World::AddEntityFromDefinition( const EntityDefinition& entityDef, const std::string& entityName )
 {
 	Entity* newEntity = nullptr;
 	switch ( entityDef.GetClass() )
@@ -238,6 +238,8 @@ void World::AddEntityFromDefinition( const EntityDefinition& entityDef )
 			return;
 		}
 	}
+
+	newEntity->SetName( entityName );
 
 	m_worldEntities.push_back( newEntity );
 	SaveEntityByName( newEntity );
@@ -286,6 +288,20 @@ Entity* World::GetEntityById( EntityId id )
 	}
 
 	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::RemoveEntityFromWorldById( EntityId id )
+{
+	Entity* entity = GetEntityById( id );
+	if ( entity != nullptr )
+	{
+		std::string name = entity->GetName();
+		
+		m_entitiesById.erase( id );
+		m_entitiesByName.erase( name );
+	}
 }
 
 
@@ -374,7 +390,7 @@ void World::InitializeAllZephyrEntityVariables()
 	for ( auto& map : m_loadedMaps )
 	{
 		map.second->InitializeAllZephyrEntityVariables();
-	}
+	}	
 }
 
 

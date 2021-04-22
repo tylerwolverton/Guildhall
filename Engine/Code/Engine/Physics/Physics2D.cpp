@@ -628,7 +628,7 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 		Collision2D& collision = m_collisions[collisionIdx];
 		
 		if ( collision.id.x == colliderToDestroy->m_id 
-			 || collision.id.y == colliderToDestroy ->m_id )
+			 || collision.id.y == colliderToDestroy->m_id )
 		{
 			InvokeCollisionEvents( collision, eCollisionEventType::LEAVE );
 			oldCollisionIds.push_back( collisionIdx );

@@ -1,6 +1,11 @@
 String roomId;
 
+Entity gameMgr = null
+Entity doorToLevel4 = null
+
+
 Function Level3DialogueSolved()
 {
-    QuestCompleted( questId: roomId )
+    doorToLevel4.Open()
+    gameMgr.QuestCompleted( questId: roomId )
 }

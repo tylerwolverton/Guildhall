@@ -19,23 +19,23 @@
 	</MapRows>
 	<Entities>
     <!-- Managers -->
-    <Entity type="Level2Manager">
+    <Entity type="Level2Manager" name="Level2Manager">
       <GlobalVar type="string" var="roomId" value="Level2"/>
+      <GlobalVar type="entity" var="victoryDoor" value="victoryDoor"/>
+      <GlobalVar type="entity" var="doorToRoom1" value="door2To1"/>
     </Entity>
     <!-- Victory door -->
-    <Entity type="ClosedDoorVertical" name="victoryDoor" pos="7.5,9.5">
-      <GlobalVar type="string" var="name" value="VictoryDoor"/>
-    </Entity>
+    <Entity type="ClosedDoorVertical" name="victoryDoor" pos="7.5,9.5"/>
     <Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
     <!-- Door back to level 1 -->
-    <Entity type="ClosedDoorVertical" name="door2To1" pos="3.5,.5">
-      <GlobalVar type="string" var="name" value="Level2To1Door"/>
-    </Entity>
+    <Entity type="ClosedDoorVertical" name="door2To1" pos="3.5,.5"/>
     <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
     <!-- Entities -->
     <PlayerStart pos="3.5,1.5" yaw="0"/>
     <!-- <Actor type="BlobBossBig" name="blobBossBig" pos="5.5,5.5" yaw="0"/> -->
-	<Actor type="Golem" name="golem" pos="10.5,5.5"/>
+    <Actor type="Golem" name="golem" pos="10.5,5.5">
+      <GlobalVar type="entity" var="levelMgr" value="Level2Manager"/>
+    </Actor>
 	</Entities>
 
 </MapDefinition>

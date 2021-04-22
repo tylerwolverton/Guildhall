@@ -691,7 +691,9 @@ void Game::LoadWorldDefinitionFromXml()
 				return;
 			}
 
-			m_world->AddEntityFromDefinition( *entityTypeDef );
+			std::string entityName = ParseXmlAttribute( *entityElement, "name", "" );
+
+			m_world->AddEntityFromDefinition( *entityTypeDef, entityName );
 		}
 		else
 		{
@@ -918,6 +920,7 @@ void Game::UpdateFromKeyboard()
 void Game::LoadStartingMap( const std::string& mapName )
 {
 	m_world->InitializeAllZephyrEntityVariables();
+	m_player->InitializeZephyrEntityVariables();
 
 	m_world->ChangeMap( mapName, m_player );
 

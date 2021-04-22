@@ -48,7 +48,7 @@
 	</MapRows>
   <Entities>
     <!-- Managers -->
-    <Entity type="PerformanceTester"/>
+    <Entity type="PerformanceTester" name="perfTester"/>
     <!-- Entities -->
     <PlayerStart pos="1.5,1.5" yaw="0"/>
   </Entities>

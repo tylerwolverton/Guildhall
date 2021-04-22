@@ -1,7 +1,7 @@
 <WorldDefinition>
   <!--Entities that persist in the world-->
   <Entities>
-    <Entity type="GameManager"/>
+    <Entity type="GameManager" name="GameManager"/>
   </Entities>
  
 </WorldDefinition>

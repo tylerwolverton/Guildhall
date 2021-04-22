@@ -1,5 +1,6 @@
 #include "Game/Scripting/ZephyrVirtualMachine.hpp"
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
+#include "Game/Scripting/GameAPI.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
@@ -373,7 +374,18 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 				InsertParametersIntoEventArgs( *args );
 
-				g_eventSystem->FireEvent( eventName.GetAsString(), args, EVERYWHERE );
+				// Try to call GameAPI funstion, then local function
+				if ( g_gameAPI->IsMethodRegistered( eventName.GetAsString() ) )
+				{
+					g_eventSystem->FireEvent( eventName.GetAsString(), args, EVERYWHERE );
+				}
+				else
+				{
+					if ( !CallMemberFunctionOnEntity( parentEntity->GetId(), eventName.GetAsString(), args ) )
+					{
+						ReportError( Stringf( "Entity '%s' doesn't have a function '%s'", parentEntity->GetName().c_str(), eventName.GetAsString().c_str() ) );
+					}
+				}
 
 				// Set new values of identifier parameters
 				UpdateIdentifierParameters( identifierToParamNames, *args, localVariables );
@@ -1167,16 +1179,16 @@ void ZephyrVirtualMachine::SetGlobalVec2MemberVariableInEntity( EntityId entityI
 
 
 //-----------------------------------------------------------------------------------------------
-void ZephyrVirtualMachine::CallMemberFunctionOnEntity( EntityId entityId, const std::string& functionName, EventArgs* args )
+bool ZephyrVirtualMachine::CallMemberFunctionOnEntity( EntityId entityId, const std::string& functionName, EventArgs* args )
 {
 	Entity* entity = g_game->GetEntityById( entityId );
 	if ( entity == nullptr )
 	{
 		ReportError( Stringf( "Unknown entity does not contain a member '%s'", functionName.c_str() ) );
-		return;
+		return false;
 	}
 
-	entity->FireScriptEvent( functionName, args );
+	return entity->FireScriptEvent( functionName, args );
 }
 
 

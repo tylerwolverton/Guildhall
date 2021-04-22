@@ -1,9 +1,29 @@
-String name;
-
-Function OpenDoor( String doorName )
+Function Open()
 {
-	if( name == doorName )
+	ChangeState( Open )
+}
+
+Function Close()
+{
+	ChangeState( Closed )
+}
+
+
+State Closed
+{
+	OnEnter()
+	{
+		ChangeSpriteAnimation( newAnim: "Closed" )
+		EnableCollisions()
+	}	
+}
+
+
+State Open
+{
+	OnEnter()
 	{
 		DestroySelf()
 	}
 }
+

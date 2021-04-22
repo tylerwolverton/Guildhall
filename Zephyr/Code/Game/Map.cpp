@@ -433,7 +433,10 @@ void Map::DeleteDeadEntities()
 			continue;
 		}
 		
-		delete( m_entities[entityIdx] );
+		m_world->RemoveEntityFromWorldById( entity->GetId() );
+
+		PTR_SAFE_DELETE( entity );
+
 		m_entities[entityIdx] = nullptr;
 	}
 }

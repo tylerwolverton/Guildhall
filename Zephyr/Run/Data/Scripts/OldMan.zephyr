@@ -1,5 +1,7 @@
 Bool hasOpenedDoor = false
 
+Entity levelMgr = null
+
 State Waiting
 {
     Function PlayerInteracted()
@@ -45,7 +47,7 @@ State Choice1
             hasOpenedDoor = true;
 
             AddLineOfDialogueText( text: "Sure, it should be open now" )
-            Level3DialogueSolved()
+            levelMgr.Level3DialogueSolved()
         }
         else
         {

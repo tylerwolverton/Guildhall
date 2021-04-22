@@ -1,19 +1,18 @@
 Number curHealth = parentEntity.health;
 Bool canShoot = true;
 Number fireCooldown = .5;
-
+Entity perfTester = null
 Vec2 testVec
 
 Function PerformanceSpawn10()
 {
-     Spawn10()
+    perfTester.Spawn10()
 }
 
 Function PerformanceSpawn100()
 {
-    Spawn100()
+    perfTester.Spawn100()
 }
-
 
 Function Spawned( Number maxHealth )
 {
@@ -33,7 +32,6 @@ Function Spawned( Number maxHealth )
     RegisterKeyEvent( key: "Right", event: "ShootFireballRight" )
 }
 
-
 Function ItemAcquired( String itemName )
 {
     if( itemName == "TripleFireballPickup" )
@@ -49,7 +47,6 @@ Function ItemAcquired( String itemName )
         RegisterKeyEvent( key: "Right", event: "ShootTripleFireballRight" )
     }
 }
-
 
 Function HealthUpdated( Number newHealth )
 {

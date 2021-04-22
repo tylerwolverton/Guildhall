@@ -67,7 +67,7 @@ private:
 	ZephyrValue GetGlobalVariableFromEntity	( EntityId entityId, const std::string& variableName );
 	void SetGlobalVariableInEntity			( EntityId entityId, const std::string& variableName, const ZephyrValue& value );
 	void SetGlobalVec2MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value );
-	void CallMemberFunctionOnEntity			( EntityId entityId, const std::string& functionName, EventArgs* args );
+	bool CallMemberFunctionOnEntity			( EntityId entityId, const std::string& functionName, EventArgs* args );
 
 
 	void ReportError( const std::string& errorMsg );

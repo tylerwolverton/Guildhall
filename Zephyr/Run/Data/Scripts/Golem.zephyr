@@ -17,18 +17,18 @@ Bool isRaging = false
 Number rageHealthThreshhold = 5
 
 Entity target = null
-
+Entity levelMgr = null
 
 Function Spawned( String mapName )
 {
-	EnemySpawned( mapName: mapName )
+	levelMgr.EnemySpawned( mapName: mapName )
 	WakeUp()
 }
 
 
 Function Died()
 {
-	EnemyDied( mapName: mapName )
+	levelMgr.EnemyDied( mapName: mapName )
 }
 
 

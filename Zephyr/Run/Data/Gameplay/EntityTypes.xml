@@ -12,7 +12,7 @@
     </Appearance>
     <Gameplay maxHealth="5"/>
     <Script name="Player.zephyr">
-      <GlobalVar type="entity" var="blob" value="blob1"/>
+      <GlobalVar type="entity" var="perfTester" value="perfTester"/>
     </Script>
   </Actor>
   ​
@@ -122,15 +122,21 @@
   </Entity>
 
   <Entity name="Level1Manager">
-    <Script name="Level1Manager.zephyr"/>
+    <Script name="Level1Manager.zephyr">
+      <GlobalVar type="entity" var="gameMgr" value="GameManager"/>
+    </Script>
   </Entity>
   
   <Entity name="Level2Manager">
-    <Script name="Level2Manager.zephyr"/>
+    <Script name="Level2Manager.zephyr">
+      <GlobalVar type="entity" var="gameMgr" value="GameManager"/>
+    </Script>
   </Entity>
   
   <Entity name="Level3Manager">
-    <Script name="Level3Manager.zephyr"/>
+    <Script name="Level3Manager.zephyr">
+      <GlobalVar type="entity" var="gameMgr" value="GameManager"/>
+    </Script>
   </Entity>
 
   <Entity name="SlidingPuzzleRoomManager">
@@ -146,7 +152,8 @@
   <Entity name="ClosedDoorVertical">
     <Physics radius="0.5" collisionLayer="StaticEnvironment"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
-      <Walk up="157"/>
+      <Closed up="157"/>
+      <Open   up="21"/>
     </Appearance>
     <Gameplay maxHealth="99999"/>
     <Script name="ClosedDoor.zephyr"/>
@@ -155,7 +162,8 @@
   <Entity name="LockedDoorVertical">
     <Physics radius="0.5" collisionLayer="StaticEnvironment"/>
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
-      <Walk up="155"/>
+      <Closed up="155"/>
+      <Open   up="21"/>
     </Appearance>
     <Gameplay maxHealth="99999"/>
     <Script name="LockedDoor.zephyr"/>

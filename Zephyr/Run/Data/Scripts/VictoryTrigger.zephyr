@@ -2,6 +2,7 @@ State Win
 {
 	OnEnter()
 	{
-		QuestCompleted( questId: "Victory" )
+		WinGame()
+		ChangeMusic( musicName: "LoZCredits", volume: .1 )
 	}
 }

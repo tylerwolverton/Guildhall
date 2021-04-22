@@ -117,7 +117,7 @@ public:
 	bool			IsInInventory( Entity* item );
 
 	void			FireSpawnEvent();
-	void			FireScriptEvent( const std::string& eventName, EventArgs* args );
+	bool			FireScriptEvent( const std::string& eventName, EventArgs* args );
 
 	void			MakeInvincibleToAllDamage();
 	void			ResetDamageMultipliers();

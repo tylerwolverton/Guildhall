@@ -10,26 +10,21 @@ Function QuestCompleted( String questId )
 {
 	if ( questId == "Level1" )
 	{
-		OpenDoor( doorName: "Level3Door" )
 		completedQuests = completedQuests + 1;
 	}
 	
 	if ( questId == "Level2" )
 	{
 		completedQuests = completedQuests + 1;
-		OpenDoor( doorName: "VictoryDoor" )
-		OpenDoor( doorName: "Level2To1Door" )
 	}
 
 	if ( questId == "Level3" )
 	{
-		OpenDoor( doorName: "Level4Door" )
 		completedQuests = completedQuests + 1;
 	}
 
 	if( questId == "Victory" )
 	{
-		WinGame()
-		ChangeMusic( musicName: "LoZCredits", volume: .1 )
+		
 	}
 }
