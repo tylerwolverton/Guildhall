@@ -54,13 +54,13 @@ public:
 class EventSystem
 {
 public:
-	EventSystem();
-	~EventSystem();
+	EventSystem() {}
+	~EventSystem() {}
 
-	void Startup();
-	void BeginFrame();
-	void EndFrame();
-	void Shutdown();
+	void Startup() {}
+	void BeginFrame() {}
+	void EndFrame() {}
+	void Shutdown() {}
 
 	// Register static function
 	void RegisterEvent( const std::string& eventName, 

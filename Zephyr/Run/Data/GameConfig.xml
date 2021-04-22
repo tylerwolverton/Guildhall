@@ -1,5 +1,5 @@
 <GameConfig
-	startMap="SlidingPuzzleRoom"
+	startMap="PerfTest"
 	playerActorName="Link"
 	windowAspect="1.777"
 	windowTitle="Zephyr Test"

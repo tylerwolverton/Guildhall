@@ -33,6 +33,7 @@
 #include "Game/TileDefinition.hpp"
 #include "Game/MapData.hpp"
 #include "Game/Scripting/ZephyrCompiler.hpp"
+#include "Game/Scripting/ZephyrInterpreter.hpp"
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
@@ -158,7 +159,7 @@ void Game::Startup()
 //-----------------------------------------------------------------------------------------------
 void Game::BeginFrame()
 {
-	
+	ZephyrInterpreter::BeginFrame();
 }
 
 
@@ -341,6 +342,7 @@ void Game::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game::EndFrame()
 {
+	ZephyrInterpreter::EndFrame();
 }
 
 

@@ -138,6 +138,17 @@ eh, whatever, probably cut
 
 
 
+---------------------------------------------------------
+How bad are perf results?
+
+
+Local vs global events?
+
+
+Error handling?
+
+
+Inventory keys?
 
 
 
