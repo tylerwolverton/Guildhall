@@ -6,6 +6,7 @@
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
+#include <thread>
 
 static Clock* s_masterClock = nullptr;
 
@@ -64,14 +65,14 @@ void Clock::Update( double deltaSeconds )
 {
 	deltaSeconds = ClampMinMax( deltaSeconds, 0.0, m_maxFrameTime );
 	
-	double minDeltaDiff = m_minFrameTime - deltaSeconds;
-	if ( minDeltaDiff > 0.f )
+	while ( deltaSeconds < m_minFrameTime )
 	{
-		//deltaSeconds = m_minFrameTime;
-		DWORD sleepTime = DWORD( minDeltaDiff * 1000.0 );
-		Sleep( sleepTime );
+		double before = GetCurrentTimeSeconds();
+		std::this_thread::yield();
+		double after = GetCurrentTimeSeconds();
+		deltaSeconds += ( after - before );
 	}
-
+	
 	if ( m_isPaused )
 	{
 		deltaSeconds = 0.0;

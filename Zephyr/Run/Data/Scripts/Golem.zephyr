@@ -93,7 +93,7 @@ State BrokenDown
 
     OnUpdate()
     {
-        PrintDebugText( text: "Broken" )
+        //PrintDebugText( text: "Broken" )
         if( !isRaging
             && parentEntity.health < rageHealthThreshhold )
         {
@@ -166,7 +166,7 @@ State MeleeAttack
 
     OnUpdate()
     {
-        PrintDebugText( text: "Melee" )
+        //PrintDebugText( text: "Melee" )
 		Number distance
 		GetDistanceToTarget( target: target, distance: distance ) 
 
@@ -195,7 +195,7 @@ State RangedAttack
 
     OnUpdate()
     {
-        PrintDebugText( text: "Ranged" )
+        //PrintDebugText( text: "Ranged" )
 		Number distance
 		GetDistanceToTarget( target: target, distance: distance ) 
 
@@ -224,7 +224,7 @@ State Raging
 
     OnUpdate()
     {
-        PrintDebugText( text: "Raging" )
+        //PrintDebugText( text: "Raging" )
         // Do both attacks when raging
         if( canAttack )
         {

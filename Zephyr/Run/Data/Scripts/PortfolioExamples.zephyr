@@ -8,14 +8,14 @@ Number maxChaseDist = 3
 // -----------------------------------------------------------------------------------------
 // Global events
 // -----------------------------------------------------------------------------------------
-Function Spawned( Number maxHealth, String mapName )
+Function OnSpawned( Number maxHealth, String mapName )
 {
 	health = maxHealth
 	EnemySpawned( mapName: mapName )
 	GetNewWanderTargetPosition( newPos: targetPosition )
 }
 
-Function HealthUpdated( Number newHealth)
+Function OnHealthUpdated( Number newHealth)
 {
 	health = newHealth
 
@@ -25,13 +25,13 @@ Function HealthUpdated( Number newHealth)
 	}
 }
 
-Function Died( String mapName )
+Function OnDied( String mapName )
 {
 	EnemyDied( mapName: mapName )
 }
 
 // Damage
-Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
+Function OnCollisionEntered( Number attackDamage = 1, Entity otherEntity )
 {
 	if( otherEntity != null )
 	{

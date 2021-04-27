@@ -13,7 +13,7 @@ String minionSpawnType;
 Function Spawned( Number maxHealth, String mapName )
 {
 	health = maxHealth;
-	EnemySpawned( mapName: mapName )
+	//EnemySpawned( mapName: mapName )
 	GetNewWanderTargetPosition( newPos: targetPosition )
 }
 

@@ -137,6 +137,7 @@ private:
 
 private:
 	Clock* m_gameClock = nullptr;
+	Timer* m_stepTimer = nullptr;
 	float m_fpsHistory[FRAME_HISTORY_COUNT];
 	int m_fpsNextIdx = 0;
 	float m_fpsHistorySum = 0.f;

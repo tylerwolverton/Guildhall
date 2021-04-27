@@ -120,7 +120,8 @@ void Game::Startup()
 	m_rng = new RandomNumberGenerator();
 
 	m_gameClock = new Clock();
-	m_gameClock->SetFrameLimits( 1.0 / 120.0, .1 );
+	//m_gameClock->SetFrameLimits( 1.0 / 60.0, .1 );
+	Clock::GetMaster()->SetFrameLimits( 1.0/60.0, .1 );
 
 	g_renderer->Setup( m_gameClock );
 	g_physicsSystem2D->Startup( m_gameClock );

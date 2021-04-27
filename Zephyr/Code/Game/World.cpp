@@ -17,14 +17,14 @@
 //-----------------------------------------------------------------------------------------------
 World::World( Clock* gameClock )
 {
-	m_worldClock = new Clock( gameClock );
+	m_worldClock = gameClock;//new Clock( gameClock );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 World::~World()
 {
-	PTR_SAFE_DELETE( m_worldClock );
+	//PTR_SAFE_DELETE( m_worldClock );
 	PTR_MAP_SAFE_DELETE( m_loadedMaps );
 }
 

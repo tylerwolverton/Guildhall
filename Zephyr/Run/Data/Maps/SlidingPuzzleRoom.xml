@@ -26,7 +26,7 @@
     <Entity type="PressurePlate" pos="15.5,2.5">
 		<GlobalVar type="entity" var="door" value="keyDoor"/>
     </Entity>
-    <Entity type="Block" pos="12.5,4.5"/>
+    <Entity type="Block" pos="14.5,3.5"/>
 	<Pickup type="Key" name="key1" pos="9.5,4.5" />
     <!-- Door back to level 1 -->
     <Portal type="InvisibleTeleporter" pos="20.5,2.5" yaw="0" destMap="Level1" destPos="1.5,1.5" destYawOffset="0"/>
