@@ -26,6 +26,7 @@ Supported features
 - Number variables
 - String variables
 - Vec2 variables
+- Entity variables
 - Arithmetic operators
 - Logical operators
 - ChangeState(<targetState>) function
