@@ -78,4 +78,5 @@ private:
 
 private:
 	std::unordered_set<std::string> m_registeredMethods;
+	//std::unordered_set<std::string> m_registered;
 };

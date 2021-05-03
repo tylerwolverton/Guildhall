@@ -6,6 +6,8 @@
 #include "Game/Scripting/ZephyrBytecodeChunk.hpp"
 #include "Game/Scripting/ZephyrToken.hpp"
 #include "Game/Scripting/ZephyrScriptDefinition.hpp"
+#include "Game/Scripting/GameAPI.hpp"
+#include "Game/GameCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -460,6 +462,12 @@ bool ZephyrParser::ParseFunctionDefinition()
 	if ( functionNameToken.GetType() != eTokenType::IDENTIFIER )
 	{
 		ReportError( "Function must be specified in the form: Function Example()" );
+		return false;
+	}
+
+	if ( g_gameAPI->IsMethodRegistered( functionNameToken.GetData() ) )
+	{
+		ReportError( Stringf( "Function '%s' is already defined in GameAPI and can't be redefined here", functionNameToken.GetData().c_str() ) );
 		return false;
 	}
 

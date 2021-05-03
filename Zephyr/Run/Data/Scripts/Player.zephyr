@@ -128,7 +128,6 @@ Function ShootFireballRight()
 }
 
 // TripleFireball
-
 Function ShootTripleFireball( Vec2 fireballOffset1,
                               Number shotOrientation1,
                               Vec2 fireballOffset2,
