@@ -26,10 +26,18 @@
     </Entity>
     <!-- Victory door -->
     <Entity type="ClosedDoorVertical" name="victoryDoor" pos="7.5,9.5"/>
-    <Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
+    <!--<Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>-->
+    <Entity type="InvisibleTeleporter" pos="7.5,9.5">
+      <GlobalVar type="string" var="destMap" value="VictoryLevel"/>
+      <GlobalVar type="vec2" var="destPos" value="8.5,8.5"/>
+    </Entity>
     <!-- Door back to level 1 -->
     <Entity type="ClosedDoorVertical" name="door2To1" pos="3.5,.5"/>
-    <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>
+    <!--<Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5" destYawOffset="0"/>-->
+    <Entity type="InvisibleTeleporter" pos="3.5,.5">
+      <GlobalVar type="string" var="destMap" value="Level1"/>
+      <GlobalVar type="vec2" var="destPos" value="8.5,8.5"/>
+    </Entity>
     <!-- Entities -->
     <PlayerStart pos="3.5,1.5" yaw="0"/>
     <!-- <Actor type="BlobBossBig" name="blobBossBig" pos="5.5,5.5" yaw="0"/> -->

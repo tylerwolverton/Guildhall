@@ -146,13 +146,22 @@ void World::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapNam
 		 && entityToWarp->IsPlayer() )
 	{
 		m_curMap->RemoveOwnershipOfEntity( entityToWarp );
-		ChangeMap( destMapName, entityToWarp );
-		// ChangeMap will transplant the player
-		//m_curMap->TakeOwnershipOfEntity( entityToWarp );
+		if ( entityToWarp->IsPlayer() )
+		{
+			// ChangeMap will transplant the player
+			ChangeMap( destMapName, entityToWarp );
+		}
+		else
+		{
+			destMap->TakeOwnershipOfEntity( entityToWarp );
+		}
+
+		entityToWarp->SetMap( destMap );
 	}
 
 	entityToWarp->SetPosition( newPos );
 	entityToWarp->SetOrientationDegrees( newYawDegrees );
+	entityToWarp->FireScriptEvent( "OnWarp" );
 }
 
 

@@ -230,17 +230,28 @@
     <Script name="BasicProjectile.zephyr"/>
   </Projectile>
 
-  <Portal name="InvisibleTeleporter">
-    <Physics radius="0.25" speed="0.0" collisionLayer="Portal" isTrigger="true"/>
-  </Portal>
+  <Entity name="InvisibleTeleporter">
+    <Physics radius="0.25" speed="0.0" collisionLayer="StaticEnvironment" isTrigger="true"/>
+    <Script name="Portal.zephyr"/>
+  </Entity>
   ​
-  <Pickup name="Key">
+  <!--<Pickup name="Key">
     <Physics radius="0.25" speed="0.0" drag="5" collisionLayer="Pickup" isTrigger="true"/>
     <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
       <Walk up="120"/>
     </Appearance>
-  </Pickup>
+  </Pickup>-->
 
+  <Entity name="Key">
+    <Physics radius="0.25" speed="0.0" drag="5" collisionLayer="Pickup" isTrigger="true"/>
+    <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">
+      <Walk up="120"/>
+    </Appearance>
+    <Script name="ItemPickup.zephyr">
+      <GlobalVar type="entity" var="target" value="player"/>
+    </Script>
+  </Entity>
+  
   <Pickup name="TripleFireballPowerup">
     <Physics radius="0.25" speed="0.0" drag="5" collisionLayer="Pickup" isTrigger="true"/>
     <Appearance size=".5,.5" localDrawBounds="-.25,-.25,.25,.25" fps="3">

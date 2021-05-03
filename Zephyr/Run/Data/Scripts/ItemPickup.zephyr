@@ -1,0 +1,12 @@
+Entity target = null
+
+Function OnTriggerEnter( Entity other )
+{
+    Entity targetEntity = target
+    if( targetEntity == null )
+    {
+        targetEntity = other
+    }
+
+    AddItemToInventory( target: targetEntity, item: parentEntity )
+}

@@ -19,7 +19,11 @@
       <GlobalVar type="entity" var="doorToLevel4" value="Level4Door"/>
     </Entity>
 		<PlayerStart pos="3.5,1.5" yaw="0"/>
-    <Portal type="InvisibleTeleporter" pos=".5,3.5" yaw="0" destMap="Level1" destPos="14.5,3.5" destYawOffset="0"/>
+    <!--<Portal type="InvisibleTeleporter" pos=".5,3.5" yaw="0" destMap="Level1" destPos="14.5,3.5" destYawOffset="0"/>-->
+    <Entity type="InvisibleTeleporter" pos=".5,3.5">
+      <GlobalVar type="string" var="destMap" value="Level1"/>
+      <GlobalVar type="vec2" var="destPos" value="14.5,3.5"/>
+    </Entity>
     <Actor type="OldMan" name="OldMan" pos="5.5,5.5" yaw="0">
       <GlobalVar type="entity" var="levelMgr" value="Level3Manager"/>
     </Actor>

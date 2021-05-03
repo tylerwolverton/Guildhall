@@ -251,9 +251,10 @@ void MapData::CreateMapEntityDefFromNode( const XmlElement& entityElem, const st
 
 	if ( GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ) != expectedType )
 	{
-		g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Entity in map '%s'", entityType.c_str(),
+		g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but '%s' in map '%s'", entityType.c_str(),
 										   GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ).c_str(),
-										   expectedType.c_str() ) );
+										   expectedType.c_str(),
+										   mapName.c_str() ) );
 		return;
 	}
 

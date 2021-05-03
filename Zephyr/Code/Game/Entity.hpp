@@ -109,6 +109,7 @@ public:
 	void			SetMap( Map* map )										{ m_map = map; }
 		
 	void			AddItemToInventory( Entity* item );
+	void			AddItemToInventory( const std::string& itemType );
 	void			RemoveItemFromInventory( const std::string& itemType );
 	void			RemoveItemFromInventory( const EntityId& itemId );
 	void			RemoveItemFromInventory( Entity* item );
@@ -117,7 +118,7 @@ public:
 	bool			IsInInventory( Entity* item );
 
 	void			FireSpawnEvent();
-	bool			FireScriptEvent( const std::string& eventName, EventArgs* args );
+	bool			FireScriptEvent( const std::string& eventName, EventArgs* args = nullptr );
 
 	void			MakeInvincibleToAllDamage();
 	void			ResetDamageMultipliers();

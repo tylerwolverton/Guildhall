@@ -131,6 +131,7 @@ private:
 	void UpdateFramesPerSecond();
 	float GetAverageFPS() const;
 	void RenderFPSCounter() const;
+	//void RenderHUD() const;
 
 	// Events
 	void PrintBytecodeChunk( EventArgs* args );

@@ -1,9 +1,17 @@
 String keyName
+String keyType = "Key"
 
-// Function CollisionEntered( Number otherEntityId )
-// {
-// 	CheckEntityForInventoryItem( itemType: keyType )	
-// }
+Function OnCollisionEnter( Entity otherEntity )
+{
+	Bool hasItem = false
+	CheckEntityForInventoryItem( target: otherEntity, itemType: keyType, isInInventory: hasItem )
+	
+	if( hasItem )
+	{
+		RemoveItemFromInventory( target: otherEntity, itemType: keyType )
+		DestroySelf()
+	}
+}
 
 // Function CheckInventoryResult( Bool hasItem )
 // {
@@ -15,10 +23,10 @@ String keyName
 // 	}
 // }
 
-Function OnAcquireItem( String itemName )
-{
-	if( itemName == keyName )
-	{
-		DestroySelf()
-	}
-}
+// Function OnAcquireItem( String itemName )
+// {
+// 	if( itemName == keyName )
+// 	{
+// 		DestroySelf()
+// 	}
+// }

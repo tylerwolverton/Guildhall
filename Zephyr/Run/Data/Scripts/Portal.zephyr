@@ -1,0 +1,10 @@
+String destMap
+Vec2 destPos
+
+Function OnTriggerEnter( Entity otherEntity )
+{
+    if( otherEntity != null )
+    {
+        WarpEntity( warpTarget: otherEntity, destMap: destMap, destPos: destPos )
+    }
+}

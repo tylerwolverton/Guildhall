@@ -31,6 +31,7 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( EndDialogue );
 	REGISTER_EVENT( AddLineOfDialogueText );
 	REGISTER_EVENT( AddDialogueChoice );
+	REGISTER_EVENT( WarpEntity );
 	REGISTER_EVENT( StartNewTimer );
 	REGISTER_EVENT( WinGame );
 
@@ -260,8 +261,16 @@ void GameAPI::ChangeDamageTypeMultiplier( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::AddItemToInventory( EventArgs* args )
 {
-	Entity* itemEntity = GetItemEntityFromArgs( args );
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
+	
+	EntityId itemId = args->GetValue( "item", (EntityId)-1 );
+	Entity* itemEntity = g_game->GetEntityById( itemId );
+
+	if ( targetEntity == nullptr )
+	{
+		targetEntity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	}
 
 	if ( itemEntity == nullptr
 		 || targetEntity == nullptr )
@@ -276,37 +285,69 @@ void GameAPI::AddItemToInventory( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::RemoveItemFromInventory( EventArgs* args )
 {
-	Entity* itemEntity = GetItemEntityFromArgs( args );
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
 
-	if ( itemEntity == nullptr
+	EntityId itemId = args->GetValue( "item", (EntityId)-1 );
+	Entity* itemEntity = g_game->GetEntityById( itemId );
+
+	std::string itemType = args->GetValue( "itemType", "" );
+
+	if ( targetEntity == nullptr )
+	{
+		targetEntity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	}
+
+	if ( ( itemEntity == nullptr && itemType.empty() )
 		 || targetEntity == nullptr )
 	{
 		return;
 	}
 
-	targetEntity->RemoveItemFromInventory( itemEntity );
+	if ( itemEntity != nullptr )
+	{
+		targetEntity->RemoveItemFromInventory( itemEntity );
+	}
+	else
+	{
+		targetEntity->RemoveItemFromInventory( itemType );
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void GameAPI::CheckEntityForInventoryItem( EventArgs* args )
 {
-	std::string itemType = args->GetValue( "itemType", "" );
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	Entity* targetEntity = g_game->GetEntityById( targetId );
 
-	if ( itemType.empty()
+	EntityId itemId = args->GetValue( "item", (EntityId)-1 );
+	Entity* itemEntity = g_game->GetEntityById( itemId );
+
+	std::string itemType = args->GetValue( "itemType", "" );
+
+	if ( targetEntity == nullptr )
+	{
+		targetEntity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	}
+
+	if ( ( itemEntity == nullptr && itemType.empty() )
 		 || targetEntity == nullptr )
 	{
 		return;
 	}
+	
+	bool isInInventory = false;
+	if ( itemEntity != nullptr )
+	{
+		isInInventory = targetEntity->IsInInventory( itemEntity );
+	}
+	else
+	{
+		isInInventory = targetEntity->IsInInventory( itemType );
+	}
 
-	bool isInInventory = targetEntity->IsInInventory( itemType );
-
-	EventArgs returnArgs;
-	returnArgs.SetValue( "hasItem", isInInventory );
-
-	targetEntity->FireScriptEvent( "CheckInventoryResult", &returnArgs );
+	args->SetValue( "isInInventory", isInInventory );
 }
 
 
@@ -398,6 +439,26 @@ void GameAPI::AddDialogueChoice( EventArgs* args )
 	std::string text = args->GetValue( "text", "" );
 
 	g_game->AddDialogueChoice( name, text );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameAPI::WarpEntity( EventArgs* args )
+{
+	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	EntityId warpTargetId = args->GetValue( "warpTarget", (EntityId)-1 );
+	Entity* warpTarget = g_game->GetEntityById( warpTargetId );
+
+	if ( entity == nullptr
+		 || warpTarget == nullptr )
+	{
+		return;
+	}
+
+	std::string mapName = args->GetValue( "destMap", entity->GetMap()->GetName() );
+	Vec2 position = args->GetValue( "destPos", entity->GetPosition() + Vec2( 2.f, 0.f ) );
+
+	g_game->WarpToMap( warpTarget, mapName, position, 0.f );
 }
 
 

@@ -27,9 +27,13 @@
 		<GlobalVar type="entity" var="door" value="keyDoor"/>
     </Entity>
     <Entity type="Block" pos="14.5,3.5"/>
-	<Pickup type="Key" name="key1" pos="9.5,4.5" />
+	<Entity type="Key" name="key1" pos="9.5,4.5" />
     <!-- Door back to level 1 -->
-    <Portal type="InvisibleTeleporter" pos="20.5,2.5" yaw="0" destMap="Level1" destPos="1.5,1.5" destYawOffset="0"/>
+    <!--<Portal type="InvisibleTeleporter" pos="20.5,2.5" yaw="0" destMap="Level1" destPos="1.5,1.5" destYawOffset="0"/>-->
+    <Entity type="InvisibleTeleporter" pos="20.5,2.5">
+      <GlobalVar type="string" var="destMap" value="Level1"/>
+      <GlobalVar type="vec2" var="destPos" value="1.5,1.5"/>
+    </Entity>
 
 	<!-- Door to key area -->
 	<Entity type="ClosedDoorEventVertical" name="keyDoor" pos="9.5,3.5"/>

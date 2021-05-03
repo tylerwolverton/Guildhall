@@ -18,6 +18,7 @@
 #include "Engine/Time/Time.hpp"
 
 #include "Game/Game.hpp"
+#include "Game/Map.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
 #include "Game/Scripting/ZephyrScript.hpp"
@@ -56,6 +57,29 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
 	
+	if ( m_entityDef.IsTrigger() )
+	{
+		DiscCollider2D* discTrigger = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
+
+		discTrigger->m_onTriggerEnterDelegate.SubscribeMethod( this, &Entity::EnterTriggerEvent );
+		discTrigger->m_onTriggerStayDelegate.SubscribeMethod( this, &Entity::StayTriggerEvent );
+		discTrigger->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Entity::ExitTriggerEvent );
+
+		m_rigidbody2D->TakeCollider( discTrigger );
+	}
+	else
+	{
+		DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, GetPhysicsRadius() );
+
+		discCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Entity::EnterCollisionEvent );
+		discCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Entity::StayCollisionEvent );
+		discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Entity::ExitCollisionEvent );
+
+		m_rigidbody2D->TakeCollider( discCollider );
+	}
+
+	Unload();
+
 	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
 }
 
@@ -206,6 +230,11 @@ void Entity::SetCollisionLayer( uint layer )
 //-----------------------------------------------------------------------------------------------
 void Entity::AddItemToInventory( Entity* item )
 {
+	if ( item == nullptr )
+	{
+		return;
+	}
+
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
 		if ( m_inventory[itemIdx] == nullptr )
@@ -216,7 +245,11 @@ void Entity::AddItemToInventory( Entity* item )
 	}
 
 	m_inventory.push_back( item );
-
+	if ( item->GetMap() != nullptr )
+	{
+		item->GetMap()->RemoveOwnershipOfEntity( item );
+	}
+	
 	EventArgs args;
 	args.SetValue( "itemName", item->GetName() );
 
@@ -291,7 +324,7 @@ bool Entity::IsInInventory( const std::string& itemType )
 	for ( int itemIdx = 0; itemIdx < (int)m_inventory.size(); ++itemIdx )
 	{
 		if ( m_inventory[itemIdx] != nullptr
-			&& m_inventory[itemIdx]->GetType() == itemType )
+			 && m_inventory[itemIdx]->GetType() == itemType )
 		{
 			return true;
 		}
@@ -520,9 +553,16 @@ void Entity::UnRegisterKeyEvent( const std::string& keyCodeStr, const std::strin
 //-----------------------------------------------------------------------------------------------
 void Entity::Load()
 {
+	if ( m_isDead )
+	{
+		return;
+	}
+
 	m_rigidbody2D->Enable();
 
-	if ( m_entityDef.IsTrigger() )
+	//m_rigidbody2D->Enable();
+
+	/*if ( m_entityDef.IsTrigger() )
 	{
 		DiscCollider2D* discTrigger = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
 		
@@ -541,16 +581,23 @@ void Entity::Load()
 		discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Entity::ExitCollisionEvent );
 
 		m_rigidbody2D->TakeCollider( discCollider );
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::Unload()
 {
-	m_rigidbody2D->Disable();
+	/*m_rigidbody2D->Disable();
 
-	g_physicsSystem2D->DestroyCollider( m_rigidbody2D->GetCollider() );
+	g_physicsSystem2D->DestroyCollider( m_rigidbody2D->GetCollider() );*/
+
+	if ( m_rigidbody2D == nullptr )
+	{
+		return;
+	}
+
+	m_rigidbody2D->Disable();
 }
 
 

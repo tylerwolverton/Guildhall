@@ -188,7 +188,8 @@ void Physics2D::DetectCollisions()
 	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
 	{
 		Collider2D* collider = m_colliders[colliderIdx];
-		if ( collider == nullptr )
+		if ( collider == nullptr
+			 || !collider->IsEnabled() )
 		{
 			continue;
 		}
@@ -197,7 +198,8 @@ void Physics2D::DetectCollisions()
 		for ( int otherColliderIdx = colliderIdx + 1; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
 		{
 			Collider2D* otherCollider = m_colliders[otherColliderIdx];
-			if ( otherCollider == nullptr )
+			if ( otherCollider == nullptr
+				 || !otherCollider->IsEnabled() )
 			{
 				continue;
 			}
