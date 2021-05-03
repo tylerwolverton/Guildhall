@@ -312,7 +312,8 @@ void ZephyrScanner::TokenizeIdentifier()
 	std::string curIdentifier = m_scriptSource.substr( m_startSrcPos, stringLength );
 
 	// Match keywords
-	if ( curIdentifier == "State" )					{ AddToken( eTokenType::STATE ); }
+	
+	/*if		( curIdentifier == "State" )			{ AddToken( eTokenType::STATE ); }
 	else if ( curIdentifier == "Function" )			{ AddToken( eTokenType::FUNCTION ); }
 	else if ( curIdentifier == "Number" )			{ AddToken( eTokenType::NUMBER ); }
 	else if ( curIdentifier == "Vec2" )				{ AddToken( eTokenType::VEC2 ); }
@@ -328,9 +329,9 @@ void ZephyrScanner::TokenizeIdentifier()
 	else if ( curIdentifier == "return" )			{ AddToken( eTokenType::RETURN ); }
 	else if ( curIdentifier == "true" )				{ AddToken( eTokenType::TRUE ); }
 	else if ( curIdentifier == "false" )			{ AddToken( eTokenType::FALSE ); }
-	else if ( curIdentifier == "null" )				{ AddToken( eTokenType::NULL_TOKEN ); }
+	else if ( curIdentifier == "null" )				{ AddToken( eTokenType::NULL_TOKEN ); }*/
 	// Must be identifier ( variable name or function call )
-	else
+	if( !MatchReservedIdentifier( curIdentifier ) )
 	{
 		AddToken( eTokenType::IDENTIFIER, curIdentifier );
 	}
@@ -406,4 +407,132 @@ bool ZephyrScanner::IsLetter( char c )
 bool ZephyrScanner::IsLetterOrNumber( char c )
 {
 	return IsNumber( c ) || IsLetter( c );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrScanner::MatchReservedIdentifier( const std::string& identifier )
+{
+	switch	( MatchesReservedName( identifier, "State" ) ) 
+	{  
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::STATE ); 
+		case eReservedKeywordResult::CASE_MISMATCH: return true; 
+	}
+
+	switch ( MatchesReservedName( identifier, "Function" ) )
+	{
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::FUNCTION );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+
+	switch ( MatchesReservedName( identifier, "Number" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::NUMBER );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch ( MatchesReservedName( identifier, "Vec2" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::VEC2 );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch ( MatchesReservedName( identifier, "Bool" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::BOOL );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch ( MatchesReservedName( identifier, "String" ) )
+	{
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::STRING );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+
+	switch	( MatchesReservedName( identifier, "Entity" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::ENTITY );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "OnEnter" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::ON_ENTER );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "OnExit" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::ON_EXIT );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "OnUpdate" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::ON_UPDATE );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "ChangeState" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::CHANGE_STATE );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "if" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::IF );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "else" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::ELSE );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "return" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::RETURN );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "true" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::TRUE );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "false" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::FALSE );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+	
+	switch	( MatchesReservedName( identifier, "null" ) )
+	{ 
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::NULL_TOKEN );
+		case eReservedKeywordResult::CASE_MISMATCH: return true;
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+eReservedKeywordResult ZephyrScanner::MatchesReservedName( const std::string& identifier, const std::string& reservedIdentifier )
+{
+	if ( IsEqualIgnoreCase( identifier, reservedIdentifier ) )
+	{
+		if ( identifier != reservedIdentifier )
+		{
+			std::string errorMsg = Stringf( "Error: Case mismatch, '%s' must be %s", identifier.c_str(), reservedIdentifier.c_str() );
+			AddToken( eTokenType::ERROR_TOKEN, errorMsg );
+			return eReservedKeywordResult::CASE_MISMATCH;
+		}
+
+		return eReservedKeywordResult::MATCH;
+	}
+
+	return eReservedKeywordResult::NO_MATCH;
 }

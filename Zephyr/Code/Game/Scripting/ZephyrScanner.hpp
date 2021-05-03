@@ -10,6 +10,15 @@ class ZephyrToken;
 
 
 //-----------------------------------------------------------------------------------------------
+enum class eReservedKeywordResult
+{
+	MATCH,
+	CASE_MISMATCH,
+	NO_MATCH
+};
+
+
+//-----------------------------------------------------------------------------------------------
 class ZephyrScanner
 {
 	friend class ZephyrCompiler;
@@ -38,6 +47,9 @@ private:
 	bool IsLetter( char c );
 	bool IsLetterOrNumber( char c );
 
+	bool MatchReservedIdentifier( const std::string& identifier );
+	eReservedKeywordResult MatchesReservedName( const std::string& identifier, const std::string& reservedIdentifier );
+	
 private:
 	std::string m_scriptSource;
 	std::vector<ZephyrToken> m_tokens;
