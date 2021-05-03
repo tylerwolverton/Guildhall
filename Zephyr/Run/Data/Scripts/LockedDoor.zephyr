@@ -15,7 +15,7 @@ String keyName
 // 	}
 // }
 
-Function ItemAcquired( String itemName )
+Function OnAcquireItem( String itemName )
 {
 	if( itemName == keyName )
 	{

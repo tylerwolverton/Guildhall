@@ -1,7 +1,7 @@
 Number totalQuestCount = 3;
 Number completedQuests = 0;
 
-Function GameStarted()
+Function OnGameStart()
 {
 	ChangeMusic( musicName: "FF6TheDecisiveBattle", volume: .1 )
 }

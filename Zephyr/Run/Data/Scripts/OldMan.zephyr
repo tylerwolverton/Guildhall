@@ -4,7 +4,7 @@ Entity levelMgr = null
 
 State Waiting
 {
-    Function PlayerInteracted()
+    Function OnPlayerInteract()
     {
         ChangeState( Intro );
     }
@@ -21,7 +21,7 @@ State Intro
     }
 
     
-    Function PlayerInteracted( String choiceName )
+    Function OnPlayerInteract( String choiceName )
     {
         if( choiceName == "choice1" )
         {
@@ -55,7 +55,7 @@ State Choice1
         }
     }
 
-    Function PlayerInteracted()
+    Function OnPlayerInteract()
     {
         EndDialogue()
 
@@ -70,7 +70,7 @@ State Choice2
         AddLineOfDialogueText( text: "Okay, see ya" )
     }
 
-    Function PlayerInteracted()
+    Function OnPlayerInteract()
     {
         EndDialogue()
 

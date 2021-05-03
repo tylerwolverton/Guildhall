@@ -14,7 +14,7 @@ Function PerformanceSpawn100()
     perfTester.Spawn100()
 }
 
-Function Spawned( Number maxHealth )
+Function OnSpawn( Number maxHealth )
 {
     AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
 
@@ -32,7 +32,7 @@ Function Spawned( Number maxHealth )
     RegisterKeyEvent( key: "Right", event: "ShootFireballRight" )
 }
 
-Function ItemAcquired( String itemName )
+Function OnAcquireItem( String itemName )
 {
     if( itemName == "TripleFireballPickup" )
     {
@@ -48,7 +48,7 @@ Function ItemAcquired( String itemName )
     }
 }
 
-Function HealthUpdated( Number newHealth )
+Function OnHealthChange( Number newHealth )
 {
     if( newHealth < curHealth )
     {

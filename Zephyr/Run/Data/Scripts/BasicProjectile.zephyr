@@ -1,6 +1,6 @@
 Number attackDamage = 1;
 
-Function Spawned()
+Function OnSpawn()
 {
     StartNewTimer( durationSeconds: 1, onCompletedEvent: "ProjectileLifeExpired")
     //  StartNewTimer( durationSeconds: 1, onCompletedEvent: ProjectileLifeExpired( message: "" ) )
@@ -12,7 +12,7 @@ Function ProjectileLifeExpired( String message, Number val )
     DestroySelf()
 }
 
-Function CollisionEntered( Entity otherEntity )
+Function OnCollisionEnter( Entity otherEntity )
 {
     if( otherEntity != null )
     {

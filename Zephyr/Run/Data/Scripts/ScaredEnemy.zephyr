@@ -11,7 +11,7 @@ Vec2 lastPosition
 // -----------------------------------------------------------------------------------------
 // Global events
 // -----------------------------------------------------------------------------------------
-Function Spawned( Number maxHealth, String mapName )
+Function OnSpawn( Number maxHealth, String mapName )
 {
 	health = maxHealth
 	EnemySpawned( mapName: mapName )
@@ -19,7 +19,7 @@ Function Spawned( Number maxHealth, String mapName )
 	
 }
 
-Function HealthUpdated( Number newHealth)
+Function OnHealthChange( Number newHealth)
 {
 	health = newHealth
 
@@ -34,7 +34,7 @@ Function HealthUpdated( Number newHealth)
 	}
 }
 
-Function Died( String mapName )
+Function OnDie( String mapName )
 {
 	EnemyDied( mapName: mapName )
 }
@@ -47,7 +47,7 @@ Function Died( String mapName )
 // }
 
 // Damage
-Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
+Function OnCollisionEnter( Number attackDamage = 1, Entity otherEntity )
 {
 	if( otherEntity != null )
 	{

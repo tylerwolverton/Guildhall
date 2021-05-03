@@ -777,7 +777,7 @@ void Game::ReloadGame()
 	LoadMapsFromXml();
 
 	EventArgs args;
-	g_eventSystem->FireEvent( "GameStarted", &args );
+	g_eventSystem->FireEvent( "OnGameStart", &args );
 	g_devConsole->PrintString( "Data files reloaded", Rgba8::GREEN );
 }
 
@@ -1298,7 +1298,7 @@ void Game::SelectInDialogue( Entity* dialoguePartner )
 
 	EventArgs args;
 	args.SetValue( "choiceName", choiceName );
-	dialoguePartner->FireScriptEvent( "PlayerInteracted", &args );
+	dialoguePartner->FireScriptEvent( "OnPlayerInteract", &args );
 }
 
 
@@ -1454,7 +1454,7 @@ void Game::ChangeGameState( const eGameState& newGameState )
 					LoadStartingMap( m_startingMapName );
 
 					EventArgs args;
-					g_eventSystem->FireEvent( "GameStarted", &args );
+					g_eventSystem->FireEvent( "OnGameStart", &args );
 				}
 				break;
 

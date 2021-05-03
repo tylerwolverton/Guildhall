@@ -10,14 +10,14 @@ String minionSpawnType;
 // -----------------------------------------------------------------------------------------
 // Global events
 // -----------------------------------------------------------------------------------------
-Function Spawned( Number maxHealth, String mapName )
+Function OnSpawn( Number maxHealth, String mapName )
 {
 	health = maxHealth;
 	//EnemySpawned( mapName: mapName )
 	GetNewWanderTargetPosition( newPos: targetPosition )
 }
 
-Function HealthUpdated( Number newHealth )
+Function OnHealthChange( Number newHealth )
 {
 	health = newHealth;
 
@@ -38,13 +38,13 @@ Function HealthUpdated( Number newHealth )
 	}	
 }
 
-Function Died( String mapName )
+Function OnDie( String mapName )
 {
 	EnemyDied( mapName: mapName )
 }
 
 // Damage
-Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
+Function OnCollisionEnter( Number attackDamage = 1, Entity otherEntity )
 {
 	if( otherEntity != null )
 	{

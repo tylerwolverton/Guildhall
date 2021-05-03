@@ -10,7 +10,7 @@ Entity trap9
 Entity trap10
 
 
-Function TriggerEntered( Number otherEntityId )
+Function OnTriggerEnter( Number otherEntityId )
 {
     if( trap1 != null ) { trap1.Activate() }
     if( trap2 != null ) { trap2.Activate() }

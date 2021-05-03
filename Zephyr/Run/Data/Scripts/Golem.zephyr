@@ -19,20 +19,20 @@ Number rageHealthThreshhold = 5
 Entity target = null
 Entity levelMgr = null
 
-Function Spawned( String mapName )
+Function OnSpawn( String mapName )
 {
 	levelMgr.EnemySpawned( mapName: mapName )
 	WakeUp()
 }
 
 
-Function Died()
+Function OnDie()
 {
 	levelMgr.EnemyDied( mapName: mapName )
 }
 
 
-Function CollisionEntered( Entity otherEntity )
+Function OnCollisionEnter( Entity otherEntity )
 {
     if( otherEntity != null )
     {

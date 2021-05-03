@@ -15,7 +15,7 @@ State UnPressed
         //PrintDebugText( text: "UnPressed" )
     }
 
-    Function TriggerEntered( Entity otherEntity )
+    Function OnTriggerEnter( Entity otherEntity )
     {
         ChangeState( Pressed )
     }
@@ -37,7 +37,7 @@ State Pressed
         //PrintDebugText( text: "Pressed" )
     }
 
-    Function TriggerExited( Entity otherEntity )
+    Function OnTriggerExit( Entity otherEntity )
     {
         ChangeState( UnPressed )
     }

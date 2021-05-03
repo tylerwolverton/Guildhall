@@ -158,7 +158,7 @@ void Actor::UpdateFromKeyboard( float deltaSeconds )
 				if ( targetEntity != nullptr )
 				{
 					EventArgs args;
-					targetEntity->FireScriptEvent( "PlayerInteracted", &args );
+					targetEntity->FireScriptEvent( "OnPlayerInteract", &args );
 				}
 			}
 		}
