@@ -27,7 +27,7 @@
 			},
 			{
 				"name": "keyword.states.zephyr",
-				"match": "\\b(StateMachine|State|Function|Variable|ChangeState|StartConversation|EndConversation|Conversation)\\b"
+				"match": "\\b(StateMachine|State|Function|ChangeState)\\b"
 			},
 			{
 				"name": "keyword.operator.arithmetic.zephyr",
@@ -55,7 +55,7 @@
 			"patterns": [
 			{
 				"name": "variable.language.gameapi.zephyr",
-				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|AddNewDamageTypeMultiplier|ChangeDamageTypeMultiplier|AddItemToInventory|RemoveItemFromInventory|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake)\\b"
+				"match": "\\b(PrintDebugText|PrintDebugScreenText|PrintToConsole|SpawnEntity|StartDialogue|EndDialogue|AddLineOfDialogueText|AddDialogueChoice|StartNewTimer|WinGame|DestroySelf|DamageEntity|ActivateInvincibility|DeactivateInvincibility|DisableCollisions|EnableCollisions|MoveToLocation|MoveInDirection|ChaseTargetEntity|FleeTargetEntity|GetEntityLocation|GetNewWanderTargetPosition|CheckForTarget|GetDistanceToTarget|RegisterKeyEvent|UnRegisterKeyEvent|ChangeSpriteAnimation|PlaySound|ChangeMusic|AddScreenShake|SpawnEntitiesInRange)\\b"
 			}
 		]
 		},
@@ -71,7 +71,7 @@
 			},
 			{
 				"name": "constant.numeric.bool.zephyr",
-				"match": "\\b(true|false|this|null)"
+				"match": "\\b(true|false|null)"
 			},
 			{
 				"name": "constant.numeric.entity.zephyr",

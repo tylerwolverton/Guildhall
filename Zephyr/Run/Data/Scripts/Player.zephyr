@@ -16,8 +16,6 @@ Function PerformanceSpawn100()
 
 Function OnSpawn( Number maxHealth )
 {
-    AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
-
     //RegisterKeyEvent( key: "Q", event: "PerformanceSpawn10" )
     //RegisterKeyEvent( key: "E", event: "PerformanceSpawn100" )
 

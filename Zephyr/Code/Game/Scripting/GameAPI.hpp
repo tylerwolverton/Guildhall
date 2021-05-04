@@ -41,11 +41,11 @@ private:
 	void DamageEntity( EventArgs* args );
 	void ActivateInvincibility( EventArgs* args );
 	void DeactivateInvincibility( EventArgs* args );
-	void AddNewDamageTypeMultiplier( EventArgs* args );
-	void ChangeDamageTypeMultiplier( EventArgs* args );
-	void AddItemToInventory( EventArgs* args );
-	void RemoveItemFromInventory( EventArgs* args );
-	void CheckEntityForInventoryItem( EventArgs* args );
+	//void AddNewDamageTypeMultiplier( EventArgs* args );
+	//void ChangeDamageTypeMultiplier( EventArgs* args );
+	//void AddItemToInventory( EventArgs* args );
+	//void RemoveItemFromInventory( EventArgs* args );
+	//void CheckEntityForInventoryItem( EventArgs* args );
 	void DisableCollisions( EventArgs* args );
 	void EnableCollisions( EventArgs* args );
 
@@ -73,10 +73,8 @@ private:
 	void SpawnEntitiesInRange( EventArgs* args );
 
 private:
-	Entity* GetItemEntityFromArgs( EventArgs* args );
 	Entity* GetTargetEntityFromArgs( EventArgs* args );
 
 private:
 	std::unordered_set<std::string> m_registeredMethods;
-	//std::unordered_set<std::string> m_registered;
 };

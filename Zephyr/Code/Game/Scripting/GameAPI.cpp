@@ -47,11 +47,6 @@ GameAPI::GameAPI()
 	REGISTER_EVENT( DamageEntity );
 	REGISTER_EVENT( ActivateInvincibility );
 	REGISTER_EVENT( DeactivateInvincibility );
-	REGISTER_EVENT( AddNewDamageTypeMultiplier );
-	REGISTER_EVENT( ChangeDamageTypeMultiplier );
-	REGISTER_EVENT( AddItemToInventory );
-	REGISTER_EVENT( RemoveItemFromInventory );
-	REGISTER_EVENT( CheckEntityForInventoryItem );
 	REGISTER_EVENT( DisableCollisions );
 	REGISTER_EVENT( EnableCollisions );
 
@@ -180,133 +175,6 @@ void GameAPI::DeactivateInvincibility( EventArgs* args )
 	}
 
 	entity->ResetDamageMultipliers();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-/**
- * Add a new damage type multiplier to target entity. 
- *
- * Description: When the entity takes damage the type of damage will be used to apply a multiplier if one exists for the given type. If an unregistered type of damage is dealt it will be applied at 1x. 
- *
- * params:
- * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
- *	- targetId: id of target entity
- *		- Zephyr type: Number
- *	- targetName: name of target entity
- *		- Zephyr type: String
- *	
- *	- multiplier: the multiplier to apply to entity upon taking damage of the given type
- *		- Zephyr type: Number
- *	- damageType: the name of the damage type to register
- *		- Zephyr type: String
-*/
-//-----------------------------------------------------------------------------------------------
-void GameAPI::AddNewDamageTypeMultiplier( EventArgs* args )
-{
-	Entity* entity = GetTargetEntityFromArgs( args );
-	if ( entity == nullptr )
-	{
-		return;
-	}
-
-	float newDamageMultiplier = args->GetValue( "multiplier", 1.f );
-	std::string type = args->GetValue( "damageType", "" );
-	if ( type.empty() )
-	{
-		return;
-	}
-
-	entity->AddNewDamageMultiplier( type, newDamageMultiplier );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-/**
- * Change the damage type multiplier for a given damage type for target entity.
- *
- * params:
- * Target will be determined by the following optional parameters, checking in order the targetId, then targetName, then ( if neither name or id are specified ) targeting the entity who called this event.
- *	- targetId: id of target entity
- *		- Zephyr type: Number
- *	- targetName: name of target entity
- *		- Zephyr type: String
- *
- *	- multiplier: the multiplier to apply to entity upon taking damage of the given type
- *		- Zephyr type: Number
- *	- damageType: the name of the damage type to register
- *		- Zephyr type: String
-*/
-//-----------------------------------------------------------------------------------------------
-void GameAPI::ChangeDamageTypeMultiplier( EventArgs* args )
-{
-	Entity* entity = GetTargetEntityFromArgs( args );
-	if ( entity == nullptr )
-	{
-		return;
-	}
-
-	float newDamageMultiplier = args->GetValue( "multiplier", 1.f );
-	std::string type = args->GetValue( "damageType", "" );
-	if ( type.empty() )
-	{
-		return;
-	}
-
-	entity->ChangeDamageMultiplier( type, newDamageMultiplier );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameAPI::AddItemToInventory( EventArgs* args )
-{
-	Entity* itemEntity = GetItemEntityFromArgs( args );
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
-
-	if ( itemEntity == nullptr
-		 || targetEntity == nullptr )
-	{
-		return;
-	}
-
-	targetEntity->AddItemToInventory( itemEntity );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameAPI::RemoveItemFromInventory( EventArgs* args )
-{
-	Entity* itemEntity = GetItemEntityFromArgs( args );
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
-
-	if ( itemEntity == nullptr
-		 || targetEntity == nullptr )
-	{
-		return;
-	}
-
-	targetEntity->RemoveItemFromInventory( itemEntity );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameAPI::CheckEntityForInventoryItem( EventArgs* args )
-{
-	std::string itemType = args->GetValue( "itemType", "" );
-	Entity* targetEntity = GetTargetEntityFromArgs( args );
-
-	if ( itemType.empty()
-		 || targetEntity == nullptr )
-	{
-		return;
-	}
-
-	bool isInInventory = targetEntity->IsInInventory( itemType );
-
-	EventArgs returnArgs;
-	returnArgs.SetValue( "hasItem", isInInventory );
-
-	targetEntity->FireScriptEvent( "CheckInventoryResult", &returnArgs );
 }
 
 
@@ -1028,43 +896,6 @@ void GameAPI::SpawnEntitiesInRange( EventArgs* args )
 		args->SetValue( "position", randomPosition );
 		g_eventSystem->FireEvent( "SpawnEntity", args );
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-Entity* GameAPI::GetItemEntityFromArgs( EventArgs* args )
-{
-	EntityId itemId = (EntityId)args->GetValue( "itemId", -1.f );
-	std::string itemName = args->GetValue( "itemName", "" );
-	Entity* entity = nullptr;
-
-	// Named entities are returned first
-	if ( !itemName.empty() )
-	{
-		entity = g_game->GetEntityByName( itemName );
-		if ( entity == nullptr )
-		{
-			g_devConsole->PrintWarning( Stringf( "Failed to find an entity with name '%s'", itemName.c_str() ) );
-			return nullptr;
-		}
-	}
-	// Id entities are tried next
-	else if ( itemId != -1 )
-	{
-		entity = g_game->GetEntityById( itemId );
-		if ( entity == nullptr )
-		{
-			g_devConsole->PrintWarning( Stringf( "Failed to find an entity with id '%i'", itemId ) );
-			return nullptr;
-		}
-	}
-	else
-	{
-		g_devConsole->PrintError( Stringf( "No item name or id specified" ) );
-		return nullptr;
-	}
-
-	return entity;
 }
 
 
