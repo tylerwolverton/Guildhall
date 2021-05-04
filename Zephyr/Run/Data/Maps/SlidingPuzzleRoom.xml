@@ -7,16 +7,16 @@
 	</Legend>
 	<MapRows>
 		<!--<MapRow tiles="#######.#.######"/>-->
-		<MapRow tiles="#####################"/>
+		<MapRow tiles="########.############"/>
 		<MapRow tiles="#...................#"/>
 		<MapRow tiles="#...................#"/>
 		<MapRow tiles="#...................#"/>
 		<MapRow tiles="#......#####........#"/>
 		<MapRow tiles="#......#...#........#"/>
 		<MapRow tiles="#......##.##........#"/>
-		<MapRow tiles="#..............*....."/>
+		<MapRow tiles="#..............*....#"/>
 		<MapRow tiles="#...................#"/>
-		<MapRow tiles="#####################"/>
+		<MapRow tiles="#####.###############"/>
 	</MapRows>
 	<Entities>
     <!-- Managers -->
@@ -27,10 +27,16 @@
 		<GlobalVar type="entity" var="door" value="keyDoor"/>
     </Entity>
     <Entity type="Block" pos="14.5,3.5"/>
-	<Pickup type="Key" name="key1" pos="9.5,4.5" />
+	<Pickup type="Key" name="key2" pos="9.5,4.5" />
     <!-- Door back to level 1 -->
-    <Portal type="InvisibleTeleporter" pos="20.5,2.5" yaw="0" destMap="Level1" destPos="1.5,1.5" destYawOffset="0"/>
+    <Portal type="InvisibleTeleporter" pos="5.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5"/>
 
+    <!-- Door to boss level -->
+    <Entity type="LockedDoorVertical" name="door2" pos="8.5,9.5">
+      <GlobalVar type="string" var="keyName" value="key2"/>
+    </Entity>
+    <Portal type="InvisibleTeleporter" pos="8.5,9.5" yaw="0" destMap="BossLevel" destPos="3.5,1.5" destYawOffset="0"/>
+    
 	<!-- Door to key area -->
 	<Entity type="ClosedDoorEventVertical" name="keyDoor" pos="9.5,3.5"/>
     <!-- Entities -->

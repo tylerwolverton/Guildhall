@@ -218,9 +218,6 @@
     <Xml Include="..\..\Run\Data\Maps\Level1.xml">
       <Filter>Data\Maps</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Maps\Level2.xml">
-      <Filter>Data\Maps</Filter>
-    </Xml>
     <Xml Include="..\..\Run\Data\Maps\VictoryLevel.xml">
       <Filter>Data\Maps</Filter>
     </Xml>
@@ -240,6 +237,9 @@
       <Filter>Data\Maps</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Maps\SlidingPuzzleRoom.xml">
+      <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Maps\BossLevel.xml">
       <Filter>Data\Maps</Filter>
     </Xml>
   </ItemGroup>

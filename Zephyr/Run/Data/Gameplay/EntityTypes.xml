@@ -127,8 +127,8 @@
     </Script>
   </Entity>
   
-  <Entity name="Level2Manager">
-    <Script name="Level2Manager.zephyr">
+  <Entity name="BossLevelManager">
+    <Script name="BossLevelManager.zephyr">
       <GlobalVar type="entity" var="gameMgr" value="GameManager"/>
     </Script>
   </Entity>

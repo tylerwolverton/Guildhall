@@ -278,7 +278,7 @@ void Game::Render() const
 		case eGameState::LOADING:
 		{
 			std::vector<Vertex_PCU> vertexes;
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Loading..." );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 450.f, 500.f ), 100.f, "Loading..." );
 
 			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 			g_renderer->DrawVertexArray( vertexes );
@@ -288,9 +288,9 @@ void Game::Render() const
 		case eGameState::ATTRACT:
 		{
 			std::vector<Vertex_PCU> vertexes;
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 500.f ), 100.f, "Zephyr Test" );
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 400.f ), 30.f, "Esc to Quit" );
-			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 550.f, 350.f ), 30.f, "Any Other Key to Start" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 450.f, 500.f ), 100.f, "Zephyr Test" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 400.f ), 30.f, "Esc to Quit" );
+			g_renderer->GetSystemFont()->AppendVertsForText2D( vertexes, Vec2( 500.f, 350.f ), 30.f, "Any Other Key to Start" );
 
 			g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 			g_renderer->DrawVertexArray( vertexes );
