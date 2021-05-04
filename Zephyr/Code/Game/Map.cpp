@@ -19,9 +19,9 @@
 #include "Game/EntityDefinition.hpp"
 #include "Game/MapData.hpp"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <profileapi.h>
+//#define WIN32_LEAN_AND_MEAN
+//#include <windows.h>
+//#include <profileapi.h>
 
 
 //-----------------------------------------------------------------------------------------------

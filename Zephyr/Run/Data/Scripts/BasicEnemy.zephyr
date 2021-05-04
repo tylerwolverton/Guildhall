@@ -13,7 +13,10 @@ Vec2 lastPosition
 // -----------------------------------------------------------------------------------------
 Function OnSpawn( Number maxHealth, String mapName )
 {
-	levelMgr.EnemySpawned( mapName: mapName )
+	if( levelMgr != null )
+	{
+		levelMgr.EnemySpawned( mapName: mapName )
+	}
 	GetNewWanderTargetPosition( newPos: targetPosition )
 }
 
@@ -35,7 +38,10 @@ Function OnHealthChange( Number newHealth)
 Function OnDie( String mapName )
 {
 	// SpawnEntity( type: "Blob", position: Vec2(1,1) )
-	levelMgr.EnemyDied( mapName: mapName )
+	if( levelMgr != null )
+	{
+		levelMgr.EnemyDied( mapName: mapName )
+	}
 }
 
 // Function SummonBlob( Vec2 newPos, Number blobVal )

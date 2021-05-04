@@ -18,8 +18,8 @@ Function OnSpawn( Number maxHealth )
 {
     AddNewDamageTypeMultiplier( damageType: "normal", multiplier: 1 )
 
-    RegisterKeyEvent( key: "Q", event: "PerformanceSpawn10" )
-    RegisterKeyEvent( key: "E", event: "PerformanceSpawn100" )
+    //RegisterKeyEvent( key: "Q", event: "PerformanceSpawn10" )
+    //RegisterKeyEvent( key: "E", event: "PerformanceSpawn100" )
 
     RegisterKeyEvent( key: "W", event: "MoveUp" )
     RegisterKeyEvent( key: "A", event: "MoveLeft" )
