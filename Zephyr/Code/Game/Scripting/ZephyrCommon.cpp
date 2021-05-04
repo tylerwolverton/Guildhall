@@ -234,9 +234,11 @@ ZephyrValue::ZephyrValue( EntityId value )
 //-----------------------------------------------------------------------------------------------
 ZephyrValue::ZephyrValue( ZephyrValue const& other )
 {
+	// If this is already a string type delete the data before setting new data
 	if ( this->m_type == eValueType::STRING )
 	{
 		delete this->strData;
+		this->strData = nullptr;
 	}
 
 	switch ( other.m_type )
@@ -249,6 +251,82 @@ ZephyrValue::ZephyrValue( ZephyrValue const& other )
 	}
 
 	m_type = other.m_type;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue& ZephyrValue::operator=( ZephyrValue const& other )
+{
+	if ( this->m_type == eValueType::STRING )
+	{
+		delete this->strData;
+		this->strData = nullptr;
+	}
+
+	switch ( other.m_type )
+	{
+		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
+		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
+		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
+		case eValueType::BOOL:		this->boolData = other.boolData;	break;
+		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
+	}
+
+	m_type = other.m_type;
+
+	return *this;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue( ZephyrValue const&& other )
+{
+	// If this is already a string type delete the data before setting new data
+	if ( this->m_type == eValueType::STRING )
+	{
+		delete this->strData;
+		this->strData = nullptr;
+	}
+
+	switch ( other.m_type )
+	{
+		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
+		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
+		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
+		case eValueType::BOOL:		this->boolData = other.boolData;	break;
+		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
+	}
+
+	m_type = other.m_type;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue& ZephyrValue::operator=( ZephyrValue const&& other )
+{
+	if ( this == &other )
+	{
+		return *this;
+	}
+
+	if ( this->m_type == eValueType::STRING )
+	{
+		delete this->strData;
+		this->strData = nullptr;
+	}
+
+	switch ( other.m_type )
+	{
+		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
+		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
+		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
+		case eValueType::BOOL:		this->boolData = other.boolData;	break;
+		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
+	}
+
+	m_type = other.m_type;
+
+	return *this;
 }
 
 
@@ -364,27 +442,4 @@ void ZephyrValue::ReportConversionError( eValueType targetType )
 {
 	g_devConsole->PrintError( Stringf( "Cannot access '%s' variable as type '%s'", ToString( m_type ).c_str(), ToString( targetType ).c_str() ) );
 	entityData = ERROR_ZEPHYR_VAL;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-ZephyrValue& ZephyrValue::operator=( ZephyrValue const& other )
-{
-	if ( this->m_type == eValueType::STRING )
-	{
-		delete this->strData;
-	}
-
-	switch ( other.m_type )
-	{
-		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
-		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
-		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
-		case eValueType::BOOL:		this->boolData = other.boolData;	break;
-		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
-	}
-
-	m_type = other.m_type;
-
-	return *this;
 }
