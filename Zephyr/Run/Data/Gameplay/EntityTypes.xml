@@ -2,7 +2,7 @@
   ​
   <Actor name="Link">
     <Physics radius="0.5" speed="150.0" drag="5" collisionLayer="Enemy"/>
-    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="1">
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5" fps="4">
       <!--First anim is defaulted as initial animation-->
       <Walk up="6,7" left="4,5" down="0,1" right="2,3"/>
       <Attack up="0"/>

@@ -1,4 +1,4 @@
-<MapDefinition type="TileMap" version="1" dimensions="21,10">
+<MapDefinition type="TileMap" version="1" dimensions="16,8">
 
 	<Legend>
 		<Tile glyph="#" tileType="BlueDungeonBlock"/>
@@ -6,41 +6,39 @@
 		<Tile glyph="*" tileType="GreyDungeonFloor"/>
 	</Legend>
 	<MapRows>
-		<!--<MapRow tiles="#######.#.######"/>-->
-		<MapRow tiles="########.############"/>
-		<MapRow tiles="#...................#"/>
-		<MapRow tiles="#...................#"/>
-		<MapRow tiles="#...................#"/>
-		<MapRow tiles="#......#####........#"/>
-		<MapRow tiles="#......#...#........#"/>
-		<MapRow tiles="#......##.##........#"/>
-		<MapRow tiles="#..............*....#"/>
-		<MapRow tiles="#...................#"/>
-		<MapRow tiles="#####.###############"/>
+		<MapRow tiles="######.#########"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="#.........*....#"/>
+		<MapRow tiles="#..............#"/>
+		<MapRow tiles="###.############"/>
 	</MapRows>
 	<Entities>
     <!-- Managers -->
     <Entity type="SlidingPuzzleRoomManager">
       <GlobalVar type="string" var="roomId" value="Level2"/>
     </Entity>
-    <Entity type="PressurePlate" pos="15.5,2.5">
-		<GlobalVar type="entity" var="door" value="keyDoor"/>
+    <Entity type="PressurePlate" pos="10.5,2.5">
+		<GlobalVar type="entity" var="door" value="doorToBoss"/>
     </Entity>
-    <Entity type="Block" pos="14.5,3.5"/>
-	<Pickup type="Key" name="key2" pos="9.5,4.5" />
+    <Entity type="Block" pos="9.5,3.5"/>
+		<!--<Pickup type="Key" name="key2" pos="9.5,4.5" />-->
     <!-- Door back to level 1 -->
-    <Portal type="InvisibleTeleporter" pos="5.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5"/>
+    <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="Level1" destPos="8.5,8.5"/>
 
     <!-- Door to boss level -->
-    <Entity type="LockedDoorVertical" name="door2" pos="8.5,9.5">
+    <!--<Entity type="LockedDoorVertical" name="door2" pos="8.5,9.5">
       <GlobalVar type="string" var="keyName" value="key2"/>
-    </Entity>
-    <Portal type="InvisibleTeleporter" pos="8.5,9.5" yaw="0" destMap="BossLevel" destPos="3.5,1.5" destYawOffset="0"/>
+    </Entity>-->
+		<Entity type="ClosedDoorEventVertical" name="doorToBoss" pos="6.5,7.5"/>
+    <Portal type="InvisibleTeleporter" pos="6.5,7.5" yaw="0" destMap="BossLevel" destPos="3.5,1.5" destYawOffset="0"/>
     
-	<!-- Door to key area -->
-	<Entity type="ClosedDoorEventVertical" name="keyDoor" pos="9.5,3.5"/>
+		<!-- Door to key area -->
+		<!--<Entity type="ClosedDoorEventVertical" name="keyDoor" pos="9.5,3.5"/>-->
     <!-- Entities -->
-    <PlayerStart pos="18.5,3.5" yaw="0"/>
+    <PlayerStart pos="8.5,3.5" yaw="0"/>
 	
 	</Entities>
 

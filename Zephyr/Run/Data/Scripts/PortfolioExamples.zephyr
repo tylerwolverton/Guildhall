@@ -31,7 +31,7 @@ Function OnDie( String mapName )
 }
 
 // Damage
-Function OnCollisionEntered( Number attackDamage = 1, Entity otherEntity )
+Function OnCollisionEnter( Number attackDamage = 1, Entity otherEntity )
 {
 	if( otherEntity != null )
 	{
