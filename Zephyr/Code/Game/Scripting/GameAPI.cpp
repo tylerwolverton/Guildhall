@@ -837,9 +837,10 @@ void GameAPI::ChangeSpriteAnimation( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void GameAPI::PlaySound( EventArgs* args )
 {
-	std::string soundName = args->GetValue( "soundName", "" );
+	std::string soundName = args->GetValue( "name", "" );
 	if ( soundName.empty() )
 	{
+		g_devConsole->PrintError( Stringf( "PlaySound must specify \"name\" parameter" ) );
 		return;
 	}
 

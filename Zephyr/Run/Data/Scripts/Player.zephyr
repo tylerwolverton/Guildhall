@@ -99,6 +99,7 @@ Function ShootFireball( Vec2 fireballOffset, Number shotOrientation )
         return;
     }
 
+    PlaySound( name: "LOZ_Bomb_Blow" volume: .5 )
     SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset, orientation: shotOrientation )
     StartNewTimer( durationSeconds: fireCooldown, onCompletedEvent: "ShotCooldownExpired" )
 
@@ -138,6 +139,7 @@ Function ShootTripleFireball( Vec2 fireballOffset1,
         return;
     }
 
+    PlaySound( name: "LOZ_Bomb_Blow" )
     SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset1, orientation: shotOrientation1 )
     SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset2, orientation: shotOrientation1 + 45 )
     SpawnEntity( type: "PlayerFireball", position: parentEntity.position + fireballOffset3, orientation: shotOrientation1 - 45 )

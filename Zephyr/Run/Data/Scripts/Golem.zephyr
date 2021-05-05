@@ -44,11 +44,11 @@ Function OnCollisionEnter( Entity otherEntity )
         {
             if( isInvincible )
             {
-                PlaySound( soundName: "LOZ_Shield", volume: .25 )
+                PlaySound( name: "LOZ_Shield", volume: .25 )
             }
             else
             {
-                PlaySound( soundName: "LOZ_Enemy_Hit", volume: .25)
+                PlaySound( name: "LOZ_Enemy_Hit", volume: .25)
                 AddScreenShake( intensity: .05 )
             }
         }
@@ -151,6 +151,8 @@ Function ShootProjectiles()
 	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( -1, 1 ), orientation: 135 )
 	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( -1, -1 ), orientation: 225 )
 	SpawnEntity( type: "Fireball", position: parentEntity.position + Vec2( 1, -1 ), orientation: 315 )
+    
+    PlaySound( name: "LOZ_Bomb_Blow" volume: .5 )
 }
 
 

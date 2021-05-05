@@ -805,7 +805,8 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 			std::string otherName;
 			std::string otherType;
 			if ( theirEntity != nullptr
-				 && !theirEntity->IsDead() )
+				 && !theirEntity->IsDead()
+				 && theirEntity->GetId() > 0 )
 			{
 				otherId = theirEntity->GetId();
 				otherName = theirEntity->GetName();

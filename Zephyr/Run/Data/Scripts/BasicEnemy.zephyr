@@ -24,6 +24,8 @@ Function OnHealthChange( Number newHealth)
 {
 	health = newHealth
 
+	PlaySound( name: "LOZ_Enemy_Hit" volume: .25)
+
 	if( health == 1 )
 	{
 		ChangeSpriteAnimation( newAnim: "LowHealth" )

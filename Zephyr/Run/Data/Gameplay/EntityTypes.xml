@@ -189,7 +189,14 @@
 
   <Entity name="PressurePlate">
     <Physics radius="0.25" speed="0" drag="5" collisionLayer="Enemy" isTrigger="true"/>
-    <Script name="PressurePlate.zephyr"/>
+    <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
+      <Off down="131"/>
+      <On down="132"/>
+    </Appearance>
+    <!--<Script name="PressurePlate.zephyr"/>-->
+    <Script name="PressurePlate.zephyr">
+      <GlobalVar type="entity" var="player" value="player"/>
+    </Script>
   </Entity>
 
   <Entity name="Block">
@@ -197,7 +204,6 @@
     <Appearance size="1.0,1.0" localDrawBounds="-.5,-.5,.5,.5">
       <Default up="122"/>
     </Appearance>
-    <!-- <Script name="PressurePlate.zephyr"/> -->
   </Entity>
 
   <Entity name="ClosedDoorEventVertical">

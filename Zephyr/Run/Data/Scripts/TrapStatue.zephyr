@@ -5,4 +5,5 @@ String projectileType = "Fireball"
 Function Activate()
 {
     SpawnEntity( type: projectileType, position: parentEntity.position + attackOffset, orientation: attackOrientation )
+    PlaySound( name: "LOZ_Bomb_Blow" volume: .25 )
 }

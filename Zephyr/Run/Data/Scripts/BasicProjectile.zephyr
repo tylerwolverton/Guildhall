@@ -8,7 +8,7 @@ Function OnSpawn()
 
 Function ProjectileLifeExpired( String message, Number val )
 {
-    // PlaySound( soundName: "EnemyHit", volume: .25)
+    // PlaySound( name: "EnemyHit", volume: .25)
     DestroySelf()
 }
 

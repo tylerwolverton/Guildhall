@@ -3,7 +3,7 @@ Number completedQuests = 0;
 
 Function OnGameStart()
 {
-	ChangeMusic( musicName: "FF6TheDecisiveBattle", volume: .1 )
+	ChangeMusic( musicName: "FF6TheDecisiveBattle", volume: .05 )
 }
 
 Function QuestCompleted( String questId )

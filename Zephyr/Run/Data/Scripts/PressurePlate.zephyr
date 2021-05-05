@@ -1,23 +1,19 @@
-Entity door = null
+Entity levelMgr = null
+Entity player = null
 
 State UnPressed
 {
     OnEnter()
     {
-        if( door != null )
-        {
-            door.Close()
-        }
-    }
-
-    OnUpdate()
-    {
-        //PrintDebugText( text: "UnPressed" )
+        ChangeSpriteAnimation( newAnim: "Off" )
     }
 
     Function OnTriggerEnter( Entity otherEntity )
     {
-        ChangeState( Pressed )
+        if( otherEntity == player )
+        {
+            ChangeState( Pressed )
+        }
     }
 }
 
@@ -26,19 +22,13 @@ State Pressed
 {
     OnEnter()
     {
-        if( door != null )
-        {
-            door.Open()
-        }
+        ChangeSpriteAnimation( newAnim: "On" )
+        levelMgr.RegisterPress( plate: parentEntity )
     }
+}
 
-    OnUpdate()
-    {
-        //PrintDebugText( text: "Pressed" )
-    }
 
-    Function OnTriggerExit( Entity otherEntity )
-    {
-        ChangeState( UnPressed )
-    }
+Function Reset()
+{
+    ChangeState( UnPressed )
 }

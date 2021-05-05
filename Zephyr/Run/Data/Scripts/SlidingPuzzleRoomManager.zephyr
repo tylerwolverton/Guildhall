@@ -1,17 +1,64 @@
-String roomId;
-String questStatusText = "Open The Door";
+Entity door = null
+Entity plate1 = null
+Entity plate2 = null
+Entity plate3 = null
+Entity nextPlate = null
 
 
-State Default
+Function OnSpawn()
 {
-    // OnUpdate()
-    // {
-    //     Vec2 screenLocationRatio = Vec2( 0, 1 );
-    //     Vec2 screenPadding = Vec2( 3, -30 );
-    //     PrintDebugScreenText( text: questStatusText,
-    //                           fontSize: 20,
-    //                           locationRatio: screenLocationRatio,
-    //                           padding: screenPadding,
-    //                           color: "white" )
-    // }
+    nextPlate = plate1
+}
+
+
+Function RegisterPress( Entity plate )
+{
+    if( plate == nextPlate )
+    {
+        if( plate == plate1 )
+        {
+            nextPlate = plate2
+            // PuzzleSolved()
+            return
+        }
+        if( plate == plate2 )
+        {
+            nextPlate = plate3
+            return
+        }
+        if( plate == plate3 )
+        {
+            PuzzleSolved()
+            return 
+        }
+    }
+
+    PuzzleFailed()
+}
+
+
+Function PuzzleSolved()
+{
+    if( door != null )
+    {
+        door.Open()
+    }
+
+    PlaySound( name: "LOZ_Bomb_Drop" )
+}
+
+
+Function PuzzleFailed()
+{
+    nextPlate = plate1
+    
+    plate1.Reset()
+    plate2.Reset()
+    plate3.Reset()    
+    
+    SpawnEntity( type: "BlobBossMed", position: parentEntity.position + Vec2( -1,0 ) )
+    SpawnEntity( type: "BlobBossMed", position: parentEntity.position + Vec2( 1,0 ) )
+    
+    PlaySound( name: "LOZ_Bomb_Blow" )
+    AddScreenShake( intensity: .05 )
 }
