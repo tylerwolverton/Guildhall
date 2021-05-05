@@ -213,7 +213,7 @@
       <Open   up="21"/>
     </Appearance>
     <Gameplay maxHealth="99999"/>
-    <Script name="ClosedDoorEvent.zephyr"/>
+    <Script name="ClosedDoor.zephyr"/>
   </Entity>
 
   <Projectile name="PoisonBlob">

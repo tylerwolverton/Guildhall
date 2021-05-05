@@ -29,7 +29,7 @@
     <Portal type="InvisibleTeleporter" pos="7.5,9.5" yaw="0" destMap="VictoryLevel" destPos="8.5,8.5" destYawOffset="0"/>
     <!-- Door back to sliding puzzle level -->
     <Entity type="ClosedDoorVertical" name="door2To1" pos="3.5,.5"/>
-    <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="SlidingPuzzleRoom" destPos="8.5,8.5" destYawOffset="0"/>
+    <Portal type="InvisibleTeleporter" pos="3.5,.5" yaw="0" destMap="SlidingPuzzleRoom" destPos="6.5,6.5" destYawOffset="0"/>
     <!-- Entities -->
     <PlayerStart pos="3.5,1.5" yaw="0"/>
     <!-- <Actor type="BlobBossBig" name="blobBossBig" pos="5.5,5.5" yaw="0"/> -->
