@@ -362,7 +362,7 @@ bool ZephyrValue::EvaluateAsBool()
 		case eValueType::VEC2: 		return !IsNearlyEqual( vec2Data, Vec2::ZERO );			
 		case eValueType::NUMBER: 	return !IsNearlyEqual( numberData, 0.f );			
 		case eValueType::BOOL:		return boolData;	
-		case eValueType::ENTITY:	return entityData != -1;
+		case eValueType::ENTITY:	return entityData != (EntityId)-1;
 	}
 
 	return false;

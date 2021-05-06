@@ -1,0 +1,8 @@
+- Redefinition of OnUpdate, etc. only runs latest one
+- Can call OnDie, etc.
+- Can redefine variable in same chunk
+- 
+- 
+- 
+- 
+- 

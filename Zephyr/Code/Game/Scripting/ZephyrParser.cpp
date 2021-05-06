@@ -292,7 +292,6 @@ bool ZephyrParser::ParseStatement()
 			return ParseFunctionDefinition();
 		}
 		
-		
 		case eTokenType::NUMBER:
 		{
 			if ( !ParseVariableDeclaration( eValueType::NUMBER ) )
