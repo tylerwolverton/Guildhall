@@ -77,18 +77,18 @@ void NpcTurret::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, 0.f, m_position );
 
-	g_renderer->BindTexture( 0, m_turretBase );
+	g_renderer->BindDiffuseTexture( m_turretBase );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	// Turret
 	vertexesCopy = m_vertexes;
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( 0, m_turretTop );
+	g_renderer->BindDiffuseTexture( m_turretTop );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	// Laser sight
-	g_renderer->BindTexture( 0, nullptr );
+	g_renderer->BindDiffuseTexture( nullptr );
 	DrawLine2D( g_renderer, m_position + GetForwardVector() * TURRET_COSMETIC_RADIUS, m_lastRaycastImpact.m_impactPosition, Rgba8::RED, DEBUG_LINE_THICKNESS );
 
 	RenderHealthBar();

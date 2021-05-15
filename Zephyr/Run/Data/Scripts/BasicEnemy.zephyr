@@ -17,7 +17,6 @@ Function OnSpawn( Number maxHealth, String mapName )
 	{
 		levelMgr.EnemySpawned( mapName: mapName )
 	}
-	
 	GetNewWanderTargetPosition( newPos: targetPosition )
 }
 

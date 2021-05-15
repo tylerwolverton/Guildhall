@@ -292,6 +292,7 @@ bool ZephyrParser::ParseStatement()
 			return ParseFunctionDefinition();
 		}
 		
+		
 		case eTokenType::NUMBER:
 		{
 			if ( !ParseVariableDeclaration( eValueType::NUMBER ) )
@@ -504,6 +505,11 @@ bool ZephyrParser::ParseFunctionDefinition()
 		curToken = ConsumeCurToken();
 	}
 
+	/*if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) )
+	{
+		return false;
+	}*/
+
 	succeeded = ParseBlock();
 
 	FinalizeCurBytecodeChunk();
@@ -582,7 +588,24 @@ bool ZephyrParser::ParseFunctionCall()
 		return false;
 	}
 
-	// TODO: Add a mechanism to check if this function has already bee defined, or if it's one of the built in functions 
+	//if ( !DoesTokenMatchType( eventName, eTokenType::IDENTIFIER ) )
+	//{
+	//	if ( DoesTokenMatchType( eventName, eTokenType::ON_ENTER ) )
+	//	{
+	//		ReportError( "OnEnter cannot be called from FireEvent, it's automatically called when entering a state" );
+	//	}
+	//	else if ( DoesTokenMatchType( eventName, eTokenType::ON_EXIT ) )
+	//	{
+	//		ReportError( "OnExit cannot be called from FireEvent, it's automatically called when exiting a state" );
+	//	}
+	//	else if ( DoesTokenMatchType( eventName, eTokenType::ON_UPDATE ) )
+	//	{
+	//		ReportError( "OnUpdate cannot be called from FireEvent, it's automatically called when the entity updates" );
+	//	}
+	//	else
+	//	{
+	//		ReportError( "FireEvent must specify an event to call in parentheses" );
+	//	}
 
 	if ( !ParseEventArgs() )
 	{
@@ -626,8 +649,8 @@ bool ZephyrParser::ParseEventArgs()
 			case eTokenType::CONSTANT_NUMBER:
 			case eTokenType::VEC2:
 			case eTokenType::ENTITY:
-			case eTokenType::TRUE:
-			case eTokenType::FALSE:
+			case eTokenType::TRUE_TOKEN:
+			case eTokenType::FALSE_TOKEN:
 			case eTokenType::NULL_TOKEN:
 			case eTokenType::CONSTANT_STRING:
 			{
@@ -958,8 +981,8 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 
 		case eTokenType::CONSTANT_NUMBER:	return ParseNumberConstant();
 		case eTokenType::VEC2:				return ParseVec2Constant();
-		case eTokenType::TRUE:				return ParseBoolConstant( true );
-		case eTokenType::FALSE:				return ParseBoolConstant( false );
+		case eTokenType::TRUE_TOKEN:				return ParseBoolConstant( true );
+		case eTokenType::FALSE_TOKEN:				return ParseBoolConstant( false );
 		case eTokenType::NULL_TOKEN:		return ParseEntityConstant();
 		case eTokenType::CONSTANT_STRING:	return ParseStringConstant();
 		case eTokenType::ENTITY:
@@ -1487,6 +1510,30 @@ bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue&
 	{
 		foundValue = m_stateMachineBytecodeChunk->TryToGetVariable( identifier, out_value );
 	}
+
+	//// Check for member accessor for Vec2
+	//if ( foundValue && out_value.GetType() == eValueType::VEC2 )
+	//{
+	//	ZephyrToken nextToken = PeekNextToken();
+	//	if ( nextToken.GetType() == eTokenType::PERIOD )
+	//	{
+	//		ZephyrToken member = PeekNextNextToken();
+
+	//		if ( member.GetData() == "x" ) 
+	//		{
+	//			out_value = ZephyrValue( out_value.GetAsVec2().x );
+	//		}
+	//		else if ( member.GetData() == "y" ) 
+	//		{ 
+	//			out_value = ZephyrValue( out_value.GetAsVec2().x );
+	//		}
+	//		else
+	//		{
+	//			ReportError( Stringf( "%s is not a member of Vec2", member.GetData().c_str() ) );
+	//			return false;
+	//		}
+	//	}
+	//}
 
 	return foundValue;
 }

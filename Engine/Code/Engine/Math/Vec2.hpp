@@ -17,6 +17,7 @@ public: // NOTE: this is one of the few cases where we break both the "m_" namin
 	static const Vec2 ONE;
 	static const Vec2 HALF;
 	static const Vec2 ZERO_TO_ONE;
+	static const Vec2 ONE_ZERO;
 
 public:
 	// Construction/Destruction

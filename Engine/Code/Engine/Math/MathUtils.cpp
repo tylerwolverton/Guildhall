@@ -9,6 +9,7 @@
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/FloatRange.hpp"
+#include "Engine/Math/Plane2D.hpp"
 
 #include <math.h>
 
@@ -118,6 +119,13 @@ bool IsNearlyEqual( const Vec3& value, const Vec3& target, float variance /*= .0
 	}
 
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool IsNearlyEqual( const AABB2& value, const AABB2& target, float variance )
+{
+	return IsNearlyEqual( value.mins, target.mins, variance ) && IsNearlyEqual( value.maxs, target.maxs, variance );
 }
 
 
@@ -270,6 +278,42 @@ bool DoDiscsOverlap( const Vec2& center1, float radius1, const Vec2& center2, fl
 bool DoSpheresOverlap( const Vec3& center1, float radius1, const Vec3& center2, float radius2 )
 {
 	return GetDistance3D( center1, center2 ) < ( radius1 + radius2 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DoesRayIntersectPlane2D( const Vec2& rayStartPos, const Vec2& rayForwardNormal, const Plane2D& plane )
+{
+	if ( plane.IsPointInFront( rayStartPos ) )
+	{
+		// Check if entire ray is in front of plane
+		return DotProduct2D( rayForwardNormal, plane.normal ) < 0.f;
+	}
+	else
+	{
+		// Check if entire ray is behind plane
+		return DotProduct2D( rayForwardNormal, plane.normal ) > 0.f;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Vec2 GetRayIntersectionPointWithPlane2D( const Vec2& rayStartPos, const Vec2& rayForwardNormal, const Plane2D& plane )
+{
+	if ( !DoesRayIntersectPlane2D( rayStartPos, rayForwardNormal, plane ) )
+	{
+		return rayStartPos;
+	}
+
+	// Compute intersection point using similar triangles
+	// ( rayForwardNormal dot plane.normal / 1 ) = ( dist of rayStartPos from plane / dist of rayStartPos to plane along rayForwardNormal )
+	// t = dist of rayStartPos to plane along rayForwardNormal = ( dist of rayStartPos from plane along plane.normal / rayForwardNormal dot plane.normal ) 
+
+	float fDotN = DotProduct2D( rayForwardNormal, plane.normal );
+	float h = DotProduct2D( rayStartPos, plane.normal ) - plane.distance;
+	float t = h / fDotN;
+	   
+	return rayStartPos - ( rayForwardNormal * t );
 }
 
 
@@ -584,6 +628,95 @@ FloatRange GetRangeOnProjectedAxis( int numPoints, const Vec2* points, const Vec
 	}
 
 	return projectedRange;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DoLineSegmentAndDiscOverlap2D( const Vec2& lineStart, const Vec2& lineForwardNormal, float lineLength, const Vec2& discCenter, float discRadius )
+{
+	Vec2 lineStartToDiscCenter = discCenter - lineStart;
+
+	float lineToDiscProjectedOntoNormal = DotProduct2D( lineForwardNormal, lineStartToDiscCenter );
+
+	if ( lineLength < lineToDiscProjectedOntoNormal - discRadius
+		 || lineToDiscProjectedOntoNormal + discRadius < 0.f )
+	{
+		return false;
+	}
+
+	Vec2 tangentToForward = lineForwardNormal.GetRotated90Degrees();
+
+	float lineToDiscProjectedOntoTangent = DotProduct2D( tangentToForward, lineStartToDiscCenter );
+
+	if ( lineToDiscProjectedOntoTangent > discRadius )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DoLineSegmentAndAABBOverlap2D( const Vec2& lineStart, const Vec2& lineForwardNormal, float lineLength, const AABB2& box )
+{
+	// Project each box point onto forward vector
+	float forwardDotBottomLeft =	DotProduct2D( lineForwardNormal, box.mins - lineStart );
+	float forwardDotBottomRight =	DotProduct2D( lineForwardNormal, Vec2( box.maxs.x, box.mins.y ) - lineStart );
+	float forwardDotTopRight =		DotProduct2D( lineForwardNormal, box.maxs - lineStart );
+	float forwardDotTopLeft =		DotProduct2D( lineForwardNormal, Vec2( box.mins.x, box.maxs.y ) - lineStart );
+
+	// Check for entire box to the side of line
+	if ( forwardDotBottomLeft > lineLength
+		 && forwardDotBottomRight > lineLength
+		 && forwardDotTopLeft > lineLength
+		 && forwardDotTopRight > lineLength )
+	{
+		return false;
+	}
+	else if ( forwardDotBottomLeft < 0.f
+		 && forwardDotBottomRight < 0.f
+		 && forwardDotTopLeft < 0.f
+		 && forwardDotTopRight < 0.f )
+	{
+		return false;
+	}
+
+	// Project each box point onto tangent to forward vector
+	Vec2 tangentToForward = lineForwardNormal.GetRotated90Degrees();
+	float tangentDotBottomLeft =	DotProduct2D( tangentToForward, box.mins - lineStart );
+	float tangentDotBottomRight =	DotProduct2D( tangentToForward, Vec2( box.maxs.x, box.mins.y ) - lineStart );
+	float tangentDotTopRight =		DotProduct2D( tangentToForward, box.maxs - lineStart );
+	float tangentDotTopLeft =		DotProduct2D( tangentToForward, Vec2( box.mins.x, box.maxs.y ) - lineStart );
+
+	// Check for entire box to the top or bottom of line
+	if ( tangentDotBottomLeft > 0.f
+		 && tangentDotBottomRight > 0.f
+		 && tangentDotTopRight > 0.f
+		 && tangentDotTopLeft > 0.f )
+	{
+		return false;
+	}
+	else if ( tangentDotBottomLeft < 0.f
+			  && tangentDotBottomRight < 0.f
+			  && tangentDotTopRight < 0.f
+			  && tangentDotTopLeft < 0.f )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool DoLineSegmentAndAABBOverlap2D( const Vec2& lineStart, const Vec2& lineEnd, const AABB2& box )
+{
+	Vec2 lineSegmentDisp = lineEnd - lineStart;
+	Vec2 forwardNormal = lineSegmentDisp.GetNormalized();
+	float length = lineSegmentDisp.GetLength();
+
+	return DoLineSegmentAndAABBOverlap2D( lineStart, forwardNormal, length, box );
 }
 
 

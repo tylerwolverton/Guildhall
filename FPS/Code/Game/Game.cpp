@@ -33,11 +33,6 @@
 #include "Engine/Time/Time.hpp"
 
 #include "Game/GameCommon.hpp"
-#include "Game/Entity.hpp"
-#include "Game/World.hpp"
-#include "Game/TileDefinition.hpp"
-#include "Game/MapDefinition.hpp"
-#include "Game/ActorDefinition.hpp"
 
 
 static float s_mouseSensitivityMultiplier = 1.f;
@@ -204,9 +199,7 @@ void Game::InitializeLights()
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
-
-	TileDefinition::s_definitions.clear();
-	
+		
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_defaultMaterial );
 	PTR_SAFE_DELETE( m_vespaMaterial );
@@ -221,7 +214,6 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
-	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_debugInfoTextBox );
@@ -335,9 +327,9 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 	pitch *= .009f;
 
 	Transform transform = m_worldCamera->GetTransform();
-	m_worldCamera->SetPitchRollYawOrientationDegrees(	transform.m_pitchDegrees + pitch,
+	m_worldCamera->SetPitchRollYawOrientationDegrees(	transform.GetPitchDegrees() + pitch,
 														0.f,
-														transform.m_yawDegrees + yaw );
+														transform.GetYawDegrees() + yaw );
 
 	// Update light direction
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
@@ -736,23 +728,25 @@ void Game::UpdateLights()
 void Game::PrintHotkeys()
 {
 	float y = .97f;
-	DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "L,R Arrows - Current light: %d", m_currentLightIdx );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "U,D Arrows - Light type: %s", LightTypeToStr( GetCurGameLight().type ).c_str() );
-	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Enter - Enable/Disable light" );
-	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5  - Light to origin" );
-	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6  - Light to camera" );
-	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7  - Light follow camera" );
-	DebugAddScreenText( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8  - Light loop" );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Ambient Light intensity : %.2f", m_ambientIntensity );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Light intensity : %.2f", GetCurLight().intensity );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "O,P - Adjust spot light angle" );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Greyscale power : %.2f", m_colorTransformConstants.transformPower );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Tint power : %.2f", m_colorTransformConstants.tintPower );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "B' -  Bloom : %s", m_bloomEnabled ? "enabled" : "disabled" );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );
+	float lineHeight = .02f;
+	float fontSize = 18.f;
+	DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "L,R Arrows - Current light: %d", m_currentLightIdx );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "U,D Arrows - Light type: %s", LightTypeToStr( GetCurGameLight().type ).c_str() );
+	DebugAddScreenText( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Enter - Enable/Disable light" );
+	DebugAddScreenText( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5  - Light to origin" );
+	DebugAddScreenText( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F6  - Light to camera" );
+	DebugAddScreenText( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F7  - Light follow camera" );
+	DebugAddScreenText( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F8  - Light loop" );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "9,0 - Ambient Light intensity : %.2f", m_ambientIntensity );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "-,+ - Light intensity : %.2f", GetCurLight().intensity );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "t   - Attenuation : ( %.2f, %.2f, %.2f )", GetCurLight().attenuation.x, GetCurLight().attenuation.y, GetCurLight().attenuation.z );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "O,P - Adjust spot light angle" );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "[,] - Greyscale power : %.2f", m_colorTransformConstants.transformPower );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, ";,' - Tint power : %.2f", m_colorTransformConstants.tintPower );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "B' -  Bloom : %s", m_bloomEnabled ? "enabled" : "disabled" );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );
 }
 
 
@@ -760,16 +754,16 @@ void Game::PrintHotkeys()
 void Game::PrintDiageticHotkeys()
 {
 	// Dissolve
-	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.m_position + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Dissolve Shader" );
-	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.m_position + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "N,M - intensity : %.2f", m_dissolveFactor );
-	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.m_position + Vec3( 0.f, 1.5f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "J.K - edge size : %.2f", m_dissolveEdge );
+	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Dissolve Shader" );
+	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "N,M - intensity : %.2f", m_dissolveFactor );
+	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 1.5f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "J.K - edge size : %.2f", m_dissolveEdge );
 
 	// Fresnel
-	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.m_position + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Fresnel Shader" );
-	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.m_position + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "7,8 - power : %.2f", m_fresnelData.power );
+	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Fresnel Shader" );
+	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.GetPosition() + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "7,8 - power : %.2f", m_fresnelData.power );
 	
 	// Triplanar
-	DebugAddWorldBillboardTextf( m_sphereMeshTriplanarTransform.m_position + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Triplanar Shader" );
+	DebugAddWorldBillboardTextf( m_sphereMeshTriplanarTransform.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Triplanar Shader" );
 }
 
 
@@ -968,16 +962,6 @@ void Game::LoadAssets()
 	g_devConsole->PrintString( "Loading Assets...", Rgba8::WHITE );
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadNewMap( const std::string& mapName )
-{
-	PTR_SAFE_DELETE( m_world );
-
-	m_world = new World();
-	m_world->BuildNewMap( mapName );
 }
 
 

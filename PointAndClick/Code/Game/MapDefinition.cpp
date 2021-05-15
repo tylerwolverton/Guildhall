@@ -104,6 +104,7 @@ MapDefinition::MapDefinition( const XmlElement& mapDefElem )
 			if ( entityDef == nullptr )
 			{
 				g_devConsole->PrintError( Stringf("Unexpected actor '%s' defined in map '%s'", name.c_str(), m_name.c_str()) );
+				entityElem = entityElem->NextSiblingElement();
 				continue;
 			}
 

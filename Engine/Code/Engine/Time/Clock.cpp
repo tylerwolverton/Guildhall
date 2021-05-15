@@ -8,6 +8,7 @@
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 #include <thread>
 
+
 static Clock* s_masterClock = nullptr;
 
 
@@ -64,7 +65,7 @@ Clock::~Clock()
 void Clock::Update( double deltaSeconds )
 {
 	deltaSeconds = ClampMinMax( deltaSeconds, 0.0, m_maxFrameTime );
-	
+
 	while ( deltaSeconds < m_minFrameTime )
 	{
 		double before = GetCurrentTimeSeconds();
@@ -72,7 +73,7 @@ void Clock::Update( double deltaSeconds )
 		double after = GetCurrentTimeSeconds();
 		deltaSeconds += ( after - before );
 	}
-	
+
 	if ( m_isPaused )
 	{
 		deltaSeconds = 0.0;

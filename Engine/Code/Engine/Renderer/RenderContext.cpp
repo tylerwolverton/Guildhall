@@ -1,5 +1,6 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/NamedProperties.hpp"
@@ -115,12 +116,14 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultShaderProgram = GetOrCreateShaderProgramFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	// Create default buffers
-	m_immediateVBO = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
+	m_immediateVBOPCU = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
+	m_immediateVBOFont = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( VertexFont ), VertexFont::LAYOUT );
 	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
 	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_debugLightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
 	// Create default sampler
 	m_defaultSampler = GetOrCreateSampler( SAMPLER_POINT, UV_MODE_CLAMP );
@@ -128,6 +131,7 @@ void RenderContext::InitializeDefaultRenderObjects()
 	// Create a white texture to use when no texture is needed
 	m_defaultWhiteTexture = CreateTextureFromColor( Rgba8::WHITE );
 	m_flatNormalMap = CreateTextureFromColor( Rgba8( 127, 127, 255, 255 ) );
+	m_defaultSpecGlossEmissiveTexture = CreateTextureFromColor( Rgba8( 127, 127, 0, 255 ) );
 
 	// Create a depth buffer and initialize it to draw pixels using painter's algorithm
 	m_defaultDepthBuffer = GetOrCreateDepthStencil( m_swapchain->GetBackBuffer()->GetTexelSize() );
@@ -170,18 +174,20 @@ void RenderContext::Shutdown()
 {
 	PTR_SAFE_DELETE( m_effectCamera );
 
-	PTR_SAFE_DELETE( m_immediateVBO );
+	PTR_SAFE_DELETE( m_immediateVBOPCU );
+	PTR_SAFE_DELETE( m_immediateVBOFont );
 	PTR_SAFE_DELETE( m_immediateIBO );
 	PTR_SAFE_DELETE( m_frameUBO );
 	PTR_SAFE_DELETE( m_modelMatrixUBO );
 	PTR_SAFE_DELETE( m_materialUBO );
 	PTR_SAFE_DELETE( m_lightUBO );
+	PTR_SAFE_DELETE( m_debugLightUBO );
 	
 	GUARANTEE_OR_DIE( m_totalRenderTargetsMade == m_renderTargetPool.size(), "Total render targets made doesn't match object pool size" );
 
 	PTR_VECTOR_SAFE_DELETE( m_renderTargetPool );
 		
-	PTR_VECTOR_SAFE_DELETE( m_loadedBitmapFonts );
+	PTR_MAP_SAFE_DELETE( m_loadedBitmapFonts );
 	PTR_VECTOR_SAFE_DELETE( m_loadedTextures );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaders );
 	PTR_VECTOR_SAFE_DELETE( m_loadedShaderPrograms );
@@ -421,6 +427,7 @@ void RenderContext::UpdateAndBindBuffers( Camera& camera )
 	BindUniformBuffer( UBO_MODEL_MATRIX_SLOT, m_modelMatrixUBO );
 	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
 	BindUniformBuffer( UBO_MATERIAL_SLOT, m_materialUBO );
+	BindUniformBuffer( UBO_DEBUG_LIGHT_SLOT, m_debugLightUBO );
 }
 
 
@@ -598,30 +605,6 @@ void RenderContext::FinalizeContext()
 	SetLightData();
 
 	BindUniformBuffer( UBO_LIGHT_SLOT, m_lightUBO );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawVertexArray( int numVertices, const Vertex_PCU* vertices )
-{
-	// Update a vertex buffer
-	size_t dataByteSize = numVertices * sizeof( Vertex_PCU );
-	size_t elementSize = sizeof( Vertex_PCU );
-	m_immediateVBO->Update( vertices, dataByteSize, elementSize );
-
-	// Bind
-	BindVertexBuffer( m_immediateVBO );
-	
-	// Draw
-	Draw( numVertices, 0 );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertices )
-{
-	GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
-	DrawVertexArray( (int)vertices.size(), &vertices[0] );
 }
 
 
@@ -827,6 +810,7 @@ void RenderContext::BindMaterial( Material* material )
 
 	BindDiffuseTexture( material->m_diffuseTexture );
 	BindNormalTexture( material->m_normalTexture );
+	BindSpecGlossEmissiveTexture( material->m_specGlossEmitTexture );
 
 	for( uint textureIdx = 0; textureIdx < material->m_userTextures.size(); ++textureIdx )
 	{
@@ -948,7 +932,8 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 
 	//GUARANTEE_OR_DIE( numComponents == 4, Stringf( "Image '%s' needs an alpha channel", imageFilePath ) );
 
-	if ( !( numComponents == 4 && imageTexelSizeX > 0 && imageTexelSizeY > 0 ) )
+	if ( !( ( numComponents == 4 || numComponents == 3 )
+			&& imageTexelSizeX > 0 && imageTexelSizeY > 0 ) )
 	{
 		g_devConsole->PrintString( Stringf( "ERROR loading image \"%s\" (Bpp=%i, size=%i,%i)", imageFilePath, numComponents, imageTexelSizeX, imageTexelSizeY ) ,Rgba8::RED );
 		return nullptr;
@@ -970,7 +955,7 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 
 	D3D11_SUBRESOURCE_DATA initialData;
 	initialData.pSysMem = imageData;
-	initialData.SysMemPitch = imageTexelSizeX * 4;
+	initialData.SysMemPitch = imageTexelSizeX * numComponents;
 	initialData.SysMemSlicePitch = 0;
 
 	// DirectX creation
@@ -1132,6 +1117,21 @@ void RenderContext::BindNormalTexture( const Texture* constTexture )
 
 
 //-----------------------------------------------------------------------------------------------
+void RenderContext::BindSpecGlossEmissiveTexture( const Texture* constTexture )
+{
+	Texture* texture = const_cast<Texture*>( constTexture );
+	if ( texture == nullptr )
+	{
+		texture = m_defaultSpecGlossEmissiveTexture;
+	}
+
+	TextureView* shaderResourceView = texture->GetOrCreateShaderResourceView();
+	ID3D11ShaderResourceView* srvHandle = shaderResourceView->m_shaderResourceView;
+	m_context->PSSetShaderResources( 2, 1, &srvHandle ); //srv
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void RenderContext::BindTexture( uint slot, const Texture* constTexture )
 {
 	Texture* texture = const_cast<Texture*>( constTexture );
@@ -1161,22 +1161,41 @@ void RenderContext::BindSampler( uint slot, Sampler* sampler )
 
 
 //-----------------------------------------------------------------------------------------------
-BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath )
+BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile( const char* filePath, bool useMetadata )
 {
-	// Since we have no xml, append .png for now
-	std::string fullFilePath( filePath );
-	fullFilePath += ".png";
+	std::string fontName = GetFileName( filePath );
 
-	BitmapFont* font = RetrieveBitmapFontFromCache( fullFilePath.c_str() );
-
-	if ( font == nullptr )
+	BitmapFont* font = RetrieveBitmapFontFromCache( fontName );
+	if ( font != nullptr )
 	{
-		Texture* fontTexture = CreateOrGetTextureFromFile( fullFilePath.c_str() );
-
-		font = new BitmapFont( fullFilePath.c_str(), fontTexture );
-		m_loadedBitmapFonts.push_back( font );
+		return font;
 	}
 
+	// Need to create a new font
+	std::string fullImageFilePath( filePath );
+	fullImageFilePath += ".png";
+
+	Texture* fontTexture = CreateOrGetTextureFromFile( fullImageFilePath.c_str() );
+
+	if ( useMetadata )
+	{
+		std::string fullMetadataFilePath( filePath );
+		fullMetadataFilePath += ".fnt";
+
+		font = new BitmapFont( fontName, fontTexture, fullMetadataFilePath );
+
+		if ( font->GetTexture() == nullptr )
+		{
+			return m_systemFont;
+		}
+	}
+	else
+	{
+		font = new BitmapFont( fontName, fontTexture );
+	}
+
+	m_loadedBitmapFonts[fontName] = font;
+	
 	return font;
 }
 
@@ -1334,6 +1353,18 @@ void RenderContext::SetLightData()
 	memcpy( lightData.lights, m_lights, sizeof( m_lights ) );
 
 	m_lightUBO->Update( &lightData, sizeof( lightData ), sizeof( lightData ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void RenderContext::SetDebugLightData( float diffuseEffect, float specularEffect, float emissiveEffect )
+{
+	DebugLightData debugLightData;
+	debugLightData.diffuseEffect = diffuseEffect;
+	debugLightData.specularEffect = specularEffect;
+	debugLightData.emissiveEffect = emissiveEffect;
+
+	m_debugLightUBO->Update( &debugLightData, sizeof( debugLightData ), sizeof( debugLightData ) );
 }
 
 
@@ -1506,17 +1537,15 @@ void RenderContext::CycleBlendMode()
 
 
 //-----------------------------------------------------------------------------------------------
-BitmapFont* RenderContext::RetrieveBitmapFontFromCache( const char* filePath )
+BitmapFont* RenderContext::RetrieveBitmapFontFromCache( const std::string& fontName )
 {
-	for ( int fontIndex = 0; fontIndex < (int)m_loadedBitmapFonts.size(); ++fontIndex )
+	auto const& fontIter = m_loadedBitmapFonts.find( fontName );
+	if ( fontIter == m_loadedBitmapFonts.cend() )
 	{
-		if ( !strcmp( filePath, m_loadedBitmapFonts[fontIndex]->GetFontName().c_str() ) )
-		{
-			return m_loadedBitmapFonts[fontIndex];
-		}
+		return nullptr;
 	}
 
-	return nullptr;
+	return fontIter->second;
 }
 
 
@@ -1565,4 +1594,20 @@ void RenderContext::ReportLiveObjects()
 
 		GUARANTEE_OR_DIE( SUCCEEDED( result ), "ReportLiveObjects failed" )
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+template<>
+VertexBuffer* RenderContext::GetImmediateVBO<Vertex_PCU>()
+{
+	return m_immediateVBOPCU;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+template<>
+VertexBuffer* RenderContext::GetImmediateVBO<VertexFont>()
+{
+	return m_immediateVBOFont;
 }

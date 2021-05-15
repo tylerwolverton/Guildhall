@@ -6,6 +6,8 @@
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/VertexFont.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
 
 #include <vector>
 #include <map>
@@ -43,7 +45,6 @@ class Shader;
 class ShaderProgram;
 class SwapChain;
 class Texture;
-class VertexBuffer;
 class Window;
 enum class eCompareFunc : uint;
 enum class eFillMode : uint;
@@ -79,6 +80,7 @@ enum eBufferSlot
 	UBO_MODEL_MATRIX_SLOT = 2,
 	UBO_LIGHT_SLOT = 3,
 	UBO_MATERIAL_SLOT = 5,
+	UBO_DEBUG_LIGHT_SLOT = 10,
 };
 
 
@@ -139,6 +141,15 @@ struct LightData
 	Light lights[MAX_LIGHTS];
 };
 
+struct DebugLightData
+{
+	float diffuseEffect = 1.f;
+	float specularEffect = 1.f;
+	float emissiveEffect = 1.f;
+
+	float padding0;
+};
+
 
 //-----------------------------------------------------------------------------------------------
 struct Fog
@@ -183,9 +194,6 @@ public:
 
 	void Draw( int numVertices, int vertexOffset = 0 );
 	void DrawIndexed( int indexCount, int indexOffset = 0, int vertexOffset = 0 );
-
-	void DrawVertexArray( int numVertices, const Vertex_PCU* vertices );
-	void DrawVertexArray( const std::vector<Vertex_PCU>& vertices );
 	void DrawMesh( GPUMesh* mesh );
 	
 	// Binding Inputs
@@ -202,6 +210,7 @@ public:
 	void BindShaderProgram( const char* fileName );
 	void BindDiffuseTexture( const Texture* constTexture );
 	void BindNormalTexture( const Texture* constTexture );
+	void BindSpecGlossEmissiveTexture( const Texture* constTexture );
 	void BindTexture( uint slot, const Texture* constTexture );
 	void BindSampler( uint slot, Sampler* sampler );
 
@@ -213,7 +222,7 @@ public:
 	Texture* CreateTextureFromColor( const Rgba8& color );
 	Texture* GetOrCreateDepthStencil( const IntVec2& outputDimensions );
 	Texture* CreateRenderTarget( const IntVec2& outputDimensions );
-	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath );
+	BitmapFont* CreateOrGetBitmapFontFromFile( const char* filePath, bool useMetadata = false );
 	Sampler* GetOrCreateSampler( eSamplerType filter, eSamplerUVMode mode );
 
 	void ReloadShaders();
@@ -223,6 +232,7 @@ public:
 	void SetModelData( const Mat44& modelMatrix, const Rgba8& tint = Rgba8::WHITE, float specularFactor = 0.f, float specularPower = 32.f );
 	void SetMaterialData( void* materialData, int dataSize );
 	void SetLightData();
+	void SetDebugLightData( float diffuseEffect = 1.f, float specularEffect = 1.f, float emissiveEffect = 1.f );
 
 	// Raster state setters
 	void SetCullMode( eCullMode cullMode );
@@ -255,9 +265,38 @@ public:
 	Shader* GetShaderByName( std::string shaderName );
 	Texture* GetDefaultWhiteTexture()					{ return m_defaultWhiteTexture; }
 	Texture* GetDefaultFlatTexture()					{ return m_flatNormalMap; }
+	Texture* GetDefaultSpecGlossEmissiveTexture()		{ return m_defaultSpecGlossEmissiveTexture; }
 
 	// Debug methods
 	void CycleBlendMode();
+
+
+	// Template Draw
+	template<typename VERTEX_TYPE>
+	void DrawVertexArray( int numVertices, const VERTEX_TYPE* vertices )
+	{
+		// Update a vertex buffer
+		size_t dataByteSize = numVertices * sizeof( VERTEX_TYPE );
+		size_t elementSize = sizeof( VERTEX_TYPE );
+		VertexBuffer* immediateVBO = GetImmediateVBO<VERTEX_TYPE>();
+		immediateVBO->Update( vertices, dataByteSize, elementSize );
+
+		// Bind
+		BindVertexBuffer( immediateVBO );
+
+		// Draw
+		Draw( numVertices, 0 );
+	}
+
+	template<typename VERTEX_TYPE>
+	void DrawVertexArray( const std::vector<VERTEX_TYPE>& vertices )
+	{
+		GUARANTEE_OR_DIE( vertices.size() > 0, "Empty vertex array cannot be drawn" );
+		DrawVertexArray( (int)vertices.size(), &vertices[0] );
+	}
+
+	template<typename VERTEX_TYPE>
+	VertexBuffer* GetImmediateVBO();
 
 private:
 	void InitializeSwapChain( Window* window );
@@ -277,7 +316,7 @@ private:
 
 	void SetRasterState( eFillMode fillMode, eCullMode cullMode, bool windCCW );
 
-	BitmapFont* RetrieveBitmapFontFromCache( const char* filePath );
+	BitmapFont* RetrieveBitmapFontFromCache( const std::string& filePath );
 
 	void CreateDebugModule();
 	void CreateDefaultRasterState();
@@ -288,26 +327,28 @@ private:
 
 public:
 	// SD2 TODO: Move to D3D11Common.hpp
-	ID3D11Device* m_device			= nullptr;
-	ID3D11DeviceContext* m_context	= nullptr;		// immediate context
-	SwapChain* m_swapchain			= nullptr;		// gives us textures that we can draw that the user can see
+	ID3D11Device* m_device				= nullptr;
+	ID3D11DeviceContext* m_context		= nullptr;		// immediate context
+	SwapChain* m_swapchain				= nullptr;		// gives us textures that we can draw that the user can see
 
-	void* m_debugModule				= nullptr;
-	IDXGIDebug* m_debug				= nullptr;
+	void* m_debugModule					= nullptr;
+	IDXGIDebug* m_debug					= nullptr;
 
-	VertexBuffer* m_immediateVBO	= nullptr;
-	IndexBuffer* m_immediateIBO		= nullptr;
-	RenderBuffer* m_frameUBO		= nullptr;
-	RenderBuffer* m_modelMatrixUBO	= nullptr;
-	RenderBuffer* m_materialUBO		= nullptr;
-	RenderBuffer* m_lightUBO		= nullptr;
+	VertexBuffer* m_immediateVBOPCU		= nullptr;
+	VertexBuffer* m_immediateVBOFont	= nullptr;
+	IndexBuffer* m_immediateIBO			= nullptr;
+	RenderBuffer* m_frameUBO			= nullptr;
+	RenderBuffer* m_modelMatrixUBO		= nullptr;
+	RenderBuffer* m_materialUBO			= nullptr;
+	RenderBuffer* m_lightUBO			= nullptr;
+	RenderBuffer* m_debugLightUBO		= nullptr;
 
 private:
 	Clock* m_gameClock								= nullptr;
 
 	// Textures
 	std::vector<Texture*> m_loadedTextures;
-	std::vector<BitmapFont*> m_loadedBitmapFonts;
+	std::map<std::string, BitmapFont*> m_loadedBitmapFonts;
 	BitmapFont* m_systemFont						= nullptr;
 	
 	int m_totalRenderTargetsMade = 0;
@@ -333,6 +374,7 @@ private:
 	// Default textures
 	Texture* m_defaultWhiteTexture					= nullptr;
 	Texture* m_flatNormalMap						= nullptr;
+	Texture* m_defaultSpecGlossEmissiveTexture		= nullptr;
 	Texture* m_defaultDepthBuffer					= nullptr;
 
 	// Lighting

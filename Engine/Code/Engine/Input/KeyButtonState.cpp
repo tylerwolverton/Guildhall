@@ -11,7 +11,7 @@ void KeyButtonState::UpdateStatus( bool isNowPressed )
 	{
 		++m_numTimesPressed;
 	}
-	else
+	else if ( !m_isPressed && m_wasPressedLastFrame )
 	{
 		++m_numTimesReleased;
 	}
@@ -48,6 +48,7 @@ void KeyButtonState::Reset()
 	m_isPressed = false;
 	m_wasPressedLastFrame = false;
 	m_numTimesPressed = 0;
+	m_numTimesReleased = 0;
 }
 
 
@@ -78,4 +79,14 @@ int KeyButtonState::ConsumeAllKeyPresses()
 	m_numTimesPressed = 0;
 	m_isPressed = false;
 	return numPresses;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int KeyButtonState::ConsumeAllKeyReleases()
+{
+	int numReleases = m_numTimesReleased;
+	m_numTimesReleased = 0;
+	m_isPressed = false;
+	return numReleases;
 }

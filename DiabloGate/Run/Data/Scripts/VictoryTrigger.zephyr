@@ -1,0 +1,7 @@
+State Win
+{
+	OnEnter()
+	{
+		QuestCompleted( questId: "Victory" )
+	}
+}

@@ -11,7 +11,7 @@ enum class eWindowMode;
 
 
 //-----------------------------------------------------------------------------------------------
-class App 
+class App
 {
 public:
 	App();
@@ -20,22 +20,23 @@ public:
 	void Shutdown();
 	void RunFrame();
 
-	bool IsQuitting()										{ return m_isQuitting; }
-	
+	bool IsQuitting() { return m_isQuitting; }
+
 	bool HandleQuitRequested();
 	void RestartGame();
 
-	static bool QuitGame( EventArgs* args );
-
 private:
+	void PopulateGameConfig();
 	eWindowMode GetWindowModeFromGameConfig();
 
 	void BeginFrame();
-	void Update( float deltaSeconds );
-	void UpdateFromKeyboard( float deltaSeconds );
+	void Update();
+	void UpdateFromKeyboard();
 	void Render() const;
 	void EndFrame();
-	
+
+	static bool QuitGame( EventArgs* args );
+
 private:
 	bool m_isQuitting = false;
 

@@ -51,7 +51,7 @@ bool FloatRange::DoesOverlap( const FloatRange& otherRange ) const
 //-----------------------------------------------------------------------------------------------
 std::string FloatRange::GetAsString() const
 {
-	return std::string( Stringf( "%f~%f", min, max ) );
+	return std::string( Stringf( "%.2f~%.2f", min, max ) );
 }
 
 
@@ -87,4 +87,18 @@ void FloatRange::SetFromText( const char* asText )
 	{
 		max = min;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const FloatRange FloatRange::operator+( const FloatRange& other ) const
+{
+	return FloatRange( this->min + other.min, this->max + other.max );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const FloatRange FloatRange::operator-( const FloatRange& other ) const
+{
+	return FloatRange( this->min - other.min, this->max - other.max );
 }

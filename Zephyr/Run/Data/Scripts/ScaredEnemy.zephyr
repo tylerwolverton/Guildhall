@@ -1,0 +1,166 @@
+Vec2 position
+Vec2 targetPosition
+Number health
+Entity target = null
+Entity levelMgr = null
+
+Number maxChaseDist = 3
+
+Vec2 lastPosition 
+
+// -----------------------------------------------------------------------------------------
+// Global events
+// -----------------------------------------------------------------------------------------
+Function Spawned( Number maxHealth, String mapName )
+{
+	health = maxHealth
+	EnemySpawned( mapName: mapName )
+	GetNewWanderTargetPosition( newPos: targetPosition )
+	
+}
+
+Function HealthUpdated( Number newHealth)
+{
+	health = newHealth
+
+	if( health == 1 )
+	{
+		ChangeSpriteAnimation( newAnim: "LowHealth" )
+	}
+
+	if( health <= 0 )
+	{
+		ChangeState( Dead )
+	}
+}
+
+Function Died( String mapName )
+{
+	EnemyDied( mapName: mapName )
+}
+
+// Function SummonBlob( Vec2 newPos, Number blobVal )
+// {
+// 	targetPosition = newPos
+// 	maxChaseDist = 99999
+// 	blobVal = 200
+// }
+
+// Damage
+Function CollisionEntered( Number attackDamage = 1, Entity otherEntity )
+{
+	if( otherEntity != null )
+	{
+		DamageEntity( target : otherEntity, damage: attackDamage, damageType: "normal" )
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Wander
+// -----------------------------------------------------------------------------------------
+State Wander
+{			
+	Number numFramesInSameSpace = 0
+	OnEnter()
+	{
+		numFramesInSameSpace = 0
+	}
+
+	OnUpdate()
+	{
+		Bool wasTargetFound = false
+		CheckForTarget( target: target, maxDist: 3, targetFound: wasTargetFound )
+		if( wasTargetFound )
+		{
+			ChangeState( Chase )
+		}
+
+		MoveToLocation( pos: targetPosition )
+
+		if( parentEntity.position == targetPosition )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+		}
+
+		UnstickFromWall()
+
+		lastPosition = parentEntity.position
+	}
+
+	Function UnstickFromWall()
+	{
+		// Check for stuck on wall, find new position if stuck for a second
+		if( lastPosition == parentEntity.position )
+		{
+			numFramesInSameSpace = numFramesInSameSpace + 1
+
+			if( numFramesInSameSpace > 60 )
+			{
+				GetNewWanderTargetPosition( newPos: targetPosition )
+			}
+		}
+		else
+		{
+			numFramesInSameSpace = 0
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Chase
+// -----------------------------------------------------------------------------------------
+State Chase
+{
+	Function WanderIfTooFar()
+	{		
+		Number distance
+		GetDistanceToTarget( target: target, distance: distance ) 
+
+		if( distance > maxChaseDist )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+			ChangeState( Wander )
+		}
+	}
+
+	OnUpdate()
+	{
+		if( health == 1 )
+		{
+			ChangeState( Flee )
+		}
+		
+		WanderIfTooFar()
+		MoveToLocation( pos: target.curPosition )
+	}
+}
+
+// -----------------------------------------------------------------------------------------
+// Flee
+// -----------------------------------------------------------------------------------------
+State Flee
+{
+	Function WanderIfTooFar()
+	{		
+		Number distance
+		GetDistanceToTarget( target: target, distance: distance ) 
+
+		if( distance > 5 )
+		{
+			GetNewWanderTargetPosition( newPos: targetPosition )
+			ChangeState( Wander )
+		}
+	}
+
+	OnUpdate()
+	{
+		WanderIfTooFar()
+		FleeTargetEntity( target: target ) 
+	}
+}
+
+
+State Dead
+{
+
+}

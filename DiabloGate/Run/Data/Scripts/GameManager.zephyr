@@ -1,0 +1,13 @@
+Function GameStarted()
+{
+	//ChangeMusic( musicName: "FF6TheDecisiveBattle", volume: .1 )
+}
+
+Function QuestCompleted( String questId )
+{	
+	if( questId == "Victory" )
+	{
+		WinGame()
+		//ChangeMusic( musicName: "LoZCredits", volume: .1 )
+	}
+}

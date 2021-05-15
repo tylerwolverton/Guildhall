@@ -52,7 +52,7 @@
   <MapDefinition name="RoomsAndPathsDemo" width="40" height="50" fillTile="Grass" edgeTile="Water">
     <MapGenSteps>
       <RoomsAndPaths chanceToRun="1" iterations="1" chancePerTile="1">
-        <Rooms count="2" width="10" height="15" numOverlaps="1" floorTile="Wood" wallTile="Stone" />
+        <Rooms count="10" width="2~7" height="5~10" numOverlaps="1" floorTile="Wood" wallTile="Stone" />
         <Paths pathTile="Wood" chanceToLoop="0" straightness=".25" numExtraPaths="0" />
       </RoomsAndPaths>
     </MapGenSteps>

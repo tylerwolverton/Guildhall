@@ -16,6 +16,8 @@ public: // NOTE: this is one of the few cases where we break both the "m_" namin
 	float z = 0.f;
 	float w = 0.f;
 
+	static const Vec4 ZERO;
+
 public:
 	// Construction/Destruction
 	~Vec4() {}																			// destructor (do nothing)

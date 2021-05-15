@@ -10,11 +10,17 @@
 
 
 //-----------------------------------------------------------------------------------------------
+struct AABB2;
+
+
+//-----------------------------------------------------------------------------------------------
 class SpriteSheet
 {
 public:
 	explicit SpriteSheet( const Texture& texture, const IntVec2& simpleGridLayout );
 	explicit SpriteSheet( const std::string& name, const Texture& texture, const IntVec2& simpleGridLayout );
+	explicit SpriteSheet( const Texture& texture, const std::vector<AABB2>& uvBoundsPerSprite );
+	explicit SpriteSheet( const std::string& name, const Texture& texture, const std::vector<AABB2>& uvBoundsPerSprite );
 	~SpriteSheet();
 
 	const Texture&			GetTexture() const																	{ return m_texture; }

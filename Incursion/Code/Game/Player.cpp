@@ -75,14 +75,14 @@ void Player::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( 0, m_tankBodyTexture );
+	g_renderer->BindDiffuseTexture( m_tankBodyTexture );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	// Tank gun
 	vertexesCopy = m_vertexes;
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees + m_gunOrientationDegrees, m_position );
 
-	g_renderer->BindTexture( 0, m_tankGunTexture );
+	g_renderer->BindDiffuseTexture( m_tankGunTexture );
 	g_renderer->DrawVertexArray( vertexesCopy );
 
 	RenderHealthBar();
@@ -105,7 +105,7 @@ void Player::RenderHUD() const
 	std::string text( "Deaths: " + std::to_string( m_numDeaths ) );
 	m_font->AppendVertsForText2D( textVertexes, Vec2( 10.f, WINDOW_HEIGHT - 1.f ), 25.f, text );
 
-	g_renderer->BindTexture( 0, m_font->GetTexture() );
+	g_renderer->BindDiffuseTexture( m_font->GetTexture() );
 	g_renderer->DrawVertexArray( textVertexes );
 }
 
@@ -117,7 +117,7 @@ void Player::DebugRender() const
 
 	// Raycast debug
 	RaycastImpact impact = m_map->Raycast( m_position, Vec2::MakeFromPolarDegrees( GetPlayerGunWorldOrientation() ), 3.f );
-	g_renderer->BindTexture( 0, nullptr );
+	g_renderer->BindDiffuseTexture( nullptr );
 	DrawLine2D( g_renderer, m_position, impact.m_impactPosition, Rgba8::WHITE, DEBUG_LINE_THICKNESS );
 }
 
@@ -176,7 +176,6 @@ void Player::PopulateVertexes()
 //-----------------------------------------------------------------------------------------------
 void Player::UpdateFromKeyboard( float deltaSeconds )
 {
-	UNUSED( deltaSeconds );
 	switch ( g_game->GetGameState() )
 	{
 		case GAME_STATE_ATTRACT:

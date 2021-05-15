@@ -44,9 +44,6 @@
     <Filter Include="Networking">
       <UniqueIdentifier>{6ba07c54-17de-4297-a6f5-984375926f09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Profiler">
-      <UniqueIdentifier>{9aebc9bb-4e5d-42ca-be92-d7e180fb3dd7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -316,8 +313,29 @@
     <ClCompile Include="Networking\NetworkingJobs.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Profiler\Profiler.cpp">
-      <Filter>Profiler</Filter>
+    <ClCompile Include="Math\ConvexHull2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\BufferWriter.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\BufferParser.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\BufferUtils.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CPUMesh.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\TWSMUtils.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\VertexFont.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIUniformGrid.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -630,20 +648,17 @@
     <ClInclude Include="..\ThirdParty\mikkt\mikktspace.h">
       <Filter>ThirdParty</Filter>
     </ClInclude>
-    <ClInclude Include="Profiler\Profiler.hpp">
-      <Filter>Profiler</Filter>
-    </ClInclude>
-    <ClInclude Include="Input\InputCommon.hpp">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\SynchronizedNonBlockingQueue.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\SynchronizedBlockingQueue.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking\NetworkingJobs.hpp">
-      <Filter>Networking</Filter>
-    </ClInclude>
+    <ClInclude Include="Networking\NetworkingJobs.hpp" />
+    <ClInclude Include="Core\SynchronizedBlockingQueue.hpp" />
+    <ClInclude Include="Core\SynchronizedNonBlockingQueue.hpp" />
+    <ClInclude Include="Input\InputCommon.hpp" />
+    <ClInclude Include="Math\ConvexHull2D.hpp" />
+    <ClInclude Include="Core\BufferWriter.hpp" />
+    <ClInclude Include="Core\BufferParser.hpp" />
+    <ClInclude Include="Core\BufferUtils.hpp" />
+    <ClInclude Include="Core\CPUMesh.hpp" />
+    <ClInclude Include="Core\TWSMUtils.hpp" />
+    <ClInclude Include="Core\VertexFont.hpp" />
+    <ClInclude Include="UI\UIUniformGrid.hpp" />
   </ItemGroup>
 </Project>

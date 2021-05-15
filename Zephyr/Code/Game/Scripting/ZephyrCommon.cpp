@@ -31,8 +31,8 @@ std::string ToString( eTokenType type )
 		case eTokenType::IF:				return "if";
 		case eTokenType::ELSE:				return "else";
 		case eTokenType::RETURN:			return "return";
-		case eTokenType::TRUE:				return "true";
-		case eTokenType::FALSE:				return "false";
+		case eTokenType::TRUE_TOKEN:		return "true";
+		case eTokenType::FALSE_TOKEN:		return "false";
 		case eTokenType::NULL_TOKEN:		return "null";
 		case eTokenType::IDENTIFIER:		return "Identifier";
 		case eTokenType::CONSTANT_NUMBER:	return "Constant Number";
@@ -85,8 +85,8 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::IF:				return "IF";
 		case eTokenType::ELSE:				return "ELSE";
 		case eTokenType::RETURN:			return "RETURN";
-		case eTokenType::TRUE:				return "TRUE";
-		case eTokenType::FALSE:				return "FALSE";
+		case eTokenType::TRUE_TOKEN:		return "TRUE";
+		case eTokenType::FALSE_TOKEN:		return "FALSE";
 		case eTokenType::NULL_TOKEN:		return "NULL_TOKEN";
 		case eTokenType::IDENTIFIER:		return "IDENTIFIER";
 		case eTokenType::CONSTANT_NUMBER:	return "CONSTANT_NUMBER";
@@ -362,7 +362,7 @@ bool ZephyrValue::EvaluateAsBool()
 		case eValueType::VEC2: 		return !IsNearlyEqual( vec2Data, Vec2::ZERO );			
 		case eValueType::NUMBER: 	return !IsNearlyEqual( numberData, 0.f );			
 		case eValueType::BOOL:		return boolData;	
-		case eValueType::ENTITY:	return entityData != (EntityId)-1;
+		case eValueType::ENTITY:	return entityData != -1;
 	}
 
 	return false;

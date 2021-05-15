@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/Mat44.hpp"
 
 #include <string>
 #include <vector>
@@ -7,9 +8,7 @@
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3;
-struct Mat44;
 struct Vertex_PCUTBN;
-class GPUMesh;
 class RenderContext;
 
 
@@ -19,6 +18,14 @@ struct ObjVertex
 	int position = -1;
 	int normal = -1;
 	int uv = -1;
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct OrientationMetaData
+{
+	Mat44 orientationMatrix;
+	bool invertWindingOrder = false;
 };
 
 
@@ -33,9 +40,9 @@ public:
 //-----------------------------------------------------------------------------------------------
 class ObjLoader
 {
-public:
+public:	
 	static void LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
-							  std::string filename,
+							  const std::string& filename,
 							  bool& out_fileHadNormals );
 
 	static void InvertVertVs( std::vector<Vertex_PCUTBN>& vertices );
@@ -50,6 +57,9 @@ private:
 	static bool AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data );
 	static bool AppendVertexUVs( const Strings& dataStrings, std::vector<Vec3>& data );
 	static bool AppendFace( const Strings& dataStrings, std::vector<ObjFace>& data, ObjVertex& lastObjVertex );
+
+	static bool ParseMetadata( const Strings& dataStrings, int lineNum, Mat44& scaleTransform, OrientationMetaData& orientationTransform );
+	static Vec3 GetVecForRelativeDir( const std::string& relativeDir );
 
 	static ObjVertex CreateObjVertexFromString( const std::string& indexStr, ObjVertex& lastObjVertex );
 };

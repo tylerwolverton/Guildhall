@@ -1,0 +1,51 @@
+<TileDefinitions>
+
+  <TileDefinition
+		name="Blank"
+    materialType="None"
+		isSolid="true"
+	/>
+  
+  <TileDefinition
+		name="StoneWall"
+    materialType="Stone"
+		isSolid="true"
+	/>
+
+  <TileDefinition
+		name="GrassGround"
+    materialType="Grass"
+		isSolid="false"
+	/>
+
+  <TileDefinition
+    name="SandGround"
+    materialType="Sand"
+    isSolid="false"
+	/>
+
+  <TileDefinition
+   name="RedGrassGround"
+   materialType="RedGrass"
+   isSolid="false"
+	/>
+
+  <TileDefinition
+   name="CaveFloor"
+   materialType="CaveFloor"
+   isSolid="false"
+	/>
+
+  <TileDefinition
+   name="CaveWall"
+   materialType="CaveWall"
+   isSolid="true"
+	/>
+  
+  <TileDefinition
+		name="DeepWater"
+    materialType="DeepWater"
+		isSolid="true"
+	/>
+  
+</TileDefinitions>

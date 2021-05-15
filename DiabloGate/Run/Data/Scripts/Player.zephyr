@@ -1,0 +1,274 @@
+Vec2 moveTargetPosition
+Entity interactionEntity = null
+Bool canAttack = true
+
+Vec2 whirlwindButtonPos
+Number initialWhirlwindCooldown = 5
+Number whirlwindCooldown = 0
+
+Function Spawned( Number maxHealth )
+{
+    moveTargetPosition = parentEntity.position
+
+    AddAnimationEvent( anim: "Attack", frame: 8, event: "DealDamagePlayer" )
+    AddAnimationEvent( anim: "Attack", frame: "last", event: "ResetAttackPlayer" )
+    AddAnimationEvent( anim: "Death", frame: "last", event: "GameOver" )
+    
+    RegisterKeyEvent( key: "Q", event: "ActivateWhirlwind" )
+}
+
+
+Function GameRestarted()
+{
+    ChangeState( Idle )
+}
+
+
+Function Died()
+{
+    PlaySound( soundName: "BarbarianDeath" )
+    ChangeState( Dead )
+}
+
+
+Function OnWarp()
+{
+    moveTargetPosition = parentEntity.position
+    interactionEntity = null
+}
+
+
+Function GameOver()
+{
+    TriggerGameOver()
+}
+
+
+Function PrintCooldowns()
+{
+    if( whirlwindCooldown > 0 )
+    {
+        Number timeRemaining = 0
+        GetTimerRemaining( name: "whirlwindTimer", timeRemaining: timeRemaining )
+        PrintDebugScreenText( text: timeRemaining, padding: whirlwindButtonPos - Vec2(40,20) )
+    }
+}
+
+
+Function ResetWhirlwindCooldown()
+{
+    whirlwindCooldown = 0
+}
+
+
+Function ActivateWhirlwind()
+{
+    if( whirlwindCooldown <= 0 )
+    {
+        DamageEntitiesInCircle( center: parentEntity.position, radius: 1, damage: 2, knockback: 200 )
+        interactionEntity = null
+        whirlwindCooldown = initialWhirlwindCooldown
+        StartNewTimer( name: "whirlwindTimer", durationSeconds: whirlwindCooldown, onCompletedEvent: "ResetWhirlwindCooldown" )
+        SpawnEntity( type: "Explosion" )
+        PlaySound( soundName: "Explosion" )
+        PlaySound( soundName: "Explosion" )
+        AddScreenShake( intensity: .1 )
+    }
+}
+
+
+Function OnClickInWorld( Vec2 worldPosition, Entity clickedEntity )
+{
+    moveTargetPosition = worldPosition
+    if( clickedEntity != null 
+        && interactionEntity == clickedEntity )
+    {
+        return
+    }
+
+    interactionEntity = clickedEntity
+    ChangeState( MoveToTargetLocation )
+}
+
+
+Function OnInitHotbarPosition( String buttonName, Vec2 buttonPos )
+{
+    if( buttonName == "attack1" )
+    {
+        whirlwindButtonPos = buttonPos
+    }
+}
+
+Function OnClickInHotbar( String buttonName, Vec2 buttonPos )
+{
+    interactionEntity = null
+
+    if( buttonName == "attack1" )
+    {
+        ActivateWhirlwind()
+    }
+}
+
+
+Function IsOverlappingInteractionEntity( Bool isOverlapping )
+{
+    DoDiscsOverlap( center1: parentEntity.interactionCenter, radius1: parentEntity.interactionRadius, 
+        center2: interactionEntity.interactionCenter, radius2: interactionEntity.interactionRadius, 
+        isOverlapping: isOverlapping )
+}
+
+
+Function CheckForInteraction()
+{
+    if( interactionEntity != null )
+    {
+        if( !( interactionEntity.class == "Item" || interactionEntity.class == "Actor" ) )
+        {
+            // This entity type isn't supported
+            interactionEntity = null
+            return
+        }
+
+        Bool isOverlapping = false
+        IsOverlappingInteractionEntity( isOverlapping: isOverlapping )
+        if( isOverlapping )
+        {
+            if( interactionEntity.class == "Item" )
+            {
+                PickupItem( item: interactionEntity )
+                interactionEntity = null
+                PlaySound( soundName: "PickupItem" )
+                ChangeState( Idle )
+            }
+            if( interactionEntity.class == "Actor" )
+            {
+                ChangeState( Attack )
+            }
+        }
+    }
+}
+
+
+State Idle
+{
+   OnEnter()
+   {
+       ChangeSpriteAnimation( newAnim: "Idle" )
+   }
+
+   OnUpdate()
+   {
+       PrintCooldowns()
+   }
+}
+
+
+State MoveToTargetLocation
+{
+   OnEnter()
+   {
+        ChangeSpriteAnimation( newAnim: "Walk" )
+   }
+
+   OnUpdate()
+   {
+       PrintCooldowns()
+       CheckForInteraction()
+
+       Bool areEqual = false
+       AreVectorsNearlyEqual( a: parentEntity.position, b: moveTargetPosition, tolerance: .1, areEqual: areEqual )
+       if( areEqual )
+       {
+            ChangeState( Idle )
+       }
+
+       MoveToLocation( pos: moveTargetPosition )
+   }
+}
+
+
+Function ResetAttackPlayer()
+{
+    canAttack = true
+    interactionEntity = null
+    ChangeState( Idle )
+} 
+
+
+Function DealDamagePlayer()
+{
+    if( !canAttack 
+        || interactionEntity == null )
+	{
+		return
+	}
+	canAttack = false
+
+    Number damage = parentEntity.attackDamage
+    Bool isCrit = false
+    CheckForCrit( isCrit: isCrit )
+
+    if( isCrit )
+    {
+        damage = damage * 2
+    }
+
+    Vec2 printPosition = interactionEntity.position + Vec2( 0, .75 );
+    if( !isCrit )
+	{
+        damage = damage - interactionEntity.defense
+    }
+
+    if( damage < -2 )
+    { 
+        PrintDebugText( position: printPosition, text: "Blocked!", duration: .5, color: "white" )
+        return 
+    }
+
+    if( damage <= 0 )
+	{
+		damage = 1
+	}
+
+    PrintDebugText( position: printPosition, text: damage, duration: .5, color: "red" )
+
+    DamageEntity( target: interactionEntity, damage: damage )
+    AddScreenShake( intensity: .03 )
+} 
+
+
+State Attack
+{
+    OnEnter()
+    {
+        PlaySpriteAnimation( newAnim: "Attack" )
+        PlaySound( soundName: "BarbarianAttack2", speed: parentEntity.attackSpeedModifier )
+    }    
+
+    OnUpdate()
+    {
+        PrintCooldowns()
+    }
+}
+
+
+Function CollectItem()
+{
+    PickupItem( item: interactionEntity )
+    interactionEntity = null
+    ChangeState( Idle )
+}
+
+
+State Dead
+{
+    OnEnter()
+    {
+        PlaySpriteAnimation( newAnim: "Death" )
+    }
+
+    OnUpdate()
+    {
+        PrintCooldowns()
+    }
+}

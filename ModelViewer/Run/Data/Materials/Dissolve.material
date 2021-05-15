@@ -1,0 +1,24 @@
+<material name="Dissolve"
+   shader_path="Data/Shaders/Dissolve.shader">
+
+  <!-- textures with special meaning to the renderer -->
+  <diffuse    path="White" />
+  <normal     path="Flat" />
+
+  <!-- material specific textures -->
+  <texture2d path="Data/Images/noise.png" slot="0" />
+
+  <!-- sampler, set by or slot.  
+      filter: nearest, bilinear
+      mode: clamp, wrap
+
+      If no slot is defined - will be the main 
+      sampler used by the diffuse/normal etc...
+
+      otherwise they use the material specific slots
+   -->
+  <sampler slot=""
+     filter="point"
+     mode="clamp" />
+  
+</material>

@@ -1,0 +1,9 @@
+<GameConfig
+	startMap="Island"
+  playerActorName="Barbarian"
+	windowAspect="1.777"
+  windowTitle="Diablo's Gate"
+	windowMode="borderless"
+  cameraSpeed="5.0"
+  masterVolume=".1f"
+/>

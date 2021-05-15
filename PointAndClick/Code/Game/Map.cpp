@@ -40,8 +40,8 @@ Map::Map( std::string name, MapDefinition* mapDef )
 Map::~Map()
 {
 	// Don't delete the player or cursor
-	m_entities.pop_back();
-	m_entities.pop_back();
+	if ( !m_entities.empty() ) { m_entities.pop_back(); }
+	if ( !m_entities.empty() ) { m_entities.pop_back(); }
 
 	for ( int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex )
 	{

@@ -6,11 +6,14 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class BitmapFont;
 class Entity;
 struct Rgba8;
 class RandomNumberGenerator;
 class Camera;
 class World;
+class Material;
+class Shader;
 class Texture;
 class SpriteSheet;
 class SpriteAnimDefinition;
@@ -48,8 +51,15 @@ public:
 private:
 	void LoadAssets();
 
+	void UpdateMousePositions();
+	void UpdateMouseWorldPosition();
+	void UpdateMouseUIPosition();
+
 	void RenderTestSpriteAnimations() const;
 	void RenderTestText() const;
+	void RenderTestTextTier3() const;
+	void RenderTestTextTier4() const;
+	void RenderTestTextTier5() const;
 	void RenderTestTextInBox() const;
 	void RenderSquareTestSprite() const;
 	void RenderNonSquareTestSprite() const;
@@ -79,6 +89,9 @@ private:
 	Camera* m_worldCamera = nullptr;
 	Camera* m_uiCamera = nullptr;
 
+	Vec2 m_mouseWorldPosition = Vec2::ZERO;
+	Vec2 m_mouseUIPosition = Vec2::ZERO;
+	
 	// Test assets
 	float					m_secondsSinceStart = -10.f;
 	Texture*				m_spriteAtlas4x4Texture = nullptr;
@@ -89,4 +102,13 @@ private:
 	SpriteAnimDefinition*	m_spriteSheet8x2AnimDefLoop = nullptr;
 	SpriteAnimDefinition*	m_spriteSheet8x2AnimDefOnce = nullptr;
 	SpriteAnimDefinition*	m_spriteSheet8x2AnimDefPingPong = nullptr;
+
+	// Fonts
+	BitmapFont*				m_fontTier3 = nullptr;  // metadata
+	BitmapFont*				m_fontTier4 = nullptr;  // signed distance field edges
+	Material*				m_fontTier4Material = nullptr;
+	BitmapFont*				m_fontTier5 = nullptr;  // custom vertex format
+	Material*				m_fontTier5Material = nullptr;
+	Shader*					m_fontTier5Shader = nullptr;
+	Shader*					m_fontTier5SecretShader = nullptr;
 };

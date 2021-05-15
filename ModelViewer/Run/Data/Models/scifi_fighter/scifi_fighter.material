@@ -1,0 +1,27 @@
+<material name="Default"
+   shader_path="Data/Shaders/Lit.shader">
+
+  <!-- textures with special meaning to the renderer -->
+  <diffuse    path="Data/Models/scifi_fighter/diffuse.png" />
+
+  <!-- material specific textures -->
+  <!--<texture2d path="Data/Textures/" slot="0" />-->
+
+  <!-- sampler, set by or slot.  
+      filter: nearest, bilinear
+      mode: clamp, wrap
+
+      If no slot is defined - will be the main 
+      sampler used by the diffuse/normal etc...
+
+      otherwise they use the material specific slots
+   -->
+  <sampler slot=""
+     filter="bilinear"
+     mode="clamp" />
+
+  <!-- specular, will default to factor 0 and power 32 -->
+  <specular factor="1"
+            power="32" />
+  
+</material>

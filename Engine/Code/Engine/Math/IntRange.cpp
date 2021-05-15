@@ -63,6 +63,25 @@ int IntRange::GetRandomInRange( RandomNumberGenerator* rng ) const
 
 
 //-----------------------------------------------------------------------------------------------
+std::vector<int> IntRange::GetAsIntVector() const
+{
+	std::vector<int> intVector;
+	if ( max - min < 0 )
+	{
+		return intVector;
+	}
+
+	intVector.reserve( max - min );
+	for ( int intToAdd = min; intToAdd <= max; ++intToAdd )
+	{
+		intVector.push_back( intToAdd );
+	}
+
+	return intVector;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void IntRange::Set( int newMin, int newMax )
 {
 	min = newMin;
@@ -87,4 +106,18 @@ void IntRange::SetFromText( const char* asText )
 	{
 		max = min;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const IntRange IntRange::operator+( const IntRange& other ) const
+{
+	return IntRange( this->min + other.min, this->max + other.max );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const IntRange IntRange::operator-( const IntRange& other ) const
+{
+	return IntRange( this->min - other.min, this->max - other.max );
 }

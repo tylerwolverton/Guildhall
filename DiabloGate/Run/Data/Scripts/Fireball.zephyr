@@ -1,0 +1,18 @@
+Function CollisionEntered( Entity otherEntity )
+{
+    if( otherEntity != null )
+    {
+        DamageEntity( target: otherEntity, damage: parentEntity.attackDamage )
+    }
+
+    DestroySelf()
+    MarkAsGarbage()
+}
+
+State Default
+{
+    OnUpdate()
+    {
+        MoveInDirection( direction: parentEntity.forwardVec, speed: parentEntity.speed )
+    }
+}

@@ -1,0 +1,52 @@
+quit
+Tyler has a history
+quit
+help
+quit
+help
+set_mouse_sensitivity multiplier=10
+set_mouse_sensitivity multiplier=25
+set_mouse_sensitivity multiplier=15
+set_mouse_sensitivity multiplier=20
+set_mouse_sensitivity multiplier=25
+set_mouse_sensitivity multiplier=30
+debug_render enabled=false
+debug_render enabled=true
+debug_add_world_point position=(0,4,2) duration=10
+debug_add_world_point position=(0,4,-2) duration=10
+debug_add_world_point position=(0,0,0) duration=10
+debug_add_world_billboard_text text="This is a string"
+debug_add_screen_quad min=(0,0) max=(50,50)
+debug_add_screen_quad min=(0,0) max=(50,50) duration=50
+debug_add_world_point position=(0,0,0) duration=10
+debug_add_screen_quad min=0,0 max=50,50 duration=50
+help
+debug_add_screen_point position=1000,500 duration=20
+debug_add_world_billboard_text text=stringsarefun
+debug_add_screen_point position=1000,500 duration=20
+debug_add_screen_quad min=0,0 max=50,50 duration=50
+debug_add_world_point position=(0,0,0) duration=10
+help
+debug_add_world_wire_sphere position=0,0,0 radius=3
+hello
+help
+light_set_ambient_color color=1,0,0
+light_set_ambient_color color=1,1,0
+light_set_color color=0,0,1
+light_set_color color=.5,.75,.2
+light_set_color color=1,0,1
+set_mouse_sensitivity multiplier=2
+help
+set_mouse_sensitivity multiplier=10
+set_mouse_sensitivity multiplier=.5
+light_set_color rgb=1,0,0
+light_set_color color=1,0,0
+light_set_color color=0,0,1
+light_set_color color=0,1,1
+light_set_color color=0,0,1
+light_set_color color=1,0,0
+light_set_color color=1,1,0
+light_set_color color=1,0,1
+save_ghcs_file testFile
+save_ghcs_file name=testFile
+load_ghcs_file name=testFile

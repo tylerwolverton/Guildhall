@@ -1,0 +1,50 @@
+<MapDefinition type="TileMap" version="1" dimensions="50,20">
+
+	<Legend>
+		<Tile glyph=" " tileType="Blank"/>
+		<Tile glyph="#" tileType="CaveWall"/>
+		<Tile glyph="." tileType="CaveFloor"/>
+	</Legend>
+	<MapRows>
+		<MapRow tiles="    #######################  ##################   "/>
+		<MapRow tiles="    #.....................#  #................#   "/>
+		<MapRow tiles="    #.....................#  #................#   "/>
+		<MapRow tiles="    #.....................#  #................#   "/>
+		<MapRow tiles="    #.....................#  #................#   "/>
+		<MapRow tiles="    #.....................#  #................#   "/>
+		<MapRow tiles="    #.....................#  #.......##########   "/>
+		<MapRow tiles="    ########.......########  #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="           #.......#         #.......#            "/>
+		<MapRow tiles="    ########.......#         #.......#            "/>
+		<MapRow tiles="    #..............#         #.......#            "/>
+		<MapRow tiles="    #..............#         #.......#            "/>
+		<MapRow tiles="    ################         #########            "/>
+	</MapRows>
+	<Entities>
+		<PlayerStart pos="10.5,1.5" yaw="0"/>
+    <Entity type="StairsUp" pos="5.5,1.5">
+      <GlobalVar type="string" var="destMap" value="Island"/>
+			<GlobalVar type="vec2" var="destPos" value="14.5,5.5"/>
+    </Entity>
+    <Entity type="StairsUp" pos="33.5,3.5">
+      <GlobalVar type="string" var="destMap" value="Island"/>
+      <GlobalVar type="vec2" var="destPos" value="33.5,4.5"/>
+    </Entity>
+    <Entity type="StairsUp" pos="41.5,14.5">
+      <GlobalVar type="string" var="destMap" value="Island"/>
+      <GlobalVar type="vec2" var="destPos" value="41.5,16.5"/>
+    </Entity>
+
+    <Actor type="RedDragon" pos="16,16.5"/>
+	</Entities>
+
+</MapDefinition>
+
+

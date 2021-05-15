@@ -13,6 +13,6 @@ public:
 	Plane2D();
 	Plane2D( const Vec2& normal, const Vec2& pointOnPlane );
 
-	bool GetPointIsInFront( const Vec2& point );
-	float GetSignedDistanceFromPlane( const Vec2& point );
+	bool IsPointInFront( const Vec2& point ) const;
+	float GetSignedDistanceFromPlane( const Vec2& point ) const;
 };

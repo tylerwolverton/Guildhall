@@ -1,0 +1,166 @@
+Entity target = null
+Bool canAttack = true
+
+// -----------------------------------------------------------------------------------------
+// Global events
+// -----------------------------------------------------------------------------------------
+Function Spawned( Number maxHealth, String mapName )
+{
+    AddAnimationEvent( anim: "Attack", frame: 8, event: "DealDamage" )
+    AddAnimationEvent( anim: "Attack", frame: "last", event: "ResetAttack" )
+}
+
+
+Function Died( String mapName )
+{
+	EnemyDied( mapName: mapName )
+    PlaySound( soundName: "SkeletonDeath" )
+	ChangeState( Dead )
+}
+
+
+Function OnWarp()
+{
+    moveTargetPosition = parentEntity.position
+}
+
+
+Function ResetAttack()
+{
+    canAttack = true
+    ChangeState( Idle )
+} 
+
+
+Function DealDamage()
+{
+	if( !canAttack )
+	{
+		return
+	}
+	canAttack = false
+
+	// Don't hit the player if they ran away
+	Bool isOverlapping = false
+	DoDiscsOverlap( center1: parentEntity.interactionCenter, radius1: parentEntity.interactionRadius, 
+		center2: target.interactionCenter, radius2: target.interactionRadius, 
+		isOverlapping: isOverlapping )
+	if( !isOverlapping )
+	{
+		return
+	}
+
+    Number damage = parentEntity.attackDamage
+    Bool isCrit = false
+    CheckForCrit( isCrit: isCrit )
+
+    if( isCrit )
+    {
+        damage = damage * 2
+    }
+
+	Vec2 printPosition = target.position + Vec2( 0, .75 );
+
+	if( !isCrit )
+	{
+    	damage = damage - target.defense
+	}
+
+	if( damage < -2 )
+    { 
+        PrintDebugText( position: printPosition, text: "Blocked!", duration: .5, color: "white" )
+        return 
+    }
+
+	if( damage <= 0 )
+	{
+		damage = 1
+	}
+
+    PrintDebugText( position: printPosition, text: damage, duration: .5, color: "red" )
+
+    DamageEntity( target: target, damage: damage )
+    AddScreenShake( intensity: .01 )
+} 
+
+
+// Function IsOverlappingTargetEntity( Entity parent, Entity target, Bool isOverlapping )
+// {
+// 	PrintDebugText( text: parent.interactionCenter )
+
+//     DoDiscsOverlap( center1: parent.interactionCenter, radius1: parent.interactionRadius, 
+//         center2: target.interactionCenter, radius2: target.interactionRadius, 
+//         isOverlapping: isOverlapping )
+// }
+
+
+// -----------------------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------------------
+State Idle
+{		
+	OnEnter()
+	{
+		ChangeSpriteAnimation( newAnim: "Idle" )
+	}
+	
+	OnUpdate()
+	{
+		if( target.isDead )
+		{
+			return
+		}
+
+		Bool wasTargetFound = false
+		CheckForTarget( target: target, maxDist: 3, targetFound: wasTargetFound )
+		if( wasTargetFound )
+		{
+			ChangeState( Chase )
+		}
+	}	
+}
+
+
+// -----------------------------------------------------------------------------------------
+// Chase
+// -----------------------------------------------------------------------------------------
+State Chase
+{
+	OnEnter()
+	{
+		ChangeSpriteAnimation( newAnim: "Walk" )
+	}
+
+	OnUpdate()
+	{		
+		Bool isOverlapping = false
+        DoDiscsOverlap( center1: parentEntity.interactionCenter, radius1: parentEntity.interactionRadius, 
+			center2: target.interactionCenter, radius2: target.interactionRadius, 
+			isOverlapping: isOverlapping )
+        if( isOverlapping )
+        {
+            ChangeState( Attack )
+        }
+
+		MoveToLocation( pos: target.position )
+	}
+}
+
+
+State Attack
+{
+    OnEnter()
+    {
+         PlaySpriteAnimation( newAnim: "Attack" )
+		 PlaySound( soundName: "SkeletonAttack" )
+    }    
+}
+
+
+State Dead
+{
+    OnEnter()
+    {
+        PlaySpriteAnimation( newAnim: "Death" )
+    }
+}

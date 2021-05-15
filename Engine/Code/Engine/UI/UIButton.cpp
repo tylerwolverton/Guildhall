@@ -11,21 +11,23 @@
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
-	: UIElement( uiSystem )
+UIButton::UIButton( UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint, const std::string& name )
+	: UIElement( uiSystem, name )
 {
-	m_boundingBox = absoluteScreenBounds;
+	m_initialBoundingBox = m_boundingBox = absoluteScreenBounds;
 	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_initialTint = tint;
+	m_curTint = tint;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint )
-	: UIElement( uiSystem )
+UIButton::UIButton( UISystem& uiSystem, const UIPanel& parentPanel, const Vec2& relativeFractionMinPosition, const Vec2& relativeFractionOfDimensions, Texture* backgroundTexture, const Rgba8& tint, const std::string& name )
+	: UIElement( uiSystem, name )
 {
 	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_initialTint = tint;
+	m_curTint = tint;
 
 	AABB2 boundingBox = parentPanel.GetBoundingBox();
 	float width = boundingBox.GetWidth();
@@ -36,26 +38,32 @@ UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const 
 
 	m_boundingBox.maxs = Vec2( m_boundingBox.mins.x + relativeFractionOfDimensions.x * width,
 							   m_boundingBox.mins.y + relativeFractionOfDimensions.y * height );
+
+	m_initialBoundingBox = m_boundingBox;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
-	: UIElement( uiSystem )
+UIButton::UIButton( UISystem& uiSystem, const UIPanel& parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint, const std::string& name )
+	: UIElement( uiSystem, name )
 {
 	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_initialTint = tint;
+	m_curTint = tint;
 	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentPanel.GetBoundingBox(), positionData );
+	m_initialBoundingBox = m_boundingBox;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton::UIButton( const UISystem& uiSystem, const UIPanel& parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
-	: UIElement( uiSystem )
+UIButton::UIButton( UISystem& uiSystem, const UIPanel& parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint, const std::string& name )
+	: UIElement( uiSystem, name )
 {
 	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_initialTint = tint;
+	m_curTint = tint;
 	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentPanel.GetBoundingBox(), positionData );
+	m_initialBoundingBox = m_boundingBox;
 }
 
 
@@ -93,13 +101,21 @@ void UIButton::Update()
 			m_onHoverStayEvent.Invoke( &args );
 		}
 
-		if ( m_uiSystem.m_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON ) )
+		if ( m_uiSystem.m_inputSystem->WasKeyJustReleased( MOUSE_LBUTTON ) )
+		{
+			EventArgs args;
+			args.SetValue( "id", m_id );
+			args.SetValue( "button", (void*)this );
+			m_onReleaseEvent.Invoke( &args );
+		}
+
+		if ( m_uiSystem.m_inputSystem->WasKeyJustPressed( MOUSE_LBUTTON ) )
 		{
 			EventArgs args;
 			args.SetValue( "id", m_id );
 			args.SetValue( "button", (void*)this );
 			m_onClickEvent.Invoke( &args );
-		}
+		}		
 	}
 	else if ( m_isMouseHovering )
 	{
@@ -124,7 +140,7 @@ void UIButton::Render() const
 	if ( m_backgroundTexture != nullptr )
 	{
 		std::vector<Vertex_PCU> vertices;
-		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint, m_uvsAtMins, m_uvsAtMaxs );
+		AppendVertsForAABB2D( vertices, m_boundingBox, m_curTint, m_uvsAtMins, m_uvsAtMaxs );
 
 		m_uiSystem.m_renderer->BindTexture( 0, m_backgroundTexture );
 		m_uiSystem.m_renderer->DrawVertexArray( vertices );

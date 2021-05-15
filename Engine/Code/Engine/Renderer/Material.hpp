@@ -25,6 +25,7 @@ public:
 	void SetShader( Shader* shader )								{ m_shader = shader; }
 	void SetDiffuseTexture( Texture* diffuse )						{ m_diffuseTexture = diffuse; }
 	void SetNormalTexture( Texture* normal )						{ m_normalTexture = normal; }
+	void SetSpecGlossEmitTexture( Texture* specGlossEmit )			{ m_specGlossEmitTexture = specGlossEmit; }
 	void SetUserTexture( uint slot, Texture* texture );
 	void UpdateUBOIfDirty();
 	
@@ -70,6 +71,7 @@ private:
 
 	Texture* m_diffuseTexture = nullptr;
 	Texture* m_normalTexture = nullptr;
+	Texture* m_specGlossEmitTexture = nullptr;
 
 	Sampler* m_defaultSampler = nullptr;
 

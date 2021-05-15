@@ -1,0 +1,13 @@
+<MapDefinitions>
+
+	<MapDefinition name="Island" defaultTile="Water" width="16~32" height="9~18">
+		<GenerationSteps>
+			<FillAndEdge chanceToRun="0.5" fillTile="Grass" edgeTile="Water" edgeThickness="2~3"/>
+			<Mutate iterations="1" ifType="Grass" changeToType="Stone" chanceToMutate="0.2"/>
+			<Mutate chanceToRun="0.5" iterations="10" ifType="Stone" changeToType="Lava" chanceToMutate="0.1"/>
+		</GenerationSteps>
+	</MapDefinition>
+
+</MapDefinitions>
+
+

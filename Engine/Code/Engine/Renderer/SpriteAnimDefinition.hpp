@@ -26,10 +26,16 @@ public:
 						  float fps, SpriteAnimPlaybackType playbackType = SpriteAnimPlaybackType::LOOP );
 
 	const SpriteDefinition& GetSpriteDefAtTime( float seconds ) const;
+	int GetFrameIndexAtTime( float seconds ) const;
+	int GetNumFrames() const;
+	int GetLastSpriteIndex() const;
 	
+	void SetSpeedModifier( float modifier );
+
 private:
 	std::vector<int>		m_spriteIndexes;
 	const SpriteSheet&		m_spriteSheet;
+	float					m_defaultDurationSeconds = 1.f;
 	float					m_durationSeconds = 1.f;
 	SpriteAnimPlaybackType	m_playbackType = SpriteAnimPlaybackType::LOOP;
 };

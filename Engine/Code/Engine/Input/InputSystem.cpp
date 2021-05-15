@@ -44,6 +44,7 @@ const unsigned char KEY_COMMA = VK_OEM_COMMA;
 const unsigned char KEY_PERIOD = VK_OEM_PERIOD;
 const unsigned char KEY_PLUS = VK_OEM_PLUS;
 const unsigned char KEY_MINUS = VK_OEM_MINUS;
+const unsigned char KEY_TAB = VK_TAB;
 
 const unsigned char MOUSE_LBUTTON = VK_LBUTTON;
 const unsigned char MOUSE_RBUTTON = VK_RBUTTON;
@@ -445,6 +446,13 @@ bool InputSystem::ConsumeKeyPress( unsigned char keyCode )
 int InputSystem::ConsumeAllKeyPresses( unsigned char keyCode )
 {
 	return m_keyStates[keyCode].ConsumeAllKeyPresses();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int InputSystem::ConsumeAllKeyReleases( unsigned char keyCode )
+{
+	return m_keyStates[keyCode].ConsumeAllKeyReleases();
 }
 
 

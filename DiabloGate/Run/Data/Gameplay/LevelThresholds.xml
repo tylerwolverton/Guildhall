@@ -1,0 +1,7 @@
+<LevelThreshholds>
+  <Level number="2" xpRequired="3"  damageIncrease="1,1" defenseIncrease="1,1" attackSpeedIncrease=".5"  critChanceIncrease="0"/>
+  <Level number="3" xpRequired="8"  damageIncrease="1,2" defenseIncrease="1,2" attackSpeedIncrease=".1"  critChanceIncrease=".1"/>
+  <Level number="4" xpRequired="15" damageIncrease="1,1" defenseIncrease="1,1" attackSpeedIncrease=".25" critChanceIncrease="0"/>
+  <Level number="5" xpRequired="23" damageIncrease="2,3" defenseIncrease="2,3" attackSpeedIncrease=".1"  critChanceIncrease=".3"/>
+</LevelThreshholds>
+

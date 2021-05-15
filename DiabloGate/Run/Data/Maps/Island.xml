@@ -1,0 +1,61 @@
+<MapDefinition type="TileMap" version="1" dimensions="50,20">
+
+	<Legend>
+		<Tile glyph="#" tileType="DeepWater"/>
+		<Tile glyph="." tileType="GrassGround"/>
+		<Tile glyph="*" tileType="SandGround"/>
+	</Legend>
+	<MapRows>
+		<MapRow tiles="##################################################"/>
+		<MapRow tiles="##################################################"/>
+		<MapRow tiles="####*********************************##*******####"/>
+		<MapRow tiles="####*...............................*##*.....*####"/>
+		<MapRow tiles="####*...............................*##*.....*####"/>
+		<MapRow tiles="####*...............................*##*.....*####"/>
+		<MapRow tiles="####*...............................*##*.....*####"/>
+		<MapRow tiles="####*...............................*##*******####"/>
+		<MapRow tiles="####*...............................*#############"/>
+		<MapRow tiles="####*...............................*#############"/>
+		<MapRow tiles="####*...............................*#############"/>
+    <MapRow tiles="####*...............................*#############"/>
+    <MapRow tiles="####*...............................*#############"/>
+    <MapRow tiles="####*...............................*#############"/>
+    <MapRow tiles="####*...............................*#############"/>
+    <MapRow tiles="####*...............................*#############"/>
+    <MapRow tiles="####*...............................*#############"/>
+    <MapRow tiles="####*********************************#############"/>
+		<MapRow tiles="##################################################"/>
+		<MapRow tiles="##################################################"/>
+	</MapRows>
+	<Entities>
+		<PlayerStart pos="24.5,3.5" yaw="0"/>
+    <Entity type="IslandManager"/>
+
+    <Entity type="StairsDown" pos="14.5,4.5">
+      <GlobalVar type="string" var="destMap" value="Cave1"/>
+      <GlobalVar type="vec2" var="destPos" value="7.5,1.5"/>
+    </Entity>
+    <Entity type="StairsDown" pos="33.5,3.5">
+      <GlobalVar type="string" var="destMap" value="Cave1"/>
+      <GlobalVar type="vec2" var="destPos" value="33.5,4.5"/>
+    </Entity>
+    <Entity type="StairsDown" pos="41.5,15.5">
+      <GlobalVar type="string" var="destMap" value="Cave1"/>
+      <GlobalVar type="vec2" var="destPos" value="39.5,14.5"/>
+    </Entity>
+    <Item type="Flame Blade" pos="43.5,15"/>
+    <!--<Entity type="HealthOrb" pos="25, 5"/>-->
+    <!--<Item type="Falchion" pos="4,2"/>
+    <Item type="Flame Blade" pos="6,2"/>
+    <Item type="Obsidian Plate" pos="8,2"/>
+    <Item type="Ring of Protection" pos="10,2"/>
+    <Item type="Ring of Speed" pos="6,4"/>
+    <Item type="Chain Mail" pos="8,6"/>
+    <Item type="Kite Shield" pos="10,6"/>-->
+	
+
+</Entities>
+
+</MapDefinition>
+
+

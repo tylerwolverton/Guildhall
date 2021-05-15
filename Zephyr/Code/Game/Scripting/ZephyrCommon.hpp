@@ -41,8 +41,8 @@ enum class eTokenType
 	IF,
 	ELSE,
 	RETURN,
-	TRUE,
-	FALSE,
+	TRUE_TOKEN,
+	FALSE_TOKEN,
 	NULL_TOKEN,
 
 	BRACE_LEFT,

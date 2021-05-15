@@ -13,6 +13,7 @@ public:
 
 	bool	ConsumeKeyPress();
 	int		ConsumeAllKeyPresses();
+	int		ConsumeAllKeyReleases();
 
 private:
 	bool m_isPressed = false;

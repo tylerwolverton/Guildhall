@@ -1,0 +1,18 @@
+<PortalDefinitions>
+
+  <PortalDefinition name="PortalToForest" >
+    <Size physicsRadius="0.25" />
+    <Destination mapName="Forest1" />
+    <Conditions>
+      <Condition type="doorIsOpen" door="Door" />
+    </Conditions>
+  </PortalDefinition>
+
+  <PortalDefinition name="PortalToBar" >
+    <Size physicsRadius="0.25" />
+    <Destination mapName="Bar" />
+  </PortalDefinition>
+
+</PortalDefinitions>
+
+

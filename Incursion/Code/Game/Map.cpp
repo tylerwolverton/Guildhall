@@ -4,9 +4,9 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
@@ -113,14 +113,11 @@ void Map::UpdateCameras()
 {
 	if ( g_game->IsDebugCameraEnabled() )
 	{
-		/*Vec2 aspectDimensions = Vec2( WINDOW_WIDTH, WINDOW_HEIGHT );
+		Vec2 aspectDimensions = Vec2( WINDOW_WIDTH, WINDOW_HEIGHT );
 		AABB2 cameraBounds( Vec2( 0.f, 0.f ), aspectDimensions );
 		cameraBounds.StretchToIncludePointMaintainAspect( Vec2( (float)m_width, (float)m_height ), aspectDimensions );
-		*/
-		float aspectRatio = WINDOW_WIDTH / WINDOW_HEIGHT;
-		AABB2 cameraBounds( Vec2::ZERO, Vec2( (float)m_width, (float)m_height ) * aspectRatio );
 
-		g_game->SetWorldCameraOrthographicView( cameraBounds );
+		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 	}
 	else
 	{
@@ -140,7 +137,7 @@ void Map::CenterCameraOnPlayer() const
 		AABB2 windowBox( Vec2( 0.f, 0.f ), Vec2( (float)m_width, (float)m_height ) );
 		cameraBounds.FitWithinBounds( windowBox );
 
-		g_game->SetWorldCameraOrthographicView( cameraBounds );
+		g_game->SetWorldCameraPosition( Vec3( cameraBounds.GetCenter(), 0.f ) );
 	}
 }
 
@@ -237,7 +234,7 @@ void Map::RenderTiles() const
 		AppendVertsForAABB2D( vertexes, tile.GetBounds(), GetColorForTileType( tile.m_tileType ), uvCoords.mins, uvCoords.maxs );
 	}
 
-	g_renderer->BindTexture( 0, m_tileTexture );
+	g_renderer->BindDiffuseTexture( m_tileTexture );
 	g_renderer->DrawVertexArray( vertexes );
 }
 

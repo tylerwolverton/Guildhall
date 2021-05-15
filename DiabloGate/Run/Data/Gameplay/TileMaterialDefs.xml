@@ -1,0 +1,47 @@
+<TileMaterialDefinitions spriteSheet="Images/Tiles_16x4.png" spriteSheetDimensions="16,4">
+
+  <TileMaterialDefinitions
+		name="Grass"
+		spriteCoords="0,0"
+	/>
+
+  <TileMaterialDefinitions
+   name="RedGrass"
+   spriteCoords="0,0"
+   spriteTint="180,0,0"
+	/>
+
+  <TileMaterialDefinitions
+		name="DeepWater"
+		spriteCoords="8,0"
+	/>
+
+  <TileMaterialDefinitions
+    name="Sand"
+    spriteCoords="9,0"
+	/>
+  
+  <TileMaterialDefinitions
+   name="Stone"
+   spriteCoords="4,0"
+	/>
+  
+  <TileMaterialDefinitions
+     name="CaveFloor"
+     spriteCoords="9,0"
+     spriteTint="125,62,0"
+	/>
+
+  <TileMaterialDefinitions
+    name="CaveWall"
+    spriteCoords="9,0"
+    spriteTint="62,31,0"
+	/> 
+  
+  <TileMaterialDefinitions
+    name="None"
+    spriteCoords="0,1"
+    spriteTint="0,0,0"
+	/>
+  
+</TileMaterialDefinitions>

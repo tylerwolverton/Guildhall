@@ -34,7 +34,7 @@ SpriteAnimDefinition::SpriteAnimDefinition( const SpriteSheet& sheet, std::vecto
 	, m_playbackType( playbackType )
 {
 	// convert fps to duration seconds
-	m_durationSeconds = (float)m_spriteIndexes.size() / fps;
+	m_defaultDurationSeconds = m_durationSeconds = (float)m_spriteIndexes.size() / fps;
 }
 
 
@@ -42,11 +42,11 @@ SpriteAnimDefinition::SpriteAnimDefinition( const SpriteSheet& sheet, std::vecto
 const SpriteDefinition& SpriteAnimDefinition::GetSpriteDefAtTime( float seconds ) const
 {
 	// Only 1 sprite in this animation
-	if( (int)m_spriteIndexes.size() == 1 ) 
+	if ( (int)m_spriteIndexes.size() == 1 )
 	{
 		return m_spriteSheet.GetSpriteDefinition( m_spriteIndexes[0] );
 	}
-	
+
 	// Determine number of frames based on the playback type
 	int numFrames = (int)m_spriteIndexes.size();
 	if ( m_playbackType == SpriteAnimPlaybackType::PINGPONG )
@@ -62,17 +62,17 @@ const SpriteDefinition& SpriteAnimDefinition::GetSpriteDefAtTime( float seconds 
 	{
 		case SpriteAnimPlaybackType::ONCE:
 		{
-			spriteIndex = m_spriteIndexes[ ClampMinMaxInt( frameIndex, 0, numFrames - 1 ) ];
+			spriteIndex = m_spriteIndexes[ClampMinMaxInt( frameIndex, 0, numFrames - 1 )];
 		}
 		break;
 
 		case SpriteAnimPlaybackType::LOOP:
 		{
 			frameIndex = PositiveMod( frameIndex, numFrames );
-			spriteIndex = m_spriteIndexes[ frameIndex ];
+			spriteIndex = m_spriteIndexes[frameIndex];
 		}
 		break;
-		
+
 		case SpriteAnimPlaybackType::PINGPONG:
 		{
 			frameIndex = PositiveMod( frameIndex, numFrames );
@@ -88,11 +88,76 @@ const SpriteDefinition& SpriteAnimDefinition::GetSpriteDefAtTime( float seconds 
 			// Return where we are in the 'pong' section
 			// 0 1 2 3 4 -> 3 2 1 <-
 			int pongIndex = frameIndex - ( numFrames / 2 );
-			int pingIndex = (numFrames / 2) - pongIndex;
-			spriteIndex = m_spriteIndexes[ pingIndex ];
+			int pingIndex = ( numFrames / 2 ) - pongIndex;
+			spriteIndex = m_spriteIndexes[pingIndex];
 		}
 		break;
 	}
 
 	return m_spriteSheet.GetSpriteDefinition( spriteIndex );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+int SpriteAnimDefinition::GetFrameIndexAtTime( float seconds ) const
+{
+	// Only 1 sprite in this animation
+	if ( (int)m_spriteIndexes.size() == 1 )
+	{
+		return 0;
+	}
+
+	// Determine number of frames based on the playback type
+	int numFrames = (int)m_spriteIndexes.size();
+	if ( m_playbackType == SpriteAnimPlaybackType::PINGPONG )
+	{
+		numFrames = ( 2 * (int)m_spriteIndexes.size() ) - 2;
+	}
+
+	float secondsPerFrame = m_durationSeconds / numFrames;
+	int frameIndex = (int)( seconds / secondsPerFrame );
+
+	return frameIndex % numFrames;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int SpriteAnimDefinition::GetNumFrames() const
+{
+	// Only 1 sprite in this animation
+	if ( (int)m_spriteIndexes.size() == 1 )
+	{
+		return 0;
+	}
+
+	// Determine number of frames based on the playback type
+	int numFrames = (int)m_spriteIndexes.size();
+	if ( m_playbackType == SpriteAnimPlaybackType::PINGPONG )
+	{
+		numFrames = ( 2 * (int)m_spriteIndexes.size() ) - 2;
+	}
+
+	return numFrames;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int SpriteAnimDefinition::GetLastSpriteIndex() const
+{
+	return m_spriteIndexes.back();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void SpriteAnimDefinition::SetSpeedModifier( float modifier )
+{
+	if ( IsNearlyEqual( modifier, 0.f ) )
+	{
+		m_durationSeconds = .01f;
+		return;
+	}
+
+	m_durationSeconds = m_defaultDurationSeconds / modifier;
+}
+
+

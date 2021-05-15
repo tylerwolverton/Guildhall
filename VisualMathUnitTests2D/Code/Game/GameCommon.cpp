@@ -1,7 +1,16 @@
+#include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Rgba8.hpp"
+#include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Game/GameCommon.hpp"
-#include "Engine/Core/NamedStrings.hpp"
-#include "Engine/Core/XmlUtils.hpp"
 
+
+//-----------------------------------------------------------------------------------------------
+void PopulateGameConfig()
+{
+
+}
 
 //-----------------------------------------------------------------------------------------------
 App* g_app = nullptr;						// Owned by Main_Windows.cpp
@@ -11,17 +20,9 @@ InputSystem* g_inputSystem = nullptr;		// Owned by the App
 AudioSystem* g_audioSystem = nullptr;		// Owned by the App
 Game* g_game = nullptr;						// Owned by the App
 
+float g_windowWidth =		 WINDOW_WIDTH;
+float g_windowHeight =		 WINDOW_HEIGHT;
+float g_windowWidthPixels =  WINDOW_WIDTH_PIXELS;
+float g_windowHeightPixels = WINDOW_HEIGHT_PIXELS;
 
-//-----------------------------------------------------------------------------------------------
-void PopulateGameConfig()
-{
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( "Data/GameConfig.xml" );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		return;
-	}
-
-	XmlElement* root = doc.RootElement();
-	g_gameConfigBlackboard.PopulateFromXmlElementAttributes( *root );
-}
+float g_debugLineThickness = DEBUG_LINE_THICKNESS;

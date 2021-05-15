@@ -11,6 +11,9 @@ Keyboard
 - WASD or Arrow keys move the player
 
 - Esc -> Exit game
+- P -> Pause game
+- T -> Slow game down to 1/10th speed
+- Y -> Increase game speed x4
 - F1 -> Toggle degub rendering for entities
 - F3 -> Toggle NoClip
 - F4 -> Toggle debug camera

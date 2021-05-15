@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include <vector>
 
 //-----------------------------------------------------------------------------------------------
 class RandomNumberGenerator;
@@ -20,12 +20,16 @@ public:
 	explicit IntRange( const char* asText );	// Construct from "5" or "12~19"
 
 	// Accessors
-	bool		IsInRange( int value ) const;
-	bool		DoesOverlap( const IntRange& otherRange ) const;
-	std::string GetAsString() const;
-	int			GetRandomInRange( RandomNumberGenerator* rng ) const;
+	bool				IsInRange( int value ) const;
+	bool				DoesOverlap( const IntRange& otherRange ) const;
+	std::string			GetAsString() const;
+	int					GetRandomInRange( RandomNumberGenerator* rng ) const;
+	std::vector<int>	GetAsIntVector() const;
 
 	// Mutators
-	void		Set( int newMin, int newMax );
-	void		SetFromText( const char* asText ); // Return false if malformatted
+	void				Set( int newMin, int newMax );
+	void				SetFromText( const char* asText ); // Return false if malformatted
+
+	const IntRange operator+( const IntRange& other ) const;
+	const IntRange operator-( const IntRange& other ) const;
 };

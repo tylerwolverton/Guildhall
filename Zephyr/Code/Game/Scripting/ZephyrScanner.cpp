@@ -499,13 +499,13 @@ bool ZephyrScanner::MatchReservedIdentifier( const std::string& identifier )
 	
 	switch	( MatchesReservedName( identifier, "true" ) )
 	{ 
-		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::TRUE );
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::TRUE_TOKEN );
 		case eReservedKeywordResult::CASE_MISMATCH: return true;
 	}
 	
 	switch	( MatchesReservedName( identifier, "false" ) )
 	{ 
-		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::FALSE );
+		case eReservedKeywordResult::MATCH:			AddToken( eTokenType::FALSE_TOKEN );
 		case eReservedKeywordResult::CASE_MISMATCH: return true;
 	}
 	

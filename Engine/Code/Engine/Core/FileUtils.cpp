@@ -8,7 +8,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-void* FileReadToNewBuffer( const std::string& filename, size_t* out_fileSize )
+void* FileReadToNewBuffer( const std::string& filename, uint32_t* out_fileSize )
 {
 	FILE* fp;
 	fopen_s( &fp, filename.c_str(), "r" );
@@ -21,23 +21,74 @@ void* FileReadToNewBuffer( const std::string& filename, size_t* out_fileSize )
 	fseek( fp, 0, SEEK_END );
 	long fileSize = ftell( fp );
 
-	unsigned char* buffer = new unsigned char[(size_t)fileSize + 1];
+	byte* buffer = new byte[fileSize + 1];
 	// Guarantee or die not null
 	if ( buffer != nullptr )
 	{
 		fseek( fp, 0, SEEK_SET );
-		size_t bytesRead = fread( buffer, 1, fileSize, fp );
+		uint32_t bytesRead = (uint32_t)fread( buffer, 1, fileSize, fp );
 		buffer[bytesRead] = NULL;
 	}
 
 	if ( out_fileSize != nullptr )
 	{
-		*out_fileSize = (size_t)fileSize;
+		*out_fileSize = (uint32_t)fileSize;
 	}
 
 	fclose( fp );
 
 	return buffer;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void* FileReadBinaryToNewBuffer( const std::string& filename, uint32_t* out_fileSize /*= nullptr */ )
+{
+	FILE* fp;
+	fopen_s( &fp, filename.c_str(), "rb" );
+	if ( fp == nullptr )
+	{
+		return nullptr;
+	}
+
+	// get size of file
+	fseek( fp, 0, SEEK_END );
+	long fileSize = ftell( fp );
+
+	byte* buffer = new byte[fileSize];
+	// Guarantee or die not null
+	if ( buffer != nullptr )
+	{
+		fseek( fp, 0, SEEK_SET );
+		fread( buffer, 1, fileSize, fp );
+	}
+
+	if ( out_fileSize != nullptr )
+	{
+		*out_fileSize = (uint32_t)fileSize;
+	}
+
+	fclose( fp );
+
+	return buffer;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool WriteBufferToFile( const std::string& filename, byte* buffer, uint32_t bufferSize )
+{
+	FILE* fp;
+	fopen_s( &fp, filename.c_str(), "wb" );
+	if ( fp == nullptr )
+	{
+		return false;
+	}
+
+	fwrite( buffer, sizeof( byte ), bufferSize, fp );
+
+	fclose( fp );
+
+	return true;
 }
 
 
@@ -94,7 +145,13 @@ Strings GetFileNamesInFolder( const std::string& relativeFolderPath, const char*
 std::string GetFileName( const std::string& filePath )
 {
 	size_t lastSlashPos = filePath.find_last_of( "/" );
-	
+	size_t lastOtherSlashPos = filePath.find_last_of( "\\" );
+	if ( lastSlashPos == std::string::npos ||
+		 lastSlashPos < lastOtherSlashPos && lastOtherSlashPos != std::string::npos )
+	{
+		lastSlashPos = lastOtherSlashPos;
+	}
+
 	if ( lastSlashPos == std::string::npos )
 	{
 		lastSlashPos = 0;
@@ -121,9 +178,24 @@ std::string GetFileNameWithoutExtension( const std::string& filePath )
 
 	if ( lastSlashPos == std::string::npos )
 	{
-		lastSlashPos = 0;
+		lastSlashPos = (size_t)-1;
 	}
 
-	return filePath.substr( lastSlashPos, extensionPos );
+	return filePath.substr( lastSlashPos + 1, extensionPos );
 }
+
+
+//-----------------------------------------------------------------------------------------------
+std::string GetFileExtension( const std::string& filePath )
+{
+	size_t extensionPos = filePath.find( "." );
+
+	if ( extensionPos == std::string::npos )
+	{
+		return "";
+	}
+	
+	return filePath.substr( extensionPos );
+}
+
 

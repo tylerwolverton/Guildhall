@@ -113,6 +113,7 @@ $RECYCLE.BIN/
 
 !**/Run/*.exe
 !**/Run/*.dll
+!**/Ants/AntArena2/Arena/Run_Windows/**/*.dll
 !**/Run/Data/**
 !**/ThirdParty/**/*.lib
 *.user
@@ -121,3 +122,7 @@ $RECYCLE.BIN/
 *.idb
 *.tlog
 Zephyr/Documentation/Wolverton_Defense_Slides.pptx
+*.exp
+*.ipdb
+*.iobj
+*.recipe

@@ -50,7 +50,7 @@ void Boulder::Render() const
 	std::vector<Vertex_PCU> vertexesCopy( m_vertexes );
 	Vertex_PCU::TransformVertexArray( vertexesCopy, 1.f, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( 0, m_texture );
+	g_renderer->BindDiffuseTexture( m_texture );
 	g_renderer->DrawVertexArray( vertexesCopy );
 }
 

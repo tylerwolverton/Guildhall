@@ -14,6 +14,8 @@ Portal::Portal( const EntityDefinition& entityDef, Map* map )
 {
 	m_rigidbody2D->SetSimulationMode( SIMULATION_MODE_STATIC );
 	m_rigidbody2D->SetLayer( eCollisionLayer::PORTAL );
+
+	m_rigidbody2D->GetCollider()->m_onTriggerEnterDelegate.SubscribeMethod( this, &Portal::EnterTriggerEvent );
 }
 
 
@@ -23,16 +25,16 @@ Portal::~Portal()
 }
 
 
-//-----------------------------------------------------------------------------------------------
-void Portal::Load()
-{
-	m_rigidbody2D->Enable();
-
-	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
-	m_rigidbody2D->TakeCollider( discCollider );
-
-	m_rigidbody2D->GetCollider()->m_onTriggerEnterDelegate.SubscribeMethod( this, &Portal::EnterTriggerEvent );
-}
+////-----------------------------------------------------------------------------------------------
+//void Portal::Load()
+//{
+//	m_rigidbody2D->Enable();
+//
+//	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
+//	m_rigidbody2D->TakeCollider( discCollider );
+//
+//	m_rigidbody2D->GetCollider()->m_onTriggerEnterDelegate.SubscribeMethod( this, &Portal::EnterTriggerEvent );
+//}
 
 
 //-----------------------------------------------------------------------------------------------

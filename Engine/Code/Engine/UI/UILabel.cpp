@@ -6,16 +6,16 @@
 
 
 //-----------------------------------------------------------------------------------------------
-UILabel::UILabel( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData )
-	: m_uiSystem( uiSystem )
+UILabel::UILabel( const std::string& name, UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData )
+	: UIElement( uiSystem, name )
 {
 	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentElement.GetBoundingBox(), positionData );
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UILabel::UILabel( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData )
-	: m_uiSystem( uiSystem )
+UILabel::UILabel( const std::string& name, UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData )
+	: UIElement( uiSystem, name )
 {
 	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentElement.GetBoundingBox(), positionData );
 }

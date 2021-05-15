@@ -1,5 +1,7 @@
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/ConvexHull2D.hpp"
+#include "Engine/Math/Plane2D.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 
@@ -45,6 +47,7 @@ void Polygon2::SetPoints( Vec2* points, int numPoints )
 	CalculateBoundingBox();
 	m_centerOfMass = m_boundingBox.GetCenter();
 }
+
 
 //-----------------------------------------------------------------------------------------------
 bool Polygon2::IsValid() const
@@ -240,6 +243,28 @@ void Polygon2::GetClosestEdge( const Vec2& point, Vec2* out_start, Vec2* out_end
 
 
 //-----------------------------------------------------------------------------------------------
+ConvexHull2D Polygon2::GenerateConvexHull() const
+{
+	ConvexHull2D convexHull;
+
+	for ( int pointNumIdx = 0; pointNumIdx < GetVertexCount(); ++pointNumIdx )
+	{
+		// Special case to handle wrapping around with final point
+		if ( pointNumIdx == GetVertexCount() - 1 )
+		{
+			convexHull.AddPlane( GenerateOutwardFacingPlaneFromEdge( m_points[pointNumIdx], m_points[0] ) );
+		}
+		else
+		{
+			convexHull.AddPlane( GenerateOutwardFacingPlaneFromEdge( m_points[pointNumIdx], m_points[pointNumIdx + 1] ) );
+		}
+	}
+
+	return convexHull;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 int Polygon2::GetVertexCount() const
 {
 	return (int)m_points.size();
@@ -289,6 +314,14 @@ void Polygon2::Translate2D( const Vec2& translation )
 	{
 		m_points[pointNumIdx] += translation;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::TranslateWithBoundingBox2D( const Vec2& translation )
+{
+	Translate2D( translation );
+	m_boundingBox.Translate( translation );
 }
 
 
@@ -343,6 +376,45 @@ void Polygon2::SetCenterOfMassAndUpdatePoints( const Vec2& newCenterOfMass )
 	m_centerOfMass = newCenterOfMass;
 
 	m_boundingBox.Translate( translation );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::RotateAboutPoint2D( float rotationDegrees, const Vec2& rotationPoint )
+{
+	for ( int pointNumIdx = 0; pointNumIdx < GetVertexCount(); ++pointNumIdx )
+	{
+		Vec2 translatedPoint = m_points[pointNumIdx] - rotationPoint;
+		translatedPoint.RotateDegrees( -rotationDegrees );
+		translatedPoint += rotationPoint;
+
+		m_points[pointNumIdx] = translatedPoint;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Polygon2::ScaleAboutPoint2D( float scaleFactor, const Vec2& scaleOriginPoint )
+{
+	for ( int pointNumIdx = 0; pointNumIdx < GetVertexCount(); ++pointNumIdx )
+	{
+		Vec2 translatedPoint = m_points[pointNumIdx] - scaleOriginPoint;
+		translatedPoint.SetLength( translatedPoint.GetLength() * scaleFactor );
+		translatedPoint += scaleOriginPoint;
+
+		m_points[pointNumIdx] = translatedPoint;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Plane2D Polygon2::GenerateOutwardFacingPlaneFromEdge( const Vec2& startPoint, const Vec2& endPoint ) const
+{
+	Vec2 displacement = endPoint - startPoint;
+	Vec2 planeNormal = displacement.GetNormalized();
+	planeNormal.RotateMinus90Degrees();
+
+	return Plane2D( planeNormal, startPoint );
 }
 
 

@@ -13,24 +13,14 @@ Pickup::Pickup( const EntityDefinition& entityDef, Map* map )
 	: Entity( entityDef, map )
 {
 	m_rigidbody2D->SetLayer( eCollisionLayer::PICKUP );
+
+	m_rigidbody2D->GetCollider()->m_onTriggerEnterDelegate.SubscribeMethod( this, &Pickup::EnterCollisionEvent );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 Pickup::~Pickup()
 {
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Pickup::Load()
-{
-	m_rigidbody2D->Enable();
-
-	DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
-	m_rigidbody2D->TakeCollider( discCollider );
-
-	m_rigidbody2D->GetCollider()->m_onTriggerEnterDelegate.SubscribeMethod( this, &Pickup::EnterCollisionEvent );
 }
 
 

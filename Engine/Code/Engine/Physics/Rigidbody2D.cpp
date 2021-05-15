@@ -250,6 +250,26 @@ void Rigidbody2D::DebugRender( RenderContext* renderer, const Rgba8& borderColor
 
 
 //-----------------------------------------------------------------------------------------------
+void Rigidbody2D::Enable()
+{
+	if ( m_collider != nullptr )
+	{
+		m_collider->Enable();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Rigidbody2D::Disable()
+{
+	if ( m_collider != nullptr )
+	{
+		m_collider->Disable();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 float Rigidbody2D::GetOrientationDegrees() const
 {
 	return ConvertRadiansToDegrees( m_orientationRadians );

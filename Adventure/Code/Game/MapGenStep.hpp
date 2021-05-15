@@ -14,7 +14,8 @@ class MapGenStep
 {
 public: 
 	MapGenStep( const XmlElement& mapGenStepXmlElem );
-
+	virtual ~MapGenStep() {}
+	
 	void RunStep( Map& map );
 	virtual void RunStepOnce( Map& map ) = 0;
 

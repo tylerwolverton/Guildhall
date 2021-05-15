@@ -66,6 +66,24 @@ Material::Material( RenderContext* context, const char* filename )
 		}
 	}
 
+	const XmlElement* specGlossEmitElem = materialElem->FirstChildElement( "specGlossEmit" );
+	if ( specGlossEmitElem == nullptr )
+	{
+		m_specGlossEmitTexture = nullptr;
+	}
+	else
+	{
+		std::string specGlossEmitPath = ParseXmlAttribute( *specGlossEmitElem, "path", specGlossEmitPath );
+		if ( specGlossEmitPath == "Default" )
+		{
+			m_specGlossEmitTexture = context->GetDefaultSpecGlossEmissiveTexture();
+		}
+		else
+		{
+			m_specGlossEmitTexture = context->CreateOrGetTextureFromFile( specGlossEmitPath.c_str() );
+		}
+	}
+
 	const XmlElement* textureElem = materialElem->FirstChildElement( "texture2d" );
 	m_userTextures.resize( MAX_USER_TEXTURES );
 	int curTextureNum = 0;
@@ -82,6 +100,7 @@ Material::Material( RenderContext* context, const char* filename )
 		if ( slot >= MAX_USER_TEXTURES )
 		{
 			g_devConsole->PrintString( Stringf( "Texture slot '%d' is outside range of %d - %d, skipping", slot, USER_TEXTURE_SLOT_START, USER_TEXTURE_SLOT_START + MAX_USER_TEXTURES - 1 ), Rgba8::YELLOW );
+			textureElem = textureElem->NextSiblingElement( "texture2d" );
 			continue;
 		}
 		++curTextureNum;

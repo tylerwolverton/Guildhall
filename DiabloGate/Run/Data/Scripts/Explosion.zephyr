@@ -1,0 +1,13 @@
+Function Spawned( Number maxHealth )
+{
+    AddAnimationEvent( anim: "Default", frame: "last", event: "Die" )
+
+    PlaySpriteAnimation( newAnim: "Default" )
+}
+
+
+Function Die()
+{
+    DestroySelf()
+    MarkAsGarbage()
+}

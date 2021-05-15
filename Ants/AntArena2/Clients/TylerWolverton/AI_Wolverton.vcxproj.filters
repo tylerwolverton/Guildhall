@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="framework">
+      <UniqueIdentifier>{274c9703-da6e-4dd7-b333-073cb70bdc18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Math">
+      <UniqueIdentifier>{31764854-5070-4dc4-9077-e92b92301997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{bd727acd-579e-4398-bd91-573914cc103c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ArenaPlayerImpl.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Colony.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TileCoords.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThreadSafeStructures.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ant.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderUtils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\IntVec2.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\MathUtils.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\Vec2.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PathGenerator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Arena\Code\Game\ArenaPlayerInterface.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Colony.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TileCoords.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThreadSafeStructures.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Main.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\AvatarEngineBuildPreferences.hpp">
+      <Filter>framework</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ant.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderUtils.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\IntVec2.hpp">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\MathUtils.hpp">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\Vec2.hpp">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SynchronizedNonBlockingQueue.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PathGenerator.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Arena\Run_Windows\Data\AgentDefinitions.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Arena\Run_Windows\Data\MapDefinitions.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Arena\Run_Windows\Data\MatchDefinitions.xml">
+      <Filter>Data</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\Arena\Run_Windows\Data\GameConfig.txt">
+      <Filter>Data</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

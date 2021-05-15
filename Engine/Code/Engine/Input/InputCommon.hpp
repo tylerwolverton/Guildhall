@@ -45,6 +45,7 @@ extern const unsigned char KEY_COMMA;
 extern const unsigned char KEY_PERIOD;
 extern const unsigned char KEY_PLUS;
 extern const unsigned char KEY_MINUS;
+extern const unsigned char KEY_TAB;
 
 extern const unsigned char MOUSE_LBUTTON;
 extern const unsigned char MOUSE_RBUTTON;

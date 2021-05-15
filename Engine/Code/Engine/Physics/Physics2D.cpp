@@ -188,7 +188,8 @@ void Physics2D::DetectCollisions()
 	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
 	{
 		Collider2D* collider = m_colliders[colliderIdx];
-		if ( collider == nullptr )
+		if ( collider == nullptr 
+			 || !collider->IsEnabled() )
 		{
 			continue;
 		}
@@ -197,7 +198,8 @@ void Physics2D::DetectCollisions()
 		for ( int otherColliderIdx = colliderIdx + 1; otherColliderIdx < (int)m_colliders.size(); ++otherColliderIdx )
 		{
 			Collider2D* otherCollider = m_colliders[otherColliderIdx];
-			if ( otherCollider == nullptr )
+			if ( otherCollider == nullptr
+				 || !otherCollider->IsEnabled() )
 			{
 				continue;
 			}
@@ -242,6 +244,10 @@ void Physics2D::ClearOldCollisions()
 		if ( collision.frameNum != m_frameNum )
 		{
 			InvokeCollisionEvents( collision, eCollisionEventType::LEAVE );
+			//collision.myCollider->m_rigidbody->m_collider = nullptr;
+			//collision.theirCollider->m_rigidbody->m_collider = nullptr;
+			collision.myCollider = nullptr;
+			collision.theirCollider = nullptr;
 			oldCollisionIds.push_back( colIdx );
 		}
 	}
@@ -612,6 +618,11 @@ PolygonCollider2D* Physics2D::CreatePolygon2Trigger( const Polygon2& polygon )
 //-----------------------------------------------------------------------------------------------
 void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 {
+	if ( colliderToDestroy == nullptr )
+	{
+		return;
+	}
+
 	for ( int colliderIdx = 0; colliderIdx < (int)m_colliders.size(); ++colliderIdx )
 	{
 		if ( m_colliders[ colliderIdx ] == colliderToDestroy )
@@ -628,7 +639,7 @@ void Physics2D::DestroyCollider( Collider2D* colliderToDestroy )
 		Collision2D& collision = m_collisions[collisionIdx];
 		
 		if ( collision.id.x == colliderToDestroy->m_id 
-			 || collision.id.y == colliderToDestroy->m_id )
+			 || collision.id.y == colliderToDestroy ->m_id )
 		{
 			InvokeCollisionEvents( collision, eCollisionEventType::LEAVE );
 			oldCollisionIds.push_back( collisionIdx );

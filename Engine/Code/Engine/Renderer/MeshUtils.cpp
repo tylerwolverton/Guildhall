@@ -287,6 +287,66 @@ void AppendVertsForArc( std::vector<Vertex_PCU>& vertexArray,
 
 
 //-----------------------------------------------------------------------------------------------
+void AppendVertsForDisc2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, const Rgba8& tint )
+{
+	AppendVertsForArc( vertexArray, center, radius, 360.f, 0.f, tint );
+}
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, const Rgba8& tint, float thickness )
+{
+	constexpr float NUM_SIDES = 64.f;
+	constexpr float DEG_PER_SIDE = 360.f / NUM_SIDES;
+
+	for ( int sideIndex = 0; sideIndex < NUM_SIDES; ++sideIndex )
+	{
+		float thetaDeg = DEG_PER_SIDE * (float)sideIndex;
+		float theta2Deg = DEG_PER_SIDE * (float)( sideIndex + 1 );
+
+		Vec2 start( radius * CosDegrees( thetaDeg ),
+					radius * SinDegrees( thetaDeg ) );
+
+		Vec2 end( radius * CosDegrees( theta2Deg ),
+				  radius * SinDegrees( theta2Deg ) );
+
+		// Translate start and end to be relative to the center of the ring
+		start += center;
+		end += center;
+
+		AppendVertsForLine2D( vertexArray, start, end, tint, thickness );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start, const Vec2& end, const Rgba8& tint, float thickness )
+{
+	float radius = 0.5f * thickness;
+	Vec2 displacement = end - start;
+
+	// Create a small vector to be used to add a little
+	// extra to the end of each line to make overlapping look better
+	Vec2 forward = displacement.GetNormalized();
+	forward *= radius;
+
+	Vec2 left = forward.GetRotated90Degrees();
+
+	// Calculate each corner of the box that will represent the line
+	Vec2 startLeft = start - forward + left;
+	Vec2 startRight = start - forward - left;
+	Vec2 endLeft = end + forward + left;
+	Vec2 endRight = end + forward - left;
+
+	vertexArray.push_back( Vertex_PCU( startRight, tint ) );
+	vertexArray.push_back( Vertex_PCU( endRight, tint ) );
+	vertexArray.push_back( Vertex_PCU( endLeft, tint ) );
+
+	vertexArray.push_back( Vertex_PCU( startRight, tint ) );
+	vertexArray.push_back( Vertex_PCU( endLeft, tint ) );
+	vertexArray.push_back( Vertex_PCU( startLeft, tint ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, 
 						   const AABB2& spriteBounds, 
 						   const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
@@ -298,6 +358,21 @@ void AppendVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray,
 	vertexArray.push_back( Vertex_PCU( spriteBounds.mins, tint, uvAtMins ) );
 	vertexArray.push_back( Vertex_PCU( spriteBounds.maxs, tint, uvAtMaxs ) );
 	vertexArray.push_back( Vertex_PCU( Vec2( spriteBounds.mins.x, spriteBounds.maxs.y ), tint, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void AppendVertsForAABB2Outline( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba8& tint, float thickness )
+{
+	Vec2 bottomLeft( box.mins );
+	Vec2 bottomRight( Vec2( box.maxs.x, box.mins.y ) );
+	Vec2 topLeft( Vec2( box.mins.x, box.maxs.y ) );
+	Vec2 topRight( box.maxs );
+
+	AppendVertsForLine2D( vertexArray, bottomLeft, bottomRight, tint, thickness );
+	AppendVertsForLine2D( vertexArray, bottomLeft, topLeft, tint, thickness );
+	AppendVertsForLine2D( vertexArray, topLeft, topRight, tint, thickness );
+	AppendVertsForLine2D( vertexArray, topRight, bottomRight, tint, thickness );
 }
 
 

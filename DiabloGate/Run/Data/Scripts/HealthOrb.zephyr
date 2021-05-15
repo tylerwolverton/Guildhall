@@ -1,0 +1,9 @@
+Number healthPoints = -3
+
+Function CollisionEntered( Entity otherEntity )
+{
+    DamageEntity( target: otherEntity, damage: healthPoints )
+    DestroySelf()
+    MarkAsGarbage()
+}
+

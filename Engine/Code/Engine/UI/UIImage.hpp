@@ -11,13 +11,16 @@ class SpriteDefinition;
 //-----------------------------------------------------------------------------------------------
 class UIImage : public UILabel
 {
-public:
-	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, Texture* image = nullptr );
-	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, Texture* image = nullptr );
-	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, SpriteDefinition* spriteDef );
-	UIImage( const UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, SpriteDefinition* spriteDef );
-	
+	friend class UIElement;
+
+public:	
 	virtual void Render() const override;
+
+private:
+	UIImage( UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, Texture* image = nullptr, const std::string& name = "" );
+	UIImage( UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, Texture* image = nullptr, const std::string& name = "" );
+	UIImage( UISystem& uiSystem, const UIElement& parentElement, const UIAlignedPositionData& positionData, SpriteDefinition* spriteDef, const std::string& name = "" );
+	UIImage( UISystem& uiSystem, const UIElement& parentElement, const UIRelativePositionData& positionData, SpriteDefinition* spriteDef, const std::string& name = "" );
 
 private:
 	Texture* m_image = nullptr;

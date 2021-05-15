@@ -1,0 +1,195 @@
+<UIRoot>
+  <UIElement type="panel" name="HUD" isHidden ="false" isActive="true" tint="0,0,0,200" >
+    <PositionData type="aligned" 
+                  fractionOfParentDimensions=".75,.125" 
+                  verticalPaddingInPixels ="10,0" 
+                  alignmentWithinParentElement="bottom-center"/>
+
+    <UIElement type="button" name="attack1" isHidden ="false" isActive="true" tint="255,255,255,200" hoverTint="200,200,200,200" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.7" 
+                    horizontalPaddingInPixels ="10,0" 
+                    verticalPaddingInPixels ="0,10" 
+                    positionOffsetFraction=".125,0" 
+                    alignmentWithinParentElement="top-left"/>
+
+      <UIElement type="image" name="attack1Img" texture="Data\Images\Explosion_UI.png">
+        <PositionData type="aligned"
+                            fractionOfParentDimensions="1,1"
+                            horizontalPaddingInPixels ="2,2"
+                            verticalPaddingInPixels ="2,2"
+                            alignmentWithinParentElement="center-left"/>
+      </UIElement>
+    </UIElement>
+    
+    <!--<UIElement type="button" name="attack2" isHidden ="false" isActive="true" tint="255,255,255,200" hoverTint="200,200,200,200" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.7" 
+                    horizontalPaddingInPixels ="10,0" 
+                    positionOffsetFraction=".1,0" 
+                    verticalPaddingInPixels ="0,10" 
+                    alignmentWithinParentElement="top-left"/>
+    </UIElement>-->
+
+    <!-- Stats -->
+    <UIElement type="text" name="attackDamageLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Atk Dmg" fontSize="24" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.2" 
+                    horizontalPaddingInPixels ="10,0" 
+                    positionOffsetFraction="-.2,.8" 
+                    alignmentWithinParentElement="bottom-right"/>
+    </UIElement>
+
+    <UIElement type="text" name="defenseLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Defense" fontSize="24" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.2" 
+                    horizontalPaddingInPixels ="10,0" 
+                    positionOffsetFraction="-.2,.6" 
+                    alignmentWithinParentElement="bottom-right"/>
+    </UIElement>
+
+    <UIElement type="text" name="attackSpeedLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Atk Speed" fontSize="24" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.2" 
+                    horizontalPaddingInPixels ="10,0" 
+                    positionOffsetFraction="-.2,.4" 
+                    alignmentWithinParentElement="bottom-right"/>
+    </UIElement>
+
+    <UIElement type="text" name="critChanceLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Crit Chance" fontSize="24" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.2" 
+                    horizontalPaddingInPixels ="10,0" 
+                    positionOffsetFraction="-.2,.2" 
+                    alignmentWithinParentElement="bottom-right"/>
+    </UIElement>
+
+    <UIElement type="text" name="levelLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Level" fontSize="60" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.3" 
+                    horizontalPaddingInPixels ="5,0" 
+                    verticalPaddingInPixels ="0,5" 
+                    positionOffsetFraction=".0,.7" 
+                    alignmentWithinParentElement="bottom-left"/>
+    </UIElement>
+
+    <UIElement type="text" name="xpLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="XP" fontSize="24" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".1,.3" 
+                    horizontalPaddingInPixels ="10,0" 
+                    verticalPaddingInPixels ="0,10" 
+                    positionOffsetFraction=".0,.5" 
+                    alignmentWithinParentElement="bottom-left"/>
+    </UIElement>
+
+    <UIElement type="panel" name="hpBar" isHidden ="false" isActive="true" tint="0,255,0,200" >
+      <PositionData type="aligned" 
+                    fractionOfParentDimensions=".9,.2" 
+                    horizontalPaddingInPixels ="0,5" 
+                    verticalPaddingInPixels ="10,0" 
+                    alignmentWithinParentElement="bottom-right"/>
+    </UIElement>
+
+    <UIElement type="text" name="hpLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="HP" fontSize="24" >
+      <PositionData type="aligned"
+                    fractionOfParentDimensions=".05,.25"
+                    horizontalPaddingInPixels ="5,0"
+                    verticalPaddingInPixels ="2,0"
+                    positionOffsetFraction="0,0"
+                    alignmentWithinParentElement="bottom-left"/>
+    </UIElement>
+  </UIElement>
+
+  <!--Inventory-->
+  <UIElement type="panel" name="inventory" isHidden="true" isActive="false" tint="0,0,0,200">
+    <PositionData type="aligned"
+                fractionOfParentDimensions=".25,.87"
+                verticalPaddingInPixels ="0,5"
+                horizontalPaddingInPixels ="0,5"
+                alignmentWithinParentElement="top-right"/>
+
+    <UIElement type="grid" name="inventoryGrid" isHidden ="false" isActive="true" tint="200,200,200,200" dimensions="5,3" elementPaddingPixels="5,5">
+      <PositionData type="aligned"
+                fractionOfParentDimensions="1,.37"
+                verticalPaddingInPixels ="0,0"
+                horizontalPaddingInPixels ="0,0"
+                alignmentWithinParentElement="bottom-center"/>
+    </UIElement>
+
+    <!--Weapon-->
+    <UIElement type="button" name="weaponSlot" isHidden ="false" isActive="true" tint="100,100,100,200">
+      <PositionData type="aligned"
+                fractionOfParentDimensions=".2,.15"
+                positionOffsetFraction=".1,-.15"
+                alignmentWithinParentElement="top-left"/>
+    </UIElement>
+    
+    <UIElement type="text" name="weaponLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Weapon" fontSize="20" >
+        <PositionData type="aligned"
+                      fractionOfParentDimensions=".2,.05"
+                      positionOffsetFraction=".125,-.11"
+                      alignmentWithinParentElement="top-left"/>
+    </UIElement>
+
+    <!--Armor-->
+    <UIElement type="button" name="armorSlot" isHidden ="false" isActive="true" tint="100,100,100,200">
+      <PositionData type="aligned"
+                fractionOfParentDimensions=".2,.15"
+                positionOffsetFraction="0,-.15"
+                alignmentWithinParentElement="top-center"/>
+    </UIElement>
+    
+    <UIElement type="text" name="armorLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Armor" fontSize="20" >
+        <PositionData type="aligned"
+                      fractionOfParentDimensions=".2,.05"
+                      positionOffsetFraction=".03,-.11"
+                      alignmentWithinParentElement="top-center"/>
+    </UIElement>
+
+    <!--Shield-->
+    <UIElement type="button" name="shieldSlot" isHidden ="false" isActive="true" tint="100,100,100,200">
+      <PositionData type="aligned"
+                fractionOfParentDimensions=".2,.15"
+                positionOffsetFraction="-.1,-.15"
+                alignmentWithinParentElement="top-right"/>
+    </UIElement>
+    
+    <UIElement type="text" name="shieldLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Shield" fontSize="20" >
+      <PositionData type="aligned"
+                    fractionOfParentDimensions=".2,.15"
+                    positionOffsetFraction="-.07,-.061"
+                    alignmentWithinParentElement="top-right"/>
+    </UIElement>
+
+    <!--Ring1-->
+    <UIElement type="button" name="ring1Slot" isHidden ="false" isActive="true" tint="100,100,100,200">
+      <PositionData type="aligned"
+                fractionOfParentDimensions=".15,.075"
+                positionOffsetFraction=".125,-.35"             
+                alignmentWithinParentElement="top-left"/>
+    </UIElement>
+
+    <UIElement type="text" name="ring1Label" isHidden ="false" isActive="true" tint="0,0,0,200" text="Ring" fontSize="20" >
+        <PositionData type="aligned"
+                      fractionOfParentDimensions=".2,.15"
+                      positionOffsetFraction=".15,-.26"
+                      alignmentWithinParentElement="top-left"/>
+    </UIElement>
+    
+    <!--Ring2-->
+    <UIElement type="button" name="ring2Slot" isHidden ="false" isActive="true" tint="100,100,100,200">
+      <PositionData type="aligned"
+                fractionOfParentDimensions=".15,.075"
+                positionOffsetFraction="-.125,-.35"
+                alignmentWithinParentElement="top-right"/>
+    </UIElement>
+    
+     <UIElement type="text" name="ring2Label" isHidden ="false" isActive="true" tint="0,0,0,200" text="Ring" fontSize="20" >
+        <PositionData type="aligned"
+                      fractionOfParentDimensions=".2,.15"
+                      positionOffsetFraction="-.05,-.26"
+                      alignmentWithinParentElement="top-right"/>
+     </UIElement>  
+
+  </UIElement>
+</UIRoot>

@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Core/CPUMesh.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
@@ -21,12 +22,17 @@ public:
 	template <typename VERTEX_TYPE>
 	GPUMesh( RenderContext* context, const std::vector<VERTEX_TYPE>& vertices, const std::vector<uint>& indices )
 	{
+		m_context = context;
 		m_vertices = new VertexBuffer( context, MEMORY_HINT_DYNAMIC, sizeof( VERTEX_TYPE ), VERTEX_TYPE::LAYOUT );
 		m_indices = new IndexBuffer( context, MEMORY_HINT_DYNAMIC );
 
 		UpdateVertices( vertices );
 		UpdateIndices( indices );
 	}
+
+	GPUMesh( RenderContext* context, const CPUMesh& cpuMesh);
+
+	void SetFromCPUMesh( const CPUMesh& cpuMesh );
 
 	// Set up buffers
 	void UpdateVertices( uint vertexCount, const void* vertexData, uint vertexStride, const BufferAttribute* layout );
@@ -53,4 +59,5 @@ public:
 public:
 	VertexBuffer* m_vertices = nullptr;
 	IndexBuffer* m_indices = nullptr;
+	RenderContext* m_context = nullptr;
 };

@@ -134,6 +134,15 @@ std::string Rgba8::ToString() const
 
 
 //-----------------------------------------------------------------------------------------------
+Rgba8 Rgba8::operator+( const Rgba8& other ) const
+{
+	Rgba8 newColor( this->r + other.r, this->g + other.g, this->b + other.b, this->a + other.a );
+
+	return newColor;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool Rgba8::operator==( const Rgba8& compare ) const
 {
 	return r == compare.r 

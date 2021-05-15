@@ -71,8 +71,8 @@ public:
 	void DebugRender( RenderContext* renderer, const Rgba8& borderColor, const Rgba8& fillColor ) const;
 
 	bool IsEnabled() const															{ return m_isEnabled; }
-	void Enable()																	{ m_isEnabled = true; }
-	void Disable()																	{ m_isEnabled = false; }
+	void Enable();
+	void Disable();
 
 	eSimulationMode GetSimulationMode()	const										{ return m_simulationMode; }
 	void SetSimulationMode( eSimulationMode mode )									{ m_simulationMode = mode; }

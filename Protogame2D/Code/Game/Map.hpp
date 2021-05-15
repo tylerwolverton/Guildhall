@@ -33,7 +33,7 @@ class Map
 {
 public:
 	Map( const MapData& mapData );
-	~Map();
+	virtual ~Map();
 
 	virtual void Load( Entity* player );
 	virtual void Unload();

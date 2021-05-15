@@ -1,30 +1,38 @@
 #include "Engine/UI/UIPanel.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Engine/UI/UIButton.hpp"
+#include "Engine/UI/UIUniformGrid.hpp"
 #include "Engine/UI/UIImage.hpp"
 #include "Engine/UI/UISystem.hpp"
 #include "Engine/UI/UIText.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint )
-	: UIElement( uiSystem )
+UIPanel::UIPanel( UISystem& uiSystem, const AABB2& absoluteScreenBounds, Texture* backgroundTexture, const Rgba8& tint, const std::string& name )
+	: UIElement( uiSystem, name )
 {
 	m_boundingBox = absoluteScreenBounds;
+	m_initialBoundingBox = m_boundingBox;
 	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_initialTint = tint;
+	m_curTint = tint;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-	: UIElement( uiSystem )
+UIPanel::UIPanel( UISystem& uiSystem, UIPanel* parentPanel, const UIAlignedPositionData& positionData, 
+				  Texture* backgroundTexture, const Rgba8& tint, 
+				  const Vec2& uvAtMins, const Vec2& uvAtMaxs, 
+				  const std::string& name )
+	: UIElement( uiSystem, name )
 {
 	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_initialTint = tint;
+	m_curTint = tint;
 	m_uvsAtMins = uvAtMins;
 	m_uvsAtMaxs = uvAtMaxs;
 
@@ -35,15 +43,20 @@ UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIAligne
 	}
 
 	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentBoundingBox, positionData );
+	m_initialBoundingBox = m_boundingBox;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
-	: UIElement( uiSystem )
+UIPanel::UIPanel( UISystem& uiSystem, UIPanel* parentPanel, const UIRelativePositionData& positionData, 
+				  Texture* backgroundTexture, const Rgba8& tint, 
+				  const Vec2& uvAtMins, const Vec2& uvAtMaxs, 
+				  const std::string& name )
+	: UIElement( uiSystem, name )
 {
 	m_backgroundTexture = backgroundTexture;
-	m_tint = tint;
+	m_initialTint = tint;
+	m_curTint = tint;
 	m_uvsAtMins = uvAtMins;
 	m_uvsAtMaxs = uvAtMaxs;
 
@@ -55,6 +68,7 @@ UIPanel::UIPanel( const UISystem& uiSystem, UIPanel* parentPanel, const UIRelati
 	}
 
 	m_boundingBox = uiSystem.GetBoundingBoxFromParentAndPositionData( parentBoundingBox, positionData );
+	m_initialBoundingBox = m_boundingBox;
 }
 
 
@@ -83,6 +97,13 @@ void UIPanel::Update()
 	{
 		m_childPanels[panelIdx]->Update();
 	}
+
+	// Consume clicks in panel to avoid world handling them
+	if ( this != m_uiSystem.GetRootPanel()
+		&& m_boundingBox.IsPointInside( m_uiSystem.m_inputSystem->GetNormalizedMouseClientPos() * m_uiSystem.m_windowDimensions ) )
+	{
+		//m_uiSystem.m_inputSystem->ConsumeAllKeyPresses( MOUSE_LBUTTON );
+	}
 }
 
 
@@ -97,7 +118,7 @@ void UIPanel::Render() const
 	if ( m_backgroundTexture != nullptr )
 	{
 		std::vector<Vertex_PCU> vertices;
-		AppendVertsForAABB2D( vertices, m_boundingBox, m_tint, m_uvsAtMins, m_uvsAtMaxs );
+		AppendVertsForAABB2D( vertices, m_boundingBox, m_curTint, m_uvsAtMins, m_uvsAtMaxs );
 
 		m_uiSystem.m_renderer->BindTexture( 0, m_backgroundTexture );
 		m_uiSystem.m_renderer->DrawVertexArray( vertices );
@@ -171,7 +192,32 @@ UIPanel* UIPanel::AddChildPanel( const UIRelativePositionData& positionData, Tex
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton* UIPanel::AddButton( const UIAlignedPositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+UIPanel* UIPanel::AddChildPanel( const std::string& name, const UIAlignedPositionData& positionData, 
+								 Texture* backgroundTexture, const Rgba8& tint, 
+								 const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint, uvAtMins, uvAtMaxs, name );
+	m_childPanels.push_back( newPanel );
+
+	return newPanel;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIPanel* UIPanel::AddChildPanel( const std::string& name, const UIRelativePositionData& positionData, 
+								 Texture* backgroundTexture, const Rgba8& tint, 
+								 const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	UIPanel* newPanel = new UIPanel( m_uiSystem, this, positionData, backgroundTexture, tint, uvAtMins, uvAtMaxs, name );
+	m_childPanels.push_back( newPanel );
+
+	return newPanel;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIButton* UIPanel::AddButton( const UIAlignedPositionData& positionData, 
+							  Texture* backgroundTexture, const Rgba8& tint )
 {
 	UIButton* newButton = new UIButton( m_uiSystem, *this, positionData, backgroundTexture, tint );
 	m_buttons.push_back( newButton );
@@ -181,12 +227,47 @@ UIButton* UIPanel::AddButton( const UIAlignedPositionData& positionData, Texture
 
 
 //-----------------------------------------------------------------------------------------------
-UIButton* UIPanel::AddButton( const UIRelativePositionData& positionData, Texture* backgroundTexture, const Rgba8& tint )
+UIButton* UIPanel::AddButton( const UIRelativePositionData& positionData, 
+							  Texture* backgroundTexture, const Rgba8& tint )
 {
 	UIButton* newButton = new UIButton( m_uiSystem, *this, positionData, backgroundTexture, tint );
 	m_buttons.push_back( newButton );
 
 	return newButton;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIButton* UIPanel::AddButton( const std::string& name, const UIAlignedPositionData& positionData, 
+							  Texture* backgroundTexture, const Rgba8& tint )
+{
+	UIButton* newButton = new UIButton( m_uiSystem, *this, positionData, backgroundTexture, tint, name );
+	m_buttons.push_back( newButton );
+
+	return newButton;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIButton* UIPanel::AddButton( const std::string& name, const UIRelativePositionData& positionData, 
+							  Texture* backgroundTexture, const Rgba8& tint )
+{
+	UIButton* newButton = new UIButton( m_uiSystem, *this, positionData, backgroundTexture, tint, name );
+	m_buttons.push_back( newButton );
+
+	return newButton;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+UIUniformGrid* UIPanel::AddUniformGrid( const std::string& name, const UIAlignedPositionData& gridPositionData, 
+										const IntVec2& gridDimensions, const Vec2& paddingOfGridElementsPixels, 
+										Texture* elementTexture, const Rgba8& elementTint )
+{
+	UIUniformGrid* newGrid = new UIUniformGrid( m_uiSystem, *this, name, gridPositionData, gridDimensions, paddingOfGridElementsPixels, elementTexture, elementTint );
+	m_childPanels.push_back( newGrid );
+
+	return newGrid;
 }
 
 

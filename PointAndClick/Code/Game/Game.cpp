@@ -178,8 +178,8 @@ void Game::Update()
 				// Initial dialogue
 				m_player->SetPosition( Vec2( 25.f, m_player->GetPosition().y ) );
 				m_player->SetMoveTargetLocation( Vec2( 25.f, m_player->GetPosition().y ) );
-				DialogueState* initialState = DialogueState::GetDialogueState( "PurpleTentacle_initial" );
-				BeginConversation( initialState, m_world->GetPurpleTentacle() );
+				//DialogueState* initialState = DialogueState::GetDialogueState( "PurpleTentacle_initial" );
+				//BeginConversation( initialState, m_world->GetPurpleTentacle() );
 
 				m_hasInitialDialogueHappened = true;
 				return;
@@ -1169,7 +1169,7 @@ void Game::OnPauseMenuExitButtonClicked( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::OnVerbButtonClicked( EventArgs* args )
 {
-	uint id = args->GetValue( "id", (uint)0 );
+	int id = args->GetValue( "id", 0 );
 	
 	eVerbState verbState = eVerbState::NONE;
 	//if ( id == m_giveVerbButton->GetId() ) { m_giveVerbButton->SetTint( tint );	return; }
@@ -1189,7 +1189,7 @@ void Game::OnVerbButtonClicked( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::OnInventoryButtonClicked( EventArgs* args )
 {
-	uint id = args->GetValue( "id", (uint)0 );
+	int id = args->GetValue( "id", 0 );
 
 	if ( m_player->GetPlayerVerbState() == eVerbState::NONE )
 	{
@@ -1214,7 +1214,7 @@ void Game::OnInventoryButtonClicked( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::OnTestButtonClicked( EventArgs* args )
 {
-	uint id = args->GetValue( "id", (uint)0 );
+	int id = args->GetValue( "id", 0 );
 
 	g_devConsole->PrintString( "Button clicked!", Rgba8::ORANGE );
 
@@ -1238,7 +1238,7 @@ void Game::OnInventoryItemHoverStay( EventArgs* args )
 		return;
 	}
 
-	uint id = args->GetValue( "id", (uint)0 );
+	int id = args->GetValue( "id", 0 );
 
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
@@ -1271,25 +1271,25 @@ void Game::OnInventoryItemHoverStay( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::OnTestButtonHoverBegin( EventArgs* args )
 {
-	uint id = args->GetValue( "id", (uint)0 );
+	int id = args->GetValue( "id", 0 );
 	
 	Rgba8 tint = Rgba8::DARK_BLUE;
 	tint.r += 10;
 	tint.g += 10;
 	tint.b += 10;
 
-	if ( id == m_giveVerbButton->GetId() )	 { m_giveVerbButton->SetButtonTint( tint );	return; }
-	if ( id == m_openVerbButton->GetId() )	 { m_openVerbButton->SetButtonTint( tint );	return; }
-	if ( id == m_closeVerbButton->GetId() )  { m_closeVerbButton->SetButtonTint( tint );	return; }
-	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetButtonTint( tint ); return; }
-	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetButtonTint( tint ); return; }
+	if ( id == m_giveVerbButton->GetId() )	 { m_giveVerbButton->SetButtonAndLabelTint( tint );	return; }
+	if ( id == m_openVerbButton->GetId() )	 { m_openVerbButton->SetButtonAndLabelTint( tint );	return; }
+	if ( id == m_closeVerbButton->GetId() )  { m_closeVerbButton->SetButtonAndLabelTint( tint );	return; }
+	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetButtonAndLabelTint( tint ); return; }
+	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetButtonAndLabelTint( tint ); return; }
 
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
 		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
 		if ( id == itemButton->GetId() )
 		{
-			itemButton->SetButtonTint( tint );
+			itemButton->SetButtonAndLabelTint( tint );
 			return;
 		}
 	}
@@ -1299,22 +1299,22 @@ void Game::OnTestButtonHoverBegin( EventArgs* args )
 //-----------------------------------------------------------------------------------------------
 void Game::OnTestButtonHoverEnd( EventArgs* args )
 {
-	uint id = args->GetValue( "id", (uint)0 );
+	int id = args->GetValue( "id", 0 );
 
 	Rgba8 tint = Rgba8::DARK_BLUE;
 
-	if ( id == m_giveVerbButton->GetId() ) { m_giveVerbButton->SetButtonTint( tint );	return; }
-	if ( id == m_openVerbButton->GetId() ) { m_openVerbButton->SetButtonTint( tint );	return; }
-	if ( id == m_closeVerbButton->GetId() ) { m_closeVerbButton->SetButtonTint( tint );	return; }
-	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetButtonTint( tint ); return; }
-	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetButtonTint( tint ); return; }
+	if ( id == m_giveVerbButton->GetId() ) { m_giveVerbButton->SetButtonAndLabelTint( tint );	return; }
+	if ( id == m_openVerbButton->GetId() ) { m_openVerbButton->SetButtonAndLabelTint( tint );	return; }
+	if ( id == m_closeVerbButton->GetId() ) { m_closeVerbButton->SetButtonAndLabelTint( tint );	return; }
+	if ( id == m_pickUpVerbButton->GetId() ) { m_pickUpVerbButton->SetButtonAndLabelTint( tint ); return; }
+	if ( id == m_talkToVerbButton->GetId() ) { m_talkToVerbButton->SetButtonAndLabelTint( tint ); return; }
 
 	for ( int inventoryButtonIdx = 0; inventoryButtonIdx < (int)m_inventoryButtons.size(); ++inventoryButtonIdx )
 	{
 		UIButton*& itemButton = m_inventoryButtons[inventoryButtonIdx];
 		if ( id == itemButton->GetId() )
 		{
-			itemButton->SetButtonTint( tint );
+			itemButton->SetButtonAndLabelTint( tint );
 
 			if ( !m_player->IsExecutingAction()
 				&& m_player->GetPlayerVerbState() == eVerbState::GIVE_TO_DESTINATION )

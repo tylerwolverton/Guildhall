@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------------------------
 void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
-							  std::string filename,
+							  const std::string& filename,
 							  bool& out_fileHadNormals )
 {
 	double startTime = GetCurrentTimeSeconds();
@@ -37,12 +37,16 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 	std::vector<Vec3> uvTexCoords;
 	std::vector<ObjFace> faces;
 	ObjVertex lastObjVertex;
+	Mat44 scaleTransform = Mat44::IDENTITY;
+	OrientationMetaData orientationMetaData;
+	int lineNum = 0;
 	while ( std::getline( objFile, line ) )
 	{
+		++lineNum;
+
 		line = TrimOuterWhitespace( line );
 		
-		if ( IsEmptyOrWhitespace( line )
-			 || line[0] == '#' )
+		if ( IsEmptyOrWhitespace( line ) )
 		{
 			continue;
 		}
@@ -53,6 +57,10 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 		if ( dataStrings[0] == "mtllib" )
 		{
 			// TODO: Handle materials
+		}
+		else if ( dataStrings[0] == "#SquirrelMeta" )
+		{
+			ParseMetadata( dataStrings, lineNum, scaleTransform, orientationMetaData );
 		}
 		else if( dataStrings[0] == "v" )
 		{
@@ -84,7 +92,21 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 		for ( int faceVertIdx = 0; faceVertIdx < 3; ++faceVertIdx )
 		{
 			Vertex_PCUTBN& vertex = faceVertices[faceVertIdx];
-			vertex.position = positions[face.vertices[faceVertIdx].position];
+
+			int indexIntoVertArray = face.vertices[faceVertIdx].position;
+			if ( indexIntoVertArray >= 0 )
+			{
+				vertex.position = positions[indexIntoVertArray];
+			}
+			else
+			{
+				size_t indexFromEnd = positions.size() - indexIntoVertArray;
+				if ( indexFromEnd >= 0 )
+				{
+					vertex.position = positions[indexFromEnd];
+				}
+			}
+
 			int uvIdx = face.vertices[faceVertIdx].uv;
 			if( uvIdx != -1 )
 			{
@@ -102,6 +124,14 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 
 		out_fileHadNormals = normals.size() != 0;
 	}
+	
+	TransformVerts( vertices, scaleTransform );
+	TransformVerts( vertices, orientationMetaData.orientationMatrix );
+
+	if ( orientationMetaData.invertWindingOrder )
+	{
+		InvertVertWindingOrder( vertices );
+	}
 
 	//g_devConsole->PrintString( Stringf( "Appending verts took: %f s", GetCurrentTimeSeconds() - startTime ) );
 }
@@ -110,15 +140,24 @@ void ObjLoader::LoadFromFile( std::vector<Vertex_PCUTBN>& vertices,
 //-----------------------------------------------------------------------------------------------
 bool ObjLoader::AppendVertexData( const Strings& dataStrings, std::vector<Vec3>& data )
 {
-	if ( dataStrings.size() != 4 )
+	float x = 0.f;
+	float y = 0.f;
+	float z = 0.f;
+	
+	if ( dataStrings.size() > 1 )
 	{
-		g_devConsole->PrintString( Stringf( "Unsupported number of vertices: %d", dataStrings.size() - 1 ), Rgba8::YELLOW );
-		return false;
+		x = (float)atof( dataStrings[1].c_str() );
+	}
+	if ( dataStrings.size() > 2 )
+	{
+		y = (float)atof( dataStrings[2].c_str() );
+	}
+	if ( dataStrings.size() > 3 )
+	{
+		z = (float)atof( dataStrings[3].c_str() );
 	}
 
-	data.push_back( Vec3( (float)atof( dataStrings[1].c_str() ),
-						  (float)atof( dataStrings[2].c_str() ), 
-						  (float)atof( dataStrings[3].c_str() ) ) );
+	data.push_back( Vec3( x, y, z ) );
 
 	return true;
 }
@@ -183,6 +222,116 @@ bool ObjLoader::AppendFace( const Strings& dataStrings, std::vector<ObjFace>& da
 	}
 
 	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ObjLoader::ParseMetadata( const Strings& dataStrings, int lineNum, Mat44& scaleTransform, OrientationMetaData& orientationMetadata )
+{
+	int numArgs = (int)dataStrings.size() - 1;
+	if ( numArgs == 0 )
+	{
+		g_devConsole->PrintWarning( Stringf( "Metadata on line %i has no arguments, ignoring", lineNum ) );
+		return false;
+	}
+
+	if ( dataStrings[1] == "orientation" )
+	{
+		if ( numArgs != 4 )
+		{
+			g_devConsole->PrintError( Stringf( "Orientation metadata on line %i should be given in the form: orientation x=left y=up z=forward", lineNum ) );
+			return false;
+		}
+
+		Vec3 newIBasis = Vec3( 1.f, 0.f, 0.f );
+		Vec3 newJBasis = Vec3( 0.f, 1.f, 0.f );
+		Vec3 newKBasis = Vec3( 0.f, 0.f, 1.f );
+		
+		float signOfOrientationChanges = 1.f;
+		for ( int axisNum = 2; axisNum < 5; ++axisNum )
+		{
+			Strings args = SplitStringOnDelimiter( dataStrings[axisNum], '=' );
+			if ( args.size() != 2 )
+			{
+				g_devConsole->PrintError( Stringf( "Orientation metadata on line %i should be given in the form: orientation x=left y=up z=forward", lineNum ) );
+				return false;
+			}
+
+			if ( args[0] == "x" )
+			{
+				newIBasis = GetVecForRelativeDir( args[1] );
+				signOfOrientationChanges *= ( newIBasis.x + newIBasis.y + newIBasis.z );
+			}
+			else if ( args[0] == "y" )
+			{
+				newJBasis = GetVecForRelativeDir( args[1] );
+				signOfOrientationChanges *= ( newJBasis.x + newJBasis.y + newJBasis.z );
+			}
+			else if ( args[0] == "z" )
+			{
+				newKBasis = GetVecForRelativeDir( args[1] );
+				signOfOrientationChanges *= ( newKBasis.x + newKBasis.y + newKBasis.z );
+			}
+			else
+			{
+				g_devConsole->PrintError( Stringf( "Orientation metadata on line %i defines unsupported axis, valid axes are x, y, and z", lineNum ) );
+				return false;
+			}
+		}
+		
+		orientationMetadata.orientationMatrix.SetBasisVectors3D( newIBasis, newJBasis, newKBasis );
+		orientationMetadata.invertWindingOrder = signOfOrientationChanges < 0.f;
+		
+	}
+	else if ( dataStrings[1] == "scale" )
+	{
+		if ( numArgs != 2 )
+		{
+			g_devConsole->PrintError( Stringf( "Scale metadata on line %i should be given in the form: scale unitsPerMeter=10", lineNum ) );
+			return false;
+		}
+
+		Strings args = SplitStringOnDelimiter( dataStrings[2], '=' );
+		if ( args.size() != 2
+			 || args[0] != "unitsPerMeter" )
+		{
+			g_devConsole->PrintError( Stringf( "Scale metadata on line %i should be given in the form: scale unitsPerMeter=10", lineNum ) );
+			return false;
+		}
+
+		float scaleFactor = FromString( args[1], 0.f );
+		if ( IsNearlyEqual( scaleFactor, 0.f )
+			 || scaleFactor <= 0.f )
+		{
+			g_devConsole->PrintError( Stringf( "Scale factor on line %i must be a positive, non-zero value", lineNum ) );
+			return false;
+		}
+
+		scaleTransform.ScaleUniform3D( 1.f / scaleFactor );
+	}
+	else
+	{
+		g_devConsole->PrintWarning( Stringf( "Unrecognized metadata type '%s' seen on line %i", dataStrings[1].c_str(), lineNum ) );
+		return false;
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 ObjLoader::GetVecForRelativeDir( const std::string& relativeDir )
+{
+	if ( relativeDir == "left" )	 { return Vec3( -1.f, 0.f, 0.f ); }
+	if ( relativeDir == "right" )	 { return Vec3( 1.f, 0.f, 0.f ); }
+	if ( relativeDir == "up" )		 { return Vec3( 0.f, 1.f, 0.f ); }
+	if ( relativeDir == "down" )	 { return Vec3( 0.f, -1.f, 0.f ); }
+	if ( relativeDir == "forward" )	 { return Vec3( 0.f, 0.f, 1.f ); }
+	if ( relativeDir == "backward" ) { return Vec3( 0.f, 0.f, -1.f ); }
+
+	g_devConsole->PrintError( Stringf( "Unrecognized direction, valid directions are left, right, up, down, forward, and backward" ) );
+
+	return Vec3( 1.f, 0.f, 0.f );
 }
 
 
@@ -302,7 +451,7 @@ void ObjLoader::TransformVerts( std::vector<Vertex_PCUTBN>& vertices, const Mat4
 //-----------------------------------------------------------------------------------------------
 void ObjLoader::CleanMesh( std::vector<Vertex_PCUTBN>& vertices, std::vector<uint>& indices )
 {
-	size_t bytesBefore = vertices.size() * sizeof( Vertex_PCUTBN );
+	//size_t bytesBefore = vertices.size() * sizeof( Vertex_PCUTBN );
 
 	std::vector<Vertex_PCUTBN> uniqueVertices;
 	uniqueVertices.reserve( vertices.size() );
@@ -335,11 +484,10 @@ void ObjLoader::CleanMesh( std::vector<Vertex_PCUTBN>& vertices, std::vector<uin
 
 	vertices = uniqueVertices;
 
-	size_t bytesAfter = vertices.size() * sizeof( Vertex_PCUTBN ) + indices.size() * sizeof( uint );
+	//size_t bytesAfter = vertices.size() * sizeof( Vertex_PCUTBN ) + indices.size() * sizeof( uint );
 
-	float percentSavings = 100.f - ( 100.f * (float)bytesAfter / (float)bytesBefore );
-
-	g_devConsole->PrintString( Stringf( "Cleaned from '%d' bytes to '%d' bytes, saving %.2f percent", bytesBefore, bytesAfter, percentSavings ), Rgba8::GREEN );
+	//float percentSavings = 100.f - ( 100.f * (float)bytesAfter / (float)bytesBefore );
+	//g_devConsole->PrintString( Stringf( "Cleaned from '%d' bytes to '%d' bytes, saving %.2f percent", bytesBefore, bytesAfter, percentSavings ), Rgba8::GREEN );
 }
 
 
@@ -420,7 +568,6 @@ static void SetTangent( const SMikkTSpaceContext* context,
 {
 	std::vector<Vertex_PCUTBN>& vertices = *( std::vector<Vertex_PCUTBN>* )( context->m_pUserData );
 	int indexInVertexArray = iFace * 3 + iVert;
-
 
 	vertices[indexInVertexArray].tangent = Vec3( fvTangent[0], fvTangent[1], fvTangent[2] ).GetNormalized();
 

@@ -158,11 +158,16 @@
     <ClCompile Include="..\ThirdParty\mikkt\mikktspace.c" />
     <ClCompile Include="..\ThirdParty\TinyXML2\tinyxml2.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
+    <ClCompile Include="Core\BufferParser.cpp" />
+    <ClCompile Include="Core\BufferUtils.cpp" />
+    <ClCompile Include="Core\BufferWriter.cpp" />
+    <ClCompile Include="Core\CPUMesh.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
     <ClCompile Include="Core\EngineCommon.cpp" />
     <ClCompile Include="Core\ErrorWarningAssert.cpp" />
     <ClCompile Include="Core\EventSystem.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
+    <ClCompile Include="Core\TWSMUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
     <ClCompile Include="Core\JobSystem.cpp" />
     <ClCompile Include="Core\NamedProperties.cpp" />
@@ -171,6 +176,7 @@
     <ClCompile Include="Core\Rgba8.cpp" />
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\TextBox.cpp" />
+    <ClCompile Include="Core\VertexFont.cpp" />
     <ClCompile Include="Core\Vertex_PCU.cpp" />
     <ClCompile Include="Core\Vertex_PCUTBN.cpp" />
     <ClCompile Include="Core\XmlUtils.cpp" />
@@ -181,6 +187,7 @@
     <ClCompile Include="Math\AABB2.cpp" />
     <ClCompile Include="Math\AABB3.cpp" />
     <ClCompile Include="Math\Capsule2.cpp" />
+    <ClCompile Include="Math\ConvexHull2D.cpp" />
     <ClCompile Include="Math\FloatRange.cpp" />
     <ClCompile Include="Math\IntRange.cpp" />
     <ClCompile Include="Math\IntVec2.cpp" />
@@ -211,7 +218,6 @@
     <ClCompile Include="Physics\PolygonCollider2D.cpp" />
     <ClCompile Include="Physics\Rigidbody2D.cpp" />
     <ClCompile Include="OS\Window.cpp" />
-    <ClCompile Include="Profiler\Profiler.cpp" />
     <ClCompile Include="Renderer\BitmapFont.cpp" />
     <ClCompile Include="Renderer\BufferAttribute.cpp" />
     <ClCompile Include="Renderer\BuiltInShaders.cpp" />
@@ -245,6 +251,7 @@
     <ClCompile Include="UI\UIPanel.cpp" />
     <ClCompile Include="UI\UISystem.cpp" />
     <ClCompile Include="UI\UIText.cpp" />
+    <ClCompile Include="UI\UIUniformGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
@@ -259,12 +266,17 @@
     <ClInclude Include="..\ThirdParty\stb\stb_image.h" />
     <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
+    <ClInclude Include="Core\BufferParser.hpp" />
+    <ClInclude Include="Core\BufferUtils.hpp" />
+    <ClInclude Include="Core\BufferWriter.hpp" />
+    <ClInclude Include="Core\CPUMesh.hpp" />
     <ClInclude Include="Core\Delegate.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EngineCommon.hpp" />
     <ClInclude Include="Core\ErrorWarningAssert.hpp" />
     <ClInclude Include="Core\EventSystem.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
+    <ClInclude Include="Core\TWSMUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
     <ClInclude Include="Core\JobSystem.hpp" />
     <ClInclude Include="Core\NamedProperties.hpp" />
@@ -275,6 +287,7 @@
     <ClInclude Include="Core\SynchronizedBlockingQueue.hpp" />
     <ClInclude Include="Core\SynchronizedNonBlockingQueue.hpp" />
     <ClInclude Include="Core\TextBox.hpp" />
+    <ClInclude Include="Core\VertexFont.hpp" />
     <ClInclude Include="Core\Vertex_PCU.hpp" />
     <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
     <ClInclude Include="Core\XmlUtils.hpp" />
@@ -286,6 +299,7 @@
     <ClInclude Include="Math\AABB2.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Math\Capsule2.hpp" />
+    <ClInclude Include="Math\ConvexHull2D.hpp" />
     <ClInclude Include="Math\FloatRange.hpp" />
     <ClInclude Include="Math\IntRange.hpp" />
     <ClInclude Include="Math\IntVec2.hpp" />
@@ -321,7 +335,6 @@
     <ClInclude Include="Physics\PolygonCollider2D.hpp" />
     <ClInclude Include="Physics\Rigidbody2D.hpp" />
     <ClInclude Include="OS\Window.hpp" />
-    <ClInclude Include="Profiler\Profiler.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\BufferAttribute.hpp" />
     <ClInclude Include="Renderer\BuiltInShaders.hpp" />
@@ -355,6 +368,7 @@
     <ClInclude Include="UI\UIPanel.hpp" />
     <ClInclude Include="UI\UISystem.hpp" />
     <ClInclude Include="UI\UIText.hpp" />
+    <ClInclude Include="UI\UIUniformGrid.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,8 +4,8 @@
 
 //-----------------------------------------------------------------------------------------------
 Plane2D::Plane2D()
-	: normal( 0, 1 )
-	, distance( 0 ) 
+	: normal( 0.f, 1.f )
+	, distance( 0.f ) 
 {
 }
 
@@ -19,7 +19,7 @@ Plane2D::Plane2D( const Vec2& normal, const Vec2& pointOnPlane )
 
 
 //-----------------------------------------------------------------------------------------------
-bool Plane2D::GetPointIsInFront( const Vec2& point )
+bool Plane2D::IsPointInFront( const Vec2& point ) const
 {
 	float pointDistFromPlane = DotProduct2D( point, normal );
 	float distanceFromPlane = pointDistFromPlane - distance;
@@ -29,7 +29,7 @@ bool Plane2D::GetPointIsInFront( const Vec2& point )
 
 
 //-----------------------------------------------------------------------------------------------
-float Plane2D::GetSignedDistanceFromPlane( const Vec2& point )
+float Plane2D::GetSignedDistanceFromPlane( const Vec2& point ) const
 {
 	float pointDistFromPlane = DotProduct2D( point, normal );
 	float distanceFromPlane = pointDistFromPlane - distance;

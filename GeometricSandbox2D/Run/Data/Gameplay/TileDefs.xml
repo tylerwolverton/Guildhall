@@ -1,0 +1,15 @@
+<TileDefinitions>
+
+  <TileDefinition
+		name="StoneWall"
+    materialType="Stone"
+		isSolid="true"
+	/>
+
+  <TileDefinition
+		name="GrassGround"
+    materialType="Grass"
+		isSolid="false"
+	/>
+
+</TileDefinitions>

@@ -29,7 +29,7 @@ ShaderProgram::~ShaderProgram()
 //-----------------------------------------------------------------------------------------------
 bool ShaderProgram::CreateFromFile( const std::string& fileName )
 {
-	size_t fileSize = 0;
+	uint32_t fileSize = 0;
 	void* source = FileReadToNewBuffer( fileName, &fileSize );
 	if ( source == nullptr )
 	{
@@ -221,11 +221,12 @@ bool ShaderStage::Compile( RenderContext* renderContext, const std::string& file
 		if ( errors != nullptr ) 
 		{
 			char* error_string = (char*)errors->GetBufferPointer();
-			DebuggerPrintf( "Failed to compile [%s].  Compiler gave the following output;\n%s",
-							 filename.c_str(),
-							 error_string );
 
-			g_devConsole->PrintString( Stringf( "%s", error_string ), Rgba8::RED );
+			DebuggerPrintf( "Failed to compile [%s].  Compiler gave the following output;\n%s",
+							 GetFileName( filename ).c_str(),
+							 GetFileName( error_string ).c_str() );
+
+			g_devConsole->PrintString( Stringf( "%s", GetFileName( error_string ).c_str() ), Rgba8::RED );
 		}	
 	}
 	else

@@ -61,7 +61,7 @@ void RunTests_MP1A5();
 #define Mat44_ScaleUniform3D				ScaleUniform3D
 #define Mat44_ScaleNonUniform2D				ScaleNonUniform2D
 #define Mat44_ScaleNonUniform3D				ScaleNonUniform3D
-#define Mat44_TransformBy					TransformBy
+#define Mat44_TransformBy					PushTransform
 
 #define Mat44_GetAsFloatArray				GetAsFloatArray
 #define Mat44_GetAsConstFloatArray			GetAsFloatArray

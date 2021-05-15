@@ -12,10 +12,8 @@
 //-----------------------------------------------------------------------------------------------
 struct AABB2;
 class Clock;
-class Entity;
 class RandomNumberGenerator;
 class Camera;
-class World;
 class TextBox;
 class Texture;
 class GPUMesh;
@@ -133,7 +131,6 @@ public:
 
 private:
 	void LoadAssets();
-	void LoadNewMap( const std::string& mapName );
 
 	void InitializeMeshes();
 	void InitializeLights();
@@ -179,10 +176,7 @@ private:
 
 	Camera* m_worldCamera = nullptr;
 	Camera* m_uiCamera = nullptr;
-
-	World* m_world = nullptr;
-	std::string m_curMap;
-
+	
 	// Meshes
 	// Normal
 	GPUMesh* m_quadMesh = nullptr;

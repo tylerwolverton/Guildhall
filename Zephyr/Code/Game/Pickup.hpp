@@ -14,8 +14,6 @@ public:
 	Pickup( const EntityDefinition& entityDef, Map* map );
 	~Pickup();
 
-	virtual void Load() override;
-
 private:
 	void EnterCollisionEvent( Collision2D collision );
 };

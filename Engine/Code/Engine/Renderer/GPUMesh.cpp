@@ -11,6 +11,28 @@ GPUMesh::~GPUMesh()
 
 
 //-----------------------------------------------------------------------------------------------
+GPUMesh::GPUMesh( RenderContext* context, const CPUMesh& cpuMesh )
+{
+	m_context = context;
+	SetFromCPUMesh( cpuMesh );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GPUMesh::SetFromCPUMesh( const CPUMesh& cpuMesh )
+{
+	PTR_SAFE_DELETE( m_vertices );
+	PTR_SAFE_DELETE( m_indices );
+
+	m_vertices = new VertexBuffer( m_context, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCUTBN ), Vertex_PCUTBN::LAYOUT );
+	m_indices = new IndexBuffer( m_context, MEMORY_HINT_DYNAMIC );
+
+	UpdateVertices( cpuMesh.GetVertices() );
+	UpdateIndices( cpuMesh.GetIndices() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void GPUMesh::UpdateVertices( uint vertexCount, const void* vertexData, uint vertexStride, const BufferAttribute* layout )
 {
 	UNUSED( layout );

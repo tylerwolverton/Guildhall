@@ -10,6 +10,7 @@ struct AABB2;
 struct OBB2;
 struct Capsule2;
 struct FloatRange;
+struct Plane2D;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -29,6 +30,7 @@ float			SignFloat( float value );
 bool			IsNearlyEqual( float value, float target, float variance = .0001f );
 bool			IsNearlyEqual( const Vec2& value, const Vec2& target, float variance = .0001f );
 bool			IsNearlyEqual( const Vec3& value, const Vec3& target, float variance = .0001f );
+bool			IsNearlyEqual( const AABB2& value, const AABB2& target, float variance = .0001f );
 
 // Transforms
 const Vec2		TransformPosition2D( const Vec2& initialPos, float scaleUniform, float rotationDeg, const Vec2& translation );
@@ -52,6 +54,8 @@ const Vec2		GetNormalizedDirectionFromAToB( const Vec2& a, const Vec2& b );
 // Intersection Tests
 bool			DoDiscsOverlap  ( const Vec2& center1, float radius1, const Vec2& center2, float radius2 );
 bool			DoSpheresOverlap( const Vec3& center1, float radius1, const Vec3& center2, float radius2 );
+bool			DoesRayIntersectPlane2D( const Vec2& rayStartPos, const Vec2& rayForwardNormal, const Plane2D& plane );
+const Vec2		GetRayIntersectionPointWithPlane2D( const Vec2& rayStartPos, const Vec2& rayForwardNormal, const Plane2D& plane );
 
 // Lerp and Clamp
 float			Interpolate			( float a, float b, float fractionOfB );
@@ -82,6 +86,9 @@ const Vec2		GetNearestPointOnCapsule2D		( const Vec2& point, const Capsule2& cap
 const Vec2		GetNearestPointOnOBB2D			( const Vec2& point, const OBB2& box );
 
 FloatRange		GetRangeOnProjectedAxis     ( int numPoints, const Vec2* points, const Vec2& relativeToPos, const Vec2& axisNormal );
+bool			DoLineSegmentAndDiscOverlap2D( const Vec2& lineStart, const Vec2& lineForwardNormal, float lineLength, const Vec2& discCenter, float discRadius );
+bool			DoLineSegmentAndAABBOverlap2D( const Vec2& lineStart, const Vec2& lineForwardNormal, float lineLength, const AABB2& box );
+bool			DoLineSegmentAndAABBOverlap2D( const Vec2& lineStart, const Vec2& lineEnd, const AABB2& box );
 bool			DoOBBAndOBBOverlap2D	    ( const OBB2& boxA, const OBB2& boxB );
 bool			DoOBBAndAABBOverlap2D	    ( const OBB2& obb, const AABB2& aabb );
 bool			DoOBBAndLineSegmentOverlap2D( const OBB2& obb, const Vec2& lineStart, const Vec2& lineEnd );

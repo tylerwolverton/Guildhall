@@ -28,4 +28,7 @@ public:
 	// Mutators
 	void		Set( float newMin, float newMax );
 	void		SetFromText( const char* asText ); // Return false if malformatted
+
+	const FloatRange operator+( const FloatRange& other ) const;
+	const FloatRange operator-( const FloatRange& other ) const;
 };

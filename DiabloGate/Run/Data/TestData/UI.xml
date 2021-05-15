@@ -1,0 +1,14 @@
+<UIRoot>
+  <UIElement type="panel" name="testPanel" isHidden ="false" isActive="true" tint="0,0,0,200" >
+    <PositionData type="aligned" fractionOfParentDimensions=".75,.125" verticalPaddingInPixels ="10,0" alignmentWithinParentElement="bottom-center"/>
+
+    <UIElement type="button" name="testButton" isHidden ="false" isActive="true" tint="255,255,255,200" hoverTint="200,200,200,200" >
+      <PositionData type="aligned" fractionOfParentDimensions=".1,.7" horizontalPaddingInPixels ="10,0" verticalPaddingInPixels ="0,10" alignmentWithinParentElement="top-left"/>
+    </UIElement>
+    
+    <UIElement type="text" name="testText" isHidden ="false" isActive="true" tint="0,0,0,200" text="Atk Dmg" fontSize="16" >
+      <PositionData type="aligned" fractionOfParentDimensions=".1,.2" horizontalPaddingInPixels ="10,0" verticalPaddingInPixels ="0,0" positionOffsetFraction=".1,.8" alignmentWithinParentElement="bottom-center"/>
+    </UIElement>
+
+  </UIElement>
+</UIRoot>

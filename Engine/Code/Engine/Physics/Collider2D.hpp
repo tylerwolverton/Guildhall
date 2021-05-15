@@ -51,6 +51,10 @@ public: // Interface
 
 	virtual Vec2 GetFarthestPointInDirection( const Vec2& direction ) const = 0;
 
+	void Enable()																{ m_isEnabled = true; }
+	void Disable()																{ m_isEnabled = false; }
+	bool IsEnabled() const														{ return m_isEnabled; }
+
 	// TODO: Move this to a generic AABB2 method
 	virtual unsigned int CheckIfOutsideScreen( const AABB2& screenBounds, bool checkForCompletelyOffScreen ) const = 0;
 	virtual const AABB2 GetWorldBounds() const																				{ return m_worldBounds; };
@@ -80,6 +84,7 @@ public:
 
 protected:
 	Physics2D* m_system			= nullptr;			
+	bool m_isEnabled			= true;
 	int m_id					= -1;
 	bool m_isTrigger			= false;
 

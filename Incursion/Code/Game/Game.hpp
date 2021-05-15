@@ -10,6 +10,7 @@
 //-----------------------------------------------------------------------------------------------
 struct Rgba8;
 class BitmapFont;
+class Clock;
 class Entity;
 class RandomNumberGenerator;
 class Camera;
@@ -40,7 +41,8 @@ public:
 	~Game();
 
 	void Startup();
-	void Update( float deltaSeconds );
+	void BeginFrame() {}
+	void Update();
 	void Render() const;
 	void DebugRender() const;
 	void Shutdown();
@@ -56,8 +58,7 @@ public:
 	bool IsDebugCameraEnabled()													{ return m_isDebugCameraEnabled; }
 
 	// Camera
-	void SetWorldCameraOrthographicView( const AABB2& cameraBounds );
-	void SetWorldCameraOrthographicView( const Vec2& bottomLeft, const Vec2& topRight );
+	void SetWorldCameraPosition( const Vec3& cameraPosition );
 	void AddScreenShakeIntensity(float additionalIntensityFraction);
 
 	void RenderDeathOverlay( float curDeathSeconds ) const;
@@ -82,6 +83,7 @@ private:
 
 private:
 	// Game state
+	Clock* m_gameClock = nullptr;
 	World* m_world = nullptr;
 	GameState m_gameState = GAME_STATE_LOADING;
 	int m_loadingFrameNum = 0;
@@ -104,6 +106,7 @@ private:
 	// Cameras
 	Camera* m_worldCamera = nullptr;
 	Camera* m_uiCamera = nullptr;
+	Vec3 m_focalPoint = Vec3::ZERO;
 
 	// Visual
 	std::vector<Vertex_PCU> m_darkScreenVertexes;

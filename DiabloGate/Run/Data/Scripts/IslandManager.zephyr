@@ -1,0 +1,12 @@
+Function GameStarted()
+{
+	SpawnEntitiesInRange( type: "BigRock", map: "Island", count: 30, minPos: Vec2( 6, 7 ), maxPos: Vec2( 33, 16 ) )
+	SpawnEntitiesInRange( type: "Skeleton", map: "Island", count: 23, minPos: Vec2( 6, 6 ), maxPos: Vec2( 33, 16 ) )
+	ChangeMusic( musicName: "OverworldMusic", volume: .05 )
+}
+
+
+// Function GameRestarted()
+// {
+// 	ChangeMusic( musicName: "OverworldMusic", volume: .1 )
+// }

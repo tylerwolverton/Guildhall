@@ -1,6 +1,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/AABB2.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -82,6 +83,28 @@ SpriteSheet::SpriteSheet( const std::string& name, const Texture& texture, const
 	: SpriteSheet( texture, simpleGridLayout )
 {
 	m_name = name;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteSheet::SpriteSheet( const std::string& name, const Texture& texture, const std::vector<AABB2>& uvBoundsPerSprite )
+	: SpriteSheet( texture, uvBoundsPerSprite )
+{
+	m_name = name;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+SpriteSheet::SpriteSheet( const Texture& texture, const std::vector<AABB2>& uvBoundsPerSprite )
+	: m_texture( texture )
+{
+	for ( int spriteIndex = 0; spriteIndex < (int)uvBoundsPerSprite.size(); ++spriteIndex )
+	{
+		Vec2 uvMins = uvBoundsPerSprite[spriteIndex].mins;
+		Vec2 uvMaxs = uvBoundsPerSprite[spriteIndex].maxs;
+
+		m_spriteDefs.push_back( SpriteDefinition( *this, spriteIndex, uvMins, uvMaxs ) );
+	}
 }
 
 

@@ -56,6 +56,29 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 
 	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
 	
+	if ( m_entityDef.IsTrigger() )
+	{
+		DiscCollider2D* discTrigger = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
+
+		discTrigger->m_onTriggerEnterDelegate.SubscribeMethod( this, &Entity::EnterTriggerEvent );
+		discTrigger->m_onTriggerStayDelegate.SubscribeMethod( this, &Entity::StayTriggerEvent );
+		discTrigger->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Entity::ExitTriggerEvent );
+
+		m_rigidbody2D->TakeCollider( discTrigger );
+	}
+	else
+	{
+		DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, GetPhysicsRadius() );
+
+		discCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Entity::EnterCollisionEvent );
+		discCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Entity::StayCollisionEvent );
+		discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Entity::ExitCollisionEvent );
+
+		m_rigidbody2D->TakeCollider( discCollider );
+	}
+
+	Unload();
+
 	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
 }
 
@@ -520,37 +543,24 @@ void Entity::UnRegisterKeyEvent( const std::string& keyCodeStr, const std::strin
 //-----------------------------------------------------------------------------------------------
 void Entity::Load()
 {
+	if ( m_isDead )
+	{
+		return;
+	}
+
 	m_rigidbody2D->Enable();
-
-	if ( m_entityDef.IsTrigger() )
-	{
-		DiscCollider2D* discTrigger = g_physicsSystem2D->CreateDiscTrigger( Vec2::ZERO, GetPhysicsRadius() );
-		
-		discTrigger->m_onTriggerEnterDelegate.SubscribeMethod( this, &Entity::EnterTriggerEvent );
-		discTrigger->m_onTriggerStayDelegate.SubscribeMethod( this, &Entity::StayTriggerEvent );
-		discTrigger->m_onTriggerLeaveDelegate.SubscribeMethod( this, &Entity::ExitTriggerEvent );
-
-		m_rigidbody2D->TakeCollider( discTrigger );
-	}
-	else
-	{
-		DiscCollider2D* discCollider = g_physicsSystem2D->CreateDiscCollider( Vec2::ZERO, GetPhysicsRadius() );
-
-		discCollider->m_onOverlapEnterDelegate.SubscribeMethod( this, &Entity::EnterCollisionEvent );
-		discCollider->m_onOverlapStayDelegate.SubscribeMethod( this, &Entity::StayCollisionEvent );
-		discCollider->m_onOverlapLeaveDelegate.SubscribeMethod( this, &Entity::ExitCollisionEvent );
-
-		m_rigidbody2D->TakeCollider( discCollider );
-	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Entity::Unload()
 {
-	m_rigidbody2D->Disable();
+	if ( m_rigidbody2D == nullptr )
+	{
+		return;
+	}
 
-	g_physicsSystem2D->DestroyCollider( m_rigidbody2D->GetCollider() );
+	m_rigidbody2D->Disable();
 }
 
 

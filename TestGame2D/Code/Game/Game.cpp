@@ -2,12 +2,15 @@
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/VertexFont.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Texture.hpp"
@@ -36,14 +39,9 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
-	delete m_spriteAtlas4x4SpriteSheet;
-	m_spriteAtlas4x4SpriteSheet = nullptr;
-
-	delete m_spriteSheet8x2SpriteSheet;
-	m_spriteSheet8x2SpriteSheet = nullptr;
-
-	delete m_spriteSheet8x2AnimDefLoop;
-	m_spriteSheet8x2AnimDefLoop = nullptr;
+	PTR_SAFE_DELETE( m_spriteAtlas4x4SpriteSheet );
+	PTR_SAFE_DELETE( m_spriteSheet8x2SpriteSheet );
+	PTR_SAFE_DELETE( m_spriteSheet8x2AnimDefLoop );
 }
 
 
@@ -68,6 +66,16 @@ void Game::Startup()
 	m_world = new World();
 	m_world->BuildNewMap( 20, 30 );
 
+	// Create fonts
+	m_fontTier3 = g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/Calibri", true );
+	m_fontTier4 = g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/FiraCode", true );
+	m_fontTier5 = g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/FiraCode", true );
+	m_fontTier4Material = new Material( g_renderer, "Data/Materials/FontTier4.material" );
+	m_fontTier5Material = new Material( g_renderer, "Data/Materials/FontTier4.material" );
+	m_fontTier5Shader = g_renderer->GetOrCreateShader( "Data/Shaders/CoolFont.shader" );
+	m_fontTier5SecretShader = g_renderer->GetOrCreateShader( "Data/Shaders/CoolFont2.shader" );
+	//m_fontTier3 = g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/Verdana", true );
+
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
 
@@ -75,17 +83,11 @@ void Game::Startup()
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
-	delete m_world;
-	m_world = nullptr;
-
-	delete m_rng;
-	m_rng = nullptr;
-	
-	delete m_uiCamera;
-	m_uiCamera = nullptr;
-
-	delete m_worldCamera;
-	m_worldCamera = nullptr;
+	PTR_SAFE_DELETE( m_world );
+	PTR_SAFE_DELETE( m_rng );
+	PTR_SAFE_DELETE( m_uiCamera );
+	PTR_SAFE_DELETE( m_worldCamera );
+	PTR_SAFE_DELETE( m_fontTier4Material );
 }
 
 
@@ -133,6 +135,7 @@ void Game::Update( float deltaSeconds )
 	
 	m_world->Update( deltaSeconds );
 	UpdateCameras( deltaSeconds );
+	UpdateMousePositions();
 
 	m_secondsSinceStart += deltaSeconds;
 }
@@ -149,17 +152,21 @@ void Game::Render() const
 		m_world->DebugRender();
 	}*/
 	
-	RenderMousePointer();
-	RenderTestSpriteAnimations();
+	//RenderMousePointer();
+	//RenderTestSpriteAnimations();
 
 	g_renderer->EndCamera( *m_worldCamera );
 
 	// Render UI with a new camera
 	g_renderer->BeginCamera( *m_uiCamera );
 
-	RenderTestText();
-	RenderTestTextInBox();
+	//RenderTestText();
+	//RenderTestTextInBox();
 		
+	RenderTestTextTier3();
+	RenderTestTextTier4();
+	RenderTestTextTier5();
+
 	g_renderer->EndCamera( *m_uiCamera );
 }
 
@@ -192,6 +199,29 @@ void Game::LoadAssets()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateMousePositions()
+{
+	UpdateMouseWorldPosition();
+	UpdateMouseUIPosition();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateMouseWorldPosition()
+{
+	m_mouseWorldPosition = g_inputSystem->GetNormalizedMouseClientPos() * m_worldCamera->GetOutputSize();
+	m_mouseWorldPosition += m_worldCamera->GetOrthoMin();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateMouseUIPosition()
+{
+	m_mouseUIPosition = g_inputSystem->GetNormalizedMouseClientPos() * m_uiCamera->GetOutputSize();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::RenderTestSpriteAnimations() const
 {
 	RenderSquareTestSprite();
@@ -209,6 +239,57 @@ void Game::RenderTestText() const
 	g_renderer->BindTexture( 0, g_renderer->GetSystemFont()->GetTexture() );
 	g_renderer->DrawVertexArray( textVerts );
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderTestTextTier3() const
+{
+	std::vector<Vertex_PCU> textVerts;
+	m_fontTier3->AppendVertsForText2D( textVerts, Vec2( 50.f, 1000.f ), 75.f, "ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890-=_+`~!@#$%" );
+	m_fontTier3->AppendVertsForText2D( textVerts, Vec2( 50.f, 900.f ), 75.f, "abcdefghijklmnopqrstuvwxyz,.';/[]}{:\"<>?\\|^&*()" );
+	m_fontTier3->AppendVertsForText2D( textVerts, Vec2( 100.f, 750.f ), 150.f, "Look at my cool tier 3 font!" );
+	g_renderer->BindTexture( 0, m_fontTier3->GetTexture() );
+	g_renderer->DrawVertexArray( textVerts );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderTestTextTier4() const
+{
+	std::vector<Vertex_PCU> textVerts;
+	m_fontTier4->AppendVertsForText2D( textVerts, Vec2( 50.f, 300.f ), 50.f, "ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890-=_+`~!@#$%", Rgba8::GREEN );
+	m_fontTier4->AppendVertsForText2D( textVerts, Vec2( 50.f, 200.f ), 50.f, "abcdefghijklmnopqrstuvwxyz,.';/[]}{:\"<>?\\|^&*()", Rgba8::GREEN );
+	m_fontTier4->AppendVertsForText2D( textVerts, Vec2( 100.f, 50.f ), 100.f, "Look at my even cooler tier 4 font!", Rgba8::GREEN );
+	g_renderer->BindMaterial( m_fontTier4Material );
+	g_renderer->BindDiffuseTexture( m_fontTier4->GetTexture() );
+	g_renderer->DrawVertexArray( textVerts );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderTestTextTier5() const
+{
+	std::vector<VertexFont> textVerts;
+
+	std::string text( "Behold the fabled tier 5 font..." );
+	Vec4 specialEffects( (float)text.length(), 0.f, 0.f, 0.f );
+	m_fontTier5->AppendVertsForText2D( textVerts, Vec2( 100.f, 550.f ), 110.f, text, Rgba8::WHITE, specialEffects );
+	g_renderer->BindMaterial( m_fontTier5Material );
+	g_renderer->BindDiffuseTexture( m_fontTier5->GetTexture() );
+	
+	g_renderer->BindShader( m_fontTier5Shader );
+	g_renderer->DrawVertexArray( textVerts );
+
+	
+	textVerts.clear();
+	specialEffects = Vec4( m_mouseUIPosition.x, WINDOW_HEIGHT_PIXELS - m_mouseUIPosition.y, 0.f, 0.f );
+	m_fontTier5->AppendVertsForText2D( textVerts, Vec2( 20.f, 500.f ), 75.f, "You found me!", Rgba8::WHITE, specialEffects );
+	g_renderer->BindMaterial( m_fontTier5Material );
+	g_renderer->BindDiffuseTexture( m_fontTier5->GetTexture() );
+
+	g_renderer->BindShader( m_fontTier5SecretShader );
+	g_renderer->DrawVertexArray( textVerts );
 }
 
 

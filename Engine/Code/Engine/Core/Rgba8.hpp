@@ -57,4 +57,5 @@ public:
 
 	bool		operator==( const Rgba8& compare ) const;		// Rgba8 == Rgba8
 	bool		operator!=( const Rgba8& compare ) const;		// Rgba8 != Rgba8
+	Rgba8		operator+( const Rgba8& other ) const;		// Rgba8 + Rgba8
 };

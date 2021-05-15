@@ -2,8 +2,8 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Rgba8.hpp"
-#include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/MeshUtils.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Map.hpp"
@@ -53,7 +53,7 @@ void Entity::Die()
 //-----------------------------------------------------------------------------------------------
 void Entity::DebugRender() const
 {
-	g_renderer->BindTexture( 0, nullptr );
+	g_renderer->BindDiffuseTexture( nullptr );
 	DrawRing2D( g_renderer, m_position, m_physicsRadius, Rgba8::CYAN, DEBUG_LINE_THICKNESS );
 	DrawRing2D( g_renderer, m_position, m_cosmeticRadius, Rgba8::MAGENTA, DEBUG_LINE_THICKNESS );
 }
@@ -165,7 +165,7 @@ void Entity::RenderHealthBar() const
 {
 	float healthPercentage = (float)m_health / (float)m_maxHealth;
 
-	g_renderer->BindTexture( 0, nullptr );
+	g_renderer->BindDiffuseTexture( nullptr );
 
 	// Black background
 	std::vector<Vertex_PCU> backgroundVertexes;

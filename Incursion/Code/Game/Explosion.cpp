@@ -65,7 +65,7 @@ void Explosion::Render() const
 	AppendVertsForAABB2D( vertexes, spriteBounds, Rgba8::WHITE, uvAtMins, uvAtMaxs );
 	Vertex_PCU::TransformVertexArray( vertexes, m_radius, m_orientationDegrees, m_position );
 
-	g_renderer->BindTexture( 0, m_texture );
+	g_renderer->BindDiffuseTexture( m_texture );
 	g_renderer->DrawVertexArray( vertexes );
 }
 
