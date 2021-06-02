@@ -1,7 +1,7 @@
 <GameConfig
 	startMap="MultiplayerMap"
   playerEntityType="Marine"
-  windowHeightRatio=".75f"
+  windowHeightRatio=".5f"
 	windowAspect="1.777"
   windowTitle="Doomenstein"
 	windowMode="windowed"

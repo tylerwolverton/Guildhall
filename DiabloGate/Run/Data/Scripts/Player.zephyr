@@ -135,10 +135,8 @@ Function CheckForInteraction()
         {
             if( interactionEntity.class == "Item" )
             {
-                PickupItem( item: interactionEntity )
-                interactionEntity = null
-                PlaySound( soundName: "PickupItem" )
-                ChangeState( Idle )
+                CollectItem()
+                return
             }
             if( interactionEntity.class == "Actor" )
             {
@@ -256,6 +254,7 @@ Function CollectItem()
 {
     PickupItem( item: interactionEntity )
     interactionEntity = null
+    PlaySound( soundName: "PickupItem" )
     ChangeState( Idle )
 }
 

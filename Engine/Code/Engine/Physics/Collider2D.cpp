@@ -103,9 +103,7 @@ static std::vector<Vec2> GetSimplexForGJKCollision( const PolygonCollider2D* pol
 			direction = orthogonal20;
 			continue;
 		}
-
-	//	return std::vector<Vec2>{ supportPoint0, supportPoint1, supportPoint2 };
-
+		
 		// Make sure simplex is in ccw order
 		if ( orthogonal21.GetNormalized() != supportEdge21.GetRotated90Degrees().GetNormalized() )
 		{
