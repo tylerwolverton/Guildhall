@@ -365,8 +365,8 @@ void Physics2D::ApplyCollisionImpulses( Rigidbody2D* rigidbody1, Rigidbody2D* ri
 	Manifold2 tangentManifold = collisionManifold;
 	tangentManifold.normal = collisionManifold.normal.GetRotatedMinus90Degrees();
 
-	/*DebugAddWorldArrow( collisionManifold.GetCenterOfContactEdge(), collisionManifold.GetCenterOfContactEdge() + collisionManifold.normal, Rgba8::BLUE );*/
-	/*DebugAddWorldArrow( tangentManifold.GetCenterOfContactEdge(), tangentManifold.GetCenterOfContactEdge() + tangentManifold.normal, Rgba8::GREEN );*/
+	//DebugAddWorldArrow( collisionManifold.GetCenterOfContactEdge(), collisionManifold.GetCenterOfContactEdge() + collisionManifold.normal, Rgba8::BLUE );
+	//DebugAddWorldArrow( tangentManifold.GetCenterOfContactEdge(), tangentManifold.GetCenterOfContactEdge() + tangentManifold.normal, Rgba8::GREEN );
 
 	// Handle dynamic vs dynamic
 	if ( rigidbody1->GetSimulationMode() == SIMULATION_MODE_DYNAMIC
