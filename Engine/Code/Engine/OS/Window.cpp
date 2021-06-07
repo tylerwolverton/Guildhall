@@ -1,6 +1,8 @@
 #include "Engine/OS/Window.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
 
@@ -21,6 +23,8 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 {
 	Window* window = (Window*) ::GetWindowLongPtr( windowHandle, GWLP_USERDATA );
 	
+	// TODO: Return if window is null and ensure input and event can never be null for a window
+	// maybe use the config struct approach
 	InputSystem* inputSystem = nullptr;
 	EventSystem* eventSystem = nullptr;
 	if ( window != nullptr )
@@ -102,6 +106,7 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 
 		case WM_PAINT:
 		{
+			// Here as formality, doesn't paint anything
 			PAINTSTRUCT ps;
 			BeginPaint( windowHandle, &ps );
 			EndPaint( windowHandle, &ps );
@@ -168,6 +173,45 @@ static void UnregisterWindowClass()
 Window::Window()
 {
 	RegisterWindowClass();
+	PopulateDesktopWindowData();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Window::PopulateDesktopWindowData()
+{
+	// Get desktop rect, dimensions, aspect
+	RECT desktopRect;
+	HWND desktopWindowHandle = GetDesktopWindow();
+	GetClientRect( desktopWindowHandle, &desktopRect );
+
+	m_desktopWidth = (float)( desktopRect.right - desktopRect.left );
+	m_desktopHeight = (float)( desktopRect.bottom - desktopRect.top );
+	m_desktopAspect = m_desktopWidth / m_desktopHeight;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec2 Window::GetClientWindowDimensions( float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode )
+{
+	float clientWidth = m_desktopWidth * maxClientFractionOfDesktop;
+	float clientHeight = m_desktopHeight * maxClientFractionOfDesktop;
+
+	if ( windowMode == eWindowMode::WINDOWED )
+	{
+		if ( clientAspect > m_desktopAspect )
+		{
+			// Client window has a wider aspect than desktop; shrink client height to match its width
+			clientHeight = clientWidth / clientAspect;
+		}
+		else
+		{
+			// Client window has a taller aspect than desktop; shrink client width to match its height
+			clientWidth = clientHeight * clientAspect;
+		}
+	}
+
+	return Vec2( clientWidth, clientHeight );
 }
 
 
@@ -193,12 +237,10 @@ void Window::SetInputSystem( InputSystem* inputSystem )
 }
 
 
-//-----------------------------------------------------------------------------------------------
-bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode )
-{
-	DWORD windowStyleFlags = 0;
-	DWORD windowStyleExFlags = 0;
 
+//-----------------------------------------------------------------------------------------------
+void GetWindowStyleFlagsForWindowMode( eWindowMode windowMode, DWORD& windowStyleFlags, DWORD& windowStyleExFlags )
+{
 	switch ( windowMode )
 	{
 		case eWindowMode::WINDOWED:
@@ -209,50 +251,67 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 		case eWindowMode::BORDERLESS:
 			windowStyleFlags = WS_POPUP;
 			windowStyleExFlags = WS_EX_CLIENTEDGE | WS_EX_APPWINDOW;
-			maxClientFractionOfDesktop = 1.f;
 			break;
 	}
-	
-	// Get desktop rect, dimensions, aspect
-	RECT desktopRect;
-	HWND desktopWindowHandle = GetDesktopWindow();
-	GetClientRect( desktopWindowHandle, &desktopRect );
-	float desktopWidth = (float)( desktopRect.right - desktopRect.left );
-	float desktopHeight = (float)( desktopRect.bottom - desktopRect.top );
-	float desktopAspect = desktopWidth / desktopHeight;
-	
-	float clientWidth = desktopWidth * maxClientFractionOfDesktop;
-	float clientHeight = desktopHeight * maxClientFractionOfDesktop;
+}
 
-	if ( windowMode == eWindowMode::WINDOWED )
+
+//-----------------------------------------------------------------------------------------------
+void Window::GetAdjustedWindowEdges( float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode, 
+									 long& windowLeft, long& windowRight, long& windowTop, long& windowBottom )
+{
+	if ( windowMode == eWindowMode::BORDERLESS )
 	{
-		if ( clientAspect > desktopAspect )
-		{
-			// Client window has a wider aspect than desktop; shrink client height to match its width
-			clientHeight = clientWidth / clientAspect;
-		}
-		else
-		{
-			// Client window has a taller aspect than desktop; shrink client width to match its height
-			clientWidth = clientHeight * clientAspect;
-		}
+		maxClientFractionOfDesktop = 1.f;
 	}
 
+	Vec2 clientDimensions = GetClientWindowDimensions( clientAspect, maxClientFractionOfDesktop, windowMode );
+
 	// Calculate client rect bounds by centering the client area
-	float clientMarginX = 0.5f * ( desktopWidth - clientWidth );
-	float clientMarginY = 0.5f * ( desktopHeight - clientHeight );
+	float clientMarginX = 0.5f * ( m_desktopWidth - clientDimensions.x );
+	float clientMarginY = 0.5f * ( m_desktopHeight - clientDimensions.y );
 	RECT clientRect;
 	clientRect.left = (int)clientMarginX;
-	clientRect.right = clientRect.left + (int)clientWidth;
+	clientRect.right = clientRect.left + (int)clientDimensions.x;
 	clientRect.top = (int)clientMarginY;
-	clientRect.bottom = clientRect.top + (int)clientHeight;
+	clientRect.bottom = clientRect.top + (int)clientDimensions.y;
 
-	m_clientWidth = (unsigned int)clientWidth;
-	m_clientHeight = (unsigned int)clientHeight;
+	DWORD windowStyleFlags = 0;
+	DWORD windowStyleExFlags = 0;
+	GetWindowStyleFlagsForWindowMode( windowMode, windowStyleFlags, windowStyleExFlags );
 
 	// Calculate the outer dimensions of the physical window, including frame et. al.
 	RECT windowRect = clientRect;
 	AdjustWindowRectEx( &windowRect, windowStyleFlags, FALSE, windowStyleExFlags );
+
+	windowLeft = windowRect.left;
+	windowRight = windowRect.right;
+	windowTop = windowRect.top;
+	windowBottom = windowRect.bottom;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Window::UpdateClientWindowDimensions( float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode )
+{
+	Vec2 clientDimensions = GetClientWindowDimensions( clientAspect, maxClientFractionOfDesktop, windowMode );
+	m_clientWidth = (unsigned int)clientDimensions.x;
+	m_clientHeight = (unsigned int)clientDimensions.y;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool Window::Open( const std::string& title, float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode )
+{
+	DWORD windowStyleFlags = 0;
+	DWORD windowStyleExFlags = 0;
+	GetWindowStyleFlagsForWindowMode( windowMode, windowStyleFlags, windowStyleExFlags );
+
+	long windowLeft = 0;
+	long windowRight = 0;
+	long windowTop = 0;
+	long windowBottom = 0;
+	GetAdjustedWindowEdges( clientAspect, maxClientFractionOfDesktop, windowMode, windowLeft, windowRight, windowTop, windowBottom );
 
 	WCHAR windowTitle[1024];
 	MultiByteToWideChar( GetACP(), 0, title.c_str(), -1, windowTitle, sizeof( windowTitle ) / sizeof( windowTitle[0] ) );
@@ -261,10 +320,10 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 		WND_CLASS_NAME,
 		windowTitle,
 		windowStyleFlags,
-		windowRect.left,
-		windowRect.top,
-		windowRect.right - windowRect.left,
-		windowRect.bottom - windowRect.top,
+		windowLeft,
+		windowTop,
+		windowRight - windowLeft,
+		windowBottom - windowTop,
 		NULL,
 		NULL,
 		(HINSTANCE) ::GetModuleHandle(NULL),
@@ -286,6 +345,8 @@ bool Window::Open( const std::string& title, float clientAspect, float maxClient
 	SetCursor( cursor );
 
 	m_hwnd = (void*)hwnd;
+	m_curWindowMode = windowMode;
+	UpdateClientWindowDimensions( clientAspect, maxClientFractionOfDesktop, windowMode );
 
 	return true;
 }
@@ -327,3 +388,40 @@ void Window::EndFrame()
 {
 
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Window::ToggleWindowMode()
+{	
+	switch ( m_curWindowMode )
+	{
+		case eWindowMode::WINDOWED:	m_curWindowMode = eWindowMode::BORDERLESS; break;
+		case eWindowMode::BORDERLESS: m_curWindowMode = eWindowMode::WINDOWED; break;
+	}
+
+	DWORD windowStyleFlags = 0;
+	DWORD windowStyleExFlags = 0;
+	GetWindowStyleFlagsForWindowMode( m_curWindowMode, windowStyleFlags, windowStyleExFlags );
+
+	::SetWindowLongPtr( (HWND)m_hwnd, GWL_STYLE, (LONG_PTR)windowStyleFlags );
+	::SetWindowLongPtr( (HWND)m_hwnd, GWL_EXSTYLE, (LONG_PTR)windowStyleExFlags );
+
+	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
+	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
+	
+	long windowLeft = 0;
+	long windowRight = 0;
+	long windowTop = 0;
+	long windowBottom = 0;
+	GetAdjustedWindowEdges( windowAspect, windowHeightRatio, m_curWindowMode, windowLeft, windowRight, windowTop, windowBottom );
+
+	::SetWindowPos( (HWND)m_hwnd, 0,
+				  windowLeft,
+				  windowTop,
+				  windowRight - windowLeft,
+				  windowBottom - windowTop,
+				  SWP_FRAMECHANGED | SWP_SHOWWINDOW );
+	
+	UpdateClientWindowDimensions( windowAspect, windowHeightRatio, m_curWindowMode );
+}
+

@@ -4,9 +4,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class Camera;
-class RenderContext;
-class Game;
 enum class eWindowMode;
 
 

@@ -185,6 +185,11 @@ void App::UpdateFromKeyboard()
 		g_devConsole->ToggleOpenFull();
 		g_inputSystem->ConsumeAnyKeyJustPressed();
 	}
+	
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F11 ) )
+	{
+		g_window->ToggleWindowMode();
+	}
 }
 
 

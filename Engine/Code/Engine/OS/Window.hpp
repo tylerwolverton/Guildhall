@@ -36,9 +36,18 @@ public:
 	unsigned int	GetClientHeight()				{ return m_clientHeight; }
 	Vec2			GetDimensions()					{ return Vec2( (float)GetClientWidth(), (float)GetClientHeight() ); }
 
+	void			ToggleWindowMode();
 
 	EventSystem*	GetEventSystem() const			{ return m_eventSystem; }
 	InputSystem*	GetInputSystem() const			{ return m_inputSystem; }
+
+private:
+	void PopulateDesktopWindowData();
+	Vec2 GetClientWindowDimensions( float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode );
+	void GetAdjustedWindowEdges( float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode,
+								   long& windowLeft, long& windowRight, long& windowTop, long& windowBottom );
+
+	void UpdateClientWindowDimensions( float clientAspect, float maxClientFractionOfDesktop, eWindowMode windowMode );
 
 public:
 	void* m_hwnd = nullptr;
@@ -48,4 +57,10 @@ public:
 private:
 	EventSystem* m_eventSystem = nullptr;
 	InputSystem* m_inputSystem = nullptr;
+
+	eWindowMode m_curWindowMode = eWindowMode::WINDOWED;
+
+	float m_desktopWidth = 500.f;
+	float m_desktopHeight = 500.f;
+	float m_desktopAspect = 1.f;
 };
