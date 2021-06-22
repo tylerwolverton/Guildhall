@@ -167,6 +167,7 @@
     <ClCompile Include="Core\ErrorWarningAssert.cpp" />
     <ClCompile Include="Core\EventSystem.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
+    <ClCompile Include="Core\HashedString.cpp" />
     <ClCompile Include="Core\TWSMUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
     <ClCompile Include="Core\JobSystem.cpp" />
@@ -276,6 +277,7 @@
     <ClInclude Include="Core\ErrorWarningAssert.hpp" />
     <ClInclude Include="Core\EventSystem.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
+    <ClInclude Include="Core\HashedString.hpp" />
     <ClInclude Include="Core\TWSMUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
     <ClInclude Include="Core\JobSystem.hpp" />
