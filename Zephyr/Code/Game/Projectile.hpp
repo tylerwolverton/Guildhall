@@ -11,7 +11,7 @@ class Projectile : public Entity
 {
 public:
 	Projectile( const EntityDefinition& entityDef, Map* map );
-	~Projectile();
+	virtual ~Projectile();
 	
 	virtual void Update( float deltaSeconds ) override;
 	

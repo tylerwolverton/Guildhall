@@ -1,13 +1,11 @@
-#include "Game/Scripting/ZephyrParser.hpp"
+#include "Engine/ZephyrCore/ZephyrParser.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
-#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
-#include "Game/Scripting/ZephyrToken.hpp"
-#include "Game/Scripting/ZephyrScriptDefinition.hpp"
-#include "Game/Scripting/GameAPI.hpp"
-#include "Game/GameCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrToken.hpp"
+#include "Engine/ZephyrCore/ZephyrScriptDefinition.hpp"
+#include "Engine/ZephyrCore/ZephyrEngineAPI.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -465,7 +463,7 @@ bool ZephyrParser::ParseFunctionDefinition()
 		return false;
 	}
 
-	if ( g_gameAPI->IsMethodRegistered( functionNameToken.GetData() ) )
+	if ( g_zephyrAPI->IsMethodRegistered( functionNameToken.GetData() ) )
 	{
 		ReportError( Stringf( "Function '%s' is already defined in GameAPI and can't be redefined here", functionNameToken.GetData().c_str() ) );
 		return false;

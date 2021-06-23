@@ -1,22 +1,25 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrEngineAPI.hpp"
 
 #include <unordered_set>
 #include <string>
 
 
 //-----------------------------------------------------------------------------------------------
+class ZephyrEntity;
 class Entity;
 
 
 //-----------------------------------------------------------------------------------------------
-class GameAPI
+class ZephyrGameAPI : public ZephyrEngineAPI
 {
 public:
-	GameAPI();
-	~GameAPI();
-
-	bool IsMethodRegistered( const std::string& methodName );
+	ZephyrGameAPI();
+	virtual ~ZephyrGameAPI();
+	
+	virtual ZephyrEntity* GetEntityById( const EntityId& id ) const override;
+	virtual ZephyrEntity* GetEntityByName( const std::string& name ) const override;
 
 private:
 	// Zephyr Script Events
@@ -74,7 +77,4 @@ private:
 
 private:
 	Entity* GetTargetEntityFromArgs( EventArgs* args );
-
-private:
-	std::unordered_set<std::string> m_registeredMethods;
 };

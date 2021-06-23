@@ -1,5 +1,4 @@
 #include "Game/Entity.hpp"
-#include "Game/EntityDefinition.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/DiscCollider2D.hpp"
@@ -16,24 +15,22 @@
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Time/Time.hpp"
+#include "Engine/ZephyrCore/ZephyrScriptDefinition.hpp"
+#include "Engine/ZephyrCore/ZephyrScript.hpp"
 
+#include "Game/EntityDefinition.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/Map.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
-#include "Game/Scripting/ZephyrScript.hpp"
-#include "Game/Scripting/ZephyrScriptDefinition.hpp"
-
-
-//-----------------------------------------------------------------------------------------------
-EntityId Entity::s_nextEntityId = 1000;
 
 
 //-----------------------------------------------------------------------------------------------
 Entity::Entity( const EntityDefinition& entityDef, Map* map )
-	: m_entityDef( entityDef )
+	: ZephyrEntity( entityDef )
+	, m_entityDef( entityDef )
 	, m_map( map )
 {
-	m_id = s_nextEntityId++;
 	m_curHealth = m_entityDef.GetMaxHealth();
 
 	m_rigidbody2D = g_physicsSystem2D->CreateRigidbody();
@@ -54,7 +51,7 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 		m_rigidbody2D->SetSimulationMode( m_entityDef.GetSimMode() );
 	}
 
-	m_rigidbody2D->m_userProperties.SetValue( "entity", (void*)this );
+	m_rigidbody2D->m_userProperties.SetValue( "entityId", m_id );
 	
 	if ( m_entityDef.IsTrigger() )
 	{
@@ -84,22 +81,21 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 
 
 //-----------------------------------------------------------------------------------------------
-void Entity::CreateZephyrScript( const EntityDefinition& entityDef )
-{
-	ZephyrScriptDefinition* scriptDef = entityDef.GetZephyrScriptDefinition();
-	if ( scriptDef != nullptr )
-	{
-		m_scriptObj = new ZephyrScript( *scriptDef, this );
-		m_scriptObj->InterpretGlobalBytecodeChunk();
-		m_scriptObj->InitializeGlobalVariables( entityDef.GetZephyrScriptInitialValues() );
-		m_scriptObj->SetEntityVariableInitializers( entityDef.GetZephyrEntityVarInits() );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 Entity::~Entity()
 {
+	if ( m_entityDef.IsTrigger() )
+	{
+		m_rigidbody2D->GetCollider()->m_onTriggerEnterDelegate.UnsubscribeAllMethodsFromObject( this );
+		m_rigidbody2D->GetCollider()->m_onTriggerStayDelegate.UnsubscribeAllMethodsFromObject( this );
+		m_rigidbody2D->GetCollider()->m_onTriggerLeaveDelegate.UnsubscribeAllMethodsFromObject( this );
+	}
+	else
+	{
+		m_rigidbody2D->GetCollider()->m_onOverlapEnterDelegate.UnsubscribeAllMethodsFromObject( this );
+		m_rigidbody2D->GetCollider()->m_onOverlapStayDelegate.UnsubscribeAllMethodsFromObject( this );
+		m_rigidbody2D->GetCollider()->m_onOverlapLeaveDelegate.UnsubscribeAllMethodsFromObject( this );
+	}
+
 	if ( m_rigidbody2D != nullptr )
 	{
 		m_rigidbody2D->Destroy();
@@ -107,8 +103,6 @@ Entity::~Entity()
 	}
 
 	g_eventSystem->DeRegisterObject( this );
-
-	PTR_SAFE_DELETE( m_scriptObj );
 
 	PTR_VECTOR_SAFE_DELETE( m_inventory );
 }
@@ -120,10 +114,7 @@ void Entity::Update( float deltaSeconds )
 	m_cumulativeTime += deltaSeconds;
 	m_lastDeltaSeconds = deltaSeconds;
 
-	if ( m_scriptObj != nullptr )
-	{
-		m_scriptObj->Update();
-	}
+	ZephyrEntity::Update( deltaSeconds );
 }
 
 
@@ -164,11 +155,7 @@ void Entity::Die()
 
 	m_isDead = true;
 
-	if ( IsScriptValid() )
-	{
-		EventArgs args;
-		m_scriptObj->FireEvent( "OnDie", &args );
-	}
+	ZephyrEntity::Die();
 }
 
 
@@ -337,33 +324,6 @@ bool Entity::IsInInventory( Entity* item )
 	}
 
 	return false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::FireSpawnEvent()
-{
-	if ( IsScriptValid() )
-	{
-		EventArgs args;
-		args.SetValue( "maxHealth", m_entityDef.GetMaxHealth() );
-		args.SetValue( "entityId", GetId() );
-		args.SetValue( "entityName", GetName() );
-
-		m_scriptObj->FireEvent( "OnSpawn", &args );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool Entity::FireScriptEvent( const std::string& eventName, EventArgs* args )
-{
-	if ( !IsScriptValid() )
-	{
-		return false;
-	}
-
-	return m_scriptObj->FireEvent( eventName, args );
 }
 
 
@@ -541,6 +501,61 @@ void Entity::UnRegisterKeyEvent( const std::string& keyCodeStr, const std::strin
 
 
 //-----------------------------------------------------------------------------------------------
+ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
+{
+	if ( !IsScriptValid() )
+	{
+		return ZephyrValue( ERROR_ZEPHYR_VAL );
+	}
+
+	// First check c++ built in vars
+	if ( varName == "id" ) { return ZephyrValue( (float)GetId() ); }
+	if ( varName == "name" ) { return ZephyrValue( GetName() ); }
+	if ( varName == "health" ) { return ZephyrValue( (float)m_curHealth ); }
+	if ( varName == "maxHealth" ) { return ZephyrValue( (float)m_entityDef.GetMaxHealth() ); }
+	if ( varName == "position" ) { return ZephyrValue( GetPosition() ); }
+	if ( varName == "forwardVec" ) { return ZephyrValue( GetForwardVector() ); }
+	if ( varName == "speed" ) { return ZephyrValue( GetSpeed() ); }
+
+	return ZephyrEntity::GetGlobalVariable( varName );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& value )
+{
+	if ( !IsScriptValid() )
+	{
+		return;
+	}
+
+	// First check c++ built in vars
+	if ( varName == "health" )
+	{
+		m_curHealth = value.GetAsNumber();
+		if ( m_curHealth < 0 )
+		{
+			Die();
+		}
+
+		return;
+	}
+
+	ZephyrEntity::SetGlobalVariable( varName, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::AddGameEventParams( EventArgs* args ) const
+{
+	if ( m_map != nullptr )
+	{
+		args->SetValue( "mapName", m_map->GetName() );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::Load()
 {
 	if ( m_isDead )
@@ -561,184 +576,6 @@ void Entity::Unload()
 	}
 
 	m_rigidbody2D->Disable();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::ChangeZephyrScriptState( const std::string& targetState )
-{
-	if ( !IsScriptValid() )
-	{
-		g_devConsole->PrintWarning( Stringf( "Tried to change state of entity: %s to %s, but it doesn't have a valid script", m_name.c_str(), targetState.c_str() ) );
-		return;
-	}
-
-	m_scriptObj->ChangeState( targetState );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::UnloadZephyrScript()
-{
-	if ( m_scriptObj == nullptr )
-	{
-		return;
-	}
-
-	m_scriptObj->UnloadScript();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::ReloadZephyrScript()
-{
-	if ( m_scriptObj != nullptr )
-	{
-		PTR_SAFE_DELETE( m_scriptObj );
-
-		ZephyrScriptDefinition* scriptDef = m_entityDef.GetZephyrScriptDefinition();
-		if ( scriptDef != nullptr )
-		{
-			m_scriptObj = new ZephyrScript( *scriptDef, this );
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::InitializeScriptValues( const ZephyrValueMap& initialValues )
-{
-	if ( IsScriptValid() )
-	{
-		m_scriptObj->InitializeGlobalVariables( initialValues );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits )
-{
-	if ( IsScriptValid() )
-	{
-		m_scriptObj->SetEntityVariableInitializers( entityVarInits );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-const ZephyrBytecodeChunk* Entity::GetBytecodeChunkByName( const std::string& chunkName ) const
-{
-	if ( m_scriptObj == nullptr )
-	{
-		return nullptr;
-	}
-
-	return m_scriptObj->GetBytecodeChunkByName( chunkName );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
-{
-	if ( !IsScriptValid() )
-	{
-		return ZephyrValue( ERROR_ZEPHYR_VAL );
-	}
-
-	// First check c++ built in vars
-	if ( varName == "id" )			{ return ZephyrValue( (float)GetId() ); }
-	if ( varName == "name" )		{ return ZephyrValue( GetName() ); }
-	if ( varName == "health" )		{ return ZephyrValue( (float)m_curHealth ); }
-	if ( varName == "maxHealth" )	{ return ZephyrValue( (float)m_entityDef.GetMaxHealth() ); }
-	if ( varName == "position" )	{ return ZephyrValue( GetPosition() ); }
-	if ( varName == "forwardVec" )	{ return ZephyrValue( GetForwardVector() ); }
-	if ( varName == "speed" )		{ return ZephyrValue( GetSpeed() ); }
-
-	return m_scriptObj->GetGlobalVariable( varName );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& value )
-{
-	if ( !IsScriptValid() )
-	{
-		return;
-	}
-
-	// First check c++ built in vars
-	if ( varName == "health" ) 
-	{ 
-		m_curHealth = value.GetAsNumber(); 
-		if ( m_curHealth < 0 ) 
-		{ 
-			Die(); 
-		}
-
-		return;
-	}
-
-	m_scriptObj->SetGlobalVariable( varName, value );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
-{
-	if ( !IsScriptValid() )
-	{
-		return;
-	}
-
-	m_scriptObj->SetGlobalVec2Variable( varName, memberName, value );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::InitializeZephyrEntityVariables()
-{
-	if ( !IsScriptValid() )
-	{
-		return;
-	}
-
-	m_scriptObj->InitializeEntityVariables();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-bool Entity::IsScriptValid() const
-{
-	if ( m_scriptObj == nullptr )
-	{
-		return false;
-	}
-
-	return m_scriptObj->IsScriptValid();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Entity::SetScriptObjectValidity( bool isValid )
-{
-	if ( m_scriptObj == nullptr )
-	{
-		return;
-	}
-
-	return m_scriptObj->SetScriptObjectValidity( isValid );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-std::string Entity::GetScriptName() const
-{
-	if ( m_scriptObj == nullptr )
-	{
-		return "unknown";
-	}
-
-	return m_scriptObj->GetScriptName();
 }
 
 
@@ -804,7 +641,10 @@ void Entity::SendPhysicsEventToScript( Collision2D collision, const std::string&
 {
 	if ( !IsDead() )
 	{
-		Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
+		//Entity* theirEntity = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entityId", (EntityId)-1 );
+		EntityId theirEntityId = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entityId", (EntityId)-1 );
+
+		Entity* theirEntity = g_game->GetEntityById( theirEntityId );
 
 		if ( IsScriptValid() )
 		{

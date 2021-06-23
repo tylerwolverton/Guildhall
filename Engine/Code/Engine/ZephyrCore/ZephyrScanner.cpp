@@ -1,8 +1,7 @@
-#include "Game/Scripting/ZephyrScanner.hpp"
+#include "Engine/ZephyrCore/ZephyrScanner.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
-#include "Game/Scripting/ZephyrToken.hpp"
+#include "Engine/ZephyrCore/ZephyrToken.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -311,25 +310,6 @@ void ZephyrScanner::TokenizeIdentifier()
 	int stringLength = m_curSrcPos - m_startSrcPos;
 	std::string curIdentifier = m_scriptSource.substr( m_startSrcPos, stringLength );
 
-	// Match keywords
-	
-	/*if		( curIdentifier == "State" )			{ AddToken( eTokenType::STATE ); }
-	else if ( curIdentifier == "Function" )			{ AddToken( eTokenType::FUNCTION ); }
-	else if ( curIdentifier == "Number" )			{ AddToken( eTokenType::NUMBER ); }
-	else if ( curIdentifier == "Vec2" )				{ AddToken( eTokenType::VEC2 ); }
-	else if ( curIdentifier == "Bool" )				{ AddToken( eTokenType::BOOL ); }
-	else if ( curIdentifier == "String" )			{ AddToken( eTokenType::STRING ); }
-	else if ( curIdentifier == "Entity" )			{ AddToken( eTokenType::ENTITY ); }
-	else if ( curIdentifier == "OnEnter" )			{ AddToken( eTokenType::ON_ENTER ); }
-	else if ( curIdentifier == "OnExit" )			{ AddToken( eTokenType::ON_EXIT ); }
-	else if ( curIdentifier == "OnUpdate" )			{ AddToken( eTokenType::ON_UPDATE ); }
-	else if ( curIdentifier == "ChangeState" )		{ AddToken( eTokenType::CHANGE_STATE ); }
-	else if ( curIdentifier == "if" )				{ AddToken( eTokenType::IF ); }
-	else if ( curIdentifier == "else" )				{ AddToken( eTokenType::ELSE ); }
-	else if ( curIdentifier == "return" )			{ AddToken( eTokenType::RETURN ); }
-	else if ( curIdentifier == "true" )				{ AddToken( eTokenType::TRUE ); }
-	else if ( curIdentifier == "false" )			{ AddToken( eTokenType::FALSE ); }
-	else if ( curIdentifier == "null" )				{ AddToken( eTokenType::NULL_TOKEN ); }*/
 	// Must be identifier ( variable name or function call )
 	if( !MatchReservedIdentifier( curIdentifier ) )
 	{

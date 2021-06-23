@@ -17,10 +17,12 @@
 #include "Engine/OS/Window.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Engine/Time/Clock.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrEngineAPI.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/Scripting/GameAPI.hpp"
+#include "Game/Scripting/ZephyrGameAPI.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ void App::Startup()
 	g_renderer = new RenderContext();
 	g_devConsole = new DevConsole();
 	g_physicsSystem2D = new Physics2D();
-	g_gameAPI = new GameAPI();
+	g_zephyrAPI = new ZephyrGameAPI();
 	g_game = new Game();
 
 	g_eventSystem->Startup();
@@ -101,7 +103,7 @@ void App::Shutdown()
 		
 	PTR_SAFE_DELETE( g_game );
 	PTR_SAFE_DELETE( g_physicsSystem2D );
-	PTR_SAFE_DELETE( g_gameAPI );
+	PTR_SAFE_DELETE( g_zephyrAPI );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_renderer );
 	PTR_SAFE_DELETE( g_audioSystem );

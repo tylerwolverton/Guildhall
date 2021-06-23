@@ -1,4 +1,4 @@
-#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
-#include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 
 #include <string>
 
@@ -8,14 +8,14 @@
 //-----------------------------------------------------------------------------------------------
 class ZephyrBytecodeChunk;
 class ZephyrScriptDefinition;
-class Entity;
+class ZephyrEntity;
 
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrScript
 {
 public:
-	ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* parentEntity = nullptr );
+	ZephyrScript( const ZephyrScriptDefinition& scriptDef, ZephyrEntity* parentEntity = nullptr );
 	~ZephyrScript();
 
 	void Update();
@@ -54,7 +54,7 @@ private:
 	bool m_hasEnteredStartingState = false;
 
 	std::string m_name;
-	Entity* m_parentEntity = nullptr;
+	ZephyrEntity* m_parentEntity = nullptr;
 
 	// Initial values for entity variables are given as names but must be translated into ids after all entities are loaded
 	std::vector<EntityVariableInitializer> m_entityVarInits;

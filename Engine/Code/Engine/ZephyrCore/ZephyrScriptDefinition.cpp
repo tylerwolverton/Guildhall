@@ -1,14 +1,15 @@
-#include "Game/Scripting/ZephyrScriptDefinition.hpp"
+#include "Engine/ZephyrCore/ZephyrScriptDefinition.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
 // Static Definitions
 std::map< std::string, ZephyrScriptDefinition* > ZephyrScriptDefinition::s_definitions;
 std::string ZephyrScriptDefinition::s_dataPathSuffix;
+
 
 //-----------------------------------------------------------------------------------------------
 ZephyrScriptDefinition::ZephyrScriptDefinition( ZephyrBytecodeChunk* stateMachineBytecodeChunk, 

@@ -5,8 +5,10 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Time/Timer.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrEntity.hpp"
+
 #include "Game/EntityDefinition.hpp"
-#include "Game/Scripting/ZephyrCommon.hpp"
 
 #include <string>
 #include <vector>
@@ -49,7 +51,7 @@ public:
 
 
 //-----------------------------------------------------------------------------------------------
-class Entity
+class Entity : public ZephyrEntity
 {
 	friend class Map;
 	friend class TileMap;
@@ -58,105 +60,82 @@ public:
 	Entity( const EntityDefinition& entityDef, Map* map );
 	virtual ~Entity();
 
-	virtual void	Update( float deltaSeconds );
-	virtual void	Render() const;
-	virtual void	Die();
-	virtual void	DebugRender() const;
+	virtual void		Update( float deltaSeconds ) override;
+	virtual void		Render() const;
+	virtual void		Die() override;
+	virtual void		DebugRender() const;
 
-	virtual void	Load();
-	virtual void	Unload();
+	virtual void		Load();
+	virtual void		Unload();
 
-	void			ChangeZephyrScriptState( const std::string& targetState );
-	void			UnloadZephyrScript();
-	void			ReloadZephyrScript();
-	
-	void			CreateZephyrScript( const EntityDefinition& entityDef );
-	void			InitializeZephyrEntityVariables();
-	void			InitializeScriptValues( const ZephyrValueMap& initialValues );
-	void			SetEntityVariableInitializers( const std::vector<EntityVariableInitializer>& entityVarInits );
-	const ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& chunkName ) const;
-	
-	ZephyrValue		GetGlobalVariable( const std::string& varName );
-	void			SetGlobalVariable( const std::string& varName, const ZephyrValue& value );
-	void			SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value );
+	void				ChangeSpriteAnimation( const std::string& spriteAnimDefSetName );
 
-	bool			IsScriptValid() const;
-	void			SetScriptObjectValidity( bool isValid );
-	std::string		GetScriptName() const;
+	const Vec2			GetForwardVector() const;
+	virtual const Vec2	GetPosition() const override;
+	void				SetPosition( const Vec2& position );
+	void				SetRigidbody2D( Rigidbody2D* rigidbody2D )				{ m_rigidbody2D = rigidbody2D; }
+	void				SetCollisionLayer( uint layer );
+	const float			GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
+	const float			GetSpeed() const										{ return m_entityDef.m_speed; }
+	const float			GetMass() const											{ return m_entityDef.m_mass; }
+	const float			GetDrag() const											{ return m_entityDef.m_drag; }
+	const float			GetOrientationDegrees() const							{ return m_orientationDegrees; }
+	void				SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
 
-	void			ChangeSpriteAnimation( const std::string& spriteAnimDefSetName );
-
-	const Vec2		GetForwardVector() const;
-	const Vec2		GetPosition() const;
-	void			SetPosition( const Vec2& position );
-	void			SetRigidbody2D( Rigidbody2D* rigidbody2D )				{ m_rigidbody2D = rigidbody2D; }
-	void			SetCollisionLayer( uint layer );
-	const float		GetPhysicsRadius() const								{ return m_entityDef.m_physicsRadius; }
-	const float		GetSpeed() const										{ return m_entityDef.m_speed; }
-	const float		GetMass() const											{ return m_entityDef.m_mass; }
-	const float		GetDrag() const											{ return m_entityDef.m_drag; }
-	const float		GetOrientationDegrees() const							{ return m_orientationDegrees; }
-	void			SetOrientationDegrees( float orientationDegrees )		{ m_orientationDegrees = orientationDegrees; }
-
-	EntityId		GetId()													{ return m_id; }
-	std::string		GetType() const											{ return m_entityDef.m_type; }
-	std::string		GetName() const											{ return m_name; }
-	void			SetName( const std::string& name ) 						{ m_name = name; }
-	eEntityClass	GetClass() const										{ return m_entityDef.m_class; }
-	const eFaction	GetFaction() const										{ return m_faction; }
-	void			SetFaction( const eFaction& faction )					{ m_faction = faction; }
-	Map*			GetMap()												{ return m_map; }
-	void			SetMap( Map* map )										{ m_map = map; }
+	std::string			GetType() const											{ return m_entityDef.m_type; }
+	eEntityClass		GetClass() const										{ return m_entityDef.m_class; }
+	const eFaction		GetFaction() const										{ return m_faction; }
+	void				SetFaction( const eFaction& faction )					{ m_faction = faction; }
+	Map*				GetMap() const											{ return m_map; }
+	void				SetMap( Map* map )										{ m_map = map; }
 		
-	void			AddItemToInventory( Entity* item );
-	void			RemoveItemFromInventory( const std::string& itemType );
-	void			RemoveItemFromInventory( const EntityId& itemId );
-	void			RemoveItemFromInventory( Entity* item );
-	bool			IsInInventory( const std::string& itemType );
-	bool			IsInInventory( const EntityId& itemId );
-	bool			IsInInventory( Entity* item );
+	void				AddItemToInventory( Entity* item );
+	void				RemoveItemFromInventory( const std::string& itemType );
+	void				RemoveItemFromInventory( const EntityId& itemId );
+	void				RemoveItemFromInventory( Entity* item );
+	bool				IsInInventory( const std::string& itemType );
+	bool				IsInInventory( const EntityId& itemId );
+	bool				IsInInventory( Entity* item );
+	
+	void				MakeInvincibleToAllDamage();
+	void				ResetDamageMultipliers();
+	void				AddNewDamageMultiplier( const std::string& damageType, float newMultiplier );
+	void				ChangeDamageMultiplier( const std::string& damageType, float newMultiplier );
+	void				PermanentlyChangeDamageMultiplier( const std::string& damageType, float newDefaultMultiplier );
 
-	void			FireSpawnEvent();
-	bool			FireScriptEvent( const std::string& eventName, EventArgs* args );
-
-	void			MakeInvincibleToAllDamage();
-	void			ResetDamageMultipliers();
-	void			AddNewDamageMultiplier( const std::string& damageType, float newMultiplier );
-	void			ChangeDamageMultiplier( const std::string& damageType, float newMultiplier );
-	void			PermanentlyChangeDamageMultiplier( const std::string& damageType, float newDefaultMultiplier );
-
-	bool			IsDead() const											{ return m_isDead; }
-	bool			IsGarbage() const										{ return m_isGarbage; }
-	bool			IsPlayer() const										{ return m_isPlayer; }
+	virtual bool		IsDead() const override									{ return m_isDead; }
+	bool				IsGarbage() const										{ return m_isGarbage; }
+	bool				IsPlayer() const										{ return m_isPlayer; }
 				 
-	void			TakeDamage( float damage, const std::string& type = "normal" );
-	//void			ApplyFriction();
+	void				TakeDamage( float damage, const std::string& type = "normal" );
+	//void				ApplyFriction();
 
-	void			MoveWithPhysics( float speed, const Vec2& direction );
-	void			EnableRigidbody();
-	void			DisableRigidbody();
+	void				MoveWithPhysics( float speed, const Vec2& direction );
+	void				EnableRigidbody();
+	void				DisableRigidbody();
 
-	void			RegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );
-	void			UnRegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );
+	void				RegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );
+	void				UnRegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName );
 
-protected:
-	void			EnterCollisionEvent( Collision2D collision );
-	void			StayCollisionEvent( Collision2D collision );
-	void			ExitCollisionEvent( Collision2D collision );
-	void			EnterTriggerEvent( Collision2D collision );
-	void			StayTriggerEvent( Collision2D collision );
-	void			ExitTriggerEvent( Collision2D collision );
-	void			SendPhysicsEventToScript( Collision2D collision, const std::string& eventName );
-
-	char			GetKeyCodeFromString( const std::string& keyCodeStr );
+	// Script overrides
+	virtual ZephyrValue	GetGlobalVariable( const std::string& varName ) override;
+	virtual void		SetGlobalVariable( const std::string& varName, const ZephyrValue& value ) override;
+	virtual void		AddGameEventParams( EventArgs* args ) const override;
 
 protected:
-	ZephyrScript*							m_scriptObj = nullptr;
+	void				EnterCollisionEvent( Collision2D collision );
+	void				StayCollisionEvent( Collision2D collision );
+	void				ExitCollisionEvent( Collision2D collision );
+	void				EnterTriggerEvent( Collision2D collision );
+	void				StayTriggerEvent( Collision2D collision );
+	void				ExitTriggerEvent( Collision2D collision );
+	void				SendPhysicsEventToScript( Collision2D collision, const std::string& eventName );
 
+	char				GetKeyCodeFromString( const std::string& keyCodeStr );
+
+protected:
 	// Game state
 	const EntityDefinition&					m_entityDef;
-	std::string								m_name;
-	EntityId								m_id = -1;
 	eFaction								m_faction = eFaction::NEUTRAL;
 	float									m_curHealth = 1.f;								// how much health is currently remaining on entity
 	float									m_speed = 1.f;
@@ -183,9 +162,6 @@ protected:
 
 	// Input
 	std::map<char, std::vector<std::string>> m_registeredKeyEvents;
-
-	// Statics
-	static EntityId							s_nextEntityId;
 };
 
 

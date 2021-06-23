@@ -1,15 +1,12 @@
-#include "Game/Scripting/ZephyrVirtualMachine.hpp"
+#include "Engine/ZephyrCore/ZephyrVirtualMachine.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrEntity.hpp"
+#include "Engine/ZephyrCore/ZephyrEngineAPI.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
-#include "Game/Scripting/GameAPI.hpp"
-
-#include "Game/GameCommon.hpp"
-#include "Game/Game.hpp"
-#include "Game/Entity.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -21,7 +18,7 @@ ZephyrVirtualMachine::ZephyrVirtualMachine()
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk,
 												   ZephyrValueMap* globalVariables,
-												   Entity* parentEntity,
+												   ZephyrEntity* parentEntity,
 												   EventArgs* eventArgs,
 												   ZephyrValueMap* stateVariables )
 {
@@ -374,8 +371,8 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 
 				InsertParametersIntoEventArgs( *args );
 
-				// Try to call GameAPI funstion, then local function
-				if ( g_gameAPI->IsMethodRegistered( eventName.GetAsString() ) )
+				// Try to call GameAPI function, then local function
+				if ( g_zephyrAPI->IsMethodRegistered( eventName.GetAsString() ) )
 				{
 					g_eventSystem->FireEvent( eventName.GetAsString(), args, EVERYWHERE );
 				}
@@ -1139,7 +1136,7 @@ ZephyrValue ZephyrVirtualMachine::GetZephyrValFromEventArgs( const std::string& 
 //-----------------------------------------------------------------------------------------------
 ZephyrValue ZephyrVirtualMachine::GetGlobalVariableFromEntity( EntityId entityId, const std::string& variableName )
 {
-	Entity* entity = g_game->GetEntityById( entityId );
+	ZephyrEntity* entity = g_zephyrAPI->GetEntityById( entityId );
 	if ( entity == nullptr )
 	{
 		ReportError( Stringf( "Unknown entity does not contain a member '%s'", variableName.c_str() ) );
@@ -1153,7 +1150,7 @@ ZephyrValue ZephyrVirtualMachine::GetGlobalVariableFromEntity( EntityId entityId
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::SetGlobalVariableInEntity( EntityId entityId, const std::string& variableName, const ZephyrValue& value )
 {
-	Entity* entity = g_game->GetEntityById( entityId );
+	ZephyrEntity* entity = g_zephyrAPI->GetEntityById( entityId );
 	if ( entity == nullptr )
 	{
 		ReportError( Stringf( "Unknown entity does not contain a member '%s'", variableName.c_str() ) );
@@ -1167,7 +1164,7 @@ void ZephyrVirtualMachine::SetGlobalVariableInEntity( EntityId entityId, const s
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::SetGlobalVec2MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value )
 {
-	Entity* entity = g_game->GetEntityById( entityId );
+	ZephyrEntity* entity = g_zephyrAPI->GetEntityById( entityId );
 	if ( entity == nullptr )
 	{
 		ReportError( Stringf( "Unknown entity does not contain a member '%s'", variableName.c_str() ) );
@@ -1181,7 +1178,7 @@ void ZephyrVirtualMachine::SetGlobalVec2MemberVariableInEntity( EntityId entityI
 //-----------------------------------------------------------------------------------------------
 bool ZephyrVirtualMachine::CallMemberFunctionOnEntity( EntityId entityId, const std::string& functionName, EventArgs* args )
 {
-	Entity* entity = g_game->GetEntityById( entityId );
+	ZephyrEntity* entity = g_zephyrAPI->GetEntityById( entityId );
 	if ( entity == nullptr )
 	{
 		ReportError( Stringf( "Unknown entity does not contain a member '%s'", functionName.c_str() ) );

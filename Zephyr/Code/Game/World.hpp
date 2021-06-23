@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/GameCommon.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 #include <string>
 #include <map>

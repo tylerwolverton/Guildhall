@@ -29,9 +29,9 @@ struct UDPMessage
 public:
 	UDPMessage() = default;
 
-	UDPMessage( int sendToPortIn, std::array<char, 512> dataIn )
-		: sendToPort( sendToPortIn )
-		, data( dataIn )
+	UDPMessage( int sendToPort, const std::array<char, 512>& data )
+		: sendToPort( sendToPort )
+		, data( data )
 	{}
 
 };

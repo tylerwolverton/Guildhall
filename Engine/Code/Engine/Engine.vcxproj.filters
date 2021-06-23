@@ -340,6 +340,45 @@
     <ClCompile Include="Core\HashedString.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrBytecodeChunk.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrCommon.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrCompiler.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrInterpreter.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrParser.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrScanner.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrScriptDefinition.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrToken.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrEngineAPI.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrEntity.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrEntityDefinition.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrScript.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrVirtualMachine.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -664,5 +703,18 @@
     <ClInclude Include="Core\VertexFont.hpp" />
     <ClInclude Include="UI\UIUniformGrid.hpp" />
     <ClInclude Include="Core\HashedString.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrBytecodeChunk.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrCommon.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrCompiler.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrInterpreter.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrParser.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrScanner.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrScriptDefinition.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrToken.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrEngineAPI.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrEntity.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrEntityDefinition.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrScript.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrVirtualMachine.hpp" />
   </ItemGroup>
 </Project>

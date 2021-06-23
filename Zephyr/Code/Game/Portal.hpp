@@ -11,7 +11,7 @@ class Portal : public Entity
 {
 public:
 	Portal( const EntityDefinition& entityDef, Map* map );
-	~Portal();
+	virtual ~Portal();
 
 	//virtual void Load() override;
 

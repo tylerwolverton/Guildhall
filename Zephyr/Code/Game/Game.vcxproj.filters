@@ -70,43 +70,13 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Scripting\ZephyrScript.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\GameAPI.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrScriptDefinition.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrCompiler.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrToken.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrCommon.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrScanner.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrBytecodeChunk.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrParser.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Scripting\ZephyrVirtualMachine.cpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="Pickup.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="DialogueBox.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Scripting\ZephyrInterpreter.cpp">
+    <ClCompile Include="Scripting\ZephyrGameAPI.cpp">
       <Filter>Framework\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
@@ -162,43 +132,13 @@
     <ClInclude Include="Projectile.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Scripting\ZephyrScript.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\GameAPI.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrScriptDefinition.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrCompiler.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrCommon.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrToken.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrScanner.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrBytecodeChunk.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrParser.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Scripting\ZephyrVirtualMachine.hpp">
-      <Filter>Framework\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="Pickup.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="DialogueBox.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Scripting\ZephyrInterpreter.hpp">
+    <ClInclude Include="Scripting\ZephyrGameAPI.hpp">
       <Filter>Framework\Scripting</Filter>
     </ClInclude>
   </ItemGroup>

@@ -42,10 +42,12 @@ void Portal::EnterTriggerEvent( Collision2D collision )
 {
 	if ( !IsDead() )
 	{
-		Entity* theirObject = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
-		if ( theirObject != nullptr )
+		EntityId theirEntityId = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entityId", (EntityId)-1 );
+
+		Entity* theirEntity = g_game->GetEntityById( theirEntityId );
+		if ( theirEntity != nullptr )
 		{
-			m_map->WarpEntityInMap( theirObject, this );
+			m_map->WarpEntityInMap( theirEntity, this );
 		}
 	}
 }

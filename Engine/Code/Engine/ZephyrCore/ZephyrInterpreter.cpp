@@ -1,7 +1,8 @@
-#include "Game/Scripting/ZephyrInterpreter.hpp"
-#include "Game/Scripting/ZephyrVirtualMachine.hpp"
+#include "Engine/ZephyrCore/ZephyrInterpreter.hpp"
+#include "Engine/ZephyrCore/ZephyrVirtualMachine.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
+
 
 int s_numTimesCalledThisFrame = 0;
 
@@ -23,7 +24,7 @@ void ZephyrInterpreter::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void ZephyrInterpreter::InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
 													 ZephyrValueMap* globalVariables, 
-													 Entity* parentEntity,
+													 ZephyrEntity* parentEntity,
 													 ZephyrValueMap* stateVariables )
 {
 	++s_numTimesCalledThisFrame;
@@ -35,7 +36,7 @@ void ZephyrInterpreter::InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& 
 //-----------------------------------------------------------------------------------------------
 void ZephyrInterpreter::InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
 													 ZephyrValueMap* globalVariables,
-													 Entity* parentEntity, 
+													 ZephyrEntity* parentEntity,
 													 EventArgs* eventArgs, 
 													 ZephyrValueMap* stateVariables )
 {

@@ -3,8 +3,9 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrEntityDefinition.hpp"
 #include "Game/GameCommon.hpp"
-#include "Game/Scripting/ZephyrCommon.hpp"
 
 #include <string>
 
@@ -30,17 +31,15 @@ std::string GetEntityClassAsString( eEntityClass entityClass );
 
 
 //-----------------------------------------------------------------------------------------------
-class EntityDefinition
+class EntityDefinition : public ZephyrEntityDefinition
 {
 	friend class Entity;
 	friend class Actor;
 
 public:
-	explicit EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spritSheet );
-	~EntityDefinition();
-
-	void			ReloadZephyrScriptDefinition();
-
+	explicit EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spriteSheet );
+	virtual ~EntityDefinition();
+	
 	bool			IsValid() const																{ return m_isValid; }
 	std::string		GetType() const																{ return m_type; }
 	float			GetMaxHealth() const														{ return m_maxHealth; }
@@ -55,15 +54,10 @@ public:
 
 	FloatRange		GetDamageRange() const														{ return m_damageRange; }
 
-	
 	SpriteAnimationSetDefinition* GetDefaultSpriteAnimSetDef() const							{ return m_defaultSpriteAnimSetDef; }
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const			{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
-
-	ZephyrScriptDefinition* GetZephyrScriptDefinition() const									{ return m_zephyrScriptDef; }
-	ZephyrValueMap GetZephyrScriptInitialValues() const											{ return m_zephyrScriptInitialValues; }
-	std::vector<EntityVariableInitializer> GetZephyrEntityVarInits() const						{ return m_zephyrEntityVarInits; }
-
+	
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
 
 public:
@@ -86,13 +80,7 @@ protected:
 
 	AABB2			m_localDrawBounds;
 	AABB2			m_uvCoords = AABB2::ONE_BY_ONE;
-
-	// Scripts
-	std::string								m_zephyrScriptName;
-	ZephyrScriptDefinition*					m_zephyrScriptDef = nullptr;
-	ZephyrValueMap							m_zephyrScriptInitialValues;
-	std::vector<EntityVariableInitializer>  m_zephyrEntityVarInits;
-
+	
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 	SpriteAnimationSetDefinition* m_defaultSpriteAnimSetDef = nullptr;
 };

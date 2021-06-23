@@ -29,10 +29,12 @@ void Pickup::EnterCollisionEvent( Collision2D collision )
 {
 	if ( !IsDead() )
 	{
-		Entity* theirObject = (Entity*)collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entity", ( void* )nullptr );
-		if ( theirObject != nullptr )
+		EntityId theirEntityId = collision.theirCollider->m_rigidbody->m_userProperties.GetValue( "entityId", (EntityId)-1 );
+
+		Entity* theirEntity = g_game->GetEntityById( theirEntityId );
+		if ( theirEntity != nullptr )
 		{
-			m_map->AddItemToTargetInventory( this, theirObject );
+			m_map->AddItemToTargetInventory( this, theirEntity );
 		}
 	}
 }

@@ -5,9 +5,9 @@
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/Collision2D.hpp"
 #include "Engine/Physics/Rigidbody2D.hpp"
+#include "Engine/ZephyrCore/ZephyrScript.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
-#include "Game/Scripting/ZephyrScript.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

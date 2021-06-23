@@ -5,10 +5,10 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/ZephyrCore/ZephyrScriptDefinition.hpp"
 
 #include "Game/SpriteAnimationSetDefinition.hpp"
-#include "Game/Scripting/GameAPI.hpp"
-#include "Game/Scripting/ZephyrScriptDefinition.hpp"
+#include "Game/Scripting/ZephyrGameAPI.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -45,7 +45,14 @@ EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName 
 
 //-----------------------------------------------------------------------------------------------
 EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet* spriteSheet )
+	: ZephyrEntityDefinition( entityDefElem )
 {
+	// Return if the script parsing failed in base class
+	if ( !m_isScriptValid )
+	{
+		return;
+	}
+
 	m_type = ParseXmlAttribute( entityDefElem, "name", "" );
 	if ( m_type == "" )
 	{
@@ -142,84 +149,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 		m_maxHealth = ParseXmlAttribute( *gameplayElem, "maxHealth", m_maxHealth );
 		m_damageRange = ParseXmlAttribute( *gameplayElem, "damage", m_damageRange );
 	}
-
-	// Script
-	const XmlElement* scriptElem = entityDefElem.FirstChildElement( "Script" );
-	if ( scriptElem != nullptr )
-	{
-		m_zephyrScriptName = ParseXmlAttribute( *scriptElem, "name", "" );
-
-		if ( !m_zephyrScriptName.empty() )
-		{
-			m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( m_zephyrScriptName );
-
-			if ( m_zephyrScriptDef == nullptr )
-			{
-				g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': Script '%s' does not exist", m_type.c_str(), m_zephyrScriptName.c_str() ) );
-				return;
-			}
-
-			// Parse initial values
-			const XmlElement* globalVarElem = scriptElem->FirstChildElement( "GlobalVar" );
-			while ( globalVarElem != nullptr )
-			{
-				std::string typeName = ParseXmlAttribute( *globalVarElem, "type", "" );
-				std::string varName = ParseXmlAttribute( *globalVarElem, "var", "" );
-				std::string valueStr = ParseXmlAttribute( *globalVarElem, "value", "" );
-				if ( typeName.empty() )
-				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar is missing a variable type", m_type.c_str() ) );
-					break;
-				}
-				if ( varName.empty() )
-				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar is missing a variable name", m_type.c_str() ) );
-					break;
-				}
-				if ( valueStr.empty() )
-				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar is missing a variable value", m_type.c_str() ) );
-					break;
-				}
-
-				if ( varName == PARENT_ENTITY_NAME )
-				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar cannot initialize reserved entity variable '%s'.", m_type.c_str(), PARENT_ENTITY_NAME.c_str() ) );
-					break;
-				}
-
-				// Convert value to correct type and store in map
-				if ( !_strcmpi( typeName.c_str(), "string" ) )
-				{
-					m_zephyrScriptInitialValues[varName] = ZephyrValue( valueStr );
-				}
-				else if ( !_strcmpi( typeName.c_str(), "number" ) )
-				{
-					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, 0.f ) );
-				}
-				else if ( !_strcmpi( typeName.c_str(), "bool" ) )
-				{
-					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, false ) );
-				}
-				else if ( !_strcmpi( typeName.c_str(), "vec2" ) )
-				{
-					m_zephyrScriptInitialValues[varName] = ZephyrValue( FromString( valueStr, Vec2::ZERO ) );
-				}
-				else if ( !_strcmpi( typeName.c_str(), "entity" ) )
-				{
-					m_zephyrEntityVarInits.emplace_back( varName, valueStr );
-				}
-				else
-				{
-					g_devConsole->PrintError( Stringf( "EntityTypes.xml '%s': GlobalVar '%s' has unsupported type '%s'", m_type.c_str(), varName.c_str(), typeName.c_str() ) );
-					break;
-				}
-
-				globalVarElem = globalVarElem->NextSiblingElement( "GlobalVar" );
-			}
-		}
-	}
-
+	
 	m_isValid = true;
 }
 
@@ -228,16 +158,6 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem, SpriteSheet
 EntityDefinition::~EntityDefinition()
 {
 	PTR_MAP_SAFE_DELETE( m_spriteAnimSetDefs );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void EntityDefinition::ReloadZephyrScriptDefinition()
-{
-	if ( !m_zephyrScriptName.empty() )
-	{
-		m_zephyrScriptDef = ZephyrScriptDefinition::GetZephyrScriptDefinitionByName( m_zephyrScriptName );
-	}
 }
 
 

@@ -1,5 +1,4 @@
 #include "Game/GameCommon.hpp"
-#include "Game/Scripting/GameAPI.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
@@ -18,7 +17,6 @@ InputSystem* g_inputSystem = nullptr;		// Owned by the App
 AudioSystem* g_audioSystem = nullptr;		// Owned by the App
 Physics2D* g_physicsSystem2D = nullptr;		// Owned by the App
 Game* g_game = nullptr;						// Owned by the App
-GameAPI* g_gameAPI = nullptr;
 
 
 //-----------------------------------------------------------------------------------------------

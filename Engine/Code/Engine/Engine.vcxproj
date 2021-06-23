@@ -253,6 +253,19 @@
     <ClCompile Include="UI\UISystem.cpp" />
     <ClCompile Include="UI\UIText.cpp" />
     <ClCompile Include="UI\UIUniformGrid.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrBytecodeChunk.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrCommon.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrCompiler.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrEngineAPI.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrEntity.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrEntityDefinition.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrInterpreter.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrParser.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrScanner.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrScript.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrScriptDefinition.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrToken.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrVirtualMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
@@ -371,6 +384,19 @@
     <ClInclude Include="UI\UISystem.hpp" />
     <ClInclude Include="UI\UIText.hpp" />
     <ClInclude Include="UI\UIUniformGrid.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrBytecodeChunk.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrCommon.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrCompiler.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrEngineAPI.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrEntity.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrEntityDefinition.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrInterpreter.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrParser.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrScanner.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrScript.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrScriptDefinition.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrToken.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrVirtualMachine.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

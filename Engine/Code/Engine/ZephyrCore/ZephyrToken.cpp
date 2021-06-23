@@ -1,4 +1,4 @@
-#include "Game/Scripting/ZephyrToken.hpp"
+#include "Engine/ZephyrCore/ZephyrToken.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -15,5 +15,3 @@ std::string ZephyrToken::GetDebugName() const
 {
 	return GetTokenName( m_type );
 }
-
-

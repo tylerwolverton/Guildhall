@@ -1,13 +1,12 @@
-#include "Game/Scripting/ZephyrCompiler.hpp"
+#include "Engine/ZephyrCore/ZephyrCompiler.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
-#include "Game/Scripting/ZephyrToken.hpp"
-#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
-#include "Game/Scripting/ZephyrScanner.hpp"
-#include "Game/Scripting/ZephyrParser.hpp"
+#include "Engine/ZephyrCore/ZephyrToken.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrScanner.hpp"
+#include "Engine/ZephyrCore/ZephyrParser.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

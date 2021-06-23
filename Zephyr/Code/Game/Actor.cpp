@@ -12,11 +12,11 @@
 #include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/ZephyrCore/ZephyrScript.hpp"
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/Map.hpp"
-#include "Game/Scripting/ZephyrScript.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

@@ -1,12 +1,12 @@
 #pragma once
-#include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 
 #include <string>
 #include <vector>
 
 
 //-----------------------------------------------------------------------------------------------
-class Entity;
+class ZephyrEntity;
 class ZephyrBytecodeChunk;
 class ZephyrScriptDefinition;
 
@@ -20,12 +20,12 @@ public:
 
 	static void InterpretStateBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk,
 											 ZephyrValueMap* globalVariables,
-											 Entity* parentEntity = nullptr,
+											 ZephyrEntity* parentEntity = nullptr,
 											 ZephyrValueMap* stateVariables = nullptr );
 
 	static void InterpretEventBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk,
 											 ZephyrValueMap* globalVariables,
-											 Entity* parentEntity = nullptr,
+											 ZephyrEntity* parentEntity = nullptr,
 											 EventArgs* eventArgs = nullptr,
 											 ZephyrValueMap* stateVariables = nullptr );
 };

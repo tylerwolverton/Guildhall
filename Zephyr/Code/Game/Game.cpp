@@ -25,6 +25,10 @@
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Engine/UI/UIPanel.hpp"
+#include "Engine/ZephyrCore/ZephyrCompiler.hpp"
+#include "Engine/ZephyrCore/ZephyrInterpreter.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrScriptDefinition.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/Entity.hpp"
@@ -32,10 +36,6 @@
 #include "Game/World.hpp"
 #include "Game/TileDefinition.hpp"
 #include "Game/MapData.hpp"
-#include "Game/Scripting/ZephyrCompiler.hpp"
-#include "Game/Scripting/ZephyrInterpreter.hpp"
-#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
-#include "Game/Scripting/ZephyrScriptDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

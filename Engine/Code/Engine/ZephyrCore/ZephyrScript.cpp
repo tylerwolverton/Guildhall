@@ -1,19 +1,17 @@
-#include "Game/Scripting/ZephyrScript.hpp"
+#include "Engine/ZephyrCore/ZephyrScript.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
-#include "Game/GameCommon.hpp"
-#include "Game/Game.hpp"
-#include "Game/Map.hpp"
-#include "Game/Scripting/ZephyrBytecodeChunk.hpp"
-#include "Game/Scripting/ZephyrScriptDefinition.hpp"
-#include "Game/Scripting/ZephyrInterpreter.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrEntity.hpp"
+#include "Engine/ZephyrCore/ZephyrScriptDefinition.hpp"
+#include "Engine/ZephyrCore/ZephyrInterpreter.hpp"
+#include "Engine/ZephyrCore/ZephyrEngineAPI.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, Entity* parentEntity )
+ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, ZephyrEntity* parentEntity )
 	: m_name( scriptDef.m_name )
 	, m_scriptDef( scriptDef )
 	, m_parentEntity( parentEntity )
@@ -115,12 +113,8 @@ bool ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 			stateVariables = m_curStateBytecodeChunk->GetUpdateableVariables();
 		}
 
-		Map* parentMap = m_parentEntity->GetMap();
-		if ( parentMap != nullptr )
-		{
-			args->SetValue( "mapName", parentMap->GetName() );
-		}
-
+		m_parentEntity->AddGameEventParams( args );
+		
 		ZephyrInterpreter::InterpretEventBytecodeChunk( *eventChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, args, stateVariables );
 		return true;
 	}
@@ -257,7 +251,7 @@ void ZephyrScript::InitializeEntityVariables()
 	
 	for ( const auto& entityVarInit : m_entityVarInits )
 	{
-		Entity* entity = g_game->GetEntityByName( entityVarInit.entityName );
+		ZephyrEntity* entity = g_zephyrAPI->GetEntityByName( entityVarInit.entityName );
 		if ( entity == nullptr )
 		{
 			g_devConsole->PrintError( Stringf( "Error defining entity variable '%s' in zephyr script. Entity with name '%s' can not be found", entityVarInit.varName.c_str(), entityVarInit.entityName.c_str() ) );

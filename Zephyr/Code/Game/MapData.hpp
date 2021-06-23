@@ -2,7 +2,7 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 
-#include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 
 #include <string>
 #include <map>

@@ -1,7 +1,6 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
-#include "Game/GameCommon.hpp"
 
 #include <string>
 
@@ -9,6 +8,7 @@
 //-----------------------------------------------------------------------------------------------
 class ZephyrValue;
 class ZephyrBytecodeChunk;
+class ZephyrEngineAPI;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -19,6 +19,8 @@ typedef std::map<std::string, ZephyrBytecodeChunk*> ZephyrBytecodeChunkMap;
 
 constexpr int ERROR_ZEPHYR_VAL = -1000;
 extern std::string PARENT_ENTITY_NAME;
+
+extern ZephyrEngineAPI* g_zephyrAPI;
 
 //-----------------------------------------------------------------------------------------------
 enum class eTokenType

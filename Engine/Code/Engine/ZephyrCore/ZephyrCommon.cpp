@@ -1,4 +1,4 @@
-#include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -6,6 +6,7 @@
 
 //-----------------------------------------------------------------------------------------------
 std::string PARENT_ENTITY_NAME = "parentEntity";
+ZephyrEngineAPI* g_zephyrAPI = nullptr;
 
 
 //-----------------------------------------------------------------------------------------------

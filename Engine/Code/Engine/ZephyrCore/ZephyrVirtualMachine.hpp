@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 
 #include <stack>
 #include <queue>
@@ -7,7 +7,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class ZephyrBytecodeChunk;
-class Entity;
+class ZephyrEntity;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ private:
 	
 	void		InterpretBytecodeChunk( const ZephyrBytecodeChunk& bytecodeChunk, 
 										ZephyrValueMap* globalVariables, 
-										Entity* parentEntity = nullptr, 
+										ZephyrEntity* parentEntity = nullptr,
 										EventArgs* eventArgs = nullptr, 
 										ZephyrValueMap* stateVariables = nullptr );
 
@@ -74,7 +74,7 @@ private:
 	bool IsErrorValue( const ZephyrValue& zephyrValue );
 
 private:
-	Entity* m_parentEntity = nullptr;
+	ZephyrEntity* m_parentEntity = nullptr;
 	std::stack<ZephyrValue> m_constantStack;
 	std::deque<std::string> m_curMemberAccessorNames;
 

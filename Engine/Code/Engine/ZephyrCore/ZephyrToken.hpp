@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 
 #include <string>
 

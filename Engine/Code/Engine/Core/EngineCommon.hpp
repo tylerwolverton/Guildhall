@@ -31,7 +31,7 @@ typedef NamedProperties EventArgs;
 
 typedef unsigned int uint;
 typedef unsigned char byte;
-
+typedef int EntityId;
 
 //-----------------------------------------------------------------------------------------------
 // Macros

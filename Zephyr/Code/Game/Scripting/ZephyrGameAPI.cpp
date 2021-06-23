@@ -1,4 +1,4 @@
-#include "Game/Scripting/GameAPI.hpp"
+#include "Game/Scripting/ZephyrGameAPI.hpp"
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
@@ -15,11 +15,11 @@
 
 #define REGISTER_EVENT( eventName ) {\
 										m_registeredMethods.insert( #eventName );\
-										g_eventSystem->RegisterMethodEvent( #eventName, "", EVERYWHERE, this, &GameAPI::eventName );\
+										g_eventSystem->RegisterMethodEvent( #eventName, "", EVERYWHERE, this, &ZephyrGameAPI::eventName );\
 									}
 
 //-----------------------------------------------------------------------------------------------
-GameAPI::GameAPI()
+ZephyrGameAPI::ZephyrGameAPI()
 {
 	REGISTER_EVENT( ChangeZephyrScriptState );
 	REGISTER_EVENT( PrintDebugText );
@@ -63,18 +63,22 @@ GameAPI::GameAPI()
 
 
 //-----------------------------------------------------------------------------------------------
-GameAPI::~GameAPI()
+ZephyrGameAPI::~ZephyrGameAPI()
 {
-	m_registeredMethods.clear();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-bool GameAPI::IsMethodRegistered( const std::string& methodName )
+ZephyrEntity* ZephyrGameAPI::GetEntityById( const EntityId& id ) const
 {
-	auto iter = m_registeredMethods.find( methodName );
-	
-	return iter != m_registeredMethods.end();
+	return g_game->GetEntityById( id );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrEntity* ZephyrGameAPI::GetEntityByName( const std::string& name ) const
+{
+	return g_game->GetEntityByName( name );
 }
 
 
@@ -83,7 +87,7 @@ bool GameAPI::IsMethodRegistered( const std::string& methodName )
  * Destroys the entity who called this event.
  */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::DestroySelf( EventArgs* args )
+void ZephyrGameAPI::DestroySelf( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
@@ -112,7 +116,7 @@ void GameAPI::DestroySelf( EventArgs* args )
  *		- default: "normal"
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::DamageEntity( EventArgs* args )
+void ZephyrGameAPI::DamageEntity( EventArgs* args )
 {
 	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
 	Entity* targetEntity = g_game->GetEntityById( targetId );
@@ -142,7 +146,7 @@ void GameAPI::DamageEntity( EventArgs* args )
  *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::ActivateInvincibility( EventArgs* args )
+void ZephyrGameAPI::ActivateInvincibility( EventArgs* args )
 {
 	Entity* entity = GetTargetEntityFromArgs( args );
 	if ( entity == nullptr )
@@ -166,7 +170,7 @@ void GameAPI::ActivateInvincibility( EventArgs* args )
  *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::DeactivateInvincibility( EventArgs* args )
+void ZephyrGameAPI::DeactivateInvincibility( EventArgs* args )
 {
 	Entity* entity = GetTargetEntityFromArgs( args );
 	if ( entity == nullptr )
@@ -179,7 +183,7 @@ void GameAPI::DeactivateInvincibility( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::DisableCollisions( EventArgs* args )
+void ZephyrGameAPI::DisableCollisions( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
@@ -191,7 +195,7 @@ void GameAPI::DisableCollisions( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::EnableCollisions( EventArgs* args )
+void ZephyrGameAPI::EnableCollisions( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
@@ -207,7 +211,7 @@ void GameAPI::EnableCollisions( EventArgs* args )
  * Change the game state to Dialogue to initiate a dialogue with an NPC.
  */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::StartDialogue( EventArgs* args )
+void ZephyrGameAPI::StartDialogue( EventArgs* args )
 {
 	UNUSED( args );
 
@@ -220,7 +224,7 @@ void GameAPI::StartDialogue( EventArgs* args )
  * Change the game state back to Playing to end a dialogue sequence.
  */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::EndDialogue( EventArgs* args )
+void ZephyrGameAPI::EndDialogue( EventArgs* args )
 {
 	UNUSED( args );
 
@@ -238,7 +242,7 @@ void GameAPI::EndDialogue( EventArgs* args )
  *		- Zephyr type: String
  */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::AddLineOfDialogueText( EventArgs* args )
+void ZephyrGameAPI::AddLineOfDialogueText( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "" );
 
@@ -260,7 +264,7 @@ void GameAPI::AddLineOfDialogueText( EventArgs* args )
  *		- Zephyr type: String
  */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::AddDialogueChoice( EventArgs* args )
+void ZephyrGameAPI::AddDialogueChoice( EventArgs* args )
 {
 	std::string name = args->GetValue( "name", "missing name" );
 	std::string text = args->GetValue( "text", "" );
@@ -291,7 +295,7 @@ void GameAPI::AddDialogueChoice( EventArgs* args )
  *		- default: false
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::StartNewTimer( EventArgs* args )
+void ZephyrGameAPI::StartNewTimer( EventArgs* args )
 {
 	std::string timerName = args->GetValue( "name", "" );
 	float durationSeconds = args->GetValue( "durationSeconds", 1.f );
@@ -325,7 +329,7 @@ void GameAPI::StartNewTimer( EventArgs* args )
  *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::ChangeZephyrScriptState( EventArgs* args )
+void ZephyrGameAPI::ChangeZephyrScriptState( EventArgs* args )
 {
 	std::string targetState = args->GetValue( "targetState", "" );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
@@ -353,7 +357,7 @@ void GameAPI::ChangeZephyrScriptState( EventArgs* args )
  *		- default: "white"
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::PrintDebugText( EventArgs* args )
+void ZephyrGameAPI::PrintDebugText( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "TestPrint" );
 	float duration = args->GetValue( "duration", 0.f );
@@ -403,7 +407,7 @@ void GameAPI::PrintDebugText( EventArgs* args )
  *		- default: "white"
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::PrintDebugScreenText( EventArgs* args )
+void ZephyrGameAPI::PrintDebugScreenText( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "" );
 	float duration = args->GetValue( "duration", 0.f );
@@ -436,7 +440,7 @@ void GameAPI::PrintDebugScreenText( EventArgs* args )
  *		- default: "white"
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::PrintToConsole( EventArgs* args )
+void ZephyrGameAPI::PrintToConsole( EventArgs* args )
 {
 	std::string text = args->GetValue( "text", "" );
 	std::string colorStr = args->GetValue( "color", "white" );
@@ -453,7 +457,7 @@ void GameAPI::PrintToConsole( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::SpawnEntity( EventArgs* args )
+void ZephyrGameAPI::SpawnEntity( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 	if ( entity == nullptr )
@@ -505,7 +509,7 @@ void GameAPI::SpawnEntity( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::WinGame( EventArgs* args )
+void ZephyrGameAPI::WinGame( EventArgs* args )
 {
 	UNUSED( args );
 
@@ -525,7 +529,7 @@ void GameAPI::WinGame( EventArgs* args )
  *		- default: entity's default movement speed
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::MoveToLocation( EventArgs* args )
+void ZephyrGameAPI::MoveToLocation( EventArgs* args )
 {
 	Vec2 targetPos = args->GetValue( "pos", Vec2::ZERO );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
@@ -556,7 +560,7 @@ void GameAPI::MoveToLocation( EventArgs* args )
  *		- default: entity's default movement speed
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::MoveInDirection( EventArgs* args )
+void ZephyrGameAPI::MoveInDirection( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 	if ( entity == nullptr )
@@ -594,7 +598,7 @@ void GameAPI::MoveInDirection( EventArgs* args )
  *		- default: entity's default movement speed
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::ChaseTargetEntity( EventArgs* args )
+void ZephyrGameAPI::ChaseTargetEntity( EventArgs* args )
 {
 	Entity* targetEntity = GetTargetEntityFromArgs( args );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
@@ -631,7 +635,7 @@ void GameAPI::ChaseTargetEntity( EventArgs* args )
  *		- default: entity's default movement speed
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::FleeTargetEntity( EventArgs* args )
+void ZephyrGameAPI::FleeTargetEntity( EventArgs* args )
 {
 	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
 	Entity* targetEntity = g_game->GetEntityById( targetId );
@@ -667,7 +671,7 @@ void GameAPI::FleeTargetEntity( EventArgs* args )
  *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::GetEntityLocation( EventArgs* args )
+void ZephyrGameAPI::GetEntityLocation( EventArgs* args )
 {
 	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
 	Entity* targetEntity = g_game->GetEntityById( targetId );
@@ -701,7 +705,7 @@ void GameAPI::GetEntityLocation( EventArgs* args )
  *		- Zephyr type: String
 */
 //-----------------------------------------------------------------------------------------------
-void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
+void ZephyrGameAPI::GetNewWanderTargetPosition( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 	if ( entity == nullptr )
@@ -726,7 +730,7 @@ void GameAPI::GetNewWanderTargetPosition( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::CheckForTarget( EventArgs* args )
+void ZephyrGameAPI::CheckForTarget( EventArgs* args )
 {
 	float maxDist = args->GetValue( "maxDist", 0.f );
 	//Entity* targetEntity = GetTargetEntityFromArgs( args );
@@ -749,7 +753,7 @@ void GameAPI::CheckForTarget( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::GetDistanceToTarget( EventArgs* args )
+void ZephyrGameAPI::GetDistanceToTarget( EventArgs* args )
 {
 	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
 	Entity* targetEntity = g_game->GetEntityById( targetId );
@@ -768,7 +772,7 @@ void GameAPI::GetDistanceToTarget( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::RegisterKeyEvent( EventArgs* args )
+void ZephyrGameAPI::RegisterKeyEvent( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 	if ( entity == nullptr )
@@ -793,7 +797,7 @@ void GameAPI::RegisterKeyEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::UnRegisterKeyEvent( EventArgs* args )
+void ZephyrGameAPI::UnRegisterKeyEvent( EventArgs* args )
 {
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 	if ( entity == nullptr )
@@ -818,7 +822,7 @@ void GameAPI::UnRegisterKeyEvent( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::ChangeSpriteAnimation( EventArgs* args )
+void ZephyrGameAPI::ChangeSpriteAnimation( EventArgs* args )
 {
 	std::string newAnim = args->GetValue( "newAnim", "" );
 	//Entity* targetEntity = g_game->GetEntityByName( targetId );
@@ -835,7 +839,7 @@ void GameAPI::ChangeSpriteAnimation( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::PlaySound( EventArgs* args )
+void ZephyrGameAPI::PlaySound( EventArgs* args )
 {
 	std::string soundName = args->GetValue( "name", "" );
 	if ( soundName.empty() )
@@ -853,7 +857,7 @@ void GameAPI::PlaySound( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::ChangeMusic( EventArgs* args )
+void ZephyrGameAPI::ChangeMusic( EventArgs* args )
 {
 	std::string musicName = args->GetValue( "musicName", "" );
 	if ( musicName.empty() )
@@ -870,7 +874,7 @@ void GameAPI::ChangeMusic( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::AddScreenShake( EventArgs* args )
+void ZephyrGameAPI::AddScreenShake( EventArgs* args )
 {
 	float intensity = args->GetValue( "intensity", 0.f );
 
@@ -879,7 +883,7 @@ void GameAPI::AddScreenShake( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-void GameAPI::SpawnEntitiesInRange( EventArgs* args )
+void ZephyrGameAPI::SpawnEntitiesInRange( EventArgs* args )
 {
 	Vec2 minPos = args->GetValue( "minPos", Vec2::ZERO );
 	Vec2 maxPos = args->GetValue( "maxPos", Vec2::ONE );
@@ -901,7 +905,7 @@ void GameAPI::SpawnEntitiesInRange( EventArgs* args )
 
 
 //-----------------------------------------------------------------------------------------------
-Entity* GameAPI::GetTargetEntityFromArgs( EventArgs* args )
+Entity* ZephyrGameAPI::GetTargetEntityFromArgs( EventArgs* args )
 {
 	EntityId targetId = (EntityId)args->GetValue( "targetId", -1.f );
 	std::string targetName = args->GetValue( "targetName", "" );

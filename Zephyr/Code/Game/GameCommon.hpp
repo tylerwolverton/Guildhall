@@ -7,7 +7,6 @@ class InputSystem;
 class AudioSystem;
 class RenderContext;
 class Game;
-class GameAPI;
 class Physics2D;
 class SpriteSheet;
 struct Vec2;
@@ -24,17 +23,12 @@ extern InputSystem* g_inputSystem;
 extern AudioSystem* g_audioSystem;
 extern RenderContext* g_renderer;
 extern Game* g_game;
-extern GameAPI* g_gameAPI;
 
 
 //-----------------------------------------------------------------------------------------------
 // Global Functions
 //
 void PopulateGameConfig();
-
-
-//-----------------------------------------------------------------------------------------------
-typedef int EntityId;
 
 
 //-----------------------------------------------------------------------------------------------

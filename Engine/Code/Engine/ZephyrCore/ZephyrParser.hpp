@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Scripting/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 
 #include <string>
 #include <stack>
@@ -11,6 +11,7 @@ class ZephyrBytecodeChunk;
 class ZephyrScriptDefinition;
 class ZephyrToken;
 enum class eBytecodeChunkType;
+
 
 //-----------------------------------------------------------------------------------------------
 enum class eOpPrecedenceLevel
