@@ -1011,6 +1011,14 @@ void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, co
 	auto localIter = localVariables.find( variableName );
 	if ( localIter != localVariables.end() )
 	{
+		if ( localVariables[variableName].GetType() != value.GetType() )
+		{
+			ReportError( Stringf( "Cannot assign a value of type '%s' to variable '%s' of type '%s'",	ToString( value.GetType() ).c_str(), 
+																										variableName.c_str(), 
+																										ToString( localVariables[variableName].GetType() ).c_str() ) );
+			return;
+		}
+
 		localVariables[variableName] = value;
 		return;
 	}
@@ -1021,6 +1029,14 @@ void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, co
 		auto stateIter = m_stateVariables->find( variableName );
 		if ( stateIter != m_stateVariables->end() )
 		{
+			if ( ( *m_stateVariables )[variableName].GetType() != value.GetType() )
+			{
+				ReportError( Stringf( "Cannot assign a value of type '%s' to variable '%s' of type '%s'",	ToString( value.GetType() ).c_str(), 
+																											variableName.c_str(), 
+																											ToString( ( *m_stateVariables )[variableName].GetType() ).c_str() ) );
+				return;
+			}
+
 			( *m_stateVariables )[variableName] = value;
 			return;
 		}
@@ -1032,6 +1048,14 @@ void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, co
 		auto globalIter = m_globalVariables->find( variableName );
 		if ( globalIter != m_globalVariables->end() )
 		{
+			if ( ( *m_globalVariables )[variableName].GetType() != value.GetType() )
+			{
+				ReportError( Stringf( "Cannot assign a value of type '%s' to variable '%s' of type '%s'",	ToString( value.GetType() ).c_str(), 
+																											variableName.c_str(), 
+																											ToString( ( *m_globalVariables )[variableName].GetType() ).c_str() ) );
+				return;
+			}
+
 			( *m_globalVariables )[variableName] = value;
 		}
 	}
@@ -1042,6 +1066,12 @@ void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, co
 // TODO: Find a more general way to set member variables
 void ZephyrVirtualMachine::AssignToVec2MemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables )
 {
+	if ( value.GetType() != eValueType::NUMBER )
+	{
+		ReportError( Stringf( "Cannot assign a value of type '%s' to Vec2 variable '%s' member '%s'", ToString( value.GetType() ).c_str(), variableName.c_str(), memberName.c_str() ) );
+		return;
+	}
+
 	// Try to find in local variables first
 	auto localIter = localVariables.find( variableName );
 	if ( localIter != localVariables.end() )
@@ -1088,6 +1118,12 @@ void ZephyrVirtualMachine::AssignToVec2MemberVariable( const std::string& variab
 //-----------------------------------------------------------------------------------------------
 void ZephyrVirtualMachine::AssignToVec3MemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables )
 {
+	if ( value.GetType() != eValueType::NUMBER )
+	{
+		ReportError( Stringf( "Cannot assign a value of type '%s' to Vec3 variable '%s' member '%s'", ToString( value.GetType() ).c_str(), variableName.c_str(), memberName.c_str() ) );
+		return;
+	}
+
 	// Try to find in local variables first
 	auto localIter = localVariables.find( variableName );
 	if ( localIter != localVariables.end() )

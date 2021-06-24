@@ -212,21 +212,16 @@ State MemberTest
 		Vec2 vec1 = Vec2( 1, 2 )
 		Vec3 vector3 = Vec3( 1, 2, 3 )
 		// Number a = vec1.x;
+		
+		// Test for dynamic assignment
 		String a
-		a = vec1.y
+		// a = vec1.y
 		// a = vec1.z
-		a = vec1
-		a.x = 9
-		a.y = 8
+		// a = vec1
+		// a.x = 9
+		// a.y = 8
 
-		Vec2 frog = a * Vec2(0,0)
-
-		if( a.x != 9 || a.y != 8 )
-		{
-			PrintToConsole( text: "MemberTest: Failed, expected 9 but found ", color: "red" )
-			PrintToConsole( text: a.x, color: "red" )
-			return;
-		}
+		// Vec2 frog = a * Vec2(0,0)
 
 		Number b
 		// b = a.x
@@ -348,12 +343,10 @@ State BinaryOpTest
 
 	Function RunEntityTests()
 	{
-		Entity aEntity = 5
-		Entity bEntity = 1		
+		Entity aEntity = null
+		Entity bEntity = aEntity		
 		
-		if( aEntity == bEntity ) 						{ PrintToConsole( text: "BinaryOpTest: Failed Entity == Entity ", color: "red" ) }
-		aEntity = bEntity
-		if( aEntity != bEntity ) 						{ PrintToConsole( text: "BinaryOpTest: Failed Entity != Entity ", color: "red" ) }
+		if( aEntity != bEntity ) 						{ PrintToConsole( text: "BinaryOpTest: Failed Entity == Entity ", color: "red" ) }
 	}
 }
 
