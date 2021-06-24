@@ -236,12 +236,12 @@ void ZephyrScript::SetGlobalVariable( const std::string& varName, const ZephyrVa
 }
 
 
-//-----------------------------------------------------------------------------------------------
-void ZephyrScript::SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
-{
-	// Already checked to make sure this is a valid member
-	m_globalBytecodeChunk->SetVec2Variable( varName, memberName, value );
-}
+////-----------------------------------------------------------------------------------------------
+//void ZephyrScript::SetGlobalVec2Member( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
+//{
+//	// Already checked to make sure this is a valid member
+//	m_globalBytecodeChunk->SetVec2Member( varName, memberName, value );
+//}
 
 
 //-----------------------------------------------------------------------------------------------

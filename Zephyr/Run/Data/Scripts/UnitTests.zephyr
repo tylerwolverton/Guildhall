@@ -210,9 +210,23 @@ State MemberTest
 	OnEnter()
 	{
 		Vec2 vec1 = Vec2( 1, 2 )
-		Number a = vec1.x;
+		Vec3 vector3 = Vec3( 1, 2, 3 )
+		// Number a = vec1.x;
+		String a
 		a = vec1.y
 		// a = vec1.z
+		a = vec1
+		a.x = 9
+		a.y = 8
+
+		Vec2 frog = a * Vec2(0,0)
+
+		if( a.x != 9 || a.y != 8 )
+		{
+			PrintToConsole( text: "MemberTest: Failed, expected 9 but found ", color: "red" )
+			PrintToConsole( text: a.x, color: "red" )
+			return;
+		}
 
 		Number b
 		// b = a.x
@@ -241,6 +255,14 @@ State MemberTest
 		}
 		
 		//vec1.z = 7
+
+		vector3.z = 6
+		if( vector3.z != 6 )
+		{
+			PrintToConsole( text: "MemberTest: Failed, expected 6 but found ", color: "red" )
+			PrintToConsole( text: vector3.z, color: "red" )
+			return;
+		}
 
 		PrintToConsole( text: "MemberTest: Success", color: "green" )
 

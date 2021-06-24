@@ -34,7 +34,7 @@ public:
 	
 	virtual ZephyrValue			GetGlobalVariable( const std::string& varName );
 	virtual void				SetGlobalVariable( const std::string& varName, const ZephyrValue& value );
-	void						SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value );
+	//void						SetGlobalVec2Member( const std::string& varName, const std::string& memberName, const ZephyrValue& value );
 
 	bool						IsScriptValid() const;
 	void						SetScriptObjectValidity( bool isValid );

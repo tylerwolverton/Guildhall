@@ -77,6 +77,7 @@ private:
 	bool ParseBinaryExpression();
 	bool ParseNumberConstant();
 	bool ParseVec2Constant();
+	bool ParseVec3Constant();
 	bool ParseBoolConstant( bool value );
 	bool ParseEntityConstant();
 	bool ParseStringConstant();

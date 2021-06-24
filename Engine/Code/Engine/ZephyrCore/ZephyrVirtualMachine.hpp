@@ -53,9 +53,13 @@ private:
 	void PushLessOp( ZephyrValue& a, ZephyrValue& b );
 	void PushLessEqualOp( ZephyrValue& a, ZephyrValue& b );
 
+	bool TryToPushVec2MultiplyOp( ZephyrValue& a, ZephyrValue& b );
+	bool TryToPushVec3MultiplyOp( ZephyrValue& a, ZephyrValue& b );
+
 	ZephyrValue GetVariableValue( const std::string& variableName, const ZephyrValueMap& localVariables );
 	void		AssignToVariable( const std::string& variableName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	void		AssignToVec2MemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
+	void		AssignToVec3MemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables );
 	
 	MemberAccessorResult ProcessResultOfMemberAccessor( const ZephyrValueMap& localVariables );
 	
@@ -67,6 +71,7 @@ private:
 	ZephyrValue GetGlobalVariableFromEntity	( EntityId entityId, const std::string& variableName );
 	void SetGlobalVariableInEntity			( EntityId entityId, const std::string& variableName, const ZephyrValue& value );
 	void SetGlobalVec2MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value );
+	void SetGlobalVec3MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value );
 	bool CallMemberFunctionOnEntity			( EntityId entityId, const std::string& functionName, EventArgs* args );
 
 

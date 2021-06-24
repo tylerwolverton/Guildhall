@@ -128,6 +128,31 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 						SetGlobalVec2MemberVariableInEntity( entityIdWithMember, vec2VarName, lastMemberName, constantValue );
 					}
 				}
+				else if ( memberAccessorResult.finalMemberVal.GetType() == eValueType::VEC3 )
+				{
+					if ( lastMemberName != "x"
+						 && lastMemberName != "y" 
+						 && lastMemberName != "z" )
+					{
+						ReportError( Stringf( "'%s' is not a member of Vec3", lastMemberName.c_str() ) );
+						return;
+					}
+
+					// This variable belongs to current entity, save like this to set local or state variables
+					int memberCount = (int)memberAccessorResult.memberNames.size();
+					if ( memberCount <= 1 )
+					{
+						AssignToVec3MemberVariable( memberAccessorResult.baseObjName, lastMemberName, constantValue, localVariables );
+					}
+					else
+					{
+						// Account for this being a member of a different entity
+						EntityId entityIdWithMember = memberAccessorResult.entityIdChain.back();
+						std::string vec3VarName = memberAccessorResult.memberNames[memberCount - 2];
+
+						SetGlobalVec3MemberVariableInEntity( entityIdWithMember, vec3VarName, lastMemberName, constantValue );
+					}
+				}
 
 				PushConstant( constantValue );
 			}
@@ -166,6 +191,19 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 						else
 						{
 							ReportError( Stringf( "'%s' is not a member of Vec2", lastMemberName.c_str() ) );
+							return;
+						}
+					}
+					break;
+
+					case eValueType::VEC3:
+					{
+						if		( lastMemberName == "x" ) { PushConstant( memberAccessorResult.finalMemberVal.GetAsVec3().x ); }
+						else if ( lastMemberName == "y" ) { PushConstant( memberAccessorResult.finalMemberVal.GetAsVec3().y ); }
+						else if ( lastMemberName == "z" ) { PushConstant( memberAccessorResult.finalMemberVal.GetAsVec3().z ); }
+						else
+						{
+							ReportError( Stringf( "'%s' is not a member of Vec3", lastMemberName.c_str() ) );
 							return;
 						}
 					}
@@ -230,6 +268,17 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				ZephyrValue xValue = PopConstant();
 
 				ZephyrValue value( Vec2( xValue.GetAsNumber(), yValue.GetAsNumber() ) );
+				PushConstant( value );
+			}
+			break;
+
+			case eOpCode::CONSTANT_VEC3:
+			{
+				ZephyrValue zValue = PopConstant();
+				ZephyrValue yValue = PopConstant();
+				ZephyrValue xValue = PopConstant();
+
+				ZephyrValue value( Vec3( xValue.GetAsNumber(), yValue.GetAsNumber(), zValue.GetAsNumber() ) );
 				PushConstant( value );
 			}
 			break;
@@ -305,6 +354,10 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 				else if ( a.GetType() == eValueType::VEC2 )
 				{
 					PushConstant( -a.GetAsVec2() );
+				}
+				else if ( a.GetType() == eValueType::VEC3 )
+				{
+					PushConstant( -a.GetAsVec3() );
 				}
 			}
 			break;
@@ -425,6 +478,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 			{
 				case eValueType::NUMBER:	eventArgs->SetValue( keyValuePair.first, val.GetAsNumber() ); break;
 				case eValueType::VEC2:		eventArgs->SetValue( keyValuePair.first, val.GetAsVec2() ); break;
+				case eValueType::VEC3:		eventArgs->SetValue( keyValuePair.first, val.GetAsVec3() ); break;
 				case eValueType::STRING:	eventArgs->SetValue( keyValuePair.first, val.GetAsString() ); break;
 				case eValueType::ENTITY:	eventArgs->SetValue( keyValuePair.first, val.GetAsEntity() ); break;
 				case eValueType::BOOL:		eventArgs->SetValue( keyValuePair.first, val.GetAsBool() ); break;
@@ -466,6 +520,10 @@ void ZephyrVirtualMachine::CopyEventArgVariables( EventArgs* eventArgs, ZephyrVa
 		else if ( keyValuePair.second->Is<Vec2>() )
 		{
 			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, Vec2::ZERO ) );
+		}
+		else if ( keyValuePair.second->Is<Vec3>() )
+		{
+			localVariables[keyValuePair.first] = ZephyrValue( eventArgs->GetValue( keyValuePair.first, Vec3::ZERO ) );
 		}
 		else if ( keyValuePair.second->Is<std::string>() 
 				  || keyValuePair.second->Is<char*>() )
@@ -545,6 +603,13 @@ void ZephyrVirtualMachine::PushAddOp( ZephyrValue& a, ZephyrValue& b )
 		return;
 	}
 
+	if ( aType == eValueType::VEC3 && bType == eValueType::VEC3 )
+	{
+		Vec3 result = a.GetAsVec3() + b.GetAsVec3();
+		PushConstant( result );
+		return;
+	}
+
 	if ( aType == eValueType::STRING
 		 || bType == eValueType::STRING )
 	{
@@ -578,7 +643,76 @@ void ZephyrVirtualMachine::PushSubtractOp( ZephyrValue& a, ZephyrValue& b )
 		return;
 	}
 	
+	if ( aType == eValueType::VEC3 && bType == eValueType::VEC3 )
+	{
+		Vec3 result = a.GetAsVec3() - b.GetAsVec3();
+		PushConstant( result );
+		return;
+	}
+
 	ReportError( Stringf( "Cannot subtract a variable of type %s from a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrVirtualMachine::TryToPushVec2MultiplyOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
+	{
+		Vec2 result = a.GetAsVec2() * b.GetAsVec2();
+		PushConstant( result );
+		return true;
+	}
+
+	if ( aType == eValueType::VEC2 && bType == eValueType::NUMBER )
+	{
+		Vec2 result = a.GetAsVec2() * b.GetAsNumber();
+		PushConstant( result );
+		return true;
+	}
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::VEC2 )
+	{
+		Vec2 result = a.GetAsNumber() * b.GetAsVec2();
+		PushConstant( result );
+		return true;
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrVirtualMachine::TryToPushVec3MultiplyOp( ZephyrValue& a, ZephyrValue& b )
+{
+	eValueType aType = a.GetType();
+	eValueType bType = b.GetType();
+
+	if ( aType == eValueType::VEC3 && bType == eValueType::VEC3 )
+	{
+		Vec3 result = a.GetAsVec3() * b.GetAsVec3();
+		PushConstant( result );
+		return true;
+	}
+
+	if ( aType == eValueType::VEC3 && bType == eValueType::NUMBER )
+	{
+		Vec3 result = a.GetAsVec3() * b.GetAsNumber();
+		PushConstant( result );
+		return true;
+	}
+
+	if ( aType == eValueType::NUMBER && bType == eValueType::VEC3 )
+	{
+		Vec3 result = a.GetAsNumber() * b.GetAsVec3();
+		PushConstant( result );
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -595,26 +729,8 @@ void ZephyrVirtualMachine::PushMultiplyOp( ZephyrValue& a, ZephyrValue& b )
 		return;
 	}
 
-	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
-	{
-		Vec2 result = a.GetAsVec2() * b.GetAsVec2();
-		PushConstant( result );
-		return;
-	}
-
-	if ( aType == eValueType::VEC2 && bType == eValueType::NUMBER )
-	{
-		Vec2 result = a.GetAsVec2() * b.GetAsNumber();
-		PushConstant( result );
-		return;
-	}
-
-	if ( aType == eValueType::NUMBER && bType == eValueType::VEC2 )
-	{
-		Vec2 result = a.GetAsNumber() * b.GetAsVec2();
-		PushConstant( result );
-		return;
-	}
+	if ( TryToPushVec2MultiplyOp( a, b ) ) return;
+	if ( TryToPushVec3MultiplyOp( a, b ) ) return;
 
 	ReportError( Stringf( "Cannot multiply a variable of type %s by a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
 }
@@ -651,6 +767,19 @@ void ZephyrVirtualMachine::PushDivideOp( ZephyrValue& a, ZephyrValue& b )
 		PushConstant( result );
 		return;
 	}
+
+	if ( aType == eValueType::VEC3 && bType == eValueType::NUMBER )
+	{
+		if ( IsNearlyEqual( b.GetAsNumber(), 0.f, .0000001f ) )
+		{
+			ReportError( "Cannot divide a Vec3 variable by 0" );
+			return;
+		}
+
+		Vec3 result = a.GetAsVec3() / b.GetAsNumber();
+		PushConstant( result );
+		return;
+	}
 	
 	ReportError( Stringf( "Cannot divide a variable of type %s by a variable of type %s", ToString( aType ).c_str(), ToString( bType ).c_str() ) );
 }
@@ -672,6 +801,13 @@ void ZephyrVirtualMachine::PushNotEqualOp( ZephyrValue& a, ZephyrValue& b )
 	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
 	{
 		bool result = !IsNearlyEqual( a.GetAsVec2(), b.GetAsVec2(), .001f );
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::VEC3 && bType == eValueType::VEC3 )
+	{
+		bool result = !IsNearlyEqual( a.GetAsVec3(), b.GetAsVec3(), .001f );
 		PushConstant( result );
 		return;
 	}
@@ -718,6 +854,13 @@ void ZephyrVirtualMachine::PushEqualOp( ZephyrValue& a, ZephyrValue& b )
 	if ( aType == eValueType::VEC2 && bType == eValueType::VEC2 )
 	{
 		bool result = IsNearlyEqual( a.GetAsVec2(), b.GetAsVec2(), .001f );
+		PushConstant( result );
+		return;
+	}
+
+	if ( aType == eValueType::VEC3 && bType == eValueType::VEC3 )
+	{
+		bool result = IsNearlyEqual( a.GetAsVec3(), b.GetAsVec3(), .001f );
 		PushConstant( result );
 		return;
 	}
@@ -869,6 +1012,7 @@ void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, co
 	if ( localIter != localVariables.end() )
 	{
 		localVariables[variableName] = value;
+		return;
 	}
 
 	// Check state variables
@@ -878,6 +1022,7 @@ void ZephyrVirtualMachine::AssignToVariable( const std::string& variableName, co
 		if ( stateIter != m_stateVariables->end() )
 		{
 			( *m_stateVariables )[variableName] = value;
+			return;
 		}
 	}
 
@@ -906,6 +1051,7 @@ void ZephyrVirtualMachine::AssignToVec2MemberVariable( const std::string& variab
 		else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
 
 		localVariables[variableName] = ZephyrValue( vecValue );
+		return;
 	}
 
 	// Check state variables
@@ -915,10 +1061,11 @@ void ZephyrVirtualMachine::AssignToVec2MemberVariable( const std::string& variab
 		if ( stateIter != m_stateVariables->end() )
 		{
 			Vec2 vecValue = stateIter->second.GetAsVec2();
-			if ( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+			if		( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
 			else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
 
 			( *m_stateVariables )[variableName] = ZephyrValue( vecValue );
+			return;
 		}
 	}
 
@@ -929,8 +1076,57 @@ void ZephyrVirtualMachine::AssignToVec2MemberVariable( const std::string& variab
 		if ( globalIter != m_globalVariables->end() )
 		{
 			Vec2 vecValue = globalIter->second.GetAsVec2();
-			if ( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+			if		( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
 			else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
+
+			( *m_globalVariables )[variableName] = ZephyrValue( vecValue );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::AssignToVec3MemberVariable( const std::string& variableName, const std::string& memberName, const ZephyrValue& value, ZephyrValueMap& localVariables )
+{
+	// Try to find in local variables first
+	auto localIter = localVariables.find( variableName );
+	if ( localIter != localVariables.end() )
+	{
+		Vec3 vecValue = localIter->second.GetAsVec3();
+		if		( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+		else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
+		else if ( memberName == "z" ) { vecValue.z = value.GetAsNumber(); }
+
+		localVariables[variableName] = ZephyrValue( vecValue );
+		return;
+	}
+
+	// Check state variables
+	if ( m_stateVariables != nullptr )
+	{
+		auto stateIter = m_stateVariables->find( variableName );
+		if ( stateIter != m_stateVariables->end() )
+		{
+			Vec3 vecValue = stateIter->second.GetAsVec3();
+			if		( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+			else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
+			else if ( memberName == "z" ) { vecValue.z = value.GetAsNumber(); }
+
+			( *m_stateVariables )[variableName] = ZephyrValue( vecValue );
+			return;
+		}
+	}
+
+	// Check global variables
+	if ( m_globalVariables != nullptr )
+	{
+		auto globalIter = m_globalVariables->find( variableName );
+		if ( globalIter != m_globalVariables->end() )
+		{
+			Vec3 vecValue = globalIter->second.GetAsVec3();
+			if		( memberName == "x" ) { vecValue.x = value.GetAsNumber(); }
+			else if ( memberName == "y" ) { vecValue.y = value.GetAsNumber(); }
+			else if ( memberName == "z" ) { vecValue.z = value.GetAsNumber(); }
 
 			( *m_globalVariables )[variableName] = ZephyrValue( vecValue );
 		}
@@ -988,11 +1184,24 @@ MemberAccessorResult ZephyrVirtualMachine::ProcessResultOfMemberAccessor( const 
 
 			case eValueType::VEC2:
 			{
-				if ( memberName == "x" ) { memberVal = ZephyrValue( memberVal.GetAsVec2().x ); }
+				if		( memberName == "x" ) { memberVal = ZephyrValue( memberVal.GetAsVec2().x ); }
 				else if ( memberName == "y" ) { memberVal = ZephyrValue( memberVal.GetAsVec2().y ); }
 				else
 				{
 					ReportError( Stringf( "'%s' is not a member of Vec2", memberName.c_str() ) );
+					return memberAccessResult;
+				}
+			}
+			break;
+
+			case eValueType::VEC3:
+			{
+				if		( memberName == "x" ) { memberVal = ZephyrValue( memberVal.GetAsVec3().x ); }
+				else if ( memberName == "y" ) { memberVal = ZephyrValue( memberVal.GetAsVec3().y ); }
+				else if ( memberName == "z" ) { memberVal = ZephyrValue( memberVal.GetAsVec3().y ); }
+				else
+				{
+					ReportError( Stringf( "'%s' is not a member of Vec3", memberName.c_str() ) );
 					return memberAccessResult;
 				}
 			}
@@ -1063,6 +1272,7 @@ void ZephyrVirtualMachine::InsertParametersIntoEventArgs( EventArgs& args )
 			case eValueType::BOOL:		args.SetValue( param.GetAsString(), value.GetAsBool() ); break;
 			case eValueType::NUMBER:	args.SetValue( param.GetAsString(), value.GetAsNumber() ); break;
 			case eValueType::VEC2:		args.SetValue( param.GetAsString(), value.GetAsVec2() ); break;
+			case eValueType::VEC3:		args.SetValue( param.GetAsString(), value.GetAsVec3() ); break;
 			case eValueType::STRING:	args.SetValue( param.GetAsString(), value.GetAsString() ); break;
 			case eValueType::ENTITY:	args.SetValue( param.GetAsString(), value.GetAsEntity() ); break;
 			default: ERROR_AND_DIE( Stringf( "Unimplemented event arg type '%s'", ToString( value.GetType() ).c_str() ) );
@@ -1123,6 +1333,10 @@ ZephyrValue ZephyrVirtualMachine::GetZephyrValFromEventArgs( const std::string& 
 	{
 		return ZephyrValue( args.GetValue( varName, Vec2::ZERO ) );
 	}
+	else if ( iter->second->Is<Vec3>() )
+	{
+		return ZephyrValue( args.GetValue( varName, Vec3::ZERO ) );
+	}
 	else if ( iter->second->Is<std::string>()
 			  || iter->second->Is<char*>() )
 	{
@@ -1170,8 +1384,48 @@ void ZephyrVirtualMachine::SetGlobalVec2MemberVariableInEntity( EntityId entityI
 		ReportError( Stringf( "Unknown entity does not contain a member '%s'", variableName.c_str() ) );
 		return;
 	}
+	ZephyrValue oldValue = entity->GetGlobalVariable( variableName );
 
-	return entity->SetGlobalVec2Variable( variableName, memberName, value );
+	Vec2 newValue = oldValue.GetAsVec2();
+	if ( memberName == "x" )
+	{
+		newValue.x = value.GetAsNumber();
+	}
+	if ( memberName == "y" )
+	{
+		newValue.y = value.GetAsNumber();
+	}
+
+	return entity->SetGlobalVariable( variableName, ZephyrValue( newValue ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrVirtualMachine::SetGlobalVec3MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value )
+{
+	ZephyrEntity* entity = g_zephyrAPI->GetEntityById( entityId );
+	if ( entity == nullptr )
+	{
+		ReportError( Stringf( "Unknown entity does not contain a member '%s'", variableName.c_str() ) );
+		return;
+	}
+	ZephyrValue oldValue = entity->GetGlobalVariable( variableName );
+
+	Vec3 newValue = oldValue.GetAsVec3();
+	if ( memberName == "x" )
+	{
+		newValue.x = value.GetAsNumber();
+	}
+	if ( memberName == "y" )
+	{
+		newValue.y = value.GetAsNumber();
+	}
+	if ( memberName == "z" )
+	{
+		newValue.z = value.GetAsNumber();
+	}
+
+	return entity->SetGlobalVariable( variableName, ZephyrValue( newValue ) );
 }
 
 

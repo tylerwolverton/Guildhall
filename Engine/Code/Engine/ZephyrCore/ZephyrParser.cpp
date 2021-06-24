@@ -309,6 +309,15 @@ bool ZephyrParser::ParseStatement()
 		}
 		break;
 
+		case eTokenType::VEC3:
+		{
+			if ( !ParseVariableDeclaration( eValueType::VEC3 ) )
+			{
+				return false;
+			}
+		}
+		break;
+
 		case eTokenType::BOOL:
 		{
 			if ( !ParseVariableDeclaration( eValueType::BOOL ) )
@@ -488,6 +497,7 @@ bool ZephyrParser::ParseFunctionDefinition()
 		{
 			case eTokenType::NUMBER: if ( !ParseVariableDeclaration( eValueType::NUMBER ) ) { return false; } break;
 			case eTokenType::VEC2:	 if ( !ParseVariableDeclaration( eValueType::VEC2   ) ) { return false; } break;
+			case eTokenType::VEC3:	 if ( !ParseVariableDeclaration( eValueType::VEC3   ) ) { return false; } break;
 			case eTokenType::BOOL:   if ( !ParseVariableDeclaration( eValueType::BOOL   ) ) { return false; } break;
 			case eTokenType::STRING: if ( !ParseVariableDeclaration( eValueType::STRING ) ) { return false; } break;
 			case eTokenType::ENTITY: if ( !ParseVariableDeclaration( eValueType::ENTITY ) ) { return false; } break;
@@ -557,6 +567,7 @@ bool ZephyrParser::ParseVariableDeclaration( const eValueType& varType )
 				case eValueType::STRING: WriteConstantToCurChunk( ZephyrValue( "" ) ); break;
 				case eValueType::ENTITY: WriteConstantToCurChunk( ZephyrValue( (EntityId)-1 ) ); break;
 				case eValueType::VEC2:	 WriteConstantToCurChunk( ZephyrValue( Vec2::ZERO ) ); break;
+				case eValueType::VEC3:	 WriteConstantToCurChunk( ZephyrValue( Vec3::ZERO ) ); break;
 			}
 
 			/*std::string errorMsg( "Unexpected '" );
@@ -646,6 +657,7 @@ bool ZephyrParser::ParseEventArgs()
 		{
 			case eTokenType::CONSTANT_NUMBER:
 			case eTokenType::VEC2:
+			case eTokenType::VEC3:
 			case eTokenType::ENTITY:
 			case eTokenType::TRUE_TOKEN:
 			case eTokenType::FALSE_TOKEN:
@@ -979,8 +991,9 @@ bool ZephyrParser::CallPrefixFunction( const ZephyrToken& token )
 
 		case eTokenType::CONSTANT_NUMBER:	return ParseNumberConstant();
 		case eTokenType::VEC2:				return ParseVec2Constant();
-		case eTokenType::TRUE_TOKEN:				return ParseBoolConstant( true );
-		case eTokenType::FALSE_TOKEN:				return ParseBoolConstant( false );
+		case eTokenType::VEC3:				return ParseVec3Constant();
+		case eTokenType::TRUE_TOKEN:		return ParseBoolConstant( true );
+		case eTokenType::FALSE_TOKEN:		return ParseBoolConstant( false );
 		case eTokenType::NULL_TOKEN:		return ParseEntityConstant();
 		case eTokenType::CONSTANT_STRING:	return ParseStringConstant();
 		case eTokenType::ENTITY:
@@ -1163,6 +1176,41 @@ bool ZephyrParser::ParseVec2Constant()
 	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) { return false; }
 
 	return WriteOpCodeToCurChunk( eOpCode::CONSTANT_VEC2 );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+bool ZephyrParser::ParseVec3Constant()
+{
+	if ( !ConsumeExpectedNextToken( eTokenType::VEC3 ) ) { return false; }
+
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_LEFT ) ) { return false; }
+
+	// Parse x value
+	if ( !ParseExpression() )
+	{
+		return false;
+	}
+
+	if ( !ConsumeExpectedNextToken( eTokenType::COMMA ) ) { return false; }
+
+	// Parse y value
+	if ( !ParseExpression() )
+	{
+		return false;
+	}
+
+	if ( !ConsumeExpectedNextToken( eTokenType::COMMA ) ) { return false; }
+
+	// Parse z value
+	if ( !ParseExpression() )
+	{
+		return false;
+	}
+
+	if ( !ConsumeExpectedNextToken( eTokenType::PARENTHESIS_RIGHT ) ) { return false; }
+
+	return WriteOpCodeToCurChunk( eOpCode::CONSTANT_VEC3 );
 }
 
 
@@ -1380,6 +1428,7 @@ bool ZephyrParser::IsStatementValidForChunk( eTokenType statementToken, eBytecod
 		case eTokenType::FUNCTION:
 		case eTokenType::NUMBER:
 		case eTokenType::VEC2:
+		case eTokenType::VEC3:
 		case eTokenType::BOOL:
 		case eTokenType::STRING:
 		case eTokenType::ENTITY:
@@ -1478,6 +1527,7 @@ bool ZephyrParser::DeclareVariable( const std::string& identifier, const eValueT
 	{
 		case eValueType::NUMBER: value = ZephyrValue( 0.f ); break;
 		case eValueType::VEC2:	 value = ZephyrValue( Vec2::ZERO ); break;
+		case eValueType::VEC3:	 value = ZephyrValue( Vec3::ZERO ); break;
 		case eValueType::BOOL:	 value = ZephyrValue( false ); break;
 		case eValueType::STRING: value = ZephyrValue( std::string( "" ) ); break;
 		case eValueType::ENTITY: 
@@ -1508,30 +1558,6 @@ bool ZephyrParser::TryToGetVariable( const std::string& identifier, ZephyrValue&
 	{
 		foundValue = m_stateMachineBytecodeChunk->TryToGetVariable( identifier, out_value );
 	}
-
-	//// Check for member accessor for Vec2
-	//if ( foundValue && out_value.GetType() == eValueType::VEC2 )
-	//{
-	//	ZephyrToken nextToken = PeekNextToken();
-	//	if ( nextToken.GetType() == eTokenType::PERIOD )
-	//	{
-	//		ZephyrToken member = PeekNextNextToken();
-
-	//		if ( member.GetData() == "x" ) 
-	//		{
-	//			out_value = ZephyrValue( out_value.GetAsVec2().x );
-	//		}
-	//		else if ( member.GetData() == "y" ) 
-	//		{ 
-	//			out_value = ZephyrValue( out_value.GetAsVec2().x );
-	//		}
-	//		else
-	//		{
-	//			ReportError( Stringf( "%s is not a member of Vec2", member.GetData().c_str() ) );
-	//			return false;
-	//		}
-	//	}
-	//}
 
 	return foundValue;
 }

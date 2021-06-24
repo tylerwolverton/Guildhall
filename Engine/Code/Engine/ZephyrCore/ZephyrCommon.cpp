@@ -22,6 +22,7 @@ std::string ToString( eTokenType type )
 		case eTokenType::FUNCTION:			return "Function";
 		case eTokenType::NUMBER:			return "Number";
 		case eTokenType::VEC2:				return "Vec2";
+		case eTokenType::VEC3:				return "Vec3";
 		case eTokenType::BOOL:				return "Bool";
 		case eTokenType::STRING:			return "String";
 		case eTokenType::ENTITY:			return "Entity";
@@ -76,6 +77,7 @@ std::string GetTokenName( eTokenType type )
 		case eTokenType::FUNCTION:			return "FUNCTION";
 		case eTokenType::NUMBER:			return "NUMBER";
 		case eTokenType::VEC2:				return "VEC2";
+		case eTokenType::VEC3:				return "VEC3";
 		case eTokenType::BOOL:				return "BOOL";
 		case eTokenType::STRING:			return "STRING";
 		case eTokenType::ENTITY:			return "ENTITY";
@@ -174,6 +176,7 @@ std::string ToString( eValueType valueType )
 	{
 		case eValueType::NUMBER:	return "Number";
 		case eValueType::VEC2:		return "Vec2";
+		case eValueType::VEC3:		return "Vec3";
 		case eValueType::BOOL:		return "Bool";
 		case eValueType::STRING:	return "String";
 		case eValueType::ENTITY:	return "Entity";
@@ -205,6 +208,14 @@ ZephyrValue::ZephyrValue( const Vec2& value )
 {
 	m_type = eValueType::VEC2;
 	vec2Data = value;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue::ZephyrValue( const Vec3& value )
+{
+	m_type = eValueType::VEC3;
+	vec3Data = value;
 }
 
 
@@ -247,6 +258,7 @@ ZephyrValue::ZephyrValue( ZephyrValue const& other )
 		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
 		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
 		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
+		case eValueType::VEC3:		this->vec3Data = other.vec3Data;	break;
 		case eValueType::BOOL:		this->boolData = other.boolData;	break;
 		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
 	}
@@ -269,6 +281,7 @@ ZephyrValue& ZephyrValue::operator=( ZephyrValue const& other )
 		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
 		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
 		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
+		case eValueType::VEC3:		this->vec3Data = other.vec3Data;	break;
 		case eValueType::BOOL:		this->boolData = other.boolData;	break;
 		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
 	}
@@ -294,6 +307,7 @@ ZephyrValue::ZephyrValue( ZephyrValue const&& other )
 		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
 		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
 		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
+		case eValueType::VEC3:		this->vec3Data = other.vec3Data;	break;
 		case eValueType::BOOL:		this->boolData = other.boolData;	break;
 		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
 	}
@@ -321,6 +335,7 @@ ZephyrValue& ZephyrValue::operator=( ZephyrValue const&& other )
 		case eValueType::STRING:	this->strData = new std::string( *other.strData );	break;
 		case eValueType::NUMBER:	this->numberData = other.numberData;	break;
 		case eValueType::VEC2:		this->vec2Data = other.vec2Data;	break;
+		case eValueType::VEC3:		this->vec3Data = other.vec3Data;	break;
 		case eValueType::BOOL:		this->boolData = other.boolData;	break;
 		case eValueType::ENTITY:	this->entityData = other.entityData;	break;
 	}
@@ -361,6 +376,7 @@ bool ZephyrValue::EvaluateAsBool()
 	{
 		case eValueType::STRING: 	return !strData->empty();
 		case eValueType::VEC2: 		return !IsNearlyEqual( vec2Data, Vec2::ZERO );			
+		case eValueType::VEC3: 		return !IsNearlyEqual( vec3Data, Vec3::ZERO );			
 		case eValueType::NUMBER: 	return !IsNearlyEqual( numberData, 0.f );			
 		case eValueType::BOOL:		return boolData;	
 		case eValueType::ENTITY:	return entityData != -1;
@@ -376,6 +392,7 @@ Vec2 ZephyrValue::EvaluateAsVec2()
 	switch ( m_type )
 	{
 		case eValueType::VEC2: 		return vec2Data;
+		case eValueType::VEC3: 	
 		case eValueType::NUMBER: 	
 		case eValueType::STRING: 	
 		case eValueType::BOOL:		
@@ -389,12 +406,32 @@ Vec2 ZephyrValue::EvaluateAsVec2()
 
 
 //-----------------------------------------------------------------------------------------------
+Vec3 ZephyrValue::EvaluateAsVec3()
+{
+	switch ( m_type )
+	{
+		case eValueType::VEC3: 		return vec3Data;
+		case eValueType::VEC2: 		return Vec3( vec2Data.x, vec2Data.y, 0.f );
+		case eValueType::NUMBER:
+		case eValueType::STRING:
+		case eValueType::BOOL:
+		case eValueType::ENTITY:
+			ReportConversionError( eValueType::VEC3 );
+	}
+
+	// Doesn't matter, Entity val will be set as -1000
+	return Vec3::ZERO;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 std::string ZephyrValue::EvaluateAsString()
 {
 	switch ( m_type )
 	{
 		case eValueType::STRING: 	return GetAsString();
 		case eValueType::VEC2: 		return ToString( vec2Data );
+		case eValueType::VEC3: 		return ToString( vec3Data );
 		case eValueType::NUMBER: 	return ToString( numberData );
 		case eValueType::BOOL:		return ToString( boolData );
 		case eValueType::ENTITY:	return ToString( entityData );
@@ -413,6 +450,7 @@ float ZephyrValue::EvaluateAsNumber()
 		case eValueType::BOOL:		return boolData ? 1.f : 0.f;
 		case eValueType::STRING: 	
 		case eValueType::VEC2: 		
+		case eValueType::VEC3: 		
 		case eValueType::ENTITY:	
 			ReportConversionError( eValueType::NUMBER );
 	}
@@ -429,6 +467,7 @@ EntityId ZephyrValue::EvaluateAsEntity()
 		case eValueType::ENTITY:	return entityData;
 		case eValueType::STRING: 	
 		case eValueType::VEC2: 		
+		case eValueType::VEC3: 		
 		case eValueType::NUMBER: 	
 		case eValueType::BOOL:		
 			ReportConversionError( eValueType::ENTITY );

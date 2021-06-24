@@ -201,16 +201,16 @@ void ZephyrEntity::SetGlobalVariable( const std::string& varName, const ZephyrVa
 }
 
 
-//-----------------------------------------------------------------------------------------------
-void ZephyrEntity::SetGlobalVec2Variable( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
-{
-	if ( !IsScriptValid() )
-	{
-		return;
-	}
-
-	m_scriptObj->SetGlobalVec2Variable( varName, memberName, value );
-}
+////-----------------------------------------------------------------------------------------------
+//void ZephyrEntity::SetGlobalVec2Member( const std::string& varName, const std::string& memberName, const ZephyrValue& value )
+//{
+//	if ( !IsScriptValid() )
+//	{
+//		return;
+//	}
+//
+//	m_scriptObj->SetGlobalVec2Member( varName, memberName, value );
+//}
 
 
 //-----------------------------------------------------------------------------------------------
