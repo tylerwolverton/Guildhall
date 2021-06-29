@@ -6,6 +6,8 @@
 #include "Engine/Core/Vertex_PCU.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/StringUtils.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
@@ -16,10 +18,13 @@
 #include "Game/GameCommon.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
 
+#include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Entity::Entity( const EntityDefinition& entityDef )
-	: m_entityDef( entityDef )
+Entity::Entity( const EntityDefinition& entityDef, Map* map )
+	: ZephyrEntity( entityDef )
+	, m_entityDef( entityDef )
+	, m_map( map )
 {
 }
 
@@ -39,6 +44,8 @@ void Entity::Update( float deltaSeconds )
 	m_orientationDegrees += m_angularVelocity * deltaSeconds;
 
 	ApplyFriction();
+
+	ZephyrEntity::Update( deltaSeconds );
 }
 
 
@@ -94,7 +101,14 @@ void Entity::Render() const
 //-----------------------------------------------------------------------------------------------
 void Entity::Die()
 {
+	if ( IsDead() )
+	{
+		return;
+	}
+
 	m_isDead = true;
+
+	ZephyrEntity::Die();
 }
 
 
@@ -142,3 +156,133 @@ void Entity::ApplyFriction()
 		m_velocity = Vec2( 0.f, 0.f );
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::RegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName )
+{
+	char keyCode = GetKeyCodeFromString( keyCodeStr );
+
+	if ( keyCode == '\0' )
+	{
+		return;
+	}
+
+	m_registeredKeyEvents[keyCode].push_back( eventName );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::UnRegisterKeyEvent( const std::string& keyCodeStr, const std::string& eventName )
+{
+	char keyCode = GetKeyCodeFromString( keyCodeStr );
+
+	if ( keyCode == '\0' )
+	{
+		return;
+	}
+
+	auto eventIter = m_registeredKeyEvents.find( keyCode );
+	if ( eventIter == m_registeredKeyEvents.end() )
+	{
+		return;
+	}
+
+	Strings& eventNames = eventIter->second;
+	int eventIdx = 0;
+	for ( ; eventIdx < (int)eventNames.size(); ++eventIdx )
+	{
+		if ( eventName == eventNames[eventIdx] )
+		{
+			break;
+		}
+	}
+
+	// Remove bound event
+	if ( eventIdx < (int)eventNames.size() )
+	{
+		eventNames.erase( eventNames.begin() + eventIdx );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+ZephyrValue Entity::GetGlobalVariable( const std::string& varName )
+{
+	if ( !IsScriptValid() )
+	{
+		return ZephyrValue( ERROR_ZEPHYR_VAL );
+	}
+
+	// First check c++ built in vars
+	if ( varName == "id" ) { return ZephyrValue( (float)GetId() ); }
+	if ( varName == "name" ) { return ZephyrValue( GetName() ); }
+	if ( varName == "health" ) { return ZephyrValue( (float)m_curHealth ); }
+	//if ( varName == "maxHealth" ) { return ZephyrValue( (float)m_entityDef.GetMaxHealth() ); }
+	if ( varName == "position" ) { return ZephyrValue( GetPosition() ); }
+	if ( varName == "forwardVec" ) { return ZephyrValue( GetForwardVector() ); }
+
+	return ZephyrEntity::GetGlobalVariable( varName );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& value )
+{
+	if ( !IsScriptValid() )
+	{
+		return;
+	}
+
+	// First check c++ built in vars
+	if ( varName == "health" )
+	{
+		m_curHealth = (int)value.GetAsNumber();
+		if ( m_curHealth < 0 )
+		{
+			Die();
+		}
+
+		return;
+	}
+
+	ZephyrEntity::SetGlobalVariable( varName, value );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::AddGameEventParams( EventArgs* args ) const
+{
+	UNUSED( args );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+char Entity::GetKeyCodeFromString( const std::string& keyCodeStr )
+{
+	if (		IsEqualIgnoreCase( keyCodeStr, "space" ) )	{ return KEY_SPACEBAR; }
+	else if (	IsEqualIgnoreCase( keyCodeStr, "enter" ) )	{ return KEY_ENTER; }
+	else if (	IsEqualIgnoreCase( keyCodeStr, "shift" ) )	{ return KEY_SHIFT; }
+	else if (	IsEqualIgnoreCase( keyCodeStr, "left" ) )	{ return KEY_LEFTARROW; }
+	else if (	IsEqualIgnoreCase( keyCodeStr, "right" ) )	{ return KEY_RIGHTARROW; }
+	else if (	IsEqualIgnoreCase( keyCodeStr, "up" ) )		{ return KEY_UPARROW; }
+	else if (	IsEqualIgnoreCase( keyCodeStr, "down" ) )	{ return KEY_DOWNARROW; }
+	else
+	{
+		// Register letters and numbers
+		char key = keyCodeStr[0];
+		if ( key >= 'a' && key <= 'z' )
+		{
+			key -= 32;
+		}
+
+		if ( ( key >= '0' && key <= '9' )
+			 || ( key >= 'A' && key <= 'Z' ) )
+		{
+			return key;
+		}
+	}
+
+	return '\0';
+}
+

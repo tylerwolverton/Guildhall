@@ -74,7 +74,6 @@ private:
 	void SetGlobalVec3MemberVariableInEntity( EntityId entityId, const std::string& variableName, const std::string& memberName, const ZephyrValue& value );
 	bool CallMemberFunctionOnEntity			( EntityId entityId, const std::string& functionName, EventArgs* args );
 
-
 	void ReportError( const std::string& errorMsg );
 	bool IsErrorValue( const ZephyrValue& zephyrValue );
 

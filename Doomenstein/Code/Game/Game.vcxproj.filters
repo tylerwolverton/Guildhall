@@ -43,9 +43,6 @@
     <ClCompile Include="TileDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Actor.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="EntityDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -64,9 +61,6 @@
     <ClCompile Include="Portal.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Projectile.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteAnimationSetDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -74,6 +68,9 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="MapData.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripting\ZephyrGameAPI.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,9 +102,6 @@
     <ClInclude Include="TileDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Actor.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="EntityDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -126,9 +120,6 @@
     <ClInclude Include="Portal.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Projectile.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="SpriteAnimationSetDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -138,6 +129,7 @@
     <ClInclude Include="MapData.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Scripting\ZephyrGameAPI.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">

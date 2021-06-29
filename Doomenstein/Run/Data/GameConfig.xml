@@ -1,6 +1,6 @@
 <GameConfig
 	startMap="TestRoom"
-  windowHeightRatio=".5f"
+  windowHeightRatio=".9f"
 	windowAspect="1.777"
   windowTitle="Doomenstein"
 	windowMode="windowed"

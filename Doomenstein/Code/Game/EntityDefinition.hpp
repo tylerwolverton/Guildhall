@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrEntityDefinition.hpp"
 #include "Game/GameCommon.hpp"
 
 #include <string>
@@ -12,7 +14,7 @@ class SpriteAnimationSetDefinition;
 
 
 //-----------------------------------------------------------------------------------------------
-enum eEntityType
+enum eEntityClass
 {
 	UNKNOWN = -1,
 	ENTITY,
@@ -21,10 +23,11 @@ enum eEntityType
 	PORTAL,
 };
 
-std::string GetEntityTypeAsString( eEntityType entityType );
+std::string GetEntityClassAsString( eEntityClass entityType );
+
 
 //-----------------------------------------------------------------------------------------------
-class EntityDefinition
+class EntityDefinition : public ZephyrEntityDefinition
 {
 	friend class Entity;
 
@@ -32,11 +35,12 @@ public:
 	explicit EntityDefinition( const XmlElement& entityDefElem );
 	~EntityDefinition();
 
-	bool		IsValid() const																{ return m_isValid; }
-	std::string GetName() const																{ return m_name; }
-	eEntityType GetType() const																{ return m_type; }
-	float		GetWalkSpeed() const														{ return m_walkSpeed; }
-	Vec2		GetVisualSize() const														{ return m_visualSize; }
+	bool			IsValid() const																{ return m_isValid; }
+	std::string		GetName() const																{ return m_type; }
+	eEntityClass	GetClass() const																{ return m_class; }
+	float			GetWalkSpeed() const														{ return m_walkSpeed; }
+	Vec2			GetVisualSize() const														{ return m_visualSize; }
+
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
@@ -47,9 +51,9 @@ public:
 
 protected:
 	bool			m_isValid = false;
-	std::string		m_name;
-	eEntityType		m_type = eEntityType::UNKNOWN;
-	//std::string		m_type;
+	std::string		m_type;
+	eEntityClass	m_class = eEntityClass::UNKNOWN;
+
 	float			m_physicsRadius = 0.f;
 	float			m_height = 0.f;
 	float			m_eyeHeight = 0.f;

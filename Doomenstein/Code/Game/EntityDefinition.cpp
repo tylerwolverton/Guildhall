@@ -42,9 +42,10 @@ EntityDefinition* EntityDefinition::GetEntityDefinition( std::string entityName 
 
 //-----------------------------------------------------------------------------------------------
 EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
+	: ZephyrEntityDefinition( entityDefElem )
 {
-	m_name = ParseXmlAttribute( entityDefElem, "name", "" );
-	if ( m_name == "" )
+	m_type = ParseXmlAttribute( entityDefElem, "name", "" );
+	if ( m_type == "" )
 	{
 		g_devConsole->PrintError( "EntityTypes.xml: EntityType is missing a name attribute" );
 		return;
@@ -53,19 +54,19 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 	std::string typeStr = entityDefElem.Name();
 	if ( typeStr == "Entity" )
 	{
-		m_type = eEntityType::ENTITY;
+		m_class = eEntityClass::ENTITY;
 	}
 	else if ( typeStr == "Actor" )
 	{
-		m_type = eEntityType::ACTOR;
+		m_class = eEntityClass::ACTOR;
 	}
 	else if ( typeStr == "Projectile" )
 	{
-		m_type = eEntityType::PROJECTILE;
+		m_class = eEntityClass::PROJECTILE;
 	}
 	else if ( typeStr == "Portal" )
 	{
-		m_type = eEntityType::PORTAL;
+		m_class = eEntityClass::PORTAL;
 	}
 	else
 	{
@@ -73,7 +74,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		return;
 	}
 
-
+	// Physics
 	const XmlElement* physicsElem = entityDefElem.FirstChildElement( "Physics" );
 	if( physicsElem != nullptr )
 	{
@@ -83,6 +84,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
 	}
 
+	// Appearance
 	const XmlElement* appearanceElem = entityDefElem.FirstChildElement( "Appearance" );
 	if ( appearanceElem != nullptr )
 	{
@@ -91,14 +93,14 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		std::string spriteSheetPath = ParseXmlAttribute( *appearanceElem, "spriteSheet", "" );
 		if ( spriteSheetPath == "" )
 		{
-			g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no spriteSheet attribute", m_name.c_str() ) );
+			g_devConsole->PrintError( Stringf( "Entity '%s' has an appearance node but no spriteSheet attribute", m_type.c_str() ) );
 			return;
 		}
 
 		std::string billboardStyleStr = ParseXmlAttribute( *appearanceElem, "billboard", "" );
 		if ( billboardStyleStr == "" )
 		{
-			g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no billboard attribute", m_name.c_str() ) );
+			g_devConsole->PrintError( Stringf( "Entity '%s' has an appearance node but no billboard attribute", m_type.c_str() ) );
 			return;
 		}
 		m_billboardStyle = GetBillboardStyleFromString( billboardStyleStr );
@@ -109,14 +111,14 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 			IntVec2 layout = ParseXmlAttribute( *appearanceElem, "layout", IntVec2( -1,-1 ) );
 			if ( layout == IntVec2( -1,-1 ) )
 			{
-				g_devConsole->PrintError( Stringf( "Actor '%s' has an appearance node but no layout attribute", m_name.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity '%s' has an appearance node but no layout attribute", m_type.c_str() ) );
 				return;
 			}
 
 			Texture* texture = g_renderer->CreateOrGetTextureFromFile( spriteSheetPath.c_str() );
 			if ( texture == nullptr )
 			{
-				g_devConsole->PrintError( Stringf( "Actor '%s' couldn't load texture '%s'", m_name.c_str(), spriteSheetPath.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Entity '%s' couldn't load texture '%s'", m_type.c_str(), spriteSheetPath.c_str() ) );
 				return;
 			}
 
@@ -144,14 +146,14 @@ EntityDefinition::~EntityDefinition()
 
 
 //-----------------------------------------------------------------------------------------------
-std::string GetEntityTypeAsString( eEntityType entityType )
+std::string GetEntityClassAsString( eEntityClass entityType )
 {
 	switch ( entityType )
 	{
-		case eEntityType::ACTOR: return "Actor";
-		case eEntityType::PROJECTILE: return "Projectile";
-		case eEntityType::PORTAL: return "Portal";
-		case eEntityType::ENTITY: return "Entity";
+		case eEntityClass::ACTOR: return "Actor";
+		case eEntityClass::PROJECTILE: return "Projectile";
+		case eEntityClass::PORTAL: return "Portal";
+		case eEntityClass::ENTITY: return "Entity";
 		default: return "Unknown";
 	}
 }

@@ -265,6 +265,7 @@
     <ClCompile Include="ZephyrCore\ZephyrScript.cpp" />
     <ClCompile Include="ZephyrCore\ZephyrScriptDefinition.cpp" />
     <ClCompile Include="ZephyrCore\ZephyrToken.cpp" />
+    <ClCompile Include="ZephyrCore\ZephyrUtils.cpp" />
     <ClCompile Include="ZephyrCore\ZephyrVirtualMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -396,6 +397,7 @@
     <ClInclude Include="ZephyrCore\ZephyrScript.hpp" />
     <ClInclude Include="ZephyrCore\ZephyrScriptDefinition.hpp" />
     <ClInclude Include="ZephyrCore\ZephyrToken.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrUtils.hpp" />
     <ClInclude Include="ZephyrCore\ZephyrVirtualMachine.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

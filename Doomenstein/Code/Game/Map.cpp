@@ -10,8 +10,6 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/Entity.hpp"
-#include "Game/Actor.hpp"
-#include "Game/Projectile.hpp"
 #include "Game/Portal.hpp"
 #include "Game/EntityDefinition.hpp"
 #include "Game/MapData.hpp"
@@ -105,46 +103,115 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 //-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 {
-	switch ( entityDef.GetType() )
+	Entity* entity = new Entity( entityDef, this );
+	m_entities.emplace_back( entity );
+	return entity;
+
+	//switch ( entityDef.GetClass() )
+	//{
+	//	/*case eEntityClass::ACTOR:
+	//	{
+	//		Actor* actor = new Actor( entityDef );
+	//		m_entities.emplace_back( actor );
+	//		return actor;
+	//	}
+	//	break;
+
+	//	case eEntityClass::PROJECTILE:
+	//	{
+	//		Projectile* projectile = new Projectile( entityDef );
+	//		m_entities.emplace_back( projectile );
+	//		return projectile;
+	//	}
+	//	break;
+
+	//	case eEntityClass::PORTAL:
+	//	{
+	//		Portal* portal = new Portal( entityDef );
+	//		m_entities.emplace_back( portal );
+	//		m_portals.emplace_back( portal );
+	//		return portal;
+	//	}
+	//	break;*/
+
+	//	//case eEntityClass::ENTITY:
+	//	//{
+	//		Entity* entity = new Entity( entityDef, this );
+	//		m_entities.emplace_back( entity );
+	//		return entity;
+	//	//}
+	//	//break;
+
+	//	/*default:
+	//	{
+	//		g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
+	//		return nullptr;
+	//	}*/
+	//}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::UnloadAllEntityScripts()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
-		case eEntityType::ACTOR:
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
 		{
-			Actor* actor = new Actor( entityDef );
-			m_entities.emplace_back( actor );
-			return actor;
+			continue;
 		}
-		break;
 
-		case eEntityType::PROJECTILE:
-		{
-			Projectile* projectile = new Projectile( entityDef );
-			m_entities.emplace_back( projectile );
-			return projectile;
-		}
-		break;
+		entity->UnloadZephyrScript();
+	}
+}
 
-		case eEntityType::PORTAL:
-		{
-			Portal* portal = new Portal( entityDef );
-			m_entities.emplace_back( portal );
-			m_portals.emplace_back( portal );
-			return portal;
-		}
-		break;
 
-		case eEntityType::ENTITY:
+//-----------------------------------------------------------------------------------------------
+void Map::ReloadAllEntityScripts()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
 		{
-			Entity* entity = new Entity( entityDef );
-			m_entities.emplace_back( entity );
-			return entity;
+			continue;
 		}
-		break;
 
-		default:
+		entity->ReloadZephyrScript();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::InitializeAllZephyrEntityVariables()
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr )
 		{
-			g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
-			return nullptr;
+			continue;
 		}
+
+		entity->InitializeZephyrEntityVariables();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::CallAllMapEntityZephyrSpawnEvents( Entity* player )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr
+			 || entity == player )
+		{
+			continue;
+		}
+
+		entity->FireSpawnEvent();
 	}
 }
 
@@ -182,6 +249,50 @@ void Map::TakeOwnershipOfEntity( Entity* entityToAdd )
 	}
 
 	m_entities.push_back( entityToAdd );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::GetEntityById( EntityId id )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr
+			 || entity->IsDead() )
+		{
+			continue;
+		}
+
+		if ( entity->GetId() == id )
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::GetEntityByName( const std::string& name )
+{
+	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
+	{
+		Entity*& entity = m_entities[entityIdx];
+		if ( entity == nullptr
+			 || entity->IsDead() )
+		{
+			continue;
+		}
+
+		if ( entity->GetName() == name )
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
 }
 
 
@@ -230,13 +341,13 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 		newEntity->SetPosition( mapEntityDef.position );
 		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
 
-		if ( mapEntityDef.entityDef->GetType() == eEntityType::PORTAL )
+		/*if ( mapEntityDef.entityDef->GetClass() == eEntityClass::PORTAL )
 		{
 			Portal* portal = (Portal*)newEntity;
 			portal->SetDestinationMap( mapEntityDef.portalDestMap );
 			portal->SetDestinationPosition( mapEntityDef.portalDestPos );
 			portal->SetDestinationYawOffset( mapEntityDef.portalDestYawOffset );
-		}
+		}*/
 	}
 
 }
@@ -347,7 +458,7 @@ void Map::ResolveEntityVsPortalCollisions()
 		{
 			Portal* const& portal = m_portals[portalIdx];
 			if ( portal == nullptr 
-				 || entity->GetType() == eEntityType::PORTAL )
+				 || entity->GetClass() == eEntityClass::PORTAL )
 			{
 				continue;
 			}

@@ -105,6 +105,20 @@ void World::ChangeMap( const std::string& mapName )
 
 
 //-----------------------------------------------------------------------------------------------
+Map* World::GetMapByName( const std::string& name )
+{
+	return GetLoadedMapByName( name );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Map* World::GetCurrentMap()
+{
+	return m_curMap;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Entity* World::GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist )
 {
 	if ( m_curMap != nullptr )
@@ -141,6 +155,211 @@ void World::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapNam
 bool World::IsMapLoaded( const std::string& mapName )
 {
 	return GetLoadedMapByName( mapName ) != nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* World::GetEntityById( EntityId id )
+{
+	auto mapIter = m_entitiesById.find( id );
+	if ( mapIter != m_entitiesById.end() )
+	{
+		return mapIter->second;
+	}
+
+	// Look in this map first
+	Entity* entity = GetEntityByIdInCurMap( id );
+	if ( entity != nullptr )
+	{
+		return entity;
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		if ( map.second == m_curMap )
+		{
+			continue;
+		}
+
+		entity = map.second->GetEntityById( id );
+		if ( entity != nullptr )
+		{
+			return entity;
+		}
+	}
+
+	for ( auto& worldEntity : m_worldEntities )
+	{
+		if ( worldEntity != nullptr
+			 && worldEntity->GetId() == id )
+		{
+			return worldEntity;
+		}
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::RemoveEntityFromWorldById( EntityId id )
+{
+	Entity* entity = GetEntityById( id );
+	if ( entity != nullptr )
+	{
+		std::string name = entity->GetName();
+
+		m_entitiesById.erase( id );
+		m_entitiesByName.erase( name );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* World::GetEntityByIdInCurMap( EntityId id )
+{
+	if ( m_curMap == nullptr )
+	{
+		return nullptr;
+	}
+
+	return m_curMap->GetEntityById( id );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* World::GetEntityByName( const std::string& name )
+{
+	auto entityIter = m_entitiesByName.find( name );
+	if ( entityIter != m_entitiesByName.end() )
+	{
+		return entityIter->second;
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Entity* World::GetEntityByNameInCurMap( const std::string& name )
+{
+	if ( m_curMap == nullptr )
+	{
+		return nullptr;
+	}
+
+	return m_curMap->GetEntityByName( name );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::SaveEntityByName( Entity* entity )
+{
+	if ( entity == nullptr
+		 || entity->GetName().empty() )
+	{
+		return;
+	}
+
+	auto entityIter = m_entitiesByName.find( entity->GetName() );
+	if ( entityIter != m_entitiesByName.end() )
+	{
+		g_devConsole->PrintError( Stringf( "Tried to save an entity with name '%s' in map '%s', but an entity with that name was already defined in map '%s'",
+										   entity->GetName().c_str(),
+										   entity->GetMap()->GetName().c_str(),
+										   entityIter->second->GetMap()->GetName().c_str() ) );
+		return;
+	}
+
+	m_entitiesByName[entity->GetName()] = entity;
+	m_entitiesById[entity->GetId()] = entity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::Reset()
+{
+	UnloadAllEntityScripts();
+	ClearEntities();
+	ClearMaps();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::UnloadAllEntityScripts()
+{
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->UnloadZephyrScript();
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->UnloadAllEntityScripts();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::ReloadAllEntityScripts()
+{
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->ReloadZephyrScript();
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->ReloadAllEntityScripts();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::ClearMaps()
+{
+	PTR_MAP_SAFE_DELETE( m_loadedMaps );
+
+	m_curMap = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::ClearEntities()
+{
+	m_entitiesByName.clear();
+
+	PTR_VECTOR_SAFE_DELETE( m_worldEntities );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::InitializeAllZephyrEntityVariables()
+{
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->InitializeZephyrEntityVariables();
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->InitializeAllZephyrEntityVariables();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::CallAllZephyrSpawnEvents( Entity* player )
+{
+	for ( auto& entity : m_worldEntities )
+	{
+		entity->FireSpawnEvent();
+	}
+
+	for ( auto& map : m_loadedMaps )
+	{
+		map.second->CallAllMapEntityZephyrSpawnEvents( player );
+	}
 }
 
 

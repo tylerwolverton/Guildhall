@@ -35,24 +35,36 @@ public:
 	Map( const MapData& mapData );
 	virtual ~Map();
 
-	virtual void Load() = 0;
-	virtual void Unload() = 0;
+	virtual void		Load() = 0;
+	virtual void		Unload() = 0;
 
-	virtual void Update( float deltaSeconds );
-	virtual void UpdateMeshes() = 0;
-	virtual void Render() const;
-	virtual void DebugRender() const;
+	virtual void		Update( float deltaSeconds );
+	virtual void		UpdateMeshes() = 0;
+	virtual void		Render() const;
+	virtual void		DebugRender() const;
 
-	virtual Entity* SpawnNewEntityOfType( const std::string& entityDefName );
-	virtual Entity* SpawnNewEntityOfType( const EntityDefinition& entityDef );
 
-	void RemoveOwnershipOfEntity( Entity* entityToRemove );
-	void TakeOwnershipOfEntity( Entity* entityToAdd );
+	const std::string&	GetName() const												{ return m_name; }
 
-	Entity* GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
+	virtual Entity*		SpawnNewEntityOfType( const std::string& entityDefName );
+	virtual Entity*		SpawnNewEntityOfType( const EntityDefinition& entityDef );
+
+	void				UnloadAllEntityScripts();
+	void				ReloadAllEntityScripts();
+	void				InitializeAllZephyrEntityVariables();
+
+	void				CallAllMapEntityZephyrSpawnEvents( Entity* player );
+
+	void				RemoveOwnershipOfEntity( Entity* entityToRemove );
+	void				TakeOwnershipOfEntity( Entity* entityToAdd );
+
+	Entity*				GetEntityById( EntityId id );
+	Entity*				GetEntityByName( const std::string& name );
+	Entity*				GetClosestEntityInSector( const Vec2& observerPos, float forwardDegrees, float apertureDegrees, float maxDist );
 
 protected:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
+
 	void ResolveEntityVsEntityCollisions();
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 	void ResolveEntityVsPortalCollisions();

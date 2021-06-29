@@ -210,7 +210,25 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 
 			hasParsedPlayerStart = true;
 		}
-		else if ( !strcmp( entityElem->Value(), "Actor" ) )
+		else
+		{
+			MapEntityDefinition mapEntityDef;
+
+			std::string entityName = ParseXmlAttribute( *entityElem, "name", "" );
+			mapEntityDef.entityDef = EntityDefinition::GetEntityDefinition( entityName );
+			if ( mapEntityDef.entityDef == nullptr )
+			{
+				g_devConsole->PrintError( Stringf( "Map file '%s': Entity '%s' was not defined in EntityTypes.xml", mapName.c_str(), entityName.c_str() ) );
+				entityElem = entityElem->NextSiblingElement();
+				continue;
+			}
+
+			mapEntityDef.position = ParseXmlAttribute( *entityElem, "pos", Vec2::ZERO );
+			mapEntityDef.yawDegrees = ParseXmlAttribute( *entityElem, "yaw", 0.f );
+
+			mapEntityDefs.push_back( mapEntityDef );
+		}
+		/*else if ( !strcmp( entityElem->Value(), "Actor" ) )
 		{
 			MapEntityDefinition mapEntityDef;
 
@@ -223,10 +241,10 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 				continue;
 			}
 
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::ACTOR )
+			if ( mapEntityDef.entityDef->GetClass() != eEntityClass::ACTOR )
 			{
 				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Actor in map '%s'", actorName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
+												   GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ).c_str(),
 												   mapName.c_str() ) );
 				entityElem = entityElem->NextSiblingElement();
 				continue;
@@ -250,10 +268,10 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 				continue;
 			}
 
-			if ( mapEntityDef.entityDef->GetType() != eEntityType::PORTAL )
+			if ( mapEntityDef.entityDef->GetClass() != eEntityClass::PORTAL )
 			{
 				g_devConsole->PrintError( Stringf( "Entity '%s' was defined as '%s' in EntityTypes.xml, but Portal in map '%s'", portalName.c_str(),
-												   GetEntityTypeAsString( mapEntityDef.entityDef->GetType() ).c_str(),
+												   GetEntityClassAsString( mapEntityDef.entityDef->GetClass() ).c_str(),
 												   mapName.c_str() ) );
 				entityElem = entityElem->NextSiblingElement();
 				continue;
@@ -271,7 +289,7 @@ bool MapData::ParseEntitiesNode( const XmlElement& mapDefElem )
 		else
 		{
 			g_devConsole->PrintError( Stringf( "Entity type '%s' is unknown", entityElem->Value() ) );
-		}
+		}*/
 
 		entityElem = entityElem->NextSiblingElement();
 	}

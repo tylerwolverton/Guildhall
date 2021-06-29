@@ -4,6 +4,7 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Time/Timer.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/GameCommon.hpp"
 
@@ -23,7 +24,37 @@ class TextBox;
 class Texture;
 class UIPanel;
 class UISystem;
+class Map;
 class World;
+
+
+//-----------------------------------------------------------------------------------------------
+enum class eGameState
+{
+	LOADING,
+	ATTRACT,
+	PLAYING,
+	DIALOGUE,
+	GAME_OVER,
+	VICTORY,
+	PAUSED
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct GameTimer
+{
+public:
+	Timer timer;
+	EntityId targetId = -1;
+	std::string name;
+	std::string callbackName;
+	EventArgs* callbackArgs = nullptr;
+
+public:
+	GameTimer( Clock* clock, const EntityId& targetId = -1, const std::string& callbackName = "", const std::string& name = "", EventArgs* callbackArgsIn = nullptr );
+	~GameTimer();
+};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -52,6 +83,18 @@ public:
 	
 	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
+	Entity*		GetEntityById( EntityId id );
+	Entity*		GetEntityByName( const std::string& name );
+	Map*		GetMapByName( const std::string& name );
+	Map*		GetCurrentMap();
+	void		SaveEntityByName( Entity* entity );
+
+	void		PlaySoundByName( const std::string& soundName, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
+	void		ChangeMusic( const std::string& musicName, bool isLooped = true, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
+
+	void		StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
+	void		StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
+
 	static bool SetMouseSensitivity( EventArgs* args );
 	static bool SetAmbientLightColor( EventArgs* args );
 	
@@ -77,6 +120,7 @@ private:
 	void UpdateFromKeyboard();
 	void UpdateMovementFromKeyboard();
 	void UpdateCameraTransformToMatchPlayer();
+	void UpdateTimers();
 	void UpdateFramesPerSecond();
 
 	void RenderDebugUI() const;
@@ -98,6 +142,7 @@ private:
 
 	Entity* m_player = nullptr;
 
+	eGameState m_gameState = eGameState::LOADING;
 	bool m_isPaused = false;
 	bool m_isDebugRendering = false;
 
@@ -130,9 +175,6 @@ private:
 	// Materials
 	Material* m_testMaterial = nullptr;
 		
-	// Sounds
-	SoundID m_testSound;
-
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 0.5f;
 	float m_specularFactor = 0.f;
@@ -142,4 +184,13 @@ private:
 	// Default map data
 	std::string m_defaultMaterialStr;
 	std::string m_defaultMapRegionStr;
+
+	// Audio
+	std::string m_curMusicName;
+	SoundPlaybackID m_curMusicId = (SoundPlaybackID)-1;
+
+	std::map<std::string, SoundID> m_loadedSoundIds;
+
+	// Timer management
+	std::vector<GameTimer*> m_timerPool;
 };

@@ -69,6 +69,10 @@ GameTimer::GameTimer( Clock* clock, const EntityId& targetId, const std::string&
 		{
 			callbackArgs->SetValue( keyValuePair.first, callbackArgsIn->GetValue( keyValuePair.first, Vec2::ZERO ) );
 		}
+		else if ( keyValuePair.second->Is<Vec3>() )
+		{
+			callbackArgs->SetValue( keyValuePair.first, callbackArgsIn->GetValue( keyValuePair.first, Vec2::ZERO ) );
+		}
 		else if ( keyValuePair.second->Is<std::string>()
 				  || keyValuePair.second->Is<char*>() )
 		{

@@ -379,6 +379,9 @@
     <ClCompile Include="ZephyrCore\ZephyrVirtualMachine.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="ZephyrCore\ZephyrUtils.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -716,5 +719,6 @@
     <ClInclude Include="ZephyrCore\ZephyrEntityDefinition.hpp" />
     <ClInclude Include="ZephyrCore\ZephyrScript.hpp" />
     <ClInclude Include="ZephyrCore\ZephyrVirtualMachine.hpp" />
+    <ClInclude Include="ZephyrCore\ZephyrUtils.hpp" />
   </ItemGroup>
 </Project>
