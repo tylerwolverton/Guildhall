@@ -48,6 +48,7 @@ public:
 
 	void				AddVelocity( const Vec2& deltaVelocity )				{ m_velocity += deltaVelocity; }
 	void				Translate( const Vec2& translation )					{ m_position += translation; }
+	void				RotateDegrees( float pitchDegrees, float yawDegrees, float rollDegrees );
 
 	virtual bool		IsDead() const											{ return m_isDead; }
 	bool				IsGarbage() const										{ return m_isGarbage; }

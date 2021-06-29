@@ -106,10 +106,16 @@ public:
 
 private:
 	void LoadAssets();
+	void LoadSounds();
 	void LoadXmlEntityTypes();
 	void LoadXmlMapMaterials();
 	void LoadXmlMapRegions();
 	void LoadXmlMaps();
+	void LoadWorldDefinitionFromXml();
+	void LoadAndCompileZephyrScripts();
+	void ReloadGame();
+	void ReloadScripts();
+
 	void ChangeMap( const std::string& mapName );
 
 	void InitializeCameras();
@@ -118,6 +124,7 @@ private:
 	void BuildUIHud();
 
 	void UpdateFromKeyboard();
+	void LoadStartingMap( const std::string& mapName );
 	void UpdateMovementFromKeyboard();
 	void UpdateCameraTransformToMatchPlayer();
 	void UpdateTimers();
@@ -163,7 +170,7 @@ private:
 	Camera* m_uiCamera = nullptr;
 
 	World* m_world = nullptr;
-	std::string m_curMapStr;
+	std::string m_startingMapName;
 
 	// Meshes
 	GPUMesh* m_cubeMesh = nullptr;

@@ -21,6 +21,7 @@
       <Pain front="7" frontLeft="15" left="23" backLeft="31" back="39" backRight="47" right="55" frontRight="63"/>
       <Death front="64,65,66,67,68,69"/>
     </Appearance>
+    <Script name="Pinky.zephyr"/>
   </Entity>
   ​
   <Actor name="Imp">

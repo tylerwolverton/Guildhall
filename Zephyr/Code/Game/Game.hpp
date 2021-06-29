@@ -179,7 +179,6 @@ private:
 	Actor* m_player = nullptr;
 
 	World* m_world = nullptr;
-	std::string m_curMapName;
 	std::string m_startingMapName;
 
 	// Timer management

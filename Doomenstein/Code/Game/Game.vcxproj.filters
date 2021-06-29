@@ -14,6 +14,9 @@
     <Filter Include="Data\Maps">
       <UniqueIdentifier>{a6607b7b-f911-4f28-9faf-3d6b6957bf6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{78f01f09-102b-48be-b602-d3da6aa849e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -71,7 +74,7 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Scripting\ZephyrGameAPI.cpp">
-      <Filter>Framework</Filter>
+      <Filter>Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,7 +132,9 @@
     <ClInclude Include="MapData.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Scripting\ZephyrGameAPI.hpp" />
+    <ClInclude Include="Scripting\ZephyrGameAPI.hpp">
+      <Filter>Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\GameConfig.xml">
@@ -158,6 +163,9 @@
     </Xml>
     <Xml Include="..\..\Run\Data\Maps\UVTest.xml">
       <Filter>Data\Maps</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\WorldDef.xml">
+      <Filter>Data\Definitions</Filter>
     </Xml>
   </ItemGroup>
 </Project>

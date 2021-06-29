@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
 
 #include "Game/MapRegionTypeDefinition.hpp"
 
@@ -19,14 +20,12 @@ class Map;
 struct MapEntityDefinition
 {
 	EntityDefinition* entityDef = nullptr;
+	std::string name;
 	Vec2 position = Vec2::ZERO;
 	float yawDegrees = 0.f;
 
-	// Portal specific variables
-	// TODO: Move this to sub struct?
-	std::string portalDestMap = "";
-	Vec2		portalDestPos = Vec2::ZERO;
-	float		portalDestYawOffset = 0.f;
+	ZephyrValueMap zephyrScriptInitialValues;
+	std::vector<EntityVariableInitializer> zephyrEntityVarInits;
 };
 
 
@@ -56,4 +55,5 @@ private:
 	bool ParseLegendNode( const XmlElement& mapDefElem, std::map<char, MapRegionTypeDefinition*>& legend, const std::string& defaultRegionName );
 	bool ParseMapRowsNode( const XmlElement& mapDefElem, const std::map<char, MapRegionTypeDefinition*>& legend, const std::string& defaultRegionName );
 	bool ParseEntitiesNode( const XmlElement& mapDefElem );
+	void CreateMapEntityDefFromNode( const XmlElement& entityElem );
 };

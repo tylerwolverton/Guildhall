@@ -73,7 +73,7 @@ void World::AddNewMap( const MapData& mapData )
 {
 	if ( mapData.type == "TileMap" )
 	{
-		TileMap* tileMap = new TileMap( mapData );
+		TileMap* tileMap = new TileMap( mapData, this );
 		m_loadedMaps[mapData.mapName] = tileMap;
 	}
 }
@@ -273,6 +273,20 @@ void World::SaveEntityByName( Entity* entity )
 
 	m_entitiesByName[entity->GetName()] = entity;
 	m_entitiesById[entity->GetId()] = entity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void World::AddEntityFromDefinition( const EntityDefinition& entityDef, const std::string& entityName )
+{
+	Entity* newEntity = new Entity( entityDef, nullptr );
+
+	newEntity->SetName( entityName );
+
+	m_worldEntities.push_back( newEntity );
+	SaveEntityByName( newEntity );
+
+	newEntity->CreateZephyrScript( entityDef );
 }
 
 

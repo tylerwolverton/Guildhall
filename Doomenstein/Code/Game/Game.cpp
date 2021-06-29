@@ -34,6 +34,10 @@
 #include "Engine/UI/UIPanel.hpp"
 #include "Engine/UI/UIText.hpp"
 #include "Engine/UI/UISystem.hpp"
+#include "Engine/ZephyrCore/ZephyrCompiler.hpp"
+#include "Engine/ZephyrCore/ZephyrInterpreter.hpp"
+#include "Engine/ZephyrCore/ZephyrBytecodeChunk.hpp"
+#include "Engine/ZephyrCore/ZephyrScriptDefinition.hpp"
 #include "Engine/ZephyrCore/ZephyrUtils.hpp"
 
 #include "Game/Entity.hpp"
@@ -122,9 +126,9 @@ void Game::Startup()
 	m_uiSystem->Startup( g_window, g_renderer );
 	BuildUIHud();
 
-	m_curMapStr = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_curMapStr );
-	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_curMapStr.c_str() ) );
-	m_world->ChangeMap( m_curMapStr );
+	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
+	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_startingMapName.c_str() ) );
+	m_world->ChangeMap( m_startingMapName );
 
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -275,6 +279,11 @@ void Game::Update()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateFromKeyboard()
 {	
+	if ( g_devConsole->IsOpen() )
+	{
+		return;
+	}
+
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
 	{
 		m_isDebugRendering = !m_isDebugRendering;
@@ -302,8 +311,31 @@ void Game::UpdateFromKeyboard()
 	{
 		g_renderer->ReloadShaders();
 	}
+	
+	if ( g_inputSystem->ConsumeAllKeyPresses( KEY_F5 ) )
+	{
+		ReloadGame();
+		LoadStartingMap( m_startingMapName );
+		return;
+	}
 
 	UpdateMovementFromKeyboard();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadStartingMap( const std::string& mapName )
+{
+	m_world->InitializeAllZephyrEntityVariables();
+
+	m_world->ChangeMap( mapName );
+
+	if ( m_player != nullptr )
+	{
+		m_player->FireSpawnEvent();
+	}
+
+	m_world->CallAllZephyrSpawnEvents( m_player );
 }
 
 
@@ -661,12 +693,23 @@ void Game::LoadAssets()
 
 	SpriteSheet::CreateAndRegister( "ViewModels", *( g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" ) ), IntVec2( 8, 8 ) );
 	
+	LoadSounds();
+
+	LoadAndCompileZephyrScripts();
 	LoadXmlEntityTypes();
+	LoadWorldDefinitionFromXml();
 	LoadXmlMapMaterials();
 	LoadXmlMapRegions();
 	LoadXmlMaps();
 	
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadSounds()
+{
+
 }
 
 
@@ -921,6 +964,143 @@ void Game::LoadXmlMaps()
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::LoadWorldDefinitionFromXml()
+{
+	g_devConsole->PrintString( "Loading World Definition..." );
+
+	std::string filePath = Stringf( "Data/Definitions/WorldDef.xml" );
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath.c_str() );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		g_devConsole->PrintError( Stringf( "The world xml file '%s' could not be opened.", filePath.c_str() ) );
+		return;
+	}
+
+	XmlElement* root = doc.RootElement();
+	if ( strcmp( root->Name(), "WorldDefinition" ) )
+	{
+		g_devConsole->PrintError( Stringf( "'%s': Incorrect root node name, must be WorldDefinition", filePath.c_str() ) );
+		return;
+	}
+
+	// Parse entities node
+	XmlElement* entitiesElement = root->FirstChildElement( "Entities" );
+	XmlElement* entityElement = entitiesElement->FirstChildElement();
+	while ( entityElement )
+	{
+		if ( !strcmp( entityElement->Name(), "Actor" )
+			 || !strcmp( entityElement->Name(), "Entity" )
+			 || !strcmp( entityElement->Name(), "Projectile" )
+			 || !strcmp( entityElement->Name(), "Portal" )
+			 || !strcmp( entityElement->Name(), "Pickup" ) )
+		{
+			std::string entityTypeStr = ParseXmlAttribute( *entityElement, "type", "" );
+			if ( entityTypeStr.empty() )
+			{
+				g_devConsole->PrintError( Stringf( "'%s': %s is missing a type attribute", filePath.c_str(), entityElement->Name() ) );
+				return;
+			}
+
+			EntityDefinition* entityTypeDef = EntityDefinition::GetEntityDefinition( entityTypeStr );
+			if ( entityTypeDef == nullptr )
+			{
+				g_devConsole->PrintError( Stringf( "'%s': Entity type '%s' was not defined in EntityTypes.xml", filePath.c_str(), entityTypeStr.c_str() ) );
+				return;
+			}
+
+			std::string entityName = ParseXmlAttribute( *entityElement, "name", "" );
+
+			m_world->AddEntityFromDefinition( *entityTypeDef, entityName );
+		}
+		else
+		{
+			g_devConsole->PrintError( Stringf( "WorldDef.xml: Unsupported node '%s'", entityElement->Name() ) );
+		}
+
+		entityElement = entityElement->NextSiblingElement();
+	}
+
+	g_devConsole->PrintString( "World Definition Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadAndCompileZephyrScripts()
+{
+	g_devConsole->PrintString( "Loading Zephyr Scripts..." );
+
+	std::string folderPath( "Data/Scripts" );
+
+	Strings scriptFiles = GetFileNamesInFolder( folderPath, "*.zephyr" );
+	for ( int scriptIdx = 0; scriptIdx < (int)scriptFiles.size(); ++scriptIdx )
+	{
+		std::string& scriptName = scriptFiles[scriptIdx];
+
+		std::string scriptFullPath( folderPath );
+		scriptFullPath += "/";
+		scriptFullPath += scriptName;
+
+		// Save compiled script into static map
+		ZephyrScriptDefinition* scriptDef = ZephyrCompiler::CompileScriptFile( scriptFullPath );
+		scriptDef->m_name = scriptName;
+
+		ZephyrScriptDefinition::s_definitions[scriptFullPath] = scriptDef;
+	}
+
+	g_devConsole->PrintString( "Zephyr Scripts Loaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ReloadGame()
+{
+	if ( m_curMusicId != (SoundPlaybackID)-1 )
+	{
+		g_audioSystem->StopSound( m_curMusicId );
+	}
+
+	m_world->Reset();
+
+	PTR_VECTOR_SAFE_DELETE( m_timerPool );
+
+	g_gameConfigBlackboard.Clear();
+	PopulateGameConfig();
+	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
+
+	m_player = nullptr;
+
+	PTR_MAP_SAFE_DELETE( ZephyrScriptDefinition::s_definitions );
+	PTR_MAP_SAFE_DELETE( EntityDefinition::s_definitions );
+	PTR_MAP_SAFE_DELETE( MapMaterialTypeDefinition::s_definitions );
+	PTR_MAP_SAFE_DELETE( TileDefinition::s_definitions );
+	PTR_VECTOR_SAFE_DELETE( SpriteSheet::s_definitions );
+
+	m_loadedSoundIds.clear();
+
+	LoadSounds();
+	LoadAndCompileZephyrScripts();
+	LoadXmlEntityTypes();
+	LoadWorldDefinitionFromXml();
+	LoadXmlMapMaterials();
+	LoadXmlMapRegions();
+	LoadXmlMaps();
+
+	EventArgs args;
+	g_eventSystem->FireEvent( "OnGameStart", &args );
+	g_devConsole->PrintString( "Data files reloaded", Rgba8::GREEN );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::ReloadScripts()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::ChangeMap( const std::string& mapName )
 {
 	m_world->ChangeMap( mapName );
@@ -1150,3 +1330,7 @@ bool Game::SetAmbientLightColor( EventArgs* args )
 
 	return false;
 }
+
+
+float Game::m_mouseSensitivityMultiplier;
+

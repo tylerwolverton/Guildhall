@@ -27,6 +27,8 @@ ZephyrGameAPI::ZephyrGameAPI()
 	REGISTER_EVENT( PrintToConsole );
 
 	REGISTER_EVENT( DestroySelf );
+	REGISTER_EVENT( RotateEntity );
+
 	REGISTER_EVENT( StartNewTimer );
 	REGISTER_EVENT( WinGame );
 	
@@ -75,6 +77,28 @@ void ZephyrGameAPI::DestroySelf( EventArgs* args )
 	if ( entity != nullptr )
 	{
 		entity->Die();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrGameAPI::RotateEntity( EventArgs* args )
+{
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+	
+	Entity* targetEntity = g_game->GetEntityById( targetId );
+	if ( targetEntity == nullptr )
+	{
+		targetEntity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
+	}
+
+	float pitchDegrees = args->GetValue( "pitchDegrees", 0.f );
+	float yawDegrees = args->GetValue( "yawDegrees", 0.f );
+	float rollDegrees = args->GetValue( "rollDegrees", 0.f );
+	
+	if ( targetEntity != nullptr )
+	{
+		targetEntity->RotateDegrees( pitchDegrees, yawDegrees, rollDegrees );
 	}
 }
 

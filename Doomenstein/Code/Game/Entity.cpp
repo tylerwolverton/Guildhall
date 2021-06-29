@@ -132,6 +132,16 @@ const Vec2 Entity::GetForwardVector() const
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::RotateDegrees( float pitchDegrees, float yawDegrees, float rollDegrees )
+{
+	UNUSED( pitchDegrees );
+	UNUSED( rollDegrees );
+
+	m_orientationDegrees += yawDegrees;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::TakeDamage( int damage )
 {
 	m_curHealth -= damage;

@@ -1,9 +1,26 @@
 #include "Game/GameCommon.hpp"
+#include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+void PopulateGameConfig()
+{
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( "Data/GameConfig.xml" );
+	if ( loadError != tinyxml2::XML_SUCCESS )
+	{
+		return;
+	}
+
+	XmlElement* root = doc.RootElement();
+	g_gameConfigBlackboard.PopulateFromXmlElementAttributes( *root );
+}
 
 
 //-----------------------------------------------------------------------------------------------

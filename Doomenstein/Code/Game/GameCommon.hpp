@@ -38,6 +38,9 @@ extern SpriteSheet* g_characterSpriteSheet;
 extern SpriteSheet* g_portraitSpriteSheet;
 
 
+void PopulateGameConfig();
+
+
 //-----------------------------------------------------------------------------------------------
 // Game Constants
 //-----------------------------------------------------------------------------------------------

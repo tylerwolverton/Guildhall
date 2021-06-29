@@ -13,13 +13,15 @@
 #include "Game/Portal.hpp"
 #include "Game/EntityDefinition.hpp"
 #include "Game/MapData.hpp"
+#include "Game/World.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-Map::Map( const MapData& mapData )
+Map::Map( const MapData& mapData, World* world )
 	: m_name( mapData.mapName )
 	, m_playerStartPos( mapData.playerStartPos )
 	, m_playerStartYaw( mapData.playerStartYaw )
+	, m_world( world )
 {
 	LoadEntities( mapData.mapEntityDefs );
 }
@@ -96,7 +98,10 @@ Entity* Map::SpawnNewEntityOfType( const std::string& entityDefName )
 		return nullptr;
 	}
 
-	return SpawnNewEntityOfType( *entityDef );
+	Entity* newEntity = SpawnNewEntityOfType( *entityDef );
+	newEntity->CreateZephyrScript( *entityDef );
+
+	return newEntity;
 }
 
 
@@ -338,16 +343,19 @@ void Map::LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs )
 			continue;
 		}
 
+		// Must be saved before initializing zephyr script
+		newEntity->SetName( mapEntityDef.name );
+		m_world->SaveEntityByName( newEntity );
+
+		newEntity->CreateZephyrScript( *mapEntityDef.entityDef );
+
 		newEntity->SetPosition( mapEntityDef.position );
 		newEntity->SetOrientationDegrees( mapEntityDef.yawDegrees );
 
-		/*if ( mapEntityDef.entityDef->GetClass() == eEntityClass::PORTAL )
-		{
-			Portal* portal = (Portal*)newEntity;
-			portal->SetDestinationMap( mapEntityDef.portalDestMap );
-			portal->SetDestinationPosition( mapEntityDef.portalDestPos );
-			portal->SetDestinationYawOffset( mapEntityDef.portalDestYawOffset );
-		}*/
+		// Define initial script values defined in map file
+		// Note: These will override any initial values already defined in the EntityDefinition
+		newEntity->InitializeScriptValues( mapEntityDef.zephyrScriptInitialValues );
+		newEntity->SetEntityVariableInitializers( mapEntityDef.zephyrEntityVarInits );
 	}
 
 }

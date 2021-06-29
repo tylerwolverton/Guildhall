@@ -19,8 +19,12 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Engine/Time/Clock.hpp"
+#include "Engine/ZephyrCore/ZephyrCommon.hpp"
+#include "Engine/ZephyrCore/ZephyrEngineAPI.hpp"
+
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/Scripting/ZephyrGameAPI.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -57,6 +61,7 @@ void App::Startup()
 	g_renderer = new RenderContext();
 	g_networkingSystem = new NetworkingSystem();
 	g_devConsole = new DevConsole();
+	g_zephyrAPI = new ZephyrGameAPI();
 	g_game = new Game();
 
 	g_eventSystem->Startup();
@@ -99,6 +104,7 @@ void App::Shutdown()
 	g_window->Close();
 
 	PTR_SAFE_DELETE( g_game );
+	PTR_SAFE_DELETE( g_zephyrAPI );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_networkingSystem );
 	PTR_SAFE_DELETE( g_renderer );
@@ -137,21 +143,6 @@ void App::RestartGame()
 
 	g_game = new Game();
 	g_game->Startup();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void App::PopulateGameConfig()
-{
-	XmlDocument doc;
-	XmlError loadError = doc.LoadFile( "Data/GameConfig.xml" );
-	if ( loadError != tinyxml2::XML_SUCCESS )
-	{
-		return;
-	}
-
-	XmlElement* root = doc.RootElement();
-	g_gameConfigBlackboard.PopulateFromXmlElementAttributes( *root );
 }
 
 
@@ -221,6 +212,11 @@ void App::UpdateFromKeyboard()
 	if ( g_inputSystem->WasKeyJustPressed( KEY_TILDE ) )
 	{
 		g_devConsole->ToggleOpenFull();
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F11 ) )
+	{
+		g_window->ToggleWindowMode();
 	}
 }
 

@@ -1,0 +1,9 @@
+
+
+State Spin
+{
+    OnUpdate()
+    {
+        RotateEntity( yawDegrees: 1 )
+    }
+}

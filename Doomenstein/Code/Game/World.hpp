@@ -10,6 +10,7 @@
 struct Vec2;
 class Clock;
 class Entity;
+class EntityDefinition;
 class Map;
 struct MapData;
 
@@ -43,6 +44,8 @@ public:
 	Entity* GetEntityByName( const std::string& name );
 	Entity* GetEntityByNameInCurMap( const std::string& name );
 	void	SaveEntityByName( Entity* entity );
+	// For WorldDef.xml
+	void AddEntityFromDefinition( const EntityDefinition& entityDef, const std::string& entityName = "" );
 
 	// Zephyr hot reloading
 	void Reset();

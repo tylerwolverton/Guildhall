@@ -238,6 +238,7 @@
     <Xml Include="..\..\Run\Data\Definitions\EntityTypes.xml" />
     <Xml Include="..\..\Run\Data\Definitions\MapMaterialTypes.xml" />
     <Xml Include="..\..\Run\Data\Definitions\MapRegionTypes.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\WorldDef.xml" />
     <Xml Include="..\..\Run\Data\GameConfig.xml" />
     <Xml Include="..\..\Run\Data\Maps\EmptyRoom.xml" />
     <Xml Include="..\..\Run\Data\Maps\SingleBlock.xml" />
