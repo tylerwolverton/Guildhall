@@ -4,6 +4,6 @@ State Spin
 {
     OnUpdate()
     {
-        RotateEntity( yawDegrees: 1 )
+        //RotateEntity( yawDegrees: 1 )
     }
 }

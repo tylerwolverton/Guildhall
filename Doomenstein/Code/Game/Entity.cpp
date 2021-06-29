@@ -92,6 +92,7 @@ void Entity::Render() const
 		AppendVertsForQuad( vertices, corners, Rgba8::WHITE, mins, maxs );
 
 		g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
+		//g_renderer->BindShaderByName( "Normals" );
 	}
 
 	g_renderer->DrawVertexArray( vertices );

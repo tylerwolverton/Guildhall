@@ -119,7 +119,6 @@ private:
 	void ChangeMap( const std::string& mapName );
 
 	void InitializeCameras();
-	void InitializeMeshes();
 
 	void BuildUIHud();
 
@@ -171,17 +170,7 @@ private:
 
 	World* m_world = nullptr;
 	std::string m_startingMapName;
-
-	// Meshes
-	GPUMesh* m_cubeMesh = nullptr;
-	GPUMesh* m_quadMesh = nullptr;
-	GPUMesh* m_sphereMesh = nullptr;
-
-	std::vector<Transform> m_cubeMeshTransforms;
-
-	// Materials
-	Material* m_testMaterial = nullptr;
-		
+			
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 0.5f;
 	float m_specularFactor = 0.f;

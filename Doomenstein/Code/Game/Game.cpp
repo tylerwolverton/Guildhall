@@ -118,7 +118,6 @@ void Game::Startup()
 	EnableDebugRendering();
 
 	InitializeCameras();
-	InitializeMeshes();
 	
 	LoadAssets();
 
@@ -159,45 +158,6 @@ void Game::InitializeCameras()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::InitializeMeshes()
-{
-	// Cube
-	std::vector<Vertex_PCUTBN> vertices;
-	std::vector<uint> indices;
-	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
-
-	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	Transform cubeTransform;
-	cubeTransform.SetPosition( Vec3( 2.5f, 0.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 2.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 0.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-	
-	// Quad
-	vertices.clear();
-	indices.clear();
-	AppendVertsAndIndicesForQuad( vertices, indices, AABB2( -1.f, -1.f, 1.f, 1.f ), Rgba8::WHITE );
-
-	m_quadMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	// Spheres
-	vertices.clear();
-	indices.clear();
-	AppendVertsAndIndicesForSphereMesh( vertices, indices, Vec3::ZERO, 1.f, 64, 64, Rgba8::WHITE );
-
-	m_sphereMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	// Initialize materials
-	m_testMaterial = new Material( g_renderer, "Data/Materials/Test.material" );
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void Game::BuildUIHud()
 {
 	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
@@ -234,10 +194,6 @@ void Game::Shutdown()
 	m_uiSystem->Shutdown();
 
 	// Clean up member variables
-	PTR_SAFE_DELETE( m_testMaterial );
-	PTR_SAFE_DELETE( m_quadMesh );
-	PTR_SAFE_DELETE( m_cubeMesh );
-	PTR_SAFE_DELETE( m_sphereMesh );
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
