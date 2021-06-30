@@ -1,5 +1,5 @@
 <material name="Pinky"
-   shader_path="Data/Shaders/Lit.shader">
+   shader_path="Data/Shaders/Normals.shader">
 
   <!-- textures with special meaning to the renderer -->
   <diffuse    path="Data/Images/Actor_Pinky_8x9.png" />

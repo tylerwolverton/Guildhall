@@ -41,9 +41,11 @@ v2f_t VertexFunction( vs_input_t input )
 // is being drawn to the first bound color target.
 float4 FragmentFunction( v2f_t input ) : SV_Target0
 {
+	float4 normal_color = tNormals.Sample( sSampler, input.uv );
+
 	float3 surface_normal = normalize( input.world_normal );
 
-	float3 final_color = VectorToColor( surface_normal );
+	float3 final_color = VectorToColor( normal_color.xyz );
 
 	return float4( final_color, 1.0f );
 }

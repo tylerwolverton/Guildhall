@@ -63,6 +63,8 @@ fragment_output_t FragmentFunction( v2f_t input )
 {
 	// use the uv to sample the texture
 	float4 diffuse_color = tDiffuse.Sample( sSampler, input.uv );
+	clip( diffuse_color.a - .001f );
+
 	float4 normal_color = tNormals.Sample( sSampler, input.uv );
 
 	float3 surface_color = input.color.xyz * pow( max( diffuse_color.xyz, 0.f ), GAMMA ); // multiply our tint with our texture color to get our final color; 

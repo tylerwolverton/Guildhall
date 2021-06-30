@@ -165,13 +165,19 @@ void TileMap::UpdateMeshes()
 //-----------------------------------------------------------------------------------------------
 void TileMap::AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topLeft, const Vec3& topRight, const Vec2& uvMins, const Vec2& uvMaxs )
 {
-	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, uvMins ) );
-	m_mesh.push_back( Vertex_PCU( bottomRight, Rgba8::WHITE, Vec2( uvMaxs.x, uvMins.y ) ) );
-	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, uvMaxs ) );
+	Vec3 right = bottomRight - bottomLeft;
+	Vec3 up = topLeft - bottomLeft;
 
-	m_mesh.push_back( Vertex_PCU( bottomLeft, Rgba8::WHITE, uvMins ) );
-	m_mesh.push_back( Vertex_PCU( topRight, Rgba8::WHITE, uvMaxs ) );
-	m_mesh.push_back( Vertex_PCU( topLeft, Rgba8::WHITE, Vec2( uvMins.x, uvMaxs.y ) ) );
+	Vec3 normal = CrossProduct3D( right, up ).GetNormalized();
+	Vec3 tangent = right.GetNormalized();
+
+	m_mesh.push_back( Vertex_PCUTBN( bottomLeft, Rgba8::WHITE, uvMins, normal, tangent ) );
+	m_mesh.push_back( Vertex_PCUTBN( bottomRight, Rgba8::WHITE, Vec2( uvMaxs.x, uvMins.y ), normal, tangent ) );
+	m_mesh.push_back( Vertex_PCUTBN( topRight, Rgba8::WHITE, uvMaxs, normal, tangent ) );
+								
+	m_mesh.push_back( Vertex_PCUTBN( bottomLeft, Rgba8::WHITE, uvMins, normal, tangent ) );
+	m_mesh.push_back( Vertex_PCUTBN( topRight, Rgba8::WHITE, uvMaxs, normal, tangent ) );
+	m_mesh.push_back( Vertex_PCUTBN( topLeft, Rgba8::WHITE, Vec2( uvMins.x, uvMaxs.y ), normal, tangent ) );
 }
 
 
@@ -187,7 +193,7 @@ void TileMap::Render() const
 
 	g_renderer->SetModelMatrix( Mat44::IDENTITY );
 	g_renderer->SetBlendMode( eBlendMode::ALPHA );
-	g_renderer->BindShaderProgram( g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Default.hlsl" ) );
+	g_renderer->BindShaderProgram( g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Lit.hlsl" ) );
 
 	g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8.png" ) );
 

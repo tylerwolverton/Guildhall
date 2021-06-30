@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Map.hpp"
+#include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Math/Transform.hpp"
 
 
@@ -91,5 +92,5 @@ private:
 
 	std::vector<Transform> m_cubeMeshTransforms;
 
-	std::vector<Vertex_PCU> m_mesh;
+	std::vector<Vertex_PCUTBN> m_mesh;
 };
