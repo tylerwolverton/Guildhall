@@ -1172,6 +1172,30 @@ void AppendVertsAndIndicesForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray, 
 
 
 //-----------------------------------------------------------------------------------------------
+void AppendVertsForQuad( std::vector<Vertex_PCUTBN>& vertexArray, Vec3* corners, const Rgba8& tint, const Vec2& uvAtMins, const Vec2& uvAtMaxs )
+{
+	Vec3 bottomLeft = corners[0];
+	Vec3 bottomRight = corners[1];
+	Vec3 topLeft = corners[2];
+	Vec3 topRight = corners[3];
+
+	Vec3 right = bottomRight - bottomLeft;
+	Vec3 up = topLeft - bottomLeft;
+
+	Vec3 normal = CrossProduct3D( right, up ).GetNormalized();
+	Vec3 tangent = right.GetNormalized();
+
+	vertexArray.push_back( Vertex_PCUTBN( bottomLeft,	tint, uvAtMins,							normal, tangent  ) );
+	vertexArray.push_back( Vertex_PCUTBN( bottomRight,	tint, Vec2( uvAtMaxs.x, uvAtMins.y ),	normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( topRight,		tint, uvAtMaxs,							normal, tangent ) );
+
+	vertexArray.push_back( Vertex_PCUTBN( bottomLeft,	tint, uvAtMins,							normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( topRight,		tint, uvAtMaxs,							normal, tangent ) );
+	vertexArray.push_back( Vertex_PCUTBN( topLeft,		tint, Vec2( uvAtMins.x, uvAtMaxs.y ),	normal, tangent ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Obj loading
 //-----------------------------------------------------------------------------------------------
 void AppendVertsForObjMeshFromFile( std::vector<Vertex_PCUTBN>& vertices,

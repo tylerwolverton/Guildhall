@@ -98,6 +98,7 @@ void AppendVertsForCubeMesh( std::vector<Vertex_PCUTBN>& vertexArray,
 							 const Vec3& center, float sideLength, 
 							 const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
+void AppendVertsForQuad( std::vector<Vertex_PCUTBN>& vertexArray, Vec3* corners, const Rgba8& tint, const Vec2& uvAtMins = Vec2::ZERO, const Vec2& uvAtMaxs = Vec2::ONE );
 
 //-----------------------------------------------------------------------------------------------
 // Obj append methods

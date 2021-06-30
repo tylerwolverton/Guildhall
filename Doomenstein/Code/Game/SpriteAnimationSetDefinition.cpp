@@ -9,8 +9,9 @@
 
 
 //-----------------------------------------------------------------------------------------------
-SpriteAnimationSetDefinition::SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem )
+SpriteAnimationSetDefinition::SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, Material* spriteMaterial, const XmlElement& spriteAnimSetDefElem )
 	: m_spriteSheet( spriteSheet )
+	, m_spriteMaterial( spriteMaterial )
 {
 	m_name = spriteAnimSetDefElem.Name();
 
@@ -57,6 +58,13 @@ SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDire
 	}
 
 	return mapIter->second->animDef;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+const Texture& SpriteAnimationSetDefinition::GetTexture() const
+{
+	return m_spriteSheet->GetTexture();
 }
 
 

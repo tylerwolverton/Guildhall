@@ -335,6 +335,7 @@ public:
 	IDXGIDebug* m_debug					= nullptr;
 
 	VertexBuffer* m_immediateVBOPCU		= nullptr;
+	VertexBuffer* m_immediateVBOPCUTBN	= nullptr;
 	VertexBuffer* m_immediateVBOFont	= nullptr;
 	IndexBuffer* m_immediateIBO			= nullptr;
 	RenderBuffer* m_frameUBO			= nullptr;

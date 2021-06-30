@@ -116,14 +116,15 @@ void RenderContext::InitializeDefaultRenderObjects()
 	m_defaultShaderProgram = GetOrCreateShaderProgramFromSourceString( "DefaultBuiltInShader", g_defaultShaderCode );
 
 	// Create default buffers
-	m_immediateVBOPCU = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
-	m_immediateVBOFont = new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( VertexFont ), VertexFont::LAYOUT );
-	m_immediateIBO = new IndexBuffer( this, MEMORY_HINT_DYNAMIC );
-	m_frameUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_modelMatrixUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_materialUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_lightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
-	m_debugLightUBO = new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_immediateVBOPCU		= new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCU ), Vertex_PCU::LAYOUT );
+	m_immediateVBOPCUTBN	= new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( Vertex_PCUTBN ), Vertex_PCUTBN::LAYOUT );
+	m_immediateVBOFont		= new VertexBuffer( this, MEMORY_HINT_DYNAMIC, sizeof( VertexFont ), VertexFont::LAYOUT );
+	m_immediateIBO			= new IndexBuffer(	this, MEMORY_HINT_DYNAMIC );
+	m_frameUBO				= new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_modelMatrixUBO		= new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_materialUBO			= new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_lightUBO				= new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
+	m_debugLightUBO			= new RenderBuffer( this, UNIFORM_BUFFER_BIT, MEMORY_HINT_DYNAMIC );
 
 	// Create default sampler
 	m_defaultSampler = GetOrCreateSampler( SAMPLER_POINT, UV_MODE_CLAMP );
@@ -175,6 +176,7 @@ void RenderContext::Shutdown()
 	PTR_SAFE_DELETE( m_effectCamera );
 
 	PTR_SAFE_DELETE( m_immediateVBOPCU );
+	PTR_SAFE_DELETE( m_immediateVBOPCUTBN );
 	PTR_SAFE_DELETE( m_immediateVBOFont );
 	PTR_SAFE_DELETE( m_immediateIBO );
 	PTR_SAFE_DELETE( m_frameUBO );
@@ -1602,6 +1604,14 @@ template<>
 VertexBuffer* RenderContext::GetImmediateVBO<Vertex_PCU>()
 {
 	return m_immediateVBOPCU;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+template<>
+VertexBuffer* RenderContext::GetImmediateVBO<Vertex_PCUTBN>()
+{
+	return m_immediateVBOPCUTBN;
 }
 
 

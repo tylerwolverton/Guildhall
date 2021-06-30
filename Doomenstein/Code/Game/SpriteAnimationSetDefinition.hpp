@@ -9,11 +9,13 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Camera;
+class Material;
 class SpriteAnimDefinition;
 class SpriteSheet;
 class RenderContext;
+class Texture;
 class Transform;
-class Camera;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -31,14 +33,14 @@ public:
 //-----------------------------------------------------------------------------------------------
 class SpriteAnimationSetDefinition
 {
-	friend class ActorDefinition;
-	friend class ItemDefinition;
-
 public:
-	SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, const XmlElement& spriteAnimSetDefElem );
+	SpriteAnimationSetDefinition( SpriteSheet* spriteSheet, Material* spriteMaterial, const XmlElement& spriteAnimSetDefElem );
 	~SpriteAnimationSetDefinition();
 
-	SpriteAnimDefinition* GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Camera& camera );
+	SpriteAnimDefinition*	GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Camera& camera );
+
+	const Texture&			GetTexture() const;
+	Material*				GetMaterial() const													{ return m_spriteMaterial; }
 
 private:
 	void AddDirectionAnimation( const std::string& animName, const Vec2& facingDir, const XmlElement& spriteAnimSetDefElem );
@@ -46,6 +48,7 @@ private:
 private:
 	std::map< std::string, DirectionAnimation* > m_directionSpriteAnims;
 
-	std::string m_name;
-	SpriteSheet* m_spriteSheet = nullptr;
+	std::string		m_name;
+	Material*		m_spriteMaterial = nullptr;
+	SpriteSheet*	m_spriteSheet = nullptr;
 };

@@ -23,7 +23,7 @@
       -->
 
       <blend enabled="true"
-             mode="opaque" />
+             mode="alpha" />
 
       <!-- depth state 
          enabled: depth check happens (false is similar to having test="always" and write being "false")

@@ -3,6 +3,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
@@ -97,6 +98,12 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 			return;
 		}
 
+		std::string spriteMaterialPath = ParseXmlAttribute( *appearanceElem, "spriteMaterial", "" );
+		if ( spriteMaterialPath != "" )
+		{
+			m_spriteMaterial = new Material( g_renderer, spriteMaterialPath.c_str() );
+		}
+
 		std::string billboardStyleStr = ParseXmlAttribute( *appearanceElem, "billboard", "" );
 		if ( billboardStyleStr == "" )
 		{
@@ -128,7 +135,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		const XmlElement* animationSetElem = appearanceElem->FirstChildElement();
 		while ( animationSetElem != nullptr )
 		{
-			m_spriteAnimSetDefs[animationSetElem->Name()] = new SpriteAnimationSetDefinition( spriteSheet, *animationSetElem );
+			m_spriteAnimSetDefs[animationSetElem->Name()] = new SpriteAnimationSetDefinition( spriteSheet, m_spriteMaterial, *animationSetElem );
 
 			animationSetElem = animationSetElem->NextSiblingElement();
 		}
@@ -142,6 +149,7 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 EntityDefinition::~EntityDefinition()
 {
 	PTR_MAP_SAFE_DELETE( m_spriteAnimSetDefs );
+	PTR_SAFE_DELETE( m_spriteMaterial );
 }
 
 

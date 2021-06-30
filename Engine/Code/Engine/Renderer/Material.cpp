@@ -20,9 +20,7 @@ Material::Material( RenderContext* context, const char* filename )
 	}
 
 	XmlElement* materialElem = doc.RootElement();
-
 	GUARANTEE_OR_DIE( materialElem != nullptr, Stringf( "Shader xml file '%s' doesn't have any elements", filename ) );
-
 
 	m_name = ParseXmlAttribute( *materialElem, "name", m_name );
 	GUARANTEE_OR_DIE( m_name != "", "Material did not have a name attribute" );

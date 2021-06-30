@@ -22,8 +22,8 @@
          mode: blend mode. opaque, alpha, additive
       -->
 
-      <blend enabled="false"
-             mode="opaque" />
+      <blend enabled="true"
+             mode="alpha" />
 
       <!-- depth state 
          enabled: depth check happens (false is similar to having test="always" and write being "false")

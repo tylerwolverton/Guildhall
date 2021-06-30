@@ -12,7 +12,7 @@
   ​
   <Entity name="Pinky">
     <Physics radius="0.22" height="0.56" eyeHeight="0.40" walkSpeed="1.5"/>
-    <Appearance size="1.5,1.5" billboard="CameraFacingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" normals="Data/Images/Actor_Pinky_8x9_n.png" layout="8,9">
+    <Appearance size="1.5,1.5" billboard="CameraFacingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" spriteMaterial="Data/Materials/Pinky.material" layout="8,9">
     <!--<Appearance size="1.5,1.5" billboard="CameraOpposingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->
     <!--<Appearance size="1.5,1.5" billboard="CameraFacingXYZ" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->
     <!--<Appearance size="1.5,1.5" billboard="CameraOpposingXYZ" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->

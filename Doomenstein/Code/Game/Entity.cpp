@@ -3,7 +3,7 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Rgba8.hpp"
-#include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -57,7 +57,7 @@ void Entity::Render() const
 		return;
 	}
 
-	std::vector<Vertex_PCU> vertices;
+	std::vector<Vertex_PCUTBN> vertices;
 	Vec3 corners[4];
 
 	switch ( m_entityDef.m_billboardStyle )
@@ -91,8 +91,17 @@ void Entity::Render() const
 
 		AppendVertsForQuad( vertices, corners, Rgba8::WHITE, mins, maxs );
 
-		g_renderer->BindDiffuseTexture( &( spriteDef.GetTexture() ) );
-		//g_renderer->BindShaderByName( "Normals" );
+		if ( walkAnimSetDef->GetMaterial() != nullptr )
+		{
+			g_renderer->BindMaterial( walkAnimSetDef->GetMaterial() );
+		}
+		else
+		{
+			// No material for this sprite, just use the diffuse texture
+			g_renderer->BindShader( nullptr );
+			g_renderer->BindDiffuseTexture( &( walkAnimSetDef->GetTexture() ) );
+			g_renderer->BindNormalTexture( nullptr );
+		}
 	}
 
 	g_renderer->DrawVertexArray( vertices );

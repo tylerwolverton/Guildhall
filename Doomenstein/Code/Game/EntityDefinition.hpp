@@ -9,6 +9,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
+class Material;
 class SpriteSheet;
 class SpriteAnimationSetDefinition;
 
@@ -37,11 +38,11 @@ public:
 
 	bool			IsValid() const																{ return m_isValid; }
 	std::string		GetName() const																{ return m_type; }
-	eEntityClass	GetClass() const																{ return m_class; }
+	eEntityClass	GetClass() const															{ return m_class; }
 	float			GetWalkSpeed() const														{ return m_walkSpeed; }
 	Vec2			GetVisualSize() const														{ return m_visualSize; }
 
-	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const		{ return m_spriteAnimSetDefs; }
+	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const			{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
 	static EntityDefinition* GetEntityDefinition( std::string entityName );
@@ -62,6 +63,7 @@ protected:
 
 	Vec2			m_visualSize = Vec2::ZERO;
 	eBillboardStyle m_billboardStyle = eBillboardStyle::CAMERA_FACING_INVALID;
+	Material*		m_spriteMaterial = nullptr;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 };
