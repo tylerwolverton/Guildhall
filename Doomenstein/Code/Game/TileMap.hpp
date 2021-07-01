@@ -49,11 +49,8 @@ public:
 private:
 	void				PopulateTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs );
 	void				CreateInitialTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs );
-	void				SolidifySurroundingTiles();
 
 	void				AddTileFace( const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topLeft, const Vec3& topRight, const Vec2& uvMins = Vec2::ZERO, const Vec2& uvMaxs = Vec2::ONE );
-
-	void				SpawnPlayer();
 
 	// Tile helpers
 	bool				IsAdjacentTileSolid( const Tile& tile, eCardinalDirection direction ) const;
@@ -69,11 +66,7 @@ private:
 
 	std::vector<const Tile*>	GetTilesInRadius( const Tile& centerTile, int radius, bool includeCenterTile ) const;
 	
-	void				RenderTiles() const;
-
 	void				BuildCardinalDirectionsArray();
-	void				CreateTestBoxes();
-	void				RenderTestBoxes() const;
 
 	void				ResolveEntityVsWallCollisions();
 	void				ResolveEntityVsWallCollision( Entity& entity );

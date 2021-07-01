@@ -177,7 +177,6 @@ private:
 	Entity* m_player = nullptr;
 
 	eGameState m_gameState = eGameState::LOADING;
-	bool m_isPaused = false;
 	bool m_isDebugRendering = false;
 
 	// UI

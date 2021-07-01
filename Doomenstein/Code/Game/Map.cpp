@@ -111,48 +111,6 @@ Entity* Map::SpawnNewEntityOfType( const EntityDefinition& entityDef )
 	Entity* entity = new Entity( entityDef, this );
 	m_entities.emplace_back( entity );
 	return entity;
-
-	//switch ( entityDef.GetClass() )
-	//{
-	//	/*case eEntityClass::ACTOR:
-	//	{
-	//		Actor* actor = new Actor( entityDef );
-	//		m_entities.emplace_back( actor );
-	//		return actor;
-	//	}
-	//	break;
-
-	//	case eEntityClass::PROJECTILE:
-	//	{
-	//		Projectile* projectile = new Projectile( entityDef );
-	//		m_entities.emplace_back( projectile );
-	//		return projectile;
-	//	}
-	//	break;
-
-	//	case eEntityClass::PORTAL:
-	//	{
-	//		Portal* portal = new Portal( entityDef );
-	//		m_entities.emplace_back( portal );
-	//		m_portals.emplace_back( portal );
-	//		return portal;
-	//	}
-	//	break;*/
-
-	//	//case eEntityClass::ENTITY:
-	//	//{
-	//		Entity* entity = new Entity( entityDef, this );
-	//		m_entities.emplace_back( entity );
-	//		return entity;
-	//	//}
-	//	//break;
-
-	//	/*default:
-	//	{
-	//		g_devConsole->PrintError( Stringf( "Tried to spawn entity '%s' with unknown type", entityDef.GetName().c_str() ) );
-	//		return nullptr;
-	//	}*/
-	//}
 }
 
 

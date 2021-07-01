@@ -84,11 +84,11 @@ protected:
 	bool					m_isPossessed = false;							
 
 	// Physics
-	Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity’s 2D(x, y) Cartesian origin / center location, in world space
-	Vec2					m_velocity = Vec2( 0.f, 0.f );					// the Entity’s linear 2D( x, y ) velocity, in world units per second
-	Vec2					m_linearAcceleration = Vec2( 0.f, 0.f );		// the Entity’s signed linear acceleration per second per second
-	float					m_orientationDegrees = 0.f;						// the Entity’s forward - facing direction, as an angle in degrees
-	float					m_angularVelocity = 0.f;						// the Entity’s signed angular velocity( spin rate ), in degrees per second
+	Vec2					m_position = Vec2( 0.f, 0.f );					// the Entity's 2D(x, y) Cartesian origin / center location, in world space
+	Vec2					m_velocity = Vec2( 0.f, 0.f );					// the Entity's linear 2D( x, y ) velocity, in world units per second
+	Vec2					m_linearAcceleration = Vec2( 0.f, 0.f );		// the Entity's signed linear acceleration per second per second
+	float					m_orientationDegrees = 0.f;						// the Entity's forward - facing direction, as an angle in degrees
+	float					m_angularVelocity = 0.f;						// the Entity's signed angular velocity( spin rate ), in degrees per second
 	bool					m_canBePushedByWalls = false;
 	bool					m_canBePushedByEntities = false;
 	bool					m_canPushEntities = false;

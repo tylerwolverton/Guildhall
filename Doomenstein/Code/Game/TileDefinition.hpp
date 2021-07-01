@@ -30,10 +30,6 @@ private:
 	AABB2		m_uvCoords = AABB2::ONE_BY_ONE;
 	Rgba8		m_tileImageColor = Rgba8::BLACK;
 	Rgba8		m_spriteTint = Rgba8::MAGENTA;
-	bool		m_allowsSight = false;
-	bool		m_allowsWalking = false;
-	bool		m_allowsFlying = false;
-	bool		m_allowsSwimming = false;
 };
 
 

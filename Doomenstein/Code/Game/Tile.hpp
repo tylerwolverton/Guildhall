@@ -21,16 +21,13 @@ public:
 
 	std::string GetName() const										{ return m_tileDef->GetName(); }
 	AABB2		GetBounds() const;
-	bool		AllowsWalking() const;
-	bool		AllowsSwimming() const;
-	bool		AllowsFlying() const;
 
 	void		SetTileDef( TileDefinition* tileDef )				{ m_tileDef = tileDef; }
 
 	bool		IsSolid() const										{ return m_regionTypeDef->IsSolid(); }
 
 public:
-	IntVec2			m_tileCoords;
-	TileDefinition* m_tileDef = nullptr;
-	MapRegionTypeDefinition* m_regionTypeDef = nullptr;
+	IntVec2						m_tileCoords;
+	TileDefinition*				m_tileDef = nullptr;
+	MapRegionTypeDefinition*	m_regionTypeDef = nullptr;
 };

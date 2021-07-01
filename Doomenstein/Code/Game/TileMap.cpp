@@ -26,7 +26,6 @@ TileMap::TileMap( const MapData& mapData, World* world )
 
 	BuildCardinalDirectionsArray();
 	PopulateTiles( mapData.regionTypeDefs );
-	CreateTestBoxes();
 }
 
 
@@ -41,12 +40,6 @@ TileMap::~TileMap()
 //-----------------------------------------------------------------------------------------------
 void TileMap::Load()
 {
-	/*float volume = g_game->m_rng->RollRandomFloatInRange( .5f, 1.f );
-	float balance = g_game->m_rng->RollRandomFloatInRange( -1.f, 1.f );
-	float speed = g_game->m_rng->RollRandomFloatInRange( .5f, 2.f );*/
-
-	//g_audioSystem->PlaySound( g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" ), false, volume, balance, speed );
-
 	g_game->SetCameraPositionAndYaw( m_playerStartPos, m_playerStartYaw );
 }
 
@@ -555,6 +548,7 @@ bool TileMap::DoesRayHitEntityAlongZ( RaycastResult& raycastResult, const Vec3& 
 {
 	Vec3 impactPos = potentialImpactPos;
 
+	// TODO: Account for flying enemies
 	// 3 cases
 	// Hit side first
 	if ( impactPos.z > 0.f
@@ -605,7 +599,6 @@ bool TileMap::DoesRayHitEntityAlongZ( RaycastResult& raycastResult, const Vec3& 
 void TileMap::PopulateTiles( const std::vector<MapRegionTypeDefinition*>& regionTypeDefs )
 {
 	CreateInitialTiles( regionTypeDefs );
-	//SolidifySurroundingTiles();
 }
 
 
@@ -619,47 +612,6 @@ void TileMap::CreateInitialTiles( const std::vector<MapRegionTypeDefinition*>& r
 			m_tiles.push_back( Tile( IntVec2( x, y ), regionTypeDefs[( y * m_dimensions.x ) + x] ) );
 		}
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void TileMap::SolidifySurroundingTiles()
-{
-	for ( int y = 0; y < m_dimensions.y; ++y )
-	{
-		for ( int x = 0; x < m_dimensions.x; ++x )
-		{
-			if ( x == 0 || x == m_dimensions.x - 1
-				|| y == 0 || y == m_dimensions.y - 1 )
-			{
-				//GetTileFromTileCoords( IntVec2( x, y ) )->m_isSolid = true;
-			}
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void TileMap::SpawnPlayer()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void TileMap::RenderTiles() const
-{
-	std::vector<Vertex_PCU> vertices;
-
-	for ( int tileIndex = 0; tileIndex < m_tiles.size(); ++tileIndex )
-	{
-		//const Tile& tile = m_tiles[tileIndex];
-
-		//AppendVertsForAABB2D( vertices, tile.GetBounds(), tile.m_tileDef->GetSpriteTint(), tile.m_tileDef->GetUVCoords().mins, tile.m_tileDef->GetUVCoords().maxs );
-	}
-
-	//g_renderer->BindTexture( &(g_tileSpriteSheet->GetTexture()) );
-	//g_renderer->DrawVertexArray( vertices );
 }
 
 
@@ -678,62 +630,6 @@ void TileMap::BuildCardinalDirectionsArray()
 	m_cardinalDirectionOffsets[(int)eCardinalDirection::NORTHEAST] = Vec2( TILE_SIZE, TILE_SIZE );
 	m_cardinalDirectionOffsets[(int)eCardinalDirection::SOUTHEAST] = Vec2( TILE_SIZE, -TILE_SIZE );
 	m_cardinalDirectionOffsets[(int)eCardinalDirection::SOUTHWEST] = Vec2( -TILE_SIZE, -TILE_SIZE );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void TileMap::CreateTestBoxes()
-{
-	// Cube
-	/*std::vector<Vertex_PCU> vertices;
-	std::vector<uint> indices;
-	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
-
-	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	Transform cubeTransform;
-	cubeTransform.SetPosition( Vec3( 2.5f, 0.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 2.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 0.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );*/
-
-	std::vector<Vertex_PCUTBN> vertices;
-	std::vector<uint> indices;
-	AppendVertsAndIndicesForCubeMesh( vertices, indices, Vec3::ZERO, 1.f, Rgba8::WHITE );
-
-	m_cubeMesh = new GPUMesh( g_renderer, vertices, indices );
-
-	Transform cubeTransform;
-	cubeTransform.SetPosition( Vec3( 2.5f, 0.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 2.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	cubeTransform.SetPosition( Vec3( 0.5f, 2.5f, 0.5f ) );
-	m_cubeMeshTransforms.push_back( cubeTransform );
-
-	// Initialize materials
-	m_testMaterial = new Material( g_renderer, "Data/Materials/Test.material" );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void TileMap::RenderTestBoxes() const
-{
-	// Render normal objects
-	for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
-	{
-		Mat44 modelMatrix = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
-		g_renderer->SetModelMatrix( modelMatrix );
-		//g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" ) );
-		g_renderer->BindMaterial( m_testMaterial );
-		g_renderer->DrawMesh( m_cubeMesh );
-	}
 }
 
 
