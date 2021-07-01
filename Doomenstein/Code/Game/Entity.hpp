@@ -54,8 +54,8 @@ public:
 	bool				IsGarbage() const										{ return m_isGarbage; }
 	bool				IsPossessed() const										{ return m_isPossessed; }
 
-	void				Possess()												{ m_isPossessed = true; }
-	void				Unpossess()												{ m_isPossessed = false; }
+	void				Possess();
+	void				Unpossess();
 						
 	void				TakeDamage( int damage );
 	void				ApplyFriction();
@@ -69,6 +69,8 @@ public:
 	virtual void		AddGameEventParams( EventArgs* args ) const override;
 
 protected:
+	void				UpdateFromKeyboard( float deltaSeconds );
+	
 	char				GetKeyCodeFromString( const std::string& keyCodeStr );
 
 protected:

@@ -6,6 +6,7 @@
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -33,6 +34,14 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 void Entity::Update( float deltaSeconds )
 {
 	m_cumulativeTime += deltaSeconds;
+
+	if ( !m_isDead )
+	{
+		if ( m_isPossessed )
+		{
+			UpdateFromKeyboard( deltaSeconds );
+		}
+	}
 
 	// vel += acceleration * dt;
 	m_velocity += m_linearAcceleration * deltaSeconds;
@@ -148,6 +157,24 @@ void Entity::RotateDegrees( float pitchDegrees, float yawDegrees, float rollDegr
 	UNUSED( rollDegrees );
 
 	m_orientationDegrees += yawDegrees;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::Possess()
+{
+	m_isPossessed = true;
+
+	FireScriptEvent( "OnPossess" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::Unpossess()
+{
+	m_isPossessed = false;
+
+	FireScriptEvent( "OnUnPossess" );
 }
 
 
@@ -274,6 +301,33 @@ void Entity::SetGlobalVariable( const std::string& varName, const ZephyrValue& v
 void Entity::AddGameEventParams( EventArgs* args ) const
 {
 	UNUSED( args );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::UpdateFromKeyboard( float deltaSeconds )
+{
+	UNUSED( deltaSeconds );
+
+	if ( g_devConsole->IsOpen()
+		 || m_isDead
+		 /*|| g_game->GetGameState() != eGameState::PLAYING */)
+	{
+		return;
+	}
+	
+	// Update script button events
+	for ( auto& registeredKey : m_registeredKeyEvents )
+	{
+		if ( g_inputSystem->IsKeyPressed( registeredKey.first ) )
+		{
+			for ( auto& eventName : registeredKey.second )
+			{
+				EventArgs args;
+				FireScriptEvent( eventName, &args );
+			}
+		}
+	}
 }
 
 

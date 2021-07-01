@@ -211,7 +211,6 @@ void Game::Shutdown()
 	PTR_SAFE_DELETE( m_world );
 	PTR_SAFE_DELETE( m_gameClock );
 	PTR_SAFE_DELETE( m_rng );
-	PTR_SAFE_DELETE( m_debugInfoTextBox );
 	PTR_SAFE_DELETE( m_worldCamera );
 	PTR_SAFE_DELETE( m_uiCamera );
 }
@@ -242,8 +241,6 @@ void Game::Update()
 	UpdateTimers();
 	UpdateCameraTransformToMatchPlayer();
 	UpdateLights();
-
-	//g_jobSystem->ClaimAndDeleteAllCompletedJobs();
 }
 
 
@@ -541,11 +538,6 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 //-----------------------------------------------------------------------------------------------
 float Game::GetAverageFPS() const
 {
-	/*if constexpr ( FRAME_HISTORY_COUNT < 1 )
-	{
-		ERROR_AND_DIE( "FRAME_HISTORY_COUNT must be configured to be larger than 0" );
-	}*/
-
 	float cummulativeFPS = 0.f;
 	for ( int frameNum = 0; frameNum < FRAME_HISTORY_COUNT; ++frameNum )
 	{
@@ -1148,23 +1140,6 @@ void Game::ChangeMap( const std::string& mapName )
 void Game::AddScreenShakeIntensity(float intensity)
 {
 	m_screenShakeIntensity += intensity;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines )
-{
-	if ( (int)textLines.size() == 0 )
-	{
-		return;
-	}
-
-	m_debugInfoTextBox->SetText( textLines[0], color );
-
-	for ( int textLineIndex = 1; textLineIndex < (int)textLines.size(); ++textLineIndex )
-	{
-		m_debugInfoTextBox->AddLineOFText( textLines[ textLineIndex ], color );
-	}
 }
 
 

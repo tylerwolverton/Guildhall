@@ -34,7 +34,6 @@ enum class eGameState
 	LOADING,
 	ATTRACT,
 	PLAYING,
-	DIALOGUE,
 	GAME_OVER,
 	VICTORY,
 	PAUSED
@@ -93,39 +92,37 @@ public:
 	Game();
 	~Game();
 
-	void		Startup();
-	void		Update();
-	void		Render() const;
-	void		DebugRender() const;
-	void		Shutdown();
+	void			Startup();
+	void			Update();
+	void			Render() const;
+	void			DebugRender() const;
+	void			Shutdown();
 
-	void		RestartGame();
+	void			RestartGame();
 	
-	const Vec2	  GetMouseWorldPosition()													{ return m_mouseWorldPosition; }
-	const Camera* GetWorldCamera()															{ return m_worldCamera; }
+	const Vec2		GetMouseWorldPosition()														{ return m_mouseWorldPosition; }
+	const Camera*	GetWorldCamera()															{ return m_worldCamera; }
 
-	void		AddScreenShakeIntensity( float additionalIntensityFraction );
-
-	void		PrintToDebugInfoBox( const Rgba8& color, const std::vector< std::string >& textLines );
-
-	void		SetCameraPositionAndYaw( const Vec2& pos, float yaw );
+	void			AddScreenShakeIntensity( float additionalIntensityFraction );
 	
-	void		WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
+	void			SetCameraPositionAndYaw( const Vec2& pos, float yaw );
+	
+	void			WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
-	Entity*		GetEntityById( EntityId id );
-	Entity*		GetEntityByName( const std::string& name );
-	Map*		GetMapByName( const std::string& name );
-	Map*		GetCurrentMap();
-	void		SaveEntityByName( Entity* entity );
+	Entity*			GetEntityById( EntityId id );
+	Entity*			GetEntityByName( const std::string& name );
+	Map*			GetMapByName( const std::string& name );
+	Map*			GetCurrentMap();
+	void			SaveEntityByName( Entity* entity );
 
-	void		PlaySoundByName( const std::string& soundName, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
-	void		ChangeMusic( const std::string& musicName, bool isLooped = true, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
+	void			PlaySoundByName( const std::string& soundName, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
+	void			ChangeMusic( const std::string& musicName, bool isLooped = true, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false );
 
-	void		StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
-	void		StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
+	void			StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
+	void			StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
 
-	static bool SetMouseSensitivity( EventArgs* args );
-	static bool SetAmbientLightColor( EventArgs* args );
+	static bool		SetMouseSensitivity( EventArgs* args );
+	static bool		SetAmbientLightColor( EventArgs* args );
 	
 public:
 	RandomNumberGenerator* m_rng = nullptr;
@@ -188,9 +185,7 @@ private:
 	UISystem* m_uiSystem = nullptr;
 	UIPanel* m_hudUIPanel = nullptr;
 	UIPanel* m_worldUIPanel = nullptr;
-
-	TextBox* m_debugInfoTextBox = nullptr;
-
+	
 	Vec2 m_mouseWorldPosition = Vec2::ZERO;
 	Vec2 m_mouseUIPosition = Vec2::ZERO;
 

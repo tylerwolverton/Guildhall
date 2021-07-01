@@ -1,9 +1,27 @@
 
+Function OnPossess()
+{
+    ChangeState( Possessed )
+}
+
+
+Function OnUnPossess()
+{
+    ChangeState( Spin )
+}
+
 
 State Spin
 {
     OnUpdate()
     {
-        //RotateEntity( yawDegrees: 1 )
+        RotateEntity( yawDegrees: 1 )
     }
+}
+
+
+// Don't do any update logic while possessed
+State Possessed
+{
+
 }

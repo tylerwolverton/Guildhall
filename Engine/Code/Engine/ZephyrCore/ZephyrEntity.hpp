@@ -47,7 +47,7 @@ public:
 	virtual void				SetName( const std::string& name ) 						{ m_name = name; }
 
 	void						FireSpawnEvent();
-	bool						FireScriptEvent( const std::string& eventName, EventArgs* args );
+	bool						FireScriptEvent( const std::string& eventName, EventArgs* args = nullptr );
 	
 	virtual bool				IsDead() const = 0;
 

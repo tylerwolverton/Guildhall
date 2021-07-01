@@ -12,7 +12,6 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Networking/NetworkingSystem.hpp"
 #include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
@@ -44,7 +43,7 @@ void App::Startup()
 {
 	PopulateGameConfig();
 
-	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "Protogame3D" );
+	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "ProtoZephyr3D" );
 	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
 	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
 	eWindowMode windowMode = GetWindowModeFromGameConfig();
@@ -59,7 +58,6 @@ void App::Startup()
 	g_inputSystem = new InputSystem();
 	g_audioSystem = new AudioSystem();
 	g_renderer = new RenderContext();
-	g_networkingSystem = new NetworkingSystem();
 	g_devConsole = new DevConsole();
 	g_zephyrAPI = new ZephyrGameAPI();
 	g_game = new Game();
@@ -76,8 +74,6 @@ void App::Startup()
 	g_renderer->Startup( g_window );
 	DebugRenderSystemStartup( g_renderer, g_eventSystem );
 	
-	g_networkingSystem->Startup();
-
 	g_devConsole->Startup();
 	g_devConsole->SetInputSystem( g_inputSystem );
 	g_devConsole->SetRenderer( g_renderer );
@@ -94,7 +90,6 @@ void App::Shutdown()
 {
 	g_game->Shutdown();
 	g_devConsole->Shutdown();
-	g_networkingSystem->Shutdown();
 	DebugRenderSystemShutdown();
 	g_renderer->Shutdown();
 	g_audioSystem->Shutdown();
@@ -106,7 +101,6 @@ void App::Shutdown()
 	PTR_SAFE_DELETE( g_game );
 	PTR_SAFE_DELETE( g_zephyrAPI );
 	PTR_SAFE_DELETE( g_devConsole );
-	PTR_SAFE_DELETE( g_networkingSystem );
 	PTR_SAFE_DELETE( g_renderer );
 	PTR_SAFE_DELETE( g_audioSystem );
 	PTR_SAFE_DELETE( g_inputSystem );
@@ -180,7 +174,6 @@ void App::BeginFrame()
 	g_audioSystem->BeginFrame();
 	g_renderer->BeginFrame();
 	DebugRenderBeginFrame();
-	g_networkingSystem->BeginFrame();
 }
 
 
@@ -225,7 +218,6 @@ void App::UpdateFromKeyboard()
 void App::Render() const
 {
 	g_game->Render();
-	//DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 	g_devConsole->Render();
 }
 
@@ -235,7 +227,6 @@ void App::EndFrame()
 {
 	DebugRenderEndFrame();
 	g_renderer->EndFrame();
-	g_networkingSystem->EndFrame();
 	g_audioSystem->EndFrame();
 	g_inputSystem->EndFrame();
 	g_devConsole->EndFrame();
