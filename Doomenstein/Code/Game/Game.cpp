@@ -161,11 +161,13 @@ void Game::InitializeCameras()
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeLights()
 {
-	m_lights[0].light.intensity = .75f;
+	m_lights[0].light.intensity = .95f;
 	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
 	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[0].type = eLightType::POINT;
+	m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 25.f );
+	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 30.f );
+	m_lights[0].type = eLightType::SPOT;
 	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
 	m_lights[0].isEnabled = true;
 }
@@ -384,6 +386,8 @@ void Game::UpdateMovementFromKeyboard()
 		// Translation
 		TranslateCameraFPS( movementTranslation * deltaSeconds );
 	}
+
+	SetLightDirectionToCamera( m_lights[0].light );
 }
 
 
@@ -453,7 +457,7 @@ void Game::UpdateLights()
 		{
 			continue;
 		}
-
+		
 		switch ( gameLight.movementMode )
 		{
 			case eLightMovementMode::STATIONARY:
@@ -532,6 +536,13 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	Vec3 absoluteTranslation( translationXY, relativeTranslation.z );
 
 	m_worldCamera->Translate( absoluteTranslation );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetLightDirectionToCamera( Light& light )
+{
+	light.direction = m_worldCamera->GetTransform().GetForwardVector();
 }
 
 

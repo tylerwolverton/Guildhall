@@ -189,6 +189,7 @@ void TileMap::Render() const
 	g_renderer->BindShaderProgram( g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/Lit.hlsl" ) );
 
 	g_renderer->BindTexture( 0, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8.png" ) );
+	g_renderer->BindTexture( 1, g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8_n.png" ) );
 
 	g_renderer->DrawVertexArray( m_mesh );
 }

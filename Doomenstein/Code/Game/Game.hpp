@@ -162,6 +162,7 @@ private:
 
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
+	void SetLightDirectionToCamera( Light& light );
 
 	float GetAverageFPS() const;
 
