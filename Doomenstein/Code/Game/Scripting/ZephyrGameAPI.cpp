@@ -27,6 +27,7 @@ ZephyrGameAPI::ZephyrGameAPI()
 	REGISTER_EVENT( PrintToConsole );
 
 	REGISTER_EVENT( DestroySelf );
+	REGISTER_EVENT( WarpToMap );
 	REGISTER_EVENT( RotateEntity );
 
 	REGISTER_EVENT( StartNewTimer );
@@ -78,6 +79,31 @@ void ZephyrGameAPI::DestroySelf( EventArgs* args )
 	{
 		entity->Die();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrGameAPI::WarpToMap( EventArgs* args )
+{
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+
+	Entity* targetEntity = g_game->GetEntityById( targetId );
+	if ( targetEntity == nullptr )
+	{
+		g_devConsole->PrintWarning( "Tried to warp entity that doesn't exist" );
+		return;
+	}
+
+	Vec2 newPosition = args->GetValue( "position", targetEntity->GetPosition() );
+	float newYawOffset = args->GetValue( "yawOffset", targetEntity->GetOrientationDegrees() );
+	std::string destMap = args->GetValue( "map", "" );
+
+	if ( destMap.empty() )
+	{
+		destMap = targetEntity->GetMap()->GetName();
+	}
+
+	g_game->WarpEntityToMap( targetEntity, destMap, newPosition, newYawOffset );
 }
 
 

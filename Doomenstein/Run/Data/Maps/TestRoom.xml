@@ -26,7 +26,11 @@
 		<Actor type="Pinky" pos="1.5,4.5" yaw="150"/>
 		<Actor type="Pinky" pos="3.5,3.5" yaw="120"/>
 		<Actor type="Pinky" pos="2.5,6.5" yaw="150"/>
-    <Portal type="Energy Teleporter" pos="6.5,6.5" yaw="90" destMap="EmptyRoom" destPos="3,3" destYawOffset="90"/>
+    	<Entity type="Energy Teleporter" pos="6.5,6.5" yaw="90">
+			<GlobalVar type="string" var="destMap" value="EmptyRoom"/>
+			<GlobalVar type="vec2" var="destPosition" value="3,3"/>
+			<GlobalVar type="number" var="destYawOffset" value="90"/>
+		</Entity>
 	</Entities>
 
 </MapDefinition>

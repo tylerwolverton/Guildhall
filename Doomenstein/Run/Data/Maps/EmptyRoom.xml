@@ -13,7 +13,11 @@
 	</MapRows>
 	<Entities>
 		<PlayerStart pos="1.5,1.5" yaw="30"/>
-    <Portal type="Energy Teleporter" pos="2,2" yaw="90" destMap="TestRoom" destPos="5,2" destYawOffset="90"/>
+   		<Entity type="Energy Teleporter" pos="2,2" yaw="90">
+			<GlobalVar type="string" var="destMap" value="TestRoom"/>
+			<GlobalVar type="vec2" var="destPosition" value="5,2"/>
+			<GlobalVar type="number" var="destYawOffset" value="90"/>
+		</Entity>
 	</Entities>
 
 </MapDefinition>

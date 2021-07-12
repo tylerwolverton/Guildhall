@@ -61,9 +61,6 @@
     <ClCompile Include="MapMaterialTypeDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Portal.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteAnimationSetDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -118,9 +115,6 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="MapMaterialTypeDefinition.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Portal.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="SpriteAnimationSetDefinition.hpp">

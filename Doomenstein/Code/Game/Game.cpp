@@ -1186,6 +1186,13 @@ void Game::WarpToMap( Entity* entityToWarp, const std::string& destMapName, cons
 
 
 //-----------------------------------------------------------------------------------------------
+void Game::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees )
+{
+	m_world->WarpEntityToMap( entityToWarp, destMapName, newPos, newYawDegrees );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Game::WarpMapCommand( EventArgs* args )
 {
 	std::string mapStr = args->GetValue( "map", "" );

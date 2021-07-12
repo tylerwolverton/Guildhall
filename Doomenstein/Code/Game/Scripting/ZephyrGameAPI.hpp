@@ -42,6 +42,7 @@ private:
 	// Entity Events
 	void DestroySelf( EventArgs* args );
 	//void DamageEntity( EventArgs* args );
+	void WarpToMap( EventArgs* args );
 	void RotateEntity( EventArgs* args );
 
 	// Input

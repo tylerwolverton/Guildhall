@@ -133,6 +133,12 @@ Entity* World::GetClosestEntityInSector( const Vec2& observerPos, float forwardD
 //-----------------------------------------------------------------------------------------------
 void World::WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees )
 {
+	if ( entityToWarp == nullptr )
+	{
+		g_devConsole->PrintWarning("Tried to warp null entity");
+		return;
+	}
+
 	Map* destMap = GetLoadedMapByName( destMapName );
 
 	// TODO: Verify portal target maps exist while loading xml files

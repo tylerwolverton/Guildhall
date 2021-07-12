@@ -108,6 +108,7 @@ public:
 	void			SetCameraPositionAndYaw( const Vec2& pos, float yaw );
 	
 	void			WarpToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
+	void			WarpEntityToMap( Entity* entityToWarp, const std::string& destMapName, const Vec2& newPos, float newYawDegrees );
 
 	Entity*			GetEntityById( EntityId id );
 	Entity*			GetEntityByName( const std::string& name );

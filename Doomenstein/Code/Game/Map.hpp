@@ -8,7 +8,6 @@
 
 //-----------------------------------------------------------------------------------------------
 class Entity;
-class Portal;
 class World;
 struct MapData;
 struct MapEntityDefinition;
@@ -68,9 +67,6 @@ protected:
 
 	void ResolveEntityVsEntityCollisions();
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
-	void ResolveEntityVsPortalCollisions();
-
-	void WarpEntityInMap( Entity* entity, Portal* portal );
 
 	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;
 
@@ -83,5 +79,4 @@ protected:
 	float					m_playerStartYaw = 0.f;
 
 	std::vector<Entity*>	m_entities;
-	std::vector<Portal*>	m_portals;
 };
