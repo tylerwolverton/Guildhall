@@ -41,6 +41,7 @@
 #include "Engine/ZephyrCore/ZephyrUtils.hpp"
 
 #include "Game/Entity.hpp"
+#include "Game/PhysicsConfig.hpp"
 #include "Game/GameJobs.hpp"
 #include "Game/MapData.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
@@ -1107,6 +1108,8 @@ void Game::ReloadGame()
 
 	g_gameConfigBlackboard.Clear();
 	PopulateGameConfig();
+	g_physicsConfig->PopulateFromXml();
+
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
 
 	m_player = nullptr;

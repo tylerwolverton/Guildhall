@@ -1,0 +1,22 @@
+<!-- Reserved for general physics settings -->
+<PhysicsConfig>
+    <!-- Maximum of 32 layers may be defined -->
+    <Layers>
+        <Layer name="entity"/>
+        <Layer name="environment"/>
+    </Layers>
+
+    <!-- 
+        By default, all layers will interact with all others.
+        Disable    - disables interaction between 2 layers
+        Enable     - enables interaction between 2 layers
+        DisableAll - disables a layer from interacting with any others 
+    -->
+
+    <LayerInteractions>
+        <!-- <Disable layer1="entity" layer2="environment" /> -->
+        <!-- <DisableAll layer="entity"/> -->
+        <!-- <Enable layer1="entity" layer2="environment"/> -->
+    </LayerInteractions>
+
+</PhysicsConfig>

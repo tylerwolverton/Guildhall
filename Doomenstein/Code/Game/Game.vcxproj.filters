@@ -73,6 +73,9 @@
     <ClCompile Include="Scripting\ZephyrGameAPI.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsConfig.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -128,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="Scripting\ZephyrGameAPI.hpp">
       <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsConfig.hpp">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

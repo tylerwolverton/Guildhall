@@ -23,6 +23,7 @@
 
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/PhysicsConfig.hpp"
 #include "Game/Scripting/ZephyrGameAPI.hpp"
 
 
@@ -42,6 +43,7 @@ App::~App()
 void App::Startup()
 {
 	PopulateGameConfig();
+	g_physicsConfig = new PhysicsConfig();
 
 	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "ProtoZephyr3D" );
 	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
@@ -98,6 +100,7 @@ void App::Shutdown()
 	g_eventSystem->Shutdown();
 	g_window->Close();
 
+	PTR_SAFE_DELETE( g_physicsConfig );
 	PTR_SAFE_DELETE( g_game );
 	PTR_SAFE_DELETE( g_zephyrAPI );
 	PTR_SAFE_DELETE( g_devConsole );

@@ -7,6 +7,7 @@ class InputSystem;
 class AudioSystem;
 class RenderContext;
 class NetworkingSystem;
+class PhysicsConfig;
 class Game;
 class SpriteSheet;
 class Camera;
@@ -28,17 +29,7 @@ extern AudioSystem* g_audioSystem;
 extern RenderContext* g_renderer;
 extern NetworkingSystem* g_networkingSystem;
 extern Game* g_game;
-
-
-//-----------------------------------------------------------------------------------------------
-// Global Tile Sheets
-//-----------------------------------------------------------------------------------------------
-extern SpriteSheet* g_tileSpriteSheet;
-extern SpriteSheet* g_characterSpriteSheet;
-extern SpriteSheet* g_portraitSpriteSheet;
-
-
-void PopulateGameConfig();
+extern PhysicsConfig* g_physicsConfig;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -54,18 +45,7 @@ constexpr float WINDOW_HEIGHT = 9.f;
 constexpr float WINDOW_WIDTH_PIXELS = 1920.f;
 constexpr float WINDOW_HEIGHT_PIXELS = 1080.f;
 
-constexpr int NUM_SPHERES = 30;
-constexpr float SPHERE_RING_RADIUS = 20.f;
-constexpr float DEGREES_PER_SPHERE = 360.f / (float)NUM_SPHERES;
-
 constexpr float TILE_SIZE = 1.f;
-
-constexpr float PLAYER_PHYSICS_RADIUS = .25f;
-constexpr float PLAYER_COSMETIC_RADIUS = .4f;
-constexpr float PLAYER_SPEED = .25f;
-constexpr float PLAYER_MAX_SPEED = 1.f;
-
-constexpr float ACTOR_WANDER_DIRECTION_CHANGE_COOLDOWN_SECONDS = 3.f;
 
 constexpr float PHYSICS_FRICTION_FRACTION = .2f;
 
@@ -73,6 +53,12 @@ constexpr float DEBUG_LINE_THICKNESS = 0.02f;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;
+
+
+//-----------------------------------------------------------------------------------------------
+// Config
+//-----------------------------------------------------------------------------------------------
+void PopulateGameConfig();
 
 
 //-----------------------------------------------------------------------------------------------

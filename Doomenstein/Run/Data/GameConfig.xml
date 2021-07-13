@@ -4,4 +4,5 @@
 	windowAspect="1.777"
   windowTitle="Doomenstein"
 	windowMode="windowed"
+  physicsConfigPath="Data/PhysicsConfig.xml"
 />
