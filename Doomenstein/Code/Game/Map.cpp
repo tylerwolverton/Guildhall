@@ -182,6 +182,9 @@ void Map::CallAllMapEntityZephyrSpawnEvents( Entity* player )
 //-----------------------------------------------------------------------------------------------
 void Map::RemoveOwnershipOfEntity( Entity* entityToRemove )
 {
+	// TODO: Fire leave events for each collision entity
+	entityToRemove->m_collidingEntities.clear();
+
 	for ( int entityIdx = 0; entityIdx < (int)m_entities.size(); ++entityIdx )
 	{
 		Entity*& entity = m_entities[entityIdx];
@@ -360,26 +363,65 @@ void Map::ResolveEntityVsEntityCollisions()
 //-----------------------------------------------------------------------------------------------
 void Map::ResolveCollisionEvents( Entity* entity, Entity* otherEntity )
 {
+	EventArgs args;
+	args.SetValue( "otherEntity", otherEntity->GetId() );
+	args.SetValue( "otherEntityName", otherEntity->GetName() );
+	args.SetValue( "otherEntityType", otherEntity->GetType() );
+
+	EventArgs otherArgs;
+	otherArgs.SetValue( "otherEntity", entity->GetId() );
+	otherArgs.SetValue( "otherEntityName", entity->GetName() );
+	otherArgs.SetValue( "otherEntityType", entity->GetType() );
+
 	if ( DoDiscsOverlap( entity->GetPosition(), entity->GetPhysicsRadius(), otherEntity->GetPosition(), otherEntity->GetPhysicsRadius() ) )
 	{
-		EventArgs args;
-		args.SetValue( "otherEntity", otherEntity->GetId() );
-		args.SetValue( "otherEntityName", otherEntity->GetName() );
-		args.SetValue( "otherEntityType", otherEntity->GetType() );
-
-		EventArgs otherArgs;
-		otherArgs.SetValue( "otherEntity", entity->GetId() );
-		otherArgs.SetValue( "otherEntityName", entity->GetName() );
-		otherArgs.SetValue( "otherEntityType", entity->GetType() );
-
-		// Fire events as long as the entities are still valid
-		if ( entity != nullptr )
+		// If entities are already colliding, fire stay
+		if ( entity->m_collidingEntities.count( otherEntity->GetId() ) > 0 )
 		{
-			entity->FireScriptEvent( "OnCollisionEnter", &args );
+			// Fire events as long as the entities are still valid
+			if ( entity != nullptr )
+			{
+				entity->FireScriptEvent( "OnCollisionStay", &args );
+			}
+			if ( otherEntity != nullptr )
+			{
+				otherEntity->FireScriptEvent( "OnCollisionStay", &otherArgs );
+			}
 		}
-		if ( otherEntity != nullptr )
+		else
 		{
-			otherEntity->FireScriptEvent( "OnCollisionEnter", &otherArgs );
+			entity->m_collidingEntities.insert( otherEntity->GetId() );
+			otherEntity->m_collidingEntities.insert( entity->GetId() );
+
+			// Fire events as long as the entities are still valid
+			if ( entity != nullptr )
+			{
+				entity->FireScriptEvent( "OnCollisionEnter", &args );
+			}
+			if ( otherEntity != nullptr )
+			{
+				otherEntity->FireScriptEvent( "OnCollisionEnter", &otherArgs );
+			}
+		}
+	}
+	else
+	{
+		// Entities were colliding earlier, fire leave events
+		if ( entity != nullptr && otherEntity != nullptr
+			 && entity->m_collidingEntities.count( otherEntity->GetId() ) > 0 )
+		{
+			entity->m_collidingEntities.erase( otherEntity->GetId() );
+			otherEntity->m_collidingEntities.erase( entity->GetId() );
+
+			// Fire events as long as the entities are still valid
+			if ( entity != nullptr )
+			{
+				entity->FireScriptEvent( "OnCollisionLeave", &args );
+			}
+			if ( otherEntity != nullptr )
+			{
+				otherEntity->FireScriptEvent( "OnCollisionLeave", &otherArgs );
+			}
 		}
 	}
 }

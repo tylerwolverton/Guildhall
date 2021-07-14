@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -94,6 +95,8 @@ protected:
 	std::string				m_collisionLayer;
 	bool					m_canBePushed = false;
 	bool					m_canPush = false;
+
+	std::unordered_set<EntityId> m_collidingEntities;
 
 	// Visual
 	float					m_cumulativeTime = 0.f;
