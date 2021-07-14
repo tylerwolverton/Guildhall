@@ -123,7 +123,7 @@ bool PhysicsConfig::DoLayersInteract( const std::string& layer0, const std::stri
 		return false;
 	}
 
-	return DoLayersInteract( m_layerInteractions[layer0Index], m_layerInteractions[layer1Index] );
+	return DoLayersInteract( layer0Index, layer1Index );
 }
 
 
@@ -139,7 +139,7 @@ void PhysicsConfig::EnableLayerInteraction( const std::string& layer0, const std
 		return;
 	}
 
-	EnableLayerInteraction( m_layerInteractions[layer0Index], m_layerInteractions[layer1Index] );
+	EnableLayerInteraction( layer0Index, layer1Index );
 }
 
 
@@ -155,7 +155,7 @@ void PhysicsConfig::DisableLayerInteraction( const std::string& layer0, const st
 		return;
 	}
 
-	DisableLayerInteraction( m_layerInteractions[layer0Index], m_layerInteractions[layer1Index] );
+	DisableLayerInteraction( layer0Index, layer1Index );
 }
 
 
@@ -169,7 +169,7 @@ void PhysicsConfig::DisableAllLayerInteraction( const std::string& layer )
 		return;
 	}
 
-	DisableAllLayerInteraction( m_layerInteractions[layerIndex] );
+	DisableAllLayerInteraction( layerIndex );
 }
 
 

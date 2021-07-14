@@ -27,6 +27,9 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	, m_entityDef( entityDef )
 	, m_map( map )
 {
+	m_collisionLayer = m_entityDef.m_initialCollisionLayer;
+	m_canBePushed = m_entityDef.m_initialCanBePushed;
+	m_canPush = m_entityDef.m_initialCanPush;
 }
 
 

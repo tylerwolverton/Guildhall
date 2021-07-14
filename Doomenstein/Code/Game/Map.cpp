@@ -13,6 +13,7 @@
 #include "Game/Entity.hpp"
 #include "Game/EntityDefinition.hpp"
 #include "Game/MapData.hpp"
+#include "Game/PhysicsConfig.hpp"
 #include "Game/World.hpp"
 
 
@@ -336,30 +337,49 @@ void Map::ResolveEntityVsEntityCollisions()
 				continue;
 			}
 
-			ResolveEntityVsEntityCollision( *entity, *otherEntity );
-
-			if ( DoDiscsOverlap( entity->GetPosition(), entity->GetPhysicsRadius(), otherEntity->GetPosition(), otherEntity->GetPhysicsRadius() ) )
+			if ( !g_physicsConfig->DoLayersInteract( entity->GetCollisionLayer(), otherEntity->GetCollisionLayer() ) )
 			{
-				EventArgs args;
-				args.SetValue( "otherEntity", otherEntity->GetId() );
-				args.SetValue( "otherEntityName", otherEntity->GetName() );
-				args.SetValue( "otherEntityType", otherEntity->GetType() );
-
-				EventArgs otherArgs;
-				otherArgs.SetValue( "otherEntity", entity->GetId() );
-				otherArgs.SetValue( "otherEntityName", entity->GetName() );
-				otherArgs.SetValue( "otherEntityType", entity->GetType() );
-
-				// Fire events as long as the entities are still valid
-				if ( entity != nullptr )
-				{
-					entity->FireScriptEvent( "OnCollisionEnter", &args );
-				}
-				if ( otherEntity != nullptr )
-				{
-					otherEntity->FireScriptEvent( "OnCollisionEnter", &otherArgs );
-				}
+				continue;
 			}
+
+			ResolveCollisionEvents( entity, otherEntity );
+
+			// Account for the case where a collision event removes an entity from the map
+			if ( entity == nullptr
+				 || otherEntity == nullptr )
+			{
+				continue;
+			}
+
+			ResolveEntityVsEntityCollision( *entity, *otherEntity );
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::ResolveCollisionEvents( Entity* entity, Entity* otherEntity )
+{
+	if ( DoDiscsOverlap( entity->GetPosition(), entity->GetPhysicsRadius(), otherEntity->GetPosition(), otherEntity->GetPhysicsRadius() ) )
+	{
+		EventArgs args;
+		args.SetValue( "otherEntity", otherEntity->GetId() );
+		args.SetValue( "otherEntityName", otherEntity->GetName() );
+		args.SetValue( "otherEntityType", otherEntity->GetType() );
+
+		EventArgs otherArgs;
+		otherArgs.SetValue( "otherEntity", entity->GetId() );
+		otherArgs.SetValue( "otherEntityName", entity->GetName() );
+		otherArgs.SetValue( "otherEntityType", entity->GetType() );
+
+		// Fire events as long as the entities are still valid
+		if ( entity != nullptr )
+		{
+			entity->FireScriptEvent( "OnCollisionEnter", &args );
+		}
+		if ( otherEntity != nullptr )
+		{
+			otherEntity->FireScriptEvent( "OnCollisionEnter", &otherArgs );
 		}
 	}
 }
@@ -369,15 +389,15 @@ void Map::ResolveEntityVsEntityCollisions()
 void Map::ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 )
 {
 	// Neither can be moved
-	if ( !entity1.m_canBePushedByEntities
-		 && !entity2.m_canBePushedByEntities )
+	if ( !entity1.m_canBePushed
+		 && !entity2.m_canBePushed )
 	{
 		return;
 	}
 
 	// Neither can push
-	if ( !entity1.m_canPushEntities
-		 && !entity2.m_canPushEntities )
+	if ( !entity1.m_canPush
+		 && !entity2.m_canPush )
 	{
 		return;
 	}
@@ -386,43 +406,43 @@ void Map::ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 )
 	float radius2 = entity2.GetPhysicsRadius();
 
 	// Both can be moved
-	if ( entity1.m_canBePushedByEntities
-		 && entity2.m_canBePushedByEntities )
+	if ( entity1.m_canBePushed
+		 && entity2.m_canBePushed )
 	{
-		if ( entity1.m_canPushEntities
-			 && entity2.m_canPushEntities )
+		if ( entity1.m_canPush
+			 && entity2.m_canPush )
 		{
 			PushDiscsOutOfEachOtherRelativeToMass2D( entity1.m_position, radius1, entity1.GetMass(), entity2.m_position, radius2, entity2.GetMass() );
 		}
 		
-		if ( entity1.m_canPushEntities
-			  && !entity2.m_canPushEntities )
+		if ( entity1.m_canPush
+			  && !entity2.m_canPush )
 		{
 			PushDiscOutOfDisc2D( entity2.m_position, radius2, entity1.m_position, radius1 );
 		}
 
-		if ( entity2.m_canPushEntities
-			  && !entity1.m_canPushEntities )
+		if ( entity2.m_canPush
+			  && !entity1.m_canPush )
 		{
 			PushDiscOutOfDisc2D( entity1.m_position, radius1, entity2.m_position, radius2 );
 		}
 	}
 
 	// Only entity1 can be moved
-	if ( entity1.m_canBePushedByEntities
-		 && !entity2.m_canBePushedByEntities )
+	if ( entity1.m_canBePushed
+		 && !entity2.m_canBePushed )
 	{
-		if ( entity2.m_canPushEntities )
+		if ( entity2.m_canPush )
 		{
 			PushDiscOutOfDisc2D( entity1.m_position, radius1, entity2.m_position, radius2 );
 		}
 	}
 
 	// Only entity2 can be moved
-	if ( entity2.m_canBePushedByEntities
-		 && !entity1.m_canBePushedByEntities )
+	if ( entity2.m_canBePushed
+		 && !entity1.m_canBePushed )
 	{
-		if ( entity1.m_canPushEntities )
+		if ( entity1.m_canPush )
 		{
 			PushDiscOutOfDisc2D( entity2.m_position, radius2, entity1.m_position, radius1 );
 		}

@@ -264,3 +264,6 @@ send_udp_message msg="sdfnsldkjfn"
 open_udp_port
 send_udp_message msg="good to meet you udp"
 close_udp_port
+help
+warp map=TestMap 
+warp map=TestRoom 

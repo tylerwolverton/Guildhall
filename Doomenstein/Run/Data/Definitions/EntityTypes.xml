@@ -1,7 +1,8 @@
 <EntityTypes>
   ​
   <Entity name="Marine">
-    <Physics radius="0.18" height="0.62" eyeHeight="0.58" walkSpeed="1.0"/>
+    <Physics radius="0.18" height="0.62" eyeHeight="0.58" walkSpeed="1.0" 
+             collisionLayer="entity" canPush="true" canBePushed="true" />
     <Appearance size="1.5,1.5" billboard="CameraFacingXY" spriteSheet="Data/Images/Actor_Marine_7x12.png" layout="7,12">
       <Walk front="0" left="14" back="28" right="42"/>
       <Attack front="0"/>
@@ -11,7 +12,8 @@
   </Entity>
   ​
   <Entity name="Pinky">
-    <Physics radius="0.22" height="0.56" eyeHeight="0.40" walkSpeed="1.5"/>
+    <Physics radius="0.22" height="0.56" eyeHeight="0.40" walkSpeed="1.5"
+             collisionLayer="entity" canPush="true" canBePushed="true"/>
     <Appearance size="1.5,1.5" billboard="CameraFacingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9" spriteMaterial="Data/Materials/Pinky.material">
     <!--<Appearance size="1.5,1.5" billboard="CameraOpposingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->
     <!--<Appearance size="1.5,1.5" billboard="CameraFacingXYZ" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9">-->
@@ -24,21 +26,9 @@
     <Script name="Pinky.zephyr"/>
   </Entity>
   ​
-  <Actor name="Imp">
-    <Physics radius="0.2" height="0.65" eyeHeight="0.6" walkSpeed="1.2"/>
-  </Actor>
-  ​
-  <Entity name="Lamp">
-    <Physics radius="0.1" height="0.9"/>
-  </Entity>
-  ​
-  <Projectile name="Plasma Bolt">
-    <Physics radius="0.05" height="0.1" speed="5"/>
-    <Gameplay damage="5~15"/>
-  </Projectile>
-  ​
   <Entity name="Energy Teleporter">
-    <Physics radius="0.18" height="0.62" eyeHeight="0.58" walkSpeed="0.0"/>
+    <Physics radius="0.18" height="0.62" eyeHeight="0.58" walkSpeed="0.0"
+             collisionLayer="portal" canPush="false" canBePushed="false" />
     <Appearance size="1,1" billboard="CameraFacingXYZ" spriteSheet="Data/Images/Terrain_8x8.png" layout="8,8">
       <Walk front="57"/>
     </Appearance>

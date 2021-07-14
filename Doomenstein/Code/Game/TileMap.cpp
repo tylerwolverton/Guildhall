@@ -653,11 +653,6 @@ void TileMap::ResolveEntityVsWallCollisions()
 //-----------------------------------------------------------------------------------------------
 void TileMap::ResolveEntityVsWallCollision( Entity& entity )
 {
-	if ( !entity.m_canBePushedByWalls )
-	{
-		return;
-	}
-
 	const Tile* entityTile = GetTileFromWorldCoords( entity.GetPosition() );
 	if ( entityTile == nullptr )
 	{

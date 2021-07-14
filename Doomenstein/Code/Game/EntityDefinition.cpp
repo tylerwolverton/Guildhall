@@ -83,6 +83,9 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		m_height = ParseXmlAttribute( *physicsElem, "height", m_height );
 		m_eyeHeight = ParseXmlAttribute( *physicsElem, "eyeHeight", m_eyeHeight );
 		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
+		m_initialCollisionLayer = ParseXmlAttribute( *physicsElem, "collisionLayer", m_initialCollisionLayer );
+		m_initialCanBePushed = ParseXmlAttribute( *physicsElem, "canBePushed", m_initialCanBePushed );
+		m_initialCanPush = ParseXmlAttribute( *physicsElem, "canPush", m_initialCanPush );
 	}
 
 	// Appearance

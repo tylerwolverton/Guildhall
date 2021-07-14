@@ -3,6 +3,7 @@
     <!-- Maximum of 32 layers may be defined -->
     <Layers>
         <Layer name="entity"/>
+        <Layer name="portal"/>
         <Layer name="environment"/>
     </Layers>
 
@@ -14,7 +15,7 @@
     -->
 
     <LayerInteractions>
-        <!-- <Disable layer1="entity" layer2="environment" /> -->
+        <!-- <Disable layer1="entity" layer2="entity" /> -->
         <!-- <DisableAll layer="entity"/> -->
         <!-- <Enable layer1="entity" layer2="environment"/> -->
     </LayerInteractions>

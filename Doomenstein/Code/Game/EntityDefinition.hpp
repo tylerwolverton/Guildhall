@@ -61,6 +61,10 @@ protected:
 	float			m_mass = 1.f;
 	float			m_walkSpeed = 0.f;
 
+	std::string		m_initialCollisionLayer;
+	bool			m_initialCanBePushed = false;
+	bool			m_initialCanPush = false;
+
 	Vec2			m_visualSize = Vec2::ZERO;
 	eBillboardStyle m_billboardStyle = eBillboardStyle::CAMERA_FACING_INVALID;
 	Material*		m_spriteMaterial = nullptr;

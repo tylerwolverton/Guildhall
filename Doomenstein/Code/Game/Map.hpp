@@ -66,6 +66,7 @@ protected:
 	void LoadEntities( const std::vector<MapEntityDefinition>& mapEntityDefs );
 
 	void ResolveEntityVsEntityCollisions();
+	void ResolveCollisionEvents( Entity* entity, Entity* otherEntity );
 	void ResolveEntityVsEntityCollision( Entity& entity1, Entity& entity2 );
 
 	virtual RaycastResult Raycast( const Vec3& startPos, const Vec3& forwardNormal, float maxDist ) const = 0;

@@ -45,6 +45,7 @@ public:
 	eEntityClass		GetClass() const										{ return m_entityDef.m_class; }
 	Map*				GetMap() const											{ return m_map; }
 	void				SetMap( Map* map )										{ m_map = map; }
+	std::string			GetCollisionLayer() const								{ return m_collisionLayer; }
 
 	void				AddVelocity( const Vec2& deltaVelocity )				{ m_velocity += deltaVelocity; }
 	void				Translate( const Vec2& translation )					{ m_position += translation; }
@@ -89,9 +90,10 @@ protected:
 	Vec2					m_linearAcceleration = Vec2( 0.f, 0.f );		// the Entity's signed linear acceleration per second per second
 	float					m_orientationDegrees = 0.f;						// the Entity's forward - facing direction, as an angle in degrees
 	float					m_angularVelocity = 0.f;						// the Entity's signed angular velocity( spin rate ), in degrees per second
-	bool					m_canBePushedByWalls = false;
-	bool					m_canBePushedByEntities = false;
-	bool					m_canPushEntities = false;
+
+	std::string				m_collisionLayer;
+	bool					m_canBePushed = false;
+	bool					m_canPush = false;
 
 	// Visual
 	float					m_cumulativeTime = 0.f;
