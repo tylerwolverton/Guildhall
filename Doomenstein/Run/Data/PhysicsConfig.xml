@@ -5,6 +5,7 @@
         <Layer name="entity"/>
         <Layer name="portal"/>
         <Layer name="environment"/>
+        <Layer name="noCollision"/>
     </Layers>
 
     <!-- 
@@ -16,7 +17,7 @@
 
     <LayerInteractions>
         <!-- <Disable layer1="entity" layer2="entity" /> -->
-        <!-- <DisableAll layer="entity"/> -->
+         <DisableAll layer="noCollision"/> 
         <!-- <Enable layer1="entity" layer2="environment"/> -->
     </LayerInteractions>
 

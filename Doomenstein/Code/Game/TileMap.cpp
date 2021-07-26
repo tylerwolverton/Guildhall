@@ -16,6 +16,7 @@
 #include "Game/MapData.hpp"
 #include "Game/MapRegionTypeDefinition.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
+#include "Game/PhysicsConfig.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -664,6 +665,7 @@ void TileMap::ResolveEntityVsWallCollision( Entity& entity )
 	{
 		const Tile*& tile = surroundingTiles[tileIdx];
 		if ( tile != nullptr
+			 && g_physicsConfig->DoLayersInteract( tile->GetCollisionLayer(), entity.GetCollisionLayer() )
 			 && tile->IsSolid() )
 		{
 			PushDiscOutOfAABB2D( entity.m_position, entity.GetPhysicsRadius(), tile->GetBounds() );

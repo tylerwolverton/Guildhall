@@ -24,6 +24,7 @@ public:
 
 	void		SetTileDef( TileDefinition* tileDef )				{ m_tileDef = tileDef; }
 
+	std::string	GetCollisionLayer() const							{ return m_regionTypeDef->GetCollisionLayer(); }
 	bool		IsSolid() const										{ return m_regionTypeDef->IsSolid(); }
 
 public:

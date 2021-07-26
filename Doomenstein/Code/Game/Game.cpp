@@ -121,6 +121,7 @@ void Game::Startup()
 	InitializeCameras();
 	InitializeLights();
 	
+	g_physicsConfig->PopulateFromXml();
 	LoadAssets();
 
 	m_uiSystem = new UISystem();
@@ -933,16 +934,23 @@ void Game::LoadXmlMapRegions()
 	}
 
 	m_defaultMapRegionStr = ParseXmlAttribute( *root, "default", "" );
-	if ( m_defaultMapRegionStr == "" )
+	if ( m_defaultMapRegionStr.empty() )
 	{
 		g_devConsole->PrintError( "MapRegionTypes.xml: No default region attribute defined" );
+		return;
+	}
+
+	m_defaultMapRegionCollisionLayerStr = ParseXmlAttribute(*root, "defaultCollisionLayer", "");
+	if ( m_defaultMapRegionCollisionLayerStr.empty() )
+	{
+		g_devConsole->PrintError("MapRegionTypes.xml: No defaultCollisionLayer region attribute defined");
 		return;
 	}
 
 	XmlElement* element = root->FirstChildElement();
 	while ( element )
 	{
-		MapRegionTypeDefinition* mapRegionTypeDef = new MapRegionTypeDefinition( *element, m_defaultMaterialStr );
+		MapRegionTypeDefinition* mapRegionTypeDef = new MapRegionTypeDefinition( *element, m_defaultMaterialStr, m_defaultMapRegionCollisionLayerStr );
 		if ( mapRegionTypeDef->IsValid() )
 		{
 			MapRegionTypeDefinition::s_definitions[mapRegionTypeDef->GetName()] = mapRegionTypeDef;

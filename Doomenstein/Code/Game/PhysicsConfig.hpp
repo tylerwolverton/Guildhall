@@ -18,6 +18,8 @@ public:
 	void DisableLayerInteraction( const std::string& layer0, const std::string& layer1 );
 	void DisableAllLayerInteraction( const std::string& layer );
 	
+	bool IsLayerDefined( const std::string& layer ) const;
+
 private:
 	bool DoLayersInteract( uint layer0, uint layer1 ) const;
 	void EnableLayerInteraction( uint layer0, uint layer1 );

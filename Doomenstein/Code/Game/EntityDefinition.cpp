@@ -7,6 +7,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Game/SpriteAnimationSetDefinition.hpp"
+#include "Game/PhysicsConfig.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -83,7 +84,14 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		m_height = ParseXmlAttribute( *physicsElem, "height", m_height );
 		m_eyeHeight = ParseXmlAttribute( *physicsElem, "eyeHeight", m_eyeHeight );
 		m_walkSpeed = ParseXmlAttribute( *physicsElem, "walkSpeed", m_walkSpeed );
+		
 		m_initialCollisionLayer = ParseXmlAttribute( *physicsElem, "collisionLayer", m_initialCollisionLayer );
+		if ( !g_physicsConfig->IsLayerDefined( m_initialCollisionLayer ) )
+		{
+			g_devConsole->PrintError( Stringf( "Layer '%s' has not been defined in PhysicsConfig.xml", m_initialCollisionLayer.c_str() ) );
+			m_initialCollisionLayer = "";
+		}
+
 		m_initialCanBePushed = ParseXmlAttribute( *physicsElem, "canBePushed", m_initialCanBePushed );
 		m_initialCanPush = ParseXmlAttribute( *physicsElem, "canPush", m_initialCanPush );
 	}

@@ -208,6 +208,7 @@ private:
 	// Default map data
 	std::string m_defaultMaterialStr;
 	std::string m_defaultMapRegionStr;
+	std::string m_defaultMapRegionCollisionLayerStr;
 
 	// Audio
 	std::string m_curMusicName;

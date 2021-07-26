@@ -1,4 +1,4 @@
-<MapRegionTypes default="InvalidRegion">
+<MapRegionTypes default="InvalidRegion" defaultCollisionLayer="environment" >
 
 	<RegionType name="InvalidRegion" isSolid="false">
 		<Floor material="InvalidMaterial"/>

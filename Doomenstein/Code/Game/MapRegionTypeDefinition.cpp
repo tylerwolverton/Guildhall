@@ -2,6 +2,8 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Game/MapMaterialTypeDefinition.hpp"
+#include "Game/PhysicsConfig.hpp"
+#include "Game/GameCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -23,7 +25,7 @@ MapRegionTypeDefinition* MapRegionTypeDefinition::GetMapRegionTypeDefinition( st
 
 
 //-----------------------------------------------------------------------------------------------
-MapRegionTypeDefinition::MapRegionTypeDefinition( const XmlElement& mapRegionTypeDefElem, const std::string& defaultMaterialName )
+MapRegionTypeDefinition::MapRegionTypeDefinition( const XmlElement& mapRegionTypeDefElem, const std::string& defaultMaterialName, const std::string& defaultMapRegionCollisionLayerStr )
 {
 	m_name = ParseXmlAttribute( mapRegionTypeDefElem, "name", m_name );
 	if ( m_name == "" )
@@ -37,6 +39,13 @@ MapRegionTypeDefinition::MapRegionTypeDefinition( const XmlElement& mapRegionTyp
 	{
 		g_devConsole->PrintError( Stringf( "Region type '%s' is missing isSolid attribute", m_name.c_str() ) );
 		return;
+	}
+
+	m_collisionLayer = ParseXmlAttribute( mapRegionTypeDefElem, "collisionLayer", defaultMapRegionCollisionLayerStr );
+	if (!g_physicsConfig->IsLayerDefined( m_collisionLayer ))
+	{
+		g_devConsole->PrintError( Stringf( "Layer '%s' has not been defined in PhysicsConfig.xml", m_collisionLayer.c_str() ) );
+		m_collisionLayer = defaultMapRegionCollisionLayerStr;
 	}
 
 	m_sideMaterial = MapMaterialTypeDefinition::GetMapMaterialTypeDefinition( defaultMaterialName );

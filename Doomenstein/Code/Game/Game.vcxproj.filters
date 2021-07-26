@@ -167,5 +167,8 @@
     <Xml Include="..\..\Run\Data\Definitions\WorldDef.xml">
       <Filter>Data\Definitions</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\PhysicsConfig.xml">
+      <Filter>Data</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

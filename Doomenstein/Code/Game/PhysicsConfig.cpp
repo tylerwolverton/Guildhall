@@ -9,7 +9,6 @@
 //-----------------------------------------------------------------------------------------------
 PhysicsConfig::PhysicsConfig()
 {
-	PopulateFromXml();
 }
 
 
@@ -61,7 +60,7 @@ void PhysicsConfig::PopulateFromXml()
 			auto mapIter = m_layerToIndexMap.find( layerName );
 			if ( mapIter != m_layerToIndexMap.end() )
 			{
-				g_devConsole->PrintError( Stringf( "Layer %s has already been defined in the layer list", layerName.c_str() ) );
+				g_devConsole->PrintError( Stringf( "Layer '%s' has already been defined in the layer list", layerName.c_str() ) );
 				return;
 			}
 
@@ -174,6 +173,13 @@ void PhysicsConfig::DisableAllLayerInteraction( const std::string& layer )
 
 
 //-----------------------------------------------------------------------------------------------
+bool PhysicsConfig::IsLayerDefined( const std::string& layer ) const
+{
+	return GetIndexForLayerName( layer ) != -1;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 bool PhysicsConfig::DoLayersInteract( uint layer0, uint layer1 ) const
 {
 	return ( m_layerInteractions[layer0] & ( 1 << layer1 ) ) != 0;
@@ -211,16 +217,18 @@ void PhysicsConfig::DisableAllLayerInteraction( uint layer )
 //-----------------------------------------------------------------------------------------------
 int PhysicsConfig::GetIndexForLayerName( const std::string& layerName ) const
 {
+	// Errors will be reported by higher level functions
+
 	auto mapIter = m_layerToIndexMap.find( layerName );
 	if ( mapIter == m_layerToIndexMap.end() )
 	{
-		g_devConsole->PrintError( Stringf( "Layer %s has not been defined in PhysicsConfig.xml", layerName.c_str() ) );
+		//g_devConsole->PrintError( Stringf( "Layer '%s' has not been defined in PhysicsConfig.xml", layerName.c_str() ) );
 		return -1;
 	}
 
 	if ( mapIter->second > 31 )
 	{
-		g_devConsole->PrintError( Stringf( "Layer '%s' was defined as index %i, but only 32 physics layers are allowed", layerName.c_str(), mapIter->second ) );
+		//g_devConsole->PrintError( Stringf( "Layer '%s' was defined as index %i, but only 32 physics layers are allowed", layerName.c_str(), mapIter->second ) );
 		return -1;
 	}
 
