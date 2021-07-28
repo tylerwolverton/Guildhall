@@ -250,6 +250,26 @@ void UISystem::ParseUIElementXml( const XmlElement& uiElementElem, UIElement* pa
 
 	Rgba8 tint = ParseXmlAttribute( uiElementElem, "tint", Rgba8::WHITE );
 	Rgba8 hoverTint = ParseXmlAttribute( uiElementElem, "hoverTint", Rgba8::WHITE );
+
+	std::string texturePath = ParseXmlAttribute( uiElementElem, "texture", "" );
+	Texture* texture = nullptr;
+	if ( !texturePath.empty() )
+	{
+		if ( IsEqualIgnoreCase( texturePath, "white" ) )
+		{
+			texture = m_renderer->GetDefaultWhiteTexture();
+		}
+		else
+		{
+			texture = m_renderer->CreateOrGetTextureFromFile( texturePath.c_str() );
+		}
+		
+		if ( texture == nullptr )
+		{
+			texture = m_renderer->GetDefaultWhiteTexture();
+		}
+	}
+
 	bool isHidden = ParseXmlAttribute( uiElementElem, "isHidden", false );
 	bool isActive = ParseXmlAttribute( uiElementElem, "isActive", true );
 
@@ -276,25 +296,14 @@ void UISystem::ParseUIElementXml( const XmlElement& uiElementElem, UIElement* pa
 
 		if ( IsEqualIgnoreCase( elementType, "panel" ) )
 		{
-			newElement = parentElem->AddChildPanel( name, posData, nullptr, tint );
+			newElement = parentElem->AddChildPanel( name, posData, texture, tint );
 		}
 		else if ( IsEqualIgnoreCase( elementType, "button" ) )
 		{
-			newElement = parentElem->AddButton( name, posData, nullptr, tint );
+			newElement = parentElem->AddButton( name, posData, texture, tint );
 		}
 		else if ( IsEqualIgnoreCase( elementType, "image" ) )
 		{
-			std::string texturePath = ParseXmlAttribute( uiElementElem, "texture", "" );
-			Texture* texture = nullptr;
-			if ( !texturePath.empty() )
-			{
-				texture = m_renderer->CreateOrGetTextureFromFile( texturePath.c_str() );
-			}
-			if ( texture == nullptr )
-			{
-				texture = m_renderer->GetDefaultWhiteTexture();
-			}
-
 			newElement = parentElem->AddImage( name, posData, texture );
 		}
 		else if ( IsEqualIgnoreCase( elementType, "text" ) )

@@ -1,11 +1,11 @@
 <UIRoot>
-  <UIElement type="panel" name="HUD" isHidden ="false" isActive="true" tint="0,0,0,200" >
+  <UIElement type="panel" name="HUD" isHidden ="false" isActive="true" texture="white" tint="0,0,0,200" >
     <PositionData type="aligned" 
                   fractionOfParentDimensions=".75,.125" 
                   verticalPaddingInPixels ="10,0" 
                   alignmentWithinParentElement="bottom-center"/>
 
-    <UIElement type="button" name="attack1" isHidden ="false" isActive="true" tint="255,255,255,200" hoverTint="200,200,200,200" >
+    <UIElement type="button" name="attack1" isHidden ="false" isActive="true" texture="white" tint="255,255,255,200" hoverTint="200,200,200,200" >
       <PositionData type="aligned" 
                     fractionOfParentDimensions=".1,.7" 
                     horizontalPaddingInPixels ="10,0" 
@@ -82,7 +82,7 @@
                     alignmentWithinParentElement="bottom-left"/>
     </UIElement>
 
-    <UIElement type="panel" name="hpBar" isHidden ="false" isActive="true" tint="0,255,0,200" >
+    <UIElement type="panel" name="hpBar" isHidden ="false" isActive="true"  texture="white" tint="0,255,0,200" >
       <PositionData type="aligned" 
                     fractionOfParentDimensions=".9,.2" 
                     horizontalPaddingInPixels ="0,5" 
@@ -101,14 +101,14 @@
   </UIElement>
 
   <!--Inventory-->
-  <UIElement type="panel" name="inventory" isHidden="true" isActive="false" tint="0,0,0,200">
+  <UIElement type="panel" name="inventory" isHidden="true" isActive="false" texture="white" tint="0,0,0,200">
     <PositionData type="aligned"
                 fractionOfParentDimensions=".25,.87"
                 verticalPaddingInPixels ="0,5"
                 horizontalPaddingInPixels ="0,5"
                 alignmentWithinParentElement="top-right"/>
 
-    <UIElement type="grid" name="inventoryGrid" isHidden ="false" isActive="true" tint="200,200,200,200" dimensions="5,3" elementPaddingPixels="5,5">
+    <UIElement type="grid" name="inventoryGrid" isHidden ="false" isActive="true" texture="white" tint="200,200,200,200" dimensions="5,3" elementPaddingPixels="5,5">
       <PositionData type="aligned"
                 fractionOfParentDimensions="1,.37"
                 verticalPaddingInPixels ="0,0"
@@ -117,7 +117,7 @@
     </UIElement>
 
     <!--Weapon-->
-    <UIElement type="button" name="weaponSlot" isHidden ="false" isActive="true" tint="100,100,100,200">
+    <UIElement type="button" name="weaponSlot" isHidden ="false" isActive="true" texture="white" tint="100,100,100,200">
       <PositionData type="aligned"
                 fractionOfParentDimensions=".2,.15"
                 positionOffsetFraction=".1,-.15"
@@ -132,14 +132,14 @@
     </UIElement>
 
     <!--Armor-->
-    <UIElement type="button" name="armorSlot" isHidden ="false" isActive="true" tint="100,100,100,200">
+    <UIElement type="button" name="armorSlot" isHidden ="false" isActive="true" texture="white" tint="100,100,100,200">
       <PositionData type="aligned"
                 fractionOfParentDimensions=".2,.15"
                 positionOffsetFraction="0,-.15"
                 alignmentWithinParentElement="top-center"/>
     </UIElement>
     
-    <UIElement type="text" name="armorLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Armor" fontSize="20" >
+    <UIElement type="text" name="armorLabel" isHidden ="false" isActive="true" texture="white" tint="0,0,0,200" text="Armor" fontSize="20" >
         <PositionData type="aligned"
                       fractionOfParentDimensions=".2,.05"
                       positionOffsetFraction=".03,-.11"
@@ -147,14 +147,14 @@
     </UIElement>
 
     <!--Shield-->
-    <UIElement type="button" name="shieldSlot" isHidden ="false" isActive="true" tint="100,100,100,200">
+    <UIElement type="button" name="shieldSlot" isHidden ="false" isActive="true" texture="white" tint="100,100,100,200">
       <PositionData type="aligned"
                 fractionOfParentDimensions=".2,.15"
                 positionOffsetFraction="-.1,-.15"
                 alignmentWithinParentElement="top-right"/>
     </UIElement>
     
-    <UIElement type="text" name="shieldLabel" isHidden ="false" isActive="true" tint="0,0,0,200" text="Shield" fontSize="20" >
+    <UIElement type="text" name="shieldLabel" isHidden ="false" isActive="true" texture="white" tint="0,0,0,200" text="Shield" fontSize="20" >
       <PositionData type="aligned"
                     fractionOfParentDimensions=".2,.15"
                     positionOffsetFraction="-.07,-.061"
@@ -162,14 +162,14 @@
     </UIElement>
 
     <!--Ring1-->
-    <UIElement type="button" name="ring1Slot" isHidden ="false" isActive="true" tint="100,100,100,200">
+    <UIElement type="button" name="ring1Slot" isHidden ="false" isActive="true" texture="white" tint="100,100,100,200">
       <PositionData type="aligned"
                 fractionOfParentDimensions=".15,.075"
                 positionOffsetFraction=".125,-.35"             
                 alignmentWithinParentElement="top-left"/>
     </UIElement>
 
-    <UIElement type="text" name="ring1Label" isHidden ="false" isActive="true" tint="0,0,0,200" text="Ring" fontSize="20" >
+    <UIElement type="text" name="ring1Label" isHidden ="false" isActive="true" texture="white" tint="0,0,0,200" text="Ring" fontSize="20" >
         <PositionData type="aligned"
                       fractionOfParentDimensions=".2,.15"
                       positionOffsetFraction=".15,-.26"
@@ -177,14 +177,14 @@
     </UIElement>
     
     <!--Ring2-->
-    <UIElement type="button" name="ring2Slot" isHidden ="false" isActive="true" tint="100,100,100,200">
+    <UIElement type="button" name="ring2Slot" isHidden ="false" isActive="true" texture="white" tint="100,100,100,200">
       <PositionData type="aligned"
                 fractionOfParentDimensions=".15,.075"
                 positionOffsetFraction="-.125,-.35"
                 alignmentWithinParentElement="top-right"/>
     </UIElement>
     
-     <UIElement type="text" name="ring2Label" isHidden ="false" isActive="true" tint="0,0,0,200" text="Ring" fontSize="20" >
+     <UIElement type="text" name="ring2Label" isHidden ="false" isActive="true" texture="white"  tint="0,0,0,200" text="Ring" fontSize="20" >
         <PositionData type="aligned"
                       fractionOfParentDimensions=".2,.15"
                       positionOffsetFraction="-.05,-.26"
