@@ -17,6 +17,9 @@
     <Filter Include="Scripting">
       <UniqueIdentifier>{78f01f09-102b-48be-b602-d3da6aa849e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\UI">
+      <UniqueIdentifier>{4317ead0-e311-4091-bf63-64a12c1ee0ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -169,6 +172,9 @@
     </Xml>
     <Xml Include="..\..\Run\Data\PhysicsConfig.xml">
       <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\UI\UI.xml">
+      <Filter>Data\UI</Filter>
     </Xml>
   </ItemGroup>
 </Project>

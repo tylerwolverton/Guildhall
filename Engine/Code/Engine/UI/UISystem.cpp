@@ -276,11 +276,11 @@ void UISystem::ParseUIElementXml( const XmlElement& uiElementElem, UIElement* pa
 
 		if ( IsEqualIgnoreCase( elementType, "panel" ) )
 		{
-			newElement = parentElem->AddChildPanel( name, posData, m_renderer->GetDefaultWhiteTexture(), tint );
+			newElement = parentElem->AddChildPanel( name, posData, nullptr, tint );
 		}
 		else if ( IsEqualIgnoreCase( elementType, "button" ) )
 		{
-			newElement = parentElem->AddButton( name, posData, m_renderer->GetDefaultWhiteTexture(), tint );
+			newElement = parentElem->AddButton( name, posData, nullptr, tint );
 		}
 		else if ( IsEqualIgnoreCase( elementType, "image" ) )
 		{

@@ -28,22 +28,22 @@ public:
 	virtual void Render() const = 0;
 	virtual void DebugRender() const = 0;
 
-	virtual void Activate() { m_isActive = true; }
-	virtual void Deactivate() { m_isActive = false; }
-	virtual void Hide() { m_isVisible = false; }
-	virtual void Show() { m_isVisible = true; }
-	bool		 IsVisible() const { return m_isVisible; }
-	bool		 IsActive() const { return m_isActive; }
+	virtual void Activate()										{ m_isActive = true; }
+	virtual void Deactivate()									{ m_isActive = false; }
+	virtual void Hide()											{ m_isVisible = false; }
+	virtual void Show()											{ m_isVisible = true; }
+	bool		 IsVisible() const								{ return m_isVisible; }
+	bool		 IsActive() const								{ return m_isActive; }
 
-	int GetId() const { return m_id; }
-	std::string GetName() const { return m_name; }
-	void SetBackgroundTexture( Texture* backgroundTexture ) { m_backgroundTexture = backgroundTexture; }
-	void SetInitialTint( const Rgba8& tint ) { m_initialTint = m_curTint = tint; }
-	void SetHoverTint( const Rgba8& tint ) { m_hoverTint = tint; }
-	void ResetTint() { m_curTint = m_initialTint; }
-	void ActivateHoverTint() { m_curTint = m_hoverTint; }
+	int GetId() const											{ return m_id; }
+	std::string GetName() const									{ return m_name; }
+	void SetBackgroundTexture( Texture* backgroundTexture )		{ m_backgroundTexture = backgroundTexture; }
+	void SetInitialTint( const Rgba8& tint )					{ m_initialTint = m_curTint = tint; }
+	void SetHoverTint( const Rgba8& tint )						{ m_hoverTint = tint; }
+	void ResetTint()											{ m_curTint = m_initialTint; }
+	void ActivateHoverTint()									{ m_curTint = m_hoverTint; }
 	void SetButtonAndLabelTint( const Rgba8& tint );
-	AABB2 GetBoundingBox() const { return m_boundingBox; }
+	AABB2 GetBoundingBox() const								{ return m_boundingBox; }
 	Vec2 GetBoundingBoxCenter() const;
 	void SetBoundingBoxPercent( const Vec2& percentOfDimensions );
 

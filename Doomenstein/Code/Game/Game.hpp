@@ -134,6 +134,7 @@ public:
 private:
 	void LoadAssets();
 	void LoadSounds();
+	void LoadXmlUIElements();
 	void LoadXmlEntityTypes();
 	void LoadXmlMapMaterials();
 	void LoadXmlMapRegions();
@@ -148,7 +149,7 @@ private:
 	void InitializeCameras();
 	void InitializeLights();
 
-	void BuildUIHud();
+	void AddGunToUI();
 
 	void UpdateFromKeyboard();
 	void LoadStartingMap( const std::string& mapName );

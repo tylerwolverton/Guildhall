@@ -121,12 +121,13 @@ void Game::Startup()
 	InitializeCameras();
 	InitializeLights();
 	
+	m_uiSystem = new UISystem();
+	m_uiSystem->Startup( g_window, g_renderer );
+
 	g_physicsConfig->PopulateFromXml();
 	LoadAssets();
 
-	m_uiSystem = new UISystem();
-	m_uiSystem->Startup( g_window, g_renderer );
-	BuildUIHud();
+	AddGunToUI();
 
 	m_startingMapName = g_gameConfigBlackboard.GetValue( std::string( "startMap" ), m_startingMapName );
 	g_devConsole->PrintString( Stringf( "Loading starting map: %s", m_startingMapName.c_str() ) );
@@ -176,29 +177,19 @@ void Game::InitializeLights()
 
 
 //-----------------------------------------------------------------------------------------------
-void Game::BuildUIHud()
+void Game::AddGunToUI()
 {
-	Texture* hudBaseTexture = g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
-	
-	UIAlignedPositionData panelPosData;
-	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .13f );
-	panelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
-	m_hudUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData, hudBaseTexture );
-
-	panelPosData.fractionOfParentDimensions = Vec2( 1.f, .87f );
-	panelPosData.alignmentWithinParentElement = ALIGN_TOP_CENTER;
-	m_worldUIPanel = m_uiSystem->GetRootPanel()->AddChildPanel( panelPosData );
-	
 	// Add gun sprite
 	SpriteSheet* gunSprite = SpriteSheet::GetSpriteSheetByName( "ViewModels" );
-	Texture* texture = const_cast<Texture*>( &gunSprite->GetTexture() );
 	Vec2 uvsAtMins, uvsAtMaxs;
 	gunSprite->GetSpriteUVs( uvsAtMins, uvsAtMaxs, IntVec2::ZERO );
 
-	UIAlignedPositionData gunPanelPosData;
-	gunPanelPosData.fractionOfParentDimensions = Vec2( .5f, 1.f );
-	gunPanelPosData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
-	m_worldUIPanel->AddChildPanel( gunPanelPosData,	texture, Rgba8::WHITE, uvsAtMins, uvsAtMaxs);
+	UIAlignedPositionData posData;
+	posData.alignmentWithinParentElement = ALIGN_BOTTOM_CENTER;
+	posData.fractionOfParentDimensions = Vec2( .5f, 1.f );
+
+	SpriteDefinition spriteDef( *gunSprite, 0, uvsAtMins, uvsAtMaxs );
+	m_uiSystem->GetUIElementByName( "Viewport" )->AddImage( posData, &spriteDef );
 }
 
 
@@ -736,6 +727,7 @@ void Game::LoadAssets()
 	SpriteSheet::CreateAndRegister( "ViewModels", *( g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" ) ), IntVec2( 8, 8 ) );
 	
 	LoadSounds();
+	LoadXmlUIElements();
 
 	LoadAndCompileZephyrScripts();
 	LoadXmlEntityTypes();
@@ -752,6 +744,28 @@ void Game::LoadAssets()
 void Game::LoadSounds()
 {
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadXmlUIElements()
+{
+	g_devConsole->PrintString( "Loading UI Elements..." );
+
+	const char* filePath = "Data/UI/UI.xml";
+
+	XmlDocument doc;
+	XmlError loadError = doc.LoadFile( filePath );
+	if (loadError != tinyxml2::XML_SUCCESS)
+	{
+		g_devConsole->PrintError( "UI.xml could not be opened" );
+		return;
+	}
+
+	XmlElement* root = doc.RootElement();
+	m_uiSystem->LoadUIElementsFromXML( *root );
+
+	g_devConsole->PrintString( "UI Elements Loaded", Rgba8::GREEN );
 }
 
 
@@ -1131,6 +1145,8 @@ void Game::ReloadGame()
 	m_loadedSoundIds.clear();
 
 	LoadSounds();
+	LoadXmlUIElements();
+
 	LoadAndCompileZephyrScripts();
 	LoadXmlEntityTypes();
 	LoadWorldDefinitionFromXml();

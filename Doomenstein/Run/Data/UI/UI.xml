@@ -1,0 +1,30 @@
+<UIRoot>
+  <!-- Hud panel -->
+  <UIElement type="panel" name="HUD" isHidden ="false" isActive="true">
+    <PositionData type="aligned"
+                  fractionOfParentDimensions="1,.125"
+                  verticalPaddingInPixels ="0,0"
+                  alignmentWithinParentElement="bottom-center"/>
+
+    <UIElement type="image" name="hudImage" texture="Data\Images\Hud_Base.png">
+      <PositionData type="aligned"
+                          fractionOfParentDimensions="1,1"
+                          alignmentWithinParentElement="center"/>
+    </UIElement>
+  </UIElement>
+  
+  <!-- Viewport panel -->
+  <UIElement type="panel" name="Viewport" isHidden ="false" isActive="true">
+    <PositionData type="aligned"
+                  fractionOfParentDimensions="1,.875"
+                  verticalPaddingInPixels ="0,0"
+                  alignmentWithinParentElement="top-center"/>
+
+    <!--<UIElement type="image" name="gunImage" texture="Data\Images\ViewModelsSpriteSheet_8x8.png">
+      <PositionData type="aligned"
+                          fractionOfParentDimensions="1,1"
+                          alignmentWithinParentElement="center"/>
+    </UIElement>-->
+  </UIElement>
+    
+</UIRoot>

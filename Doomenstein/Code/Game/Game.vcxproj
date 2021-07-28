@@ -246,6 +246,7 @@
     <Xml Include="..\..\Run\Data\Maps\TwistyMaze.xml" />
     <Xml Include="..\..\Run\Data\Maps\UVTest.xml" />
     <Xml Include="..\..\Run\Data\PhysicsConfig.xml" />
+    <Xml Include="..\..\Run\Data\UI\UI.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
