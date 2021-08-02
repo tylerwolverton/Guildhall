@@ -10,6 +10,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/HashedString.hpp"
 // Include whatever you want here to test various engine classes (even non-math stuff, like Rgba)
 
 //-----------------------------------------------------------------------------------------------
@@ -115,6 +116,23 @@ int TestSet_Custom_SetFromText()
 	return 17; // Number of tests expected (set equal to the # of times you call VerifyTestResult)
 }
 
+
+//-----------------------------------------------------------------------------------------------
+int TestSet_Custom_HashedString()
+{
+	HashedString str1 = "hash me!";
+	HashedString str2 = "no, hash me!";
+	HashedString str3 = "Hash me!";
+	HashedString str4 = "Hash me!";
+
+	VerifyTestResult( str1 != str2, "Hashed strings should not match!" );
+	VerifyTestResult( str1 != str3, "Hashed strings should not match!" );
+	VerifyTestResult( str3 == str4, "Hashed strings should match!" );
+
+	return 3; // Number of tests expected (set equal to the # of times you call VerifyTestResult)
+}
+
+
 //-----------------------------------------------------------------------------------------------
 void RunTests_Custom()
 {
@@ -122,6 +140,7 @@ void RunTests_Custom()
 	//RunTestSet( false, TestSet_Custom_Dummy,	 "Custom dummy sample tests" );
 	RunTestSet( false, TestSet_Custom_Rgba,		 "Custom Rgba sample tests" );
 	RunTestSet( false, TestSet_Custom_MathUtils, "Custom MathUtils sample tests" );
-	RunTestSet( false, TestSet_Custom_SetFromText, "Custom SetFromText sample tests" );
+	RunTestSet( false, TestSet_Custom_SetFromText, "Custom SetFromText tests" );
+	RunTestSet( false, TestSet_Custom_HashedString, "Custom HashedString tests" );
 }
 

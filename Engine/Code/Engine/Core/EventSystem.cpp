@@ -7,7 +7,7 @@
 void EventSystem::RegisterEvent( const std::string& eventName, const std::string& eventHelpText, eUsageLocation usageMode, EventCallbackFunctionPtrType function )
 {
 	EventSubscription* newSubscription = new EventSubscription();
-	newSubscription->m_eventName = eventName;
+	newSubscription->m_eventName = HashedString( eventName );
 	newSubscription->m_eventHelpText = eventHelpText;
 	newSubscription->m_usageMode = usageMode;
 	newSubscription->m_callbackFuncPtr = function;
@@ -20,7 +20,7 @@ void EventSystem::RegisterEvent( const std::string& eventName, const std::string
 void EventSystem::RegisterEvent( const std::string& eventName, const std::string& eventHelpText, eUsageLocation usageMode, Delegate<EventArgs*> function )
 {
 	DelegateEventSubscription newSub;
-	newSub.m_eventName = eventName;
+	newSub.m_eventName = HashedString( eventName );
 	newSub.m_eventHelpText = eventHelpText;
 	newSub.m_usageMode = usageMode;
 	newSub.m_delegate = function;
@@ -32,9 +32,11 @@ void EventSystem::RegisterEvent( const std::string& eventName, const std::string
 //-----------------------------------------------------------------------------------------------
 void EventSystem::DeRegisterEvent( const std::string& eventName, EventCallbackFunctionPtrType function )
 {
+	HashedString hashedEventName( eventName );
+
 	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_eventSubscriptionPtrs.size(); ++subscriptionIndex )
 	{
-		if ( !_strcmpi( m_eventSubscriptionPtrs[subscriptionIndex]->m_eventName.c_str(), eventName.c_str() )
+		if ( m_eventSubscriptionPtrs[subscriptionIndex]->m_eventName == hashedEventName
 			 && m_eventSubscriptionPtrs[subscriptionIndex]->m_callbackFuncPtr == function )
 		{
 			m_eventSubscriptionPtrs[subscriptionIndex]->m_callbackFuncPtr = nullptr;
@@ -46,6 +48,7 @@ void EventSystem::DeRegisterEvent( const std::string& eventName, EventCallbackFu
 //-----------------------------------------------------------------------------------------------
 void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs, eUsageLocation location )
 {
+	HashedString hashedEventName( eventName );
 	EventArgs eventArgsObj;
 
 	// Initialize event args if necessary and set this event's name into them
@@ -64,7 +67,7 @@ void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs,
 	for ( int subscriptionIndex = 0; subscriptionIndex < (int)curEvents.size(); ++subscriptionIndex )
 	{
 		EventSubscription*& sub = curEvents[subscriptionIndex];
-		if ( !_strcmpi( sub->m_eventName.c_str(), eventName.c_str() )
+		if ( sub->m_eventName == hashedEventName
 			 && sub->m_usageMode & location
 			 && sub->m_callbackFuncPtr != nullptr )
 		{
@@ -75,7 +78,7 @@ void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs,
 	for ( int subscriptionIndex = 0; subscriptionIndex < (int)curDelegateSubs.size(); ++subscriptionIndex )
 	{
 		DelegateEventSubscription& sub = curDelegateSubs[subscriptionIndex];
-		if ( !_strcmpi( sub.m_eventName.c_str(), eventName.c_str() )
+		if ( sub.m_eventName == hashedEventName
 			 && sub.m_usageMode & location )
 		{
 			sub.m_delegate.Invoke( eventArgs );
@@ -93,7 +96,7 @@ std::vector<std::string> EventSystem::GetAllExposedEventNamesForLocation( eUsage
 		EventSubscription*& sub = m_eventSubscriptionPtrs[subscriptionIndex];
 		if ( sub->m_usageMode & location )
 		{
-			matchingEvents.push_back( sub->m_eventName );
+			matchingEvents.push_back( sub->m_eventName.GetRawString() );
 		}
 	}
 	
@@ -102,7 +105,7 @@ std::vector<std::string> EventSystem::GetAllExposedEventNamesForLocation( eUsage
 		DelegateEventSubscription& sub = m_delegateEventSubscriptions[subscriptionIndex];
 		if ( sub.m_usageMode & location )
 		{
-			matchingEvents.push_back( sub.m_eventName );
+			matchingEvents.push_back( sub.m_eventName.GetRawString() );
 		}
 	}
 

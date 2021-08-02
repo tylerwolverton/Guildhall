@@ -181,8 +181,6 @@ Strings TrimOuterWhitespace( const Strings& stringsToTrim )
 }
 
 
-
-
 //-----------------------------------------------------------------------------------------------
 int ConvertStringToInt( const std::string& string )
 {

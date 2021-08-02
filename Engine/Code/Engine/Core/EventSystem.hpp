@@ -2,6 +2,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Delegate.hpp"
 #include "Engine/Core/NamedProperties.hpp"
+#include "Engine/Core/HashedString.hpp"
 
 #include <string>
 #include <vector>
@@ -24,7 +25,7 @@ enum eUsageLocation : uint
 struct EventSubscription
 {
 public:
-	std::string m_eventName;
+	HashedString m_eventName;
 	std::string m_eventHelpText;
 	eUsageLocation m_usageMode = EVERYWHERE;
 	EventCallbackFunctionPtrType m_callbackFuncPtr = nullptr;
@@ -39,7 +40,7 @@ public:
 struct DelegateEventSubscription
 {
 public:
-	std::string m_eventName;
+	HashedString m_eventName;
 	std::string m_eventHelpText;
 	eUsageLocation m_usageMode = EVERYWHERE;
 	Delegate<EventArgs*> m_delegate;
@@ -119,11 +120,13 @@ void EventSystem::RegisterMethodEvent( const std::string& eventName,
 	newSub.m_eventHelpText = eventHelpText;
 	newSub.m_usageMode = usageMode;
 	
-	// Try to subscribe to existing delegate before making new one
+	HashedString hashedEventName( eventName );
+
+	// Try to subscribe to existing delegate before making a new one
 	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_delegateEventSubscriptions.size(); ++subscriptionIndex )
 	{
 		DelegateEventSubscription& sub = m_delegateEventSubscriptions[subscriptionIndex];
-		if ( !_strcmpi( sub.m_eventName.c_str(), eventName.c_str() )
+		if ( sub.m_eventName == hashedEventName
 			 && sub.m_usageMode & usageMode )
 		{
 			sub.m_delegate.SubscribeMethod( obj, callbackMethod );
@@ -143,10 +146,12 @@ void EventSystem::DeRegisterMethodEvent( const std::string& eventName,
 										 OBJ_TYPE* obj, 
 										 void( OBJ_TYPE::*callbackMethod )( EventArgs* args ) )
 {
+	HashedString hashedEventName( eventName );
+
 	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_delegateEventSubscriptions.size(); ++subscriptionIndex )
 	{
 		DelegateEventSubscription& sub = m_delegateEventSubscriptions[subscriptionIndex];
-		if ( !_strcmpi( sub.m_eventName.c_str(), eventName.c_str() ) )
+		if ( sub.m_eventName == hashedEventName )
 		{
 			sub.m_delegate.UnsubscribeMethod( obj, callbackMethod );
 			if ( sub.m_delegate.GetSubscriptionCount() == 0 )
