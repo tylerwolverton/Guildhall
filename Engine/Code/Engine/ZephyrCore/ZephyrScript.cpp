@@ -27,9 +27,6 @@ ZephyrScript::ZephyrScript( const ZephyrScriptDefinition& scriptDef, ZephyrEntit
 	m_curStateBytecodeChunk = m_scriptDef.GetFirstStateBytecodeChunk();
 	m_stateBytecodeChunks = m_scriptDef.GetAllStateBytecodeChunks();
 
-	RegisterScriptEvents( m_globalBytecodeChunk );
-	RegisterScriptEvents( m_curStateBytecodeChunk );
-
 	// Initialize parentEntity in script
 	m_globalBytecodeChunk->SetVariable( PARENT_ENTITY_NAME, ZephyrValue( (EntityId)m_parentEntity->GetId() ) );
 }
@@ -83,9 +80,6 @@ void ZephyrScript::UnloadScript()
 		return;
 	}
 
-	UnRegisterScriptEvents( m_curStateBytecodeChunk );
-	UnRegisterScriptEvents( m_scriptDef.GetGlobalBytecodeChunk() );
-
 	m_stateBytecodeChunks.clear();
 }
 
@@ -93,15 +87,15 @@ void ZephyrScript::UnloadScript()
 //-----------------------------------------------------------------------------------------------
 bool ZephyrScript::FireEvent( const std::string& eventName, EventArgs* args )
 {
+	if ( !m_scriptDef.IsValid() )
+	{
+		return false;
+	}
+
 	EventArgs eventArgs;
 	if ( args == nullptr )
 	{
 		args = &eventArgs;
-	}
-
-	if ( !m_scriptDef.IsValid() )
-	{
-		return false;
 	}
 
 	ZephyrBytecodeChunk* eventChunk = GetEventBytecodeChunk( eventName );
@@ -142,13 +136,9 @@ void ZephyrScript::ChangeState( const std::string& targetState )
 
 	FireEvent( "OnExit" );
 	
-	UnRegisterScriptEvents( m_curStateBytecodeChunk );
-
 	m_curStateBytecodeChunk = targetStateBytecodeChunk;
 	// Initialize state variables each time the state is entered
 	ZephyrInterpreter::InterpretStateBytecodeChunk( *m_curStateBytecodeChunk, m_globalBytecodeChunk->GetUpdateableVariables(), m_parentEntity, m_curStateBytecodeChunk->GetUpdateableVariables() );
-
-	RegisterScriptEvents( m_curStateBytecodeChunk );
 
 	FireEvent( "OnEnter" );
 	m_hasEnteredStartingState = true;
@@ -300,36 +290,6 @@ const ZephyrBytecodeChunk* ZephyrScript::GetBytecodeChunkByName( const std::stri
 	}
 
 	return nullptr;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrScript::RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk )
-{
-	if ( bytecodeChunk == nullptr )
-	{
-		return;
-	}
-
-	for ( auto chunk : bytecodeChunk->GetEventBytecodeChunks() )
-	{
-		g_eventSystem->RegisterMethodEvent( chunk.first, "", eUsageLocation::EVERYWHERE, this, &ZephyrScript::OnEvent );
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void ZephyrScript::UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk )
-{
-	if ( bytecodeChunk == nullptr )
-	{
-		return;
-	}
-
-	for ( auto chunk : bytecodeChunk->GetEventBytecodeChunks() )
-	{
-		g_eventSystem->DeRegisterMethodEvent( chunk.first, this, &ZephyrScript::OnEvent );
-	}
 }
 
 

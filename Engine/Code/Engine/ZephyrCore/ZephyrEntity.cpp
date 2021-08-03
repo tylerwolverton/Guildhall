@@ -166,6 +166,7 @@ void ZephyrEntity::SetEntityVariableInitializers( const std::vector<EntityVariab
 
 
 //-----------------------------------------------------------------------------------------------
+// Used for debug printing
 const ZephyrBytecodeChunk* ZephyrEntity::GetBytecodeChunkByName( const std::string& chunkName ) const
 {
 	if ( m_scriptObj == nullptr )

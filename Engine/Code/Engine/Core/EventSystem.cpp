@@ -59,14 +59,15 @@ void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs,
 
 	eventArgs->SetValue( "eventName", eventName );
 
-	// Copy current state of event registrations and iterate over them to fire events
+	// Copy current number of event registrations and iterate over them to fire events
 	// This effectively ignores any new events that are registered from other events
-	std::vector<EventSubscription*> curEvents = m_eventSubscriptionPtrs;
-	std::vector<DelegateEventSubscription> curDelegateSubs = m_delegateEventSubscriptions;
 
-	for ( int subscriptionIndex = 0; subscriptionIndex < (int)curEvents.size(); ++subscriptionIndex )
+	int curEventSubsCount = (int)m_eventSubscriptionPtrs.size();
+	int curDelegateSubsCount = (int)m_delegateEventSubscriptions.size();
+
+	for ( int subscriptionIndex = 0; subscriptionIndex < curEventSubsCount; ++subscriptionIndex )
 	{
-		EventSubscription*& sub = curEvents[subscriptionIndex];
+		EventSubscription*& sub = m_eventSubscriptionPtrs[subscriptionIndex];
 		if ( sub->m_eventName == hashedEventName
 			 && sub->m_usageMode & location
 			 && sub->m_callbackFuncPtr != nullptr )
@@ -75,9 +76,9 @@ void EventSystem::FireEvent( const std::string& eventName, EventArgs* eventArgs,
 		}
 	}
 
-	for ( int subscriptionIndex = 0; subscriptionIndex < (int)curDelegateSubs.size(); ++subscriptionIndex )
+	for ( int subscriptionIndex = 0; subscriptionIndex < curDelegateSubsCount; ++subscriptionIndex )
 	{
-		DelegateEventSubscription& sub = curDelegateSubs[subscriptionIndex];
+		DelegateEventSubscription& sub = m_delegateEventSubscriptions[subscriptionIndex];
 		if ( sub.m_eventName == hashedEventName
 			 && sub.m_usageMode & location )
 		{

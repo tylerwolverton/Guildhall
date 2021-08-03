@@ -115,12 +115,12 @@ void EventSystem::RegisterMethodEvent( const std::string& eventName,
 									   OBJ_TYPE* obj, 
 									   void( OBJ_TYPE::*callbackMethod )( EventArgs* args ) )
 {
+	HashedString hashedEventName( eventName );
+
 	DelegateEventSubscription newSub;
-	newSub.m_eventName = eventName;
+	newSub.m_eventName = hashedEventName;
 	newSub.m_eventHelpText = eventHelpText;
 	newSub.m_usageMode = usageMode;
-	
-	HashedString hashedEventName( eventName );
 
 	// Try to subscribe to existing delegate before making a new one
 	for ( int subscriptionIndex = 0; subscriptionIndex < (int)m_delegateEventSubscriptions.size(); ++subscriptionIndex )

@@ -42,9 +42,6 @@ public:
 	const ZephyrBytecodeChunk* GetBytecodeChunkByName( const std::string& chunkName ) const;
 
 private:
-	void RegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
-	void UnRegisterScriptEvents( ZephyrBytecodeChunk* bytecodeChunk );
-
 	void OnEvent( EventArgs* args );
 	ZephyrBytecodeChunk* GetStateBytecodeChunk( const std::string& stateName );
 	ZephyrBytecodeChunk* GetEventBytecodeChunk( const std::string& eventName );
