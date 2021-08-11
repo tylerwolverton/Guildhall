@@ -4,6 +4,7 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Renderer/RenderBuffer.hpp"
 
+
 //-----------------------------------------------------------------------------------------------
 //class RenderBuffer;
 class RenderContext;

@@ -1,0 +1,7 @@
+Entity target = null
+
+State Follow
+{
+    // parentEntity.position = target.position
+    // parentEntity.forwardVec = target.forwardVec
+}

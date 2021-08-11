@@ -41,35 +41,6 @@ enum class eGameState
 
 
 //-----------------------------------------------------------------------------------------------
-enum class eLightMovementMode
-{
-	STATIONARY,
-	FOLLOW_CAMERA,
-	LOOP
-};
-
-
-//-----------------------------------------------------------------------------------------------
-enum class eLightType
-{
-	POINT,
-	DIRECTIONAL,
-	SPOT
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct GameLight
-{
-	Light light;
-
-	eLightMovementMode movementMode = eLightMovementMode::FOLLOW_CAMERA;
-	eLightType type = eLightType::POINT;
-	bool isEnabled = true;
-};
-
-
-//-----------------------------------------------------------------------------------------------
 struct GameTimer
 {
 public:
@@ -147,7 +118,6 @@ private:
 	void ChangeMap( const std::string& mapName );
 
 	void InitializeCameras();
-	void InitializeLights();
 
 	void AddGunToUI();
 
@@ -156,7 +126,6 @@ private:
 	void UpdateMovementFromKeyboard();
 	void UpdateCameraTransformToMatchPlayer();
 	void UpdateTimers();
-	void UpdateLights();
 	void UpdateFramesPerSecond();
 
 	void RenderDebugUI() const;
@@ -200,8 +169,9 @@ private:
 	std::string m_startingMapName;
 			
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 0.0f;
-	GameLight m_lights[MAX_LIGHTS];
+	float m_ambientIntensity = 0.1f;
+	// TODO: Turn into light pool
+	//GameLight m_lights[MAX_LIGHTS];
 	float m_specularFactor = 0.f;
 	float m_specularPower = 32.f;
 	float m_gamma = 2.2f;

@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/ZephyrCore/ZephyrCommon.hpp"
 #include "Engine/ZephyrCore/ZephyrEntity.hpp"
 #include "Game/EntityDefinition.hpp"
@@ -15,6 +16,24 @@
 //-----------------------------------------------------------------------------------------------
 class Map;
 class Texture;
+
+
+//-----------------------------------------------------------------------------------------------
+enum class eLightType
+{
+	STATIC_LIGHT,
+	DYNAMIC_LIGHT,
+};
+
+
+//-----------------------------------------------------------------------------------------------
+struct GameLight
+{
+	Light light;
+
+	eLightType type = eLightType::STATIC_LIGHT;
+	bool isEnabled = false;
+};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -102,6 +121,7 @@ protected:
 	float					m_cumulativeTime = 0.f;
 	std::vector<Vertex_PCU> m_vertices;
 	Texture*				m_texture = nullptr;
+	GameLight				m_gameLight;
 
 	// Input
 	std::map<char, std::vector<std::string>> m_registeredKeyEvents;

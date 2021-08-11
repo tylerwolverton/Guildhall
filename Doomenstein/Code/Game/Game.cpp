@@ -119,7 +119,6 @@ void Game::Startup()
 	EnableDebugRendering();
 
 	InitializeCameras();
-	InitializeLights();
 	
 	m_uiSystem = new UISystem();
 	m_uiSystem->Startup( g_window, g_renderer );
@@ -160,20 +159,20 @@ void Game::InitializeCameras()
 	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::InitializeLights()
-{
-	m_lights[0].light.intensity = .95f;
-	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
-	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 25.f );
-	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 30.f );
-	m_lights[0].type = eLightType::SPOT;
-	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
-	m_lights[0].isEnabled = true;
-}
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::InitializeLights()
+//{
+//	m_lights[0].light.intensity = .95f;
+//	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
+//	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
+//	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
+//	m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 25.f );
+//	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 30.f );
+//	m_lights[0].type = eLightType::SPOT;
+//	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
+//	m_lights[0].isEnabled = true;
+//}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -235,7 +234,6 @@ void Game::Update()
 
 	UpdateTimers();
 	UpdateCameraTransformToMatchPlayer();
-	UpdateLights();
 }
 
 
@@ -380,7 +378,7 @@ void Game::UpdateMovementFromKeyboard()
 		TranslateCameraFPS( movementTranslation * deltaSeconds );
 	}
 
-	SetLightDirectionToCamera( m_lights[0].light );
+	//SetLightDirectionToCamera( m_lights[0].light );
 }
 
 
@@ -434,65 +432,6 @@ void Game::UpdateTimers()
 
 			delete m_timerPool[timerIdx];
 			m_timerPool[timerIdx] = nullptr;
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateLights()
-{
-	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
-	{
-		GameLight& gameLight = m_lights[lightIdx];
-		//if ( gameLight.light.intensity == 0.f )
-		if ( !gameLight.isEnabled )
-		{
-			continue;
-		}
-		
-		switch ( gameLight.movementMode )
-		{
-			case eLightMovementMode::STATIONARY:
-			{
-				if ( gameLight.type == eLightType::POINT )
-				{
-					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
-				}
-				else if ( gameLight.type == eLightType::SPOT )
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
-				}
-				else
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
-				}
-			} break;
-
-			case eLightMovementMode::FOLLOW_CAMERA:
-			{
-				gameLight.light.position = m_worldCamera->GetTransform().GetPosition();
-			} break;
-
-			case eLightMovementMode::LOOP:
-			{
-				gameLight.light.position = Vec3::ZERO;
-				gameLight.light.position.x += CosDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
-				gameLight.light.position.z += SinDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
-
-				if ( gameLight.type == eLightType::POINT )
-				{
-					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
-				}
-				else if ( gameLight.type == eLightType::SPOT )
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
-				}
-				else
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
-				}
-			}
 		}
 	}
 }
@@ -589,13 +528,14 @@ void Game::Render() const
 
 	g_renderer->DisableAllLights();
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
-	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	// TODO: Update with light pool
+	/*for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
 		if ( m_lights[lightIdx].isEnabled )
 		{
 			g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
 		}
-	}
+	}*/
 	g_renderer->SetGamma( m_gamma );
 
 	m_world->Render();

@@ -9,7 +9,6 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/MeshUtils.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
@@ -58,6 +57,20 @@ void Entity::Update( float deltaSeconds )
 	ApplyFriction();
 
 	ZephyrEntity::Update( deltaSeconds );
+
+	if ( m_gameLight.isEnabled )
+	{
+		switch ( m_gameLight.type )
+		{
+			case eLightType::DYNAMIC_LIGHT:
+			{
+				m_gameLight.light.position.x = m_position.x;
+				m_gameLight.light.position.z = m_position.y;
+				m_gameLight.light.direction = Vec3( GetForwardVector(), 0.f ); // TODO: Do this properly
+			}
+			break;
+		}
+	}
 }
 
 
