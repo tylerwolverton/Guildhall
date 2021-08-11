@@ -2,6 +2,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntRange.hpp"
@@ -83,6 +84,19 @@ Vec2 ParseXmlAttribute( const XmlElement& element, const char* attributeName, co
 {
 	const char* attributeValueText = element.Attribute( attributeName );
 	Vec2 value = defaultValue;
+	if ( attributeValueText )
+	{
+		value.SetFromText( attributeValueText );
+	}
+	return value;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+Vec3 ParseXmlAttribute( const XmlElement& element, const char* attributeName, const Vec3& defaultValue )
+{
+	const char* attributeValueText = element.Attribute( attributeName );
+	Vec3 value = defaultValue;
 	if ( attributeValueText )
 	{
 		value.SetFromText( attributeValueText );

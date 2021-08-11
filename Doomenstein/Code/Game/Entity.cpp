@@ -29,6 +29,14 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	m_collisionLayer = m_entityDef.m_initialCollisionLayer;
 	m_canBePushed = m_entityDef.m_initialCanBePushed;
 	m_canPush = m_entityDef.m_initialCanPush;
+
+	m_gameLight.light.intensity				= m_entityDef.m_lightIntensity;
+	m_gameLight.light.color					= m_entityDef.m_lightColor;
+	m_gameLight.light.attenuation			= m_entityDef.m_lightAttenuation;
+	m_gameLight.light.specularAttenuation	= m_entityDef.m_lightSpecularAttenuation;
+	m_gameLight.light.halfCosOfInnerAngle	= m_entityDef.m_lightHalfCosOfInnerAngle;
+	m_gameLight.light.halfCosOfOuterAngle	= m_entityDef.m_lightHalfCosOfOuterAngle;
+	m_gameLight.isEnabled					= m_entityDef.m_isLightEnabled;
 }
 
 
@@ -58,18 +66,20 @@ void Entity::Update( float deltaSeconds )
 
 	ZephyrEntity::Update( deltaSeconds );
 
+	switch ( m_gameLight.type )
+	{
+		case eLightType::DYNAMIC_LIGHT:
+		{
+			m_gameLight.light.position.x = m_position.x;
+			m_gameLight.light.position.z = m_position.y;
+			m_gameLight.light.direction = Vec3( GetForwardVector(), 0.f ); // TODO: Do this properly
+		}
+		break;
+	}
+
 	if ( m_gameLight.isEnabled )
 	{
-		switch ( m_gameLight.type )
-		{
-			case eLightType::DYNAMIC_LIGHT:
-			{
-				m_gameLight.light.position.x = m_position.x;
-				m_gameLight.light.position.z = m_position.y;
-				m_gameLight.light.direction = Vec3( GetForwardVector(), 0.f ); // TODO: Do this properly
-			}
-			break;
-		}
+		g_game->AcquireAndSetLightFromPool( m_gameLight.light );
 	}
 }
 

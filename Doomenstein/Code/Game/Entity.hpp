@@ -31,8 +31,9 @@ struct GameLight
 {
 	Light light;
 
-	eLightType type = eLightType::STATIC_LIGHT;
+	eLightType type = eLightType::DYNAMIC_LIGHT;
 	bool isEnabled = false;
+	int poolIndex = -1;
 };
 
 

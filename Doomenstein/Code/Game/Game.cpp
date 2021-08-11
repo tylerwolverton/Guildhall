@@ -230,6 +230,7 @@ void Game::Update()
 
 	m_uiSystem->Update();
 
+	FreeAllLights();
 	m_world->Update();
 
 	UpdateTimers();
@@ -526,16 +527,14 @@ void Game::Render() const
 
 	g_renderer->SetDepthTest( eCompareFunc::COMPARISON_LESS_EQUAL, true );
 
-	g_renderer->DisableAllLights();
+	// Lighting
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
-	// TODO: Update with light pool
-	/*for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	//g_renderer->DisableAllLights();
+	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
-		if ( m_lights[lightIdx].isEnabled )
-		{
-			g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
-		}
-	}*/
+		g_renderer->EnableLight( lightIdx, m_lightPool[lightIdx] );
+	}
+
 	g_renderer->SetGamma( m_gamma );
 
 	m_world->Render();
@@ -1308,6 +1307,42 @@ void Game::StartNewTimer( const std::string& targetName, const std::string& name
 	}
 
 	StartNewTimer( target->GetId(), name, durationSeconds, onCompletedEventName, callbackArgs );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int Game::AcquireAndSetLightFromPool( const Light& newLight )
+{
+	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	{
+		if ( IsNearlyEqual( m_lightPool[lightIdx].intensity, 0.f ) )
+		{
+			m_lightPool[lightIdx] = newLight;
+			return lightIdx;
+		}
+	}
+
+	return -1;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::FreeLight( int lightIdx )
+{
+	if ( lightIdx >= 0 && lightIdx < MAX_LIGHTS )
+	{
+		m_lightPool[lightIdx] = Light();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Game::FreeAllLights()
+{
+	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	{
+		FreeLight( lightIdx );
+	}
 }
 
 

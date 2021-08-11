@@ -152,6 +152,19 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 		}
 	}
 
+	// Lighting
+	const XmlElement* lightingElem = entityDefElem.FirstChildElement( "Light" );
+	if ( lightingElem != nullptr )
+	{
+		m_lightIntensity =				ParseXmlAttribute( *lightingElem, "intensity", m_lightIntensity );
+		m_lightColor =					ParseXmlAttribute( *lightingElem, "color", m_lightColor );
+		m_lightAttenuation =			ParseXmlAttribute( *lightingElem, "attenuation", m_lightAttenuation );
+		m_lightHalfCosOfInnerAngle =	ParseXmlAttribute( *lightingElem, "halfCosOfInnerAngle", m_lightHalfCosOfInnerAngle );
+		m_lightSpecularAttenuation =	ParseXmlAttribute( *lightingElem, "specularAttenuation", m_lightSpecularAttenuation );
+		m_lightHalfCosOfOuterAngle =	ParseXmlAttribute( *lightingElem, "halfCosOfOuterAngle", m_lightHalfCosOfOuterAngle );
+		m_isLightEnabled =				ParseXmlAttribute( *lightingElem, "isEnabled", m_isLightEnabled );
+	}
+
 	m_isValid = true;
 }
 

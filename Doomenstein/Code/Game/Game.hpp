@@ -93,6 +93,10 @@ public:
 	void			StartNewTimer( const EntityId& targetId, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
 	void			StartNewTimer( const std::string& targetName, const std::string& name, float durationSeconds, const std::string& onCompletedEventName, EventArgs* callbackArgs );
 
+	int				AcquireAndSetLightFromPool( const Light& newLight );
+	void			FreeLight( int lightIdx );
+	void			FreeAllLights();
+
 	static bool		SetMouseSensitivity( EventArgs* args );
 	static bool		SetAmbientLightColor( EventArgs* args );
 	
@@ -170,10 +174,7 @@ private:
 			
 	Rgba8 m_ambientColor = Rgba8::WHITE;
 	float m_ambientIntensity = 0.1f;
-	// TODO: Turn into light pool
-	//GameLight m_lights[MAX_LIGHTS];
-	float m_specularFactor = 0.f;
-	float m_specularPower = 32.f;
+	Light m_lightPool[MAX_LIGHTS];
 	float m_gamma = 2.2f;
 
 	// Default map data

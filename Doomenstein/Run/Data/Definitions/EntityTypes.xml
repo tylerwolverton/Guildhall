@@ -9,6 +9,7 @@
       <Pain front="0"/>
       <Death front="0"/>
     </Appearance>
+    <Light isEnabled="true" intensity=".5" color="0,1,0" attenuation="0,.5,.5"/>
   </Entity>
   ​
   <Entity name="Pinky">

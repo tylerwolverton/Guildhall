@@ -69,5 +69,13 @@ protected:
 	eBillboardStyle m_billboardStyle = eBillboardStyle::CAMERA_FACING_INVALID;
 	Material*		m_spriteMaterial = nullptr;
 
+	float			m_lightIntensity = 0.f;
+	Vec3			m_lightColor = Vec3::ONE;
+	Vec3			m_lightAttenuation = Vec3( 0.f, 1.f, 0.f );
+	float			m_lightHalfCosOfInnerAngle = -1.f;
+	Vec3			m_lightSpecularAttenuation = Vec3( 0.f, 1.f, 0.f );
+	float			m_lightHalfCosOfOuterAngle = -1.f;
+	bool			m_isLightEnabled = false;
+
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
 };
