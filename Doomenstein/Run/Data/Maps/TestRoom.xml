@@ -18,6 +18,9 @@
 	</MapRows>
 	<Entities>
 		<PlayerStart pos="6.5,1.5" yaw="150"/>
+		<Entity type="DemoLight" pos="1.5,1.5" yaw="0">
+			<GlobalVar type="vec2" var="rotationCenter" value="4.5,4.5"/>
+		</Entity>
 		<Actor type="Pinky" pos="1.5,1.5" yaw="150"/>
 		<Actor type="Pinky" pos="3.5,1.5" yaw="75"/>
 		<Actor type="Pinky" pos="2.5,1.5" yaw="15"/>

@@ -1,4 +1,13 @@
 Entity target = null
+Vec2 rotationCenter = Vec2( 0,0 )
+
+State Loop
+{
+    OnUpdate()
+    {
+        MoveInCircle( center: rotationCenter, radius: 2, speed: .25 )
+    }
+}
 
 State Follow
 {

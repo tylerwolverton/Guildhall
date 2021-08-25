@@ -173,7 +173,7 @@ private:
 	std::string m_startingMapName;
 			
 	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 0.1f;
+	float m_ambientIntensity = 0.01f;
 	Light m_lightPool[MAX_LIGHTS];
 	float m_gamma = 2.2f;
 

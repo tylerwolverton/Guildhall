@@ -44,6 +44,7 @@ private:
 	//void DamageEntity( EventArgs* args );
 	void WarpToMap( EventArgs* args );
 	void RotateEntity( EventArgs* args );
+	void MoveInCircle( EventArgs* args );
 
 	// Input
 	void RegisterKeyEvent( EventArgs* args );

@@ -9,7 +9,7 @@
       <Pain front="0"/>
       <Death front="0"/>
     </Appearance>
-    <Light isEnabled="true" intensity=".5" color="0,1,0" attenuation="0,.5,.5"/>
+    <!-- <Light isEnabled="true" intensity=".9" color="0,1,0" attenuation="0,.5,0"/> -->
   </Entity>
   ​
   <Entity name="Pinky">
@@ -36,4 +36,12 @@
     <Script name="Portal.zephyr"/>
   </Entity>
   ​
+    <Entity name="DemoLight">    
+     <!-- <Appearance size="1.5,1.5" billboard="CameraFacingXY" spriteSheet="Data/Images/Actor_Pinky_8x9.png" layout="8,9" spriteMaterial="Data/Materials/Pinky.material">
+      <Walk front="0,1,2,3" />
+    </Appearance> -->
+    <Light isEnabled="true" intensity=".5" color="1,1,1" attenuation="0,.5,0"/>
+    <Script name="FollowLight.zephyr"/>
+  </Entity>
+
 </EntityTypes>

@@ -72,6 +72,8 @@ public:
 	void				Translate( const Vec2& translation )					{ m_position += translation; }
 	void				RotateDegrees( float pitchDegrees, float yawDegrees, float rollDegrees );
 
+	void				MoveInCircle( const Vec2& center, float radius, float speed );
+
 	virtual bool		IsDead() const											{ return m_isDead; }
 	bool				IsGarbage() const										{ return m_isGarbage; }
 	bool				IsPossessed() const										{ return m_isPossessed; }

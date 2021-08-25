@@ -29,6 +29,7 @@ ZephyrGameAPI::ZephyrGameAPI()
 	REGISTER_EVENT( DestroySelf );
 	REGISTER_EVENT( WarpToMap );
 	REGISTER_EVENT( RotateEntity );
+	REGISTER_EVENT( MoveInCircle );
 
 	REGISTER_EVENT( StartNewTimer );
 	REGISTER_EVENT( WinGame );
@@ -126,6 +127,25 @@ void ZephyrGameAPI::RotateEntity( EventArgs* args )
 	{
 		targetEntity->RotateDegrees( pitchDegrees, yawDegrees, rollDegrees );
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void ZephyrGameAPI::MoveInCircle( EventArgs* args )
+{
+	EntityId targetId = args->GetValue( "target", (EntityId)-1 );
+
+	Entity* targetEntity = g_game->GetEntityById( targetId );
+	if ( targetEntity == nullptr )
+	{
+		targetEntity = (Entity*)args->GetValue( "entity", (void*)nullptr );
+	}
+
+	float speed = args->GetValue( "speed", .5f );
+	float radius = args->GetValue( "radius", .5f );
+	Vec2 center = args->GetValue( "center", targetEntity->GetPosition() );
+
+	targetEntity->MoveInCircle( center, radius, speed );
 }
 
 

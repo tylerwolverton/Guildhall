@@ -187,6 +187,22 @@ void Entity::RotateDegrees( float pitchDegrees, float yawDegrees, float rollDegr
 
 
 //-----------------------------------------------------------------------------------------------
+void Entity::MoveInCircle( const Vec2& center, float radius, float speed )
+{
+	m_orientationDegrees += speed;
+	if ( m_orientationDegrees > 360.f )
+	{
+		m_orientationDegrees -= 360.f;
+	}
+	if ( m_orientationDegrees < 0.f )
+	{
+		m_orientationDegrees += 360.f;
+	}
+	m_position = center + Vec2::MakeFromPolarDegrees( m_orientationDegrees, radius );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Entity::Possess()
 {
 	m_isPossessed = true;
