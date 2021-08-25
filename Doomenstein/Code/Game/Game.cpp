@@ -159,22 +159,6 @@ void Game::InitializeCameras()
 	m_uiCamera->SetProjectionOrthographic( windowDimensions.y );
 }
 
-//
-////-----------------------------------------------------------------------------------------------
-//void Game::InitializeLights()
-//{
-//	m_lights[0].light.intensity = .95f;
-//	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
-//	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
-//	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-//	m_lights[0].light.halfCosOfInnerAngle = CosDegrees( 25.f );
-//	m_lights[0].light.halfCosOfOuterAngle = CosDegrees( 30.f );
-//	m_lights[0].type = eLightType::SPOT;
-//	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
-//	m_lights[0].isEnabled = true;
-//}
-
-
 //-----------------------------------------------------------------------------------------------
 void Game::AddGunToUI()
 {
@@ -378,8 +362,6 @@ void Game::UpdateMovementFromKeyboard()
 		// Translation
 		TranslateCameraFPS( movementTranslation * deltaSeconds );
 	}
-
-	//SetLightDirectionToCamera( m_lights[0].light );
 }
 
 
@@ -529,7 +511,6 @@ void Game::Render() const
 
 	// Lighting
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
-	//g_renderer->DisableAllLights();
 	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
 	{
 		g_renderer->EnableLight( lightIdx, m_lightPool[lightIdx] );
@@ -656,13 +637,6 @@ void Game::LoadAssets()
 {
 	g_devConsole->PrintString( "Loading Assets...", Rgba8::WHITE );
 
-	// Audio
-	g_audioSystem->CreateOrGetSound( "Data/Audio/Teleporter.wav" );
-
-	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Terrain_8x8.png" );
-	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
-	g_renderer->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
-
 	SpriteSheet::CreateAndRegister( "ViewModels", *( g_renderer->CreateOrGetTextureFromFile( "Data/Images/ViewModelsSpriteSheet_8x8.png" ) ), IntVec2( 8, 8 ) );
 	
 	LoadSounds();
@@ -682,7 +656,24 @@ void Game::LoadAssets()
 //-----------------------------------------------------------------------------------------------
 void Game::LoadSounds()
 {
+	g_devConsole->PrintString( "Loading Audio..." );
 
+	std::string folderPath( "Data/Audio" );
+
+	Strings audioFiles = GetFileNamesInFolder( folderPath, "*.*" );
+	for ( int soundIdx = 0; soundIdx < (int)audioFiles.size(); ++soundIdx )
+	{
+		std::string soundName = GetFileNameWithoutExtension( audioFiles[soundIdx] );
+		std::string& soundNameWithExtension = audioFiles[soundIdx];
+
+		std::string soundFullPath( folderPath );
+		soundFullPath += "/";
+		soundFullPath += soundNameWithExtension;
+
+		m_loadedSoundIds[soundName] = g_audioSystem->CreateOrGetSound( soundFullPath );
+	}
+
+	g_devConsole->PrintString( "Audio Files Loaded", Rgba8::GREEN );
 }
 
 
@@ -1102,7 +1093,23 @@ void Game::ReloadGame()
 //-----------------------------------------------------------------------------------------------
 void Game::ReloadScripts()
 {
+	m_world->UnloadAllEntityScripts();
 
+	PTR_MAP_SAFE_DELETE( ZephyrScriptDefinition::s_definitions );
+
+	LoadAndCompileZephyrScripts();
+
+	for ( auto& entityDef : EntityDefinition::s_definitions )
+	{
+		if ( entityDef.second != nullptr )
+		{
+			entityDef.second->ReloadZephyrScriptDefinition();
+		}
+	}
+
+	m_world->ReloadAllEntityScripts();
+
+	g_devConsole->PrintString( "Scripts reloaded", Rgba8::GREEN );
 }
 
 
@@ -1365,4 +1372,3 @@ bool Game::SetAmbientLightColor( EventArgs* args )
 
 
 float Game::m_mouseSensitivityMultiplier;
-

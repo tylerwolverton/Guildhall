@@ -1161,7 +1161,6 @@ void GameAPI::UnRegisterKeyEvent( EventArgs* args )
 void GameAPI::ChangeSpriteAnimation( EventArgs* args )
 {
 	std::string newAnim = args->GetValue( "newAnim", "" );
-	//Entity* targetEntity = g_game->GetEntityByName( targetId );
 	Entity* entity = (Entity*)args->GetValue( "entity", ( void* )nullptr );
 
 	if ( entity == nullptr

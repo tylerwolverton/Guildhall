@@ -156,7 +156,6 @@ private:
 	bool m_isDebugRendering = false;
 
 	// UI
-	//UIPanel* m_rootUIPanel = nullptr;
 	UISystem* m_uiSystem = nullptr;
 	UIPanel* m_hudUIPanel = nullptr;
 	UIPanel* m_worldUIPanel = nullptr;

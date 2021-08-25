@@ -143,10 +143,17 @@ EntityDefinition::EntityDefinition( const XmlElement& entityDefElem )
 			spriteSheet = SpriteSheet::CreateAndRegister( *texture, layout );
 		}
 
+		bool isFirstAnim = true;
 		const XmlElement* animationSetElem = appearanceElem->FirstChildElement();
 		while ( animationSetElem != nullptr )
 		{
 			m_spriteAnimSetDefs[animationSetElem->Name()] = new SpriteAnimationSetDefinition( spriteSheet, m_spriteMaterial, *animationSetElem );
+
+			if ( isFirstAnim )
+			{
+				isFirstAnim = false;
+				m_defaultSpriteAnimSetDef = m_spriteAnimSetDefs[animationSetElem->Name()];
+			}
 
 			animationSetElem = animationSetElem->NextSiblingElement();
 		}

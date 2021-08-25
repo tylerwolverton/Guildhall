@@ -37,6 +37,8 @@ Entity::Entity( const EntityDefinition& entityDef, Map* map )
 	m_gameLight.light.halfCosOfInnerAngle	= m_entityDef.m_lightHalfCosOfInnerAngle;
 	m_gameLight.light.halfCosOfOuterAngle	= m_entityDef.m_lightHalfCosOfOuterAngle;
 	m_gameLight.isEnabled					= m_entityDef.m_isLightEnabled;
+
+	m_curSpriteAnimSetDef = m_entityDef.GetDefaultSpriteAnimSetDef();
 }
 
 
@@ -66,6 +68,14 @@ void Entity::Update( float deltaSeconds )
 
 	ZephyrEntity::Update( deltaSeconds );
 
+	if ( m_curSpriteAnimSetDef != nullptr )
+	{
+		SpriteAnimDefinition* animDef = m_curSpriteAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_game->GetWorldCamera() );
+		int frameIndex = animDef->GetFrameIndexAtTime( m_cumulativeTime );
+
+		m_curSpriteAnimSetDef->FireFrameEvent( frameIndex, this );
+	}
+
 	switch ( m_gameLight.type )
 	{
 		case eLightType::DYNAMIC_LIGHT:
@@ -87,14 +97,14 @@ void Entity::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::Render() const
 {
-	if ( m_isPossessed )
+	if ( m_isPossessed 
+		|| m_curSpriteAnimSetDef == nullptr )
 	{
 		return;
 	}
 
-	std::vector<Vertex_PCUTBN> vertices;
+	// Billboarding
 	Vec3 corners[4];
-
 	switch ( m_entityDef.m_billboardStyle )
 	{
 		case eBillboardStyle::CAMERA_FACING_XY:		BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners );	 break;
@@ -105,40 +115,29 @@ void Entity::Render() const
 		default: BillboardSpriteCameraFacingXY( m_position, m_entityDef.GetVisualSize(), *g_game->GetWorldCamera(), corners ); break;
 	}
 	
+	// Get UVs for sprite
+	SpriteAnimDefinition* animDef = m_curSpriteAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_game->GetWorldCamera() );
+	const SpriteDefinition& spriteDef = animDef->GetSpriteDefAtTime( m_cumulativeTime );
+	
 	Vec2 mins, maxs;
-	SpriteAnimationSetDefinition* walkAnimSetDef = m_entityDef.GetSpriteAnimSetDef( "Walk" );
-	SpriteAnimDefinition* walkAnimDef = nullptr;
-	if ( walkAnimSetDef != nullptr )
-	{
-		walkAnimDef = walkAnimSetDef->GetSpriteAnimationDefForDirection( m_position, m_orientationDegrees, *g_game->GetWorldCamera() );
-	}
+	spriteDef.GetUVs( mins, maxs );
 
-	if ( walkAnimDef == nullptr )
-	{
-		AppendVertsForQuad( vertices, corners, Rgba8::WHITE );
+	std::vector<Vertex_PCUTBN> vertices;
+	AppendVertsForQuad( vertices, corners, Rgba8::WHITE, mins, maxs );
 
-		g_renderer->BindDiffuseTexture( g_renderer->CreateOrGetTextureFromFile( "Data/Images/test.png" ) );
+	// Setup shaders and textures
+	if ( m_curSpriteAnimSetDef->GetMaterial() != nullptr )
+	{
+		g_renderer->BindMaterial( m_curSpriteAnimSetDef->GetMaterial() );
 	}
 	else
 	{
-		const SpriteDefinition& spriteDef = walkAnimDef->GetSpriteDefAtTime( m_cumulativeTime );
-		spriteDef.GetUVs( mins, maxs );
-
-		AppendVertsForQuad( vertices, corners, Rgba8::WHITE, mins, maxs );
-
-		if ( walkAnimSetDef->GetMaterial() != nullptr )
-		{
-			g_renderer->BindMaterial( walkAnimSetDef->GetMaterial() );
-		}
-		else
-		{
-			// No material for this sprite, just use the diffuse texture
-			g_renderer->BindShader( nullptr );
-			g_renderer->BindDiffuseTexture( &( walkAnimSetDef->GetTexture() ) );
-			g_renderer->BindNormalTexture( nullptr );
-		}
+		// No material for this sprite, just use the diffuse texture
+		g_renderer->BindShader( nullptr );
+		g_renderer->BindDiffuseTexture( &(m_curSpriteAnimSetDef->GetTexture()) );
+		g_renderer->BindNormalTexture( nullptr );
 	}
-
+	
 	g_renderer->DrawVertexArray( vertices );
 }
 
@@ -217,6 +216,37 @@ void Entity::Unpossess()
 	m_isPossessed = false;
 
 	FireScriptEvent( "OnUnPossess" );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::ChangeSpriteAnimation( const std::string& spriteAnimDefSetName )
+{
+	SpriteAnimationSetDefinition* newSpriteAnimSetDef = m_entityDef.GetSpriteAnimSetDef( spriteAnimDefSetName );
+
+	if ( newSpriteAnimSetDef == nullptr )
+	{
+		//g_devConsole->PrintWarning( Stringf( "Warning: Failed to change animation for entity '%s' to undefined animation '%s'", GetName().c_str(), spriteAnimDefSetName.c_str() ) );
+		return;
+	}
+
+	m_curSpriteAnimSetDef = newSpriteAnimSetDef;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Entity::PlaySpriteAnimation( const std::string& spriteAnimDefSetName )
+{
+	SpriteAnimationSetDefinition* newSpriteAnimSetDef = m_entityDef.GetSpriteAnimSetDef( spriteAnimDefSetName );
+
+	if ( newSpriteAnimSetDef == nullptr )
+	{
+		//g_devConsole->PrintWarning( Stringf( "Warning: Failed to change animation for entity '%s' to undefined animation '%s'", GetName().c_str(), spriteAnimDefSetName.c_str() ) );
+		return;
+	}
+
+	m_curSpriteAnimSetDef = newSpriteAnimSetDef;
+	m_cumulativeTime = 0.f;
 }
 
 

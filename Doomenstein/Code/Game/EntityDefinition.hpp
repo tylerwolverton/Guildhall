@@ -42,6 +42,7 @@ public:
 	float			GetWalkSpeed() const														{ return m_walkSpeed; }
 	Vec2			GetVisualSize() const														{ return m_visualSize; }
 
+	SpriteAnimationSetDefinition* GetDefaultSpriteAnimSetDef() const							{ return m_defaultSpriteAnimSetDef; }
 	std::map< std::string, SpriteAnimationSetDefinition* > GetSpriteAnimSetDefs() const			{ return m_spriteAnimSetDefs; }
 	SpriteAnimationSetDefinition* GetSpriteAnimSetDef( const std::string& animSetName ) const;
 
@@ -78,4 +79,5 @@ protected:
 	bool			m_isLightEnabled = false;
 
 	std::map< std::string, SpriteAnimationSetDefinition* > m_spriteAnimSetDefs;
+	SpriteAnimationSetDefinition* m_defaultSpriteAnimSetDef = nullptr;
 };

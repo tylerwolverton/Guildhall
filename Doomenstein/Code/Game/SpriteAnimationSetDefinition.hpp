@@ -10,6 +10,7 @@
 
 //-----------------------------------------------------------------------------------------------
 class Camera;
+class Entity;
 class Material;
 class SpriteAnimDefinition;
 class SpriteSheet;
@@ -39,6 +40,12 @@ public:
 
 	SpriteAnimDefinition*	GetSpriteAnimationDefForDirection( const Vec2& entityPos, float entityOrientationDegrees, const Camera& camera );
 
+	void					AddFrameEvent( int frameNum, const std::string& eventName );
+	void					FireFrameEvent( int frameNum, Entity* parent );
+
+	void					AdjustAnimationSpeed( float deltaSpeedModifier );
+
+	int						GetNumFrames() const; // Assumes directional anims all have same number of frames
 	const Texture&			GetTexture() const;
 	Material*				GetMaterial() const													{ return m_spriteMaterial; }
 
@@ -47,8 +54,10 @@ private:
 
 private:
 	std::map< std::string, DirectionAnimation* > m_directionSpriteAnims;
+	std::map<int, std::string> m_frameToEventNames;
 
 	std::string		m_name;
+	float			m_curSpeedModifier = 1.f;
 	Material*		m_spriteMaterial = nullptr;
 	SpriteSheet*	m_spriteSheet = nullptr;
 };

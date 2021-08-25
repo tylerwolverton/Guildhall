@@ -1,11 +1,13 @@
 #include "Game/SpriteAnimationSetDefinition.hpp"
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
-#include "Engine/Core/DevConsole.hpp"
-#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/Entity.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -58,6 +60,58 @@ SpriteAnimDefinition* SpriteAnimationSetDefinition::GetSpriteAnimationDefForDire
 	}
 
 	return mapIter->second->animDef;
+}
+
+
+
+//-----------------------------------------------------------------------------------------------
+void SpriteAnimationSetDefinition::AddFrameEvent( int frameNum, const std::string& eventName )
+{
+	m_frameToEventNames[frameNum] = eventName;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void SpriteAnimationSetDefinition::FireFrameEvent( int frameNum, Entity* parent )
+{
+	auto iter = m_frameToEventNames.find( frameNum );
+	if ( iter == m_frameToEventNames.end() )
+	{
+		return;
+	}
+
+	if ( parent == nullptr )
+	{
+		g_eventSystem->FireEvent( iter->second );
+	}
+	else
+	{
+		parent->FireScriptEvent( iter->second );
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+int SpriteAnimationSetDefinition::GetNumFrames() const
+{
+	if ( m_directionSpriteAnims.empty() )
+	{
+		return 0;
+	}
+
+	return m_directionSpriteAnims.begin()->second->animDef->GetNumFrames();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void SpriteAnimationSetDefinition::AdjustAnimationSpeed( float deltaSpeedModifier )
+{
+	m_curSpeedModifier += deltaSpeedModifier;
+
+	for ( auto& anim : m_directionSpriteAnims )
+	{
+		anim.second->animDef->SetSpeedModifier( m_curSpeedModifier );
+	}
 }
 
 
