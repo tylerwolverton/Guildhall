@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine/Core/XmlUtils.hpp"
-#include "Engine/Renderer/D3D11Common.hpp"
+#include "Engine/Renderer/D3D11/D3D11Common.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 

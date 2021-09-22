@@ -4,7 +4,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
-#include "Engine/Renderer/D3D11Common.hpp"
+#include "Engine/Renderer/D3D11/D3D11Common.hpp"
 #include "Engine/Renderer/BufferAttribute.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/BuiltInShaders.hpp"

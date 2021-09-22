@@ -199,9 +199,6 @@
     <ClCompile Include="Renderer\RenderBuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\D3D11Common.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer\VertexBuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
@@ -384,6 +381,12 @@
     </ClCompile>
     <ClCompile Include="Core\HashUtils.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\D3D11\D3D11RenderContext.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\D3D11\D3D11Common.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -570,9 +573,6 @@
     <ClInclude Include="Renderer\TextureView.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\D3D11Common.hpp">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Core\FileUtils.hpp">
       <Filter>Core</Filter>
     </ClInclude>
@@ -724,5 +724,10 @@
     <ClInclude Include="ZephyrCore\ZephyrVirtualMachine.hpp" />
     <ClInclude Include="ZephyrCore\ZephyrUtils.hpp" />
     <ClInclude Include="Core\HashUtils.hpp" />
+    <ClInclude Include="Renderer\D3D11\D3D11RenderContext.hpp" />
+    <ClInclude Include="Renderer\D3D11\D3D11Common.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderCommon.hpp" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Renderer/RenderCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -52,34 +52,11 @@ DXGI_FORMAT ToDXGIFormat( eBufferFormatType formatType );
 
 
 //-----------------------------------------------------------------------------------------------
-enum class eCompareFunc : uint
-{
-	COMPARISON_NEVER,
-	COMPARISON_LESS,
-	COMPARISON_LESS_EQUAL,
-	COMPARISON_GREATER,
-	COMPARISON_GREATER_EQUAL,
-	COMPARISON_EQUAL,
-	COMPARISON_ALWAYS,
-};
 D3D11_COMPARISON_FUNC ToDxComparisonFunc( eCompareFunc funcType );
 
-//-----------------------------------------------------------------------------------------------
-enum class eFillMode : uint
-{
-	WIREFRAME,
-	SOLID,
-};
 D3D11_FILL_MODE ToDXFillMode( eFillMode fillMode );
 eFillMode FromDXFillMode( D3D11_FILL_MODE fillMode );
 
-//-----------------------------------------------------------------------------------------------
-enum class eCullMode : uint
-{
-	NONE,
-	FRONT,
-	BACK,
-};
 D3D11_CULL_MODE ToDXCullMode( eCullMode cullMode );
 eCullMode FromDXCullMode( D3D11_CULL_MODE cullMode );
 

@@ -52,120 +52,11 @@ enum class eCullMode : uint;
 enum eSamplerType : uint;
 enum eSamplerUVMode : uint;
 
-
-//-----------------------------------------------------------------------------------------------
-enum class eBlendMode
-{
-	DISABLED,
-	ALPHA,
-	ADDITIVE,
-};
-
-
-//-----------------------------------------------------------------------------------------------
-// Should this be controlled by 2 separate enums?
-enum class eSampler
-{
-	POINT_CLAMP,
-	LINEAR_CLAMP,
-	POINT_WRAP,
-};
-
-
-//-----------------------------------------------------------------------------------------------
-enum eBufferSlot
-{
-	UBO_FRAME_SLOT = 0,
-	UBO_CAMERA_SLOT = 1,
-	UBO_MODEL_MATRIX_SLOT = 2,
-	UBO_LIGHT_SLOT = 3,
-	UBO_MATERIAL_SLOT = 5,
-	UBO_DEBUG_LIGHT_SLOT = 10,
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct FrameData
-{
-	float systemTimeSeconds;
-	float systemDeltaTimeSeconds;
-	
-	float nearFogDistance = 50.f;
-	float farFogDistance = 100.f;
-
-	Vec4 fogColor;
-	
-	float gamma = 2.2f;
-	float padding0;
-	float padding1;
-	float padding2;
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct ModelData
-{
-	Mat44 modelMatrix;
-	float tint[4];
-
-	float specularFactor;
-	float specularPower;
-
-	float padding0;
-	float padding1;
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct Light
-{
-	Vec3 position = Vec3::ONE;
-	float pad00;
-	
-	Vec3 direction = Vec3( 0.f, 0.f, -1.f );
-	float isDirectional = 0.f;
-
-	Vec3 color = Vec3::ONE;
-	float intensity = 0.f;
-
-	Vec3 attenuation = Vec3( 0.f, 1.f, 0.f );
-	float halfCosOfInnerAngle = -1.f;
-
-	Vec3 specularAttenuation = Vec3( 0.f, 1.f, 0.f );
-	float halfCosOfOuterAngle = -1.f;
-};
-
-struct LightData
-{
-	Vec4 ambientLight;
-	Light lights[MAX_LIGHTS];
-};
-
-struct DebugLightData
-{
-	float diffuseEffect = 1.f;
-	float specularEffect = 1.f;
-	float emissiveEffect = 1.f;
-
-	float padding0;
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct Fog
-{
-	float nearFogDistance = 999999.f;
-	float farFogDistance = 999999.f;
-
-	Vec4 fogColor = Rgba8::BLACK.GetAsRGBAVector();
-};
-
-
 //-----------------------------------------------------------------------------------------------
 class RenderContext
 {
 public:
-	void Startup( Window* window );
+	virtual void Startup( Window* window );
 	void Setup( Clock* gameClock );
 	void BeginFrame();
 	void EndFrame();
@@ -173,9 +64,6 @@ public:
 
 	void SetBlendMode( eBlendMode blendMode );
 	void SetDepthTest( eCompareFunc compare, bool writeDepthOnPass );
-
-	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
-	void ClearDepth( Texture* depthStencilTarget, float depth );
 
 	int GetTotalTexturePoolCount()															{ return m_totalRenderTargetsMade; }
 	int GetTexturePoolFreeCount()															{ return m_totalRenderTargetsMade - m_curActiveRenderTargets; }
@@ -258,14 +146,14 @@ public:
 	void DisableFog();
 
 	// Accessors
-	Texture* GetBackBuffer();
-	IntVec2 GetDefaultBackBufferSize();
-	BitmapFont* GetSystemFont() const					{ return m_systemFont; }
-	Clock* GetClock() const								{ return m_gameClock; }
-	Shader* GetShaderByName( std::string shaderName );
-	Texture* GetDefaultWhiteTexture()					{ return m_defaultWhiteTexture; }
-	Texture* GetDefaultFlatTexture()					{ return m_flatNormalMap; }
-	Texture* GetDefaultSpecGlossEmissiveTexture()		{ return m_defaultSpecGlossEmissiveTexture; }
+	Texture*	GetBackBuffer();
+	IntVec2		GetDefaultBackBufferSize();
+	BitmapFont* GetSystemFont() const							{ return m_systemFont; }
+	Clock*		GetClock() const								{ return m_gameClock; }
+	Shader*		GetShaderByName( std::string shaderName );
+	Texture*	GetDefaultWhiteTexture()						{ return m_defaultWhiteTexture; }
+	Texture*	GetDefaultFlatTexture()							{ return m_flatNormalMap; }
+	Texture*	GetDefaultSpecGlossEmissiveTexture()			{ return m_defaultSpecGlossEmissiveTexture; }
 
 	// Debug methods
 	void CycleBlendMode();
@@ -298,8 +186,7 @@ public:
 	template<typename VERTEX_TYPE>
 	VertexBuffer* GetImmediateVBO();
 
-private:
-	void InitializeSwapChain( Window* window );
+protected:
 	void InitializeDefaultRenderObjects();
 	void InitializeViewport( const IntVec2& outputSize );
 	void UpdateAndBindBuffers( Camera& camera );
@@ -307,6 +194,8 @@ private:
 	ID3D11DepthStencilView* GetDepthStencilViewFromCamera( const Camera& camera );
 	std::vector<ID3D11RenderTargetView*> GetRTVsFromCamera( const Camera& camera );
 	void ClearCamera( std::vector<ID3D11RenderTargetView*> renderTargetViews, const Camera& camera );
+	void ClearScreen( ID3D11RenderTargetView* renderTargetView, const Rgba8& clearColor );
+	void ClearDepth( Texture* depthStencilTarget, float depth );
 	void ResetRenderObjects();
 
 	Texture* CreateTextureFromFile( const char* filePath );
@@ -344,7 +233,7 @@ public:
 	RenderBuffer* m_lightUBO			= nullptr;
 	RenderBuffer* m_debugLightUBO		= nullptr;
 
-private:
+protected:
 	Clock* m_gameClock								= nullptr;
 
 	// Textures
