@@ -141,3 +141,16 @@ struct Fog
 
 	Vec4 fogColor = Rgba8::BLACK.GetAsRGBAVector();
 };
+
+
+//-----------------------------------------------------------------------------------------------
+enum eBufferFormatType : uint
+{
+	// add types as you need them - for now, we can get by with just this
+	BUFFER_FORMAT_UNKNOWN,
+	BUFFER_FORMAT_VEC2,
+	BUFFER_FORMAT_VEC3,
+	BUFFER_FORMAT_VEC4,
+	BUFFER_FORMAT_R8G8B8A8_UNORM,
+	BUFFER_FORMAT_INT
+};

@@ -36,6 +36,7 @@ void ZephyrVirtualMachine::InterpretBytecodeChunk( const ZephyrBytecodeChunk& by
 	std::map<std::string, ZephyrValue> localVariables;
 	if (  bytecodeChunk.GetType() == eBytecodeChunkType::EVENT )
 	{
+		// TODO: Remove this line and inside if statement as they are the same
 		localVariables = bytecodeChunk.GetVariables();
 
 		if ( bytecodeChunk.GetType() == eBytecodeChunkType::EVENT )

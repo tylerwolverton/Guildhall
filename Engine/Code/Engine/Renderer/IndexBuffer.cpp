@@ -1,5 +1,6 @@
 #include "Engine/Renderer/IndexBuffer.hpp"
 
+
 //-----------------------------------------------------------------------------------------------
 IndexBuffer::IndexBuffer( RenderContext* owner, eRenderMemoryHint memHint )
 	: RenderBuffer( owner, INDEX_BUFFER_BIT, memHint )

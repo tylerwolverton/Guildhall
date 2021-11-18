@@ -83,11 +83,6 @@ public:
 	void Draw( int numVertices, int vertexOffset = 0 );
 	void DrawIndexed( int indexCount, int indexOffset = 0, int vertexOffset = 0 );
 	void DrawMesh( GPUMesh* mesh );
-	
-	// Binding Inputs
-	void BindVertexBuffer( VertexBuffer* vbo );
-	void BindIndexBuffer( IndexBuffer* ibo );
-	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
 
 	// Binding State
 	void BindMaterial( Material* material );
@@ -158,7 +153,6 @@ public:
 	// Debug methods
 	void CycleBlendMode();
 
-
 	// Template Draw
 	template<typename VERTEX_TYPE>
 	void DrawVertexArray( int numVertices, const VERTEX_TYPE* vertices )
@@ -187,6 +181,11 @@ public:
 	VertexBuffer* GetImmediateVBO();
 
 protected:
+	// Binding Inputs
+	void BindVertexBuffer( VertexBuffer* vbo );
+	void BindIndexBuffer( IndexBuffer* ibo );
+	void BindUniformBuffer( uint slot, RenderBuffer* ubo );
+
 	void InitializeDefaultRenderObjects();
 	void InitializeViewport( const IntVec2& outputSize );
 	void UpdateAndBindBuffers( Camera& camera );

@@ -409,7 +409,7 @@ int RoundDownToInt( float value )
 
 
 //-----------------------------------------------------------------------------------------------
-float GetRotationInRangeDegrees( float rotationDegrees, float minAngleDegrees /*= -360.f*/, float maxAngleDegrees /*= 360.f */ )
+float GetRotationInRangeDegrees( float rotationDegrees, float minAngleDegrees, float maxAngleDegrees )
 {
 	float newRotation = rotationDegrees;
 
