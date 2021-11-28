@@ -25,7 +25,9 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
-#include "Engine/Renderer/D3D11Common.hpp"
+//#include "Engine/Renderer/Vulkan/VulkanRenderContext.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/D3D11/D3D11Common.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
@@ -55,8 +57,8 @@ void Game::Startup()
 {
 	Transform::s_axisOrientation.InvertZAxis();
 	g_eventSystem->RegisterEvent( "set_mouse_sensitivity", "Usage: set_mouse_sensitivity multiplier=NUMBER. Set the multiplier for mouse sensitivity.", eUsageLocation::DEV_CONSOLE, SetMouseSensitivity );
-	g_eventSystem->RegisterMethodEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetAmbientLightColor );
-	g_eventSystem->RegisterMethodEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetPointLightColor );
+	/*g_eventSystem->RegisterMethodEvent( "light_set_ambient_color", "Usage: light_set_ambient_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetAmbientLightColor );
+	g_eventSystem->RegisterMethodEvent( "light_set_color", "Usage: light_set_color color=r,g,b", eUsageLocation::DEV_CONSOLE, this, &Game::SetPointLightColor );*/
 	g_eventSystem->RegisterMethodEvent( "unsubscribe_game", "Usage: Unsubscribe game methods from event system for demo", eUsageLocation::DEV_CONSOLE, this, &Game::UnSubscribeGameMethods );
 	//g_eventSystem->DeRegisterObject( this );
 
@@ -64,8 +66,8 @@ void Game::Startup()
 
 	m_worldCamera = new Camera();
 	m_worldCamera->SetColorTarget( nullptr );
-	Texture* depthTexture = g_renderer->GetOrCreateDepthStencil( g_renderer->GetDefaultBackBufferSize() );
-	m_worldCamera->SetDepthStencilTarget( depthTexture );
+	//Texture* depthTexture = g_renderer->GetOrCreateDepthStencil( g_renderer->GetDefaultBackBufferSize() );
+	//m_worldCamera->SetDepthStencilTarget( depthTexture );
 
 	m_worldCamera->SetOutputSize( Vec2( 16.f, 9.f ) );
 	m_worldCamera->SetProjectionPerspective( 60.f, -.1f, -100.f );
@@ -75,22 +77,22 @@ void Game::Startup()
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
 
-	EnableDebugRendering();
+	//EnableDebugRendering();
 	
 	// Init shaders
-	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.shader" ) );
+	/*m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Lit.shader" ) );
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Default.shader" ) );
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Normals.shader" ) );
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Tangents.shader" ) );
 	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/Bitangents.shader" ) );
-	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/SurfaceNormals.shader" ) );
+	m_shaders.push_back( g_renderer->GetOrCreateShader( "Data/Shaders/SurfaceNormals.shader" ) );*/
 
 	// For testing SetShaderByName
-	g_renderer->GetOrCreateShader( "Data/Shaders/Fresnel.shader" );
-	m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
-	m_fresnelData.power = 32.f;
+	//g_renderer->GetOrCreateShader( "Data/Shaders/Fresnel.shader" );
+	/*m_fresnelData.color = Rgba8::GREEN.GetAsRGBVector();
+	m_fresnelData.power = 32.f;*/
 
-	InitializeMeshes();
+	/*InitializeMeshes();
 
 	InitializeLights();
 
@@ -99,12 +101,12 @@ void Game::Startup()
 	Vec3 jBasis = greyscale.YYY();
 	Vec3 kBasis = greyscale.ZZZ();
 	Mat44 colorTransform;
-	colorTransform.SetBasisVectors3D( iBasis, jBasis, kBasis );
+	colorTransform.SetBasisVectors3D( iBasis, jBasis, kBasis );*/
 
-	m_colorTransformConstants.colorTransform = colorTransform;
+	/*m_colorTransformConstants.colorTransform = colorTransform;
 	m_colorTransformConstants.transformPower = 0.f;
 	m_colorTransformConstants.tint = Rgba8::BLACK.GetAsRGBVector();
-	m_colorTransformConstants.tintPower = 0.f;
+	m_colorTransformConstants.tintPower = 0.f;*/
 	
 	g_devConsole->PrintString( "Game Started", Rgba8::GREEN );
 }
@@ -171,7 +173,7 @@ void Game::InitializeMeshes()
 	m_scifiMeshTransform.SetPosition( Vec3( 5.f, 0.f, -2.f ) );
 
 	// Set materials
-	m_defaultMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
+	/*m_defaultMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
 	m_teapotMaterial = new Material( g_renderer, "Data/Materials/Teapot.material" );
 	m_vespaMaterial = new Material( g_renderer, "Data/Models/Vespa/Vespa.material" );
 	m_scifiMaterial = new Material( g_renderer, "Data/Models/scifi_fighter/scifi_fighter.material" );
@@ -179,19 +181,19 @@ void Game::InitializeMeshes()
 	m_fresnelMaterial = new Material( g_renderer, "Data/Materials/Default.material" );
 	m_fresnelMaterial->SetShader( g_renderer->GetShaderByName( "Fresnel" ) );
 	m_dissolveMaterial = new Material( g_renderer, "Data/Materials/Dissolve.material" );
-	m_triplanarMaterial = new Material( g_renderer, "Data/Materials/Triplanar.material" );
+	m_triplanarMaterial = new Material( g_renderer, "Data/Materials/Triplanar.material" );*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeLights()
 {
-	m_lights[0].light.intensity = .75f;
+	/*m_lights[0].light.intensity = .75f;
 	m_lights[0].light.color = Rgba8::WHITE.GetAsRGBVector();
 	m_lights[0].light.attenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].light.specularAttenuation = Vec3( 0.f, 1.f, 0.f );
 	m_lights[0].type = eLightType::POINT;
-	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;
+	m_lights[0].movementMode = eLightMovementMode::FOLLOW_CAMERA;*/
 }
 
 
@@ -201,13 +203,13 @@ void Game::Shutdown()
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 		
 	// Clean up member variables
-	PTR_SAFE_DELETE( m_defaultMaterial );
+	/*PTR_SAFE_DELETE( m_defaultMaterial );
 	PTR_SAFE_DELETE( m_vespaMaterial );
 	PTR_SAFE_DELETE( m_scifiMaterial );
 	PTR_SAFE_DELETE( m_teapotMaterial );
 	PTR_SAFE_DELETE( m_fresnelMaterial );
 	PTR_SAFE_DELETE( m_dissolveMaterial );
-	PTR_SAFE_DELETE( m_triplanarMaterial );
+	PTR_SAFE_DELETE( m_triplanarMaterial );*/
 	PTR_SAFE_DELETE( m_teapotMesh );
 	PTR_SAFE_DELETE( m_vespaMesh );
 	PTR_SAFE_DELETE( m_scifiMesh );
@@ -237,22 +239,22 @@ void Game::Update()
 		UpdateFromKeyboard();
 	}
 
-	UpdateCameras();
+	//UpdateCameras();
 		
-	m_fresnelMaterial->SetData( m_fresnelData );
+	//m_fresnelMaterial->SetData( m_fresnelData );
 
-	DissolveConstants dissolveData;// = m_dissolveMaterial->GetDataAs<DissolveConstants>();
-	dissolveData.dissolveFactor = m_dissolveFactor;
-	dissolveData.edgeWidth = m_dissolveEdge;
-	dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
-	dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
-	m_dissolveMaterial->SetData( dissolveData );
+	//DissolveConstants dissolveData;// = m_dissolveMaterial->GetDataAs<DissolveConstants>();
+	//dissolveData.dissolveFactor = m_dissolveFactor;
+	//dissolveData.edgeWidth = m_dissolveEdge;
+	//dissolveData.startColor = Rgba8::RED.GetAsRGBVector();
+	//dissolveData.endColor = Rgba8::BLUE.GetAsRGBVector();
+	//m_dissolveMaterial->SetData( dissolveData );
 
-	UpdateLights();
+	//UpdateLights();
 
-	PrintHotkeys();
+	/*PrintHotkeys();
 	PrintDiageticHotkeys();
-	PrintInfo();
+	PrintInfo();*/
 }
 
 
@@ -267,7 +269,7 @@ void Game::UpdateFromKeyboard()
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
 	{
-		g_renderer->ReloadShaders();
+		//g_renderer->ReloadShaders();
 	}
 }
 
@@ -331,23 +333,23 @@ void Game::UpdateCameraTransform( float deltaSeconds )
 														0.f,
 														transform.GetYawDegrees() + yaw );
 
-	// Update light direction
-	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
-	{
-		GameLight& gameLight = m_lights[lightIdx];
-		if ( !gameLight.isEnabled
-			 || gameLight.movementMode != eLightMovementMode::FOLLOW_CAMERA )
-		{
-			continue;
-		}
-	
-		SetLightDirectionToCamera( gameLight.light );
+	//// Update light direction
+	//for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	//{
+	//	GameLight& gameLight = m_lights[lightIdx];
+	//	if ( !gameLight.isEnabled
+	//		 || gameLight.movementMode != eLightMovementMode::FOLLOW_CAMERA )
+	//	{
+	//		continue;
+	//	}
+	//
+	//	SetLightDirectionToCamera( gameLight.light );
 
-		if ( lightIdx == 0 )
-		{
-			m_projectionViewMatrix = m_worldCamera->GetViewMatrix();
-		}
-	}
+	//	if ( lightIdx == 0 )
+	//	{
+	//		m_projectionViewMatrix = m_worldCamera->GetViewMatrix();
+	//	}
+	//}
 
 	// Translation
 	TranslateCameraFPS( cameraTranslation * deltaSeconds );
@@ -412,238 +414,239 @@ void Game::UpdateDebugDrawCommands()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateLightingCommands( float deltaSeconds )
 {
-	// Switch light
-	if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
-	{
-		m_currentLightIdx++;
-		if ( m_currentLightIdx >= MAX_LIGHTS )
-		{
-			m_currentLightIdx = 0;
-		}
-	}
+	UNUSED( deltaSeconds );
+	//// Switch light
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_RIGHTARROW ) )
+	//{
+	//	m_currentLightIdx++;
+	//	if ( m_currentLightIdx >= MAX_LIGHTS )
+	//	{
+	//		m_currentLightIdx = 0;
+	//	}
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
-	{
-		m_currentLightIdx--;
-		if ( m_currentLightIdx < 0 )
-		{
-			m_currentLightIdx = MAX_LIGHTS - 1;
-		}
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_LEFTARROW ) )
+	//{
+	//	m_currentLightIdx--;
+	//	if ( m_currentLightIdx < 0 )
+	//	{
+	//		m_currentLightIdx = MAX_LIGHTS - 1;
+	//	}
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
-	{
-		switch ( GetCurGameLight().type )
-		{
-			case eLightType::POINT:	ChangeCurrentLightType( eLightType::SPOT ); break;
-			case eLightType::DIRECTIONAL: ChangeCurrentLightType( eLightType::POINT ); break;
-			case eLightType::SPOT: ChangeCurrentLightType( eLightType::DIRECTIONAL ); break;
-		}
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_UPARROW ) )
+	//{
+	//	switch ( GetCurGameLight().type )
+	//	{
+	//		case eLightType::POINT:	ChangeCurrentLightType( eLightType::SPOT ); break;
+	//		case eLightType::DIRECTIONAL: ChangeCurrentLightType( eLightType::POINT ); break;
+	//		case eLightType::SPOT: ChangeCurrentLightType( eLightType::DIRECTIONAL ); break;
+	//	}
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
-	{
-		switch ( GetCurGameLight().type )
-		{
-			case eLightType::POINT:	ChangeCurrentLightType( eLightType::DIRECTIONAL ); break;
-			case eLightType::DIRECTIONAL: ChangeCurrentLightType( eLightType::SPOT ); break;
-			case eLightType::SPOT: ChangeCurrentLightType( eLightType::POINT ); break;
-		}
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_DOWNARROW ) )
+	//{
+	//	switch ( GetCurGameLight().type )
+	//	{
+	//		case eLightType::POINT:	ChangeCurrentLightType( eLightType::DIRECTIONAL ); break;
+	//		case eLightType::DIRECTIONAL: ChangeCurrentLightType( eLightType::SPOT ); break;
+	//		case eLightType::SPOT: ChangeCurrentLightType( eLightType::POINT ); break;
+	//	}
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_ENTER ) )
-	{
-		GetCurGameLight().isEnabled = !GetCurGameLight().isEnabled;
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_ENTER ) )
+	//{
+	//	GetCurGameLight().isEnabled = !GetCurGameLight().isEnabled;
+	//}
 
-	// Movement
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
-	{
-		GetCurLight().position = Vec3::ZERO;
-		GetCurGameLight().movementMode = eLightMovementMode::STATIONARY;
-	}
+	//// Movement
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_F5 ) )
+	//{
+	//	GetCurLight().position = Vec3::ZERO;
+	//	GetCurGameLight().movementMode = eLightMovementMode::STATIONARY;
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
-	{
-		GetCurLight().position = m_worldCamera->GetTransform().GetPosition();
-		SetLightDirectionToCamera( GetCurLight() );
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_F6 ) )
+	//{
+	//	GetCurLight().position = m_worldCamera->GetTransform().GetPosition();
+	//	SetLightDirectionToCamera( GetCurLight() );
 
-		GetCurGameLight().movementMode = eLightMovementMode::STATIONARY;
+	//	GetCurGameLight().movementMode = eLightMovementMode::STATIONARY;
 
-		m_projectionViewMatrix = m_worldCamera->GetViewMatrix();
-	}
+	//	m_projectionViewMatrix = m_worldCamera->GetViewMatrix();
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F7 ) )
-	{
-		GetCurGameLight().movementMode = eLightMovementMode::FOLLOW_CAMERA;
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_F7 ) )
+	//{
+	//	GetCurGameLight().movementMode = eLightMovementMode::FOLLOW_CAMERA;
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_F8 ) )
-	{
-		GetCurGameLight().movementMode = eLightMovementMode::LOOP;
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_F8 ) )
+	//{
+	//	GetCurGameLight().movementMode = eLightMovementMode::LOOP;
+	//}
 
-	// Ambient Light
-	if ( g_inputSystem->IsKeyPressed( '9' ) )
-	{
-		m_ambientIntensity -= .5f * deltaSeconds;
-		m_ambientIntensity = ClampZeroToOne( m_ambientIntensity );
-	}
+	//// Ambient Light
+	//if ( g_inputSystem->IsKeyPressed( '9' ) )
+	//{
+	//	m_ambientIntensity -= .5f * deltaSeconds;
+	//	m_ambientIntensity = ClampZeroToOne( m_ambientIntensity );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( '0' ) )
-	{
-		m_ambientIntensity += .5f * deltaSeconds;
-		m_ambientIntensity = ClampZeroToOne( m_ambientIntensity );
-	}
+	//if ( g_inputSystem->IsKeyPressed( '0' ) )
+	//{
+	//	m_ambientIntensity += .5f * deltaSeconds;
+	//	m_ambientIntensity = ClampZeroToOne( m_ambientIntensity );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( '7' ) )
-	{
-		m_fresnelData.power -= 5.f * deltaSeconds;
-		m_fresnelData.power = ClampMin( m_fresnelData.power, 0.f );
-	}
+	//if ( g_inputSystem->IsKeyPressed( '7' ) )
+	//{
+	//	m_fresnelData.power -= 5.f * deltaSeconds;
+	//	m_fresnelData.power = ClampMin( m_fresnelData.power, 0.f );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( '8' ) )
-	{
-		m_fresnelData.power += 5.f * deltaSeconds;
-	}
+	//if ( g_inputSystem->IsKeyPressed( '8' ) )
+	//{
+	//	m_fresnelData.power += 5.f * deltaSeconds;
+	//}
 
-	// Current light
-	if ( g_inputSystem->IsKeyPressed( KEY_MINUS ) )
-	{
-		GetCurLight().intensity -= .5f * deltaSeconds;
-		GetCurLight().intensity = ClampMin( GetCurLight().intensity, 0.f );
-	}
+	//// Current light
+	//if ( g_inputSystem->IsKeyPressed( KEY_MINUS ) )
+	//{
+	//	GetCurLight().intensity -= .5f * deltaSeconds;
+	//	GetCurLight().intensity = ClampMin( GetCurLight().intensity, 0.f );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_PLUS ) )
-	{
-		GetCurLight().intensity += .5f * deltaSeconds;
-		GetCurLight().intensity = ClampMin( GetCurLight().intensity, 0.f );
-	}
+	//if ( g_inputSystem->IsKeyPressed( KEY_PLUS ) )
+	//{
+	//	GetCurLight().intensity += .5f * deltaSeconds;
+	//	GetCurLight().intensity = ClampMin( GetCurLight().intensity, 0.f );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
-	{
-		m_colorTransformConstants.transformPower -= 1.f * deltaSeconds;
-		m_colorTransformConstants.transformPower = ClampZeroToOne( m_colorTransformConstants.transformPower );
-	}
+	//if ( g_inputSystem->IsKeyPressed( KEY_LEFT_BRACKET ) )
+	//{
+	//	m_colorTransformConstants.transformPower -= 1.f * deltaSeconds;
+	//	m_colorTransformConstants.transformPower = ClampZeroToOne( m_colorTransformConstants.transformPower );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_RIGHT_BRACKET ) )
-	{
-		m_colorTransformConstants.transformPower += 1.f * deltaSeconds;
-		m_colorTransformConstants.transformPower = ClampZeroToOne( m_colorTransformConstants.transformPower );
-	}
-	
-	if ( g_inputSystem->IsKeyPressed( KEY_SEMICOLON ) )
-	{
-		m_colorTransformConstants.tintPower -= 1.f * deltaSeconds;
-		m_colorTransformConstants.tintPower = ClampZeroToOne( m_colorTransformConstants.tintPower );
-	}
+	//if ( g_inputSystem->IsKeyPressed( KEY_RIGHT_BRACKET ) )
+	//{
+	//	m_colorTransformConstants.transformPower += 1.f * deltaSeconds;
+	//	m_colorTransformConstants.transformPower = ClampZeroToOne( m_colorTransformConstants.transformPower );
+	//}
+	//
+	//if ( g_inputSystem->IsKeyPressed( KEY_SEMICOLON ) )
+	//{
+	//	m_colorTransformConstants.tintPower -= 1.f * deltaSeconds;
+	//	m_colorTransformConstants.tintPower = ClampZeroToOne( m_colorTransformConstants.tintPower );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( KEY_QUOTE ) )
-	{
-		m_colorTransformConstants.tintPower += 1.f * deltaSeconds;
-		m_colorTransformConstants.tintPower = ClampZeroToOne( m_colorTransformConstants.tintPower );
-	}
+	//if ( g_inputSystem->IsKeyPressed( KEY_QUOTE ) )
+	//{
+	//	m_colorTransformConstants.tintPower += 1.f * deltaSeconds;
+	//	m_colorTransformConstants.tintPower = ClampZeroToOne( m_colorTransformConstants.tintPower );
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
-	{
-		ChangeShader( m_currentShaderIdx - 1 );
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_COMMA ) )
+	//{
+	//	ChangeShader( m_currentShaderIdx - 1 );
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( KEY_PERIOD ) )
-	{
-		ChangeShader( m_currentShaderIdx + 1 );
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( KEY_PERIOD ) )
+	//{
+	//	ChangeShader( m_currentShaderIdx + 1 );
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
-	{
-		if ( GetCurLight().attenuation == Vec3( 1.f, 0.f, 0.f ) )
-		{
-			GetCurLight().attenuation = Vec3( 0.f, 1.f, 0.f );
-		}
-		else if ( GetCurLight().attenuation == Vec3( 0.f, 1.f, 0.f ) )
-		{
-			GetCurLight().attenuation = Vec3( 0.f, 0.f, 1.f );
-		}
-		else if ( GetCurLight().attenuation == Vec3( 0.f, 0.f, 1.f ) )
-		{
-			GetCurLight().attenuation = Vec3( 1.f, 0.f, 0.f );
-		}
+	//if ( g_inputSystem->WasKeyJustPressed( 'T' ) )
+	//{
+	//	if ( GetCurLight().attenuation == Vec3( 1.f, 0.f, 0.f ) )
+	//	{
+	//		GetCurLight().attenuation = Vec3( 0.f, 1.f, 0.f );
+	//	}
+	//	else if ( GetCurLight().attenuation == Vec3( 0.f, 1.f, 0.f ) )
+	//	{
+	//		GetCurLight().attenuation = Vec3( 0.f, 0.f, 1.f );
+	//	}
+	//	else if ( GetCurLight().attenuation == Vec3( 0.f, 0.f, 1.f ) )
+	//	{
+	//		GetCurLight().attenuation = Vec3( 1.f, 0.f, 0.f );
+	//	}
 
-		GetCurLight().specularAttenuation = GetCurLight().attenuation;
-	}
+	//	GetCurLight().specularAttenuation = GetCurLight().attenuation;
+	//}
 
-	// Adjust global values
-	if ( g_inputSystem->IsKeyPressed( 'G' ) )
-	{
-		m_gamma -= 1.f * deltaSeconds;
-		m_gamma = ClampMin( m_gamma, 1.f );
-	}
+	//// Adjust global values
+	//if ( g_inputSystem->IsKeyPressed( 'G' ) )
+	//{
+	//	m_gamma -= 1.f * deltaSeconds;
+	//	m_gamma = ClampMin( m_gamma, 1.f );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( 'H' ) )
-	{
-		m_gamma += 1.f * deltaSeconds;
-		m_gamma = ClampMin( m_gamma, 1.f );
-	}
+	//if ( g_inputSystem->IsKeyPressed( 'H' ) )
+	//{
+	//	m_gamma += 1.f * deltaSeconds;
+	//	m_gamma = ClampMin( m_gamma, 1.f );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( 'N' ) )
-	{
-		m_dissolveFactor -= 1.f * deltaSeconds;
-		m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
-	}
+	//if ( g_inputSystem->IsKeyPressed( 'N' ) )
+	//{
+	//	m_dissolveFactor -= 1.f * deltaSeconds;
+	//	m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( 'M' ) )
-	{
-		m_dissolveFactor += 1.f * deltaSeconds;
-		m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
-	}
+	//if ( g_inputSystem->IsKeyPressed( 'M' ) )
+	//{
+	//	m_dissolveFactor += 1.f * deltaSeconds;
+	//	m_dissolveFactor = ClampZeroToOne( m_dissolveFactor );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( 'J' ) )
-	{
-		m_dissolveEdge -= 1.f * deltaSeconds;
-		m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
-	}
+	//if ( g_inputSystem->IsKeyPressed( 'J' ) )
+	//{
+	//	m_dissolveEdge -= 1.f * deltaSeconds;
+	//	m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( 'K' ) )
-	{
-		m_dissolveEdge += 1.f * deltaSeconds;
-		m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
-	}
+	//if ( g_inputSystem->IsKeyPressed( 'K' ) )
+	//{
+	//	m_dissolveEdge += 1.f * deltaSeconds;
+	//	m_dissolveEdge = ClampZeroToOne( m_dissolveEdge );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( 'O' ) )
-	{
-		GetCurLight().halfCosOfInnerAngle += CosDegrees( 1.f ) * deltaSeconds * .05f;
-		GetCurLight().halfCosOfOuterAngle += CosDegrees( 1.f ) * deltaSeconds * .05f;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, 1.f );
-		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, -1.f, 1.f );
-	}
+	//if ( g_inputSystem->IsKeyPressed( 'O' ) )
+	//{
+	//	GetCurLight().halfCosOfInnerAngle += CosDegrees( 1.f ) * deltaSeconds * .05f;
+	//	GetCurLight().halfCosOfOuterAngle += CosDegrees( 1.f ) * deltaSeconds * .05f;
+	//	GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, 1.f );
+	//	GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, -1.f, 1.f );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( 'P' ) )
-	{
-		GetCurLight().halfCosOfInnerAngle -= CosDegrees( 1.f ) * deltaSeconds * .05f;
-		GetCurLight().halfCosOfOuterAngle -= CosDegrees( 1.f ) * deltaSeconds * .05f;
-		GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, 1.f );
-		GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, -1.f, 1.f );
-	}
+	//if ( g_inputSystem->IsKeyPressed( 'P' ) )
+	//{
+	//	GetCurLight().halfCosOfInnerAngle -= CosDegrees( 1.f ) * deltaSeconds * .05f;
+	//	GetCurLight().halfCosOfOuterAngle -= CosDegrees( 1.f ) * deltaSeconds * .05f;
+	//	GetCurLight().halfCosOfInnerAngle = ClampMinMax( GetCurLight().halfCosOfInnerAngle, -1.f, 1.f );
+	//	GetCurLight().halfCosOfOuterAngle = ClampMinMax( GetCurLight().halfCosOfOuterAngle, -1.f, 1.f );
+	//}
 
-	if ( g_inputSystem->IsKeyPressed( '5' ) )
-	{
-		m_nearFogDist -= 5.f * deltaSeconds;
-		m_farFogDist -= 5.f * deltaSeconds;
-		m_farFogDist = ClampMinMax( m_farFogDist, 10.f, 100.f );
-		m_nearFogDist = ClampMinMax( m_nearFogDist, 0.f, m_farFogDist - 10.f );
-	}
-	if ( g_inputSystem->IsKeyPressed( '6' ) )
-	{
-		m_nearFogDist += 5.f * deltaSeconds;
-		m_farFogDist += 5.f * deltaSeconds;
-		m_farFogDist = ClampMinMax( m_farFogDist, 10.f, 100.f );
-		m_nearFogDist = ClampMinMax( m_nearFogDist, 0.f, m_farFogDist - 10.f );
-	}
+	//if ( g_inputSystem->IsKeyPressed( '5' ) )
+	//{
+	//	m_nearFogDist -= 5.f * deltaSeconds;
+	//	m_farFogDist -= 5.f * deltaSeconds;
+	//	m_farFogDist = ClampMinMax( m_farFogDist, 10.f, 100.f );
+	//	m_nearFogDist = ClampMinMax( m_nearFogDist, 0.f, m_farFogDist - 10.f );
+	//}
+	//if ( g_inputSystem->IsKeyPressed( '6' ) )
+	//{
+	//	m_nearFogDist += 5.f * deltaSeconds;
+	//	m_farFogDist += 5.f * deltaSeconds;
+	//	m_farFogDist = ClampMinMax( m_farFogDist, 10.f, 100.f );
+	//	m_nearFogDist = ClampMinMax( m_nearFogDist, 0.f, m_farFogDist - 10.f );
+	//}
 
-	if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
-	{
-		m_bloomEnabled = !m_bloomEnabled;
-	}
+	//if ( g_inputSystem->WasKeyJustPressed( 'B' ) )
+	//{
+	//	m_bloomEnabled = !m_bloomEnabled;
+	//}
 }
 
 
@@ -664,73 +667,73 @@ void Game::TranslateCameraFPS( const Vec3& relativeTranslation )
 	m_worldCamera->Translate( absoluteTranslation );
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateLights()
-{
-	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
-	{
-		GameLight& gameLight = m_lights[lightIdx];
-		//if ( gameLight.light.intensity == 0.f )
-		if ( !gameLight.isEnabled )
-		{
-			continue;
-		}
-
-		switch ( gameLight.movementMode )
-		{
-			case eLightMovementMode::STATIONARY:
-			{
-				if ( gameLight.type == eLightType::POINT )
-				{
-					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
-				}
-				else if ( gameLight.type == eLightType::SPOT )
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
-				}
-				else
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
-				}
-			} break;
-
-			case eLightMovementMode::FOLLOW_CAMERA:
-			{
-				gameLight.light.position = m_worldCamera->GetTransform().GetPosition();
-			} break;
-
-			case eLightMovementMode::LOOP:
-			{
-				gameLight.light.position = m_quadMeshTransform.GetPosition();
-				gameLight.light.position.x += CosDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
-				gameLight.light.position.z += SinDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
-
-				if ( gameLight.type == eLightType::POINT )
-				{
-					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
-				}
-				else if ( gameLight.type == eLightType::SPOT )
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
-				}
-				else
-				{
-					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
-				}
-			}
-		}
-	}	
-}
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::UpdateLights()
+//{
+//	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+//	{
+//		GameLight& gameLight = m_lights[lightIdx];
+//		//if ( gameLight.light.intensity == 0.f )
+//		if ( !gameLight.isEnabled )
+//		{
+//			continue;
+//		}
+//
+//		switch ( gameLight.movementMode )
+//		{
+//			case eLightMovementMode::STATIONARY:
+//			{
+//				if ( gameLight.type == eLightType::POINT )
+//				{
+//					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+//				}
+//				else if ( gameLight.type == eLightType::SPOT )
+//				{
+//					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
+//				}
+//				else
+//				{
+//					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
+//				}
+//			} break;
+//
+//			case eLightMovementMode::FOLLOW_CAMERA:
+//			{
+//				gameLight.light.position = m_worldCamera->GetTransform().GetPosition();
+//			} break;
+//
+//			case eLightMovementMode::LOOP:
+//			{
+//				gameLight.light.position = m_quadMeshTransform.GetPosition();
+//				gameLight.light.position.x += CosDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
+//				gameLight.light.position.z += SinDegrees( (float)GetCurrentTimeSeconds() * 20.f ) * 8.f;
+//
+//				if ( gameLight.type == eLightType::POINT )
+//				{
+//					DebugAddWorldPoint( gameLight.light.position, Rgba8::GREEN );
+//				}
+//				else if ( gameLight.type == eLightType::SPOT )
+//				{
+//					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction * .5f, Rgba8::RED );
+//				}
+//				else
+//				{
+//					DebugAddWorldArrow( gameLight.light.position, gameLight.light.position + gameLight.light.direction, Rgba8::GREEN );
+//				}
+//			}
+//		}
+//	}	
+//}
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::PrintHotkeys()
 {
-	float y = .97f;
+	/*float y = .97f;
 	float lineHeight = .02f;
-	float fontSize = 18.f;
-	DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "L,R Arrows - Current light: %d", m_currentLightIdx );
+	float fontSize = 18.f;*/
+	/*DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "L,R Arrows - Current light: %d", m_currentLightIdx );
 	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "U,D Arrows - Light type: %s", LightTypeToStr( GetCurGameLight().type ).c_str() );
 	DebugAddScreenText( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Enter - Enable/Disable light" );
 	DebugAddScreenText( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "F5  - Light to origin" );
@@ -746,135 +749,137 @@ void Game::PrintHotkeys()
 	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "B' -  Bloom : %s", m_bloomEnabled ? "enabled" : "disabled" );
 	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "G,H - Gamma : %.2f", m_gamma );
 	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "5,6 - Fog dist - Near: %.2f Far: %.2f", m_nearFogDist, m_farFogDist );
-	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );
+	DebugAddScreenTextf( Vec4( 0.f, y -= lineHeight, 5.f, 5.f ), Vec2::ZERO, fontSize, Rgba8::WHITE, Rgba8::WHITE, 0.f, "<,> - Shader : %s", m_shaders[m_currentShaderIdx]->GetName().c_str() );*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::PrintDiageticHotkeys()
 {
-	// Dissolve
-	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Dissolve Shader" );
-	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "N,M - intensity : %.2f", m_dissolveFactor );
-	DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 1.5f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "J.K - edge size : %.2f", m_dissolveEdge );
+	//// Dissolve
+	//DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Dissolve Shader" );
+	//DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "N,M - intensity : %.2f", m_dissolveFactor );
+	//DebugAddWorldBillboardTextf( m_cubeMeshTransformDissolve.GetPosition() + Vec3( 0.f, 1.5f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "J.K - edge size : %.2f", m_dissolveEdge );
 
-	// Fresnel
-	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Fresnel Shader" );
-	DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.GetPosition() + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "7,8 - power : %.2f", m_fresnelData.power );
-	
-	// Triplanar
-	DebugAddWorldBillboardTextf( m_sphereMeshTriplanarTransform.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Triplanar Shader" );
+	//// Fresnel
+	//DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Fresnel Shader" );
+	//DebugAddWorldBillboardTextf( m_sphereMeshFresnelTransform.GetPosition() + Vec3( 0.f, 1.75f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "7,8 - power : %.2f", m_fresnelData.power );
+	//
+	//// Triplanar
+	//DebugAddWorldBillboardTextf( m_sphereMeshTriplanarTransform.GetPosition() + Vec3( 0.f, 2.f, 0.f ), Vec2( .5f, .5f ), Rgba8::WHITE, 0.f, eDebugRenderMode::DEBUG_RENDER_USE_DEPTH, "Triplanar Shader" );
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::PrintInfo()
 {
-	float y = .06f;
-	DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Total Texture Pool Count: %d", g_renderer->GetTotalTexturePoolCount() );
-	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Free Texture Pool Count: %d", g_renderer->GetTexturePoolFreeCount() );
+	//float y = .06f;
+	/*DebugAddScreenTextf( Vec4( 0.f, y, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Total Texture Pool Count: %d", g_renderer->GetTotalTexturePoolCount() );
+	DebugAddScreenTextf( Vec4( 0.f, y -= .03f, 5.f, 5.f ), Vec2::ZERO, 20.f, Rgba8::WHITE, Rgba8::WHITE, 0.f, "Free Texture Pool Count: %d", g_renderer->GetTexturePoolFreeCount() );*/
 }
 
 
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	Texture* backbuffer = g_renderer->GetBackBuffer();
+
+
+	/*Texture* backbuffer = g_renderer->GetBackBuffer();
 	Texture* colorTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
-	Texture* bloomTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	Texture* bloomTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );*/
 
-	m_worldCamera->SetColorTarget( 0, colorTarget );
-	m_worldCamera->SetColorTarget( 1, bloomTarget );
+	/*m_worldCamera->SetColorTarget( 0, colorTarget );
+	m_worldCamera->SetColorTarget( 1, bloomTarget );*/
 
-	g_renderer->BeginCamera( *m_worldCamera );
+	//g_renderer->BeginCamera( *m_worldCamera );
 
-	g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
-	
-	g_renderer->DisableAllLights();
-	g_renderer->SetAmbientLight( m_ambientColor.GetAsRGBVector(), m_ambientIntensity );
-	for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
-	{
-		if ( m_lights[lightIdx].isEnabled )
-		{
-			g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
-		}
-	}
-	g_renderer->SetGamma( m_gamma );
-	
-	// Render test teapot
-	g_renderer->SetModelMatrix( Mat44::IDENTITY );
-	g_renderer->BindMaterial( m_teapotMaterial );
+	//g_renderer->EnableFog( m_nearFogDist, m_farFogDist, Rgba8::BLACK );
+	//
+	//g_renderer->DisableAllLights();
+	//g_renderer->SetAmbientLight( m_ambientColor.GetAsRGBVector(), m_ambientIntensity );
+	//for ( int lightIdx = 0; lightIdx < MAX_LIGHTS; ++lightIdx )
+	//{
+	//	if ( m_lights[lightIdx].isEnabled )
+	//	{
+	//		g_renderer->EnableLight( lightIdx, m_lights[lightIdx].light );
+	//	}
+	//}
+	//g_renderer->SetGamma( m_gamma );
+	//
+	//// Render test teapot
+	//g_renderer->SetModelMatrix( Mat44::IDENTITY );
+	//g_renderer->BindMaterial( m_teapotMaterial );
 
-	g_renderer->DrawMesh( m_teapotMesh );
+	//g_renderer->DrawMesh( m_teapotMesh );
 
-	// Render vespa with material
-	g_renderer->SetModelMatrix( m_vespaMeshTransform.GetAsMatrix() );
-	g_renderer->BindMaterial( m_vespaMaterial );
-	g_renderer->DrawMesh( m_vespaMesh );
+	//// Render vespa with material
+	//g_renderer->SetModelMatrix( m_vespaMeshTransform.GetAsMatrix() );
+	//g_renderer->BindMaterial( m_vespaMaterial );
+	//g_renderer->DrawMesh( m_vespaMesh );
 
-	// Render scifi fighter with material
-	g_renderer->SetModelMatrix( m_scifiMeshTransform.GetAsMatrix() );
-	g_renderer->BindMaterial( m_scifiMaterial );
-	g_renderer->DrawMesh( m_scifiMesh );
+	//// Render scifi fighter with material
+	//g_renderer->SetModelMatrix( m_scifiMeshTransform.GetAsMatrix() );
+	//g_renderer->BindMaterial( m_scifiMaterial );
+	//g_renderer->DrawMesh( m_scifiMesh );
 
-	// Fresnel
-	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
-	g_renderer->BindMaterial( m_defaultMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );
-	
-	g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
-	g_renderer->BindMaterial( m_fresnelMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );
-	   
-	// Dissolve
-	g_renderer->SetModelMatrix( m_cubeMeshTransformDissolve.GetAsMatrix() );
-	g_renderer->BindMaterial( m_dissolveMaterial );
-	g_renderer->DrawMesh( m_cubeMesh );
+	//// Fresnel
+	//g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	//g_renderer->BindMaterial( m_defaultMaterial );
+	//g_renderer->DrawMesh( m_sphereMesh );
+	//
+	//g_renderer->SetModelMatrix( m_sphereMeshFresnelTransform.GetAsMatrix() );
+	//g_renderer->BindMaterial( m_fresnelMaterial );
+	//g_renderer->DrawMesh( m_sphereMesh );
+	//   
+	//// Dissolve
+	//g_renderer->SetModelMatrix( m_cubeMeshTransformDissolve.GetAsMatrix() );
+	//g_renderer->BindMaterial( m_dissolveMaterial );
+	//g_renderer->DrawMesh( m_cubeMesh );
 
-	// Triplanar
-	g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
-	g_renderer->BindMaterial( m_triplanarMaterial );
-	g_renderer->DrawMesh( m_sphereMesh );
+	//// Triplanar
+	//g_renderer->SetModelMatrix( m_sphereMeshTriplanarTransform.GetAsMatrix() );
+	//g_renderer->BindMaterial( m_triplanarMaterial );
+	//g_renderer->DrawMesh( m_sphereMesh );
 
-	g_renderer->EndCamera( *m_worldCamera );
+	//g_renderer->EndCamera( *m_worldCamera );
 
 	// Render full screen effect
-	ShaderProgram* shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
-	g_renderer->SetMaterialData( (void*)&m_colorTransformConstants, sizeof( m_colorTransformConstants ) );
+	//ShaderProgram* shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectColorTransform.hlsl" );
+	//g_renderer->SetMaterialData( (void*)&m_colorTransformConstants, sizeof( m_colorTransformConstants ) );
 
-	Texture* colorTransformTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
+	//Texture* colorTransformTarget = g_renderer->AcquireRenderTargetMatching( backbuffer );
 
-	g_renderer->StartEffect( colorTransformTarget, colorTarget, shaderProg );
-	g_renderer->EndEffect();
+	//g_renderer->StartEffect( colorTransformTarget, colorTarget, shaderProg );
+	//g_renderer->EndEffect();
 
-	if ( m_bloomEnabled )
-	{
-		shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectBloom.hlsl" );
+	//if ( m_bloomEnabled )
+	//{
+	//	shaderProg = g_renderer->GetOrCreateShaderProgram( "Data/Shaders/src/ImageEffectBloom.hlsl" );
 
-		Material mat( g_renderer );
-		Shader shader;
-		shader.SetShaderProgram( shaderProg );
+	//	Material mat( g_renderer );
+	//	Shader shader;
+	//	shader.SetShaderProgram( shaderProg );
 
-		mat.SetShader( &shader );
-		mat.SetUserTexture( 0, colorTransformTarget );
+	//	mat.SetShader( &shader );
+	//	mat.SetUserTexture( 0, colorTransformTarget );
 
-		g_renderer->StartEffect( backbuffer, bloomTarget, &mat );
-		g_renderer->EndEffect();
-	}
-	else
-	{
-		g_renderer->CopyTexture( backbuffer, colorTransformTarget );
-	}
+	//	g_renderer->StartEffect( backbuffer, bloomTarget, &mat );
+	//	g_renderer->EndEffect();
+	//}
+	//else
+	//{
+	//	g_renderer->CopyTexture( backbuffer, colorTransformTarget );
+	//}
 
-	m_worldCamera->SetColorTarget( backbuffer );
+	//m_worldCamera->SetColorTarget( backbuffer );
 
-	g_renderer->ReleaseRenderTarget( colorTarget );
-	g_renderer->ReleaseRenderTarget( bloomTarget );
-	g_renderer->ReleaseRenderTarget( colorTransformTarget );
+	//g_renderer->ReleaseRenderTarget( colorTarget );
+	//g_renderer->ReleaseRenderTarget( bloomTarget );
+	//g_renderer->ReleaseRenderTarget( colorTransformTarget );
 
-	// Debug Rendering
-	DebugRenderWorldToCamera( m_worldCamera );
-	DebugRenderScreenTo( g_renderer->GetBackBuffer() );
+	//// Debug Rendering
+	//DebugRenderWorldToCamera( m_worldCamera );
+	//DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 }
 
 
@@ -884,76 +889,76 @@ void Game::DebugRender() const
 	
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::ChangeShader( int nextShaderIdx )
-{
-	if ( nextShaderIdx > (int)m_shaders.size() - 1 )
-	{
-		nextShaderIdx = 0;
-	}
-	else if ( nextShaderIdx < 0 )
-	{
-		nextShaderIdx = (int)m_shaders.size() - 1;
-	}
-
-	m_currentShaderIdx = nextShaderIdx;
-	m_vespaMaterial->SetShader( m_shaders[m_currentShaderIdx] );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::ChangeCurrentLightType( eLightType newLightype )
-{
-	switch ( newLightype )
-	{
-		case eLightType::POINT:
-		{
-			GetCurLight().isDirectional = 0.f;
-			GetCurLight().halfCosOfInnerAngle = 0.f;
-			GetCurLight().halfCosOfOuterAngle = 0.f;
-		} break;
-
-		case eLightType::DIRECTIONAL:
-		{
-			GetCurLight().isDirectional = 1.f;
-			GetCurLight().halfCosOfInnerAngle = 0.f;
-			GetCurLight().halfCosOfOuterAngle = 0.f;
-		} break;
-
-		case eLightType::SPOT:
-		{
-			GetCurLight().isDirectional = 0.f;
-			GetCurLight().halfCosOfInnerAngle = CosDegrees( 5.f );
-			GetCurLight().halfCosOfOuterAngle = CosDegrees( 10.f );
-		} break;
-	}
-
-	GetCurGameLight().type = newLightype;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-std::string Game::LightTypeToStr( eLightType lightType )
-{
-	switch ( lightType )
-	{
-		case eLightType::POINT:	return "Point";
-		case eLightType::DIRECTIONAL: return "Directional";
-		case eLightType::SPOT: return "Spot";
-	}
-
-	return "Invalid";
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::SetLightDirectionToCamera( Light& light )
-{
-	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
-	Vec3 cameraForwardDir = model.TransformVector3D( Vec3( 0.f, 0.f, -1.f ) ).GetNormalized();
-	light.direction = cameraForwardDir;
-}
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::ChangeShader( int nextShaderIdx )
+//{
+//	if ( nextShaderIdx > (int)m_shaders.size() - 1 )
+//	{
+//		nextShaderIdx = 0;
+//	}
+//	else if ( nextShaderIdx < 0 )
+//	{
+//		nextShaderIdx = (int)m_shaders.size() - 1;
+//	}
+//
+//	m_currentShaderIdx = nextShaderIdx;
+//	m_vespaMaterial->SetShader( m_shaders[m_currentShaderIdx] );
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::ChangeCurrentLightType( eLightType newLightype )
+//{
+//	switch ( newLightype )
+//	{
+//		case eLightType::POINT:
+//		{
+//			GetCurLight().isDirectional = 0.f;
+//			GetCurLight().halfCosOfInnerAngle = 0.f;
+//			GetCurLight().halfCosOfOuterAngle = 0.f;
+//		} break;
+//
+//		case eLightType::DIRECTIONAL:
+//		{
+//			GetCurLight().isDirectional = 1.f;
+//			GetCurLight().halfCosOfInnerAngle = 0.f;
+//			GetCurLight().halfCosOfOuterAngle = 0.f;
+//		} break;
+//
+//		case eLightType::SPOT:
+//		{
+//			GetCurLight().isDirectional = 0.f;
+//			GetCurLight().halfCosOfInnerAngle = CosDegrees( 5.f );
+//			GetCurLight().halfCosOfOuterAngle = CosDegrees( 10.f );
+//		} break;
+//	}
+//
+//	GetCurGameLight().type = newLightype;
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//std::string Game::LightTypeToStr( eLightType lightType )
+//{
+//	switch ( lightType )
+//	{
+//		case eLightType::POINT:	return "Point";
+//		case eLightType::DIRECTIONAL: return "Directional";
+//		case eLightType::SPOT: return "Spot";
+//	}
+//
+//	return "Invalid";
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::SetLightDirectionToCamera( Light& light )
+//{
+//	Mat44 model = m_worldCamera->GetTransform().GetAsMatrix();
+//	Vec3 cameraForwardDir = model.TransformVector3D( Vec3( 0.f, 0.f, -1.f ) ).GetNormalized();
+//	light.direction = cameraForwardDir;
+//}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -1006,18 +1011,18 @@ void Game::UnSubscribeGameMethods( EventArgs* args )
 	g_eventSystem->DeRegisterObject( this );
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::SetAmbientLightColor( EventArgs* args )
-{
-	Vec3 color = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
-
-	m_ambientColor.SetFromNormalizedVector( Vec4( color, 1.f ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::SetPointLightColor( EventArgs* args )
-{
-	GetCurLight().color = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
-}
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::SetAmbientLightColor( EventArgs* args )
+//{
+//	Vec3 color = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
+//
+//	m_ambientColor.SetFromNormalizedVector( Vec4( color, 1.f ) );
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//void Game::SetPointLightColor( EventArgs* args )
+//{
+//	GetCurLight().color = args->GetValue( "color", Vec3( 1.f, 1.f, 1.f ) );
+//}

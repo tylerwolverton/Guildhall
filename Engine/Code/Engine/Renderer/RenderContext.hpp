@@ -57,10 +57,10 @@ class RenderContext
 {
 public:
 	virtual void Startup( Window* window );
-	void Setup( Clock* gameClock );
-	void BeginFrame();
-	void EndFrame();
-	void Shutdown();
+	virtual void Setup( Clock* gameClock );
+	virtual void BeginFrame();
+	virtual void EndFrame();
+	virtual void Shutdown();
 
 	void SetBlendMode( eBlendMode blendMode );
 	void SetDepthTest( eCompareFunc compare, bool writeDepthOnPass );

@@ -3,7 +3,6 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Transform.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 
 #include <string>
 #include <vector>
@@ -20,79 +19,79 @@ class GPUMesh;
 class Shader;
 class Material;
 
-
-//-----------------------------------------------------------------------------------------------
-enum class eLightMovementMode
-{
-	STATIONARY,
-	FOLLOW_CAMERA,
-	LOOP
-};
-
-
-//-----------------------------------------------------------------------------------------------
-enum class eLightType
-{
-	POINT,
-	DIRECTIONAL,
-	SPOT
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct GameLight
-{
-	Light light;
-
-	eLightMovementMode movementMode = eLightMovementMode::FOLLOW_CAMERA;
-	eLightType type = eLightType::POINT;
-	bool isEnabled = true;
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct FresnelConstants
-{
-	Vec3 color;
-	float power;
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct DissolveConstants
-{
-	Vec3 startColor;
-	float dissolveFactor;
-
-	Vec3 endColor;
-	float edgeWidth;
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct ProjectionConstants
-{
-	Mat44 projectionMatrix;
-
-	Vec3 position;
-	float power;
-};
-
-
-//-----------------------------------------------------------------------------------------------
-struct ColorTransformConstants
-{
-	Mat44 colorTransform;
-
-	Vec3 tint;
-	float tintPower;
-
-	float transformPower;
-
-	float padding0;
-	float padding1;
-	float padding2;
-};
+//
+////-----------------------------------------------------------------------------------------------
+//enum class eLightMovementMode
+//{
+//	STATIONARY,
+//	FOLLOW_CAMERA,
+//	LOOP
+//};
+//
+//
+////-----------------------------------------------------------------------------------------------
+//enum class eLightType
+//{
+//	POINT,
+//	DIRECTIONAL,
+//	SPOT
+//};
+//
+//
+////-----------------------------------------------------------------------------------------------
+//struct GameLight
+//{
+//	Light light;
+//
+//	eLightMovementMode movementMode = eLightMovementMode::FOLLOW_CAMERA;
+//	eLightType type = eLightType::POINT;
+//	bool isEnabled = true;
+//};
+//
+//
+////-----------------------------------------------------------------------------------------------
+//struct FresnelConstants
+//{
+//	Vec3 color;
+//	float power;
+//};
+//
+//
+////-----------------------------------------------------------------------------------------------
+//struct DissolveConstants
+//{
+//	Vec3 startColor;
+//	float dissolveFactor;
+//
+//	Vec3 endColor;
+//	float edgeWidth;
+//};
+//
+//
+////-----------------------------------------------------------------------------------------------
+//struct ProjectionConstants
+//{
+//	Mat44 projectionMatrix;
+//
+//	Vec3 position;
+//	float power;
+//};
+//
+//
+////-----------------------------------------------------------------------------------------------
+//struct ColorTransformConstants
+//{
+//	Mat44 colorTransform;
+//
+//	Vec3 tint;
+//	float tintPower;
+//
+//	float transformPower;
+//
+//	float padding0;
+//	float padding1;
+//	float padding2;
+//};
 
 
 //-----------------------------------------------------------------------------------------------
@@ -142,20 +141,20 @@ private:
 
 	void UpdateCameras();
 	void TranslateCameraFPS( const Vec3& relativeTranslation );
-	void UpdateLights();
+	/*void UpdateLights();*/
 
 	void PrintHotkeys();
 	void PrintDiageticHotkeys();
 	void PrintInfo();
-	void ChangeShader( int nextShaderIdx );
+	//void ChangeShader( int nextShaderIdx );
 
-	GameLight& GetCurGameLight()											{ return m_lights[m_currentLightIdx]; }
+	/*GameLight& GetCurGameLight()											{ return m_lights[m_currentLightIdx]; }
 	Light& GetCurLight()													{ return m_lights[m_currentLightIdx].light; }
 
 	void ChangeCurrentLightType( eLightType newLightype );
 	std::string LightTypeToStr( eLightType lightType );
 
-	void SetLightDirectionToCamera( Light& light );
+	void SetLightDirectionToCamera( Light& light );*/
 
 private:
 	Clock* m_gameClock = nullptr;
@@ -202,35 +201,35 @@ private:
 	Transform m_sphereMeshTriplanarTransform;
 	Transform m_cubeMeshTransformDissolve;
 
-	Rgba8 m_ambientColor = Rgba8::WHITE;
-	float m_ambientIntensity = 0.f;
-	GameLight m_lights[MAX_LIGHTS];
-	int m_currentLightIdx = 0;
-	float m_specularFactor = 0.f;
-	float m_specularPower = 1.f;
-	float m_gamma = 2.2f;
-	float m_nearFogDist = 25.f;
-	float m_farFogDist = 50.f;
+	/*Rgba8 m_ambientColor = Rgba8::WHITE;
+	float m_ambientIntensity = 0.f;*/
+	//GameLight m_lights[MAX_LIGHTS];
+	//int m_currentLightIdx = 0;
+	//float m_specularFactor = 0.f;
+	//float m_specularPower = 1.f;
+	//float m_gamma = 2.2f;
+	//float m_nearFogDist = 25.f;
+	//float m_farFogDist = 50.f;
 
-	FresnelConstants m_fresnelData;
-	float m_dissolveFactor = 0.f;
-	float m_dissolveEdge = .3f;
-	
-	Mat44 m_projectionViewMatrix;
+	//FresnelConstants m_fresnelData;
+	//float m_dissolveFactor = 0.f;
+	//float m_dissolveEdge = .3f;
+	//
+	//Mat44 m_projectionViewMatrix;
 
-	ColorTransformConstants m_colorTransformConstants;
+	//ColorTransformConstants m_colorTransformConstants;
 
-	std::vector<Shader*> m_shaders;
-	int m_currentShaderIdx = 0;
+	//std::vector<Shader*> m_shaders;
+	//int m_currentShaderIdx = 0;
 
-	// Materials
-	Material* m_defaultMaterial = nullptr;
-	Material* m_vespaMaterial = nullptr;
-	Material* m_scifiMaterial = nullptr;
-	Material* m_teapotMaterial = nullptr;
-	Material* m_fresnelMaterial = nullptr;
-	Material* m_dissolveMaterial = nullptr;
-	Material* m_triplanarMaterial = nullptr;
+	//// Materials
+	//Material* m_defaultMaterial = nullptr;
+	//Material* m_vespaMaterial = nullptr;
+	//Material* m_scifiMaterial = nullptr;
+	//Material* m_teapotMaterial = nullptr;
+	//Material* m_fresnelMaterial = nullptr;
+	//Material* m_dissolveMaterial = nullptr;
+	//Material* m_triplanarMaterial = nullptr;
 
-	bool m_bloomEnabled = true;
+	//bool m_bloomEnabled = true;
 };

@@ -13,6 +13,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/OS/Window.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Vulkan/VulkanRenderContext.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Time/Time.hpp"
@@ -38,7 +39,7 @@ void App::Startup()
 {
 	PopulateGameConfig();
 
-	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "SD2.A01" );
+	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "FPS" );
 	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
 	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
 	eWindowMode windowMode = GetWindowModeFromGameConfig();
@@ -50,8 +51,7 @@ void App::Startup()
 
 	g_eventSystem = new EventSystem();
 	g_inputSystem = new InputSystem();
-	g_audioSystem = new AudioSystem();
-	g_renderer = new RenderContext();
+	g_renderer = new VulkanRenderContext();
 	g_devConsole = new DevConsole();
 	g_game = new Game();
 
@@ -61,14 +61,13 @@ void App::Startup()
 	g_inputSystem->Startup( g_window );
 	g_window->SetInputSystem( g_inputSystem );
 
-	g_audioSystem->Startup();
 	g_renderer->Startup( g_window );
-	DebugRenderSystemStartup( g_renderer, g_eventSystem );
+	//DebugRenderSystemStartup( g_renderer, g_eventSystem );
 	
 	g_devConsole->Startup();
 	g_devConsole->SetInputSystem( g_inputSystem );
 	g_devConsole->SetRenderer( g_renderer );
-	g_devConsole->SetBitmapFont( g_renderer->GetSystemFont() );
+	//g_devConsole->SetBitmapFont( g_renderer->GetSystemFont() );
 
 	g_game->Startup();
 
@@ -81,9 +80,8 @@ void App::Shutdown()
 {
 	g_game->Shutdown();
 	g_devConsole->Shutdown();
-	DebugRenderSystemShutdown();
+	//DebugRenderSystemShutdown();
 	g_renderer->Shutdown();
-	g_audioSystem->Shutdown();
 	g_inputSystem->Shutdown();
 	g_eventSystem->Shutdown();
 	g_window->Close();
@@ -91,7 +89,6 @@ void App::Shutdown()
 	PTR_SAFE_DELETE( g_game );
 	PTR_SAFE_DELETE( g_devConsole );
 	PTR_SAFE_DELETE( g_renderer );
-	PTR_SAFE_DELETE( g_audioSystem );
 	PTR_SAFE_DELETE( g_inputSystem );
 	PTR_SAFE_DELETE( g_eventSystem );
 	PTR_SAFE_DELETE( g_window );
@@ -173,7 +170,6 @@ void App::BeginFrame()
 	g_eventSystem->BeginFrame();
 	g_devConsole->BeginFrame();
 	g_inputSystem->BeginFrame();
-	g_audioSystem->BeginFrame();
 	g_renderer->BeginFrame();
 	DebugRenderBeginFrame();
 }
@@ -222,9 +218,8 @@ void App::Render() const
 //-----------------------------------------------------------------------------------------------
 void App::EndFrame()
 {
-	DebugRenderEndFrame();
+	//DebugRenderEndFrame();
 	g_renderer->EndFrame();
-	g_audioSystem->EndFrame();
 	g_inputSystem->EndFrame();
 	g_devConsole->EndFrame();
 	g_eventSystem->EndFrame();
