@@ -9,13 +9,6 @@ void VulkanRenderContext::Startup( Window* window )
 
 
 //-----------------------------------------------------------------------------------------------
-void VulkanRenderContext::Setup( Clock* gameClock )
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
 void VulkanRenderContext::BeginFrame()
 {
 

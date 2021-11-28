@@ -12,7 +12,6 @@ class VulkanRenderContext : public RenderContext
 {
 public:
 	virtual void Startup( Window* window ) override;
-	virtual void Setup( Clock* gameClock ) override;
 	virtual void BeginFrame() override;
 	virtual void EndFrame() override;
 	virtual void Shutdown() override;
