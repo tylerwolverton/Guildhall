@@ -169,6 +169,7 @@
     <ClCompile Include="Core\FileUtils.cpp" />
     <ClCompile Include="Core\HashedString.cpp" />
     <ClCompile Include="Core\HashUtils.cpp" />
+    <ClCompile Include="Core\MemoryPool.cpp" />
     <ClCompile Include="Core\TWSMUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
     <ClCompile Include="Core\JobSystem.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="Core\FileUtils.hpp" />
     <ClInclude Include="Core\HashedString.hpp" />
     <ClInclude Include="Core\HashUtils.hpp" />
+    <ClInclude Include="Core\MemoryPool.hpp" />
     <ClInclude Include="Core\TWSMUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
     <ClInclude Include="Core\JobSystem.hpp" />

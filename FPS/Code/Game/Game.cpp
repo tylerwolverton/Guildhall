@@ -12,6 +12,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/MemoryPool.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/TextBox.hpp"
 #include "Engine/Core/XmlUtils.hpp"
@@ -76,6 +77,11 @@ void Game::Startup()
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
+
+	MemoryPool testPool( 2048 );
+	Camera* obj1 = (Camera*)testPool.AllocateObject( (int)sizeof(Camera), (int)alignof(Camera) );
+	byte* obj2 = testPool.AllocateObject( 32, 4 );
+	byte* obj3 = testPool.AllocateObject( 16, 4 );
 
 	//EnableDebugRendering();
 	

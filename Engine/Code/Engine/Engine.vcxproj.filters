@@ -391,6 +391,9 @@
     <ClCompile Include="Renderer\Vulkan\VulkanRenderContext.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\MemoryPool.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -733,5 +736,6 @@
     </ClInclude>
     <ClInclude Include="Renderer\RenderCommon.hpp" />
     <ClInclude Include="Renderer\Vulkan\VulkanRenderContext.hpp" />
+    <ClInclude Include="Core\MemoryPool.hpp" />
   </ItemGroup>
 </Project>
