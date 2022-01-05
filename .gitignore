@@ -116,7 +116,6 @@ $RECYCLE.BIN/
 !**/Ants/AntArena2/Arena/Run_Windows/**/*.dll
 !**/Run/Data/**
 !**/ThirdParty/**/*.lib
-*.user
 *.ilk
 *.pdb
 *.idb
