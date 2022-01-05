@@ -10,6 +10,7 @@
 EventSystem* g_eventSystem = nullptr;
 DevConsole*  g_devConsole = nullptr;
 JobSystem*  g_jobSystem = nullptr;
+NamedStrings g_editorConfigBlackboard;
 NamedStrings g_gameConfigBlackboard;
 
 

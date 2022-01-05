@@ -20,6 +20,7 @@ class NamedStrings;
 extern DevConsole* g_devConsole;
 extern EventSystem* g_eventSystem;
 extern JobSystem* g_jobSystem;
+extern NamedStrings g_editorConfigBlackboard;
 extern NamedStrings g_gameConfigBlackboard;
 
 
