@@ -385,6 +385,27 @@
     <ClCompile Include="Core\HashUtils.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_demo.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_draw.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_tables.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_widgets.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_impl_win32.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_impl_dx11.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -724,5 +745,13 @@
     <ClInclude Include="ZephyrCore\ZephyrVirtualMachine.hpp" />
     <ClInclude Include="ZephyrCore\ZephyrUtils.hpp" />
     <ClInclude Include="Core\HashUtils.hpp" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imconfig.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui_internal.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imstb_rectpack.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imstb_textedit.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imstb_truetype.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui_impl_dx11.h" />
   </ItemGroup>
 </Project>

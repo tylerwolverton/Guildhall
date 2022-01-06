@@ -5,10 +5,13 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
+#include "ThirdParty/DearImgui/imgui_impl_win32.h"
+
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 //-----------------------------------------------------------------------------------------------
 static TCHAR const* WND_CLASS_NAME = TEXT( "Simple Window Class" );
@@ -32,6 +35,9 @@ static LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT
 		inputSystem = window->GetInputSystem();
 		eventSystem = window->GetEventSystem();
 	}
+
+	if ( ImGui_ImplWin32_WndProcHandler( windowHandle, wmMessageCode, wParam, lParam ) )
+		return true;
 
 	switch ( wmMessageCode )
 	{

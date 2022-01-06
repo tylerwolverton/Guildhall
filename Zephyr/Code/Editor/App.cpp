@@ -11,6 +11,10 @@
 #include "Engine/Time/Time.hpp"
 #include "Engine/Time/Clock.hpp"
 
+#include "ThirdParty/DearImgui/imgui.h"
+#include "ThirdParty/DearImgui/imgui_impl_win32.h"
+#include "ThirdParty/DearImgui/imgui_impl_dx11.h"
+
 #include "Editor/EditorCommon.hpp"
 #include "Editor/Editor.hpp"
 
@@ -64,6 +68,28 @@ void App::Startup()
 	g_devConsole->SetRenderer( g_renderer );
 	g_devConsole->SetBitmapFont( g_renderer->CreateOrGetBitmapFontFromFile( "Data/Fonts/SquirrelFixedFont" ) );
 	
+	// TEMP DearImgui Initialization
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.DisplaySize.x = g_window->GetClientWidth();
+	io.DisplaySize.y = g_window->GetClientHeight();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+	
+	ImGui::StyleColorsDark();
+	ImGuiStyle& style = ImGui::GetStyle();
+	if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	ImGui_ImplWin32_Init( g_window->m_hwnd );
+	ImGui_ImplDX11_Init( g_renderer->m_device, g_renderer->m_context );
+
 	g_editor->Startup();
 
 	g_eventSystem->RegisterEvent( "Quit", "Quit the game.", eUsageLocation::EVERYWHERE, QuitGame );
@@ -73,6 +99,10 @@ void App::Startup()
 //-----------------------------------------------------------------------------------------------
 void App::Shutdown()
 {
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	g_editor->Shutdown();
 	g_devConsole->Shutdown();
 	DebugRenderSystemShutdown();

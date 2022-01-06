@@ -155,6 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui.cpp" />
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_demo.cpp" />
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_draw.cpp" />
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_tables.cpp" />
+    <ClCompile Include="..\ThirdParty\DearImgui\imgui_widgets.cpp" />
     <ClCompile Include="..\ThirdParty\mikkt\mikktspace.c" />
     <ClCompile Include="..\ThirdParty\TinyXML2\tinyxml2.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
@@ -270,6 +277,14 @@
     <ClCompile Include="ZephyrCore\ZephyrVirtualMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ThirdParty\DearImgui\imconfig.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imgui_internal.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imstb_rectpack.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imstb_textedit.h" />
+    <ClInclude Include="..\ThirdParty\DearImgui\imstb_truetype.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod.hpp" />
     <ClInclude Include="..\ThirdParty\fmod\fmod_codec.h" />
