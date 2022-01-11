@@ -406,6 +406,9 @@
     <ClCompile Include="..\ThirdParty\DearImgui\imgui_impl_dx11.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="DearImgui\DearImguiSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -753,5 +756,6 @@
     <ClInclude Include="..\ThirdParty\DearImgui\imstb_truetype.h" />
     <ClInclude Include="..\ThirdParty\DearImgui\imgui_impl_win32.h" />
     <ClInclude Include="..\ThirdParty\DearImgui\imgui_impl_dx11.h" />
+    <ClInclude Include="DearImgui\DearImguiSystem.hpp" />
   </ItemGroup>
 </Project>

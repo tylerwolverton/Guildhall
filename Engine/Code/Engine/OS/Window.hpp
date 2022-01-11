@@ -32,9 +32,9 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	unsigned int	GetClientWidth()				{ return m_clientWidth; }
-	unsigned int	GetClientHeight()				{ return m_clientHeight; }
-	Vec2			GetDimensions()					{ return Vec2( (float)GetClientWidth(), (float)GetClientHeight() ); }
+	unsigned int	GetClientWidth() const			{ return m_clientWidth; }
+	unsigned int	GetClientHeight() const			{ return m_clientHeight; }
+	Vec2			GetDimensions()	const			{ return Vec2( (float)GetClientWidth(), (float)GetClientHeight() ); }
 
 	void			ToggleWindowMode();
 

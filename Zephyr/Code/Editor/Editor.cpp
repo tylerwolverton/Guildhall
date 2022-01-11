@@ -26,10 +26,6 @@
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
 
-#include "ThirdParty/DearImgui/imgui.h"
-#include "ThirdParty/DearImgui/imgui_impl_win32.h"
-#include "ThirdParty/DearImgui/imgui_impl_dx11.h"
-
 #include "Editor/EditorCommon.hpp"
 
 
@@ -79,9 +75,6 @@ void Editor::Startup()
 //-----------------------------------------------------------------------------------------------
 void Editor::BeginFrame()
 {
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
 }
 
 
@@ -137,9 +130,6 @@ void Editor::Update()
 		case eEditorState::PLAYING:
 		{
 			UpdateFromKeyboard();
-
-			bool temp = true;
-			ImGui::ShowDemoWindow( &temp );
 		}
 		break;
 	}
@@ -201,12 +191,6 @@ void Editor::Render() const
 	}
 
 	RenderFPSCounter();
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
-
-	ImGui::UpdatePlatformWindows();
-	ImGui::RenderPlatformWindowsDefault();
 
 	g_renderer->EndCamera( *m_uiCamera );
 

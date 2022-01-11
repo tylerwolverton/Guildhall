@@ -189,6 +189,7 @@
     <ClCompile Include="Core\Vertex_PCU.cpp" />
     <ClCompile Include="Core\Vertex_PCUTBN.cpp" />
     <ClCompile Include="Core\XmlUtils.cpp" />
+    <ClCompile Include="DearImgui\DearImguiSystem.cpp" />
     <ClCompile Include="Input\AnalogJoystick.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
     <ClCompile Include="Input\KeyButtonState.cpp" />
@@ -324,6 +325,7 @@
     <ClInclude Include="Core\Vertex_PCU.hpp" />
     <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
     <ClInclude Include="Core\XmlUtils.hpp" />
+    <ClInclude Include="DearImgui\DearImguiSystem.hpp" />
     <ClInclude Include="Input\AnalogJoystick.hpp" />
     <ClInclude Include="Input\InputCommon.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
