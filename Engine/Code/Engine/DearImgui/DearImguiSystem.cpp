@@ -45,8 +45,8 @@ void DearImguiSystem::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void DearImguiSystem::Render()
 {
-	bool temp = true;
-	ImGui::ShowDemoWindow( &temp );
+	/*bool temp = true;
+	ImGui::ShowDemoWindow( &temp );*/
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );

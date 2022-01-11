@@ -15,6 +15,8 @@ class RandomNumberGenerator;
 class Clock;
 class Camera;
 
+class EntityDefinitionWidget;
+
 
 //-----------------------------------------------------------------------------------------------
 enum class eEditorState
@@ -88,4 +90,6 @@ private:
 	Vec3 m_focalPoint = Vec3::ZERO;
 
 	eEditorState m_editorState = eEditorState::LOADING;
+
+	EntityDefinitionWidget* m_entityDefWidget = nullptr;
 };

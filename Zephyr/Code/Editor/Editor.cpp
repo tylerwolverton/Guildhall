@@ -27,6 +27,7 @@
 #include "Engine/Time/Time.hpp"
 
 #include "Editor/EditorCommon.hpp"
+#include "Editor/Widgets/EntityDefinitionWidget.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -68,6 +69,8 @@ void Editor::Startup()
 
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
 
+	m_entityDefWidget = new EntityDefinitionWidget();
+
 	g_devConsole->PrintString( "Editor Started", Rgba8::GREEN );
 }
 
@@ -81,6 +84,7 @@ void Editor::BeginFrame()
 //-----------------------------------------------------------------------------------------------
 void Editor::Shutdown()
 {
+	PTR_SAFE_DELETE( m_entityDefWidget );
 	PTR_SAFE_DELETE( m_rng );
 	PTR_SAFE_DELETE( m_uiCamera );
 	PTR_SAFE_DELETE( m_worldCamera );
@@ -129,6 +133,7 @@ void Editor::Update()
 
 		case eEditorState::PLAYING:
 		{
+			m_entityDefWidget->Build();
 			UpdateFromKeyboard();
 		}
 		break;

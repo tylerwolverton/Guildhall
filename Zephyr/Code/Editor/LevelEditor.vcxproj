@@ -179,12 +179,15 @@
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorCommon.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
+    <ClCompile Include="Widgets\EntityDefinitionWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
     <ClInclude Include="Editor.hpp" />
     <ClInclude Include="EditorCommon.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
+    <ClInclude Include="Widgets\DearImguiWidget.hpp" />
+    <ClInclude Include="Widgets\EntityDefinitionWidget.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engine\Code\Engine\Engine.vcxproj">

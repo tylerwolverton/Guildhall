@@ -1,8 +1,9 @@
 #pragma once
-
 class RenderContext;
 class Window;
 
+
+//-----------------------------------------------------------------------------------------------
 class DearImguiSystem
 {
 public:
