@@ -57,7 +57,6 @@ public:
 
 private:
 	void LoadAssets();
-	void LoadNewMap( const std::string& mapName );
 
 	void InitializeCameras();
 	void InitializeMeshes();

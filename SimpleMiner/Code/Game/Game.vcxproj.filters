@@ -22,34 +22,19 @@
     <ClCompile Include="Game.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="GameCommon.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Tile.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="World.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="TileDefinition.cpp">
+    <ClCompile Include="Chunk.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="MapDefinition.cpp">
+    <ClCompile Include="Block.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Actor.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorDefinition.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityDefinition.cpp">
+    <ClCompile Include="BlockDefinition.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,34 +48,19 @@
     <ClInclude Include="Game.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Map.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Tile.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="World.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="EngineBuildPreferences.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="TileDefinition.hpp">
+    <ClInclude Include="Chunk.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="MapDefinition.hpp">
+    <ClInclude Include="Block.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Actor.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorDefinition.hpp">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityDefinition.hpp">
+    <ClInclude Include="BlockDefinition.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,10 +3,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-class Map;
-
-
-//-----------------------------------------------------------------------------------------------
 class World
 {
 public:
@@ -16,9 +12,4 @@ public:
 	void Update( float deltaSeconds );
 	void Render() const;
 	void DebugRender() const;
-
-	void BuildNewMap( std::string name );
-
-private:
-	Map* m_curMap = nullptr;
 };

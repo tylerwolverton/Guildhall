@@ -39,23 +39,14 @@ constexpr float WINDOW_HEIGHT = 9.f;
 constexpr float WINDOW_WIDTH_PIXELS = 1920.f;
 constexpr float WINDOW_HEIGHT_PIXELS = 1080.f;
 
-constexpr int NUM_SPHERES = 30;
-constexpr float SPHERE_RING_RADIUS = 20.f;
-constexpr float DEGREES_PER_SPHERE = 360.f / (float)NUM_SPHERES;
-
-
-constexpr float TILE_SIZE = 1.f;
-
-constexpr float PLAYER_PHYSICS_RADIUS = .25f;
-constexpr float PLAYER_COSMETIC_RADIUS = .4f;
-constexpr float PLAYER_SPEED = .25f;
-constexpr float PLAYER_MAX_SPEED = 1.f;
-
-constexpr float ACTOR_WANDER_DIRECTION_CHANGE_COOLDOWN_SECONDS = 3.f;
-
-constexpr float PHYSICS_FRICTION_FRACTION = .2f;
-
 constexpr float DEBUG_LINE_THICKNESS = 0.02f;
+
+constexpr float BLOCK_SIZE = 1.f;
+
+constexpr int CHUNK_WIDTH = 16;
+constexpr int CHUNK_LENGTH = 16;
+constexpr int CHUNK_HEIGHT = 128;
+constexpr int NUM_BLOCKS_IN_CHUNK = CHUNK_WIDTH * CHUNK_LENGTH * CHUNK_HEIGHT;
 
 constexpr float MAX_CAMERA_SHAKE_DIST = 5.f;
 constexpr float SCREEN_SHAKE_ABLATION_PER_SECOND = 1.f;

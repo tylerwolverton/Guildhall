@@ -9,6 +9,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -23,18 +24,13 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/D3D11Common.hpp"
-#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Time/Clock.hpp"
 #include "Engine/Time/Time.hpp"
 
 #include "Game/GameCommon.hpp"
-#include "Game/Entity.hpp"
 #include "Game/World.hpp"
-#include "Game/TileDefinition.hpp"
-#include "Game/MapDefinition.hpp"
-#include "Game/ActorDefinition.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -143,9 +139,7 @@ void Game::InitializeMeshes()
 void Game::Shutdown()
 {
 	g_inputSystem->PushMouseOptions( CURSOR_ABSOLUTE, true, false );
-
-	TileDefinition::s_definitions.clear();
-	
+		
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_testMaterial );
 	PTR_SAFE_DELETE( m_quadMesh );
@@ -381,16 +375,6 @@ void Game::LoadAssets()
 	m_testSound = g_audioSystem->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 
 	g_devConsole->PrintString( "Assets Loaded", Rgba8::GREEN );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadNewMap( const std::string& mapName )
-{
-	PTR_SAFE_DELETE( m_world );
-
-	m_world = new World();
-	m_world->BuildNewMap( mapName );
 }
 
 

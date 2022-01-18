@@ -38,7 +38,7 @@ void App::Startup()
 {
 	PopulateGameConfig();
 
-	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "Protogame3D" );
+	std::string windowTitle = g_gameConfigBlackboard.GetValue( "windowTitle", "SimpleMiner" );
 	float windowAspect = g_gameConfigBlackboard.GetValue( "windowAspect", 16.f / 9.f );
 	float windowHeightRatio = g_gameConfigBlackboard.GetValue( "windowHeightRatio", .9f );
 	eWindowMode windowMode = GetWindowModeFromGameConfig();
@@ -215,7 +215,6 @@ void App::UpdateFromKeyboard()
 void App::Render() const
 {
 	g_game->Render();
-	//DebugRenderScreenTo( g_renderer->GetBackBuffer() );
 	g_devConsole->Render();
 }
 
