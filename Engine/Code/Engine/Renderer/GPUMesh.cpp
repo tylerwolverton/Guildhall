@@ -58,6 +58,11 @@ int GPUMesh::GetIndexCount()
 //-----------------------------------------------------------------------------------------------
 int GPUMesh::GetVertexCount()
 {
+	if ( (int)m_vertices->m_elementByteSize == 0 )
+	{
+		return 0;
+	}
+
 	return (int)m_vertices->m_bufferByteSize / (int)m_vertices->m_elementByteSize;
 }
 

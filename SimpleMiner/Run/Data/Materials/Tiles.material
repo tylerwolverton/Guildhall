@@ -1,0 +1,28 @@
+<material name="Default"
+   shader_path="Data/Shaders/Test.shader">
+
+  <!-- textures with special meaning to the renderer -->
+  <diffuse    path="Data/Images/TestAtlas_4x4.png" />
+  <normal     path="Flat" />
+
+  <!-- material specific textures -->
+  <!--<texture2d path="Data/Textures/" slot="0" />-->
+
+  <!-- sampler, set by or slot.  
+      filter: nearest, bilinear
+      mode: clamp, wrap
+
+      If no slot is defined - will be the main 
+      sampler used by the diffuse/normal etc...
+
+      otherwise they use the material specific slots
+   -->
+  <sampler slot=""
+     filter="point"
+     mode="clamp" />
+  
+  <!-- specular, will default to factor 0 and power 32 -->
+  <specular factor="0"
+            power="32" />
+
+</material>

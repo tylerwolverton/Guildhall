@@ -43,6 +43,11 @@ public:
 	template <typename VERTEX_TYPE>
 	void UpdateVertices( const std::vector<VERTEX_TYPE> vertices )
 	{
+		if ( vertices.empty() )
+		{
+			return;
+		}
+
 		UpdateVertices( (uint)vertices.size(), &vertices[0] );
 	}
 

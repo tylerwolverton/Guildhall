@@ -68,6 +68,7 @@ void Game::Startup()
 
 	m_gameClock = new Clock();
 	g_renderer->Setup( m_gameClock );
+	m_world = new World();
 
 	EnableDebugRendering();
 
@@ -132,6 +133,7 @@ void Game::InitializeMeshes()
 
 	// Initialize materials
 	m_testMaterial = new Material( g_renderer, "Data/Materials/Test.material" );
+	m_tileMaterial = new Material( g_renderer, "Data/Materials/Tiles.material" );
 }
 
 
@@ -142,6 +144,7 @@ void Game::Shutdown()
 		
 	// Clean up member variables
 	PTR_SAFE_DELETE( m_testMaterial );
+	PTR_SAFE_DELETE( m_tileMaterial );
 	PTR_SAFE_DELETE( m_quadMesh );
 	PTR_SAFE_DELETE( m_cubeMesh );
 	PTR_SAFE_DELETE( m_sphereMesh );
@@ -192,6 +195,11 @@ void Game::UpdateFromKeyboard()
 		float speed = m_rng->RollRandomFloatInRange( .5f, 2.f );
 		
 		g_audioSystem->PlaySound( m_testSound, false, volume, balance, speed );
+	}
+
+	if ( g_inputSystem->WasKeyJustPressed( KEY_F1 ) )
+	{
+		m_isDebugRendering = !m_isDebugRendering;
 	}
 
 	if ( g_inputSystem->WasKeyJustPressed( KEY_F4 ) )
@@ -337,14 +345,23 @@ void Game::Render() const
 	g_renderer->SetAmbientLight( s_ambientLightColor, m_ambientIntensity );
 	g_renderer->SetGamma( m_gamma );
 	
-	// Render normal objects
-	for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
+	g_renderer->BindMaterial( m_tileMaterial );
+
+	m_world->Render();
+
+	if ( m_isDebugRendering )
 	{
-		Mat44 modelMatrix = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
-		g_renderer->SetModelMatrix( modelMatrix );
-		g_renderer->BindMaterial( m_testMaterial );
-		g_renderer->DrawMesh( m_cubeMesh );
+		m_world->DebugRender();
 	}
+
+	//// Render normal objects
+	//for ( int cubeMeshTransformIdx = 0; cubeMeshTransformIdx < (int)m_cubeMeshTransforms.size(); ++cubeMeshTransformIdx )
+	//{
+	//	Mat44 modelMatrix = m_cubeMeshTransforms[cubeMeshTransformIdx].GetAsMatrix();
+	//	g_renderer->SetModelMatrix( modelMatrix );
+	//	g_renderer->BindMaterial( m_testMaterial );
+	//	g_renderer->DrawMesh( m_cubeMesh );
+	//}
 	
 	g_renderer->EndCamera( *m_worldCamera );
 

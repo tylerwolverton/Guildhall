@@ -100,6 +100,7 @@ private:
 
 	// Materials
 	Material* m_testMaterial = nullptr;
+	Material* m_tileMaterial = nullptr;
 		
 	// Sounds
 	SoundID m_testSound;

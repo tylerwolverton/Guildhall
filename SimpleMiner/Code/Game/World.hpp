@@ -1,5 +1,8 @@
 #pragma once
+#include "Game/Chunk.hpp"
+
 #include <string>
+#include <vector>
 
 
 //-----------------------------------------------------------------------------------------------
@@ -12,4 +15,7 @@ public:
 	void Update( float deltaSeconds );
 	void Render() const;
 	void DebugRender() const;
+
+private:
+	std::vector<Chunk> m_chunks;
 };
